@@ -78,7 +78,7 @@ export default {
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
     if (!(await this.isSupportedAsync())) {
       throw new Error(
-        `expo-screen-orientation: You're browser doesn't support locking screen orientation.`
+        `expo-screen-orientation: Your browser doesn't support locking screen orientation.`
       );
     }
     await OrientationTarget.lock(OrientationLockJSONToNative[orientationLock]);
@@ -86,7 +86,7 @@ export default {
   async lockPlatformAsync(orientation: number): Promise<void> {
     if (!(await this.isSupportedAsync())) {
       throw new Error(
-        `expo-screen-orientation: You're browser doesn't support locking screen orientation.`
+        `expo-screen-orientation: Your browser doesn't support locking screen orientation.`
       );
     }
     const nextOrientation = OrientationAngleJSONToNative[`${orientation}`];
