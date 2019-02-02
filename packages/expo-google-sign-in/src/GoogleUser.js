@@ -57,7 +57,7 @@ class GoogleUser extends GoogleIdentity {
       auth: ?{
         accessToken: ?string,
       },
-    } = await ExpoGoogleSignIn.getTokensAsync(false);
+    } = await ExpoGoogleSignIn.getTokensAsync(true);
     if (response.idToken == null) {
       response.idToken = this.auth.idToken;
     }
