@@ -132,4 +132,3 @@ if (global) {
   // @ts-ignore
   global.Expo = module.exports;
 }
- 

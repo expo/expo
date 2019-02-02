@@ -3,7 +3,12 @@ import { UnavailabilityError } from 'expo-errors';
 
 import ExponentSegment from './ExponentSegment';
 
-export function initialize(options: { androidWriteKey?: string; iosWriteKey?: string }): void {
+export type SegmentOptions = {
+  androidWriteKey?: string;
+  iosWriteKey?: string;
+};
+
+export function initialize(options: SegmentOptions): void {
   if (Platform.OS === 'android') {
     ExponentSegment.initializeAndroid(options.androidWriteKey);
   } else if (Platform.OS === 'ios') {
@@ -45,7 +50,7 @@ export async function alias(newId: string, options?: { [key: string]: any }): Pr
   if (!ExponentSegment.alias) {
     throw new UnavailabilityError('expo-analytics-segment', 'alias');
   }
-  return ExponentSegment.alias(newId, options);
+  return await ExponentSegment.alias(newId, options);
 }
 
 export function reset(): void {
@@ -102,5 +107,5 @@ export async function setEnabledAsync(enabled: boolean): Promise<void> {
   if (!ExponentSegment.setEnabledAsync) {
     throw new UnavailabilityError('expo-analytics-segment', 'setEnabledAsync');
   }
-  return ExponentSegment.setEnabledAsync(enabled);
+  await ExponentSegment.setEnabledAsync(enabled);
 }

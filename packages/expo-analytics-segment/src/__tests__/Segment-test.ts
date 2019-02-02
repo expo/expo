@@ -3,26 +3,29 @@ import { mockPlatformAndroid, mockPlatformIOS, unmockAllProperties } from 'jest-
 import ExponentSegment from '../ExponentSegment';
 import * as Segment from '../Segment';
 
-const ANDROID_WRITE_KEY = 'android-write-key';
-const IOS_WRITE_KEY = 'ios-write-key';
+describe('initialization', () => {
+  const mockOptions = {
+    androidWriteKey: 'android-write-key',
+    iosWriteKey: 'ios-write-key',
+  };
 
-describe('Segment initialization', () => {
-  it('initializes iOS', () => {
-    mockPlatformIOS();
-    Segment.initialize({
-      androidWriteKey: ANDROID_WRITE_KEY,
-      iosWriteKey: IOS_WRITE_KEY,
-    });
-    expect(ExponentSegment.initializeIOS).toHaveBeenCalled();
-    unmockAllProperties();
-  });
-  it('initializes Android', () => {
+  afterEach(unmockAllProperties);
+
+  it(`initializes on Android`, () => {
     mockPlatformAndroid();
-    Segment.initialize({
-      androidWriteKey: ANDROID_WRITE_KEY,
-      iosWriteKey: IOS_WRITE_KEY,
-    });
-    expect(ExponentSegment.initializeAndroid).toHaveBeenCalled();
-    unmockAllProperties();
+
+    Segment.initialize(mockOptions);
+
+    expect(ExponentSegment.initializeAndroid).toHaveBeenCalledWith(mockOptions.androidWriteKey);
+    expect(ExponentSegment.initializeIOS).not.toHaveBeenCalled();
+  });
+
+  it(`initializes on iOS`, () => {
+    mockPlatformIOS();
+
+    Segment.initialize(mockOptions);
+
+    expect(ExponentSegment.initializeIOS).toHaveBeenCalledWith(mockOptions.iosWriteKey);
+    expect(ExponentSegment.initializeAndroid).not.toHaveBeenCalled();
   });
 });

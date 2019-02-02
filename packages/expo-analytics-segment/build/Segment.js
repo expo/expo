@@ -40,7 +40,7 @@ export async function alias(newId, options) {
     if (!ExponentSegment.alias) {
         throw new UnavailabilityError('expo-analytics-segment', 'alias');
     }
-    return ExponentSegment.alias(newId, options);
+    return await ExponentSegment.alias(newId, options);
 }
 export function reset() {
     if (!ExponentSegment.reset) {
@@ -89,6 +89,6 @@ export async function setEnabledAsync(enabled) {
     if (!ExponentSegment.setEnabledAsync) {
         throw new UnavailabilityError('expo-analytics-segment', 'setEnabledAsync');
     }
-    return ExponentSegment.setEnabledAsync(enabled);
+    await ExponentSegment.setEnabledAsync(enabled);
 }
 //# sourceMappingURL=Segment.js.map

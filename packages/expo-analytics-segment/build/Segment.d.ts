@@ -1,7 +1,8 @@
-export declare function initialize(options: {
+export declare type SegmentOptions = {
     androidWriteKey?: string;
     iosWriteKey?: string;
-}): void;
+};
+export declare function initialize(options: SegmentOptions): void;
 export declare function identify(userId: string): void;
 export declare function identifyWithTraits(userId: string, traits: {
     [key: string]: any;
