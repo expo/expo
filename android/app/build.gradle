@@ -46,15 +46,6 @@ android {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
   }
 
-  flavorDimensions 'remoteKernel'
-  productFlavors {
-    devKernel {
-      dimension 'remoteKernel'
-    }
-    prodKernel {
-      dimension 'remoteKernel'
-    }
-  }
   signingConfigs {
     debug {
       storeFile file('../debug.keystore')
@@ -263,6 +254,8 @@ dependencies {
   api 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
   api 'host.exp.exponent:expo-barcode-scanner:2.0.0'
   api 'host.exp.exponent:expo-blur:1.0.0'
+  api 'host.exp.exponent:expo-brightness:1.0.0'
+  api 'host.exp.exponent:expo-calendar:1.0.0'
   api 'host.exp.exponent:expo-camera-interface:2.0.0'
   api 'host.exp.exponent:expo-camera:2.0.0'
   api 'host.exp.exponent:expo-contacts:2.0.0'
@@ -287,7 +280,7 @@ dependencies {
   api 'host.exp.exponent:expo-mail-composer:1.0.0'
   api 'host.exp.exponent:expo-speech:1.0.0'
   api 'host.exp.exponent:expo-sqlite:1.0.0'
-
+  api 'host.exp.exponent:expo-web-browser:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 }
 

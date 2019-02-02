@@ -18,7 +18,7 @@
   "dependencies": {
     "async-retry": "^1.1.4",
     "case-sensitive-paths-webpack-plugin": "^2.2.0",
-    "expo": "^32.0.0-rc.3",
+    "expo": "^32.0.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "4.0.0-alpha.2",
     "i18n-js": "^3.0.11",

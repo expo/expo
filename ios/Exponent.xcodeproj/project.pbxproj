@@ -15,8 +15,6 @@
 		0779EE2720977C9E00C2D71B /* AIRGoogleMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2320977C9D00C2D71B /* AIRGoogleMapOverlayManager.m */; };
 		0779EE2820977C9E00C2D71B /* AIRDummyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2420977C9E00C2D71B /* AIRDummyView.m */; };
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
-		07E26F301FFFFB55004667A1 /* EXCalendarConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */; };
-		07E26F311FFFFB55004667A1 /* EXCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E26F2E1FFFFB55004667A1 /* EXCalendar.m */; };
 		08FCA2B1B8F4B2420E552303 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC01B7874B93745E639DFA6 /* libPods-Tests.a */; };
 		19065BE72006015D007706D6 /* EXFileSystemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19065BE62006015D007706D6 /* EXFileSystemManager.m */; };
 		19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */; };
@@ -214,7 +212,6 @@
 		B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */; };
 		B5FB745B1FF6DADB001C764B /* EXAnimationViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72E31FF6DADB001C764B /* EXAnimationViewManager.m */; };
 		B5FB745C1FF6DADB001C764B /* EXContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB72E51FF6DADB001C764B /* EXContainerView.m */; };
-		B5FB74A01FF6DADC001C764B /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73771FF6DADB001C764B /* EXBrightness.m */; };
 		B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */; };
 		B5FB74A51FF6DADC001C764B /* EXErrorRecovery.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */; };
 		B5FB74AA1FF6DADC001C764B /* EXImageManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738B1FF6DADB001C764B /* EXImageManipulator.m */; };
@@ -222,7 +219,6 @@
 		B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73971FF6DADB001C764B /* EXScreenOrientation.m */; };
 		B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A11FF6DADB001C764B /* EXUtil.m */; };
 		B5FB74B61FF6DADC001C764B /* EXViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A31FF6DADB001C764B /* EXViewShot.m */; };
-		B5FB74B71FF6DADC001C764B /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */; };
 		B5FB74C81FF6DADC001C764B /* EXOAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73CB1FF6DADB001C764B /* EXOAuthViewController.m */; };
 		B5FB74D61FF6DADC001C764B /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73EB1FF6DADB001C764B /* BranchLinkProperties+RNBranch.m */; };
 		B5FB74D71FF6DADC001C764B /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB73ED1FF6DADB001C764B /* BranchUniversalObject+RNBranch.m */; };
@@ -328,10 +324,6 @@
 		0779EE2520977C9E00C2D71B /* AIRGoogleMapOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapOverlay.h; sourceTree = "<group>"; };
 		0799CFD821839B470039E97C /* EXSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSession.h; sourceTree = "<group>"; };
 		0799CFD921839B520039E97C /* EXSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSession.m; sourceTree = "<group>"; };
-		07E26F2C1FFFFB55004667A1 /* EXCalendar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCalendar.h; sourceTree = "<group>"; };
-		07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCalendarConverter.m; sourceTree = "<group>"; };
-		07E26F2E1FFFFB55004667A1 /* EXCalendar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXCalendar.m; sourceTree = "<group>"; };
-		07E26F2F1FFFFB55004667A1 /* EXCalendarConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXCalendarConverter.h; sourceTree = "<group>"; };
 		13E8F108A9CD2612A9EB2573 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		19065BE52006015D007706D6 /* EXFileSystemManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXFileSystemManager.h; sourceTree = "<group>"; };
 		19065BE62006015D007706D6 /* EXFileSystemManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFileSystemManager.m; sourceTree = "<group>"; };
@@ -731,8 +723,6 @@
 		B5FB72E31FF6DADB001C764B /* EXAnimationViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAnimationViewManager.m; sourceTree = "<group>"; };
 		B5FB72E41FF6DADB001C764B /* EXContainerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXContainerView.h; sourceTree = "<group>"; };
 		B5FB72E51FF6DADB001C764B /* EXContainerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXContainerView.m; sourceTree = "<group>"; };
-		B5FB73761FF6DADB001C764B /* EXBrightness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBrightness.h; sourceTree = "<group>"; };
-		B5FB73771FF6DADB001C764B /* EXBrightness.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBrightness.m; sourceTree = "<group>"; };
 		B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXConstantsBinding.h; sourceTree = "<group>"; };
 		B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXConstantsBinding.m; sourceTree = "<group>"; };
 		B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorRecovery.h; sourceTree = "<group>"; };
@@ -747,8 +737,6 @@
 		B5FB73A11FF6DADB001C764B /* EXUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXUtil.m; sourceTree = "<group>"; };
 		B5FB73A21FF6DADB001C764B /* EXViewShot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXViewShot.h; sourceTree = "<group>"; };
 		B5FB73A31FF6DADB001C764B /* EXViewShot.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXViewShot.m; sourceTree = "<group>"; };
-		B5FB73A41FF6DADB001C764B /* EXWebBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXWebBrowser.h; sourceTree = "<group>"; };
-		B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXWebBrowser.m; sourceTree = "<group>"; };
 		B5FB73CA1FF6DADB001C764B /* EXOAuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXOAuthViewController.h; sourceTree = "<group>"; };
 		B5FB73CB1FF6DADB001C764B /* EXOAuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXOAuthViewController.m; sourceTree = "<group>"; };
 		B5FB73EA1FF6DADB001C764B /* BranchLinkProperties+RNBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BranchLinkProperties+RNBranch.h"; sourceTree = "<group>"; };
@@ -922,18 +910,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		07E26F2B1FFFFB55004667A1 /* Calendar */ = {
-			isa = PBXGroup;
-			children = (
-				07E26F2C1FFFFB55004667A1 /* EXCalendar.h */,
-				07E26F2E1FFFFB55004667A1 /* EXCalendar.m */,
-				07E26F2F1FFFFB55004667A1 /* EXCalendarConverter.h */,
-				07E26F2D1FFFFB55004667A1 /* EXCalendarConverter.m */,
-			);
-			name = Calendar;
-			path = Exponent/Versioned/Core/Api/Calendar;
-			sourceTree = SOURCE_ROOT;
-		};
 		3050F5A98E56E9379C36ABD2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -1590,11 +1566,8 @@
 			children = (
 				BBD0318A200011C9009F0434 /* Cognito */,
 				BB5BD2FA20AEFCB4007E02FC /* Reanimated */,
-				07E26F2B1FFFFB55004667A1 /* Calendar */,
 				BB36BC5C2135C98D00AFFD58 /* Screens */,
 				B5FB728D1FF6DADB001C764B /* Components */,
-				B5FB73761FF6DADB001C764B /* EXBrightness.h */,
-				B5FB73771FF6DADB001C764B /* EXBrightness.m */,
 				B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */,
 				B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */,
 				CD99394E2040C1AA0087C883 /* EXHaptic.h */,
@@ -1615,8 +1588,6 @@
 				B5FB73A11FF6DADB001C764B /* EXUtil.m */,
 				B5FB73A21FF6DADB001C764B /* EXViewShot.h */,
 				B5FB73A31FF6DADB001C764B /* EXViewShot.m */,
-				B5FB73A41FF6DADB001C764B /* EXWebBrowser.h */,
-				B5FB73A51FF6DADB001C764B /* EXWebBrowser.m */,
 				B5FB73C91FF6DADB001C764B /* OAuthViewController */,
 				B5FB73E81FF6DADB001C764B /* Standalone */,
 			);
@@ -2328,7 +2299,6 @@
 				BB5BD32420AEFCB4007E02FC /* REABezierNode.m in Sources */,
 				7834361D205B8C5F00DD28C3 /* AIRMapManager.m in Sources */,
 				3159BB8C21806E76002D2A81 /* RNSVGGroupManager.m in Sources */,
-				07E26F311FFFFB55004667A1 /* EXCalendar.m in Sources */,
 				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
 				BB5BD32020AEFCB4007E02FC /* REAClockNodes.m in Sources */,
 				B5FB745B1FF6DADB001C764B /* EXAnimationViewManager.m in Sources */,
@@ -2500,7 +2470,6 @@
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */,
 				19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */,
-				B5FB74B71FF6DADC001C764B /* EXWebBrowser.m in Sources */,
 				BB50E88C20B9C0D3003C752D /* RNGestureHandlerButton.m in Sources */,
 				07639ABA20507B2000B4BE4C /* EXUpdates.m in Sources */,
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
@@ -2516,7 +2485,6 @@
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
 				78343625205B8C5F00DD28C3 /* AIRMapCallout.m in Sources */,
 				3159BB3421806E24002D2A81 /* RNSVGRect.m in Sources */,
-				B5FB74A01FF6DADC001C764B /* EXBrightness.m in Sources */,
 				2519CCFC216B292600FA7C80 /* EXUserNotificationCenter.m in Sources */,
 				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
 				3159BB2621806E0C002D2A81 /* RNSVGClipPath.m in Sources */,
@@ -2562,7 +2530,6 @@
 				78343614205B8C5F00DD28C3 /* AIRMapPolylineManager.m in Sources */,
 				B5FB74D81FF6DADC001C764B /* NSObject+RNBranch.m in Sources */,
 				B5FB74D61FF6DADC001C764B /* BranchLinkProperties+RNBranch.m in Sources */,
-				07E26F301FFFFB55004667A1 /* EXCalendarConverter.m in Sources */,
 				31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */,
 				3159BB4521806E3D002D2A81 /* RNSVGPropHelper.m in Sources */,
 				78343617205B8C5F00DD28C3 /* AIRMapPolyline.m in Sources */,
@@ -2756,7 +2723,6 @@
 					"-l\"CocoaLumberjack\"",
 					"-l\"FBSDKCoreKit\"",
 					"-l\"FBSDKLoginKit\"",
-					"-l\"FBSDKShareKit\"",
 					"-l\"React\"",
 					"-l\"c++\"",
 					"-l\"sqlite3.0\"",
@@ -2826,7 +2792,6 @@
 					"-l\"CocoaLumberjack\"",
 					"-l\"FBSDKCoreKit\"",
 					"-l\"FBSDKLoginKit\"",
-					"-l\"FBSDKShareKit\"",
 					"-l\"React\"",
 					"-l\"c++\"",
 					"-l\"sqlite3.0\"",

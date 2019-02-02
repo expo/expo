@@ -29,5 +29,8 @@
     "eslint-config-universe": "^2.0.0-alpha.0",
     "expo-yarn-workspaces": "^1.1.0",
     "prettier": "^1.14.2"
+  },
+  "resolutions": {
+    "react-native-gesture-handler": "1.0.14"
   }
 }

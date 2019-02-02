@@ -66,7 +66,5 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 
 dependencies {
   expendency 'expo-core'
-  api('com.facebook.android:audience-network-sdk:4.99.0') {
-    exclude module: 'play-services-ads'
-  }
+  api 'com.facebook.android:audience-network-sdk:5.1.1'
 }

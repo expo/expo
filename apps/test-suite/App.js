@@ -33,6 +33,7 @@ async function getTestModulesAsync() {
     require('./tests/Import3'),
     require('./tests/Asset'),
     require('./tests/Audio'),
+    require('./tests/Calendar'),
     require('./tests/Constants'),
     require('./tests/Contacts'),
     require('./tests/FileSystem'),

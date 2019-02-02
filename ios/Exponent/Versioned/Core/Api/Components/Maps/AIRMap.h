@@ -38,6 +38,7 @@ extern const NSInteger AIRMapMaxZoomLevel;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
 @property (nonatomic, assign) MKCoordinateRegion initialRegion;
+@property (nonatomic, assign) MKMapCamera *initialCamera;
 @property (nonatomic, assign) CGFloat minZoomLevel;
 @property (nonatomic, assign) CGFloat maxZoomLevel;
 
@@ -64,5 +65,6 @@ extern const NSInteger AIRMapMaxZoomLevel;
 - (void)cacheViewIfNeeded;
 - (void)beginLoading;
 - (void)finishLoading;
+- (NSArray *)getMapBoundaries;
 
 @end

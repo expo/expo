@@ -96,6 +96,11 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 //        view.setImage(image);
 //    }
 
+  @ReactProp(name = "icon")
+  public void setIcon(AirMapMarker view, @Nullable String source) {
+    view.setImage(source);
+  }
+
   @ReactProp(name = "pinColor", defaultInt = Color.RED, customType = "Color")
   public void setPinColor(AirMapMarker view, int pinColor) {
     float[] hsv = new float[3];

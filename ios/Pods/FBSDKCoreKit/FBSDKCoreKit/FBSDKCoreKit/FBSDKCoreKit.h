@@ -53,5 +53,5 @@
 #import <FBSDKCoreKit/FBSDKDeviceViewControllerBase.h>
 #endif
 
-#define FBSDK_VERSION_STRING @"4.39.1"
+#define FBSDK_VERSION_STRING @"4.40.0"
 #define FBSDK_TARGET_PLATFORM_VERSION @"v3.2"

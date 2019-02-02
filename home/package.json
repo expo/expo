@@ -1,6 +1,6 @@
 {
   "name": "@expo/home",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "__generated__/AppEntry.js",
   "private": true,
   "description": "The Expo client app",
@@ -27,7 +27,7 @@
     "autobind-decorator": "^1.3.2",
     "dedent": "^0.7.0",
     "es6-error": "^4.0.1",
-    "expo": "^32.0.0",
+    "expo": "^32.0.1",
     "graphql-tag": "^1.2.1",
     "immutable": "^3.8.1",
     "jwt-decode": "^2.1.0",

@@ -36,10 +36,23 @@
       src="https://maps.googleapis.com/maps/api/js?key=API_KEY"
       type="text/javascript"
     ></script> -->
+
+    <style>
+      html {
+        height: 100%;
+        display: flex;
+      }
+      body,
+      #main {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+      }
+    </style>
   </head>
 
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="main" style="display:flex;flex-direction:column;min-height:100vh;"></div>
+    <div id="main"></div>
   </body>
 </html>

@@ -76,7 +76,6 @@ Pod::Spec.new do |s|
     ss.dependency 'FBAudienceNetwork'
     ss.dependency 'FBSDKCoreKit'
     ss.dependency 'FBSDKLoginKit'
-    ss.dependency 'FBSDKShareKit'
     ss.dependency 'Google-Mobile-Ads-SDK'
     ss.dependency 'GoogleSignIn'
     ss.dependency 'GoogleMaps'

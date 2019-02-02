@@ -16,6 +16,8 @@ import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.blurview.BlurViewPackage;
+import expo.modules.brightness.BrightnessPackage;
+import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -42,6 +44,7 @@ import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.webbrowser.WebBrowserPackage;
 import expolib_v1.okhttp3.OkHttpClient;
 
 // Needed for `react-native link`
@@ -75,6 +78,8 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new BackgroundFetchPackage(),
         new BarCodeScannerPackage(),
         new BlurViewPackage(),
+        new BrightnessPackage(),
+        new CalendarPackage(),
         new CameraPackage(),
         new ConstantsPackage(),
         new ContactsPackage(),
@@ -101,18 +106,14 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new SegmentPackage(),
         new SensorsPackage(),
         new SpeechPackage(),
-        new TaskManagerPackage()
+        new TaskManagerPackage(),
+        new WebBrowserPackage()
     );
   }
 
   @Override
   public String gcmSenderId() {
     return getString(R.string.gcm_defaultSenderId);
-  }
-
-  @Override
-  public boolean shouldUseInternetKernel() {
-    return BuildVariantConstants.USE_INTERNET_KERNEL;
   }
 
   public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {

@@ -37,7 +37,6 @@ public abstract class ExpoApplication extends MultiDexApplication {
   // Override me!
   public abstract String gcmSenderId();
   public abstract boolean isDebug();
-  public abstract boolean shouldUseInternetKernel();
 
   private static final String TAG = ExpoApplication.class.getSimpleName();
 
@@ -127,5 +126,11 @@ public abstract class ExpoApplication extends MultiDexApplication {
 
     // Add exception handler. This is used by the entire process, so only need to add it here.
     Thread.setDefaultUncaughtExceptionHandler(new ExponentUncaughtExceptionHandler(getApplicationContext()));
+  }
+
+  // we're leaving this stub in here so that if people don't modify their MainApplication to
+  // remove the override of shouldUseInternetKernel() their project will still build without errors
+  public boolean shouldUseInternetKernel() {
+    return !isDebug();
   }
 }

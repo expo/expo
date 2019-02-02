@@ -1,1 +1,1 @@
-../../../../FBAudienceNetwork/FBAudienceNetwork.framework/Headers/FBRewardedVideoAd.h
+../../../../FBAudienceNetwork/Static/FBAudienceNetwork.framework/Headers/FBRewardedVideoAd.h

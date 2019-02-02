@@ -15,6 +15,8 @@ import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.blurview.BlurViewPackage;
+import expo.modules.brightness.BrightnessPackage;
+import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -25,9 +27,9 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
-import expo.modules.imagepicker.ImagePickerPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
@@ -42,6 +44,7 @@ import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.webbrowser.WebBrowserPackage;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
@@ -53,6 +56,8 @@ public class ExperiencePackagePicker {
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
       new BlurViewPackage(),
+      new BrightnessPackage(),
+      new CalendarPackage(),
       new CameraPackage(),
       new ConstantsPackage(),
       new ContactsPackage(),
@@ -80,7 +85,8 @@ public class ExperiencePackagePicker {
       new SensorsPackage(),
       new SpeechPackage(),
       new StripePackage(),
-      new TaskManagerPackage()
+      new TaskManagerPackage(),
+      new WebBrowserPackage()
   );
 
   /**
