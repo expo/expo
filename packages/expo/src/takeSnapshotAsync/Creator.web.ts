@@ -184,7 +184,8 @@ async function processClone(original: Element, clone: HTMLElement): Promise<HTML
   if (source.cssText) {
     target.cssText = source.cssText;
   } else {
-    for (const name in source) {
+    for (const prop in source) {
+      const name = source[prop];
       target.setProperty(name, source.getPropertyValue(name), source.getPropertyPriority(name));
     }
   }
