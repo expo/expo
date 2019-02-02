@@ -95,7 +95,7 @@ export { Updates };
 export { Util };
 export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
-export { default as takeSnapshotAsync } from './takeSnapshotAsync';
+export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 export { Audio, Video };
 export { BlurView, VibrancyView };
 export { LinearGradient } from 'expo-linear-gradient';
