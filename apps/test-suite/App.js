@@ -225,15 +225,18 @@ export default class App extends React.Component {
       jasmineDone() {
         console.log('--- tests done');
         console.log('--- send results to runner');
-        const jsonResult = {
+        const result = {
           magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
           failed: failedSpecs.length,
           results: this._results,
         };
-        let result = JSON.stringify(jsonResult);
-        // This log needs to be an object for puppeteer tests
-        console.log(jsonResult);
-        console.log(result);
+        if (Platform.OS === 'web') {
+          // This log needs to be an object for puppeteer tests
+          console.log(result);
+        } else {
+          const jsonResult = JSON.stringify(result);
+          console.log(jsonResult);
+        }
 
         if (ExponentTest) {
           // Native logs are truncated so log just the failures for now

@@ -25,11 +25,24 @@ async function runPuppeteerAsync() {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
   const page = await browser.newPage();
-  await page.goto(`http://localhost:${port}`, {
-    timeout: 3000000,
+
+  async function exitOnErrorAsync() {
+    await browser.close();
+
+    if (server) {
+      server.close();
+    }
+    process.exit(1);
+  }
+  page.on('pageerror', async msg => {
+    console.error('pageerror', msg);
+    exitOnErrorAsync();
   });
 
-  console.log('Start observing test-suite');
+  page.on('error', async msg => {
+    console.error('error', msg);
+    exitOnErrorAsync();
+  });
 
   // 3. Parse a JSHandle into: { value: any, type: string }
   function parseHandle(jsHandle) {
@@ -42,6 +55,7 @@ async function runPuppeteerAsync() {
   page.on('console', async msg => {
     // 2. Filter the results into a list of objects
     const args = await Promise.all(msg.args().map(arg => parseHandle(arg)));
+    console.log(msg);
 
     // 4. Ignore anything that isn't an object - in test-suite we are sending the results as an object.
     const jsonObjects = args.filter(({ type }) => type === 'object');
@@ -68,6 +82,11 @@ async function runPuppeteerAsync() {
       }
     }
   });
+
+  await page.goto(`http://localhost:${port}`, {
+    timeout: 3000000,
+  });
+  console.log('Start observing test-suite');
 }
 
 function listenToServerAsync(server) {
@@ -83,11 +102,6 @@ function listenToServerAsync(server) {
 }
 
 async function main(args) {
-  require('babel-register')({
-    babelrc: false,
-    plugins: [require('babel-plugin-transform-es2015-modules-commonjs')],
-  });
-
   if (manuallyRunWebpack) {
     server = new WebpackDevServer(webpack(config), options);
     try {
