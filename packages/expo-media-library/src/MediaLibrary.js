@@ -75,6 +75,11 @@ type Album = {
   locationNames?: Array<string>,
 };
 
+type AlbumsOptions = {
+  // iOS only
+  includeSmartAlbums?: boolean,
+};
+
 type AssetsOptions = {
   first?: number,
   after?: AssetRef,
@@ -236,11 +241,13 @@ export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
   return assetInfo;
 }
 
-export async function getAlbumsAsync(): Promise<Array<Album>> {
+export async function getAlbumsAsync({ includeSmartAlbums = false }: AlbumsOptions = {}): Promise<
+  Array<Album>
+> {
   if (!MediaLibrary.getAlbumsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAlbumsAsync');
   }
-  return MediaLibrary.getAlbumsAsync();
+  return MediaLibrary.getAlbumsAsync({ includeSmartAlbums });
 }
 
 export async function getAlbumAsync(title: string): Promise<Album> {
