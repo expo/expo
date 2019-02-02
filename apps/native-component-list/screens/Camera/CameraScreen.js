@@ -122,7 +122,6 @@ export default class CameraScreen extends React.Component {
   handleMountError = ({ message }) => console.error(message);
 
   onPictureSaved = async photo => {
-    console.log('PUSHH', photo);
     if (Platform.OS === 'web') {
       photos.push(photo);
     } else {

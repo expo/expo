@@ -19,6 +19,6 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     onMountError: ({ nativeEvent }: {
         nativeEvent: MountError;
     }) => void;
-    _setRef: (ref: any) => Promise<void>;
+    _setRef: (ref: any) => void;
     render(): JSX.Element;
 }

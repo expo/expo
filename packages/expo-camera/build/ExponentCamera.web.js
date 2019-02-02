@@ -73,8 +73,7 @@ export default class ExponentCamera extends React.Component {
                 this.props.onMountError({ nativeEvent });
             }
         };
-        this._setRef = async (ref) => {
-            console.log('SET', ref);
+        this._setRef = ref => {
             if (!ref) {
                 this.video = null;
                 if (this.camera) {

@@ -52,8 +52,6 @@ export default class GalleryScreen extends React.Component {
   );
 
   render() {
-    console.log('PHOTOS', this.props.photos, this.state.photos);
-
     return (
       <View style={styles.container}>
         <View style={styles.navbar}>
