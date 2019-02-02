@@ -3,34 +3,42 @@ import PropTypes from 'prop-types';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
 import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 
-import packageJSON from '../package.json';
+const packageJSON = require('../package.json');
 
-import { SurfaceCreateEvent, SnapshotOptions } from './GLView.types';
+import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
+export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps }
 
-type Props = {
-  /**
-   * Called when the OpenGL context is created, with the context object as a parameter. The context
-   * object has an API mirroring WebGL's WebGLRenderingContext.
-   */
-  onContextCreate?: (gl: *) => void,
-
-  /**
-   * [iOS only] Number of samples for Apple's built-in multisampling.
-   */
-  msaaSamples: number,
-
-  /**
-   * A ref callback for the native GLView
-   */
-  nativeRef_EXPERIMENTAL: (React.ElementRef<typeof GLView.NativeView> | null) => void,
-} & React.ElementProps<typeof View>;
+declare let global: any;
 
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
+
+export interface NativeGLViewProps extends GLViewProps {
+
+  /**
+  * Called when the OpenGL context is created, with the context object as a parameter. The context
+  * object has an API mirroring WebGL's WebGLRenderingContext.
+  */
+ onContextCreate(gl: ExpoWebGLRenderingContext): void;
+
+ /**
+  * [iOS only] Number of samples for Apple's built-in multisampling.
+  */
+ msaaSamples: number;
+
+ /**
+  * A ref callback for the native GLView
+  */
+ nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null);
+}
+
+type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
+const NativeView = requireNativeViewManager('ExponentGLView');
 
 /**
  * A component that acts as an OpenGL render target
  */
-export default class GLView extends React.Component<Props> {
+export default class GLView extends React.Component<NativeGLViewProps, { msaaSamples: number }> {
+  static NativeView: any;
   static propTypes = {
     onContextCreate: PropTypes.func,
     msaaSamples: PropTypes.number,
@@ -47,21 +55,21 @@ export default class GLView extends React.Component<Props> {
     return getGl(exglCtxId);
   }
 
-  static async destroyContextAsync(exgl: WebGLRenderingContext | ?number) {
+  static async destroyContextAsync(exgl?: WebGLRenderingContext | number) {
     const exglCtxId = getContextId(exgl);
     return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
   }
 
   static async takeSnapshotAsync(
-    exgl: WebGLRenderingContext | ?number,
+    exgl?: WebGLRenderingContext | number,
     options: SnapshotOptions = {}
   ) {
     const exglCtxId = getContextId(exgl);
     return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
   }
 
-  nativeRef: ?GLView.NativeView;
-  exglCtxId: ?number;
+  nativeRef: ComponentOrHandle = null;
+  exglCtxId?: number;
 
   render() {
     const {
@@ -72,7 +80,7 @@ export default class GLView extends React.Component<Props> {
 
     return (
       <View {...viewProps}>
-        <GLView.NativeView
+        <NativeView
           ref={this._setNativeRef}
           style={{
             flex: 1,
@@ -89,14 +97,15 @@ export default class GLView extends React.Component<Props> {
     );
   }
 
-  _setNativeRef = (nativeRef: React.ElementRef<typeof GLView.NativeView>) => {
+  // React.ElementRef<typeof GLView.NativeView>
+  _setNativeRef = (nativeRef: ComponentOrHandle): void => {
     if (this.props.nativeRef_EXPERIMENTAL) {
       this.props.nativeRef_EXPERIMENTAL(nativeRef);
     }
     this.nativeRef = nativeRef;
   };
 
-  _onSurfaceCreate = ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => {
+  _onSurfaceCreate = ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent): void => {
     const gl = getGl(exglCtxId);
 
     this.exglCtxId = exglCtxId;
@@ -106,20 +115,18 @@ export default class GLView extends React.Component<Props> {
     }
   };
 
-  static NativeView = requireNativeViewManager('ExponentGLView', GLView);
-
-  startARSessionAsync() {
-    return ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
+  async startARSessionAsync(): Promise<any> {
+    return await ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
   }
 
-  async createCameraTextureAsync(cameraRef: React.Node) {
+  async createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture> {
     const { exglCtxId } = this;
 
     if (!exglCtxId) {
       throw new Error("GLView's surface is not created yet!");
     }
 
-    const cameraTag = findNodeHandle(cameraRef);
+    const cameraTag = findNodeHandle(cameraRefOrHandle);
     const { exglObjId } = await ExponentGLObjectManager.createCameraTextureAsync(
       exglCtxId,
       cameraTag
@@ -127,20 +134,22 @@ export default class GLView extends React.Component<Props> {
     return new WebGLTexture(exglObjId);
   }
 
-  destroyObjectAsync(glObject: WebGLObject) {
-    return ExponentGLObjectManager.destroyObjectAsync(glObject.id);
+  async destroyObjectAsync(glObject: WebGLObject): Promise<any> {
+    return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
   }
 
-  takeSnapshotAsync(options: SnapshotOptions = {}) {
+  async takeSnapshotAsync(options: SnapshotOptions = {}): Promise<any> {
     const { exglCtxId } = this;
-    return GLView.takeSnapshotAsync(exglCtxId, options);
+    return await GLView.takeSnapshotAsync(exglCtxId, options);
   }
 }
+
+GLView.NativeView = NativeView;
 
 // JavaScript WebGL types to wrap around native objects
 
 class WebGLRenderingContext {
-  __exglCtxId: ?number;
+  __exglCtxId?: number;
 }
 
 class WebGL2RenderingContext extends WebGLRenderingContext {}
@@ -539,7 +548,7 @@ const getGl = exglCtxId => {
   return gl;
 };
 
-const getContextId = (exgl: WebGLRenderingContext | ?number) => {
+const getContextId = (exgl?: WebGLRenderingContext | number) => {
   const exglCtxId = exgl && typeof exgl === 'object' ? exgl.__exglCtxId : exgl;
 
   if (!exglCtxId || typeof exglCtxId !== 'number') {

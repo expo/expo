@@ -1,19 +1,31 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
-import { Platform, ViewPropTypes, findNodeHandle } from 'react-native';
-import packageJSON from '../package.json';
+import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+const packageJSON = require('../package.json');
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
+const NativeView = requireNativeViewManager('ExponentGLView');
 /**
  * A component that acts as an OpenGL render target
  */
 export default class GLView extends React.Component {
     constructor() {
         super(...arguments);
-        this.onSurfaceCreate = { this: ._onSurfaceCreate };
-        this.msaaSamples = { Platform, : .OS === 'ios' ? msaaSamples : undefined }
-            /  >
-            /View>;
+        this.nativeRef = null;
+        // React.ElementRef<typeof GLView.NativeView>
+        this._setNativeRef = (nativeRef) => {
+            if (this.props.nativeRef_EXPERIMENTAL) {
+                this.props.nativeRef_EXPERIMENTAL(nativeRef);
+            }
+            this.nativeRef = nativeRef;
+        };
+        this._onSurfaceCreate = ({ nativeEvent: { exglCtxId } }) => {
+            const gl = getGl(exglCtxId);
+            this.exglCtxId = exglCtxId;
+            if (this.props.onContextCreate) {
+                this.props.onContextCreate(gl);
+            }
+        };
     }
     static async createContextAsync() {
         const { exglCtxId } = await ExponentGLObjectManager.createContextAsync();
@@ -30,21 +42,36 @@ export default class GLView extends React.Component {
     render() {
         const { onContextCreate, // eslint-disable-line no-unused-vars
         msaaSamples, ...viewProps } = this.props;
-        return ({ ...viewProps } >
-            ref) = { this: ._setNativeRef };
-        style = {};
-        {
+        return (<View {...viewProps}>
+        <NativeView ref={this._setNativeRef} style={{
             flex: 1,
-            ;
-            (Platform.OS === 'ios'
+            ...(Platform.OS === 'ios'
                 ? {
                     backgroundColor: 'transparent',
                 }
                 : {}),
-            ;
-        }
+        }} onSurfaceCreate={this._onSurfaceCreate} msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}/>
+      </View>);
     }
-    ;
+    async startARSessionAsync() {
+        return await ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
+    }
+    async createCameraTextureAsync(cameraRefOrHandle) {
+        const { exglCtxId } = this;
+        if (!exglCtxId) {
+            throw new Error("GLView's surface is not created yet!");
+        }
+        const cameraTag = findNodeHandle(cameraRefOrHandle);
+        const { exglObjId } = await ExponentGLObjectManager.createCameraTextureAsync(exglCtxId, cameraTag);
+        return new WebGLTexture(exglObjId);
+    }
+    async destroyObjectAsync(glObject) {
+        return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
+    }
+    async takeSnapshotAsync(options = {}) {
+        const { exglCtxId } = this;
+        return await GLView.takeSnapshotAsync(exglCtxId, options);
+    }
 }
 GLView.propTypes = {
     onContextCreate: PropTypes.func,
@@ -55,44 +82,7 @@ GLView.propTypes = {
 GLView.defaultProps = {
     msaaSamples: 4,
 };
-_setNativeRef = (nativeRef) => {
-    if (this.props.nativeRef_EXPERIMENTAL) {
-        this.props.nativeRef_EXPERIMENTAL(nativeRef);
-    }
-    this.nativeRef = nativeRef;
-};
-_onSurfaceCreate = ({ nativeEvent: { exglCtxId } }) => {
-    const gl = getGl(exglCtxId);
-    this.exglCtxId = exglCtxId;
-    if (this.props.onContextCreate) {
-        this.props.onContextCreate(gl);
-    }
-};
-NativeView = requireNativeViewManager('ExponentGLView', GLView);
-startARSessionAsync();
-{
-    return ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
-}
-async;
-createCameraTextureAsync(cameraRef, React.Node);
-{
-    const { exglCtxId } = this;
-    if (!exglCtxId) {
-        throw new Error("GLView's surface is not created yet!");
-    }
-    const cameraTag = findNodeHandle(cameraRef);
-    const { exglObjId } = await ExponentGLObjectManager.createCameraTextureAsync(exglCtxId, cameraTag);
-    return new WebGLTexture(exglObjId);
-}
-destroyObjectAsync(glObject, WebGLObject);
-{
-    return ExponentGLObjectManager.destroyObjectAsync(glObject.id);
-}
-takeSnapshotAsync(options, SnapshotOptions = {});
-{
-    const { exglCtxId } = this;
-    return GLView.takeSnapshotAsync(exglCtxId, options);
-}
+GLView.NativeView = NativeView;
 // JavaScript WebGL types to wrap around native objects
 class WebGLRenderingContext {
 }

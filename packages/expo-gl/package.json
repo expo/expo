@@ -8,6 +8,7 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "test": "expo-module test",
+    "test:snapshots": "jest --updateSnapshot",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -23,8 +24,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "peerDependencies": {
-    "expo-core": "~2.0.0",
     "expo-camera-interface": "~2.0.0",
+    "expo-core": "~2.0.0",
     "expo-file-system-interface": "~2.0.0",
     "expo-gl-cpp": "~2.0.0"
   },
@@ -34,5 +35,8 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58",
+  "devDependencies": {
+    "react-test-renderer": "^16.7.0"
+  }
 }

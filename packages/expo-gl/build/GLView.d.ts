@@ -1,13 +1,13 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { View } from 'react-native';
-import { SnapshotOptions } from './GLView.types';
-declare type Props = {
+import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
+export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
+export interface NativeGLViewProps extends GLViewProps {
     /**
-     * Called when the OpenGL context is created, with the context object as a parameter. The context
-     * object has an API mirroring WebGL's WebGLRenderingContext.
-     */
-    onContextCreate?: (gl: *) => void;
+    * Called when the OpenGL context is created, with the context object as a parameter. The context
+    * object has an API mirroring WebGL's WebGLRenderingContext.
+    */
+    onContextCreate(gl: ExpoWebGLRenderingContext): void;
     /**
      * [iOS only] Number of samples for Apple's built-in multisampling.
      */
@@ -15,13 +15,16 @@ declare type Props = {
     /**
      * A ref callback for the native GLView
      */
-    nativeRef_EXPERIMENTAL: (React.ElementRef<typeof GLView.NativeView> | null);
-    void: any;
-} & React.ElementProps<typeof View>;
+    nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null): any;
+}
+declare type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
 /**
  * A component that acts as an OpenGL render target
  */
-export default class GLView extends React.Component<Props> {
+export default class GLView extends React.Component<NativeGLViewProps, {
+    msaaSamples: number;
+}> {
+    static NativeView: any;
     static propTypes: {
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
         onLayout?: PropTypes.Validator<((event: import("react-native").LayoutChangeEvent) => void) | undefined> | undefined;
@@ -75,19 +78,26 @@ export default class GLView extends React.Component<Props> {
         msaaSamples: number;
     };
     static createContextAsync(): Promise<any>;
-    static destroyContextAsync(exgl: WebGLRenderingContext | ?number): Promise<any>;
-    static takeSnapshotAsync(exgl: WebGLRenderingContext | ?number, options?: SnapshotOptions): Promise<any>;
-    nativeRef: ?GLView.NativeView;
-    exglCtxId: ?number;
-    render(): {
-        this: any;
-    };
-    onSurfaceCreate: {
-        this: any;
-    };
-    msaaSamples: boolean;
+    static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<any>;
+    static takeSnapshotAsync(exgl?: WebGLRenderingContext | number, options?: SnapshotOptions): Promise<any>;
+    nativeRef: ComponentOrHandle;
+    exglCtxId?: number;
+    render(): JSX.Element;
+    _setNativeRef: (nativeRef: ComponentOrHandle) => void;
+    _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
+    startARSessionAsync(): Promise<any>;
+    createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
+    destroyObjectAsync(glObject: WebGLObject): Promise<any>;
+    takeSnapshotAsync(options?: SnapshotOptions): Promise<any>;
 }
 declare class WebGLRenderingContext {
-    __exglCtxId: ?number;
+    __exglCtxId?: number;
 }
-export {};
+declare type WebGLObjectId = any;
+declare class WebGLObject {
+    id: WebGLObjectId;
+    constructor(id: WebGLObjectId);
+    toString(): string;
+}
+declare class WebGLTexture extends WebGLObject {
+}
