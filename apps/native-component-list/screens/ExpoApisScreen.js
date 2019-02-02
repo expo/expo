@@ -69,6 +69,7 @@ export default class ExpoApisScreen extends React.Component {
     return Platform.select({
       web: [
         'ActionSheet',
+        'Audio',
         'AuthSession',
         'Constants',
         'DocumentPicker',

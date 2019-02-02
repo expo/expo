@@ -1,9 +1,10 @@
 import { EventEmitter } from 'expo-core';
 import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from '../AV';
+declare type AudioInstance = number | HTMLMediaElement | null;
 export declare class Sound implements Playback {
     _loaded: boolean;
     _loading: boolean;
-    _key: number;
+    _key: AudioInstance;
     _lastStatusUpdate: string | null;
     _lastStatusUpdateTime: Date | null;
     _subscriptions: Array<{
@@ -22,12 +23,12 @@ export declare class Sound implements Playback {
     }>;
     _callOnPlaybackStatusUpdateForNewStatus(status: PlaybackStatus): void;
     _performOperationAndHandleStatusAsync(operation: () => Promise<PlaybackStatus>): Promise<PlaybackStatus>;
-    _internalStatusUpdateCallback: ({ key, status }: {
-        key: number;
+    _internalStatusUpdateCallback: ({ key, status, }: {
+        key: AudioInstance;
         status: PlaybackStatus;
     }) => void;
     _internalErrorCallback: ({ key, error }: {
-        key: number;
+        key: AudioInstance;
         error: string;
     }) => void;
     _subscribeToNativeEvents(): void;
@@ -56,3 +57,4 @@ export declare class Sound implements Playback {
     setIsLoopingAsync: (isLooping: boolean) => Promise<PlaybackStatus>;
     setProgressUpdateIntervalAsync: (progressUpdateIntervalMillis: number) => Promise<PlaybackStatus>;
 }
+export {};
