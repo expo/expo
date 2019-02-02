@@ -1,13 +1,13 @@
-//@flow
-import { NativeModulesProxy } from 'expo-core';
 import invariant from 'invariant';
-const { ExpoAppAuth } = NativeModulesProxy;
+
+import { UnavailabilityError } from 'expo-errors';
+import ExpoAppAuth from './ExpoAppAuth';
 
 export type OAuthServiceConfiguration = {
-  revocationEndpoint?: string,
-  authorizationEndpoint?: string,
-  registrationEndpoint?: string,
-  tokenEndpoint: string,
+  revocationEndpoint?: string;
+  authorizationEndpoint?: string;
+  registrationEndpoint?: string;
+  tokenEndpoint: string;
 };
 
 /* ASCII string value that specifies how the Authorization Server displays the authentication and consent user interface pages to the End-User. */
@@ -91,61 +91,54 @@ export type OAuthLoginHintParameter = string;
 export type OAuthACRValuesParameter = string;
 
 export type OAuthParameters = {
-  nonce?: OAuthNonceParameter,
-  display?: OAuthParametersDisplay,
-  prompt?: OAuthPromptParameter,
-  max_age?: OAuthMaxAgeParameter,
-  ui_locales?: OAuthUILocalesParameter,
-  id_token_hint?: OAuthIDTokenHintParameter,
-  login_hint?: OAuthLoginHintParameter,
-  acr_values?: OAuthACRValuesParameter,
-  [string]: string,
+  nonce?: OAuthNonceParameter;
+  display?: OAuthDisplayParameter;
+  prompt?: OAuthPromptParameter;
+  max_age?: OAuthMaxAgeParameter;
+  ui_locales?: OAuthUILocalesParameter;
+  id_token_hint?: OAuthIDTokenHintParameter;
+  login_hint?: OAuthLoginHintParameter;
+  acr_values?: OAuthACRValuesParameter;
+  [key: string]: any;
 };
 
-export type OAuthBaseProps = {
-  clientId: string,
-  issuer: string,
-  serviceConfiguration?: OAuthServiceConfiguration,
-};
+export interface OAuthBaseProps {
+  clientId: string;
+  issuer: string;
+  serviceConfiguration?: OAuthServiceConfiguration;
+}
 
-export type OAuthProps = OAuthBaseProps & {
-  redirectUrl?: string,
-  clientSecret?: string,
-  scopes?: Array<string>,
-  additionalParameters?: OAuthParameters,
-  canMakeInsecureRequests?: boolean,
-};
+export interface OAuthProps extends OAuthBaseProps {
+  redirectUrl?: string;
+  clientSecret?: string;
+  scopes?: Array<string>;
+  additionalParameters?: OAuthParameters;
+  canMakeInsecureRequests?: boolean;
+  isRefresh?: boolean;
+  refreshToken?: string;
+}
 
 export type OAuthRevokeOptions = {
-  token: string,
-  isClientIdProvided: boolean,
+  token: string;
+  isClientIdProvided: boolean;
 };
 
 export type TokenResponse = {
-  accessToken: string | null,
-  accessTokenExpirationDate: string | null,
-  additionalParameters: { [string]: any } | null,
-  idToken: string | null,
-  tokenType: string | null,
-  refreshToken?: string,
+  accessToken: string | null;
+  accessTokenExpirationDate: string | null;
+  additionalParameters: { [key: string]: any } | null;
+  idToken: string | null;
+  tokenType: string | null;
+  refreshToken?: string;
 };
 
-const isValidString = (s: ?string): boolean => s && typeof s === 'string';
+const isValidString = (s?: string): boolean => !!(s && typeof s === 'string');
 
-function isValidClientId(clientId: ?string): void {
+function isValidClientId(clientId?: string): void {
   if (!isValidString(clientId)) throw new Error('Config error: clientId must be a string');
 }
 
-function isValidProps({
-  isRefresh,
-  issuer,
-  redirectUrl,
-  clientId,
-  clientSecret,
-  scopes,
-  additionalParameters,
-  serviceConfiguration,
-}: OAuthProps): void {
+function isValidProps({ issuer, redirectUrl, clientId, serviceConfiguration }: OAuthProps): void {
   const _serviceConfigIsValid =
     serviceConfiguration &&
     isValidString(serviceConfiguration.authorizationEndpoint) &&
@@ -166,6 +159,9 @@ async function _executeAsync(props: OAuthProps): Promise<TokenResponse> {
 }
 
 export async function authAsync(props: OAuthProps): Promise<TokenResponse> {
+  if (!ExpoAppAuth.executeAsync) {
+    throw new UnavailabilityError('expo-app-auth', 'authAsync');
+  }
   return await _executeAsync(props);
 }
 
@@ -173,7 +169,12 @@ export async function refreshAsync(
   props: OAuthProps,
   refreshToken: string
 ): Promise<TokenResponse> {
-  if (!refreshToken) throw new Error('Please include the refreshToken');
+  if (!ExpoAppAuth.executeAsync) {
+    throw new UnavailabilityError('expo-app-auth', 'refreshAsync');
+  }
+  if (!refreshToken) {
+    throw new Error('Please include the refreshToken');
+  }
   return await _executeAsync({
     isRefresh: true,
     refreshToken,
@@ -181,11 +182,14 @@ export async function refreshAsync(
   });
 }
 
+/* JS Method */
 export async function revokeAsync(
   { clientId, issuer, serviceConfiguration }: OAuthBaseProps,
   { token, isClientIdProvided = false }: OAuthRevokeOptions
 ): Promise<any> {
-  if (!token) throw new Error('Please include the token to revoke');
+  if (!token) {
+    throw new Error('Please include the token to revoke');
+  }
 
   isValidClientId(clientId);
 

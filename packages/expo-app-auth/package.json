@@ -2,7 +2,16 @@
   "name": "expo-app-auth",
   "version": "2.0.0",
   "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
-  "main": "index.js",
+  "main": "build/AppAuth.js",
+  "types": "build/AppAuth.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -27,10 +36,11 @@
     "url": "git+https://github.com/expo/expo.git"
   },
   "bugs": "https://github.com/expo/expo/issues",
-  "peerDependencies": {
-    "invariant": "^2.2.2"
+  "jest": {
+    "preset": "expo-module-scripts"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "invariant": "^2.2.2",
     "expo-core": "~2.0.0",
     "expo-constants-interface": "~2.0.0"
   },
