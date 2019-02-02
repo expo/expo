@@ -12,10 +12,11 @@ import {
 } from '../AV';
 import ExponentAV from '../ExponentAV';
 
+type AudioInstance = number | HTMLMediaElement | null;
 export class Sound implements Playback {
   _loaded: boolean = false;
   _loading: boolean = false;
-  _key: number = -1;
+  _key: AudioInstance = null;
   _lastStatusUpdate: string | null = null;
   _lastStatusUpdateTime: Date | null = null;
   _subscriptions: Array<{ remove: () => void }> = [];
@@ -75,13 +76,19 @@ export class Sound implements Playback {
     }
   }
 
-  _internalStatusUpdateCallback = ({ key, status }: { key: number; status: PlaybackStatus }) => {
+  _internalStatusUpdateCallback = ({
+    key,
+    status,
+  }: {
+    key: AudioInstance;
+    status: PlaybackStatus;
+  }) => {
     if (this._key === key) {
       this._callOnPlaybackStatusUpdateForNewStatus(status);
     }
   };
 
-  _internalErrorCallback = ({ key, error }: { key: number; error: string }) => {
+  _internalErrorCallback = ({ key, error }: { key: AudioInstance; error: string }) => {
     if (this._key === key) {
       this._errorCallback(error);
     }
@@ -111,7 +118,7 @@ export class Sound implements Playback {
   _errorCallback = (error: string) => {
     this._clearSubscriptions();
     this._loaded = false;
-    this._key = -1;
+    this._key = null;
     this._callOnPlaybackStatusUpdateForNewStatus(getUnloadedStatus(error));
   };
 
@@ -161,7 +168,7 @@ export class Sound implements Playback {
 
       // This is a workaround, since using load with resolve / reject seems to not work.
       return new Promise<PlaybackStatus>((resolve, reject) => {
-        const loadSuccess = (result: [number, PlaybackStatus]) => {
+        const loadSuccess = (result: [AudioInstance, PlaybackStatus]) => {
           const [key, status] = result;
           this._key = key;
           this._loaded = true;
@@ -189,7 +196,7 @@ export class Sound implements Playback {
     if (this._loaded) {
       this._loaded = false;
       const key = this._key;
-      this._key = -1;
+      this._key = null;
       const status = await ExponentAV.unloadForSound(key);
       this._callOnPlaybackStatusUpdateForNewStatus(status);
       this._clearSubscriptions();
