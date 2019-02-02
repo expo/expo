@@ -1,5 +1,3 @@
-// @flow
-
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
@@ -7,7 +5,7 @@ import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 
 import packageJSON from '../package.json';
 
-import type { SurfaceCreateEvent, SnapshotOptions } from './GLView.types';
+import { SurfaceCreateEvent, SnapshotOptions } from './GLView.types';
 
 type Props = {
   /**

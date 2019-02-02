@@ -1,4 +1,3 @@
-// @flow
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import React from 'react';

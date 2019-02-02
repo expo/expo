@@ -2,7 +2,16 @@
   "name": "expo-gl",
   "version": "2.0.0",
   "description": "Expo GL standalone universal module",
-  "main": "index.js",
+  "main": "build/GLView.js",
+  "types": "build/GLView.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -22,8 +31,8 @@
   "dependencies": {
     "prop-types": "^15.6.2"
   },
-  "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
+  "jest": {
+    "preset": "expo-module-scripts"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }
