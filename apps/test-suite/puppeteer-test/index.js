@@ -46,7 +46,7 @@ async function runPuppeteerAsync() {
     // 4. Ignore anything that isn't an object - in test-suite we are sending the results as an object.
     const jsonObjects = args.filter(({ type }) => type === 'object');
     if (jsonObjects.length) {
-      // 5. Unsafe - filter the obejcts who's magic prop is '[TEST-SUITE-END]'
+      // 5. Unsafe - filter the objects whose magic prop is '[TEST-SUITE-END]'
       const { value: results } = args.filter(({ value }) => {
         return value.magic === '[TEST-SUITE-END]';
       })[0];
