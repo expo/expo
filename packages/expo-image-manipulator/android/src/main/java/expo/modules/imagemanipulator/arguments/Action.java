@@ -3,10 +3,9 @@ package expo.modules.imagemanipulator.arguments;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
-public class Action extends HashMap<String, Object> {
+public class Action {
   private static final String TAG = "action";
 
   private static final String KEY_RESIZE = "resize";

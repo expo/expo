@@ -2,11 +2,9 @@ package expo.modules.imagemanipulator.arguments;
 
 import android.support.annotation.NonNull;
 
-import java.util.HashMap;
-
 import expo.core.arguments.ReadableArguments;
 
-public class SaveOptions extends HashMap<String, Object> {
+public class SaveOptions {
   private static final String TAG = "saveOptions";
 
   private static final String KEY_BASE64 = "base64";
