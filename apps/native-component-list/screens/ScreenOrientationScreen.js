@@ -33,7 +33,7 @@ export default class ScreenOrientationScreen extends React.Component {
     }
   }
 
-  allow = async orientation => {
+  lock = async orientation => {
     if (Platform.OS === 'web') {
       // most web browsers require fullscreen in order to change screen orientation
       await document.documentElement.requestFullscreen();
@@ -62,7 +62,7 @@ export default class ScreenOrientationScreen extends React.Component {
         {Object.keys(ScreenOrientation.Orientation).map(orientation => (
           <ListButton
             key={orientation}
-            onPress={() => this.allow(orientation)}
+            onPress={() => this.lock(orientation)}
             title={orientation}
           />
         ))}
