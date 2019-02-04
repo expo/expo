@@ -1,7 +1,7 @@
 export var FlipType;
 (function (FlipType) {
-    FlipType["VERTICAL"] = "vertical";
-    FlipType["HORIZONTAL"] = "horizontal";
+    FlipType["Vertical"] = "vertical";
+    FlipType["horizontal"] = "horizontal";
 })(FlipType || (FlipType = {}));
 export var SaveFormat;
 (function (SaveFormat) {

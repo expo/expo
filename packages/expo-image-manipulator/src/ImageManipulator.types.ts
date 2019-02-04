@@ -17,8 +17,8 @@ type ActionRotate = {
 }
 
 export enum FlipType {
-  VERTICAL = 'vertical',
-  HORIZONTAL = 'horizontal',
+  Vertical = 'vertical',
+  horizontal = 'horizontal',
 }
 
 type ActionFlip = {

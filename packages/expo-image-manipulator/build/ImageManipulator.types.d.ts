@@ -14,8 +14,8 @@ declare type ActionRotate = {
     rotate: number;
 };
 export declare enum FlipType {
-    VERTICAL = "vertical",
-    HORIZONTAL = "horizontal"
+    Vertical = "vertical",
+    horizontal = "horizontal"
 }
 declare type ActionFlip = {
     flip: FlipType;

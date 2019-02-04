@@ -21,7 +21,7 @@ Manipulate the image provided via `uri`. Available modifications are rotating, f
 
     -   **resize : `object`** -- An object of shape `{ width, height }`. Values correspond to the result image dimensions. If you specify only one value, the other will be calculated automatically to preserve image ratio.
     -   **rotate : `number`** -- Degrees to rotate the image. Rotation is clockwise when the value is positive and counter-clockwise when negative.
-    -   **flip : `string`** -- `ImageManipulator.FlipType.{VERTICAL, HORIZONTAL}`. Only one flip per transformation is available. If you want to flip according to both axes then provide two separate transformations.
+    -   **flip : `string`** -- `ImageManipulator.FlipType.{Vertical, Horizontal}`. Only one flip per transformation is available. If you want to flip according to both axes then provide two separate transformations.
     -   **crop : `object`** -- An object of shape `{ originX, originY, width, height }`. Fields specify top-left corner and dimensions of a crop rectangle.
 
 -  **saveOptions : `object`** -- A map defining how modified image should be saved:

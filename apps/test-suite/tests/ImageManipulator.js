@@ -68,7 +68,7 @@ export async function test(t) {
       t.it('performs compression', async () => {
         const result = await ImageManipulator.manipulateAsync(
           image.localUri,
-          [{ flip: ImageManipulator.FlipType.VERTICAL }],
+          [{ flip: ImageManipulator.FlipType.Vertical }],
           {
             compress: 0.0,
           }
@@ -87,7 +87,7 @@ export async function test(t) {
 
       t.it('flips horizontally', async () => {
         const result = await ImageManipulator.manipulateAsync(image.localUri, [
-          { flip: ImageManipulator.FlipType.HORIZONTAL },
+          { flip: ImageManipulator.FlipType.Horizontal },
         ]);
         t.expect(result.width).toBe(image.width);
         t.expect(result.height).toBe(image.height);
@@ -95,7 +95,7 @@ export async function test(t) {
 
       t.it('flips vertically', async () => {
         const result = await ImageManipulator.manipulateAsync(image.localUri, [
-          { flip: ImageManipulator.FlipType.VERTICAL },
+          { flip: ImageManipulator.FlipType.Vertical },
         ]);
         t.expect(result.width).toBe(image.width);
         t.expect(result.height).toBe(image.height);
@@ -120,7 +120,7 @@ export async function test(t) {
       t.it('performs multiple transformations', async () => {
         const result = await ImageManipulator.manipulateAsync(image.localUri, [
           { resize: { width: 200, height: 200 } },
-          { flip: ImageManipulator.FlipType.VERTICAL },
+          { flip: ImageManipulator.FlipType.Vertical },
           { rotate: 45 },
           { crop: { originX: 20, originY: 20, width: 100, height: 100 } },
         ]);
