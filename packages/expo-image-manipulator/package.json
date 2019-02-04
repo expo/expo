@@ -2,8 +2,8 @@
   "name": "expo-image-manipulator",
   "version": "1.0.0",
   "description": "Expo Image Manipulator standalone module",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "build/ImageManipulator.js",
+  "types": "build/ImageManipulator.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -28,7 +28,7 @@
   "dependencies": {},
   "peerDependencies": {
     "expo-core": "~2.0.0",
+    "expo-errors": "~1.0.0",
     "expo-file-system-interface": "~2.0.0"
-  },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  }
 }

@@ -1,43 +1,38 @@
 package expo.modules.imagemanipulator.arguments;
 
-import android.support.annotation.NonNull;
+import android.graphics.Matrix;
 
-import java.util.Map;
+public enum ActionFlip {
+  VERTICAL("vertical", 1, -1),
+  HORIZONTAL("horizontal", -1, 1);
 
-public class ActionFlip {
-  private static final String TAG = "action.flip";
+  private final String mType;
+  private final float mSx;
+  private final float mSy;
 
-  private static final String KEY_VERTICAL = "vertical";
-  private static final String KEY_HORIZONTAL = "horizontal";
-
-  @NonNull
-  private final Boolean mVertical;
-  @NonNull
-  private final Boolean mHorizontal;
-
-  private ActionFlip(@NonNull Boolean vertical, @NonNull Boolean horizontal) {
-    mVertical = vertical;
-    mHorizontal = horizontal;
+  ActionFlip(String type, float sx, float sy) {
+    mType = type;
+    mSx = sx;
+    mSy = sy;
   }
 
-  static ActionFlip fromObject(Object options) throws IllegalArgumentException {
-    Map optionsMap = Utilities.ensureMap(options, TAG);
+  static public ActionFlip fromObject(Object o) throws IllegalArgumentException {
+    String errorMessage = "Action 'flip' must be one of ['vertical', 'horizontal']. Obtained '" + o.toString() + "'";
 
-    Boolean verticalNullable = Utilities.getBooleanFromOptions(optionsMap, KEY_VERTICAL, TAG + "." + KEY_VERTICAL);
-    Boolean horizontalNullable = Utilities.getBooleanFromOptions(optionsMap, KEY_HORIZONTAL, TAG + "." + KEY_HORIZONTAL);
-    Boolean vertical = verticalNullable != null ? verticalNullable : false;
-    Boolean horizontal = horizontalNullable != null ? horizontalNullable : false;
-
-    return new ActionFlip(vertical, horizontal);
+    if (!(o instanceof String)) {
+      throw new IllegalArgumentException(errorMessage);
+    }
+    for (ActionFlip af : values()) {
+      if (af.mType.equals(o)) {
+        return af;
+      }
+    }
+    throw new IllegalArgumentException(errorMessage);
   }
 
-  @NonNull
-  public Boolean isVertical() {
-    return mVertical;
-  }
-
-  @NonNull
-  public Boolean isHorizontal() {
-    return mHorizontal;
+  public Matrix getRotationMatrix() {
+    Matrix rotationMatrix = new Matrix();
+    rotationMatrix.postScale(mSx, mSy);
+    return rotationMatrix;
   }
 }

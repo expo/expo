@@ -21,12 +21,12 @@ Manipulate the image provided via `uri`. Available modifications are rotating, f
 
     -   **resize : `object`** -- An object of shape `{ width, height }`. Values correspond to the result image dimensions. If you specify only one value, the other will be calculated automatically to preserve image ratio.
     -   **rotate : `number`** -- Degrees to rotate the image. Rotation is clockwise when the value is positive and counter-clockwise when negative.
-    -   **flip : `object`** -- An object of shape `{ vertical, horizontal }`. Having a field set to true, flips the image in specified axis. Only one flip per transformation is valid. If you want to flip according to both axes then provide two separate transformations.
+    -   **flip : `string`** -- `ImageManipulator.FlipType.{VERTICAL, HORIZONTAL}`. Only one flip per transformation is available. If you want to flip according to both axes then provide two separate transformations.
     -   **crop : `object`** -- An object of shape `{ originX, originY, width, height }`. Fields specify top-left corner and dimensions of a crop rectangle.
 
 -  **saveOptions : `object`** -- A map defining how modified image should be saved:
     -   **compress : `number`** -- A value in range `0.0` - `1.0` specifying compression level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality).
-    -   **format : `string`** -- Either `'jpeg'` or `'png'`. Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
+    -   **format : `string`** -- `ImageManipulator.SaveFormat.{JPEG, PNG}`. Specifies what type of compression should be used and what is the result file extension. `SaveFormat.PNG` compression is lossless but slower, `SaveFormat.JPEG` is faster but the image has visible artifacts. Defaults to `SaveFormat.JPEG`.
     -   **base64 : `boolean`** -- Whether to also include the image data in Base64 format.
 
 #### Returns

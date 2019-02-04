@@ -21,12 +21,26 @@ public class ActionResize {
   }
 
   static ActionResize fromObject(Object options) {
-    Map optionsMap = Utilities.ensureMap(options, TAG);
+    if (!(options instanceof Map<?, ?>)) {
+      throw new IllegalArgumentException("'" + TAG + "' must be an object");
+    }
+    Map optionsMap = (Map) options;
 
-    Double widthDouble = Utilities.getDoubleFromOptions(optionsMap, KEY_WIDTH, TAG + "." + KEY_WIDTH);
-    Integer width = widthDouble != null ? widthDouble.intValue() : 0;
-    Double heightDouble = Utilities.getDoubleFromOptions(optionsMap, KEY_HEIGHT, TAG + "." + KEY_HEIGHT);
-    Integer height = heightDouble != null ? heightDouble.intValue() : 0;
+    int width = 0;
+    if (optionsMap.containsKey(KEY_WIDTH)) {
+      if (!(optionsMap.get(KEY_WIDTH) instanceof Double)) {
+        throw new IllegalArgumentException("'" + TAG + "." + KEY_WIDTH + "' must be a Number value");
+      }
+      width = ((Double) optionsMap.get(KEY_WIDTH)).intValue();
+    }
+
+    int height = 0;
+    if (optionsMap.containsKey(KEY_HEIGHT)) {
+      if (!(optionsMap.get(KEY_HEIGHT) instanceof Double)) {
+        throw new IllegalArgumentException("'" + TAG + "." + KEY_HEIGHT + "' must be a Number value");
+      }
+      height = ((Double) optionsMap.get(KEY_HEIGHT)).intValue();
+    }
 
     return new ActionResize(width, height);
   }

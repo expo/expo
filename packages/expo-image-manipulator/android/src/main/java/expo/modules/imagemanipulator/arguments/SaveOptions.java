@@ -3,7 +3,8 @@ package expo.modules.imagemanipulator.arguments;
 import android.support.annotation.NonNull;
 
 import java.util.HashMap;
-import java.util.Map;
+
+import expo.core.arguments.ReadableArguments;
 
 public class SaveOptions extends HashMap<String, Object> {
   private static final String TAG = "saveOptions";
@@ -19,12 +20,24 @@ public class SaveOptions extends HashMap<String, Object> {
   @NonNull
   private final SaveOptionsFormat mFormat;
 
-  public static SaveOptions fromMap(Map<String, Object> options) throws IllegalArgumentException {
-    Boolean base64Nullable = Utilities.getBooleanFromOptions(options, KEY_BASE64, TAG + "." + KEY_BASE64);
-    boolean base64 = base64Nullable != null ? base64Nullable : false;
-    Double compressNullable = Utilities.getDoubleFromOptions(options, KEY_COMPRESS, TAG + "." + KEY_COMPRESS);
-    Double compress = compressNullable != null ? compressNullable : 1.0;
-    SaveOptionsFormat mediaTypes = options.containsKey(KEY_FORMAT) ? SaveOptionsFormat.fromObject(options.get(KEY_FORMAT)) : SaveOptionsFormat.JPEG;
+  public static SaveOptions fromArguments(ReadableArguments options) throws IllegalArgumentException {
+    boolean base64 = false;
+    if (options.containsKey(KEY_BASE64)) {
+      if (!(options.get(KEY_BASE64) instanceof Boolean)) {
+        throw new IllegalArgumentException("'" + TAG + "." + KEY_BASE64 + "' must be a Boolean value");
+      }
+      base64 = options.getBoolean(KEY_BASE64);
+    }
+
+    double compress = 1.0;
+    if (options.containsKey(KEY_COMPRESS)) {
+      if (!(options.get(KEY_COMPRESS) instanceof Double)) {
+        throw new IllegalArgumentException("'" + TAG + "." + KEY_COMPRESS + "' must be a Number value");
+      }
+      compress = options.getDouble(KEY_COMPRESS);
+    }
+
+    SaveOptionsFormat mediaTypes = SaveOptionsFormat.fromObject(options.get(KEY_FORMAT));
 
     return new SaveOptions(base64, compress, mediaTypes);
   }

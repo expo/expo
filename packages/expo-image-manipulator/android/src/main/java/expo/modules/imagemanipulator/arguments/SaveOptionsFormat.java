@@ -17,7 +17,7 @@ public enum SaveOptionsFormat {
   }
 
   static public SaveOptionsFormat fromObject(Object o) throws IllegalArgumentException {
-    String errorMessage = "SaveOption 'format' must be one of ['png', 'jpeg']";
+    String errorMessage = "SaveOption 'format' must be one of ['png', 'jpeg']. Obtained '" + o.toString() + "'";
     if (!(o instanceof String)) {
       throw new IllegalArgumentException(errorMessage);
     }

@@ -136,7 +136,7 @@ EX_EXPORT_METHOD_AS(manipulateAsync,
 {
   NSString* format = saveOptions[SAVE_OPTIONS_KEY_FORMAT];
   if (![format isEqualToString:@"jpeg"] && ![format isEqualToString:@"png"]) {
-    *errorMessage = @"SaveOption 'format' must be one of ['png', 'jpeg']";
+    *errorMessage = [NSString stringWithFormat:@"SaveOption 'format' must be one of ['png', 'jpeg']. Obtained '%@'.", format];
     return NO;
   }
   return YES;
@@ -223,7 +223,7 @@ EX_EXPORT_METHOD_AS(manipulateAsync,
     } else if (action[ACTION_KEY_ROTATE]) {
       image = [self rotateImage:image rotation:(NSNumber *)action[ACTION_KEY_ROTATE]];
     } else if (action[ACTION_KEY_FLIP]) {
-      image = [self flipImage:image options:action[ACTION_KEY_FLIP]];
+      image = [self flipImage:image flipType:action[ACTION_KEY_FLIP]];
     } else if (action[ACTION_KEY_CROP]) {
       NSString *errorMessage;
       image = [self cropImage:image options:action[ACTION_KEY_CROP] didFailWithErrorMessage:&errorMessage];
@@ -312,17 +312,17 @@ EX_EXPORT_METHOD_AS(manipulateAsync,
   return image;
 }
 
-- (UIImage *)flipImage:(UIImage *)image options:(NSDictionary *)flip
+- (UIImage *)flipImage:(UIImage *)image flipType:(NSString *)flip
 {
   UIImageView *tempImageView = [[UIImageView alloc] initWithImage:image];
   UIGraphicsBeginImageContext(tempImageView.frame.size);
   CGContextRef context = UIGraphicsGetCurrentContext();
   CGAffineTransform transform;
 
-  if (flip[@"vertical"]) {
+  if ([flip isEqualToString:@"vertical"]) {
     transform = CGAffineTransformMake(1, 0, 0, -1, 0, tempImageView.frame.size.height);
     CGContextConcatCTM(context, transform);
-  } else if (flip[@"horizontal"]) {
+  } else if ([flip isEqualToString:@"horizontal"]) {
     transform = CGAffineTransformMake(-1, 0, 0, 1, tempImageView.frame.size.width, 0);
     CGContextConcatCTM(context, transform);
   }

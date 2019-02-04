@@ -19,6 +19,7 @@ import java.util.Map;
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
+import expo.core.arguments.ReadableArguments;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.interfaces.imageloader.ImageLoader;
@@ -50,7 +51,7 @@ public class ImageManipulatorModule extends ExportedModule implements ModuleRegi
   }
 
   @ExpoMethod
-  public void manipulateAsync(final String uri, final ArrayList<Object> actions, final Map<String, Object> saveOptions, final Promise promise) {
+  public void manipulateAsync(final String uri, final ArrayList<Object> actions, final ReadableArguments saveOptions, final Promise promise) {
     if (uri == null || uri.length() == 0) {
       promise.reject(ERROR_TAG + "_INVALID_ARG", "Uri passed to ImageManipulator cannot be empty!");
       return;
@@ -59,7 +60,7 @@ public class ImageManipulatorModule extends ExportedModule implements ModuleRegi
     final SaveOptions manipulatorSaveOptions;
     final ArrayList<Action> manipulatorActions = new ArrayList<>();
     try {
-      manipulatorSaveOptions = SaveOptions.fromMap(saveOptions);
+      manipulatorSaveOptions = SaveOptions.fromArguments(saveOptions);
       for (Object action : actions) {
         manipulatorActions.add(Action.fromObject(action));
       }
@@ -111,13 +112,7 @@ public class ImageManipulatorModule extends ExportedModule implements ModuleRegi
   }
 
   private Bitmap flipBitmap(Bitmap bmp, ActionFlip flip) {
-    Matrix rotationMatrix = new Matrix();
-    if (flip.isHorizontal()) {
-      rotationMatrix.postScale(-1, 1);
-    } else if (flip.isVertical()) {
-      rotationMatrix.postScale(1, -1);
-    }
-    return Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), rotationMatrix, true);
+    return Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), flip.getRotationMatrix(), true);
   }
 
   private Bitmap cropBitmap(Bitmap bitmap, ActionCrop crop) throws IllegalArgumentException {

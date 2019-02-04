@@ -24,11 +24,22 @@ public class Action extends HashMap<String, Object> {
   private final ActionCrop mCrop;
 
   public static Action fromObject(Object options) throws IllegalArgumentException {
-    Map optionsMap = Utilities.ensureMap(options, TAG);
+    if (!(options instanceof Map<?,?>)){
+      throw new IllegalArgumentException("'" + TAG + "' must be an object");
+    }
+
+    Map optionsMap = (Map) options;
 
     ActionResize resize = optionsMap.containsKey(KEY_RESIZE) ? ActionResize.fromObject(optionsMap.get(KEY_RESIZE)) : null;
-    Double rotateDouble = Utilities.getDoubleFromOptions(optionsMap, KEY_ROTATE, TAG + "." + KEY_ROTATE);
-    Integer rotate = rotateDouble != null ? rotateDouble.intValue() : null;
+
+    Integer rotate = null;
+    if (optionsMap.containsKey(KEY_ROTATE)) {
+      if (!(optionsMap.get(KEY_ROTATE) instanceof Double)) {
+        throw new IllegalArgumentException("'" + TAG + "." + KEY_ROTATE + "' must be a Number value");
+      }
+      rotate = ((Double) optionsMap.get(KEY_ROTATE)).intValue();
+    }
+
     ActionFlip flip = optionsMap.containsKey(KEY_FLIP) ? ActionFlip.fromObject(optionsMap.get(KEY_FLIP)) : null;
     ActionCrop crop = optionsMap.containsKey(KEY_CROP) ? ActionCrop.fromObject(optionsMap.get(KEY_CROP)) : null;
 

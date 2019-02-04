@@ -33,33 +33,46 @@ public class ActionCrop {
   }
 
   static ActionCrop fromObject(Object options) throws IllegalArgumentException {
-    Map optionsMap = Utilities.ensureMap(options, TAG);
+    if (!(options instanceof Map<?,?>)){
+      throw new IllegalArgumentException("'" + TAG + "' must be an object");
+    }
+    Map optionsMap = (Map) options;
 
-    Double originXDouble = Utilities.getDoubleFromOptions(optionsMap, KEY_ORIGIN_X, TAG + "." + KEY_ORIGIN_X);
+    Double originXDouble = ActionCrop.getDoubleFromOptions(optionsMap, KEY_ORIGIN_X, TAG + "." + KEY_ORIGIN_X);
     if (originXDouble == null) {
       throw new IllegalArgumentException("'" + TAG + "." + KEY_ORIGIN_X + "' must be defined");
     }
     Integer originX = originXDouble.intValue();
 
-    Double originYDouble = Utilities.getDoubleFromOptions(optionsMap, KEY_ORIGIN_Y, TAG + "." + KEY_ORIGIN_Y);
+    Double originYDouble = ActionCrop.getDoubleFromOptions(optionsMap, KEY_ORIGIN_Y, TAG + "." + KEY_ORIGIN_Y);
     if (originYDouble == null) {
       throw new IllegalArgumentException("'" + TAG + "." + KEY_ORIGIN_Y + "' must be defined");
     }
     Integer originY = originYDouble.intValue();
 
-    Double widthDouble = Utilities.getDoubleFromOptions(optionsMap, KEY_WIDTH, TAG + "." + KEY_WIDTH);
+    Double widthDouble = ActionCrop.getDoubleFromOptions(optionsMap, KEY_WIDTH, TAG + "." + KEY_WIDTH);
     if (widthDouble == null) {
       throw new IllegalArgumentException("'" + TAG + "." + KEY_WIDTH + "' must be defined");
     }
     Integer width = widthDouble.intValue();
 
-    Double heightDouble = Utilities.getDoubleFromOptions(optionsMap, KEY_HEIGHT, TAG + "." + KEY_HEIGHT);
+    Double heightDouble = ActionCrop.getDoubleFromOptions(optionsMap, KEY_HEIGHT, TAG + "." + KEY_HEIGHT);
     if (heightDouble == null) {
       throw new IllegalArgumentException("'" + TAG + "." + KEY_HEIGHT + "' must be defined");
     }
     Integer height = heightDouble.intValue();
 
     return new ActionCrop(originX, originY, width, height);
+  }
+
+  private static Double getDoubleFromOptions(Map options, String key, String pathToErroneousKey) {
+    if (!options.containsKey(key)) {
+      return null;
+    }
+    if (!(options.get(key) instanceof Double)) {
+      throw new IllegalArgumentException("'" + pathToErroneousKey + "' must be a Number value");
+    }
+    return ((Double) options.get(key));
   }
 
   @NonNull
