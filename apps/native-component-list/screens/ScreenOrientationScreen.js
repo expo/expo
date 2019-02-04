@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, Text } from 'react-native';
 import { ScreenOrientation } from 'expo';
+import { Platform } from 'expo-react-native-adapter';
 import ListButton from '../components/ListButton';
 
 export default class ScreenOrientationScreen extends React.Component {
@@ -33,7 +34,16 @@ export default class ScreenOrientationScreen extends React.Component {
   }
 
   allow = async orientation => {
+    if (Platform.OS === 'web') {
+      // most web browsers require fullscreen in order to change screen orientation
+      await document.documentElement.requestFullscreen();
+    }
+
     await ScreenOrientation.lockAsync(orientation).catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
+
+    if (Platform.OS === 'web') {
+      await document.exitFullscreen();
+    }
   };
 
   doesSupport = async () => {
