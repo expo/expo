@@ -6,6 +6,8 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const pckg = require('./package.json');
 
 const absolutePath = location => path.resolve(__dirname, location);
@@ -13,7 +15,8 @@ const absolutePath = location => path.resolve(__dirname, location);
 const locations = {
   // Shouldn't change
   root: absolutePath('.'),
-  output: absolutePath('web'),
+  output: absolutePath('build'),
+  contentBase: absolutePath('web'),
   rootHtml: absolutePath('web/index.html'),
   packageJson: absolutePath('package.json'),
   appMain: absolutePath(pckg.main),
@@ -21,10 +24,9 @@ const locations = {
   // TODO: Bacon: Only use this in expo/apps/
   modules: absolutePath('../../node_modules'),
 };
+const nativeAppManifest = require(absolutePath('./app.json'));
 
 function getAppManifest() {
-  const nativeAppManifest = require(absolutePath('./app.json'));
-
   if (nativeAppManifest && nativeAppManifest.expo) {
     const { expo } = nativeAppManifest;
     const PWAManifest = require(absolutePath('./web/manifest.json'));
@@ -71,7 +73,7 @@ function getClientEnvironment(publicUrl) {
       {
         // Useful for determining whether we’re running in production mode.
         // Most importantly, it switches React into the correct mode.
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+        NODE_ENV: JSON.stringify(environment),
 
         // Useful for resolving the correct path to static assets in `public`.
         // For example, <img src={process.env.PUBLIC_URL + '/img/logo.png'} />.
@@ -87,6 +89,66 @@ function getClientEnvironment(publicUrl) {
     'process.env': processEnv,
     __DEV__,
   };
+}
+
+function generateHTMLFromAppJSON() {
+  const { expo: expoManifest = {} } = nativeAppManifest;
+  const { web: expoManifestWebManifest = {} } = expoManifest;
+
+  const favicon = expoManifestWebManifest.favicon;
+
+  const metaTags = {
+    viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
+    description: expoManifest.description || 'A Neat Expo App',
+    'theme-color': expoManifest.primaryColor || '#000000',
+    'apple-mobile-web-app-capable': 'yes',
+    // default, black, black-translucent
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': expoManifest.name,
+    'application-name': expoManifest.name,
+    // Windows
+    'msapplication-navbutton-color': '',
+    'msapplication-TileColor': '',
+    'msapplication-TileImage': '',
+  };
+
+  // Generates an `index.html` file with the <script> injected.
+  return new HtmlWebpackPlugin({
+    /**
+     * The file to write the HTML to.
+     * You can specify a subdirectory here too (eg: `assets/admin.html`).
+     * Default: `'index.html'`.
+     */
+    filename: absolutePath('build/index.html'),
+    /**
+     * The title to use for the generated HTML document.
+     * Default: `'Webpack App'`.
+     */
+    title: expoManifest.name,
+    /**
+     * Pass a html-minifier options object to minify the output.
+     * https://github.com/kangax/html-minifier#options-quick-reference
+     * Default: `false`.
+     */
+    minify: {
+      removeComments: true,
+    },
+    /**
+     * Adds the given favicon path to the output html.
+     * Default: `false`.
+     */
+    favicon,
+    /**
+     * Allows to inject meta-tags, e.g. meta: `{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}`.
+     * Default: `{}`.
+     */
+    meta: metaTags,
+    /**
+     * The `webpack` require path to the template.
+     * @see https://github.com/jantimon/html-webpack-plugin/blob/master/docs/template-option.md
+     */
+    template: locations.rootHtml,
+  });
 }
 
 const env = getClientEnvironment(publicUrl);
@@ -197,22 +259,18 @@ function useWebModule(modulePathToHiJack, redirectPath, initialRoot = 'expo/buil
 const publicPath = '/';
 
 module.exports = {
-  mode: 'development',
+  mode: environment,
   devtool: 'cheap-module-source-map',
 
   entry: [require.resolve('react-dev-utils/webpackHotDevClient'), locations.appMain],
   // configures where the build ends up
   output: {
     path: locations.output,
-    pathinfo: true,
     filename: 'bundle.js',
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: '[name].chunk.js',
-    // This is the URL that app is served from. We use "/" in development.
+    // // This is the URL that app is served from. We use "/" in development.
     publicPath,
-    // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
-      path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   optimization: {
     runtimeChunk: true,
@@ -222,7 +280,7 @@ module.exports = {
     historyApiFallback: true,
     compress: true,
     disableHostCheck: true,
-    contentBase: locations.output,
+    contentBase: locations.contentBase,
     inline: true,
   },
   module: {
@@ -239,12 +297,8 @@ module.exports = {
   },
   plugins: [
     // Generates an `index.html` file with the <script> injected.
-    new HtmlWebpackPlugin({
-      inject: true,
-      template: locations.rootHtml,
-      filename: locations.rootHtml,
-      title: pckg.name,
-    }),
+    generateHTMLFromAppJSON(),
+
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
       PUBLIC_URL: publicUrl,
     }),
@@ -253,13 +307,6 @@ module.exports = {
 
     new CaseSensitivePathsPlugin(),
 
-    // Moment.js is an extremely popular library that bundles large locale files
-    // by default due to how Webpack interprets its code. This is a practical
-    // solution that requires the user to opt into importing specific locales.
-    // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-    // You can remove this if you don't use Moment.js:
-    /* expo-localization uses `moment/timezone` */
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
     // having to parse `index.html`.
@@ -274,6 +321,10 @@ module.exports = {
     useWebModule('Performance/Systrace', 'Performance/Systrace'),
     useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
     useWebModule('RCTNetworking', 'Network/RCTNetworking'),
+
+    new WorkboxPlugin.GenerateSW(),
+
+    // new BundleAnalyzerPlugin(),
   ],
   resolve: {
     symlinks: false,
@@ -296,7 +347,7 @@ module.exports = {
       // To fix this, we prevent you from importing files out of the root folder -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(locations.output, [locations.packageJson]),
+      new ModuleScopePlugin(locations.contentBase, [locations.packageJson]),
     ],
   },
   resolveLoader: {

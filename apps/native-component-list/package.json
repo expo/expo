@@ -17,7 +17,6 @@
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.0.1",
     "@react-navigation/web": "^1.0.0-alpha.7",
-    "case-sensitive-paths-webpack-plugin": "^2.1.2",
     "date-format": "^2.0.0",
     "expo": "^32.0.0-rc.3",
     "expo-processing": "~2.0.0",
@@ -56,14 +55,17 @@
   "devDependencies": {
     "babel-loader": "^8.0.4",
     "babel-preset-expo": "^5.0.0",
+    "case-sensitive-paths-webpack-plugin": "^2.1.2",
     "css-loader": "^1.0.1",
     "expo-yarn-workspaces": "^1.0.0",
     "file-loader": "^2.0.0",
     "react-native-scripts": "^2.0.1",
     "style-loader": "^0.23.1",
     "webpack": "^4.24.0",
+    "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "3.1.11"
+    "webpack-dev-server": "3.1.11",
+    "workbox-webpack-plugin": "^3.6.3"
   },
   "browserslist": [
     ">0.2%",
