@@ -76,12 +76,30 @@ export default {
     };
   },
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
-    if (!(await this.isSupportedAsync())) {
+    const lockOrientationFn =
+      screen['lockOrientation'] || screen['mozLockOrientation'] || screen['msLockOrientation'];
+
+    // Chrome has the lock function under screen.orientation.lock
+    // https://stackoverflow.com/questions/42956350/screen-lockorientation-is-not-a-function#answer-42961058
+    const lockOrientationChromeFn = screen.orientation && screen.orientation.lock;
+
+    if (!lockOrientationFn && !lockOrientationChromeFn) {
       throw new Error(
         `expo-screen-orientation: Your browser doesn't support locking screen orientation.`
       );
     }
-    await OrientationTarget.lock(OrientationLockJSONToNative[orientationLock]);
+
+    const webOrientationLock = OrientationLockJSONToNative[orientationLock];
+    let isSuccess;
+    if (lockOrientationChromeFn) {
+      isSuccess = await lockOrientationChromeFn.call(screen.orientation, webOrientationLock);
+    } else {
+      isSuccess = await lockOrientationFn.call(screen, webOrientationLock);
+    }
+
+    if (!isSuccess) {
+      throw new Error(`Applying orientation lock: ${orientationLock} to device was denied`);
+    }
   },
   async lockPlatformAsync(orientation: number): Promise<void> {
     if (!(await this.isSupportedAsync())) {
