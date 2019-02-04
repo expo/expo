@@ -207,6 +207,9 @@ jobs:
           working_directory: ~/expo/packages/expo-analytics-amplitude
       - yarn:
           command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-face-detector
+      - yarn:
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-facebook
       - yarn:
           command: test --maxWorkers 1

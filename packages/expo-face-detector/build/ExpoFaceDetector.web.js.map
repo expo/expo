@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoFaceDetector.web.js","sourceRoot":"","sources":["../src/ExpoFaceDetector.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,kBAAkB,CAAC;IAC5B,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExpoFaceDetector';\n  },\n};\n"]}
