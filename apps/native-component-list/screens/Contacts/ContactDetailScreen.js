@@ -1,7 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Linking, ImagePicker } from 'expo';
-import { Contacts } from 'expo-contacts';
-import { Permissions } from 'expo-permissions';
+import { Contacts, Permissions, Linking, ImagePicker } from 'expo';
 import React from 'react';
 import {
   ActionSheetIOS,

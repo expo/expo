@@ -1,13 +1,10 @@
-// @flow
-
-// TODO: Bacon: No React Native
-import { Share } from 'react-native';
-import { Platform } from 'expo-core';
-import UUID from 'uuid-js';
-import ExpoContacts from './ExpoContacts';
 import { UnavailabilityError } from 'expo-errors';
+import { Platform, Share } from 'react-native';
+import UUID from 'uuid-js';
 
-type CalendarFormatType =
+import ExpoContacts from './ExpoContacts';
+
+export type CalendarFormatType =
   | typeof CalendarFormats.Gregorian
   | typeof CalendarFormats.Buddhist
   | typeof CalendarFormats.Chinese
@@ -25,15 +22,15 @@ type CalendarFormatType =
   | typeof CalendarFormats.IslamicTabular
   | typeof CalendarFormats.IslamicUmmAlQura;
 
-type ContainerType =
+export type ContainerType =
   | typeof ContainerTypes.Local
   | typeof ContainerTypes.Exchange
   | typeof ContainerTypes.CardDAV
   | typeof ContainerTypes.Unassigned;
 
-type ContactType = typeof ContactTypes.Person | typeof ContactTypes.Company;
+export type ContactType = typeof ContactTypes.Person | typeof ContactTypes.Company;
 
-type FieldType =
+export type FieldType =
   | typeof Fields.ID
   | typeof Fields.ContactType
   | typeof Fields.Name
@@ -66,176 +63,174 @@ type FieldType =
   | typeof Fields.Dates
   | typeof Fields.Relationships;
 
-type Date = {
-  day?: number,
-  month?: number,
-  year?: number,
-  id: string,
-  label: string,
-  format?: CalendarFormatType,
+export type Date = {
+  day?: number;
+  month?: number;
+  year?: number;
+  id: string;
+  label: string;
+  format?: CalendarFormatType;
 };
 
-type Relationship = {
-  label: string,
-  name?: string,
-  id: string,
+export type Relationship = {
+  label: string;
+  name?: string;
+  id: string;
 };
 
-type Email = {
-  email?: string,
-  isPrimary?: boolean,
-  label: string,
-  id: string,
+export type Email = {
+  email?: string;
+  isPrimary?: boolean;
+  label: string;
+  id: string;
 };
 
-type PhoneNumber = {
-  number?: string,
-  isPrimary?: boolean,
-  digits?: string,
-  countryCode?: string,
-  label: string,
-  id: string,
+export type PhoneNumber = {
+  number?: string;
+  isPrimary?: boolean;
+  digits?: string;
+  countryCode?: string;
+  label: string;
+  id: string;
 };
 
-type Address = {
-  street?: string,
-  city?: string,
-  country?: string,
-  region?: string,
-  neighborhood?: string,
-  postalCode?: string,
-  poBox?: string,
-  isoCountryCode?: string,
-  label: string,
-  id: string,
+export type Address = {
+  street?: string;
+  city?: string;
+  country?: string;
+  region?: string;
+  neighborhood?: string;
+  postalCode?: string;
+  poBox?: string;
+  isoCountryCode?: string;
+  label: string;
+  id: string;
 };
 
-type SocialProfile = {
-  service?: string,
-  localizedProfile?: string,
-  url?: string,
-  username?: string,
-  userId?: string,
-  label: string,
-  id: string,
+export type SocialProfile = {
+  service?: string;
+  localizedProfile?: string;
+  url?: string;
+  username?: string;
+  userId?: string;
+  label: string;
+  id: string;
 };
 
-type InstantMessageAddress = {
-  service?: string,
-  username?: string,
-  localizedService?: string,
-  label: string,
-  id: string,
+export type InstantMessageAddress = {
+  service?: string;
+  username?: string;
+  localizedService?: string;
+  label: string;
+  id: string;
 };
 
-type UrlAddress = {
-  label: string,
-  url?: string,
-  id: string,
+export type UrlAddress = {
+  label: string;
+  url?: string;
+  id: string;
 };
 
-type Image = {
-  uri?: string,
-  width?: number,
-  height?: number,
-  base64?: string,
+export type Image = {
+  uri?: string;
+  width?: number;
+  height?: number;
+  base64?: string;
 };
 
-type Contact = {
-  id: string,
-  contactType: ContactType,
-  name: string,
-  firstName?: string,
-  middleName?: string,
-  lastName?: string,
-  maidenName?: string,
-  namePrefix?: string,
-  nameSuffix?: string,
-  nickname?: string,
-  phoneticFirstName?: string,
-  phoneticMiddleName?: string,
-  phoneticLastName?: string,
-  company?: string,
-  jobTitle?: string,
-  department?: string,
-  note?: string,
-  imageAvailable?: boolean,
-  image?: Image,
-  rawImage?: Image,
-  birthday?: Date,
-  dates?: Date[],
-  relationships?: Relationship[],
-  emails?: Email[],
-  phoneNumbers?: PhoneNumber[],
-  addresses?: Address[],
-  instantMessageAddresses?: InstantMessageAddress[],
-  urlAddresses?: UrlAddress[],
+export type Contact = {
+  id: string;
+  contactType: ContactType;
+  name: string;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  maidenName?: string;
+  namePrefix?: string;
+  nameSuffix?: string;
+  nickname?: string;
+  phoneticFirstName?: string;
+  phoneticMiddleName?: string;
+  phoneticLastName?: string;
+  company?: string;
+  jobTitle?: string;
+  department?: string;
+  note?: string;
+  imageAvailable?: boolean;
+  image?: Image;
+  rawImage?: Image;
+  birthday?: Date;
+  dates?: Date[];
+  relationships?: Relationship[];
+  emails?: Email[];
+  phoneNumbers?: PhoneNumber[];
+  addresses?: Address[];
+  instantMessageAddresses?: InstantMessageAddress[];
+  urlAddresses?: UrlAddress[];
 
-  nonGregorianBirthday?: Date,
-  socialProfiles?: SocialProfile[],
+  nonGregorianBirthday?: Date;
+  socialProfiles?: SocialProfile[];
 };
 
-type ContactResponse = {
-  data: Contact[],
-  hasNextPage: boolean,
-  hasPreviousPage: boolean,
+export type ContactResponse = {
+  data: Contact[];
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 };
 
-type ContactSort =
+export type ContactSort =
   | typeof SortTypes.UserDefault
   | typeof SortTypes.FirstName
   | typeof SortTypes.LastName
   | typeof SortTypes.None;
 
-type ContactQuery = {
-  pageSize?: number,
-  pageOffset?: number,
-  fields?: FieldType[],
-  sort?: ContactSort,
-  name?: string,
-  id?: string | string[],
-  groupId?: string,
-  containerId?: string,
-  rawContacts?: boolean,
+export type ContactQuery = {
+  pageSize?: number;
+  pageOffset?: number;
+  fields?: FieldType[];
+  sort?: ContactSort;
+  name?: string;
+  id?: string | string[];
+  groupId?: string;
+  containerId?: string;
+  rawContacts?: boolean;
 };
 
-type FormOptions = {
-  displayedPropertyKeys?: FieldType[],
-  message?: string,
-  alternateName?: string,
-  allowsEditing?: boolean,
-  allowsActions?: boolean,
-  shouldShowLinkedContacts?: boolean,
-  isNew?: boolean,
-  cancelButtonTitle?: string,
-  preventAnimation?: boolean,
-  groupId?: string,
+export type FormOptions = {
+  displayedPropertyKeys?: FieldType[];
+  message?: string;
+  alternateName?: string;
+  allowsEditing?: boolean;
+  allowsActions?: boolean;
+  shouldShowLinkedContacts?: boolean;
+  isNew?: boolean;
+  cancelButtonTitle?: string;
+  preventAnimation?: boolean;
+  groupId?: string;
 };
 
-type GroupQuery = {
-  groupId?: string,
-  groupName?: string,
-  containerId?: string,
+export type GroupQuery = {
+  groupId?: string;
+  groupName?: string;
+  containerId?: string;
 };
 
-type Group = {
-  name?: string,
-  id?: string,
+export type Group = {
+  name?: string;
+  id?: string;
 };
 
-type ContainerQuery = {
-  contactId?: string,
-  groupId?: string,
-  containerId?: string | string[],
+export type ContainerQuery = {
+  contactId?: string;
+  groupId?: string;
+  containerId?: string | string[];
 };
 
-type Container = {
-  name: string,
-  id: string,
-  type: ContainerType,
+export type Container = {
+  name: string;
+  id: string;
+  type: ContainerType;
 };
-
-const isIOS = Platform.OS === 'ios';
 
 export async function shareContactAsync(
   contactId: string,
@@ -245,11 +240,11 @@ export async function shareContactAsync(
   if (!ExpoContacts.shareContactAsync) {
     throw new UnavailabilityError('Contacts', 'shareContactAsync');
   }
-  if (isIOS) {
+  if (Platform.OS === 'ios') {
     const url = await writeContactToFileAsync({
       id: contactId,
     });
-    Share.share(
+    return await Share.share(
       {
         url,
         message,
@@ -283,7 +278,10 @@ export async function getPagedContactsAsync(
   });
 }
 
-export async function getContactByIdAsync(id: string, fields?: FieldType): Promise<?Contact> {
+export async function getContactByIdAsync(
+  id: string,
+  fields?: FieldType
+): Promise<Contact | undefined> {
   if (!ExpoContacts.getContactsAsync) {
     throw new UnavailabilityError('Contacts', 'getContactsAsync');
   }
@@ -300,7 +298,7 @@ export async function getContactByIdAsync(id: string, fields?: FieldType): Promi
     if (results && results.data && results.data.length > 0) {
       return results.data[0];
     }
-    return null;
+    return;
   }
 }
 
@@ -325,28 +323,29 @@ export async function removeContactAsync(contactId: string): Promise<any> {
   return await ExpoContacts.removeContactAsync(contactId);
 }
 
-export async function writeContactToFileAsync(contactQuery: ContactQuery = {}): Promise<?string> {
+export async function writeContactToFileAsync(
+  contactQuery: ContactQuery = {}
+): Promise<string | undefined> {
   if (!ExpoContacts.writeContactToFileAsync) {
     throw new UnavailabilityError('Contacts', 'writeContactToFileAsync');
   }
   return await ExpoContacts.writeContactToFileAsync(contactQuery);
 }
 
-// TODO: Evan: Test
 export async function presentFormAsync(
-  contactId: ?string,
-  contact: ?Contact,
+  contactId?: string,
+  contact?: Contact,
   formOptions: FormOptions = {}
 ): Promise<any> {
   if (!ExpoContacts.presentFormAsync) {
     throw new UnavailabilityError('Contacts', 'presentFormAsync');
   }
-  if (isIOS) {
+  if (Platform.OS === 'ios') {
     let adjustedOptions = formOptions;
 
     if (contactId) {
       if (contact) {
-        contact = null;
+        contact = undefined;
         console.log(
           'Expo.Contacts.presentFormAsync: You should define either a `contact` or a `contactId` but not both.'
         );
@@ -376,13 +375,15 @@ export async function addExistingGroupToContainerAsync(
   return await ExpoContacts.addExistingGroupToContainerAsync(groupId, containerId);
 }
 
-export async function createGroupAsync(name: ?string, containerId: ?string): Promise<string> {
+export async function createGroupAsync(name?: string, containerId?: string): Promise<string> {
   if (!ExpoContacts.createGroupAsync) {
     throw new UnavailabilityError('Contacts', 'createGroupAsync');
   }
 
   name = name || UUID.create().toString();
-  if (!containerId) containerId = await getDefaultContainerIdAsync();
+  if (!containerId) {
+    containerId = await getDefaultContainerIdAsync();
+  }
 
   return await ExpoContacts.createGroupAsync(name, containerId);
 }
