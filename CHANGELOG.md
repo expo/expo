@@ -6,6 +6,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- `ImageManipulator.manipulateAsync` is now accepting `ImageManipulator.FlipType.{Vertical, Horizontal}` as flipping action parameter and `ImageManipulator.SaveFormat.{JPEG, PNG}` as saving option [@bbarthec](https://github.com/bbarthec) ([#3245](https://github.com/expo/expo/pull/3245))
 - removed `devKernel` and `prodKernel` build flavors from Android ExpoKit projects (all Gradle commands become simply `[verb](Debug|Release)`, e.g. `installDebug` or `assembleRelease`) by [@esamelson](https://github.com/esamelson) ([#3386](https://github.com/expo/expo/pull/3386))
 
 ### 🎉 New features

@@ -14,7 +14,7 @@ public class FileSystemUtils {
 
   public static String generateOutputPath(File internalDirectory, String dirName, String extension) throws IOException {
     File directory = new File(internalDirectory + File.separator + dirName);
-    ensureDirExists(directory);
+    FileSystemUtils.ensureDirExists(directory);
     String filename = UUID.randomUUID().toString();
     return directory + File.separator + filename + extension;
   }

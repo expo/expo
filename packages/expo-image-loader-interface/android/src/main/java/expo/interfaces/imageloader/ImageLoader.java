@@ -1,12 +1,14 @@
 package expo.interfaces.imageloader;
 
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public interface ImageLoader {
   interface ResultListener {
-    void onSuccess(Bitmap bitmap);
-    void onFailure(Throwable cause);
+    void onSuccess(@NonNull Bitmap bitmap);
+    void onFailure(@Nullable Throwable cause);
   }
 
-  void loadImageFromURL(String url, ResultListener resultListener);
+  void loadImageFromURL(@NonNull String url, ResultListener resultListener);
 }

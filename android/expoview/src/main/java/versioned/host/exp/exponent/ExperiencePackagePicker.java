@@ -27,6 +27,7 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.imagemanipulator.ImageManipulatorPackage;
 import expo.modules.imagepicker.ImagePickerPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
@@ -62,12 +63,13 @@ public class ExperiencePackagePicker {
       new ConstantsPackage(),
       new ContactsPackage(),
       new DocumentPickerPackage(),
-      new FaceDetectorPackage(),
       new FacebookPackage(),
+      new FaceDetectorPackage(),
       new FileSystemPackage(),
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),
+      new ImageManipulatorPackage(),
       new ImagePickerPackage(),
       new KeepAwakePackage(),
       new LinearGradientPackage(),
