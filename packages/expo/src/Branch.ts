@@ -5,9 +5,12 @@ import { Constants } from 'expo-constants';
 // similar.
 Branch.BranchEvent = BranchEvent;
 
+var firstExecution = true;
+
 export function warnIfNotStandalone() {
-  if (Constants.appOwnership !== 'standalone') {
+  if (firstExecution && Constants.appOwnership !== 'standalone') {
      console.warn('The Branch API only works with standalone builds created with expo build.');
+     firstExecution = false;
   }
 };
 
