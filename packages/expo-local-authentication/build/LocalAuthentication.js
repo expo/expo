@@ -40,7 +40,7 @@ export async function authenticateAsync(promptMessageIOS = 'Authenticate') {
 }
 export async function cancelAuthenticate() {
     if (!ExpoLocalAuthentication.cancelAuthenticate) {
-        throw new Error(`LocalAuthentication.cancelAuthenticate is not supported on ${Platform.OS}`);
+        throw new UnavailabilityError('expo-local-authentication', 'cancelAuthenticate');
     }
     await ExpoLocalAuthentication.cancelAuthenticate();
 }
