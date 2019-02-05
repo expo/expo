@@ -15,6 +15,9 @@
 
 @implementation EXSpeechUtteranceWithId
 
+static NSString *const INVALID_VOICE_ERROR_CODE = @"INVALID_VOICE_IDENTIFIER";
+static NSString *const INVALID_VOICE_ERROR_MSG = @"Cannot find voice with identifier: %@!";
+
 - (instancetype)initWithString:(NSString *)string utteranceId:(NSString *)utteranceId
 {
   self = [super initWithString:string];
@@ -106,6 +109,10 @@ EX_EXPORT_METHOD_AS(speak,
   }
   if (voice != nil) {
     utterance.voice = [AVSpeechSynthesisVoice voiceWithIdentifier:voice];
+    if (utterance.voice == nil) {
+      reject(INVALID_VOICE_ERROR_CODE, [NSString stringWithFormat:INVALID_VOICE_ERROR_MSG, voice], nil);
+      return;
+    }
   }
   if (pitch != nil) {
     utterance.pitchMultiplier = [pitch floatValue];
@@ -116,6 +123,27 @@ EX_EXPORT_METHOD_AS(speak,
 
   [_synthesizer speakUtterance:utterance];
   resolve(nil);
+}
+
+EX_EXPORT_METHOD_AS(getVoices,
+                    getVoices:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  NSArray<AVSpeechSynthesisVoice *> *availableVoices = [AVSpeechSynthesisVoice speechVoices];
+  NSMutableArray<NSDictionary *> *availableVoicesResult = [NSMutableArray array];
+  for (AVSpeechSynthesisVoice* voice in availableVoices) {
+    NSString *quality = @"Default";
+    if (voice.quality == AVSpeechSynthesisVoiceQualityEnhanced) {
+      quality = @"Enhanced";
+    }
+    NSDictionary *voiceInfo = @{
+                                @"identifier" : voice.identifier,
+                                @"name"       : voice.name,
+                                @"quality"    : quality,
+                                @"language"   : voice.language
+                                };
+    [availableVoicesResult addObject:voiceInfo];
+  }
+  resolve([availableVoicesResult mutableCopy]);
 }
 
 EX_EXPORT_METHOD_AS(stop,

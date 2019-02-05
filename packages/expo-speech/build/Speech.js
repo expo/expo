@@ -55,6 +55,9 @@ export function speak(text, options = {}) {
     _registerListenersIfNeeded();
     ExponentSpeech.speak(String(id), text, options);
 }
+export async function getAvailableVoicesAsync() {
+    return ExponentSpeech.getVoices();
+}
 export async function isSpeakingAsync() {
     return ExponentSpeech.isSpeaking();
 }

@@ -5,6 +5,11 @@ import Touchable from 'react-native-platform-touchable';
 import HeadingText from '../components/HeadingText';
 import { Colors } from '../constants';
 
+const VOICES = {
+  sara: 'com.apple.ttsbundle.Sara-compact',
+  anna: 'com.apple.ttsbundle.Anna-compact',
+};
+
 const EXAMPLES = [
   { language: 'en', text: 'Hello world' },
   { language: 'es', text: 'Hola mundo' },
@@ -71,6 +76,12 @@ export default class TextToSpeechScreen extends React.Component {
           </View>
         )}
 
+        {Platform.OS === 'ios' && (
+          <View style={styles.controlRow}>
+            <Button onPress={this._showAllVoices} title="getListOfAllVoices" />
+          </View>
+        )}
+
         <Text style={styles.controlText}>Pitch: {this.state.pitch.toFixed(2)}</Text>
         <View style={styles.controlRow}>
           <AmountControlButton
@@ -107,6 +118,14 @@ export default class TextToSpeechScreen extends React.Component {
     );
   }
 
+  _getRandomVoice = () => {
+    if (Math.random() > 0.5) {
+      return VOICES.sara;
+    } else {
+      return VOICES.anna;
+    }
+  };
+
   _speak = () => {
     const start = () => {
       this.setState({ inProgress: true });
@@ -116,6 +135,7 @@ export default class TextToSpeechScreen extends React.Component {
     };
 
     Speech.speak(this.state.selectedExample.text, {
+      voiceIOS: this._getRandomVoice(),
       language: this.state.selectedExample.language,
       pitch: this.state.pitch,
       rate: this.state.rate,
@@ -124,6 +144,11 @@ export default class TextToSpeechScreen extends React.Component {
       onStopped: complete,
       onError: complete,
     });
+  };
+
+  _showAllVoices = async () => {
+    let availableVoices = await Speech.getAvailableVoicesAsync();
+    console.log('availableVoices ', JSON.stringify(availableVoices));
   };
 
   _stop = () => {

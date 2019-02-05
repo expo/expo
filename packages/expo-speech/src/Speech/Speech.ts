@@ -61,6 +61,10 @@ export function speak(text: string, options: SpeechOptions = {}) {
   ExponentSpeech.speak(String(id), text, options);
 }
 
+export async function getAvailableVoicesAsync() {
+  return ExponentSpeech.getVoices();
+}
+
 export async function isSpeakingAsync(): Promise<boolean> {
   return ExponentSpeech.isSpeaking();
 }
