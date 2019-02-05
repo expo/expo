@@ -23,6 +23,7 @@ export {
 };
 
 const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);
+let _lastOrientationLock: OrientationLock = OrientationLock.UNKNOWN;
 
 export function allow(orientationLock: OrientationLock): void {
   console.warn(
@@ -48,11 +49,12 @@ export async function lockAsync(orientationLock: OrientationLock): Promise<void>
     throw new TypeError(`Invalid Orientation Lock: ${orientationLock}`);
   }
 
-  if (orientationLock === OrientationLock.OTHER){
+  if (orientationLock === OrientationLock.OTHER) {
     return;
   }
 
   await ExpoScreenOrientation.lockAsync(orientationLock);
+  _lastOrientationLock = orientationLock;
 }
 
 export async function lockPlatformAsync(options: PlatformOrientationInfo): Promise<void> {
@@ -98,10 +100,11 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
     platformOrientationParam = screenOrientationArrayWeb;
   }
 
-  if (!platformOrientationParam){
+  if (!platformOrientationParam) {
     throw new TypeError('lockPlatformAsync cannot be called with undefined option properties');
   }
   await ExpoScreenOrientation.lockPlatformAsync(platformOrientationParam);
+  _lastOrientationLock = OrientationLock.OTHER;
 }
 
 export async function unlockAsync(): Promise<void> {
@@ -120,15 +123,12 @@ export async function getOrientationAsync(): Promise<OrientationInfo> {
 
 export async function getOrientationLockAsync(): Promise<OrientationLock> {
   if (!ExpoScreenOrientation.getOrientationLockAsync) {
-    throw new UnavailabilityError('ScreenOrientation', 'getOrientationLockAsync');
+    return _lastOrientationLock;
   }
   return await ExpoScreenOrientation.getOrientationLockAsync();
 }
 
 export async function getPlatformOrientationLockAsync(): Promise<PlatformOrientationInfo> {
-  if (!ExpoScreenOrientation.getPlatformOrientationLockAsync) {
-    throw new UnavailabilityError('ScreenOrientation', 'getPlatformOrientationLockAsync');
-  }
   const platformOrientationLock = await ExpoScreenOrientation.getPlatformOrientationLockAsync();
   if (Platform.OS === 'android') {
     return {
@@ -138,10 +138,13 @@ export async function getPlatformOrientationLockAsync(): Promise<PlatformOrienta
     return {
       screenOrientationArrayIOS: platformOrientationLock,
     };
+  } else if (Platform.OS === 'web') {
+    return {
+      screenOrientationArrayWeb: platformOrientationLock,
+    };
+  } else {
+    return {};
   }
-  return {
-    screenOrientationArray: platformOrientationLock,
-  };
 }
 
 export async function supportsOrientationLockAsync(
@@ -178,7 +181,6 @@ export function addOrientationChangeListener(listener: OrientationChangeListener
   if (typeof listener !== 'function') {
     throw new TypeError(`addOrientationChangeListener cannot be called with ${listener}`);
   }
-
   const subscription = _orientationChangeEmitter.addListener(
     getEventName(),
     async (update: OrientationChangeEvent) => {
@@ -190,8 +192,8 @@ export function addOrientationChangeListener(listener: OrientationChangeListener
       } else {
         // We rely on the RN Dimensions to emit the `didUpdateDimensions` event on Android
         [orientationLock, orientationInfo] = await Promise.all([
-          ExpoScreenOrientation.getOrientationLockAsync(),
-          ExpoScreenOrientation.getOrientationAsync(),
+          getOrientationLockAsync(),
+          getOrientationAsync(),
         ]);
       }
       listener({ orientationInfo, orientationLock });

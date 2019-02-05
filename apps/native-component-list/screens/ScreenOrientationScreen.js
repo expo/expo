@@ -11,15 +11,30 @@ export default class ScreenOrientationScreen extends React.Component {
 
   state = {
     orientation: undefined,
+    orientationLock: undefined,
   };
   async componentDidMount() {
-    this.listener = ScreenOrientation.addOrientationChangeListener(async () => {
-      await this.updateOrientationAsync();
+    this.listener = ScreenOrientation.addOrientationChangeListener(
+      ({ orientationInfo, orientationLock }) => {
+        this.setState({
+          orientation: orientationInfo.orientation,
+          orientationLock,
+        });
+      }
+    );
+
+    const [orientation, orientationLock] = await Promise.all([
+      (await ScreenOrientation.getOrientationAsync()).orientation,
+      await ScreenOrientation.getOrientationLockAsync(),
+    ]);
+    // update state
+    this.setState({
+      orientation,
+      orientationLock,
     });
-    await this.updateOrientationAsync();
   }
 
-  updateOrientationAsync = async () => {
+  updateOrientationAsync = async ({ orientationInfo, orientationLock }) => {
     this.setState({
       orientation: (await ScreenOrientation.getOrientationAsync()).orientation,
     });
@@ -79,10 +94,11 @@ export default class ScreenOrientationScreen extends React.Component {
   };
 
   render() {
-    const { orientation } = this.state;
+    const { orientation, orientationLock } = this.state;
     return (
       <ScrollView style={{ padding: 10 }}>
         {orientation && <Text>Orientation: {orientation}</Text>}
+        {orientationLock && <Text>OrientationLock: {orientationLock}</Text>}
         {Object.keys(ScreenOrientation.Orientation).map(orientation => (
           <ListButton
             key={orientation}

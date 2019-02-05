@@ -80,19 +80,17 @@ async function _lockAsync(
   // https://stackoverflow.com/questions/42956350/screen-lockorientation-is-not-a-function#answer-42961058
   const lockOrientationFnNestedContext = screen.orientation && screen.orientation.lock;
 
-  if (!lockOrientationFn && !lockOrientationFnNestedContext) {
-    throw new Error(
-      `expo-screen-orientation: The browser doesn't support locking screen orientation.`
-    );
-  }
-
   let isSuccess;
   // Nested context fn does not accept an array parameter, only single orientationLockTypes
   if (lockOrientationFnNestedContext && !Array.isArray(webOrientationParam)) {
     // correct `this` context must be passed in otherwise method call is disallowed by browser
     isSuccess = await lockOrientationFnNestedContext.call(screen.orientation, webOrientationParam);
-  } else {
+  } else if (lockOrientationFn) {
     isSuccess = await lockOrientationFn.call(screen, webOrientationParam);
+  } else {
+    throw new Error(
+      `expo-screen-orientation: The browser doesn't support locking screen orientation.`
+    );
   }
 
   if (!isSuccess) {
@@ -102,6 +100,8 @@ async function _lockAsync(
   }
 }
 
+let _lastPlatformOrientationLock: Array<Orientation> = [Orientation.UNKNOWN];
+
 export default {
   get name(): string {
     return 'ExpoScreenOrientation';
@@ -109,13 +109,8 @@ export default {
   async supportsOrientationLockAsync(orientationLock: OrientationLock): Promise<boolean> {
     return orientationLock in OrientationLockAPIToWeb;
   },
-  // TODO: is the UNavailabiity Error in the API JS layer good enough?
-  async getPlatformOrientationLockAsync(): Promise<number> {
-    throw new UnavailabilityError('ScreenOrientation', 'getPlatformOrientationLockAsync');
-  },
-  // TODO: is the UNavailabiity Error in the API JS layer good enough?
-  async getOrientationLockAsync(): Promise<OrientationLock> {
-    throw new UnavailabilityError('ScreenOrientation', 'getOrientationLockAsync');
+  async getPlatformOrientationLockAsync(): Promise<Array<Orientation>> {
+    return _lastPlatformOrientationLock;
   },
   async getOrientationAsync(): Promise<OrientationInfo> {
     const webOrientation =
@@ -148,6 +143,7 @@ export default {
         : orientationSet.add(webOrientation);
     }
     await _lockAsync(Array.from(orientationSet));
+    _lastPlatformOrientationLock = orientations;
   },
   async unlockAsync(): Promise<void> {
     const unlockOrientationFn =

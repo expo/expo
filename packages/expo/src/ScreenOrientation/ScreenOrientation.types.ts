@@ -18,6 +18,7 @@ export enum OrientationLock {
   LANDSCAPE_LEFT = 'LANDSCAPE_LEFT',
   LANDSCAPE_RIGHT = 'LANDSCAPE_RIGHT',
   OTHER = 'OTHER',
+  UNKNOWN = 'UNKNOWN',
   ALL_BUT_UPSIDE_DOWN = 'ALL_BUT_UPSIDE_DOWN', // deprecated
 }
 
@@ -37,7 +38,6 @@ export type PlatformOrientationInfo = {
   screenOrientationConstantAndroid?: number;
   screenOrientationArrayIOS?: Orientation[];
   screenOrientationArrayWeb?: Orientation[];
-  screenOrientationArray?: number;
 };
 
 export type OrientationChangeListener = (event: OrientationChangeEvent) => void;
