@@ -26,11 +26,11 @@
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
-    "eslint": "^5.4.0",
+    "eslint": "^5.15.3",
     "eslint-config-universe": "^2.0.0-alpha.0",
-    "expo-cli": "^2.7.1",
+    "expo-cli": "^2.13.0",
     "expo-yarn-workspaces": "^1.1.0",
-    "prettier": "^1.14.2"
+    "prettier": "^1.16.4"
   },
   "resolutions": {
     "react-native-gesture-handler": "1.1.0"
