@@ -1,14 +1,13 @@
 import * as rtlDetect from 'rtl-detect';
-import { Localization } from './Localization.types';
 
-declare const navigator: Navigator;
+import { Localization } from './Localization.types';
 
 export default {
   get isRTL(): boolean {
     return rtlDetect.isRtlLang(this.locale);
   },
   get locale(): string {
-    let locale =
+    const locale =
       navigator.language ||
       navigator['systemLanguage'] ||
       navigator['browserLanguage'] ||
