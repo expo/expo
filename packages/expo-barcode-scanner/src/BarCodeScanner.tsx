@@ -35,7 +35,7 @@ export interface BarCodeScannerProps extends ViewProps {
 
 type AnyComponent = null | React.Component<any, any> | React.ComponentClass<any>;
 
-export default class BarCodeScanner extends React.Component<BarCodeScannerProps> {
+export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   lastEvents: { [key: string]: any };
   lastEventsTimes: { [key: string]: any };
   barCodeScannerRef: AnyComponent = null;

@@ -7,7 +7,7 @@ import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
-export default class BarCodeScanner extends React.Component {
+export class BarCodeScanner extends React.Component {
     constructor(props) {
         super(props);
         this.barCodeScannerRef = null;
