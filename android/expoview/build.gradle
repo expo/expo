@@ -222,6 +222,7 @@ dependencies {
   api project(':expo-image-loader-interface')
   api project(':expo-image-manipulator')
   api project(':expo-image-picker')
+  api project(':expo-intent-launcher')
   api project(':expo-keep-awake')
   api project(':expo-linear-gradient')
   api project(':expo-local-authentication')

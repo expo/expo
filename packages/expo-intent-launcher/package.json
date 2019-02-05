@@ -1,0 +1,39 @@
+{
+  "name": "expo-intent-launcher",
+  "version": "1.0.0",
+  "description": "ExpoIntentLauncher standalone module",
+  "main": "build/IntentLauncher.js",
+  "types": "build/IntentLauncher.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-intent-launcher",
+    "intent",
+    "launcher"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-intent-launcher",
+  "dependencies": {
+    "expo-errors": "^1.0.0"
+  },
+  "peerDependencies": {
+    "expo-core": "~2.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  }
+}

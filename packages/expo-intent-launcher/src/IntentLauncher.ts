@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-errors';
-import ExponentIntentLauncher from './ExponentIntentLauncher';
+import ExpoIntentLauncher from './ExpoIntentLauncher';
 
 /**
  * Constants are from the source code of Settings:
@@ -101,15 +101,32 @@ export const ACTION_ZEN_MODE_SCHEDULE_RULE_SETTINGS =
   'android.settings.ZEN_MODE_SCHEDULE_RULE_SETTINGS';
 export const ACTION_ZEN_MODE_SETTINGS = 'android.settings.ZEN_MODE_SETTINGS';
 
-export function startActivityAsync(
-  activity: string,
-  // TODO: Make this type more precise
-  data: { [key: string]: any } | null = null,
-  uri: string | null = null,
-  mime: string | null = null
-): Promise<boolean> {
-  if (!ExponentIntentLauncher.startActivity) {
-    throw new UnavailabilityError('IntentLauncherAndroid', 'startActivityAsync');
+interface IntentParams {
+  action?: string;
+  type?: string;
+  category?: string;
+  extra?: object;
+  data?: string;
+  flags?: number;
+  packageName?: string;
+  className?: string;
+}
+
+interface IntentResult {
+  resultCode: number;
+  data?: string;
+  extra?: object;
+}
+
+export enum ResultCode {
+  Success = -1,
+  Canceled = 0,
+  FirstUser = 1,
+}
+
+export async function startActivityAsync(params: IntentParams = {}): Promise<IntentResult> {
+  if (!ExpoIntentLauncher.startActivity) {
+    throw new UnavailabilityError('IntentLauncher', 'startActivityAsync');
   }
-  return ExponentIntentLauncher.startActivity(activity, data, uri, mime);
+  return ExpoIntentLauncher.startActivity(params);
 }
