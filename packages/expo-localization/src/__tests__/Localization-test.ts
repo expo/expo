@@ -1,7 +1,7 @@
 import i18n from 'i18n-js';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
-import ExpoLocalization from '../ExpoLocalization';
 
+import ExpoLocalization from '../ExpoLocalization';
 import * as Localization from '../Localization';
 
 const en = {
@@ -27,19 +27,21 @@ const fakeLocalization = {
   country: 'US',
   isRTL: false,
 };
+
 beforeEach(() => {
   for (const property of Object.keys(fakeLocalization)) {
     mockProperty(ExpoLocalization, property, fakeLocalization[property]);
+    mockProperty(Localization, property, fakeLocalization[property]);
   }
   mockProperty(ExpoLocalization, 'getLocalizationAsync', jest.fn(async () => fakeLocalization));
 });
 
-afterAll(() => {
+afterEach(() => {
   unmockAllProperties();
 });
 
 describe(`Localization methods`, () => {
-  it('expect async to return locale', async () => {
+  it(`expect async to return locale`, async () => {
     function validateString(result) {
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -72,21 +74,23 @@ describe(`Localization methods`, () => {
 });
 
 describe(`Localization defines constants`, () => {
-  it('Gets the current device country', async () => {
+  it(`Gets the current device country`, async () => {
     const result = Localization.country;
 
     expect(result).toBeDefined();
     expect(typeof result).toBe('string');
     expect(result.length > 0).toBe(true);
   });
-  it('Gets the current locale', async () => {
+
+  it(`Gets the current locale`, async () => {
     const result = Localization.locale;
 
     expect(result).toBeDefined();
     expect(typeof result).toBe('string');
     expect(result.length > 0).toBe(true);
   });
-  it('Gets the preferred locales', async () => {
+
+  it(`Gets the preferred locales`, async () => {
     const result = Localization.locales;
 
     expect(result).toBeDefined();
@@ -94,7 +98,8 @@ describe(`Localization defines constants`, () => {
     expect(result.length > 0).toBe(true);
     expect(result[0]).toBe(Localization.locale);
   });
-  it('Gets ISO currency codes', async () => {
+
+  it(`Gets ISO currency codes`, async () => {
     const result = Localization.isoCurrencyCodes;
     expect(result).toBeDefined();
     expect(Array.isArray(result)).toBe(true);
@@ -103,7 +108,8 @@ describe(`Localization defines constants`, () => {
       expect(iso.length > 0).toBe(true);
     }
   });
-  it('Gets the current timzezone', async () => {
+
+  it(`Gets the current timzezone`, async () => {
     const result = Localization.timezone;
     expect(result).toBeDefined();
     expect(typeof result).toBe('string');
@@ -112,7 +118,7 @@ describe(`Localization defines constants`, () => {
     expect(result.split('/').length > 1).toBe(true);
   });
 
-  it('Gets the current layout direction (LTR only)', async () => {
+  it(`Gets the current layout direction (LTR only)`, async () => {
     const result = Localization.isRTL;
     expect(result).toBeDefined();
     expect(result).toBe(false);
@@ -125,7 +131,7 @@ describe(`Localization works with i18n-js`, () => {
   i18n.missingTranslationPrefix = 'EE: ';
   i18n.fallbacks = true;
 
-  it('expect language to match strings (en, pl, fr supported)', async () => {
+  it(`expect language to match strings (en, pl, fr supported)`, async () => {
     const target = 'good';
 
     i18n.locale = Localization.locale;
