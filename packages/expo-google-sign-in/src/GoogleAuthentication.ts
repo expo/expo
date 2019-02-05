@@ -1,13 +1,12 @@
-// @flow
 import GoogleAuthData from './GoogleAuthData';
 
 class GoogleAuthentication extends GoogleAuthData {
-  clientId: ?string;
-  accessToken: ?string;
-  accessTokenExpirationDate: ?number;
-  refreshToken: ?string;
-  idToken: ?string;
-  idTokenExpirationDate: ?number;
+  clientId?: string;
+  accessToken?: string;
+  accessTokenExpirationDate?: number;
+  refreshToken?: string;
+  idToken?: string;
+  idTokenExpirationDate?: number;
 
   constructor(props) {
     super(props);
@@ -28,7 +27,7 @@ class GoogleAuthentication extends GoogleAuthData {
     this.idTokenExpirationDate = idTokenExpirationDate;
   }
 
-  equals(other: ?any): boolean {
+  equals(other: any): boolean {
     if (!super.equals(other) || !(other instanceof GoogleAuthentication)) {
       return false;
     }
@@ -43,7 +42,7 @@ class GoogleAuthentication extends GoogleAuthData {
     );
   }
 
-  toJSON(): { [string]: any } {
+  toJSON(): { [key: string]: any } {
     return {
       ...super.toJSON(),
       clientId: this.clientId,
