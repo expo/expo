@@ -2,11 +2,11 @@ import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 import ExpoAppAuth from './ExpoAppAuth';
 const isValidString = (s) => !!(s && typeof s === 'string');
-function isValidClientId(clientId) {
+function assertValidClientId(clientId) {
     if (!isValidString(clientId))
         throw new Error('Config error: clientId must be a string');
 }
-function isValidProps({ issuer, redirectUrl, clientId, serviceConfiguration }) {
+function assertValidProps({ issuer, redirectUrl, clientId, serviceConfiguration, }) {
     const _serviceConfigIsValid = serviceConfiguration &&
         isValidString(serviceConfiguration.authorizationEndpoint) &&
         isValidString(serviceConfiguration.tokenEndpoint);
@@ -14,13 +14,13 @@ function isValidProps({ issuer, redirectUrl, clientId, serviceConfiguration }) {
         throw new Error('Invalid you must provide either an issuer or a service endpoints');
     if (!isValidString(redirectUrl))
         throw new Error('Config error: redirectUrl must be a string');
-    isValidClientId(clientId);
+    assertValidClientId(clientId);
 }
 async function _executeAsync(props) {
     if (!props.redirectUrl) {
         props.redirectUrl = `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
     }
-    isValidProps(props);
+    assertValidProps(props);
     return await ExpoAppAuth.executeAsync(props);
 }
 export async function authAsync(props) {
@@ -47,11 +47,7 @@ export async function revokeAsync({ clientId, issuer, serviceConfiguration }, { 
     if (!token) {
         throw new Error('Please include the token to revoke');
     }
-    isValidClientId(clientId);
-    if (!isValidString(issuer) ||
-        (serviceConfiguration && !isValidString(serviceConfiguration.revocationEndpoint))) {
-        throw new Error('Config error: you must provide either an issuer or a revocation endpoint');
-    }
+    assertValidClientId(clientId);
     let revocationEndpoint;
     if (serviceConfiguration && serviceConfiguration.revocationEndpoint) {
         revocationEndpoint = serviceConfiguration.revocationEndpoint;

@@ -17,9 +17,9 @@ type LogInResult =
     }
   | {
       type: 'success';
-      accessToken?: string;
-      idToken: string | null;
-      refreshToken: string | null;
+      accessToken?: string | null;
+      idToken?: string | null;
+      refreshToken?: string | null;
       user: {
         id?: string;
         name?: string;
@@ -77,9 +77,12 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
       headers: { Authorization: `Bearer ${logInResult.accessToken}` },
     });
     const userInfo = await userInfoResponse.json();
+
     return {
       type: 'success',
-      ...logInResult,
+      accessToken: logInResult.accessToken,
+      idToken: logInResult.idToken,
+      refreshToken: logInResult.refreshToken,
       user: {
         id: userInfo.id,
         name: userInfo.name,
