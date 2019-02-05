@@ -1,0 +1,7 @@
+{
+  "name": "expo-firebase/perf",
+  "main": "./FirebasePerformance.js",
+  "browser": "./FirebasePerformance.js",
+  "module": "./FirebasePerformance.js",
+  "typings": "./FirebasePerformance.d.ts"
+}

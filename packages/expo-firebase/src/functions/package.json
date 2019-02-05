@@ -1,0 +1,7 @@
+{
+  "name": "expo-firebase/functions",
+  "main": "./FirebaseFunctions.js",
+  "browser": "./FirebaseFunctions.js",
+  "module": "./FirebaseFunctions.js",
+  "typings": "./FirebaseFunctions.d.ts"
+}

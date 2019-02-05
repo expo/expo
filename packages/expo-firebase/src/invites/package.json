@@ -1,0 +1,7 @@
+{
+  "name": "expo-firebase/invites",
+  "main": "./FirebaseInvites.js",
+  "browser": "./FirebaseInvites.js",
+  "module": "./FirebaseInvites.js",
+  "typings": "./FirebaseInvites.d.ts"
+}

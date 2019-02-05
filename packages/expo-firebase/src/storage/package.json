@@ -1,0 +1,7 @@
+{
+  "name": "expo-firebase/storage",
+  "main": "./FirebaseStorage.js",
+  "browser": "./FirebaseStorage.js",
+  "module": "./FirebaseStorage.js",
+  "typings": "./FirebaseStorage.d.ts"
+}

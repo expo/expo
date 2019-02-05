@@ -1,0 +1,7 @@
+{
+  "name": "expo-firebase/database",
+  "main": "./FirebaseDatabase.js",
+  "browser": "./FirebaseDatabase.js",
+  "module": "./FirebaseDatabase.js",
+  "typings": "./FirebaseDatabase.d.ts"
+}

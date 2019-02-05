@@ -1,0 +1,7 @@
+{
+  "name": "expo-firebase/iid",
+  "main": "./FirebaseIID.js",
+  "browser": "./FirebaseIID.js",
+  "module": "./FirebaseIID.js",
+  "typings": "./FirebaseIID.d.ts"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "expo-firebase/notifications",
+  "main": "./FirebaseNotifications.js",
+  "browser": "./FirebaseNotifications.js",
+  "module": "./FirebaseNotifications.js",
+  "typings": "./FirebaseNotifications.d.ts"
+}
