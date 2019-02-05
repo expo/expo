@@ -78,24 +78,19 @@ async function _lockAsync(
 
   // Chrome has the lock function under screen.orientation.lock
   // https://stackoverflow.com/questions/42956350/screen-lockorientation-is-not-a-function#answer-42961058
-  const lockOrientationChromeFn = screen.orientation && screen.orientation.lock;
+  const lockOrientationFnNestedContext = screen.orientation && screen.orientation.lock;
 
-  if (!lockOrientationFn && !lockOrientationChromeFn) {
+  if (!lockOrientationFn && !lockOrientationFnNestedContext) {
     throw new Error(
       `expo-screen-orientation: The browser doesn't support locking screen orientation.`
     );
   }
 
-  if (Array.isArray(webOrientationParam)) {
-    console.warn(
-      `This browser may not support an array argument ${webOrientationParam} in its lockOrientation function. It may not comply with the standards as described in https://developer.mozilla.org/en-US/docs/Web/API/Screen/lockOrientation#Usage_with_an_Array_argument`
-    );
-  }
-
   let isSuccess;
-  if (lockOrientationChromeFn) {
+  // Nested context fn does not accept an array parameter, only single orientationLockTypes
+  if (lockOrientationFnNestedContext && !Array.isArray(webOrientationParam)) {
     // correct `this` context must be passed in otherwise method call is disallowed by browser
-    isSuccess = await lockOrientationChromeFn.call(screen.orientation, webOrientationParam);
+    isSuccess = await lockOrientationFnNestedContext.call(screen.orientation, webOrientationParam);
   } else {
     isSuccess = await lockOrientationFn.call(screen, webOrientationParam);
   }
@@ -159,17 +154,17 @@ export default {
       screen['unlockOrientation'] ||
       screen['mozUnlockOrientation'] ||
       screen['msUnlockOrientation'];
-    const unlockOrientationChromeFn = screen.orientation && screen.orientation.unlock;
+    const unlockOrientationFnNestedContext = screen.orientation && screen.orientation.unlock;
 
-    if (!unlockOrientationFn && !unlockOrientationChromeFn) {
+    if (!unlockOrientationFn && !unlockOrientationFnNestedContext) {
       throw new Error(
         `expo-screen-orientation: The browser doesn't support unlocking screen orientation.`
       );
     }
 
     let isSuccess;
-    if (unlockOrientationChromeFn) {
-      isSuccess = await unlockOrientationChromeFn.call(screen.orientation);
+    if (unlockOrientationFnNestedContext) {
+      isSuccess = await unlockOrientationFnNestedContext.call(screen.orientation);
     } else {
       isSuccess = await unlockOrientationFn.call(screen);
     }

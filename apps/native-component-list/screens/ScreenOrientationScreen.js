@@ -52,7 +52,7 @@ export default class ScreenOrientationScreen extends React.Component {
 
     await ScreenOrientation.lockPlatformAsync({
       screenOrientationArrayWeb: [
-        ScreenOrientation.Orientation.PORTRAIT_DOWN,
+        ScreenOrientation.Orientation.LANDSCAPE_LEFT,
         ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
       ],
       screenOrientationArrayIOS: [
@@ -60,7 +60,11 @@ export default class ScreenOrientationScreen extends React.Component {
         ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
       ],
       screenOrientationConstantAndroid: 8, // reverse landscape
-    }).catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
+    }).catch(e => alert(e)); // on iPhoneX PortraitUpsideDown would be rejected
+
+    if (Platform.OS === 'web') {
+      await document.exitFullscreen();
+    }
   };
 
   doesSupport = async () => {
