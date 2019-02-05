@@ -1,14 +1,9 @@
 import React from 'react';
-import { Text, Button, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, Button, Platform, ScrollView, StyleSheet, View, Picker } from 'react-native';
 import { Speech } from 'expo';
 import Touchable from 'react-native-platform-touchable';
 import HeadingText from '../components/HeadingText';
 import { Colors } from '../constants';
-
-const VOICES = {
-  sara: 'com.apple.ttsbundle.Sara-compact',
-  anna: 'com.apple.ttsbundle.Anna-compact',
-};
 
 const EXAMPLES = [
   { language: 'en', text: 'Hello world' },
@@ -48,9 +43,23 @@ export default class TextToSpeechScreen extends React.Component {
     paused: false,
     pitch: 1,
     rate: 0.75,
+    voiceList: null,
+    voice: null,
   };
 
+  async componentDidMount() {
+    if (Platform.OS === 'ios') {
+      await this._loadAllVoices();
+    }
+  }
+
   render() {
+    const voiceList = [];
+    if (this.state.voiceList) {
+      for (let voice of this.state.voiceList) {
+        voiceList.push(<Picker.Item label={voice.name} value={voice.identifier} />);
+      }
+    }
     return (
       <ScrollView style={styles.container}>
         <HeadingText>Select a phrase</HeadingText>
@@ -76,9 +85,13 @@ export default class TextToSpeechScreen extends React.Component {
           </View>
         )}
 
-        {Platform.OS === 'ios' && (
-          <View style={styles.controlRow}>
-            <Button onPress={this._showAllVoices} title="getListOfAllVoices" />
+        {Platform.OS === 'ios' && this.state.voiceList && (
+          <View>
+            <Picker
+              selectedValue={this.state.voice}
+              onValueChange={(itemValue, itemIndex) => this.setState({ voice: itemValue })}>
+              {voiceList}
+            </Picker>
           </View>
         )}
 
@@ -118,14 +131,6 @@ export default class TextToSpeechScreen extends React.Component {
     );
   }
 
-  _getRandomVoice = () => {
-    if (Math.random() > 0.5) {
-      return VOICES.sara;
-    } else {
-      return VOICES.anna;
-    }
-  };
-
   _speak = () => {
     const start = () => {
       this.setState({ inProgress: true });
@@ -135,7 +140,7 @@ export default class TextToSpeechScreen extends React.Component {
     };
 
     Speech.speak(this.state.selectedExample.text, {
-      voiceIOS: this._getRandomVoice(),
+      voice: this.state.voice,
       language: this.state.selectedExample.language,
       pitch: this.state.pitch,
       rate: this.state.rate,
@@ -146,9 +151,9 @@ export default class TextToSpeechScreen extends React.Component {
     });
   };
 
-  _showAllVoices = async () => {
-    let availableVoices = await Speech.getAvailableVoicesAsync();
-    console.log('availableVoices ', JSON.stringify(availableVoices));
+  _loadAllVoices = async () => {
+    const availableVoices = await Speech.getAvailableVoicesAsync();
+    this.setState({ voiceList: availableVoices, voice: availableVoices[0].identifier });
   };
 
   _stop = () => {

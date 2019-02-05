@@ -100,7 +100,7 @@ EX_EXPORT_METHOD_AS(speak,
   AVSpeechUtterance *utterance = [[EXSpeechUtteranceWithId alloc] initWithString:text utteranceId:utteranceId];
 
   NSString *language = options[@"language"];
-  NSString *voice = options[@"voiceIOS"];
+  NSString *voice = options[@"voice"];
   NSNumber *pitch = options[@"pitch"];
   NSNumber *rate = options[@"rate"];
 

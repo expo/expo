@@ -18,7 +18,7 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 -   **options : `object`** --
 
       A map of options:
-    -   **voiceIOS : `string`** -- Voice identifier (iOS only)
+    -   **voice : `string`** -- Voice identifier (**iOS only**)
     -   **language : `string`** -- The code of a language that should be used to read the `text`, check out IETF BCP 47 to see valid codes.
     -   **pitch : `number`** -- Pitch of the voice to speak `text`. 1.0 is the normal pitch.
     -   **rate : `number`** -- Rate of the voice to speak `text`. 1.0 is the normal rate.
@@ -61,5 +61,8 @@ List of `Voice` objects.
 |:----------:|:--------------------------------:|
 | identifier |              string              |
 |    name    |              string              |
-|   quality  | string ("Default" or "Enhanced") |
+|   quality  |  enum Expo.Speech.VoiceQuality   |
 |  language  |              string              |
+
+##### enum `Expo.Speech.VoiceQuality`
+  possible values: `Default` or `Enhanced`.

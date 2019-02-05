@@ -5,6 +5,11 @@ import { SpeechOptions } from './Speech.types';
 
 const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
 
+export enum VoiceQuality {
+  Default = "Default",
+  Enhanced = "Enhanced",
+}
+
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
 let _didSetListeners = false;
@@ -61,7 +66,7 @@ export function speak(text: string, options: SpeechOptions = {}) {
   ExponentSpeech.speak(String(id), text, options);
 }
 
-export async function getAvailableVoicesAsync() {
+export async function getAvailableVoicesAsync():Promise<any> {
   return ExponentSpeech.getVoices();
 }
 
