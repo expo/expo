@@ -1,5 +1,5 @@
 ---
-title: IntentLauncherAndroid
+title: IntentLauncher
 ---
 
 import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
@@ -10,27 +10,58 @@ Provides a way to launch android intents. e.g. - opening a specific settings scr
 
 ## Usage
 
-### `IntentLauncherAndroid.startActivityAsync(activity, data, uri, mime)`
+### `IntentLauncher.startActivityAsync(intentParams)`
 
 Starts the specified activity. The method will return a promise which resolves when the user returns to the app.
 
 #### Arguments
 
-- **activity (`string`)** -- A string specifying which settings screen to open, or alternatively the action of the intent. There are a few pre-defined constants you can use for this parameter. You can find them at [expo/src/IntentLauncherAndroid.ts](https://github.com/expo/expo/blob/master/packages/expo/src/IntentLauncherAndroid/IntentLauncherAndroid.ts).
+-   **intentParams ([`IntentParams`](#typeintentparams))** -- An object of intent parameters.
 
-- **data (`{ [key: string]: any }`)** (Optional) -- A map specifying additional key-value pairs which are passed with the intent as `extras`.
+#### Returns
 
-- **uri (`string`)** (Optional) -- A URI specifying the data that the intent should operate upon. (_Note: Android requires the URI scheme to be lowercase, unlike the formal RFC._)
+A promise resolving to an object of type [IntentResult](#typeintentresult).
 
-- **mime (`string`)** (Optional) -- A string specifying the MIME type of the data represented by the `uri` argument. Ignore this argument to allow Android to infer the correct MIME type.
+## Types
+
+### Type `IntentParams`
+
+| Key         | Type   | Description |
+| ----------- |:------:| ----------- |
+| action      | string | The action to be performed, e.g. `IntentLauncher.ACTION_WIRELESS_SETTINGS`. There are a few pre-defined constants you can use for this parameter. You can find them at [expo/src/IntentLauncherAndroid.ts](https://github.com/expo/expo/blob/master/packages/expo-intent-launcher/src/IntentLauncher.ts). **Required**. |
+| type        | string | A string specifying the MIME type of the data represented by the `data` parameter. Ignore this argument to allow Android to infer the correct MIME type. |
+| category    | string | Category provides more details about the action the intent performs. See [Intent.addCategory](https://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String)). |
+| extra       | object | A map specifying additional key-value pairs which are passed with the intent as `extras`. The keys must include a package prefix, for example the app `com.android.contacts` would use names like `com.android.contacts.ShowAll`. |
+| data        | string | A URI specifying the data that the intent should operate upon. (_Note: Android requires the URI scheme to be lowercase, unlike the formal RFC._) |
+| flags       | number | Bitmask of flags to be used. See [Intent.setFlags](https://developer.android.com/reference/android/content/Intent.html#setFlags(int)) for more details. |
+| packageName | string | Package name used as an identifier of ComponentName. Set this only if you want to explicitly set the component to handle the intent. |
+| className   | string | Class name of the ComponentName. |
+
+### Type `IntentResult`
+
+| Key        | Type   | Description |
+| ---------- |:------:| ----------- |
+| resultCode | number | Result code returned by the activity. See [ResultCode](#enumresultcode) for more details. |
+| data       | string | Optional data URI that can be returned by the activity. |
+| extra      | object | Optional extras object that can be returned by the activity. |
+
+## Enums
+
+### Enum `ResultCode`
+
+| Result code | Value | Description |
+| ----------- |:-----:| ----------- |
+| Success     | -1    | Indicates that the activity operation succeeded. |
+| Canceled    | 0     | Means that the activity was canceled, e.g. by tapping on the back button. |
+| FirstUser   | 1     | First custom, user-defined value that can be returned by the activity. |
 
 #### Example
 
 ```javascript
-import { IntentLauncherAndroid } from 'expo';
+import { IntentLauncher } from 'expo';
 
 // Open location settings
-IntentLauncherAndroid.startActivityAsync(
-  IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS
-);
+IntentLauncher.startActivityAsync({
+  action: IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS
+});
 ```
