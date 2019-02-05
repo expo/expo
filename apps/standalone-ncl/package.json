@@ -1,0 +1,21 @@
+{
+  "name": "standalone-ncl",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ../../react-native-lab/react-native/local-cli/cli.js start --config ../../../../apps/standalone-ncl/rn-cli.config.js"
+  },
+  "dependencies": {
+    "expo-core": "~2.0.0",
+    "expo-react-native-adapter": "~2.0.0",
+    "native-component-list": "*",
+    "react": "16.5.0",
+    "react-native": "^0.57.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.1.0",
+    "babel-plugin-module-resolver": "^3.1.1",
+    "expo-yarn-workspaces": "^1.0.0",
+    "metro-react-native-babel-preset": "^0.49.0"
+  }
+}
