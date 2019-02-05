@@ -19,8 +19,9 @@ import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.interfaces.services.UIManager;
 import expo.errors.CurrentActivityNotFoundException;
 import expo.errors.ModuleNotFoundException;
+import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException;
 
-public class IntentLauncherModule extends ExportedModule implements ModuleRegistryConsumer {
+public class IntentLauncherModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
   private static final int REQUEST_CODE = 12;
   private static final String ATTR_ACTION = "action";
   private static final String ATTR_TYPE = "type";
@@ -31,6 +32,7 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
   private static final String ATTR_PACKAGE_NAME = "packageName";
   private static final String ATTR_CLASS_NAME = "className";
 
+  private Promise mPendingPromise;
   private UIManager mUIManager;
   private ActivityProvider mActivityProvider;
 
@@ -51,6 +53,11 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
 
   @ExpoMethod
   public void startActivity(@NonNull ReadableArguments params, final Promise promise) {
+    if (mPendingPromise != null) {
+      promise.reject(new ActivityAlreadyStartedException());
+      return;
+    }
+
     Activity activity = mActivityProvider != null ? mActivityProvider.getCurrentActivity() : null;
 
     if (activity == null) {
@@ -97,38 +104,47 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
       intent.addCategory(params.getString(ATTR_CATEGORY));
     }
 
-    final UIManager uiManager = mUIManager;
-
-    uiManager.registerActivityEventListener(new ActivityEventListener() {
-      @Override
-      public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
-        if (requestCode != REQUEST_CODE) {
-          return;
-        }
-
-        Bundle response = new Bundle();
-
-        response.putInt("resultCode", resultCode);
-
-        if (intent != null) {
-          Uri data = intent.getData();
-          if (data != null) {
-            response.putString(ATTR_DATA, data.toString());
-          }
-
-          Bundle extras = intent.getExtras();
-          if (extras != null) {
-            response.putBundle(ATTR_EXTRA, extras);
-          }
-        }
-        promise.resolve(response);
-        uiManager.unregisterActivityEventListener(this);
-      }
-
-      @Override
-      public void onNewIntent(Intent intent) {}
-    });
-
+    if (mUIManager != null) {
+      mUIManager.registerActivityEventListener(this);
+    }
+    mPendingPromise = promise;
     activity.startActivityForResult(intent, REQUEST_CODE);
   }
+
+  //region ActivityEventListener
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
+    if (requestCode != REQUEST_CODE) {
+      return;
+    }
+
+    Bundle response = new Bundle();
+
+    response.putInt("resultCode", resultCode);
+
+    if (intent != null) {
+      Uri data = intent.getData();
+      if (data != null) {
+        response.putString(ATTR_DATA, data.toString());
+      }
+
+      Bundle extras = intent.getExtras();
+      if (extras != null) {
+        response.putBundle(ATTR_EXTRA, extras);
+      }
+    }
+    if (mPendingPromise != null) {
+      mPendingPromise.resolve(response);
+      mPendingPromise = null;
+    }
+    if (mUIManager != null) {
+      mUIManager.unregisterActivityEventListener(this);
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {}
+
+  //endregion
 }
