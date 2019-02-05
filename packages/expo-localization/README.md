@@ -124,7 +124,7 @@ This API is mostly synchronous and driven by constants. On iOS the constants wil
 
 **Web Timezone**
 
-On web we will attempt to get the timezone with the native `Intl.DateTimeFormat().resolvedOptions().timeZone` but if cannot be found, the default value `Etc/UTC` will be returned. For more accurate results you could use the library `moment/timezone`. Because [`moment.js` is so large](https://github.com/moment/moment/issues/3376) we don't include it.
+On web we will attempt to get the timezone with the standard `Intl` API but if the time zone cannot be found, the default value `Etc/UTC` will be returned. For more accurate results you could use the library `moment/timezone`. Because [`moment.js` is so large](https://github.com/moment/moment/issues/3376) we don't include it.
 
 ```js
 import { timezone } from 'expo-localization';
