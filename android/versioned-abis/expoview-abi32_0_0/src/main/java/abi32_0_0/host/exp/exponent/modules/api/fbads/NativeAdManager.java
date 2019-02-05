@@ -122,7 +122,7 @@ public class NativeAdManager extends ReactContextBaseJavaModule implements Nativ
   }
 
   /**
-   * BarCodeScannerEventHelper for sending events back to Javascript.
+   * Helper for sending events back to Javascript.
    *
    * @param eventName
    * @param params
