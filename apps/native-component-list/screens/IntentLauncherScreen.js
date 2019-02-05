@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform, ScrollView, Text, ToastAndroid, View } from 'react-native';
-import { IntentLauncherAndroid } from 'expo';
+import { IntentLauncher } from 'expo';
 import Button from '../components/Button';
 
 export default class IntentLauncherScreen extends React.Component {
@@ -8,7 +8,7 @@ export default class IntentLauncherScreen extends React.Component {
     title: 'IntentLauncher',
   };
 
-  renderSettingsLink(title, activity, data = null, uri = null) {
+  renderSettingsLink(title, intentParams = {}) {
     if (Platform.OS !== 'android') {
       return (
         <View>
@@ -21,8 +21,8 @@ export default class IntentLauncherScreen extends React.Component {
         <Button
           onPress={async () => {
             try {
-              await IntentLauncherAndroid.startActivityAsync(activity, data, uri);
-              ToastAndroid.show(`Activity finished`, ToastAndroid.SHORT);
+              const result = await IntentLauncher.startActivityAsync(intentParams);
+              ToastAndroid.show(`Activity finished: ${JSON.stringify(result)}`, ToastAndroid.SHORT);
             } catch (e) {
               ToastAndroid.show(`An error occurred: ${e.message}`, ToastAndroid.SHORT);
             }
@@ -37,17 +37,28 @@ export default class IntentLauncherScreen extends React.Component {
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
-        {this.renderSettingsLink(
-          'Location Settings',
-          IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS
-        )}
+        {this.renderSettingsLink('Location Settings', {
+          action: IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS,
+        })}
 
-        {this.renderSettingsLink(
-          'Application Details for Play Store',
-          IntentLauncherAndroid.ACTION_APPLICATION_DETAILS_SETTINGS,
-          null,
-          'package:com.android.vending'
-        )}
+        {this.renderSettingsLink('Wireless Settings', {
+          action: IntentLauncher.ACTION_WIRELESS_SETTINGS,
+        })}
+
+        {this.renderSettingsLink('Application Details for Expo Client', {
+          action: IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
+          data: 'package:host.exp.exponent',
+        })}
+
+        {this.renderSettingsLink('Application Details for Play Store', {
+          action: IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
+          data: 'package:com.android.vending',
+        })}
+
+        {this.renderSettingsLink('Application Details for not existing package', {
+          action: IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
+          data: 'package:package.name.that.doesnt.exist',
+        })}
       </ScrollView>
     );
   }
