@@ -1,11 +1,6 @@
 import { SyntheticPlatformEmitter } from 'expo-core';
 
-import {
-  OrientationInfo,
-  Orientation,
-  OrientationLock,
-  PlatformOrientationInfo,
-} from './ScreenOrientation.types';
+import { OrientationInfo, Orientation, OrientationLock } from './ScreenOrientation.types';
 
 enum OrientationLockType {
   PORTRAIT_PRIMARY = 'portrait-primary',
@@ -14,7 +9,8 @@ enum OrientationLockType {
   LANDSCAPE_PRIMARY = 'landscape-primary',
   LANDSCAPE_SECONDARY = 'landscape-secondary',
   LANDSCAPE = 'landscape',
-  DEFAULT = 'default',
+  ANY = 'any',
+  NATURAL = 'natural',
 }
 
 enum OrientationType {
@@ -25,15 +21,10 @@ enum OrientationType {
 }
 
 const OrientationLockAPIToWeb: {
-  [lock: string]: OrientationLockType | Array<OrientationLockType>;
+  [lock: string]: OrientationLockType;
 } = {
-  DEFAULT: OrientationLockType.DEFAULT,
-  ALL: [
-    OrientationLockType.PORTRAIT_PRIMARY,
-    OrientationLockType.PORTRAIT_SECONDARY,
-    OrientationLockType.LANDSCAPE_PRIMARY,
-    OrientationLockType.LANDSCAPE_SECONDARY,
-  ],
+  DEFAULT: OrientationLockType.NATURAL,
+  ALL: OrientationLockType.ANY,
   PORTRAIT: OrientationLockType.PORTRAIT,
   PORTRAIT_UP: OrientationLockType.PORTRAIT_PRIMARY,
   PORTRAIT_DOWN: OrientationLockType.PORTRAIT_SECONDARY,
@@ -62,17 +53,6 @@ const WebOrientationLock = {
   'landscape-primary': 'LANDSCAPE_LEFT',
   'landscape-secondary': 'LANDSCAPE_RIGHT',
   natural: 'ALL_BUT_UPSIDE_DOWN',
-};
-
-const OrientationLockJSONToNative = {
-  ALL: 'any',
-  PORTRAIT: 'portrait',
-  PORTRAIT_UP: 'portrait-primary',
-  PORTRAIT_DOWN: 'portrait-secondary',
-  LANDSCAPE: 'landscape',
-  LANDSCAPE_LEFT: 'landscape-primary',
-  LANDSCAPE_RIGHT: 'landscape-secondary',
-  ALL_BUT_UPSIDE_DOWN: 'natural',
 };
 
 const OrientationAngleJSONToNative = {
