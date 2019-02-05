@@ -36,6 +36,7 @@ export type OrientationInfo = {
 export type PlatformOrientationInfo = {
   screenOrientationConstantAndroid?: number;
   screenOrientationArrayIOS?: Orientation[];
+  screenOrientationArrayWeb?: Orientation[];
   screenOrientationArray?: number;
 };
 

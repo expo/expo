@@ -60,7 +60,11 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
     throw new UnavailabilityError('ScreenOrientation', 'lockPlatformAsync');
   }
 
-  const { screenOrientationConstantAndroid, screenOrientationArrayIOS } = options;
+  const {
+    screenOrientationConstantAndroid,
+    screenOrientationArrayIOS,
+    screenOrientationArrayWeb,
+  } = options;
   let platformOrientationParam: number | Orientation[] | undefined;
   if (Platform.OS === 'android' && screenOrientationConstantAndroid) {
     if (isNaN(screenOrientationConstantAndroid)) {
@@ -85,6 +89,13 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
       }
     }
     platformOrientationParam = screenOrientationArrayIOS;
+  } else if (Platform.OS === 'web' && screenOrientationArrayWeb) {
+    if (!Array.isArray(screenOrientationArrayWeb)) {
+      throw new TypeError(
+        `lockPlatformAsync web platform: screenOrientationArrayWeb cannot be called with ${screenOrientationArrayWeb}`
+      );
+    }
+    platformOrientationParam = screenOrientationArrayWeb;
   }
 
   if (!platformOrientationParam){

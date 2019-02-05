@@ -46,6 +46,29 @@ export default class ScreenOrientationScreen extends React.Component {
     }
   };
 
+  lockPlatformExample = async () => {
+    if (Platform.OS === 'web') {
+      // most web browsers require fullscreen in order to change screen orientation
+      await document.documentElement.requestFullscreen();
+    }
+
+    await ScreenOrientation.lockPlatformAsync({
+      screenOrientationArrayWeb: [
+        ScreenOrientation.Orientation.PORTRAIT_DOWN,
+        ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
+      ],
+      screenOrientationArrayIOS: [
+        ScreenOrientation.Orientation.PORTRAIT_DOWN,
+        ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
+      ],
+      screenOrientationConstantAndroid: 8, // reverse landscape
+    }).catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
+
+    if (Platform.OS === 'web') {
+      await document.exitFullscreen();
+    }
+  };
+
   doesSupport = async () => {
     const result = await ScreenOrientation.supportsOrientationLockAsync(
       ScreenOrientation.Orientation.PORTRAIT_DOWN
@@ -66,6 +89,11 @@ export default class ScreenOrientationScreen extends React.Component {
             title={orientation}
           />
         ))}
+        <ListButton
+          key="lockPlatformAsync Example"
+          onPress={this.lockPlatformExample}
+          title="Apply a custom native lock"
+        />
         <ListButton
           key="doesSupport"
           onPress={this.doesSupport}

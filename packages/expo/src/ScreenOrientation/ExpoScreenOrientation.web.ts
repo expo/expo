@@ -1,6 +1,57 @@
 import { SyntheticPlatformEmitter } from 'expo-core';
 
-import { OrientationInfo, OrientationLock } from './ScreenOrientation.types';
+import {
+  OrientationInfo,
+  Orientation,
+  OrientationLock,
+  PlatformOrientationInfo,
+} from './ScreenOrientation.types';
+
+enum OrientationLockType {
+  PORTRAIT_PRIMARY = 'portrait-primary',
+  PORTRAIT_SECONDARY = 'portrait-secondary',
+  PORTRAIT = 'portrait',
+  LANDSCAPE_PRIMARY = 'landscape-primary',
+  LANDSCAPE_SECONDARY = 'landscape-secondary',
+  LANDSCAPE = 'landscape',
+  DEFAULT = 'default',
+}
+
+enum OrientationType {
+  PORTRAIT_PRIMARY = 'portrait-primary',
+  PORTRAIT_SECONDARY = 'portrait-secondary',
+  LANDSCAPE_PRIMARY = 'landscape-primary',
+  LANDSCAPE_SECONDARY = 'landscape-secondary',
+}
+
+const OrientationLockAPIToWeb: {
+  [lock: string]: OrientationLockType | Array<OrientationLockType>;
+} = {
+  DEFAULT: OrientationLockType.DEFAULT,
+  ALL: [
+    OrientationLockType.PORTRAIT_PRIMARY,
+    OrientationLockType.PORTRAIT_SECONDARY,
+    OrientationLockType.LANDSCAPE_PRIMARY,
+    OrientationLockType.LANDSCAPE_SECONDARY,
+  ],
+  PORTRAIT: OrientationLockType.PORTRAIT,
+  PORTRAIT_UP: OrientationLockType.PORTRAIT_PRIMARY,
+  PORTRAIT_DOWN: OrientationLockType.PORTRAIT_SECONDARY,
+  LANDSCAPE: OrientationLockType.LANDSCAPE,
+  LANDSCAPE_LEFT: OrientationLockType.LANDSCAPE_PRIMARY,
+  LANDSCAPE_RIGHT: OrientationLockType.LANDSCAPE_SECONDARY,
+};
+
+const OrientationAPIToWeb: {
+  [lock: string]: OrientationType | Array<OrientationType>;
+} = {
+  PORTRAIT: [OrientationType.PORTRAIT_PRIMARY, OrientationType.PORTRAIT_SECONDARY],
+  PORTRAIT_UP: OrientationType.PORTRAIT_PRIMARY,
+  PORTRAIT_DOWN: OrientationType.PORTRAIT_SECONDARY,
+  LANDSCAPE: [OrientationType.LANDSCAPE_PRIMARY, OrientationType.LANDSCAPE_SECONDARY],
+  LANDSCAPE_LEFT: OrientationType.LANDSCAPE_PRIMARY,
+  LANDSCAPE_RIGHT: OrientationType.LANDSCAPE_SECONDARY,
+};
 
 const WebOrientationLock = {
   any: 'ALL',
@@ -50,15 +101,48 @@ if (OrientationTarget) {
   window.onorientationchange = emitOrientationEvent;
 }
 
+async function _lockAsync(
+  webOrientationParam: OrientationLockType | Array<OrientationLockType>
+): Promise<void> {
+  const lockOrientationFn =
+    screen['lockOrientation'] || screen['mozLockOrientation'] || screen['msLockOrientation'];
+
+  // Chrome has the lock function under screen.orientation.lock
+  // https://stackoverflow.com/questions/42956350/screen-lockorientation-is-not-a-function#answer-42961058
+  const lockOrientationChromeFn = screen.orientation && screen.orientation.lock;
+
+  if (!lockOrientationFn && !lockOrientationChromeFn) {
+    throw new Error(
+      `expo-screen-orientation: Your browser doesn't support locking screen orientation.`
+    );
+  }
+
+  if (Array.isArray(webOrientationParam)) {
+    console.warn(
+      `This browser may not support an array argument ${webOrientationParam} in its lockOrientation function. It may not comply with the standards as described in https://developer.mozilla.org/en-US/docs/Web/API/Screen/lockOrientation#Usage_with_an_Array_argument`
+    );
+  }
+
+  let isSuccess;
+  if (lockOrientationChromeFn) {
+    isSuccess = await lockOrientationChromeFn.call(screen.orientation, webOrientationParam);
+  } else {
+    isSuccess = await lockOrientationFn.call(screen, webOrientationParam);
+  }
+
+  if (!isSuccess) {
+    throw new Error(
+      `Applying orientation lock: ${JSON.stringify(webOrientationParam)} to device was denied`
+    );
+  }
+}
+
 export default {
   get name(): string {
     return 'ExpoScreenOrientation';
   },
-  async isSupportedAsync(): Promise<boolean> {
-    return OrientationTarget !== undefined;
-  },
   async supportsOrientationLockAsync(orientationLock: OrientationLock): Promise<boolean> {
-    return await this.isSupportedAsync();
+    return OrientationTarget !== undefined;
   },
   async getPlatformOrientationLockAsync(): Promise<number> {
     return parseInt(`${window.orientation}`);
@@ -76,39 +160,26 @@ export default {
     };
   },
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
-    const lockOrientationFn =
-      screen['lockOrientation'] || screen['mozLockOrientation'] || screen['msLockOrientation'];
-
-    // Chrome has the lock function under screen.orientation.lock
-    // https://stackoverflow.com/questions/42956350/screen-lockorientation-is-not-a-function#answer-42961058
-    const lockOrientationChromeFn = screen.orientation && screen.orientation.lock;
-
-    if (!lockOrientationFn && !lockOrientationChromeFn) {
-      throw new Error(
-        `expo-screen-orientation: Your browser doesn't support locking screen orientation.`
-      );
+    const webOrientationLock = OrientationLockAPIToWeb[orientationLock];
+    if (!webOrientationLock) {
+      throw new TypeError(`Invalid Orientation Lock: ${orientationLock}`);
     }
-
-    const webOrientationLock = OrientationLockJSONToNative[orientationLock];
-    let isSuccess;
-    if (lockOrientationChromeFn) {
-      isSuccess = await lockOrientationChromeFn.call(screen.orientation, webOrientationLock);
-    } else {
-      isSuccess = await lockOrientationFn.call(screen, webOrientationLock);
-    }
-
-    if (!isSuccess) {
-      throw new Error(`Applying orientation lock: ${orientationLock} to device was denied`);
-    }
+    await _lockAsync(webOrientationLock);
   },
-  async lockPlatformAsync(orientation: number): Promise<void> {
-    if (!(await this.isSupportedAsync())) {
-      throw new Error(
-        `expo-screen-orientation: Your browser doesn't support locking screen orientation.`
-      );
+  async lockPlatformAsync(orientations: Array<Orientation>): Promise<void> {
+    const orientationSet = new Set(); // used to remove duplicate orientation types
+    for (let orientation of orientations) {
+      const webOrientation = OrientationAPIToWeb[orientation];
+      if (!webOrientation) {
+        throw new TypeError(`Invalid Orientation: ${webOrientation}`);
+      }
+
+      // Add orientations to set
+      Array.isArray(webOrientation)
+        ? webOrientation.forEach(orientation => orientationSet.add(orientation))
+        : orientationSet.add(webOrientation);
     }
-    const nextOrientation = OrientationAngleJSONToNative[`${orientation}`];
-    await OrientationTarget.lock(nextOrientation);
+    await _lockAsync(Array.from(orientationSet));
   },
   async unlockAsync(): Promise<void> {
     if (OrientationTarget) {
