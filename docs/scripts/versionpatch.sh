@@ -30,6 +30,6 @@ for version in $*; do
 
     # patch changes in existing files
     pushd pages/versions/$version > /dev/null
-    git diff -- ../$src_version | patch -p4
+    git diff -- ../$src_version | patch -p5
     popd > /dev/null
 done
