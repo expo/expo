@@ -10,8 +10,7 @@ export default class ScreenOrientationScreen extends React.Component {
   };
 
   state = {
-    orientationLock: undefined,
-    orientationInfo: undefined,
+    orientation: undefined,
   };
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(async () => {
@@ -22,8 +21,7 @@ export default class ScreenOrientationScreen extends React.Component {
 
   updateOrientationAsync = async () => {
     this.setState({
-      orientationLock: await ScreenOrientation.getPlatformOrientationLockAsync(),
-      orientationInfo: (await ScreenOrientation.getOrientationAsync()).orientation,
+      orientation: (await ScreenOrientation.getOrientationAsync()).orientation,
     });
   };
 
@@ -63,10 +61,6 @@ export default class ScreenOrientationScreen extends React.Component {
       ],
       screenOrientationConstantAndroid: 8, // reverse landscape
     }).catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
-
-    if (Platform.OS === 'web') {
-      await document.exitFullscreen();
-    }
   };
 
   doesSupport = async () => {
@@ -76,12 +70,15 @@ export default class ScreenOrientationScreen extends React.Component {
     alert(`Orientation.PORTRAIT_DOWN supported: ${JSON.stringify(result)}`);
   };
 
+  unlock = async () => {
+    await ScreenOrientation.unlockAsync().catch(console.warn);
+  };
+
   render() {
-    const { orientationLock, orientationInfo } = this.state;
+    const { orientation } = this.state;
     return (
       <ScrollView style={{ padding: 10 }}>
-        {orientationLock && <Text>Angle: {JSON.stringify(orientationLock, null, 2)}</Text>}
-        {orientationInfo && <Text>Orientation: {orientationInfo}</Text>}
+        {orientation && <Text>Orientation: {orientation}</Text>}
         {Object.keys(ScreenOrientation.Orientation).map(orientation => (
           <ListButton
             key={orientation}
@@ -98,6 +95,11 @@ export default class ScreenOrientationScreen extends React.Component {
           key="doesSupport"
           onPress={this.doesSupport}
           title="Check Orientation.PORTRAIT_DOWN support"
+        />
+        <ListButton
+          key="unlock"
+          onPress={this.unlock}
+          title="unlock orientation back to default settings"
         />
       </ScrollView>
     );

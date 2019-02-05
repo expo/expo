@@ -1,4 +1,5 @@
 import { SyntheticPlatformEmitter } from 'expo-core';
+import { UnavailabilityError } from 'expo-errors';
 
 import { OrientationInfo, Orientation, OrientationLock } from './ScreenOrientation.types';
 
@@ -44,24 +45,11 @@ const OrientationAPIToWeb: {
   LANDSCAPE_RIGHT: OrientationType.LANDSCAPE_SECONDARY,
 };
 
-const WebOrientationLock = {
-  any: 'ALL',
-  portrait: 'PORTRAIT',
-  'portrait-primary': 'PORTRAIT_UP',
-  'portrait-secondary': 'PORTRAIT_DOWN',
-  landscape: 'LANDSCAPE',
-  'landscape-primary': 'LANDSCAPE_LEFT',
-  'landscape-secondary': 'LANDSCAPE_RIGHT',
-  natural: 'ALL_BUT_UPSIDE_DOWN',
-};
-
-const OrientationAngleJSONToNative = {
-  '0': 'portrait-primary',
-  '180': 'portrait-secondary',
-  '-180': 'portrait-secondary',
-  '90': 'landscape-primary',
-  '-90': 'landscape-secondary',
-  '270': 'landscape-secondary',
+const WebToAPIOrientation = {
+  [OrientationType.PORTRAIT_PRIMARY]: Orientation.PORTRAIT_UP,
+  [OrientationType.PORTRAIT_SECONDARY]: Orientation.PORTRAIT_DOWN,
+  [OrientationType.LANDSCAPE_PRIMARY]: Orientation.LANDSCAPE_LEFT,
+  [OrientationType.LANDSCAPE_SECONDARY]: Orientation.LANDSCAPE_RIGHT,
 };
 
 declare const window: Window;
@@ -122,21 +110,24 @@ export default {
     return 'ExpoScreenOrientation';
   },
   async supportsOrientationLockAsync(orientationLock: OrientationLock): Promise<boolean> {
-    return OrientationTarget !== undefined;
+    return orientationLock in OrientationLockAPIToWeb;
   },
+  // TODO: is the UNavailabiity Error in the API JS layer good enough?
   async getPlatformOrientationLockAsync(): Promise<number> {
-    return parseInt(`${window.orientation}`);
+    throw new UnavailabilityError('ScreenOrientation', 'getPlatformOrientationLockAsync');
   },
+  // TODO: is the UNavailabiity Error in the API JS layer good enough?
   async getOrientationLockAsync(): Promise<OrientationLock> {
-    const nextOrientation = OrientationAngleJSONToNative[`${window.orientation}`];
-    const orientation = WebOrientationLock[nextOrientation];
-    return OrientationLock[orientation as OrientationLock];
+    throw new UnavailabilityError('ScreenOrientation', 'getOrientationLockAsync');
   },
   async getOrientationAsync(): Promise<OrientationInfo> {
-    const nextOrientation = OrientationAngleJSONToNative[`${window.orientation}`];
-    const orientation = WebOrientationLock[nextOrientation];
+    const webOrientation =
+      screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
+    if (!webOrientation) {
+      throw new Error(`getOrientationAsync isn't supported in this browser.`);
+    }
     return {
-      orientation,
+      orientation: WebToAPIOrientation[webOrientation],
     };
   },
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
@@ -162,8 +153,27 @@ export default {
     await _lockAsync(Array.from(orientationSet));
   },
   async unlockAsync(): Promise<void> {
-    if (OrientationTarget) {
-      OrientationTarget.unlock();
+    const unlockOrientationFn =
+      screen['unlockOrientation'] ||
+      screen['mozUnlockOrientation'] ||
+      screen['msUnlockOrientation'];
+    const unlockOrientationChromeFn = screen.orientation && screen.orientation.unlock;
+
+    if (!unlockOrientationFn && !unlockOrientationChromeFn) {
+      throw new Error(
+        `expo-screen-orientation: Your browser doesn't support unlocking screen orientation.`
+      );
+    }
+
+    let isSuccess;
+    if (unlockOrientationChromeFn) {
+      isSuccess = await unlockOrientationChromeFn.call(screen.orientation);
+    } else {
+      isSuccess = await unlockOrientationFn.call(screen);
+    }
+
+    if (!isSuccess) {
+      throw new Error(`Unlocking screen orientation on device was denied`);
     }
   },
 };
