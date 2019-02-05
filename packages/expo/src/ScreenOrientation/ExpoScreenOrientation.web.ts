@@ -35,7 +35,7 @@ const OrientationLockAPIToWeb: {
 };
 
 const OrientationAPIToWeb: {
-  [lock: string]: OrientationType | Array<OrientationType>;
+  [orientationApi: string]: OrientationType | Array<OrientationType>;
 } = {
   PORTRAIT: [OrientationType.PORTRAIT_PRIMARY, OrientationType.PORTRAIT_SECONDARY],
   PORTRAIT_UP: OrientationType.PORTRAIT_PRIMARY,
@@ -45,7 +45,9 @@ const OrientationAPIToWeb: {
   LANDSCAPE_RIGHT: OrientationType.LANDSCAPE_SECONDARY,
 };
 
-const WebToAPIOrientation = {
+const OrientationWebToAPI: {
+  [orientationWeb: string]: Orientation;
+} = {
   [OrientationType.PORTRAIT_PRIMARY]: Orientation.PORTRAIT_UP,
   [OrientationType.PORTRAIT_SECONDARY]: Orientation.PORTRAIT_DOWN,
   [OrientationType.LANDSCAPE_PRIMARY]: Orientation.LANDSCAPE_LEFT,
@@ -55,16 +57,15 @@ const WebToAPIOrientation = {
 declare const window: Window;
 
 const { screen } = window;
-
-const OrientationTarget: ScreenOrientation =
-  screen['msOrientation'] || (screen.orientation || screen['mozOrientation']);
+const orientation: ScreenOrientation | null =
+  screen.orientation || (screen as any).msOrientation || null;
 
 function emitOrientationEvent() {
   SyntheticPlatformEmitter.emit('didUpdateDimensions', {});
 }
 
-if (OrientationTarget) {
-  OrientationTarget.onchange = emitOrientationEvent;
+if (orientation) {
+  orientation.onchange = emitOrientationEvent;
 } else {
   window.onorientationchange = emitOrientationEvent;
 }
@@ -81,7 +82,7 @@ async function _lockAsync(
 
   if (!lockOrientationFn && !lockOrientationChromeFn) {
     throw new Error(
-      `expo-screen-orientation: Your browser doesn't support locking screen orientation.`
+      `expo-screen-orientation: The browser doesn't support locking screen orientation.`
     );
   }
 
@@ -93,6 +94,7 @@ async function _lockAsync(
 
   let isSuccess;
   if (lockOrientationChromeFn) {
+    // correct `this` context must be passed in otherwise method call is disallowed by browser
     isSuccess = await lockOrientationChromeFn.call(screen.orientation, webOrientationParam);
   } else {
     isSuccess = await lockOrientationFn.call(screen, webOrientationParam);
@@ -127,7 +129,7 @@ export default {
       throw new Error(`getOrientationAsync isn't supported in this browser.`);
     }
     return {
-      orientation: WebToAPIOrientation[webOrientation],
+      orientation: OrientationWebToAPI[webOrientation],
     };
   },
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
@@ -161,7 +163,7 @@ export default {
 
     if (!unlockOrientationFn && !unlockOrientationChromeFn) {
       throw new Error(
-        `expo-screen-orientation: Your browser doesn't support unlocking screen orientation.`
+        `expo-screen-orientation: The browser doesn't support unlocking screen orientation.`
       );
     }
 

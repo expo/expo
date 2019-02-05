@@ -14,9 +14,9 @@ export default class ScreenOrientationScreen extends React.Component {
   };
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(async () => {
-      this.updateOrientationAsync();
+      await this.updateOrientationAsync();
     });
-    this.updateOrientationAsync();
+    await this.updateOrientationAsync();
   }
 
   updateOrientationAsync = async () => {

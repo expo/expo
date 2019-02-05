@@ -65,7 +65,7 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
     screenOrientationArrayIOS,
     screenOrientationArrayWeb,
   } = options;
-  let platformOrientationParam: number | Orientation[] | undefined;
+  let platformOrientationParam: any;
   if (Platform.OS === 'android' && screenOrientationConstantAndroid) {
     if (isNaN(screenOrientationConstantAndroid)) {
       throw new TypeError(
