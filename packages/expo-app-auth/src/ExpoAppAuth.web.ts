@@ -3,6 +3,6 @@ export default {
     return 'ExpoAppAuth';
   },
   get OAuthRedirect(): string {
-    return '';
+    return window.location.href;
   },
 };

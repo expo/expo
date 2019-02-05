@@ -3,7 +3,7 @@ export default {
         return 'ExpoAppAuth';
     },
     get OAuthRedirect() {
-        return '';
+        return window.location.href;
     },
 };
 //# sourceMappingURL=ExpoAppAuth.web.js.map

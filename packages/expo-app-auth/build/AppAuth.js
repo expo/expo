@@ -1,5 +1,5 @@
-import invariant from 'invariant';
 import { UnavailabilityError } from 'expo-errors';
+import invariant from 'invariant';
 import ExpoAppAuth from './ExpoAppAuth';
 const isValidString = (s) => !!(s && typeof s === 'string');
 function isValidClientId(clientId) {

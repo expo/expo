@@ -43,7 +43,7 @@ export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from '
 export { Segment } from 'expo-analytics-segment';
 export { Asset } from 'expo-asset';
 import * as AppAuth from 'expo-app-auth';
-export { AppAuth}
+export { AppAuth };
 export { BackgroundFetch };
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Calendar };

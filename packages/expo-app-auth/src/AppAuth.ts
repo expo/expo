@@ -1,23 +1,24 @@
+import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 
-import { UnavailabilityError } from 'expo-errors';
-import ExpoAppAuth from './ExpoAppAuth';
 import {
-  OAuthServiceConfiguration,
-  OAuthDisplayParameter,
-  OAuthPromptParameter,
-  OAuthNonceParameter,
-  OAuthUILocalesParameter,
-  OAuthIDTokenHintParameter,
-  OAuthMaxAgeParameter,
-  OAuthLoginHintParameter,
   OAuthACRValuesParameter,
-  OAuthParameters,
   OAuthBaseProps,
+  OAuthDisplayParameter,
+  OAuthIDTokenHintParameter,
+  OAuthLoginHintParameter,
+  OAuthMaxAgeParameter,
+  OAuthNonceParameter,
+  OAuthParameters,
+  OAuthPromptParameter,
   OAuthProps,
   OAuthRevokeOptions,
+  OAuthServiceConfiguration,
+  OAuthUILocalesParameter,
   TokenResponse,
 } from './AppAuth.types';
+import ExpoAppAuth from './ExpoAppAuth';
+
 export {
   OAuthServiceConfiguration,
   OAuthDisplayParameter,
