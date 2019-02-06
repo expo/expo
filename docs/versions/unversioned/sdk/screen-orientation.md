@@ -2,7 +2,7 @@
 title: ScreenOrientation
 ---
 
-Allows changing supported screen-orientations at runtime. This will take priority over the `orientation` key in `app.json`.
+Allows changing supported screen orientations at runtime. This will take priority over the `orientation` key in `app.json`.
 
 On both iOS and Android platforms, changes to the screen-orientation will override any system settings or user preferences. On Android, it is possible to change the screen-orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen-orientation will override existing settings.
 
