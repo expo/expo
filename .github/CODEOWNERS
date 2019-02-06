@@ -1,6 +1,6 @@
 /packages/babel-preset-expo               @brentvatne
 /packages/expo-ads-admob                  @sjchmiela
-/packages/expo-ads-facebook               @sjchmiela
+/packages/expo-ads-facebook               @Szymon20000
 /packages/expo-analytics-amplitude        @sjchmiela
 /packages/expo-analytics-segment          @sjchmiela
 /packages/expo-app-auth                   @EvanBacon
@@ -20,7 +20,7 @@
 /packages/expo-contacts                   @EvanBacon
 /packages/expo-core                       @sjchmiela
 /packages/expo-document-picker            @bbarthec
-/packages/expo-errors                     @tsapeta
+/packages/expo-errors                     @esamelson
 /packages/expo-face-detector              @sjchmiela
 /packages/expo-face-detector-interface    @sjchmiela
 /packages/expo-facebook                   @sjchmiela
@@ -41,8 +41,8 @@
 /packages/expo-firebase-performance       @EvanBacon
 /packages/expo-firebase-remote-config     @EvanBacon
 /packages/expo-firebase-storage           @EvanBacon
-/packages/expo-font                       @tsapeta
-/packages/expo-font-interface             @tsapeta
+/packages/expo-font                       @sjchmiela
+/packages/expo-font-interface             @sjchmiela
 /packages/expo-gl                         @tsapeta
 /packages/expo-gl-cpp                     @tsapeta
 /packages/expo-google-sign-in             @EvanBacon
@@ -76,3 +76,4 @@
 /packages/expo-web-browser                @sjchmiela
 /packages/expo-yarn-workspaces            @ide
 /packages/jest-expo                       @brentvatne
+/packages/jest-expo/src/preset/expoModules.js
