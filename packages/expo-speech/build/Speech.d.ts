@@ -1,6 +1,8 @@
-import { SpeechOptions } from './Speech.types';
+import { SpeechOptions, VoiceQuality, Voice } from './Speech.types';
+export { VoiceQuality };
+export { Voice };
 export declare function speak(text: string, options?: SpeechOptions): void;
-export declare function getAvailableVoicesAsync(): Promise<any>;
+export declare function getAvailableVoicesAsync(): Promise<Voice[]>;
 export declare function isSpeakingAsync(): Promise<boolean>;
 export declare function stop(): Promise<void>;
 export declare function pause(): Promise<void>;
