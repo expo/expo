@@ -86,7 +86,7 @@ This property takes an array of objects, where each object has the following key
 
 | Type                                                                                                                  | Required |
 | --------------------------------------------------------------------------------------------------------------------- | -------- |
-| array of object: ${"{"}title: string,icon: optionalImageSource,show: enum('always', 'ifRoom', 'never'),showWithText: bool${"}"} | No       |
+| array of object: {title: string,icon: optionalImageSource,show: enum('always', 'ifRoom', 'never'),showWithText: bool} | No       |
 
 ---
 
