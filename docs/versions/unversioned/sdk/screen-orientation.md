@@ -209,8 +209,8 @@ Each iOS device has a default set of [size classes](https://developer.apple.com/
 ### `OrientationInfo`
 
     - orientation (_Orientation_): The current orientation of the device
-    - verticalSizeClass (_iOSSizeClass_): The [vertical size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (ios only)
-    - horizontalSizeClass (_iOSSizeClass_): The [horizontal size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (ios only)
+    - verticalSizeClass (_iOSSizeClass_): The [vertical size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (iOS only)
+    - horizontalSizeClass (_iOSSizeClass_): The [horizontal size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (iOS only)
 
 ### `EmitterSubscription`
 
