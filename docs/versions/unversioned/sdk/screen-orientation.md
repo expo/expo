@@ -194,7 +194,7 @@ Each iOS device has a default set of [size classes](https://developer.apple.com/
 
 ### `PlatformInfo`
     - screenOrientationConstantAndroid (_integer_): A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation). For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED), -1 should be passed in. (Android only)
-    - screenOrientationArrayIOS (Array[Orientation]): An array of orientations to allow on the iOS platform (ios only)
+    - screenOrientationArrayIOS (Array[Orientation]): An array of orientations to allow on the iOS platform (iOS only)
 
 ### `OrientationInfo`
     - orientation (_Orientation_): The current orientation of the device
