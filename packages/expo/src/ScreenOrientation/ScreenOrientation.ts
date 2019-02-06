@@ -171,7 +171,6 @@ export async function doesSupportAsync(orientationLock: OrientationLock): Promis
   return await supportsOrientationLockAsync(orientationLock);
 }
 
-/* Make this a getter for jest */
 function getEventName(): string {
   return Platform.OS === 'ios' ? 'expoDidUpdateDimensions' : 'didUpdateDimensions';
 }
