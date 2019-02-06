@@ -23,6 +23,8 @@ export {
 };
 
 const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);
+let _orientationChangeSubscribers: Subscription[] = [];
+
 let _lastOrientationLock: OrientationLock = OrientationLock.UNKNOWN;
 
 export function allow(orientationLock: OrientationLock): void {
@@ -199,9 +201,29 @@ export function addOrientationChangeListener(listener: OrientationChangeListener
       listener({ orientationInfo, orientationLock });
     }
   );
+  _orientationChangeSubscribers.push(subscription);
   return subscription;
 }
 
+// We need to keep track of our own subscribers because EventEmitter uses a shared subscriber
+// from NativeEventEmitter that is registered to the same eventTypes as us. Directly calling
+// removeAllListeners(eventName) will remove other module's subscribers.
 export function removeOrientationChangeListeners(): void {
-  _orientationChangeEmitter.removeAllListeners(getEventName());
+  // Remove listener by subscription instead of eventType to avoid clobbering Dimension module's subscription of didUpdateDimensions
+  let i = _orientationChangeSubscribers.length;
+  while (i--) {
+    const subscriber = _orientationChangeSubscribers[i];
+    subscriber.remove();
+
+    // remove after a successful unsubscribe
+    _orientationChangeSubscribers.pop();
+  }
+}
+
+export function removeOrientationChangeListener(subscription: Subscription): void {
+  if (!subscription || !subscription.remove) {
+    throw new TypeError(`Must pass in a valid subscription`);
+  }
+  subscription.remove();
+  _orientationChangeSubscribers = _orientationChangeSubscribers.filter(sub => sub !== subscription);
 }
