@@ -24,8 +24,8 @@ export enum VoiceQuality {
 }
 
 export type Voice = {
-  identifier?: string;
-  name?: string;
-  quality?: VoiceQuality;
-  language?: string;
+  identifier: string;
+  name: string;
+  quality: VoiceQuality;
+  language: string;
 };
