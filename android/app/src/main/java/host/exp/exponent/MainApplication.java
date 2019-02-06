@@ -28,6 +28,7 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.haptics.HapticsPackage;
 import expo.modules.imagemanipulator.ImageManipulatorPackage;
 import expo.modules.imagepicker.ImagePickerPackage;
 import expo.modules.keepawake.KeepAwakePackage;
@@ -91,6 +92,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new FontLoaderPackage(),
         new GLPackage(),
         new GoogleSignInPackage(),
+        new HapticsPackage(),
         new ImageManipulatorPackage(),
         new ImagePickerPackage(),
         new KeepAwakePackage(),
