@@ -23,6 +23,7 @@ import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
+import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.permissions.PermissionsPackage;
 import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
@@ -102,7 +103,8 @@ public class HomeActivity extends BaseExperienceActivity {
         new PermissionsPackage(),
         new FileSystemPackage(),
         new FontLoaderPackage(),
-        new BarCodeScannerPackage()
+        new BarCodeScannerPackage(),
+        new KeepAwakePackage()
     );
   }
 }
