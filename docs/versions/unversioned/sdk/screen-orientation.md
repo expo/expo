@@ -49,7 +49,7 @@ Deprecated in favor of `Expo.ScreenOrientation.lockAsync`. Allow a screen orient
 
 #### Returns
 
-Returns a promise with `null` value, resolving when the orientation is set.
+Returns a promise with `void` value, resolving when the orientation is set.
 
 #### Example
 
@@ -69,7 +69,7 @@ Lock the screen orientation to a particular OrientationLock.
 
 #### Returns
 
-Returns a promise with `null` value, resolving when the orientation is set.
+Returns a promise with `void` value, resolving when the orientation is set.
 
 #### Error Codes
 
@@ -90,7 +90,7 @@ Sets the screen orientation back to the `OrientationLock.DEFAULT` policy.
 
 #### Returns
 
-Returns a promise with `null` value, resolving when the orientation is set.
+Returns a promise with `void` value, resolving when the orientation is set.
 
 ### `Expo.ScreenOrientation.getOrientationAsync()`
 
@@ -132,7 +132,7 @@ Returns a promise that resolves to a `boolean` value that reflects whether or no
 
 #### Returns
 
-Returns a promise with `null` value, resolving when the orientation is set and rejecting if an invalid option or value is passed.
+Returns a promise with `void` value, resolving when the orientation is set and rejecting if an invalid option or value is passed.
 
 #### Error Codes
 
