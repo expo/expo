@@ -3,13 +3,20 @@
  * up to date if you plan to use any of these.
  */
 
+import { Constants } from 'expo-constants';
+
+var firstExecution = true;
+
 export default {
   get Lottie() {
     return require('lottie-react-native');
   },
   get Branch() {
     const Branch = require('./Branch').default;
-    require('./Branch').warnIfNotStandalone();
+    if (firstExecution && Constants.appOwnership !== 'standalone') {
+       console.warn('The Branch API only works with standalone builds created with expo build.');
+       firstExecution = false;
+    }
     return Branch;
   },
   get GestureHandler() {
