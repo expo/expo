@@ -159,6 +159,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-image-manipulator:1.0.0'
   compileOnly 'host.exp.exponent:expo-image-picker:1.0.0'
+  compileOnly 'host.exp.exponent:expo-intent-launcher:1.0.0'
   compileOnly 'host.exp.exponent:expo-keep-awake:1.0.0'
   compileOnly 'host.exp.exponent:expo-linear-gradient:1.0.0'
   compileOnly 'host.exp.exponent:expo-local-authentication:2.0.0'

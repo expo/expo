@@ -10,12 +10,13 @@ Provides a way to launch android intents. e.g. - opening a specific settings scr
 
 ## Usage
 
-### `IntentLauncher.startActivityAsync(intentParams)`
+### `IntentLauncher.startActivityAsync(activityAction, intentParams)`
 
 Starts the specified activity. The method will return a promise which resolves when the user returns to the app.
 
 #### Arguments
 
+-   **activityAction (_string_)** -- The action to be performed, e.g. `IntentLauncher.ACTION_WIRELESS_SETTINGS`. There are a few pre-defined constants you can use for this parameter. You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/blob/master/packages/expo-intent-launcher/src/IntentLauncher.ts). **Required**
 -   **intentParams ([`IntentParams`](#typeintentparams))** -- An object of intent parameters.
 
 #### Returns
@@ -28,7 +29,6 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 
 | Key         | Type   | Description |
 | ----------- |:------:| ----------- |
-| action      | string | The action to be performed, e.g. `IntentLauncher.ACTION_WIRELESS_SETTINGS`. There are a few pre-defined constants you can use for this parameter. You can find them at [expo/src/IntentLauncherAndroid.ts](https://github.com/expo/expo/blob/master/packages/expo-intent-launcher/src/IntentLauncher.ts). **Required**. |
 | type        | string | A string specifying the MIME type of the data represented by the `data` parameter. Ignore this argument to allow Android to infer the correct MIME type. |
 | category    | string | Category provides more details about the action the intent performs. See [Intent.addCategory](https://developer.android.com/reference/android/content/Intent.html#addCategory(java.lang.String)). |
 | extra       | object | A map specifying additional key-value pairs which are passed with the intent as `extras`. The keys must include a package prefix, for example the app `com.android.contacts` would use names like `com.android.contacts.ShowAll`. |
@@ -61,7 +61,5 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 import { IntentLauncher } from 'expo';
 
 // Open location settings
-IntentLauncher.startActivityAsync({
-  action: IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS
-});
+IntentLauncher.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
 ```

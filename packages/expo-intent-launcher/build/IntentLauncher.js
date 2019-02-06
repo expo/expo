@@ -90,10 +90,13 @@ export var ResultCode;
     ResultCode[ResultCode["Canceled"] = 0] = "Canceled";
     ResultCode[ResultCode["FirstUser"] = 1] = "FirstUser";
 })(ResultCode || (ResultCode = {}));
-export async function startActivityAsync(params = {}) {
+export async function startActivityAsync(activityAction, params = {}) {
     if (!ExpoIntentLauncher.startActivity) {
         throw new UnavailabilityError('IntentLauncher', 'startActivityAsync');
     }
-    return ExpoIntentLauncher.startActivity(params);
+    if (typeof activityAction !== 'string' || !activityAction) {
+        throw new TypeError(`'activityAction' argument must be a non-empty string!`);
+    }
+    return ExpoIntentLauncher.startActivity(activityAction, params);
 }
 //# sourceMappingURL=IntentLauncher.js.map

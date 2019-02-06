@@ -102,7 +102,6 @@ export const ACTION_ZEN_MODE_SCHEDULE_RULE_SETTINGS =
 export const ACTION_ZEN_MODE_SETTINGS = 'android.settings.ZEN_MODE_SETTINGS';
 
 interface IntentParams {
-  action?: string;
   type?: string;
   category?: string;
   extra?: object;
@@ -124,9 +123,12 @@ export enum ResultCode {
   FirstUser = 1,
 }
 
-export async function startActivityAsync(params: IntentParams = {}): Promise<IntentResult> {
+export async function startActivityAsync(activityAction: string, params: IntentParams = {}): Promise<IntentResult> {
   if (!ExpoIntentLauncher.startActivity) {
     throw new UnavailabilityError('IntentLauncher', 'startActivityAsync');
   }
-  return ExpoIntentLauncher.startActivity(params);
+  if (typeof activityAction !== 'string' || !activityAction) {
+    throw new TypeError(`'activityAction' argument must be a non-empty string!`);
+  }
+  return ExpoIntentLauncher.startActivity(activityAction, params);
 }

@@ -52,7 +52,7 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void startActivity(@NonNull ReadableArguments params, final Promise promise) {
+  public void startActivity(@NonNull String activityAction, @NonNull ReadableArguments params, final Promise promise) {
     if (mPendingPromise != null) {
       promise.reject(new ActivityAlreadyStartedException());
       return;
@@ -69,7 +69,7 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
       return;
     }
 
-    Intent intent = new Intent();
+    Intent intent = new Intent(activityAction);
 
     if (params.containsKey(ATTR_CLASS_NAME)) {
       ComponentName cn = params.containsKey(ATTR_PACKAGE_NAME)
@@ -77,9 +77,6 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
           : new ComponentName(getContext(), params.getString(ATTR_CLASS_NAME));
 
       intent.setComponent(cn);
-    }
-    if (params.containsKey(ATTR_ACTION)) {
-      intent.setAction(params.getString(ATTR_ACTION));
     }
 
     // `setData` and `setType` are exclusive, so we need to use `setDateAndType` in that case.
@@ -104,9 +101,7 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
       intent.addCategory(params.getString(ATTR_CATEGORY));
     }
 
-    if (mUIManager != null) {
-      mUIManager.registerActivityEventListener(this);
-    }
+    mUIManager.registerActivityEventListener(this);
     mPendingPromise = promise;
     activity.startActivityForResult(intent, REQUEST_CODE);
   }

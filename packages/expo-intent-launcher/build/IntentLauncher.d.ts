@@ -83,7 +83,6 @@ export declare const ACTION_ZEN_MODE_PRIORITY_SETTINGS = "android.settings.ZEN_M
 export declare const ACTION_ZEN_MODE_SCHEDULE_RULE_SETTINGS = "android.settings.ZEN_MODE_SCHEDULE_RULE_SETTINGS";
 export declare const ACTION_ZEN_MODE_SETTINGS = "android.settings.ZEN_MODE_SETTINGS";
 interface IntentParams {
-    action?: string;
     type?: string;
     category?: string;
     extra?: object;
@@ -102,5 +101,5 @@ export declare enum ResultCode {
     Canceled = 0,
     FirstUser = 1
 }
-export declare function startActivityAsync(params?: IntentParams): Promise<IntentResult>;
+export declare function startActivityAsync(activityAction: string, params?: IntentParams): Promise<IntentResult>;
 export {};
