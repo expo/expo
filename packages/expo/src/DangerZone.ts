@@ -5,7 +5,7 @@
 
 import { Constants } from 'expo-constants';
 
-let hasWarnedAboutBranchInExpoClient = true;
+let hasWarnedAboutBranchInExpoClient = false;
 
 export default {
   get Lottie() {
@@ -13,9 +13,9 @@ export default {
   },
   get Branch() {
     const Branch = require('./Branch').default;
-    if (hasWarnedAboutBranchInExpoClient && Constants.appOwnership !== 'standalone') {
+    if (!hasWarnedAboutBranchInExpoClient && Constants.appOwnership !== 'standalone') {
        console.warn('The Branch API only works with standalone builds created with expo build.');
-       hasWarnedAboutBranchInExpoClient = false;
+       hasWarnedAboutBranchInExpoClient = true;
     }
     return Branch;
   },
