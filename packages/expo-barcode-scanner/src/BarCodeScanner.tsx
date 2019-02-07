@@ -23,23 +23,17 @@ export type BarCodeEventCallbackArguments = {
 
 export type BarCodeReadCallback = (params: BarCodeEvent) => void;
 
-export type BarCodeScannedCallback = (params: BarCodeEventCallbackArguments) => void;
-
 export interface BarCodeScannerProps extends ViewProps {
   type?: 'front' | 'back' | number;
   torchMode?: 'on' | 'off';
   barCodeTypes?: string[];
   onBarCodeRead?: BarCodeReadCallback;
-  onBarCodeScanned: BarCodeScannedCallback;
+  onBarCodeScanned: BarCodeReadCallback;
 }
-
-type AnyComponent = null | React.Component<any, any> | React.ComponentClass<any>;
 
 export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   lastEvents: { [key: string]: any } = {};
   lastEventsTimes: { [key: string]: any } = {};
-  barCodeScannerRef: AnyComponent = null;
-  barCodeScannerHandle: null | number = null;
 
   static Constants = {
     BarCodeType,
@@ -64,7 +58,7 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
 
   static async scanFromURLAsync(
     url: string,
-    barCodeTypes: string[]
+    barCodeTypes: string[] = Object.values(BarCodeType)
   ): Promise<{ type: string; data: string }> {
     if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
       throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
@@ -83,8 +77,7 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     }
 
     // On other platforms, if barCodeTypes is not provided, use all available types
-    const effectiveBarCodeTypes = barCodeTypes || Object.values(BarCodeType);
-    return await ExpoBarCodeScannerModule.scanFromURLAsync(url, effectiveBarCodeTypes);
+    return await ExpoBarCodeScannerModule.scanFromURLAsync(url, barCodeTypes);
   }
 
   render() {
@@ -93,23 +86,12 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     return (
       <ExpoBarCodeScannerView
         {...nativeProps}
-        ref={this.setReference}
         onBarCodeScanned={this.onObjectDetected(onBarCodeScanned || onBarCodeRead)} // onBarCodeRead is deprecated
       />
     );
   }
 
-  setReference = (ref: AnyComponent) => {
-    if (ref) {
-      this.barCodeScannerRef = ref;
-      this.barCodeScannerHandle = findNodeHandle(ref);
-    } else {
-      this.barCodeScannerRef = null;
-      this.barCodeScannerHandle = null;
-    }
-  };
-
-  onObjectDetected = (callback?: (params: any) => void) => ({
+  onObjectDetected = (callback?: BarCodeReadCallback) => ({
     nativeEvent,
   }: BarCodeEventCallbackArguments) => {
     const { type } = nativeEvent;

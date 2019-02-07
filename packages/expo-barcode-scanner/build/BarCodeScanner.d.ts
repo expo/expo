@@ -10,15 +10,13 @@ export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
 export declare type BarCodeReadCallback = (params: BarCodeEvent) => void;
-export declare type BarCodeScannedCallback = (params: BarCodeEventCallbackArguments) => void;
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     torchMode?: 'on' | 'off';
     barCodeTypes?: string[];
     onBarCodeRead?: BarCodeReadCallback;
-    onBarCodeScanned: BarCodeScannedCallback;
+    onBarCodeScanned: BarCodeReadCallback;
 }
-declare type AnyComponent = null | React.Component<any, any> | React.ComponentClass<any>;
 export declare class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     lastEvents: {
         [key: string]: any;
@@ -26,8 +24,6 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
     lastEventsTimes: {
         [key: string]: any;
     };
-    barCodeScannerRef: AnyComponent;
-    barCodeScannerHandle: null | number;
     static Constants: {
         BarCodeType: any;
         Type: any;
@@ -88,13 +84,12 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         type: any;
         barCodeTypes: {}[];
     };
-    static scanFromURLAsync(url: string, barCodeTypes: string[]): Promise<{
+    static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<{
         type: string;
         data: string;
     }>;
     render(): JSX.Element;
-    setReference: (ref: AnyComponent) => void;
-    onObjectDetected: (callback?: ((params: any) => void) | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
+    onObjectDetected: (callback?: BarCodeReadCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
     convertNativeProps(props: BarCodeScannerProps): any;
     convertProp(value: any, key: string): any;
 }
