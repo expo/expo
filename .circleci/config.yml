@@ -269,14 +269,13 @@ jobs:
           name: Build Expo Client and upload tarball
           command: |
             export TARBALL=ios-expo-client-$CIRCLE_SHA1.tar.gz
-            aws --version
-            # fastlane ios create_expo_client_build
-            # tar \
-            #   -C ~/project \
-            #   -zcf "/tmp/$TARBALL" \
-            #   expo-client-build/Exponent.xcarchive \
-            #   ios
-            # nix run -f ~/project s3env --ignore-environment --keep AWS_ACCESS_KEY_ID --keep AWS_SECRET_ACCESS_KEY --command aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+            fastlane ios create_expo_client_build
+            tar \
+              -C ~/project \
+              -zcf "/tmp/$TARBALL" \
+              expo-client-build/Exponent.xcarchive \
+              ios
+            aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
 
   shell_app_sim_base_ios:
     executor: mac
