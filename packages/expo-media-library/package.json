@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Expo MediaLibrary module",
   "main": "build/MediaLibrary.js",
   "types": "build/MediaLibrary.d.ts",
@@ -8,7 +8,6 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "test": "expo-module test",
-    "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
