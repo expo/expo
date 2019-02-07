@@ -258,18 +258,22 @@ function useWebModule(modulePathToHiJack, redirectPath, initialRoot = 'expo/buil
 
 const publicPath = '/';
 
+const entry = __DEV__
+  ? [require.resolve('react-dev-utils/webpackHotDevClient'), locations.appMain]
+  : locations.appMain;
+
 module.exports = {
   mode: environment,
   devtool: 'cheap-module-source-map',
 
-  entry: [require.resolve('react-dev-utils/webpackHotDevClient'), locations.appMain],
+  entry,
   // configures where the build ends up
   output: {
     path: locations.output,
     filename: 'bundle.js',
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: '[name].chunk.js',
-    // // This is the URL that app is served from. We use "/" in development.
+    // This is the URL that app is served from. We use "/" in development.
     publicPath,
   },
   optimization: {
@@ -301,6 +305,8 @@ module.exports = {
 
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
       PUBLIC_URL: publicUrl,
+      WEB_TITLE: nativeAppManifest.expo.name,
+      SERVICE_WORKER: `<script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));</script>`,
     }),
 
     new webpack.HotModuleReplacementPlugin(),
