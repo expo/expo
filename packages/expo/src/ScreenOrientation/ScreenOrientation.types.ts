@@ -28,6 +28,25 @@ export enum SizeClassIOS {
   UNKNOWN = 'UNKNOWN',
 }
 
+export enum WebOrientationLock {
+  PORTRAIT_PRIMARY = 'portrait-primary',
+  PORTRAIT_SECONDARY = 'portrait-secondary',
+  PORTRAIT = 'portrait',
+  LANDSCAPE_PRIMARY = 'landscape-primary',
+  LANDSCAPE_SECONDARY = 'landscape-secondary',
+  LANDSCAPE = 'landscape',
+  ANY = 'any',
+  NATURAL = 'natural',
+  UNKNOWN = 'unknown',
+}
+
+export enum WebOrientation {
+  PORTRAIT_PRIMARY = 'portrait-primary',
+  PORTRAIT_SECONDARY = 'portrait-secondary',
+  LANDSCAPE_PRIMARY = 'landscape-primary',
+  LANDSCAPE_SECONDARY = 'landscape-secondary',
+}
+
 export type OrientationInfo = {
   orientation: Orientation;
   verticalSizeClass?: SizeClassIOS;
@@ -37,7 +56,7 @@ export type OrientationInfo = {
 export type PlatformOrientationInfo = {
   screenOrientationConstantAndroid?: number;
   screenOrientationArrayIOS?: Orientation[];
-  screenOrientationArrayWeb?: Orientation[];
+  screenOrientationLockWeb?: Orientation[];
 };
 
 export type OrientationChangeListener = (event: OrientationChangeEvent) => void;

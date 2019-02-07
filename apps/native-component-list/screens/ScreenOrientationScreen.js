@@ -13,6 +13,7 @@ export default class ScreenOrientationScreen extends React.Component {
     orientation: undefined,
     orientationLock: undefined,
   };
+
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(
       ({ orientationInfo, orientationLock }) => {
@@ -24,8 +25,8 @@ export default class ScreenOrientationScreen extends React.Component {
     );
 
     const [orientation, orientationLock] = await Promise.all([
-      (await ScreenOrientation.getOrientationAsync()).orientation,
-      await ScreenOrientation.getOrientationLockAsync(),
+      ScreenOrientation.getOrientationAsync().orientation,
+      ScreenOrientation.getOrientationLockAsync(),
     ]);
     // update state
     this.setState({

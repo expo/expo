@@ -10,6 +10,7 @@ import {
   OrientationLock,
   PlatformOrientationInfo,
   SizeClassIOS,
+  WebOrientationLock,
 } from './ScreenOrientation.types';
 
 export {
@@ -67,7 +68,7 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
   const {
     screenOrientationConstantAndroid,
     screenOrientationArrayIOS,
-    screenOrientationArrayWeb,
+    screenOrientationLockWeb,
   } = options;
   let platformOrientationParam: any;
   if (Platform.OS === 'android' && screenOrientationConstantAndroid) {
@@ -93,13 +94,12 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
       }
     }
     platformOrientationParam = screenOrientationArrayIOS;
-  } else if (Platform.OS === 'web' && screenOrientationArrayWeb) {
-    if (!Array.isArray(screenOrientationArrayWeb)) {
-      throw new TypeError(
-        `lockPlatformAsync web platform: screenOrientationArrayWeb cannot be called with ${screenOrientationArrayWeb}`
-      );
+  } else if (Platform.OS === 'web' && screenOrientationLockWeb) {
+    const webOrientationLocks = Object.values(WebOrientationLock);
+    if (!webOrientationLocks.includes(screenOrientationLockWeb)) {
+      throw new TypeError(`Invalid Web Orientation Lock: ${screenOrientationLockWeb}`);
     }
-    platformOrientationParam = screenOrientationArrayWeb;
+    platformOrientationParam = screenOrientationLockWeb;
   }
 
   if (!platformOrientationParam) {
@@ -142,7 +142,7 @@ export async function getPlatformOrientationLockAsync(): Promise<PlatformOrienta
     };
   } else if (Platform.OS === 'web') {
     return {
-      screenOrientationArrayWeb: platformOrientationLock,
+      screenOrientationLockWeb: platformOrientationLock,
     };
   } else {
     return {};
@@ -173,7 +173,9 @@ export async function doesSupportAsync(orientationLock: OrientationLock): Promis
 
 // Determine the event name lazily so Jest can set up mocks in advance
 function getEventName(): string {
-  return Platform.OS === 'ios' ? 'expoDidUpdateDimensions' : 'didUpdateDimensions';
+  return Platform.OS === 'ios' || Platform.OS === 'web'
+    ? 'expoDidUpdateDimensions'
+    : 'didUpdateDimensions';
 }
 
 // We rely on RN to emit `didUpdateDimensions`
@@ -187,8 +189,8 @@ export function addOrientationChangeListener(listener: OrientationChangeListener
     getEventName(),
     async (update: OrientationChangeEvent) => {
       let orientationInfo, orientationLock;
-      if (Platform.OS === 'ios') {
-        // RN relies on statusBarOrientation (deprecated) to emit `didUpdateDimensions` event, so we emit our own `expoDidUpdateDimensions` event instead
+      if (Platform.OS === 'ios' || Platform.OS === 'web') {
+        // For iOS, RN relies on statusBarOrientation (deprecated) to emit `didUpdateDimensions` event, so we emit our own `expoDidUpdateDimensions` event instead
         orientationLock = update.orientationLock;
         orientationInfo = update.orientationInfo;
       } else {
