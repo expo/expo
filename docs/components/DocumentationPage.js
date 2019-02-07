@@ -1,17 +1,16 @@
 import Router from 'next/router';
-import styled, { keyframes, css } from 'react-emotion';
+import { css } from 'react-emotion';
 
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 import * as Constants from '~/common/constants';
 import * as WindowUtils from '~/common/window';
-import { VERSIONS, LATEST_VERSION } from '~/common/versions';
+import { VERSIONS } from '~/common/versions';
 
 import navigation from '~/common/navigation';
 
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationFooter from '~/components/DocumentationFooter';
-import DocumentationPageLayout from '~/components/DocumentationPageLayout';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import Head from '~/components/Head';
@@ -148,8 +147,6 @@ export default class DocumentationPage extends React.Component {
     const sidebarElement = (
       <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
     );
-
-    console.log(this.props.title);
 
     return (
       <DocumentationNestedScrollLayout
