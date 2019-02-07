@@ -1,5 +1,9 @@
 import { AppRegistry } from 'react-native';
-import App from 'native-component-list/App';
-import { name as appName } from './app.json';
+import { _setShouldThrowAnErrorOutsideOfExpo } from 'expo/build/environment/validatorState';
+_setShouldThrowAnErrorOutsideOfExpo(false);
 
-AppRegistry.registerComponent(appName, () => App);
+import { name as appName } from './app.json'; // eslint-disable-line import/first
+
+AppRegistry.registerComponent(appName, () => {
+  return require('native-component-list/App').default;
+});

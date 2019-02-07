@@ -25,3 +25,11 @@ it(`throws if we're not running in Expo`, () => {
   mockProperty(Constants, 'expoVersion', undefined);
   expect(() => require('../validate')).toThrowError('Expo');
 });
+
+it(`doesn't throw an error if we're not running in Expo and have disabled the error`, () => {
+  require('../validatorState')._setShouldThrowAnErrorOutsideOfExpo(false);
+  expect(require('../validatorState').shouldThrowAnErrorOutsideOfExpo()).toBeFalsy();
+  const Constants = require('expo-constants').default;
+  mockProperty(Constants, 'expoVersion', undefined);
+  expect(() => require('../validate')).not.toThrowError();
+});
