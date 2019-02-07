@@ -203,8 +203,14 @@ jobs:
           command: build
           working_directory: ~/expo/packages/expo-constants
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-contacts
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-analytics-amplitude
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-face-detector
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-facebook
@@ -216,10 +222,13 @@ jobs:
           working_directory: ~/expo/packages/expo-file-system
       - yarn:
           command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-localization
+          working_directory: ~/expo/packages/expo-google-sign-in
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-local-authentication
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-localization
       - yarn:
           command: build
           working_directory: ~/expo/packages/expo-permissions
