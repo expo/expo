@@ -48,7 +48,7 @@ _iOS_: When the switch value is false, the track shrinks into the border. If you
 
 | Type                                                          | Required |
 | ------------------------------------------------------------- | -------- |
-| object: ${"{"}false: [color](../colors/), true: [color](../colors/)${"}"} | No       |
+| object: {false: [color](../colors/), true: [color](../colors/)} | No       |
 
 ---
 

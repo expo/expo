@@ -39,7 +39,7 @@ export default withDocumentationElements(meta);
 
 | Type                                   | Required |
 | -------------------------------------- | -------- |
-| object: ${"{"}width: number,height: number${"}"} | No       |
+| object: {width: number,height: number} | No       |
 
 ---
 

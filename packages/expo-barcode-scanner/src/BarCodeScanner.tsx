@@ -89,6 +89,8 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     );
   }
 
+  // coordinates of cornerPoints and boundingBox are represented in DP (Display-Indepent Points) unit
+  // React Native is using the same unit
   onObjectDetected = (callback?: BarCodeScannedCallback) => ({
     nativeEvent,
   }: BarCodeEventCallbackArguments) => {

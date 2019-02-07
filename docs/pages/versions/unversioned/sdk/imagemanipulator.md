@@ -76,7 +76,7 @@ export default class ImageManipulatorSample extends React.Component {
     const manipResult = await ImageManipulator.manipulateAsync(
       this.state.image.localUri || this.state.image.uri,
       [{ rotate: 90}, { flip: { vertical: true }}],
-      { format: 'png' }
+      { format: ImageManipulator.SaveFormat.PNG }
     );
     this.setState({ image: manipResult });
   }

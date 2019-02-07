@@ -1,4 +1,4 @@
-import { Contacts } from 'expo-contacts';
+import { Contacts } from 'expo';
 import { Platform } from 'expo-core';
 import { UnavailabilityError } from 'expo-errors';
 

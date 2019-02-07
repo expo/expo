@@ -277,7 +277,6 @@
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		C7AB1A74D650FCF755E54086 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */; };
 		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
-		CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99394F2040C1AA0087C883 /* EXHaptic.m */; };
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
 		E396BB759F55EA40EB120B5A /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */; };
 		F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
@@ -857,8 +856,6 @@
 		BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD4BAD322092A30A009A1287 /* EXAR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAR.h; sourceTree = "<group>"; };
 		CD4BAD332092A30A009A1287 /* EXAR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAR.m; sourceTree = "<group>"; };
-		CD99394E2040C1AA0087C883 /* EXHaptic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXHaptic.h; sourceTree = "<group>"; };
-		CD99394F2040C1AA0087C883 /* EXHaptic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXHaptic.m; sourceTree = "<group>"; };
 		CDBF79F820868287009B25D6 /* EXStoreReview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStoreReview.h; sourceTree = "<group>"; };
 		CDBF79F920868287009B25D6 /* EXStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStoreReview.m; sourceTree = "<group>"; };
 		EB9676B1E402ED70AEB10A7A /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1567,8 +1564,6 @@
 				B5FB728D1FF6DADB001C764B /* Components */,
 				B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */,
 				B5FB73811FF6DADB001C764B /* EXErrorRecovery.m */,
-				CD99394E2040C1AA0087C883 /* EXHaptic.h */,
-				CD99394F2040C1AA0087C883 /* EXHaptic.m */,
 				CDBF79F820868287009B25D6 /* EXStoreReview.h */,
 				CDBF79F920868287009B25D6 /* EXStoreReview.m */,
 				B5FB738E1FF6DADB001C764B /* EXImageUtils.h */,
@@ -2331,7 +2326,6 @@
 				3159BB4821806E3D002D2A81 /* RNSVGTSpan.m in Sources */,
 				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.m in Sources */,
-				CD9939502040C1AA0087C883 /* EXHaptic.m in Sources */,
 				BB50E88820B9C0D3003C752D /* RNGestureHandler.m in Sources */,
 				3159BB9D21806E76002D2A81 /* RNSVGRadialGradientManager.m in Sources */,
 				BB5BD32820AEFCB4007E02FC /* REASetNode.m in Sources */,

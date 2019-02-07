@@ -206,8 +206,14 @@ jobs:
           command: build
           working_directory: ~/expo/packages/expo-constants
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-contacts
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-analytics-amplitude
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-face-detector
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-facebook
@@ -217,6 +223,15 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-file-system
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-google-sign-in
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-local-authentication
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-localization
       - yarn:
           command: build
           working_directory: ~/expo/packages/expo-permissions
@@ -300,7 +315,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: fastlane ios create_simulator_build
+      - run: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
@@ -315,11 +330,12 @@ jobs:
       - yarn_install:
           working_directory: ~/project/tools-public
       - run: ~/project/tools-public/generate-files-ios.js
+      - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
           name: Build ios shell app simulator
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
 
   android_test_suite:
     executor: android
