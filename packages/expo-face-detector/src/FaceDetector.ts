@@ -2,7 +2,7 @@ import { UnavailabilityError } from 'expo-errors';
 
 import ExpoFaceDetector from './ExpoFaceDetector';
 
-export type Point = { x: number; y: number };
+type Point = { x: number; y: number };
 
 export type FaceFeature = {
   bounds: {
@@ -30,9 +30,9 @@ export type FaceFeature = {
   rollAngle?: number;
 };
 
-export type ValuesOf<T extends any[]> = T[number];
+type ValuesOf<T extends any[]> = T[number];
 
-export type FaceDetectorMode = ValuesOf<typeof ExpoFaceDetector.Mode>;
+export type FaceDetectorMode = string[];
 
 export type FaceDetectorLandmarks = ValuesOf<typeof ExpoFaceDetector.Landmarks>;
 

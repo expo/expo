@@ -1,5 +1,5 @@
 import ExpoFaceDetector from './ExpoFaceDetector';
-export declare type Point = {
+declare type Point = {
     x: number;
     y: number;
 };
@@ -28,8 +28,8 @@ export declare type FaceFeature = {
     yawAngle?: number;
     rollAngle?: number;
 };
-export declare type ValuesOf<T extends any[]> = T[number];
-export declare type FaceDetectorMode = ValuesOf<typeof ExpoFaceDetector.Mode>;
+declare type ValuesOf<T extends any[]> = T[number];
+export declare type FaceDetectorMode = string[];
 export declare type FaceDetectorLandmarks = ValuesOf<typeof ExpoFaceDetector.Landmarks>;
 export declare type FaceDetectorClassifications = ValuesOf<typeof ExpoFaceDetector.Classifications>;
 export declare type DetectionOptions = {
@@ -43,3 +43,4 @@ export declare const Constants: {
     Landmarks: any;
     Classifications: any;
 };
+export {};
