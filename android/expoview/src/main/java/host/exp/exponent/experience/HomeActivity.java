@@ -19,6 +19,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import expo.core.interfaces.Package;
+import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.filesystem.FileSystemPackage;
@@ -104,7 +105,8 @@ public class HomeActivity extends BaseExperienceActivity {
         new FileSystemPackage(),
         new FontLoaderPackage(),
         new BarCodeScannerPackage(),
-        new KeepAwakePackage()
+        new KeepAwakePackage(),
+        new AmplitudePackage()
     );
   }
 }
