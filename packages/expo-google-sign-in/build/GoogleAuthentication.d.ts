@@ -6,7 +6,7 @@ declare class GoogleAuthentication extends GoogleAuthData {
     refreshToken?: string;
     idToken?: string;
     idTokenExpirationDate?: number;
-    constructor(props: any);
+    constructor(options: any);
     equals(other: any): boolean;
     toJSON(): {
         [key: string]: any;

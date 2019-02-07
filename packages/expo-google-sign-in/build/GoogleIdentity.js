@@ -1,8 +1,8 @@
 import GoogleAuthData from './GoogleAuthData';
 class GoogleIdentity extends GoogleAuthData {
-    constructor(props) {
-        super(props);
-        const { uid, email, displayName, photoURL, firstName, lastName } = props;
+    constructor(options) {
+        super(options);
+        const { uid, email, displayName, photoURL, firstName, lastName } = options;
         this.uid = uid;
         this.email = email;
         this.displayName = displayName;

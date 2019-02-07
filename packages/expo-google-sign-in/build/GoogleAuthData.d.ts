@@ -1,5 +1,5 @@
 declare class GoogleAuthData {
-    constructor(props: any);
+    constructor(options: any);
     equals(other: any): boolean;
     toJSON(): {
         [key: string]: any;

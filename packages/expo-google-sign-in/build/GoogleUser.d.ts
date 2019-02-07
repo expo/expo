@@ -1,16 +1,16 @@
 import GoogleAuthentication from './GoogleAuthentication';
 import GoogleIdentity from './GoogleIdentity';
 declare class GoogleUser extends GoogleIdentity {
-    auth?: GoogleAuthentication;
+    auth: GoogleAuthentication | null;
     scopes: string[];
     hostedDomain?: string;
     serverAuthCode?: string;
-    constructor(props: any);
+    constructor(options: any);
     clearCache: () => Promise<any>;
     getHeaders: () => {
         [key: string]: string;
     };
-    refreshAuth: () => Promise<GoogleAuthentication | undefined>;
+    refreshAuth: () => Promise<GoogleAuthentication | null>;
     equals(other: any): boolean;
     toJSON(): {
         [key: string]: any;

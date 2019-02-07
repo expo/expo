@@ -6,14 +6,14 @@ import GoogleAuthentication from './GoogleAuthentication';
 import GoogleIdentity from './GoogleIdentity';
 
 class GoogleUser extends GoogleIdentity {
-  auth?: GoogleAuthentication;
+  auth: GoogleAuthentication | null;
   scopes: string[];
   hostedDomain?: string;
   serverAuthCode?: string;
 
-  constructor(props) {
-    super(props);
-    const { auth, scopes, hostedDomain, serverAuthCode } = props;
+  constructor(options) {
+    super(options);
+    const { auth, scopes, hostedDomain, serverAuthCode } = options;
 
     this.auth = auth;
     this.scopes = scopes;
@@ -44,7 +44,7 @@ class GoogleUser extends GoogleIdentity {
     };
   };
 
-  refreshAuth = async (): Promise<GoogleAuthentication | undefined> => {
+  refreshAuth = async (): Promise<GoogleAuthentication | null> => {
     if (!ExpoGoogleSignIn.getTokensAsync) {
       throw new UnavailabilityError('GoogleSignIn', 'getTokensAsync');
     }
@@ -72,7 +72,7 @@ class GoogleUser extends GoogleIdentity {
       return false;
     }
 
-    if (this.auth !== undefined) {
+    if (this.auth != null) {
       return (
         this.auth.equals(other.auth) &&
         this.scopes === other.scopes &&
@@ -80,7 +80,7 @@ class GoogleUser extends GoogleIdentity {
         this.serverAuthCode === other.serverAuthCode
       );
     } else {
-      return other.auth === undefined;
+      return other.auth == null;
     }
   }
 

@@ -8,8 +8,8 @@ class GoogleAuthentication extends GoogleAuthData {
   idToken?: string;
   idTokenExpirationDate?: number;
 
-  constructor(props) {
-    super(props);
+  constructor(options: any) {
+    super(options);
     const {
       clientId,
       accessToken,
@@ -17,7 +17,7 @@ class GoogleAuthentication extends GoogleAuthData {
       refreshToken,
       idToken,
       idTokenExpirationDate,
-    } = props;
+    } = options;
 
     this.clientId = clientId;
     this.accessToken = accessToken;

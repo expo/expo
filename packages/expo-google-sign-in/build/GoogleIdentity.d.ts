@@ -6,7 +6,7 @@ declare class GoogleIdentity extends GoogleAuthData {
     photoURL?: string;
     firstName?: string;
     lastName?: string;
-    constructor(props: any);
+    constructor(options: any);
     equals(other: any): boolean;
     toJSON(): {
         [key: string]: any;

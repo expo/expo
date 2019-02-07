@@ -1,5 +1,5 @@
 class GoogleAuthData {
-  constructor(props: any) {
+  constructor(options: any) {
     this.equals = this.equals.bind(this);
     this.toJSON = this.toJSON.bind(this);
   }

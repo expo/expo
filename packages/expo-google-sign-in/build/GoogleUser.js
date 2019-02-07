@@ -3,8 +3,8 @@ import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import GoogleAuthentication from './GoogleAuthentication';
 import GoogleIdentity from './GoogleIdentity';
 class GoogleUser extends GoogleIdentity {
-    constructor(props) {
-        super(props);
+    constructor(options) {
+        super(options);
         this.clearCache = async () => {
             if (!ExpoGoogleSignIn.clearCacheAsync) {
                 return;
@@ -41,7 +41,7 @@ class GoogleUser extends GoogleIdentity {
             }
             return this.auth;
         };
-        const { auth, scopes, hostedDomain, serverAuthCode } = props;
+        const { auth, scopes, hostedDomain, serverAuthCode } = options;
         this.auth = auth;
         this.scopes = scopes;
         this.hostedDomain = hostedDomain;
@@ -51,14 +51,14 @@ class GoogleUser extends GoogleIdentity {
         if (!super.equals(other) || !(other instanceof GoogleUser)) {
             return false;
         }
-        if (this.auth !== undefined) {
+        if (this.auth != null) {
             return (this.auth.equals(other.auth) &&
                 this.scopes === other.scopes &&
                 this.hostedDomain === other.hostedDomain &&
                 this.serverAuthCode === other.serverAuthCode);
         }
         else {
-            return other.auth === undefined;
+            return other.auth == null;
         }
     }
     toJSON() {

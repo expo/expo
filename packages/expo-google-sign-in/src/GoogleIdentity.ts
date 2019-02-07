@@ -8,9 +8,9 @@ class GoogleIdentity extends GoogleAuthData {
   firstName?: string;
   lastName?: string;
 
-  constructor(props) {
-    super(props);
-    const { uid, email, displayName, photoURL, firstName, lastName } = props;
+  constructor(options: any) {
+    super(options);
+    const { uid, email, displayName, photoURL, firstName, lastName } = options;
 
     this.uid = uid;
     this.email = email;

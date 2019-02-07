@@ -1,8 +1,8 @@
 import GoogleAuthData from './GoogleAuthData';
 class GoogleAuthentication extends GoogleAuthData {
-    constructor(props) {
-        super(props);
-        const { clientId, accessToken, accessTokenExpirationDate, refreshToken, idToken, idTokenExpirationDate, } = props;
+    constructor(options) {
+        super(options);
+        const { clientId, accessToken, accessTokenExpirationDate, refreshToken, idToken, idTokenExpirationDate, } = options;
         this.clientId = clientId;
         this.accessToken = accessToken;
         this.accessTokenExpirationDate = accessTokenExpirationDate;

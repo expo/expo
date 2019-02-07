@@ -2,12 +2,12 @@ import * as GoogleSignIn from '../GoogleSignIn';
 
 /* More tests are in test-suite */
 
-it('has constants', () => {
+it(`has constants`, () => {
   function validateConstants(constants) {
     expect(constants).toBeDefined();
-    Object.values(constants).map(constant => {
+    for (const constant of Object.values(constants)) {
       expect(typeof constant).toBe('string');
-    });
+    }
   }
 
   validateConstants(GoogleSignIn.ERRORS);
