@@ -174,7 +174,7 @@ Called once when the scroll position gets within `onEndReachedThreshold` of the 
 
 | Type                                        | Required |
 | ------------------------------------------- | -------- |
-| [(info: ${"{"}distanceFromEnd: number${"}"}) => void] | No       |
+| [(info: {distanceFromEnd: number}) => void] | No       |
 
 ---
 
@@ -319,7 +319,7 @@ Rendered at the bottom of each section.
 
 | Type                                                 | Required |
 | ---------------------------------------------------- | -------- |
-| [(info: ${"{"}section: SectionT${"}"}) => ?React.Element${"<"}any>] | No       |
+| [(info: {section: SectionT}) => ?React.Element\<any\>] | No       |
 
 ---
 
@@ -329,7 +329,7 @@ Rendered at the top of each section. These stick to the top of the `ScrollView` 
 
 | Type                                                 | Required |
 | ---------------------------------------------------- | -------- |
-| [(info: ${"{"}section: SectionT${"}"}) => ?React.Element${"<"}any>] | No       |
+| [(info: {section: SectionT}) => ?React.Element\<any\>] | No       |
 
 ---
 
@@ -339,7 +339,7 @@ Rendered at the top and bottom of each section (note this is different from `Ite
 
 | Type              | Required |
 | ----------------- | -------- |
-| [ReactClass${"<"}any>] | No       |
+| [ReactClass\<any\>] | No       |
 
 ---
 

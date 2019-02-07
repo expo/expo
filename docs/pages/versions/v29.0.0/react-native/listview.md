@@ -231,7 +231,7 @@ If provided, a renderable component to be rendered as the separator below each r
 
 (visibleRows, changedRows) => void
 
-Called when the set of visible rows changes. `visibleRows` maps ${"{"} sectionID: ${"{"} rowID: true ${"}"}${"}"} for all the visible rows, and `changedRows` maps ${"{"} sectionID: ${"{"} rowID: true | false ${"}"}${"}"} for the rows that have changed their visibility, with true indicating visible, and false indicating the view has moved out of view.
+Called when the set of visible rows changes. `visibleRows` maps { sectionID: { rowID: true }} for all the visible rows, and `changedRows` maps { sectionID: { rowID: true | false }} for the rows that have changed their visibility, with true indicating visible, and false indicating the view has moved out of view.
 
 | Type     | Required |
 | -------- | -------- |
