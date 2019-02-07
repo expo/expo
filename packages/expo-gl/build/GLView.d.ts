@@ -1,6 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
+import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
 export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
 declare type Asset = {
     uri: string;
@@ -8,7 +8,7 @@ declare type Asset = {
     width: number;
     height: number;
 };
-export interface NativeGLViewProps extends GLViewProps {
+declare type GLViewProps = {
     /**
     * Called when the OpenGL context is created, with the context object as a parameter. The context
     * object has an API mirroring WebGL's WebGLRenderingContext.
@@ -22,14 +22,12 @@ export interface NativeGLViewProps extends GLViewProps {
      * A ref callback for the native GLView
      */
     nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null): any;
-}
+} & BaseGLViewProps;
 declare type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
 /**
  * A component that acts as an OpenGL render target
  */
-export default class GLView extends React.Component<NativeGLViewProps, {
-    msaaSamples: number;
-}> {
+export default class GLView extends React.Component<GLViewProps> {
     static NativeView: any;
     static propTypes: {
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;

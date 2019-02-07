@@ -38,6 +38,7 @@
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58",
   "devDependencies": {
-    "react-test-renderer": "^16.7.0"
+    "react-test-renderer": "^16.7.0",
+    "expo-module-scripts": "^1.0.0"
   }
 }

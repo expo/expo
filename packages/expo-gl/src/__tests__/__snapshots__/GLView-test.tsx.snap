@@ -1,6 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`renders correctly on Web 1`] = `
+<div
+  style={
+    Object {
+      "flex": 1,
+    }
+  }
+>
+  <canvas
+    height={0}
+    style={
+      Object {
+        "flex": 1,
+        "height": 0,
+        "width": 0,
+      }
+    }
+    width={0}
+  />
+</div>
+`;
+
+exports[`renders correctly on iOS & Android 1`] = `
 <View>
   <ViewManagerAdapter_ExponentGLView
     proxiedProperties={

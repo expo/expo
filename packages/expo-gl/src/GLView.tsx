@@ -5,7 +5,7 @@ import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 
 const packageJSON = require('../package.json');
 
-import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
+import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
 import { UnavailabilityError } from 'expo-errors';
 export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
 
@@ -20,7 +20,7 @@ type Asset = {
   height: number;
 }
 
-export interface NativeGLViewProps extends GLViewProps {
+type GLViewProps = {
 
   /**
   * Called when the OpenGL context is created, with the context object as a parameter. The context
@@ -37,7 +37,7 @@ export interface NativeGLViewProps extends GLViewProps {
   * A ref callback for the native GLView
   */
  nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null);
-}
+} & BaseGLViewProps;
 
 type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
 const NativeView = requireNativeViewManager('ExponentGLView');
@@ -45,7 +45,7 @@ const NativeView = requireNativeViewManager('ExponentGLView');
 /**
  * A component that acts as an OpenGL render target
  */
-export default class GLView extends React.Component<NativeGLViewProps, { msaaSamples: number }> {
+export default class GLView extends React.Component<GLViewProps> {
   static NativeView: any;
   static propTypes = {
     onContextCreate: PropTypes.func,

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { UnavailabilityError } from 'expo-errors';
-import { ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
+import { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions } from './GLView.types';
+export { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
 
 declare const window: Window;
 
@@ -77,7 +78,7 @@ const propTypes = {
   webglContextAttributes: PropTypes.object,
 };
 
-interface WebGLViewProps extends GLViewProps {
+interface GLViewProps extends BaseGLViewProps {
   onContextCreate: (gl: WebGLRenderingContext) => void;
   onContextRestored?: (gl?: WebGLRenderingContext) => void;
   onContextLost?: () => void;
@@ -89,7 +90,7 @@ type State = {
   height: number;
 };
 
-export default class GLView extends React.Component<WebGLViewProps, State> {
+export default class GLView extends React.Component<GLViewProps, State> {
   state = {
     width: 0,
     height: 0,

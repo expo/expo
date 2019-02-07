@@ -25,7 +25,7 @@ export interface ExpoWebGLRenderingContext extends WebGLRenderingContext {
  * context is created. Its drawing buffer is presented as the contents of
  * the View every frame.
  */
-export interface GLViewProps extends ViewProps {
+export interface BaseGLViewProps extends ViewProps {
     /**
      * Called when the OpenGL context is created, with the context object as a parameter. The context
      * object has an API mirroring WebGL's WebGLRenderingContext.
