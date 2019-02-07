@@ -36,8 +36,8 @@ export interface BarCodeScannerProps extends ViewProps {
 type AnyComponent = null | React.Component<any, any> | React.ComponentClass<any>;
 
 export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
-  lastEvents: { [key: string]: any };
-  lastEventsTimes: { [key: string]: any };
+  lastEvents: { [key: string]: any } = {};
+  lastEventsTimes: { [key: string]: any } = {};
   barCodeScannerRef: AnyComponent = null;
   barCodeScannerHandle: null | number = null;
 
@@ -61,12 +61,6 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     type: Type.back,
     barCodeTypes: Object.values(BarCodeType),
   };
-
-  constructor(props: BarCodeScannerProps) {
-    super(props);
-    this.lastEvents = {};
-    this.lastEventsTimes = {};
-  }
 
   static async scanFromURLAsync(
     url: string,

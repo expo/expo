@@ -88,7 +88,6 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         type: any;
         barCodeTypes: {}[];
     };
-    constructor(props: BarCodeScannerProps);
     static scanFromURLAsync(url: string, barCodeTypes: string[]): Promise<{
         type: string;
         data: string;

@@ -8,8 +8,10 @@ import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
 export class BarCodeScanner extends React.Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super(...arguments);
+        this.lastEvents = {};
+        this.lastEventsTimes = {};
         this.barCodeScannerRef = null;
         this.barCodeScannerHandle = null;
         this.setReference = (ref) => {
@@ -36,8 +38,6 @@ export class BarCodeScanner extends React.Component {
                 this.lastEvents[type] = JSON.stringify(nativeEvent);
             }
         };
-        this.lastEvents = {};
-        this.lastEventsTimes = {};
     }
     static async scanFromURLAsync(url, barCodeTypes) {
         if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
