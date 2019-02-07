@@ -2,7 +2,7 @@ import { UnavailabilityError } from 'expo-errors';
 import mapValues from 'lodash.mapvalues';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { findNodeHandle, Platform, ViewProps, ViewPropTypes } from 'react-native';
+import { Platform, ViewProps, ViewPropTypes } from 'react-native';
 
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
@@ -21,14 +21,12 @@ export type BarCodeEventCallbackArguments = {
   nativeEvent: BarCodeEvent;
 };
 
-export type BarCodeReadCallback = (params: BarCodeEvent) => void;
+export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 
 export interface BarCodeScannerProps extends ViewProps {
   type?: 'front' | 'back' | number;
-  torchMode?: 'on' | 'off';
   barCodeTypes?: string[];
-  onBarCodeRead?: BarCodeReadCallback;
-  onBarCodeScanned: BarCodeReadCallback;
+  onBarCodeScanned: BarCodeScannedCallback;
 }
 
 export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
@@ -82,16 +80,16 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
 
   render() {
     const nativeProps = this.convertNativeProps(this.props);
-    const { onBarCodeScanned, onBarCodeRead } = this.props;
+    const { onBarCodeScanned } = this.props;
     return (
       <ExpoBarCodeScannerView
         {...nativeProps}
-        onBarCodeScanned={this.onObjectDetected(onBarCodeScanned || onBarCodeRead)} // onBarCodeRead is deprecated
+        onBarCodeScanned={this.onObjectDetected(onBarCodeScanned)}
       />
     );
   }
 
-  onObjectDetected = (callback?: BarCodeReadCallback) => ({
+  onObjectDetected = (callback?: BarCodeScannedCallback) => ({
     nativeEvent,
   }: BarCodeEventCallbackArguments) => {
     const { type } = nativeEvent;

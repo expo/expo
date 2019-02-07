@@ -25,7 +25,8 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo-core": "~2.0.0"
+    "expo-core": "~2.0.0",
+    "expo-errors": "^1.0.0"
   },
   "dependencies": {
     "expo-barcode-scanner-interface": "~2.0.0",

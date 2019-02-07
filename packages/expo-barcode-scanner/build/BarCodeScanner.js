@@ -47,9 +47,8 @@ export class BarCodeScanner extends React.Component {
     }
     render() {
         const nativeProps = this.convertNativeProps(this.props);
-        const { onBarCodeScanned, onBarCodeRead } = this.props;
-        return (<ExpoBarCodeScannerView {...nativeProps} onBarCodeScanned={this.onObjectDetected(onBarCodeScanned || onBarCodeRead)} // onBarCodeRead is deprecated
-        />);
+        const { onBarCodeScanned } = this.props;
+        return (<ExpoBarCodeScannerView {...nativeProps} onBarCodeScanned={this.onObjectDetected(onBarCodeScanned)}/>);
     }
     convertNativeProps(props) {
         const newProps = mapValues(props, this.convertProp);

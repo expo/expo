@@ -9,13 +9,11 @@ declare type BarCodeEvent = {
 export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
-export declare type BarCodeReadCallback = (params: BarCodeEvent) => void;
+export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
-    torchMode?: 'on' | 'off';
     barCodeTypes?: string[];
-    onBarCodeRead?: BarCodeReadCallback;
-    onBarCodeScanned: BarCodeReadCallback;
+    onBarCodeScanned: BarCodeScannedCallback;
 }
 export declare class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     lastEvents: {
@@ -89,7 +87,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         data: string;
     }>;
     render(): JSX.Element;
-    onObjectDetected: (callback?: BarCodeReadCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
+    onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
     convertNativeProps(props: BarCodeScannerProps): any;
     convertProp(value: any, key: string): any;
 }
