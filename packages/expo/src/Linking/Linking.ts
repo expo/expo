@@ -6,10 +6,10 @@ import Linking from './LinkingModule';
 
 const { manifest } = Constants;
 
-const USES_CUSTOM_SCHEME = Constants.appOwnership === 'standalone' && manifest.scheme;
+const USES_CUSTOM_SCHEME = Constants.appOwnership === 'standalone' && manifest && manifest.scheme;
 
-let HOST_URI = manifest.hostUri;
-if (!HOST_URI && !USES_CUSTOM_SCHEME) {
+let HOST_URI = manifest ? manifest.hostUri : null;
+if (!HOST_URI && !USES_CUSTOM_SCHEME && Constants.linkingUri) {
   // we're probably not using up-to-date xdl, so just fake it for now
   // we have to remove the /--/ on the end since this will be inserted again later
   HOST_URI = _removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');

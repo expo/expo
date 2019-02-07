@@ -24,7 +24,13 @@ interface RegisteredTask {
 
 type Task = (body: TaskBody) => void;
 
-const eventEmitter = new EventEmitter(ExpoTaskManager);
+let eventEmitter: EventEmitter | null = null;
+if (ExpoTaskManager.addListener) {
+  eventEmitter = new EventEmitter(ExpoTaskManager);
+} else {
+  console.warn('ExpoTaskManager is not an event emitter, are you sure all the installed Expo modules are properly linked?')
+}
+
 const tasks: Map<string, Task> = new Map<string, Task>();
 
 let isRunningDuringInitialization = true;
@@ -102,30 +108,32 @@ export async function unregisterAllTasksAsync(): Promise<void> {
   await ExpoTaskManager.unregisterAllTasksAsync();
 }
 
-eventEmitter.addListener<TaskBody>(ExpoTaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
-  const { eventId, taskName } = executionInfo;
-  const task = tasks.get(taskName);
-  let result: any = null;
-
-  if (task) {
-    try {
-      // Execute JS task
-      result = await task({ data, error, executionInfo });
-    } catch (error) {
-      console.error(`TaskManager: Task "${taskName}" failed:`, error);
-    } finally {
-      // Notify manager the task is finished.
+if (eventEmitter) {
+  eventEmitter.addListener<TaskBody>(ExpoTaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
+    const { eventId, taskName } = executionInfo;
+    const task = tasks.get(taskName);
+    let result: any = null;
+  
+    if (task) {
+      try {
+        // Execute JS task
+        result = await task({ data, error, executionInfo });
+      } catch (error) {
+        console.error(`TaskManager: Task "${taskName}" failed:`, error);
+      } finally {
+        // Notify manager the task is finished.
+        await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
+      }
+    } else {
+      console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Please make sure that "TaskManager.defineTask" is called during initialization phase.`);
+      // No tasks defined -> we need to notify about finish anyway.
       await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
+      // We should also unregister such tasks automatically as the task might have been removed
+      // from the app or just renamed - in that case it needs to be registered again (with the new name).
+      await ExpoTaskManager.unregisterTaskAsync(taskName);
     }
-  } else {
-    console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Please make sure that "TaskManager.defineTask" is called during initialization phase.`);
-    // No tasks defined -> we need to notify about finish anyway.
-    await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
-    // We should also unregister such tasks automatically as the task might have been removed
-    // from the app or just renamed - in that case it needs to be registered again (with the new name).
-    await ExpoTaskManager.unregisterTaskAsync(taskName);
-  }
-});
+  });
+}
 
 // @tsapeta: Turn off `defineTask` function right after the initialization phase.
 // Promise.resolve() ensures that it will be called as a microtask just after the first event loop.

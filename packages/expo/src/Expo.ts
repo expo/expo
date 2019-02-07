@@ -36,7 +36,7 @@ import * as FacebookAds from 'expo-ads-facebook';
 import * as SplashScreen from './launch/SplashScreen';
 import * as WebBrowser from 'expo-web-browser';
 
-if (typeof Constants.manifest.env === 'object') {
+if (Constants && Constants.manifest && typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);
 }
 

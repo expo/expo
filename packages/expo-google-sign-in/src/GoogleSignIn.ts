@@ -9,7 +9,7 @@ import { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.type
 
 export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
-const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
+const DEFAULT_SCOPES = SCOPES ? [SCOPES.PROFILE, SCOPES.EMAIL] : undefined;
 
 let _initialization: Promise<void>;
 let _options: GoogleSignInOptions;

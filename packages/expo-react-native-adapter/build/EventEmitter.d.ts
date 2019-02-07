@@ -11,7 +11,7 @@ export declare type Subscription = {
 export declare class EventEmitter {
     _listenerCount: number;
     _nativeModule: NativeModule;
-    _eventEmitter: NativeEventEmitter;
+    _eventEmitter: NativeEventEmitter | null;
     constructor(nativeModule: NativeModule);
     addListener<T>(eventName: string, listener: (event: T) => void): Subscription;
     removeAllListeners(eventName: string): void;

@@ -47,8 +47,8 @@ function checkSortByKey(sortBy) {
     }
 }
 // export constants
-export const MediaType = MediaLibrary.MediaType;
-export const SortBy = MediaLibrary.SortBy;
+export const MediaType = MediaLibrary.MediaType || {};
+export const SortBy = MediaLibrary.SortBy || {};
 export async function createAssetAsync(localUri) {
     if (!MediaLibrary.createAssetAsync) {
         throw new UnavailabilityError('MediaLibrary', 'createAssetAsync');

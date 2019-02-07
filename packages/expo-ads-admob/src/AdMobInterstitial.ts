@@ -22,7 +22,7 @@ type EventNameType =
 
 type EventListener = (...args: any[]) => void;
 
-const eventEmitter = new EventEmitter(AdMobNativeModule);
+const eventEmitter = AdMobNativeModule && new EventEmitter(AdMobNativeModule);
 
 const eventHandlers: { [eventName: string]: Map<EventListener, Subscription> } = {};
 
@@ -75,7 +75,11 @@ export default {
   },
   addEventListener(type: EventNameType, handler: EventListener) {
     if (eventNames.includes(type)) {
-      eventHandlers[type].set(handler, eventEmitter.addListener(type, handler));
+      if (eventEmitter) {
+        eventHandlers[type].set(handler, eventEmitter.addListener(type, handler));
+      } else {
+        console.warn('AdMobNativeModule native module is not available, are you sure all the native dependencies are linked properly?')
+      }
     } else {
       console.log(`Event with type ${type} does not exist.`);
     }
@@ -89,6 +93,10 @@ export default {
     eventHandlers[type].delete(handler);
   },
   removeAllListeners() {
+    if (!eventEmitter) {
+      return;
+    }
+
     for (const eventName of eventNames) {
       eventEmitter.removeAllListeners(eventName);
     }

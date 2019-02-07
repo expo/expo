@@ -1,2 +1,2 @@
 import { NativeModulesProxy } from 'expo-core';
-export default NativeModulesProxy.ExponentPedometer;
+export default NativeModulesProxy.ExponentPedometer || {};

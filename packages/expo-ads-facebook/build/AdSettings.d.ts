@@ -3,7 +3,7 @@ declare const _default: {
     /**
      * Contains hash of the device id
      */
-    readonly currentDeviceHash: string;
+    readonly currentDeviceHash: string | null;
     /**
      * Registers given device with `deviceHash` to receive test Facebook ads.
      */
