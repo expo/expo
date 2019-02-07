@@ -410,7 +410,7 @@ When the scroll view is disabled, this defines how far your touch may move off o
 
 | Type                                                               | Required |
 | ------------------------------------------------------------------ | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       |
+| object: {top: number, left: number, bottom: number, right: number} | No       |
 
 ---
 
@@ -432,7 +432,7 @@ Specifies whether fonts should scale to respect Text Size accessibility settings
 
 * [View Style Props...](../view-style-props/#style)
 
-* **`textShadowOffset`**: object: ${"{"}width: number,height: number${"}"}
+* **`textShadowOffset`**: object: {width: number,height: number}
 
 * **`color`**: [color](../colors/)
 

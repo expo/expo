@@ -64,26 +64,26 @@ Many standards functions are also available on all the supported JavaScript runt
 
 Browser
 
-* [console.${"{"}log, warn, error, info, trace, table${"}"}](https://developer.chrome.com/devtools/docs/console-api)
+* [console.{log, warn, error, info, trace, table}](https://developer.chrome.com/devtools/docs/console-api)
 * [CommonJS require](https://nodejs.org/docs/latest/api/modules.html)
 * [XMLHttpRequest, fetch](../network/#content)
-* [${"{"}set, clear${"}"}${"{"}Timeout, Interval, Immediate${"}"}, ${"{"}request, cancel${"}"}AnimationFrame](../timers/#content)
+* [{set, clear}{Timeout, Interval, Immediate}, {request, cancel}AnimationFrame](../timers/#content)
 * [navigator.geolocation](../../sdk/location/)
 
 ES6
 
 * [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
-* String.prototype.${"{"}[startsWith](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith), [endsWith](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith), [repeat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeat), [includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)${"}"}
+* String.prototype.{[startsWith](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith), [endsWith](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith), [repeat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeat), [includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)}
 * [Array.from](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from)
-* Array.prototype.${"{"}[find](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find), [findIndex](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)${"}"}
+* Array.prototype.{[find](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find), [findIndex](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)}
 
 ES7
 
-* Array.prototype.${"{"}[includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)${"}"}
+* Array.prototype.{[includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)}
 
 ES8
 
-* Object.${"{"}[entries](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries), [values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values)${"}"}
+* Object.{[entries](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries), [values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values)}
 
 Specific
 

@@ -2,11 +2,24 @@
   "name": "expo-media-library",
   "version": "2.0.0",
   "description": "Expo MediaLibrary module",
-  "main": "index.js",
+  "main": "build/MediaLibrary.js",
+  "types": "build/MediaLibrary.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo"
   ],
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -16,7 +29,7 @@
     "expo-permissions-interface": "~2.0.0"
   },
   "devDependencies": {
-    "flow-bin": "^0.79.1"
+    "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

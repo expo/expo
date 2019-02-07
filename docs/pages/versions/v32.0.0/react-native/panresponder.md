@@ -125,7 +125,7 @@ static create(config)
 ```
 
 
-@param ${"{"}object${"}"} config Enhanced versions of all of the responder callbacks that provide not only the typical `ResponderSyntheticEvent`, but also the `PanResponder` gesture state. Simply replace the word `Responder` with `PanResponder` in each of the typical `onResponder*` callbacks. For example, the `config` object would look like:
+@param {object} config Enhanced versions of all of the responder callbacks that provide not only the typical `ResponderSyntheticEvent`, but also the `PanResponder` gesture state. Simply replace the word `Responder` with `PanResponder` in each of the typical `onResponder*` callbacks. For example, the `config` object would look like:
 
 * `onMoveShouldSetPanResponder: (e, gestureState) => {...}`
 * `onMoveShouldSetPanResponderCapture: (e, gestureState) => {...}`

@@ -419,6 +419,8 @@ PODS:
   - EXGoogleSignIn (2.0.0):
     - EXCore
     - GoogleSignIn (~> 4.4)
+  - EXHaptics (1.0.0):
+    - EXCore
   - EXImageLoaderInterface (2.0.0):
     - EXCore
   - EXImageManipulator (1.0.0):
@@ -1321,6 +1323,7 @@ DEPENDENCIES:
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
+  - EXHaptics (from `../packages/expo-haptics/ios`)
   - EXImageLoaderInterface (from `../packages/expo-image-loader-interface/ios`)
   - EXImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../packages/expo-image-picker/ios`)
@@ -1793,6 +1796,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl-cpp/cpp"
   EXGoogleSignIn:
     :path: "../packages/expo-google-sign-in/ios"
+  EXHaptics:
+    :path: "../packages/expo-haptics/ios"
   EXImageLoaderInterface:
     :path: "../packages/expo-image-loader-interface/ios"
   EXImageManipulator:
@@ -2027,6 +2032,7 @@ SPEC CHECKSUMS:
   EXGL: 9a5dd454a7ed9660b25b71d82d8009ac9bd6f85a
   EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
   EXGoogleSignIn: 646a6097f0e6ca5c4812b5dc2fcda1979ad9d333
+  EXHaptics: fd08f1e2a9d7722f031f6da4036aad1a57ad37c9
   EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
   EXImageManipulator: fbee2f5a70d1b976f5dcf7815fb2cdd9d556f545
   EXImagePicker: b78781a9dcfd04c6e5ea76d88ee5dc1c721a617b
@@ -2087,6 +2093,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: 1bde2c03d3e4e04c2a18f72411b83511fe61c865
+PODFILE CHECKSUM: 9bd5f1e512703a25fac86a7abba9fd67bc7ef5f0
 
 COCOAPODS: 1.5.3
