@@ -1,4 +1,3 @@
-// @flow
 import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 
@@ -7,14 +6,14 @@ import GoogleAuthentication from './GoogleAuthentication';
 import GoogleIdentity from './GoogleIdentity';
 
 class GoogleUser extends GoogleIdentity {
-  auth: ?GoogleAuthentication;
-  scopes: Array<string>;
-  hostedDomain: ?string;
-  serverAuthCode: ?string;
+  auth: GoogleAuthentication | null;
+  scopes: string[];
+  hostedDomain?: string;
+  serverAuthCode?: string;
 
-  constructor(props) {
-    super(props);
-    const { auth, scopes, hostedDomain, serverAuthCode } = props;
+  constructor(options) {
+    super(options);
+    const { auth, scopes, hostedDomain, serverAuthCode } = options;
 
     this.auth = auth;
     this.scopes = scopes;
@@ -26,20 +25,18 @@ class GoogleUser extends GoogleIdentity {
     if (!ExpoGoogleSignIn.clearCacheAsync) {
       return;
     }
-    invariant(
-      this.auth && this.auth.accessToken,
-      'GoogleSignIn: GoogleUser.clearCache(): Invalid accessToken'
-    );
+    if (!this.auth || !this.auth.accessToken) {
+      throw new Error('GoogleSignIn: GoogleUser.clearCache(): Invalid accessToken');
+    }
     return await ExpoGoogleSignIn.clearCacheAsync({ token: this.auth.accessToken });
   };
 
-  getHeaders = (): Promise<{
-    [string]: string,
-  }> => {
-    invariant(
-      this.auth && this.auth.accessToken && this.auth.accessToken !== '',
-      'GoogleSignIn: GoogleUser.getHeaders(): Invalid accessToken'
-    );
+  getHeaders = (): {
+    [key: string]: string;
+  } => {
+    if (!this.auth || !this.auth.accessToken || !this.auth.accessToken.length) {
+      throw new Error('GoogleSignIn: GoogleUser.getHeaders(): Invalid accessToken');
+    }
     return {
       Authorization: `Bearer ${this.auth.accessToken}`,
       Accept: 'application/json',
@@ -47,18 +44,18 @@ class GoogleUser extends GoogleIdentity {
     };
   };
 
-  refreshAuth = async (): Promise<?GoogleAuthentication> => {
+  refreshAuth = async (): Promise<GoogleAuthentication | null> => {
     if (!ExpoGoogleSignIn.getTokensAsync) {
       throw new UnavailabilityError('GoogleSignIn', 'getTokensAsync');
     }
     const response: {
-      idToken: ?string,
-      accessToken: ?string,
-      auth: ?{
-        accessToken: ?string,
-      },
+      idToken?: string;
+      accessToken?: string;
+      auth?: {
+        accessToken?: string;
+      };
     } = await ExpoGoogleSignIn.getTokensAsync(false);
-    if (response.idToken == null) {
+    if (response.idToken == null && this.auth) {
       response.idToken = this.auth.idToken;
     }
     if (!this.auth) {
@@ -70,21 +67,25 @@ class GoogleUser extends GoogleIdentity {
     return this.auth;
   };
 
-  equals(other: ?any): boolean {
+  equals(other: any): boolean {
     if (!super.equals(other) || !(other instanceof GoogleUser)) {
       return false;
     }
 
-    return (
-      this.auth.equals(other.auth) &&
-      this.scopes === other.scopes &&
-      this.hostedDomain === other.hostedDomain &&
-      this.serverAuthCode === other.serverAuthCode
-    );
+    if (this.auth != null) {
+      return (
+        this.auth.equals(other.auth) &&
+        this.scopes === other.scopes &&
+        this.hostedDomain === other.hostedDomain &&
+        this.serverAuthCode === other.serverAuthCode
+      );
+    } else {
+      return other.auth == null;
+    }
   }
 
-  toJSON(): { [string]: any } {
-    let auth = this.auth;
+  toJSON(): { [key: string]: any } {
+    let auth: any = this.auth;
     if (this.auth && this.auth.toJSON) {
       auth = this.auth.toJSON();
     }

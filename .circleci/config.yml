@@ -219,6 +219,9 @@ jobs:
           working_directory: ~/expo/packages/expo-file-system
       - yarn:
           command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-google-sign-in
+      - yarn:
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-local-authentication
       - yarn:
           command: build
