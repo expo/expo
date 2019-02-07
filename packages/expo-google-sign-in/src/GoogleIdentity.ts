@@ -1,17 +1,16 @@
-// @flow
 import GoogleAuthData from './GoogleAuthData';
 
 class GoogleIdentity extends GoogleAuthData {
   uid: string;
   email: string;
-  displayName: ?string;
-  photoURL: ?string;
-  firstName: ?string;
-  lastName: ?string;
+  displayName?: string;
+  photoURL?: string;
+  firstName?: string;
+  lastName?: string;
 
-  constructor(props) {
-    super(props);
-    const { uid, email, displayName, photoURL, firstName, lastName } = props;
+  constructor(options: any) {
+    super(options);
+    const { uid, email, displayName, photoURL, firstName, lastName } = options;
 
     this.uid = uid;
     this.email = email;
@@ -21,7 +20,7 @@ class GoogleIdentity extends GoogleAuthData {
     this.lastName = lastName;
   }
 
-  equals(other: ?any): boolean {
+  equals(other: any): boolean {
     if (!super.equals(other) || !(other instanceof GoogleIdentity)) {
       return false;
     }
@@ -36,7 +35,7 @@ class GoogleIdentity extends GoogleAuthData {
     );
   }
 
-  toJSON(): { [string]: any } {
+  toJSON(): { [key: string]: any } {
     return {
       ...super.toJSON(),
       uid: this.uid,

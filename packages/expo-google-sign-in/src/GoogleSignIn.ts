@@ -1,4 +1,3 @@
-// @flow
 import Constants from 'expo-constants';
 import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
@@ -6,15 +5,15 @@ import invariant from 'invariant';
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';
 import GoogleUser from './GoogleUser';
 
-import type { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
+import { GoogleSignInOptions, GoogleSignInAuthResult } from './GoogleSignIn.types';
 
 export const { ERRORS, SCOPES, TYPES } = ExpoGoogleSignIn;
 
 const DEFAULT_SCOPES = [SCOPES.PROFILE, SCOPES.EMAIL];
 
 let _initialization: Promise<void>;
-let _options: GoogleSignInOptions = {};
-let _currentUser: GoogleUser = null;
+let _options: GoogleSignInOptions;
+let _currentUser: GoogleUser | null = null;
 let _isClientUsageEnabled = false;
 
 function setCurrentUser(currentUser: GoogleUser | null): GoogleUser | null {
@@ -22,11 +21,16 @@ function setCurrentUser(currentUser: GoogleUser | null): GoogleUser | null {
   return _currentUser;
 }
 
-function validateOptions(options: ?GoogleSignInOptions = {}): GoogleSignInOptions {
-  if (options.offlineAccess) {
+function validateOptions(options?: GoogleSignInOptions): GoogleSignInOptions {
+  if (!options) {
+    return {
+      scopes: DEFAULT_SCOPES,
+    };
+  }
+  if (options.isOfflineEnabled) {
     invariant(
       typeof options.webClientId === 'string' && options.webClientId !== '',
-      'GoogleSignIn: Offline access (offlineAccess: true) requires a valid google server id `webClientId`'
+      'GoogleSignIn: Offline access (isOfflineEnabled: true) requires a valid google server id `webClientId`'
     );
   }
 
@@ -43,7 +47,7 @@ function validateOwnership() {
   );
 }
 
-async function ensureGoogleIsInitializedAsync(options: ?GoogleSignInOptions): Promise<any> {
+async function ensureGoogleIsInitializedAsync(options?: GoogleSignInOptions): Promise<any> {
   if (_initialization == null) {
     return initAsync(options);
   }
@@ -66,7 +70,7 @@ export function allowInClient() {
 
 export function getCurrentUser(): GoogleUser | null {
   return _currentUser;
-} 
+}
 
 export async function askForPlayServicesAsync(): Promise<boolean> {
   return await getPlayServiceAvailability(true);
@@ -82,19 +86,19 @@ export async function getPlayServiceAvailability(shouldAsk: boolean = false): Pr
   }
 }
 
-export async function initAsync(options: ?GoogleSignInOptions): Promise<void> {
+export async function initAsync(options?: GoogleSignInOptions): Promise<void> {
   if (!ExpoGoogleSignIn.initAsync) {
     throw new UnavailabilityError('GoogleSignIn', 'initAsync');
   }
 
-  _options = validateOptions(options || _options);
+  _options = validateOptions(options || _options || {});
 
   const hasPlayServices = await getPlayServiceAvailability();
   if (!hasPlayServices) {
-    return false;
+    return;
   }
 
-  _initialization = ExpoGoogleSignIn.initAsync(_options);
+  _initialization = ExpoGoogleSignIn.initAsync(_options || {});
 
   return _initialization;
 }
@@ -158,17 +162,14 @@ export async function getPhotoAsync(size: number = 128): Promise<string | null> 
   return await ExpoGoogleSignIn.getPhotoAsync(size);
 }
 
-
-export { GoogleAuthData } from './GoogleAuthData';
-export { GoogleAuthentication } from './GoogleAuthentication';
-export { GoogleIdentity } from './GoogleIdentity';
-export { GoogleUser } from './GoogleUser';
-export { ExpoGoogleSignIn } from './ExpoGoogleSignIn';
+export { default as GoogleAuthData } from './GoogleAuthData';
+export { default as GoogleAuthentication } from './GoogleAuthentication';
+export { default as GoogleIdentity } from './GoogleIdentity';
+export { default as GoogleUser } from './GoogleUser';
 
 export {
   GoogleSignInType,
   GoogleSignInOptions,
   GoogleSignInAuthResultType,
   GoogleSignInAuthResult,
-  GoogleSignInPlayServicesOptions,
 } from './GoogleSignIn.types';

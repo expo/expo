@@ -1,16 +1,14 @@
-// @flow
-
 export default {
   get name(): string {
     return 'ExpoGoogleSignIn';
   },
-  get ERRORS(): { [string]: string } {
+  get ERRORS(): { [key: string]: string } {
     return {};
   },
-  get SCOPES(): { [string]: string } {
+  get SCOPES(): { [key: string]: string } {
     return {};
   },
-  get TYPES(): { [string]: string } {
+  get TYPES(): { [key: string]: string } {
     return {};
   },
   async isConnectedAsync(): Promise<boolean> {
