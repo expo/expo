@@ -1,5 +1,4 @@
 import { SyntheticPlatformEmitter } from 'expo-core';
-import { UnavailabilityError } from 'expo-errors';
 
 import {
   OrientationInfo,
@@ -22,17 +21,6 @@ const OrientationLockAPIToWeb: {
   LANDSCAPE: WebOrientationLock.LANDSCAPE,
   LANDSCAPE_LEFT: WebOrientationLock.LANDSCAPE_PRIMARY,
   LANDSCAPE_RIGHT: WebOrientationLock.LANDSCAPE_SECONDARY,
-};
-
-const OrientationAPIToWeb: {
-  [orientationApi: string]: WebOrientation | WebOrientation[];
-} = {
-  PORTRAIT: [WebOrientation.PORTRAIT_PRIMARY, WebOrientation.PORTRAIT_SECONDARY],
-  PORTRAIT_UP: WebOrientation.PORTRAIT_PRIMARY,
-  PORTRAIT_DOWN: WebOrientation.PORTRAIT_SECONDARY,
-  LANDSCAPE: [WebOrientation.LANDSCAPE_PRIMARY, WebOrientation.LANDSCAPE_SECONDARY],
-  LANDSCAPE_LEFT: WebOrientation.LANDSCAPE_PRIMARY,
-  LANDSCAPE_RIGHT: WebOrientation.LANDSCAPE_SECONDARY,
 };
 
 const OrientationWebToAPI: {
@@ -95,7 +83,7 @@ async function _lockAsync(webOrientationLock: WebOrientationLock): Promise<void>
     screen['mozLockOrientation'] ||
     screen['msLockOrientation']
   ) {
-    const legacyLock = _convertToLegacyOrientationLock(webOrientationLock); // string | string[]
+    const legacyLock = _convertToLegacyOrientationLock(webOrientationLock);
     const lockOrientation =
       screen['lockOrientation'] || screen['mozLockOrientation'] || screen['msLockOrientation'];
     // correct `this` context must be passed in otherwise method call is disallowed by browser
