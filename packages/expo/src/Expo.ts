@@ -24,7 +24,10 @@ import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
 import * as Google from './Google/Google';
-import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAndroid';
+import * as Haptics from 'expo-haptics';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as IntentLauncher from 'expo-intent-launcher';
+import * as LocalAuthentication from 'expo-local-authentication';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
@@ -54,14 +57,12 @@ export { FileSystem };
 export { Font };
 export { GLView } from 'expo-gl';
 export { GoogleSignIn } from 'expo-google-sign-in';
-import * as ImageManipulator from 'expo-image-manipulator';
 export { ImageManipulator };
-import * as Haptics from 'expo-haptics';
 export { Haptics };
 import * as ImagePicker from 'expo-image-picker';
 export { ImagePicker };
-import * as LocalAuthentication from 'expo-local-authentication';
 export { LocalAuthentication };
+export { IntentLauncher };
 export { Localization } from 'expo-localization';
 export { Location };
 import * as MediaLibrary from 'expo-media-library';
@@ -85,7 +86,6 @@ export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 export { Facebook };
 export { Google };
 export { default as Icon } from './Icon';
-export { IntentLauncherAndroid };
 export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { default as Linking } from './Linking/Linking';
 export { MailComposer };
@@ -129,6 +129,13 @@ Object.defineProperties(exports, {
     get() {
       console.log('Module name `Haptic` is deprecated. Use `Haptics` instead.');
       return Haptics;
+    },
+  },
+  IntentLauncherAndroid: {
+    enumerable: true,
+    get() {
+      console.warn(`Module name 'IntentLauncherAndroid' is deprecated, use 'IntentLauncher' instead`);
+      return IntentLauncher;
     },
   },
 });
