@@ -306,7 +306,7 @@ module.exports = {
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
       PUBLIC_URL: publicUrl,
       WEB_TITLE: nativeAppManifest.expo.name,
-      SERVICE_WORKER: `<script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));</script>`,
+      SERVICE_WORKER: `<script>if ('serviceWorker' in navigator) window.addEventListener('load', function() {navigator.serviceWorker.register('/service-worker.js'));}</script>`,
     }),
 
     new webpack.HotModuleReplacementPlugin(),
