@@ -138,7 +138,7 @@ workflows:
       - expotools
       - client_android
       - client_ios
-      - iphone_build
+      - expo_client_build
       - test_suite_publish
       # TODO: fix devicefarm running tests
       #- android_test_suite:
@@ -253,7 +253,7 @@ jobs:
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
-  iphone_build:
+  expo_client_build:
     executor: mac
     steps:
       - install_nix
@@ -263,15 +263,17 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: |
-          fastlane ios create_iphone_build
-          tar \
-            -C ~/project \
-            -zcf "/tmp/shellapp.tar.gz" \
-            iphone-build/Exponent.xcarchive \
-            ios
-      - store_artifacts:
-          path: /tmp/shellapp.tar.gz
+      - run:
+          name: Build Expo Client and upload tarball
+          command: |
+            export TARBALL=ios-expo-client-$CIRCLE_SHA1.tar.gz
+            fastlane ios create_expo_client_build
+            tar \
+              -C ~/project \
+              -zcf "/tmp/$TARBALL" \
+              expo-client-build/Exponent.xcarchive \
+              ios
+            r nix run -f ~/project s3env --ignore-environment --keep AWS_ACCESS_KEY_ID --keep AWS_SECRET_ACCESS_KEY --command aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
 
   shell_app_sim_base_ios:
     executor: mac
