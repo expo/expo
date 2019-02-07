@@ -1,13 +1,13 @@
-// @flow
-
-import { Platform } from 'react-native';
-import { EventEmitter } from 'expo-core';
+import { EventEmitter, Subscription } from 'expo-core';
 import { UnavailabilityError } from 'expo-errors';
+import { Platform } from 'react-native';
+
 import MediaLibrary from './ExponentMediaLibrary';
+
 const eventEmitter = new EventEmitter(MediaLibrary);
 
-type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
-type SortByKey =
+export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
+export type SortByKey =
   | 'default'
   | 'id'
   | 'mediaType'
@@ -16,91 +16,87 @@ type SortByKey =
   | 'creationTime'
   | 'modificationTime'
   | 'duration';
-type SortByValue = [SortByKey, boolean] | SortByKey;
+export type SortByValue = [SortByKey, boolean] | SortByKey;
 
-type MediaTypeObject = {
-  audio: 'audio',
-  photo: 'photo',
-  video: 'video',
-  unknown: 'unknown',
+export type MediaTypeObject = {
+  audio: 'audio';
+  photo: 'photo';
+  video: 'video';
+  unknown: 'unknown';
 };
 
-type SortByObject = {
-  default: 'default',
-  id: 'id',
-  mediaType: 'mediaType',
-  width: 'width',
-  height: 'height',
-  creationTime: 'creationTime',
-  modificationTime: 'modificationTime',
-  duration: 'duration',
+export type SortByObject = {
+  default: 'default';
+  id: 'id';
+  mediaType: 'mediaType';
+  width: 'width';
+  height: 'height';
+  creationTime: 'creationTime';
+  modificationTime: 'modificationTime';
+  duration: 'duration';
 };
 
-type Asset = {
-  id: string,
-  filename: string,
-  uri: string,
-  mediaType: MediaTypeValue,
-  mediaSubtypes?: Array<string>, // iOS only
-  width: number,
-  height: number,
-  creationTime: number,
-  modificationTime: number,
-  duration: number,
-  albumId?: string, // Android only
+export type Asset = {
+  id: string;
+  filename: string;
+  uri: string;
+  mediaType: MediaTypeValue;
+  mediaSubtypes?: Array<string>; // iOS only
+  width: number;
+  height: number;
+  creationTime: number;
+  modificationTime: number;
+  duration: number;
+  albumId?: string; // Android only
 };
 
-type AssetInfo = Asset & {
-  localUri?: string,
-  location?: Location,
-  exif?: Object,
-  isFavorite?: boolean, //iOS only
+export type AssetInfo = Asset & {
+  localUri?: string;
+  location?: Location;
+  exif?: Object;
+  isFavorite?: boolean; //iOS only
 };
 
-type Location = {
-  latitude: number,
-  longitude: number,
+export type Location = {
+  latitude: number;
+  longitude: number;
 };
 
-type Album = {
-  id: string,
-  title: string,
-  assetCount: number,
-  type?: string, // iOS only
+export type Album = {
+  id: string;
+  title: string;
+  assetCount: number;
+  type?: string; // iOS only
 
   // iOS moments only
-  startTime: number,
-  endTime: number,
-  approximateLocation?: Location,
-  locationNames?: Array<string>,
+  startTime: number;
+  endTime: number;
+  approximateLocation?: Location;
+  locationNames?: Array<string>;
 };
 
-type AlbumsOptions = {
+export type AlbumsOptions = {
   // iOS only
-  includeSmartAlbums?: boolean,
+  includeSmartAlbums?: boolean;
 };
 
-type AssetsOptions = {
-  first?: number,
-  after?: AssetRef,
-  album?: AlbumRef,
-  sortBy?: Array<SortByValue> | SortByValue,
-  mediaType?: Array<MediaTypeValue> | MediaTypeValue,
+export type AssetsOptions = {
+  first?: number;
+  after?: AssetRef;
+  album?: AlbumRef;
+  sortBy?: Array<SortByValue> | SortByValue;
+  mediaType?: Array<MediaTypeValue> | MediaTypeValue;
 };
 
-type PagedInfo<T> = {
-  assets: Array<T>,
-  endCursor: string,
-  hasNextPage: boolean,
-  totalCount: number,
+export type PagedInfo<T> = {
+  assets: Array<T>;
+  endCursor: string;
+  hasNextPage: boolean;
+  totalCount: number;
 };
 
-type AssetRef = Asset | string;
-type AlbumRef = Album | string;
-
-type Subscription = {
-  remove: () => void,
-};
+export type AssetRef = Asset | string;
+export type AlbumRef = Album | string;
 
 function arrayize(item: any): Array<any> {
   if (Array.isArray(item)) {
@@ -109,32 +105,32 @@ function arrayize(item: any): Array<any> {
   return item ? [item] : [];
 }
 
-function getId(ref): ?string {
+function getId(ref: any): string | undefined {
   if (typeof ref === 'string') {
     return ref;
   }
   return ref ? ref.id : undefined;
 }
 
-function checkAssetIds(assetIds) {
+function checkAssetIds(assetIds: any): void {
   if (assetIds.some(id => !id || typeof id !== 'string')) {
     throw new Error('Asset ID must be a string!');
   }
 }
 
-function checkAlbumIds(albumIds) {
+function checkAlbumIds(albumIds: any): void {
   if (albumIds.some(id => !id || typeof id !== 'string')) {
     throw new Error('Album ID must be a string!');
   }
 }
 
-function checkMediaType(mediaType) {
+function checkMediaType(mediaType: any): void {
   if (Object.values(MediaType).indexOf(mediaType) === -1) {
     throw new Error(`Invalid mediaType: ${mediaType}`);
   }
 }
 
-function checkSortBy(sortBy) {
+function checkSortBy(sortBy: any): void {
   if (Array.isArray(sortBy)) {
     checkSortByKey(sortBy[0]);
 
@@ -146,7 +142,7 @@ function checkSortBy(sortBy) {
   }
 }
 
-function checkSortByKey(sortBy) {
+function checkSortByKey(sortBy: any): void {
   if (Object.values(SortBy).indexOf(sortBy) === -1) {
     throw new Error(`Invalid sortBy key: ${sortBy}`);
   }
@@ -192,9 +188,9 @@ export async function addAssetsToAlbumAsync(
   }
 
   if (Platform.OS === 'ios') {
-    return MediaLibrary.addAssetsToAlbumAsync(assetIds, albumId);
+    return await MediaLibrary.addAssetsToAlbumAsync(assetIds, albumId);
   }
-  return MediaLibrary.addAssetsToAlbumAsync(assetIds, albumId, !!copy);
+  return await MediaLibrary.addAssetsToAlbumAsync(assetIds, albumId, !!copy);
 }
 
 export async function removeAssetsFromAlbumAsync(
@@ -209,7 +205,7 @@ export async function removeAssetsFromAlbumAsync(
   const albumId = getId(album);
 
   checkAssetIds(assetIds);
-  return MediaLibrary.removeAssetsFromAlbumAsync(assetIds, albumId);
+  return await MediaLibrary.removeAssetsFromAlbumAsync(assetIds, albumId);
 }
 
 export async function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef) {
@@ -220,7 +216,7 @@ export async function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef) {
   const assetIds = arrayize(assets).map(getId);
 
   checkAssetIds(assetIds);
-  return MediaLibrary.deleteAssetsAsync(assetIds);
+  return await MediaLibrary.deleteAssetsAsync(assetIds);
 }
 
 export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
@@ -247,7 +243,7 @@ export async function getAlbumsAsync({ includeSmartAlbums = false }: AlbumsOptio
   if (!MediaLibrary.getAlbumsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAlbumsAsync');
   }
-  return MediaLibrary.getAlbumsAsync({ includeSmartAlbums });
+  return await MediaLibrary.getAlbumsAsync({ includeSmartAlbums });
 }
 
 export async function getAlbumAsync(title: string): Promise<Album> {
@@ -257,13 +253,13 @@ export async function getAlbumAsync(title: string): Promise<Album> {
   if (typeof title !== 'string') {
     throw new Error('Album title must be a string!');
   }
-  return MediaLibrary.getAlbumAsync(title);
+  return await MediaLibrary.getAlbumAsync(title);
 }
 
 export async function createAlbumAsync(
   albumName: string,
   asset?: AssetRef,
-  copyAsset?: boolean = true
+  copyAsset: boolean = true
 ): Promise<Album> {
   if (!MediaLibrary.createAlbumAsync) {
     throw new UnavailabilityError('MediaLibrary', 'createAlbumAsync');
@@ -282,8 +278,10 @@ export async function createAlbumAsync(
     throw new Error('Asset ID must be a string!');
   }
 
-  if (Platform.OS === 'ios') return MediaLibrary.createAlbumAsync(albumName, assetId);
-  return MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset);
+  if (Platform.OS === 'ios') {
+    return await MediaLibrary.createAlbumAsync(albumName, assetId);
+  }
+  return await MediaLibrary.createAlbumAsync(albumName, assetId, !!copyAsset);
 }
 
 export async function deleteAlbumsAsync(
@@ -298,9 +296,9 @@ export async function deleteAlbumsAsync(
 
   checkAlbumIds(albumIds);
   if (Platform.OS === 'android') {
-    return MediaLibrary.deleteAlbumsAsync(albumIds);
+    return await MediaLibrary.deleteAlbumsAsync(albumIds);
   }
-  return MediaLibrary.deleteAlbumsAsync(albumIds, !!assetRemove);
+  return await MediaLibrary.deleteAlbumsAsync(albumIds, !!assetRemove);
 }
 
 export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise<PagedInfo<Asset>> {
@@ -331,21 +329,20 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
   options.sortBy.forEach(checkSortBy);
   options.mediaType.forEach(checkMediaType);
 
-  return MediaLibrary.getAssetsAsync(options);
+  return await MediaLibrary.getAssetsAsync(options);
 }
 
 export function addListener(listener: () => void): Subscription {
   const subscription = eventEmitter.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
-  subscription.remove = () => this.removeSubscription(subscription);
   return subscription;
 }
 
 export function removeSubscription(subscription: Subscription): void {
-  eventEmitter.removeSubscription(subscription);
+  subscription.remove();
 }
 
 export function removeAllListeners(): void {
-  eventEmitter.removeAllListeners('mediaLibraryDidChange');
+  eventEmitter.removeAllListeners(MediaLibrary.CHANGE_LISTENER_NAME);
 }
 
 // iOS only
@@ -354,5 +351,5 @@ export async function getMomentsAsync() {
     throw new UnavailabilityError('MediaLibrary', 'getMomentsAsync');
   }
 
-  return MediaLibrary.getMomentsAsync();
+  return await MediaLibrary.getMomentsAsync();
 }
