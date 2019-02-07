@@ -1,5 +1,3 @@
-// @flow
-
 export default {
   get name(): string {
     return 'ExponentMediaLibrary';
@@ -7,7 +5,7 @@ export default {
   get CHANGE_LISTENER_NAME(): string {
     return 'mediaLibraryDidChange';
   },
-  get MediaType(): { [string]: string } {
+  get MediaType(): { [key: string]: string } {
     return {
       audio: 'audio',
       photo: 'photo',
@@ -15,7 +13,7 @@ export default {
       unknown: 'unknown',
     };
   },
-  get SortBy(): { [string]: string } {
+  get SortBy(): { [key: string]: string } {
     return {
       default: 'default',
       id: 'id',
