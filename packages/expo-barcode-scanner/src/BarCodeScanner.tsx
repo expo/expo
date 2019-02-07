@@ -76,7 +76,7 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
       throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
     }
     if (Array.isArray(barCodeTypes) && !barCodeTypes.length) {
-      throw new Error('No barCodeTypes requested, provide at least one barCodeType for scanner');
+      throw new Error('No barCodeTypes specified; provide at least one barCodeType for scanner');
     }
 
     if (Platform.OS === 'ios') {
