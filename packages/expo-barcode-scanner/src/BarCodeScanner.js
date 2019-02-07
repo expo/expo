@@ -79,7 +79,7 @@ export default class BarCodeScanner extends React.Component<Props> {
         {...nativeProps}
         ref={this.setReference}
         onBarCodeScanned={this.onObjectDetected(onBarCodeScanned || onBarCodeRead)} // onBarCodeRead is deprecated
-      /> 
+      />
     );
   }
 
@@ -93,6 +93,8 @@ export default class BarCodeScanner extends React.Component<Props> {
     }
   };
 
+  // coordinates of cornerPoints and boundingBox are represented in DP (Display-Indepent Points) unit
+  // React Native is using the same unit
   onObjectDetected = (callback: ?Function) => ({ nativeEvent }: EventCallbackArgumentsType) => {
     const { type } = nativeEvent;
     if (this.lastEvents[type] &&
