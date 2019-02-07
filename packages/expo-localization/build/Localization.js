@@ -1,18 +1,11 @@
 import ExpoLocalization from './ExpoLocalization';
-export let locale = ExpoLocalization.locale;
-export let locales = ExpoLocalization.locales;
-export let timezone = ExpoLocalization.timezone;
-export let isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
-export let country = ExpoLocalization.country;
-export let isRTL = ExpoLocalization.isRTL;
+export const locale = ExpoLocalization.locale;
+export const locales = ExpoLocalization.locales;
+export const timezone = ExpoLocalization.timezone;
+export const isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
+export const country = ExpoLocalization.country;
+export const isRTL = ExpoLocalization.isRTL;
 export async function getLocalizationAsync() {
-    const localization = await ExpoLocalization.getLocalizationAsync();
-    locale = ExpoLocalization.locale;
-    locales = ExpoLocalization.locales;
-    timezone = ExpoLocalization.timezone;
-    isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
-    country = ExpoLocalization.country;
-    isRTL = ExpoLocalization.isRTL;
-    return localization;
+    return await ExpoLocalization.getLocalizationAsync();
 }
 //# sourceMappingURL=Localization.js.map

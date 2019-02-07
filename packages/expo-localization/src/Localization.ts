@@ -12,5 +12,3 @@ export const isRTL = ExpoLocalization.isRTL;
 export async function getLocalizationAsync(): Promise<Localization> {
   return await ExpoLocalization.getLocalizationAsync();
 }
-
-export { Localization };

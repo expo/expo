@@ -4,7 +4,7 @@ export default {
         return rtlDetect.isRtlLang(this.locale);
     },
     get locale() {
-        let locale = navigator.language ||
+        const locale = navigator.language ||
             navigator['systemLanguage'] ||
             navigator['browserLanguage'] ||
             navigator['userLanguage'] ||

@@ -1,9 +1,8 @@
 import { Localization } from './Localization.types';
-export declare let locale: any;
-export declare let locales: any;
-export declare let timezone: any;
-export declare let isoCurrencyCodes: any;
-export declare let country: any;
-export declare let isRTL: any;
+export declare const locale: any;
+export declare const locales: any;
+export declare const timezone: any;
+export declare const isoCurrencyCodes: any;
+export declare const country: any;
+export declare const isRTL: any;
 export declare function getLocalizationAsync(): Promise<Localization>;
-export { Localization };
