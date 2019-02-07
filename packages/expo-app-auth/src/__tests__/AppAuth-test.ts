@@ -1,49 +1,65 @@
 import * as AppAuth from '../AppAuth';
 import ExpoAppAuth from '../ExpoAppAuth';
 
-it(`authenticates correctly`, async () => {
-  const config = {
-    issuer: 'https://accounts.google.com',
-    clientId: '<CLIENT_ID>',
-    scopes: ['profile'],
-    redirectUrl: ':/oauthredirect',
-  };
+const refreshToken = '<DEBUG_VALUE>';
+const config: any = {
+  issuer: 'https://accounts.google.com',
+  scopes: ['profile'],
+  redirectUrl: ':/oauthredirect',
+};
 
-  await AppAuth.authAsync(config);
+describe('authAsync', () => {
+  it(`authenticates correctly`, async () => {
+    const inputConfig = {
+      ...config,
+      clientId: '<CLIENT_ID>',
+    };
 
-  expect(ExpoAppAuth.executeAsync).toHaveBeenCalledWith(config);
-});
-it(`refreshes correctly`, async () => {
-  const refreshToken = '<DEBUG_VALUE>';
-  const config = {
-    issuer: 'https://accounts.google.com',
-    clientId: '<CLIENT_ID>',
-    scopes: ['profile'],
-    redirectUrl: ':/oauthredirect',
-  };
+    await AppAuth.authAsync(inputConfig);
 
-  await AppAuth.refreshAsync(config, refreshToken);
+    expect(ExpoAppAuth.executeAsync).toHaveBeenCalledWith(inputConfig);
+  });
 
-  expect(ExpoAppAuth.executeAsync).toHaveBeenCalledWith({
-    ...config,
-    refreshToken,
-    isRefresh: true,
+  it(`rejects invalid IDs`, async () => {
+    await expect(AppAuth.authAsync(config)).rejects.toThrowError(
+      'Config error: clientId must be a string'
+    );
   });
 });
 
-it(`rejects invalid IDs`, async () => {
-  const refreshToken = '<DEBUG_VALUE>';
-  const config: any = {
-    issuer: 'https://accounts.google.com',
-    scopes: ['profile'],
-    redirectUrl: ':/oauthredirect',
-  };
+describe('refreshAsync', () => {
+  it(`refreshes correctly`, async () => {
+    const inputConfig = {
+      ...config,
+      clientId: '<CLIENT_ID>',
+    };
 
-  expect(AppAuth.authAsync(config)).rejects.toThrowError('Config error: clientId must be a string');
-  expect(AppAuth.refreshAsync(config, refreshToken)).rejects.toThrowError(
-    'Config error: clientId must be a string'
-  );
-  expect(AppAuth.revokeAsync(config, {} as any)).rejects.toThrowError(
-    'Config error: clientId must be a string'
-  );
+    await AppAuth.refreshAsync(inputConfig, refreshToken);
+
+    expect(ExpoAppAuth.executeAsync).toHaveBeenCalledWith({
+      ...inputConfig,
+      refreshToken,
+      isRefresh: true,
+    });
+  });
+
+  it(`rejects invalid IDs`, async () => {
+    await expect(AppAuth.refreshAsync(config, refreshToken)).rejects.toThrowError(
+      'Config error: clientId must be a string'
+    );
+  });
+});
+
+describe('revokeAsync', () => {
+  it(`rejects when a token isn't provided`, async () => {
+    await expect(AppAuth.revokeAsync(config, {} as any)).rejects.toThrowError(
+      'Please include the token to revoke'
+    );
+  });
+
+  it(`rejects invalid IDs`, async () => {
+    await expect(AppAuth.revokeAsync(config, { token: refreshToken })).rejects.toThrowError(
+      'Config error: clientId must be a string'
+    );
+  });
 });

@@ -1,19 +1,23 @@
 import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 import ExpoAppAuth from './ExpoAppAuth';
-const isValidString = (s) => !!(s && typeof s === 'string');
+function isValidServiceConfiguration(config) {
+    return !!(config &&
+        typeof config.authorizationEndpoint === 'string' &&
+        typeof config.tokenEndpoint === 'string');
+}
 function assertValidClientId(clientId) {
-    if (!isValidString(clientId))
+    if (typeof clientId !== 'string' || !clientId.length) {
         throw new Error('Config error: clientId must be a string');
+    }
 }
 function assertValidProps({ issuer, redirectUrl, clientId, serviceConfiguration, }) {
-    const _serviceConfigIsValid = serviceConfiguration &&
-        isValidString(serviceConfiguration.authorizationEndpoint) &&
-        isValidString(serviceConfiguration.tokenEndpoint);
-    if (!isValidString(issuer) && !_serviceConfigIsValid)
+    if (typeof issuer !== 'string' && !isValidServiceConfiguration(serviceConfiguration)) {
         throw new Error('Invalid you must provide either an issuer or a service endpoints');
-    if (!isValidString(redirectUrl))
+    }
+    if (typeof redirectUrl !== 'string') {
         throw new Error('Config error: redirectUrl must be a string');
+    }
     assertValidClientId(clientId);
 }
 async function _executeAsync(props) {
@@ -58,7 +62,9 @@ export async function revokeAsync({ clientId, issuer, serviceConfiguration }, { 
         invariant(openidConfig.revocation_endpoint, 'The OpenID config does not specify a revocation endpoint');
         revocationEndpoint = openidConfig.revocation_endpoint;
     }
-    const body = `token=${token}${isClientIdProvided ? `&client_id=${clientId}` : ''}`;
+    const encodedClientID = encodeURIComponent(clientId);
+    const encodedToken = encodeURIComponent(token);
+    const body = `token=${encodedToken}${isClientIdProvided ? `&client_id=${encodedClientID}` : ''}`;
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
     try {
         const results = await fetch(revocationEndpoint, {

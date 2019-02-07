@@ -23,12 +23,12 @@ export declare type OAuthParameters = {
     acr_values?: OAuthACRValuesParameter;
     [key: string]: any;
 };
-export interface OAuthBaseProps {
+export declare type OAuthBaseProps = {
     clientId: string;
     issuer: string;
     serviceConfiguration?: OAuthServiceConfiguration;
-}
-export interface OAuthProps extends OAuthBaseProps {
+};
+export declare type OAuthProps = OAuthBaseProps & {
     redirectUrl?: string;
     clientSecret?: string;
     scopes?: Array<string>;
@@ -36,10 +36,10 @@ export interface OAuthProps extends OAuthBaseProps {
     canMakeInsecureRequests?: boolean;
     isRefresh?: boolean;
     refreshToken?: string;
-}
+};
 export declare type OAuthRevokeOptions = {
     token: string;
-    isClientIdProvided: boolean;
+    isClientIdProvided?: boolean;
 };
 export declare type TokenResponse = {
     accessToken: string | null;

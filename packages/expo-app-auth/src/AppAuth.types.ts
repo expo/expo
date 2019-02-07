@@ -97,13 +97,13 @@ export type OAuthParameters = {
   [key: string]: any;
 };
 
-export interface OAuthBaseProps {
+export type OAuthBaseProps = {
   clientId: string;
   issuer: string;
   serviceConfiguration?: OAuthServiceConfiguration;
-}
+};
 
-export interface OAuthProps extends OAuthBaseProps {
+export type OAuthProps = OAuthBaseProps & {
   redirectUrl?: string;
   clientSecret?: string;
   scopes?: Array<string>;
@@ -111,11 +111,11 @@ export interface OAuthProps extends OAuthBaseProps {
   canMakeInsecureRequests?: boolean;
   isRefresh?: boolean;
   refreshToken?: string;
-}
+};
 
 export type OAuthRevokeOptions = {
   token: string;
-  isClientIdProvided: boolean;
+  isClientIdProvided?: boolean;
 };
 
 export type TokenResponse = {

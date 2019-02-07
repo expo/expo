@@ -2,44 +2,28 @@ import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 
 import {
-  OAuthACRValuesParameter,
   OAuthBaseProps,
-  OAuthDisplayParameter,
-  OAuthIDTokenHintParameter,
-  OAuthLoginHintParameter,
-  OAuthMaxAgeParameter,
-  OAuthNonceParameter,
-  OAuthParameters,
-  OAuthPromptParameter,
   OAuthProps,
   OAuthRevokeOptions,
   OAuthServiceConfiguration,
-  OAuthUILocalesParameter,
   TokenResponse,
 } from './AppAuth.types';
 import ExpoAppAuth from './ExpoAppAuth';
 
-export {
-  OAuthServiceConfiguration,
-  OAuthDisplayParameter,
-  OAuthPromptParameter,
-  OAuthNonceParameter,
-  OAuthUILocalesParameter,
-  OAuthIDTokenHintParameter,
-  OAuthMaxAgeParameter,
-  OAuthLoginHintParameter,
-  OAuthACRValuesParameter,
-  OAuthParameters,
-  OAuthBaseProps,
-  OAuthProps,
-  OAuthRevokeOptions,
-  TokenResponse,
-};
+export * from './AppAuth.types';
 
-const isValidString = (s?: string): boolean => !!(s && typeof s === 'string');
+function isValidServiceConfiguration(config?: OAuthServiceConfiguration): boolean {
+  return !!(
+    config &&
+    typeof config.authorizationEndpoint === 'string' &&
+    typeof config.tokenEndpoint === 'string'
+  );
+}
 
 function assertValidClientId(clientId?: string): void {
-  if (!isValidString(clientId)) throw new Error('Config error: clientId must be a string');
+  if (typeof clientId !== 'string' || !clientId.length) {
+    throw new Error('Config error: clientId must be a string');
+  }
 }
 
 function assertValidProps({
@@ -48,14 +32,12 @@ function assertValidProps({
   clientId,
   serviceConfiguration,
 }: OAuthProps): void {
-  const _serviceConfigIsValid =
-    serviceConfiguration &&
-    isValidString(serviceConfiguration.authorizationEndpoint) &&
-    isValidString(serviceConfiguration.tokenEndpoint);
-
-  if (!isValidString(issuer) && !_serviceConfigIsValid)
+  if (typeof issuer !== 'string' && !isValidServiceConfiguration(serviceConfiguration)) {
     throw new Error('Invalid you must provide either an issuer or a service endpoints');
-  if (!isValidString(redirectUrl)) throw new Error('Config error: redirectUrl must be a string');
+  }
+  if (typeof redirectUrl !== 'string') {
+    throw new Error('Config error: redirectUrl must be a string');
+  }
   assertValidClientId(clientId);
 }
 
@@ -117,7 +99,9 @@ export async function revokeAsync(
     revocationEndpoint = openidConfig.revocation_endpoint;
   }
 
-  const body = `token=${token}${isClientIdProvided ? `&client_id=${clientId}` : ''}`;
+  const encodedClientID = encodeURIComponent(clientId);
+  const encodedToken = encodeURIComponent(token);
+  const body = `token=${encodedToken}${isClientIdProvided ? `&client_id=${encodedClientID}` : ''}`;
   const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
   try {
     const results = await fetch(revocationEndpoint, {
