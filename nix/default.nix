@@ -17,6 +17,5 @@ in
     };
     overlays = [
       (import ./all-packages.nix)
-      (import ./tools.nix)
     ];
   })

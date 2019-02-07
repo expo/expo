@@ -9,6 +9,7 @@ commands:
     steps:
       - run:
           name: Install common packages
+          # awscli: used to upload Expo Client shell app to S3
           # direnv: configures environment with .envrc files
           # findutils (where, find, etc): expo-module test
           # git: circleci checkout steps
@@ -20,6 +21,7 @@ commands:
           # xz: circleci checkout steps
           command: |
             nix-env -iA \
+              nixpkgs.awscli \
               nixpkgs.direnv \
               nixpkgs.findutils \
               nixpkgs.git \
@@ -267,6 +269,7 @@ jobs:
           name: Build Expo Client and upload tarball
           command: |
             export TARBALL=ios-expo-client-$CIRCLE_SHA1.tar.gz
+            aws --version
             # fastlane ios create_expo_client_build
             # tar \
             #   -C ~/project \
