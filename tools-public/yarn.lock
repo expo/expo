@@ -60,7 +60,7 @@
     lodash "4.17.5"
     subscriptions-transport-ws "0.9.8"
 
-"@expo/json-file@8.1.0", "@expo/json-file@^8.1.0":
+"@expo/json-file@8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.1.0.tgz#adcbadb20b9ac4e945a354b879b5b307c19df91f"
   integrity sha512-L2Z3Sod/TDeHNIsixMwiRKgdISJpjA81SknFArFUiD3E0eVYhgPEx++kU23KRD2f8FqwTI6tWJSM5msyxAEldg==
@@ -182,7 +182,7 @@
     babel-runtime "^6.23.0"
     exec-async "^2.2.0"
 
-"@expo/schemer@1.2.2", "@expo/schemer@^1.2.2":
+"@expo/schemer@1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@expo/schemer/-/schemer-1.2.2.tgz#4661e1663fd8b90d430b6d739a3791e2fb5176bf"
   integrity sha512-Ao5QMV7MpUyDOB9VMTgJUkb04nqPpPwNsyVlaxOd6ghvXSMdgTW6KU4WBvRh0LKsc4OfiYlzx5wFYFsBsDVVvQ==
@@ -1681,6 +1681,11 @@ deepmerge@^1.3.0:
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-1.5.2.tgz#10499d868844cdad4fee0842df8c7f6f0c95a753"
   integrity sha512-95k0GDqvBjZavkuvzx/YqVLv/6YYa17fz6ILMSf7neqQITCPbnfEnQvEgMPNjH4kgobe7+WIL0yJEHku+H3qtQ==
 
+deepmerge@^2.0.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.2.1.tgz#5d3ff22a01c00f645405a2fbc17d0778a1801170"
+  integrity sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA==
+
 default-compare@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/default-compare/-/default-compare-1.0.0.tgz#cb61131844ad84d84788fb68fd01681ca7781a2f"
@@ -2181,6 +2186,8 @@ extend-shallow@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/extend-shallow/-/extend-shallow-2.0.1.tgz#51af7d614ad9a9f610ea1bafbb989d6b1c56890f"
   integrity sha1-Ua99YUrZqfYQ6huvu5idaxxWiQ8=
+  dependencies:
+    is-extendable "^0.1.0"
 
 extend-shallow@^3.0.2:
   version "3.0.2"
@@ -5548,6 +5555,18 @@ probe-image-size@^3.1.0:
     next-tick "^1.0.0"
     stream-parser "~0.3.1"
 
+probe-image-size@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/probe-image-size/-/probe-image-size-4.0.0.tgz#d35b71759e834bcf580ea9f18ec8b9265c0977eb"
+  integrity sha512-nm7RvWUxps+2+jZKNLkd04mNapXNariS6G5WIEVzvAqjx7EUuKcY1Dp3e6oUK7GLwzJ+3gbSbPLFAASHFQrPcQ==
+  dependencies:
+    any-promise "^1.3.0"
+    deepmerge "^2.0.1"
+    inherits "^2.0.3"
+    next-tick "^1.0.0"
+    request "^2.83.0"
+    stream-parser "~0.3.1"
+
 process-nextick-args@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
@@ -5938,7 +5957,7 @@ request-promise-native@1.0.5, request-promise-native@^1.0.5:
     stealthy-require "^1.1.0"
     tough-cookie ">=2.3.3"
 
-request@2.88.0, request@^2.72.0, request@^2.81.0, request@^2.87.0:
+request@2.88.0, request@^2.72.0, request@^2.81.0, request@^2.83.0, request@^2.87.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==
@@ -6452,6 +6471,8 @@ split-string@^3.0.1, split-string@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/split-string/-/split-string-3.1.0.tgz#7cb09dda3a86585705c64b39a6466038682e8fe2"
   integrity sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==
+  dependencies:
+    extend-shallow "^3.0.0"
 
 split@0.2.x:
   version "0.2.10"
@@ -7403,16 +7424,16 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xdl@52.1.2-alpha.1:
-  version "52.1.2-alpha.1"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-52.1.2-alpha.1.tgz#1ac36ed97c897d9a62ca6e47c57c6005a762b4f4"
-  integrity sha512-DuO/htgWvbup/ir+hwjpseADDiIy546SBvGBEcUwMnKOplJ2C7RbDVDE93pt9jLSQl4RyPrIsChHETze42DCVg==
+xdl@53.0.0:
+  version "53.0.0"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-53.0.0.tgz#164afa20bd96e3c8fe92615a63782f7079462ea4"
+  integrity sha512-9xZUHNqfjT4BnzJfbu6pfDx7tD2BUzmTaTFjQd9Y0MizXxA+jMJ6DGgDWPSFDOedgrLgf0KF56lUwHFyA2u9pg==
   dependencies:
     "@expo/bunyan" "3.0.2"
-    "@expo/json-file" "^8.1.0"
+    "@expo/json-file" "8.1.0"
     "@expo/ngrok" "2.4.3"
     "@expo/osascript" "^1.9.0"
-    "@expo/schemer" "^1.2.2"
+    "@expo/schemer" "1.2.2"
     "@expo/spawn-async" "1.3.0"
     analytics-node "^2.1.0"
     axios v0.19.0-beta.1
@@ -7449,6 +7470,7 @@ xdl@52.1.2-alpha.1:
     p-timeout "2.0.1"
     pacote "9.2.3"
     plist "2.1.0"
+    probe-image-size "^4.0.0"
     querystring "0.2.0"
     raven "2.6.3"
     read-chunk "2.1.0"
