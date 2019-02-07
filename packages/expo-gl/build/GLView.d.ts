@@ -2,6 +2,12 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
 export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
+declare type Asset = {
+    uri: string;
+    localUri: string;
+    width: number;
+    height: number;
+};
 export interface NativeGLViewProps extends GLViewProps {
     /**
     * Called when the OpenGL context is created, with the context object as a parameter. The context
@@ -87,8 +93,8 @@ export default class GLView extends React.Component<NativeGLViewProps, {
     _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
     startARSessionAsync(): Promise<any>;
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
-    destroyObjectAsync(glObject: WebGLObject): Promise<any>;
-    takeSnapshotAsync(options?: SnapshotOptions): Promise<any>;
+    destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;
+    takeSnapshotAsync(options?: SnapshotOptions): Promise<Asset>;
 }
 declare class WebGLRenderingContext {
     __exglCtxId?: number;

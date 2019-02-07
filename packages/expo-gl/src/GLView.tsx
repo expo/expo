@@ -6,11 +6,19 @@ import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 const packageJSON = require('../package.json');
 
 import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
-export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps }
+import { UnavailabilityError } from 'expo-errors';
+export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
 
 declare let global: any;
 
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
+
+type Asset = {
+  uri: string;
+  localUri: string;
+  width: number;
+  height: number;
+}
 
 export interface NativeGLViewProps extends GLViewProps {
 
@@ -116,10 +124,17 @@ export default class GLView extends React.Component<NativeGLViewProps, { msaaSam
   };
 
   async startARSessionAsync(): Promise<any> {
+    if (!ExponentGLViewManager.startARSessionAsync) {
+      throw new UnavailabilityError('expo-gl', 'startARSessionAsync')
+    }
     return await ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
   }
 
   async createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture> {
+    if (!ExponentGLObjectManager.createCameraTextureAsync) {
+      throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync')
+    }
+
     const { exglCtxId } = this;
 
     if (!exglCtxId) {
@@ -134,11 +149,17 @@ export default class GLView extends React.Component<NativeGLViewProps, { msaaSam
     return new WebGLTexture(exglObjId);
   }
 
-  async destroyObjectAsync(glObject: WebGLObject): Promise<any> {
+  async destroyObjectAsync(glObject: WebGLObject): Promise<boolean> {
+    if (!ExponentGLObjectManager.destroyObjectAsync) {
+      throw new UnavailabilityError('expo-gl', 'destroyObjectAsync')
+    }
     return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
   }
 
-  async takeSnapshotAsync(options: SnapshotOptions = {}): Promise<any> {
+  async takeSnapshotAsync(options: SnapshotOptions = {}): Promise<Asset> {
+    if (!GLView.takeSnapshotAsync) {
+      throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync')
+    }
     const { exglCtxId } = this;
     return await GLView.takeSnapshotAsync(exglCtxId, options);
   }

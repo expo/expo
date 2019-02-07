@@ -30,7 +30,8 @@
     "expo-gl-cpp": "~2.0.0"
   },
   "dependencies": {
-    "prop-types": "^15.6.2"
+    "prop-types": "^15.6.2",
+    "expo-errors": "~1.0.0"
   },
   "jest": {
     "preset": "expo-module-scripts"

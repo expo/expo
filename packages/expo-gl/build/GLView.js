@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
 import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 const packageJSON = require('../package.json');
+import { UnavailabilityError } from 'expo-errors';
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
 /**
@@ -54,9 +55,15 @@ export default class GLView extends React.Component {
       </View>);
     }
     async startARSessionAsync() {
+        if (!ExponentGLViewManager.startARSessionAsync) {
+            throw new UnavailabilityError('expo-gl', 'startARSessionAsync');
+        }
         return await ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
     }
     async createCameraTextureAsync(cameraRefOrHandle) {
+        if (!ExponentGLObjectManager.createCameraTextureAsync) {
+            throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync');
+        }
         const { exglCtxId } = this;
         if (!exglCtxId) {
             throw new Error("GLView's surface is not created yet!");
@@ -66,9 +73,15 @@ export default class GLView extends React.Component {
         return new WebGLTexture(exglObjId);
     }
     async destroyObjectAsync(glObject) {
+        if (!ExponentGLObjectManager.destroyObjectAsync) {
+            throw new UnavailabilityError('expo-gl', 'destroyObjectAsync');
+        }
         return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
     }
     async takeSnapshotAsync(options = {}) {
+        if (!GLView.takeSnapshotAsync) {
+            throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync');
+        }
         const { exglCtxId } = this;
         return await GLView.takeSnapshotAsync(exglCtxId, options);
     }
