@@ -16,9 +16,6 @@ export default {
     );
     return require('./GestureHandler').GestureHandler;
   },
-  get Localization() {
-    return require('./Localization').default;
-  },
   get Stripe() {
     return require('expo-payments-stripe').PaymentsStripe;
   },
