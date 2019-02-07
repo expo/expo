@@ -2,36 +2,43 @@
 title: ScreenOrientation
 ---
 
+import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+
+export default withDocumentationElements(meta);
+
 Allows changing supported screen orientations at runtime. This will take priority over the `orientation` key in `app.json`.
 
 On both iOS and Android platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
-// TODO(quin): Add some notes here about screen orientation vs physical device orientation w/ diagrams
-
 ### Methods
 
-- [`Expo.ScreenOrientation.allowAsync(orientation)`](#exposcreenorientationallowasync)
-- [`Expo.ScreenOrientation.lockAsync(orientationLock)`](#exposcreenorientationlockasync)
-- [`Expo.ScreenOrientation.unlockAsync()`](#exposcreenorientationunlockasync)
-- [`Expo.ScreenOrientation.getOrientationAsync()`](#exposcreenorientationgetorientationasync)
-- [`Expo.ScreenOrientation.getOrientationLockAsync()`](#exposcreenorientationgetorientationlockasync)
-- [`Expo.ScreenOrientation.getPlatformOrientationLockAsync()`](#exposcreenorientationgetplatformorientationlockasync)
-- [`Expo.ScreenOrientation.supportsOrientationLockAsync(orientationLock)`](#exposcreenorientationsupportsOrientationLockAsync)
-- [`Expo.ScreenOrientation.lockPlatformAsync()`](#exposcreenorientationlockplatformAsync)
-- [`Expo.ScreenOrientation.removeOrientationChangeListeners()`](#exposcreenorientationremoveorientationchangelisteners)
-- [`Expo.ScreenOrientation.removeOrientationChangeListener(subscription)`](#exposcreenorientationremoveorientationchangelistener)
+- [`ScreenOrientation.allowAsync(orientation)`](#screenorientationallowasyncorientationlock)
+- [`ScreenOrientation.lockAsync(orientationLock)`](#screenorientationlockasyncorientationlock)
+- [`ScreenOrientation.lockPlatformAsync(platformInfo)`](#screenorientationlockplatformasyncplatforminfo)
+- [`ScreenOrientation.unlockAsync()`](#screenorientationunlockasync)
+- [`ScreenOrientation.getOrientationAsync()`](#screenorientationgetorientationasync)
+- [`ScreenOrientation.getOrientationLockAsync()`](#screenorientationgetorientationlockasync)
+- [`ScreenOrientation.getPlatformOrientationLockAsync()`](#screenorientationgetplatformorientationlockasync)
+- [`ScreenOrientation.supportsOrientationLockAsync(orientationLock)`](#screenorientationsupportsorientationlockasyncorientationlock)
+- [`ScreenOrientation.removeOrientationChangeListeners()`](#screenorientationremoveorientationchangelisteners)
+- [`ScreenOrientation.removeOrientationChangeListener(subscription)`](#screenorientationremoveorientationchangelistenersubscription)
 
 ### Enum Types
 
-- [`Expo.ScreenOrientation.Orientation`](#exposcreenorientationorientation)
-- [`Expo.ScreenOrientation.OrientationLock`](#exposcreenorientationorientationlock)
-- [`Expo.ScreenOrientation.iOSSizeClass`](#exposcreenorientationiossizeclass)
+- [`ScreenOrientation.Orientation`](#screenorientationorientation)
+- [`ScreenOrientation.OrientationLock`](#screenorientationorientationlock)
+- [`ScreenOrientation.SizeClassIOS`](#screenorientationsizeclassios)
 
 ### Object Types
 
-- [`Expo.ScreenOrientation.PlatformInfo`](#exposcreenorientationplatforminfo)
-- [`Expo.ScreenOrientation.OrientationInfo`](#exposcreenorientationorientationinfo)
-- [`EmitterSubscription`](#exposcreenorientationemittersubscription)
+- [`ScreenOrientation.PlatformOrientationInfo`](#screenorientationplatformorientationinfo)
+- [`ScreenOrientation.OrientationInfo`](#screenorientationorientationinfo)
+- [`ScreenOrientation.OrientationChangeEvent`](#screenorientationorientationchangeevent)
+- [`Subscription`](#subscription)
+
+### Function Types
+
+- [`ScreenOrientation.OrientationChangeListener`](#screenorientationorientationchangelistener)
 
 ### Errors
 
@@ -39,9 +46,9 @@ On both iOS and Android platforms, changes to the screen orientation will overri
 
 ## Methods
 
-### `Expo.ScreenOrientation.allowAsync(orientationLock)`
+### `ScreenOrientation.allowAsync(orientationLock)`
 
-Deprecated in favor of `Expo.ScreenOrientation.lockAsync`. Allow a screen orientation.
+Deprecated in favor of `ScreenOrientation.lockAsync`. Allow a screen orientation.
 
 #### Arguments
 
@@ -55,11 +62,11 @@ Returns a promise with `void` value, resolving when the orientation is set.
 
 ```javascript
 function changeScreenOrientation() {
-  Expo.ScreenOrientation.allowAsync(Expo.ScreenOrientation.Orientation.LANDSCAPE);
+  await ScreenOrientation.allowAsync(ScreenOrientation.Orientation.LANDSCAPE);
 }
 ```
 
-### `Expo.ScreenOrientation.lockAsync(orientationLock)`
+### `ScreenOrientation.lockAsync(orientationLock)`
 
 Lock the screen orientation to a particular OrientationLock.
 
@@ -80,55 +87,15 @@ Returns a promise with `void` value, resolving when the orientation is set.
 
 ```javascript
 async function changeScreenOrientation() {
-  await Expo.ScreenOrientation.lockAsync(Expo.ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+  await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
 }
 ```
 
-### `Expo.ScreenOrientation.unlockAsync()`
-
-Sets the screen orientation back to the `OrientationLock.DEFAULT` policy.
-
-#### Returns
-
-Returns a promise with `void` value, resolving when the orientation is set.
-
-### `Expo.ScreenOrientation.getOrientationAsync()`
-
-Gets the current screen orientation.
-
-#### Returns
-
-Returns a promise that resolves to an `OrientationInfo` object value that reflects the current screen orientation.
-
-### `Expo.ScreenOrientation.getOrientationLockAsync()`
-
-Gets the current screen orientation lock type.
-
-#### Returns
-
-Returns a promise with an `OrientationLock` value.
-
-### `Expo.ScreenOrientation.getPlatformOrientationLockAsync()`
-
-Gets the platform specific screen orientation lock type.
-
-#### Returns
-
-Returns a promise with a `PlatformInfo` value.
-
-### `Expo.ScreenOrientation.supportsOrientationLockAsync(orientationLock)`
-
-Returns whether the `OrientationLock` policy is supported on the device.
-
-#### Returns
-
-Returns a promise that resolves to a `boolean` value that reflects whether or not the orientationLock is supported.
-
-### `Expo.ScreenOrientation.lockPlatformAsync(platformInfo)`
+### `ScreenOrientation.lockPlatformAsync(platformInfo)`
 
 #### Arguments
 
-- **platformInfo (_PlatformInfo_)** -- The platform specific lock to apply. See the `PlatformInfo` object type for the different platform formats.
+- **platformInfo (_PlatformOrientationInfo_)** -- The platform specific lock to apply. See the `PlatformOrientationInfo` object type for the different platform formats.
 
 #### Returns
 
@@ -139,35 +106,75 @@ Returns a promise with `void` value, resolving when the orientation is set and r
 - `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - an invalid `OrientationLock` was passed in.
 - `ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK` - the platform does not support the orientation lock policy.
 
-### `Expo.ScreenOrientation.addOrientationChangeListener(listener)`
+### `ScreenOrientation.unlockAsync()`
+
+Sets the screen orientation back to the `OrientationLock.DEFAULT` policy.
+
+#### Returns
+
+Returns a promise with `void` value, resolving when the orientation is set.
+
+### `ScreenOrientation.getOrientationAsync()`
+
+Gets the current screen orientation.
+
+#### Returns
+
+Returns a promise that resolves to an `OrientationInfo` object value that reflects the current screen orientation.
+
+### `ScreenOrientation.getOrientationLockAsync()`
+
+Gets the current screen orientation lock type.
+
+#### Returns
+
+Returns a promise with an `OrientationLock` value.
+
+### `ScreenOrientation.getPlatformOrientationLockAsync()`
+
+Gets the platform specific screen orientation lock type.
+
+#### Returns
+
+Returns a promise with a `PlatformOrientationInfo` value.
+
+### `ScreenOrientation.supportsOrientationLockAsync(orientationLock)`
+
+Returns whether the `OrientationLock` policy is supported on the device.
+
+#### Returns
+
+Returns a promise that resolves to a `boolean` value that reflects whether or not the orientationLock is supported.
+
+### `ScreenOrientation.addOrientationChangeListener(listener)`
 
 Invokes the `listener` function when the screen orientation changes.
 
 #### Arguments
 
-- **listener (_Function_)**
+- **listener (_OrientationChangeListener_)**
   - Object: { orientationInfo: OrientationInfo, orientationLock: OrientationLock }: Each orientation change event will pass an object with the new `OrientationInfo` and `OrientationLock` to the listener.
 
 #### Returns
 
-Returns an `EmitterSubscription` object that can later be used to unsuscribe updates to the listener.
+Returns an `Subscription` object that can later be used to unsuscribe updates to the listener.
 
-### `Expo.ScreenOrientation.removeOrientationChangeListeners()`
+### `ScreenOrientation.removeOrientationChangeListeners()`
 
 Removes all listeners subscribed to orientation change updates.
 
-### `Expo.ScreenOrientation.removeOrientationChangeListener(subscription)`
+### `ScreenOrientation.removeOrientationChangeListener(subscription)`
 
-Unsuscribes the listener associated with the `subscription` object from all orientation change updates.
+Unsubscribes the listener associated with the `subscription` object from all orientation change updates.
 
 #### Arguments
 
-- **subscription (_EmitterSubscription_)**
+- **subscription (_Subscription_)**
   - A subscription object that manages the updates passed to a listener function on an orientation change.
 
 ## Enum types
 
-### `Orientation`
+### `ScreenOrientation.Orientation`
 
 - **`Orientation.UNKNOWN`** - An unknown screen orientation. For example, the device is flat, perhaps on a table.
 - **`Orientation.PORTRAIT`** - Portrait interface orientation (right side up or upside down).
@@ -177,7 +184,7 @@ Unsuscribes the listener associated with the `subscription` object from all orie
 - **`Orientation.LANDSCAPE_LEFT`** - Left landscape interface orientation.
 - **`Orientation.LANDSCAPE_RIGHT`** - Right landscape interface orientation.
 
-### `OrientationLock`
+### `ScreenOrientation.OrientationLock`
 
 An enum whose values can be passed to the `lockAsync` method.
 
@@ -189,32 +196,50 @@ An enum whose values can be passed to the `lockAsync` method.
 - **`OrientationLock.LANDSCAPE`** -- Any landscape orientation.
 - **`OrientationLock.LANDSCAPE_LEFT`** -- Left landscape only.
 - **`OrientationLock.LANDSCAPE_RIGHT`** -- Right landscape only.
-- **`OrientationLock.OTHER`** -- A platform specific orientation.
+- **`OrientationLock.OTHER`** -- A platform specific orientation. This is not a valid policy that can be applied in `lockAsync`.
+- **`OrientationLock.UNKNOWN`** -- An unknown screen orientation lock. This is not a valid policy that can be applied in `lockAsync`.
 
-### `iOSSizeClass`
+### `ScreenOrientation.SizeClassIOS`
 
 Each iOS device has a default set of [size classes](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) that you can use as a guide when designing your interface.
 
-- **`iOSSizeClass.VERTICAL`**
-- **`iOSSizeClass.HORIZONTAL`**
-- **`iOSSizeClass.UNKNOWN`**
+- **`SizeClassIOS.REGULAR`**
+- **`SizeClassIOS.COMPACT`**
+- **`SizeClassIOS.UNKNOWN`**
 
-## Object types
+## Object Types
 
-### `PlatformInfo`
+### `ScreenOrientation.PlatformOrientationInfo`
 
     - screenOrientationConstantAndroid (_integer_): A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation). For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED), -1 should be passed in. (Android only)
     - screenOrientationArrayIOS (Array[Orientation]): An array of orientations to allow on the iOS platform (iOS only)
 
-### `OrientationInfo`
+### `ScreenOrientation.OrientationInfo`
 
     - orientation (_Orientation_): The current orientation of the device
-    - verticalSizeClass (_iOSSizeClass_): The [vertical size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (iOS only)
-    - horizontalSizeClass (_iOSSizeClass_): The [horizontal size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (iOS only)
+    - verticalSizeClass (_SizeClassIOS_): The [vertical size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (iOS only)
+    - horizontalSizeClass (_SizeClassIOS_): The [horizontal size class](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html) of the device (iOS only)
 
-### `EmitterSubscription`
+### `ScreenOrientation.OrientationChangeEvent`
 
-A React Native [subscription object](https://github.com/facebook/react-native/blob/master/Libraries/vendor/emitter/EmitterSubscription.js).
+    - orientationLock (_OrientationLock_): The current OrientationLock of the device.
+    - orientationInfo (_OrientationInfo_): The current OrientationInfo of the device.
+
+### `Subscription`
+
+A [subscription object](https://github.com/expo/expo/blob/master/packages/expo-react-native-adapter/src/EventEmitter.ts#L16).
+
+## Function Types
+
+### `ScreenOrientation.OrientationChangeListener`
+
+#### Args
+
+    - event (_OrientationChangeEvent_): An update with the most recent OrientationChangeEvent.
+
+#### Returns
+
+`void`
 
 ## Error Codes
 
