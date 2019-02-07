@@ -7,6 +7,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     state: {
         type: null;
     };
+    componentWillUnmount(): void;
     componentWillReceiveProps(nextProps: any): void;
     _updateCameraProps: ({ type, zoom, pictureSize, flashMode, autoFocus, whiteBalance, }: NativeProps) => Promise<void>;
     getCamera: () => CameraModule;
@@ -18,6 +19,6 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     onMountError: ({ nativeEvent }: {
         nativeEvent: MountError;
     }) => void;
-    _setRef: (ref: any) => Promise<void>;
+    _setRef: (ref: any) => void;
     render(): JSX.Element;
 }

@@ -193,19 +193,30 @@ EX_EXPORT_METHOD_AS(deleteAssetsAsync,
 }
 
 EX_EXPORT_METHOD_AS(getAlbumsAsync,
-                    getAlbums:(EXPromiseResolveBlock)resolve
+                    getAlbumsWithOptions:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
   }
+
+  NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
   
-  PHFetchOptions *options = [PHFetchOptions new];
-  options.includeHiddenAssets = NO;
-  options.includeAllBurstAssets = NO;
+  PHFetchOptions *fetchOptions = [PHFetchOptions new];
+  fetchOptions.includeHiddenAssets = NO;
+  fetchOptions.includeAllBurstAssets = NO;
   
-  PHFetchResult *fetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:options];
-  NSArray<NSDictionary *> *albums = [EXMediaLibrary _exportCollections:fetchResult];
+  PHFetchResult *userAlbumsFetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:fetchOptions];
+  [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:userAlbumsFetchResult]];
+
+  if ([options[@"includeSmartAlbums"] boolValue]) {
+    PHFetchResult<PHAssetCollection *> *smartAlbumsFetchResult =
+    [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum
+                                             subtype:PHAssetCollectionSubtypeAlbumRegular
+                                             options:fetchOptions];
+    [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:smartAlbumsFetchResult]];
+  }
   
   resolve(albums);
 }

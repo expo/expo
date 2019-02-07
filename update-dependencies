@@ -18,10 +18,10 @@ newCommit=$(nix-prefetch-git --url $repo --rev $rev)
 # "default.nix" uses this file to pin exact dependencies
 echo "$newCommit" > nix/nixpkgs.json
 
+# generate binstubs for cli tools
 bin/nix-binstubs \
   awscli \
   cocoapods \
-  expo-cli \
   fastlane \
   git-crypt \
   git-lfs \
@@ -30,21 +30,18 @@ bin/nix-binstubs \
   xcpretty \
   yarn
 
-# Generate nix files for a node 8 project with the npm dependency expo
-pushd nix/nodepackages
-nix run -f $nixdir nodePackages.node2nix --command \
-  node2nix \
-  --strip-optional-dependencies \
-  --nodejs-10 \
-  --input <(echo '["expo-cli"]')
-popd
-
-# Generate nix files for the bundix ruby gem
+# Generate nix files for xcpretty ruby gem
 pushd nix/xcpretty
 rm Gemfile.lock
 nix run -f $nixdir bundler --command bundle install
 nix run -f $nixdir bundix --command bundix
 popd
+
+# Update cross-workspace tools installed by yarn
+yarn add --dev --ignore-workspace-root-check \
+  eslint@latest \
+  expo-cli@latest \
+  prettier@latest
 
 # Update all yarn.lock files
 nix run -f $nixdir fd yarn parallel bash --command bash -c "fd -a yarn.lock $scriptdir | xargs -n 1 dirname | parallel -j 1 'cd {} && echo {} && yarn install --force'"

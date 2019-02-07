@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoContacts.js","sourceRoot":"","sources":["../src/ExpoContacts.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAE/C,eAAe,kBAAkB,CAAC,YAAY,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-core';\n\nexport default NativeModulesProxy.ExpoContacts;\n"]}

@@ -422,7 +422,7 @@ The amount by which the scroll view content is inset from the edges of the scrol
 
 | Type                                                               | Required | Platform |
 | ------------------------------------------------------------------ | -------- | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       | iOS      |
+| object: {top: number, left: number, bottom: number, right: number} | No       | iOS      |
 
 ---
 
@@ -529,7 +529,7 @@ The amount by which the scroll view indicators are inset from the edges of the s
 
 | Type                                                               | Required | Platform |
 | ------------------------------------------------------------------ | -------- | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       | iOS      |
+| object: {top: number, left: number, bottom: number, right: number} | No       | iOS      |
 
 ---
 

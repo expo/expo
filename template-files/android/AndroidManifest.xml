@@ -197,6 +197,10 @@
       android:name=".oauth.OAuthResultActivity">
     </activity>
 
+    <activity
+      android:name="abi32_0_0.expo.modules.appauth.AppAuthBrowserActivity">
+    </activity>
+
     <!-- START OF STRIPE SCHEMES -->
     <activity
         android:exported="true"
