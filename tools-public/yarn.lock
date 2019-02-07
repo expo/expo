@@ -60,7 +60,7 @@
     lodash "4.17.5"
     subscriptions-transport-ws "0.9.8"
 
-"@expo/json-file@8.1.0":
+"@expo/json-file@8.1.0", "@expo/json-file@^8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.1.0.tgz#adcbadb20b9ac4e945a354b879b5b307c19df91f"
   integrity sha512-L2Z3Sod/TDeHNIsixMwiRKgdISJpjA81SknFArFUiD3E0eVYhgPEx++kU23KRD2f8FqwTI6tWJSM5msyxAEldg==
@@ -182,7 +182,7 @@
     babel-runtime "^6.23.0"
     exec-async "^2.2.0"
 
-"@expo/schemer@1.2.2":
+"@expo/schemer@1.2.2", "@expo/schemer@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@expo/schemer/-/schemer-1.2.2.tgz#4661e1663fd8b90d430b6d739a3791e2fb5176bf"
   integrity sha512-Ao5QMV7MpUyDOB9VMTgJUkb04nqPpPwNsyVlaxOd6ghvXSMdgTW6KU4WBvRh0LKsc4OfiYlzx5wFYFsBsDVVvQ==
@@ -2189,7 +2189,7 @@ extend-shallow@^2.0.1:
   dependencies:
     is-extendable "^0.1.0"
 
-extend-shallow@^3.0.2:
+extend-shallow@^3.0.0, extend-shallow@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/extend-shallow/-/extend-shallow-3.0.2.tgz#26a71aaf073b39fb2127172746131c2704028db8"
   integrity sha1-Jqcarwc7OfshJxcnRhMcJwQCjbg=
@@ -3333,7 +3333,7 @@ is-equal-shallow@^0.1.3:
   dependencies:
     is-primitive "^2.0.0"
 
-is-extendable@^0.1.1:
+is-extendable@^0.1.0, is-extendable@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/is-extendable/-/is-extendable-0.1.1.tgz#62b110e289a471418e3ec36a617d472e301dfc89"
   integrity sha1-YrEQ4omkcUGOPsNqYX1HLjAd/Ik=
@@ -7424,16 +7424,16 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xdl@53.0.0:
-  version "53.0.0"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-53.0.0.tgz#164afa20bd96e3c8fe92615a63782f7079462ea4"
-  integrity sha512-9xZUHNqfjT4BnzJfbu6pfDx7tD2BUzmTaTFjQd9Y0MizXxA+jMJ6DGgDWPSFDOedgrLgf0KF56lUwHFyA2u9pg==
+xdl@53.0.1-alpha.1:
+  version "53.0.1-alpha.1"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-53.0.1-alpha.1.tgz#12ea6ea4dab23e61069a9c71584b0d45416393ba"
+  integrity sha512-t+92GIghRqtibcx0lMNG98auNVxVo0Uy0y3BIyXuBQd2ozKJuYFnZlb0btEhm2dNaKDqY7tebQOFAgQtQoZ5EA==
   dependencies:
     "@expo/bunyan" "3.0.2"
-    "@expo/json-file" "8.1.0"
+    "@expo/json-file" "^8.1.0"
     "@expo/ngrok" "2.4.3"
     "@expo/osascript" "^1.9.0"
-    "@expo/schemer" "1.2.2"
+    "@expo/schemer" "^1.2.2"
     "@expo/spawn-async" "1.3.0"
     analytics-node "^2.1.0"
     axios v0.19.0-beta.1
