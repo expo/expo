@@ -20,10 +20,16 @@ class CameraModule {
         this.getAvailablePictureSizes = async (ratio) => {
             return PictureSizes;
         };
+        this.unmount = () => {
+            this.settings = null;
+            this.stream = null;
+        };
         this.videoElement = videoElement;
-        this.videoElement.addEventListener('loadedmetadata', () => {
-            this._syncTrackCapabilities();
-        });
+        if (this.videoElement) {
+            this.videoElement.addEventListener('loadedmetadata', () => {
+                this._syncTrackCapabilities();
+            });
+        }
     }
     get autoFocus() {
         return this._autoFocus;

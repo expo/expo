@@ -610,7 +610,7 @@ The following values work on iOS only:
 
 ### `secureTextEntry`
 
-If `true`, the text input obscures the text entered so that sensitive text like passwords stay secure. The default value is `false`. Does not work with 'multiline=${"{"}true${"}"}'.
+If `true`, the text input obscures the text entered so that sensitive text like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
 
 | Type | Required |
 | ---- | -------- |
@@ -624,7 +624,7 @@ The start and end of the text input's selection. Set start and end to the same v
 
 | Type                                | Required |
 | ----------------------------------- | -------- |
-| object: ${"{"}start: number,end: number${"}"} | No       |
+| object: {start: number,end: number} | No       |
 
 ---
 

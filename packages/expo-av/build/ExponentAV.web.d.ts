@@ -1,4 +1,4 @@
-import { PlaybackStatusToSet, PlaybackStatus, PlaybackNativeSource } from './AV';
+import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 declare const _default: {
     readonly name: string;
     getStatusForVideo(element: HTMLMediaElement): Promise<PlaybackStatus>;
@@ -8,12 +8,14 @@ declare const _default: {
     replayVideo(element: HTMLMediaElement, status: PlaybackStatusToSet): Promise<PlaybackStatus>;
     setAudioMode(): Promise<void>;
     setAudioIsEnabled(): Promise<void>;
-    getStatusForSound(): Promise<void>;
-    setErrorCallbackForSound(): Promise<void>;
-    loadForSound(): Promise<void>;
-    unloadForSound(): Promise<void>;
-    setStatusForSound(): Promise<void>;
-    replaySound(): Promise<void>;
+    getStatusForSound(element: HTMLMediaElement): Promise<PlaybackStatus>;
+    loadForSound(nativeSource: string | {
+        [key: string]: any;
+        uri: string;
+    }, fullInitialStatus: PlaybackStatusToSet): Promise<[HTMLMediaElement, PlaybackStatus]>;
+    unloadForSound(element: HTMLMediaElement): Promise<void>;
+    setStatusForSound(element: HTMLMediaElement, status: PlaybackStatusToSet): Promise<PlaybackStatus>;
+    replaySound(element: HTMLMediaElement, status: PlaybackStatusToSet): Promise<PlaybackStatus>;
     getAudioRecordingStatus(): Promise<void>;
     prepareAudioRecorder(): Promise<void>;
     startAudioRecording(): Promise<void>;

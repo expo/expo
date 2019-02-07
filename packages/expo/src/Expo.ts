@@ -24,9 +24,10 @@ import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
 import * as Google from './Google/Google';
-import * as Haptic from './Haptic/Haptic';
-import * as ImageManipulator from './ImageManipulator/ImageManipulator';
-import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAndroid';
+import * as Haptics from 'expo-haptics';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as IntentLauncher from 'expo-intent-launcher';
+import * as LocalAuthentication from 'expo-local-authentication';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
@@ -40,7 +41,8 @@ if (typeof Constants.manifest.env === 'object') {
 }
 
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
-export { Segment } from 'expo-analytics-segment';
+import * as Segment from 'expo-analytics-segment';
+export { Segment };
 export { Asset } from 'expo-asset';
 export { AppAuth } from 'expo-app-auth';
 export { BackgroundFetch };
@@ -55,13 +57,17 @@ export { FileSystem };
 export { Font };
 export { GLView } from 'expo-gl';
 export { GoogleSignIn } from 'expo-google-sign-in';
+export { ImageManipulator };
+export { Haptics };
 import * as ImagePicker from 'expo-image-picker';
 export { ImagePicker };
-export { LocalAuthentication } from 'expo-local-authentication';
+export { LocalAuthentication };
+export { IntentLauncher };
 import * as Localization from 'expo-localization';
 export { Localization };
 export { Location };
-export { MediaLibrary } from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library';
+export { MediaLibrary };
 import * as Permissions from 'expo-permissions';
 export { Permissions };
 export { Print } from 'expo-print';
@@ -80,10 +86,7 @@ export { default as DangerZone } from './DangerZone';
 export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 export { Facebook };
 export { Google };
-export { Haptic };
 export { default as Icon } from './Icon';
-export { ImageManipulator };
-export { IntentLauncherAndroid };
 export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { default as Linking } from './Linking/Linking';
 export { MailComposer };
@@ -96,7 +99,7 @@ export { Updates };
 export { Util };
 export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
-export { default as takeSnapshotAsync } from './takeSnapshotAsync';
+export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 export { Audio, Video };
 export { BlurView, VibrancyView };
 export { LinearGradient } from 'expo-linear-gradient';
@@ -120,6 +123,20 @@ Object.defineProperties(exports, {
       } else {
         return require('expo-sensors').Pedometer;
       }
+    },
+  },
+  Haptic: {
+    enumerable: false,
+    get() {
+      console.log('Module name `Haptic` is deprecated. Use `Haptics` instead.');
+      return Haptics;
+    },
+  },
+  IntentLauncherAndroid: {
+    enumerable: true,
+    get() {
+      console.warn(`Module name 'IntentLauncherAndroid' is deprecated, use 'IntentLauncher' instead`);
+      return IntentLauncher;
     },
   },
 });

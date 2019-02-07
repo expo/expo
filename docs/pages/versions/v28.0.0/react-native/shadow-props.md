@@ -36,7 +36,7 @@ Sets the drop shadow offset
 
 | Type                                   | Required | Platform |
 | -------------------------------------- | -------- | -------- |
-| object: ${"{"}width: number,height: number${"}"} | No       | iOS      |
+| object: {width: number,height: number} | No       | iOS      |
 
 ---
 
