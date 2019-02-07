@@ -362,7 +362,7 @@ When the image is resized, the corners of the size specified by `capInsets` will
 
 | Type                                                               | Required | Platform |
 | ------------------------------------------------------------------ | -------- | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       | iOS      |
+| object: {top: number, left: number, bottom: number, right: number} | No       | iOS      |
 
 ---
 

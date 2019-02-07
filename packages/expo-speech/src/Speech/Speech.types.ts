@@ -17,3 +17,15 @@ export type SpeechOptions = {
   onPause?: SpeechEventCallback | null;
   onResume?: SpeechEventCallback | null;
 };
+
+export enum VoiceQuality {
+  Default = "Default",
+  Enhanced = "Enhanced",
+}
+
+export type Voice = {
+  identifier: string;
+  name: string;
+  quality: VoiceQuality;
+  language: string;
+};
