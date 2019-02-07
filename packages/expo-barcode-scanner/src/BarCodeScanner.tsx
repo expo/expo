@@ -88,7 +88,7 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
       return await ExpoBarCodeScannerModule.scanFromURLAsync(url, [BarCodeType.qr]);
     }
 
-    // on Android if barCodeTypes not provided use all available types
+    // On other platforms, if barCodeTypes is not provided, use all available types
     const effectiveBarCodeTypes = barCodeTypes || Object.values(BarCodeType);
     return await ExpoBarCodeScannerModule.scanFromURLAsync(url, effectiveBarCodeTypes);
   }
