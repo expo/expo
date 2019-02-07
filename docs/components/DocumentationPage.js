@@ -163,15 +163,17 @@ export default class DocumentationPage extends React.Component {
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
             <div className={STYLES_ALERT}>
-              <strong className={STYLES_ALERT_BOLD}>Hey friend!</strong> We are co-hosting a
-              conference with <strong className={STYLES_ALERT_BOLD}>Software Mansion</strong>,{' '}
-              <a
-                className={STYLES_ALERT_BOLD}
-                style={{ color: Constants.colors.lila }}
-                href="https://appjs.co/"
-                target="blank">
-                learn more
-              </a>.
+              <span style={{ fontSize: 17 }}>
+                <strong className={STYLES_ALERT_BOLD}>Hi friend!</strong>{' '}
+                Meet us at App.js Conf in Krakow, Poland on April 4th and 5th with workshops and talks.{' '}
+                <a
+                  className={STYLES_ALERT_BOLD}
+                  style={{ color: Constants.colors.lila }}
+                  href="https://appjs.co/"
+                  target="blank">
+                  Learn more
+                </a>
+              </span>
             </div>
             <H1>{this.props.title}</H1>
             {this.props.children}
