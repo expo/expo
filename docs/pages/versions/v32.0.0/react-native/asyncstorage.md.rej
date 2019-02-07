@@ -1,0 +1,93 @@
+***************
+*** 236,242 ****
+  
+  | Name     | Type                                           | Required | Description                                                |
+  | -------- | ---------------------------------------------- | -------- | ---------------------------------------------------------- |
+- | callback | ?(error: ?Error, keys: ?Array<string>) => void | No       | Function that will be called the keys found and any error. |
+  
+  ---
+  
+--- 236,242 ----
+  
+  | Name     | Type                                           | Required | Description                                                |
+  | -------- | ---------------------------------------------- | -------- | ---------------------------------------------------------- |
++ | callback | ?(error: ?Error, keys: ?Array\<string\>) => void | No       | Function that will be called the keys found and any error. |
+  
+  ---
+  
+***************
+*** 280,287 ****
+  
+  | Name     | Type                                                            | Required | Description                                                                                                         |
+  | -------- | --------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+- | keys     | Array<string>                                                   | Yes      | Array of key for the items to get.                                                                                  |
+- | callback | ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void | No       | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
+  
+  Example:
+  
+--- 280,287 ----
+  
+  | Name     | Type                                                            | Required | Description                                                                                                         |
+  | -------- | --------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
++ | keys     | Array\<string\>                                                   | Yes      | Array of key for the items to get.                                                                                  |
++ | callback | ?(errors: ?Array\<Error\>, result: ?Array\<Array\<string\>\>) => void | No       | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
+  
+  Example:
+  
+***************
+*** 329,336 ****
+  
+  | Name          | Type                             | Required | Description                                                                  |
+  | ------------- | -------------------------------- | -------- | ---------------------------------------------------------------------------- |
+- | keyValuePairs | Array<Array<string>>             | Yes      | Array of key-value array for the items to set.                               |
+- | callback      | ?(errors: ?Array<Error>) => void | No       | Function that will be called with an array of any key-specific errors found. |
+  
+  ---
+  
+--- 329,336 ----
+  
+  | Name          | Type                             | Required | Description                                                                  |
+  | ------------- | -------------------------------- | -------- | ---------------------------------------------------------------------------- |
++ | keyValuePairs | Array\<Array\<string\>\>             | Yes      | Array of key-value array for the items to set.                               |
++ | callback      | ?(errors: ?Array\<Error\>) => void | No       | Function that will be called with an array of any key-specific errors found. |
+  
+  ---
+  
+***************
+*** 350,357 ****
+  
+  | Name     | Type                             | Required | Description                                                             |
+  | -------- | -------------------------------- | -------- | ----------------------------------------------------------------------- |
+- | keys     | Array<string>                    | Yes      | Array of key for the items to delete.                                   |
+- | callback | ?(errors: ?Array<Error>) => void | No       | Function that will be called an array of any key-specific errors found. |
+  
+  Example:
+  
+--- 350,357 ----
+  
+  | Name     | Type                             | Required | Description                                                             |
+  | -------- | -------------------------------- | -------- | ----------------------------------------------------------------------- |
++ | keys     | Array\<string\>                    | Yes      | Array of key for the items to delete.                                   |
++ | callback | ?(errors: ?Array\<Error\>) => void | No       | Function that will be called an array of any key-specific errors found. |
+  
+  Example:
+  
+***************
+*** 387,394 ****
+  
+  | Name          | Type                             | Required | Description                                                                  |
+  | ------------- | -------------------------------- | -------- | ---------------------------------------------------------------------------- |
+- | keyValuePairs | Array<Array<string>>             | Yes      | Array of key-value array for the items to merge.                             |
+- | callback      | ?(errors: ?Array<Error>) => void | No       | Function that will be called with an array of any key-specific errors found. |
+  
+  Example:
+  
+--- 387,394 ----
+  
+  | Name          | Type                             | Required | Description                                                                  |
+  | ------------- | -------------------------------- | -------- | ---------------------------------------------------------------------------- |
++ | keyValuePairs | Array\<Array\<string\>\>             | Yes      | Array of key-value array for the items to merge.                             |
++ | callback      | ?(errors: ?Array\<Error\>) => void | No       | Function that will be called with an array of any key-specific errors found. |
+  
+  Example:
+  

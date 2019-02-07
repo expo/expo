@@ -106,6 +106,7 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 
 If upgrading from SDK31 or below:
+
 1. add the following lines to `android/app/build.gradle`:
     ```groovy
     api 'host.exp.exponent:expo-app-loader-provider:1.0.0'

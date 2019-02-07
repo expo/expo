@@ -1,9 +1,12 @@
 import { NativeEventEmitter, Platform } from 'react-native';
 import ExponentSpeech from './ExponentSpeech';
 import { UnavailabilityError } from 'expo-errors';
-import { SpeechOptions } from './Speech.types';
+import { SpeechOptions, VoiceQuality, Voice } from './Speech.types';
 
 const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
+
+export { VoiceQuality };
+export { Voice };
 
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
@@ -59,6 +62,13 @@ export function speak(text: string, options: SpeechOptions = {}) {
   _CALLBACKS[id] = options;
   _registerListenersIfNeeded();
   ExponentSpeech.speak(String(id), text, options);
+}
+
+export async function getAvailableVoicesAsync(): Promise<Voice[]> {
+  if (!ExponentSpeech.getVoices) {
+    throw new UnavailabilityError('Speech', 'getVoices');
+  }
+  return ExponentSpeech.getVoices();
 }
 
 export async function isSpeakingAsync(): Promise<boolean> {

@@ -27,9 +27,8 @@ afterEvaluate {
 
   android.applicationVariants.each { variant ->
     def targetName = variant.name.capitalize()
-    def targetPath = variant.dirName
 
-    def assetsDir = file("$buildDir/intermediates/assets/${targetPath}")
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${targetName}/merge${targetName}Assets/out")
 
     // Bundle task name for variant
     def bundleExpoAssetsTaskName = "bundle${targetName}ExpoAssets"
@@ -41,7 +40,9 @@ afterEvaluate {
 
       // Create dirs if they are not there (e.g. the "clean" task just ran)
       doFirst {
-        assetsDir.mkdirs()
+        if (!assetsDir.exists()) {
+          assetsDir.mkdirs()
+        }
       }
 
       // Set up inputs and outputs so gradle can cache the result

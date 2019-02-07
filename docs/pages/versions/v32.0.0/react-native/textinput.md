@@ -635,7 +635,7 @@ The start and end of the text input's selection. Set start and end to the same v
 
 | Type                                | Required |
 | ----------------------------------- | -------- |
-| object: ${"{"}start: number,end: number${"}"} | No       |
+| object: {start: number,end: number} | No       |
 
 ---
 
