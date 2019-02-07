@@ -12,7 +12,7 @@ On both iOS and Android platforms, changes to the screen orientation will overri
 
 ### Methods
 
-- [`ScreenOrientation.allowAsync(orientation)`](#screenorientationallowasyncorientationlock)
+- [`ScreenOrientation.allowAsync(orientationLock)`](#screenorientationallowasyncorientationlock)
 - [`ScreenOrientation.lockAsync(orientationLock)`](#screenorientationlockasyncorientationlock)
 - [`ScreenOrientation.lockPlatformAsync(platformInfo)`](#screenorientationlockplatformasyncplatforminfo)
 - [`ScreenOrientation.unlockAsync()`](#screenorientationunlockasync)
@@ -52,7 +52,7 @@ Deprecated in favor of `ScreenOrientation.lockAsync`. Allow a screen orientation
 
 #### Arguments
 
-- **orientation (_OrientationLock_)** -- The orientation lock to apply. See the `OrientationLock` enum for possible values.
+- **orientation (_OrientationLock_)** -- The orientation lock to apply. See the [`OrientationLock`](#screenorientationorientationlock) enum for possible values.
 
 #### Returns
 
@@ -72,7 +72,7 @@ Lock the screen orientation to a particular OrientationLock.
 
 #### Arguments
 
-- **orientationLock (_OrientationLock_)** -- The orientation lock to apply. See the `OrientationLock` enum for possible values.
+- **orientationLock (_OrientationLock_)** -- The orientation lock to apply. See the [`OrientationLock`](#screenorientationorientationlock) enum for possible values.
 
 #### Returns
 
@@ -80,7 +80,7 @@ Returns a promise with `void` value, resolving when the orientation is set.
 
 #### Error Codes
 
-- `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - an invalid `OrientationLock` was passed in.
+- `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - an invalid [`OrientationLock`](#screenorientationorientationlock) was passed in.
 - `ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK` - the platform does not support the orientation lock policy.
 
 #### Example
@@ -95,7 +95,7 @@ async function changeScreenOrientation() {
 
 #### Arguments
 
-- **platformInfo (_PlatformOrientationInfo_)** -- The platform specific lock to apply. See the `PlatformOrientationInfo` object type for the different platform formats.
+- **platformInfo (_PlatformOrientationInfo_)** -- The platform specific lock to apply. See the [`PlatformOrientationInfo`](#screenorientationplatformorientationinfo) object type for the different platform formats.
 
 #### Returns
 
@@ -103,7 +103,7 @@ Returns a promise with `void` value, resolving when the orientation is set and r
 
 #### Error Codes
 
-- `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - an invalid `OrientationLock` was passed in.
+- `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - an invalid [`OrientationLock`](#screenorientationorientationlock) was passed in.
 - `ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK` - the platform does not support the orientation lock policy.
 
 ### `ScreenOrientation.unlockAsync()`
@@ -120,7 +120,7 @@ Gets the current screen orientation.
 
 #### Returns
 
-Returns a promise that resolves to an `OrientationInfo` object value that reflects the current screen orientation.
+Returns a promise that resolves to an [`OrientationInfo`](#screenorientationorientationinfo) object value that reflects the current screen orientation.
 
 ### `ScreenOrientation.getOrientationLockAsync()`
 
@@ -128,7 +128,7 @@ Gets the current screen orientation lock type.
 
 #### Returns
 
-Returns a promise with an `OrientationLock` value.
+Returns a promise with an [`OrientationLock`](#screenorientationorientationlock) value.
 
 ### `ScreenOrientation.getPlatformOrientationLockAsync()`
 
@@ -136,11 +136,11 @@ Gets the platform specific screen orientation lock type.
 
 #### Returns
 
-Returns a promise with a `PlatformOrientationInfo` value.
+Returns a promise with a [`PlatformOrientationInfo`](#screenorientationplatformorientationinfo) value.
 
 ### `ScreenOrientation.supportsOrientationLockAsync(orientationLock)`
 
-Returns whether the `OrientationLock` policy is supported on the device.
+Returns whether the [`OrientationLock`](#screenorientationorientationlock) policy is supported on the device.
 
 #### Returns
 
@@ -153,11 +153,11 @@ Invokes the `listener` function when the screen orientation changes.
 #### Arguments
 
 - **listener (_OrientationChangeListener_)**
-  - Object: { orientationInfo: OrientationInfo, orientationLock: OrientationLock }: Each orientation change event will pass an object with the new `OrientationInfo` and `OrientationLock` to the listener.
+  - Each orientation update will pass an object with the new [`OrientationChangeEvent`](#screenorientationorientationchangeevent) to the listener.
 
 #### Returns
 
-Returns an `Subscription` object that can later be used to unsuscribe updates to the listener.
+Returns an [`Subscription`](#subscription) object that can later be used to unsuscribe updates to the listener.
 
 ### `ScreenOrientation.removeOrientationChangeListeners()`
 
@@ -186,7 +186,7 @@ Unsubscribes the listener associated with the `subscription` object from all ori
 
 ### `ScreenOrientation.OrientationLock`
 
-An enum whose values can be passed to the `lockAsync` method.
+An enum whose values can be passed to the [`lockAsync`](#screenorientationlockasyncorientationlock) method.
 
 - **`OrientationLock.DEFAULT`** -- The default orientation. On iOS, this will allow all orientations except `Orientation.PORTRAIT_DOWN`. On Android, this lets the system decide the best orientation.
 - **`OrientationLock.ALL`** -- All four possible orientations
@@ -196,8 +196,8 @@ An enum whose values can be passed to the `lockAsync` method.
 - **`OrientationLock.LANDSCAPE`** -- Any landscape orientation.
 - **`OrientationLock.LANDSCAPE_LEFT`** -- Left landscape only.
 - **`OrientationLock.LANDSCAPE_RIGHT`** -- Right landscape only.
-- **`OrientationLock.OTHER`** -- A platform specific orientation. This is not a valid policy that can be applied in `lockAsync`.
-- **`OrientationLock.UNKNOWN`** -- An unknown screen orientation lock. This is not a valid policy that can be applied in `lockAsync`.
+- **`OrientationLock.OTHER`** -- A platform specific orientation. This is not a valid policy that can be applied in [`lockAsync`](#screenorientationlockasyncorientationlock).
+- **`OrientationLock.UNKNOWN`** -- An unknown screen orientation lock. This is not a valid policy that can be applied in [`lockAsync`](#screenorientationlockasyncorientationlock).
 
 ### `ScreenOrientation.SizeClassIOS`
 
@@ -243,7 +243,7 @@ A [subscription object](https://github.com/expo/expo/blob/master/packages/expo-r
 
 ## Error Codes
 
-| Code                                                | Description                                                 |
-| --------------------------------------------------- | ----------------------------------------------------------- |
-| ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK | The platform does not support the `OrientationLock` policy. |
-| ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK     | An invalid `OrientationLock` was passed in.                 |
+| Code                                                | Description                                                                                      |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK | The platform does not support the [`OrientationLock`](#screenorientationorientationlock) policy. |
+| ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK     | An invalid [`OrientationLock`](#screenorientationorientationlock) was passed in.                 |
