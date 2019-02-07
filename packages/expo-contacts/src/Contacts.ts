@@ -325,7 +325,7 @@ export async function removeContactAsync(contactId: string): Promise<any> {
 
 export async function writeContactToFileAsync(
   contactQuery: ContactQuery = {}
-): Promise<string | undefined> {
+): Promise<string | null> {
   if (!ExpoContacts.writeContactToFileAsync) {
     throw new UnavailabilityError('Contacts', 'writeContactToFileAsync');
   }
@@ -333,8 +333,8 @@ export async function writeContactToFileAsync(
 }
 
 export async function presentFormAsync(
-  contactId?: string,
-  contact?: Contact,
+  contactId?: string | null,
+  contact?: Contact | null,
   formOptions: FormOptions = {}
 ): Promise<any> {
   if (!ExpoContacts.presentFormAsync) {
