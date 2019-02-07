@@ -15,9 +15,19 @@ const {
   AdTriggerView,
 } = FacebookAds;
 
-AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+let adsManager = null;
 
-const adsManager = new NativeAdsManager('629712900716487_629713604049750');
+try {
+  AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+} catch (e) {
+  // AdSettings may not be available, shrug
+}
+
+try {
+  adsManager = new NativeAdsManager('629712900716487_629713604049750');
+} catch (e) {
+  // CTKNativeAdManager may be undefined too
+}
 
 class ChangingFullAd extends React.Component {
   state = {
