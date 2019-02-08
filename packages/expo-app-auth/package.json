@@ -27,7 +27,7 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-ads-facebook",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-app-auth",
   "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-constants-interface": "~2.0.0",
