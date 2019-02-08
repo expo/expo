@@ -41,7 +41,7 @@ Note: We support building the clients only on macOS.
 ## Running on a Device
 
 ### iOS
-- In Xcode's menu bar, open the **Xcode** drop-down menu, and select **Preferences**.  Then in the **Accounts** tab of the preferences menu, add add your personal or team apple developer account.
+- In Xcode's menu bar, open the **Xcode** drop-down menu, and select **Preferences**.  Then in the **Accounts** tab of the preferences menu, add your personal or team apple developer account.
 - Connect your test device to your computer with a USB cable.
 - In Xcode's menu bar, open the **Product** drop-down menu, select **Destination**, then in the _Device_ grouping select your device.
 - In the project navigator, select the **Exponent** project to bring up the project's settings, and then:
