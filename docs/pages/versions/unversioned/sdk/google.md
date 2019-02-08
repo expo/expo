@@ -157,8 +157,6 @@ In the Expo Client app, you can only use browser-based login (this works very we
 To use Google Sign In, you will need to create a project in Firebase (or on the Google Developer Console).
 In Firebase create a project, then enable Google Sign-In in the Authentication tab on the left side of the page.
 
-With the developer console, create an OAuth 2.0 client ID. This is, unfortunately, super annoying to do and we wish there was a way we could automate this for you, but at the moment the Google Developer Console does not expose an API.
-
 ## Server side APIs
 
 If you need to access Google APIs using the user's authorization you need to pass an additional web client id. This will add accessToken, idToken, refreshToken and serverAuthCode to the response object that you can use on your server with the client id secret.

@@ -38,7 +38,7 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
 
   if (config.behavior !== undefined) {
     console.warn(
-      "Deprecated: Native Google Sign-In has been moved to Expo.GoogleSignIn ('expo-google-sign-in') Falling back to `web` behavior"
+      "Deprecated: Native Google Sign-In has been moved to Expo.GoogleSignIn ('expo-google-sign-in') Falling back to `web` behavior. `behavior` deprecated in SDK 34"
     );
   }
 
@@ -53,13 +53,18 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
     config.clientId ||
     Platform.select({
       ios: config.iosClientId,
-      android: config.androidClientId,
-      web: config.clientId,
+      android: config.androidClientId || config['androidStandaloneAppClientId'],
+      web: config.clientId || config['iosStandaloneAppClientId'],
     });
 
-  if (config.iosClientId || config.androidClientId) {
+  if (
+    config.iosClientId ||
+    config.androidClientId ||
+    config['androidStandaloneAppClientId'] ||
+    config['iosStandaloneAppClientId']
+  ) {
     console.warn(
-      'Expo.Google.logInAsync(): `iosClientId` & `androidClientId` have been deprecated in favor of `clientId`'
+      'Expo.Google.logInAsync(): `iosClientId`, `androidClientId`, `iosStandaloneAppClientId`, and `androidStandaloneAppClientId` have been deprecated and will be removed in SDK 34 in favor of `clientId`'
     );
   }
 
