@@ -11,6 +11,8 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		31D80D35220DA35E00734ED5 /* RCTDevMenu+NCL.m in Sources */ = {isa = PBXBuildFile; fileRef = 31D80D34220DA35E00734ED5 /* RCTDevMenu+NCL.m */; };
+		31D80D38220DA45B00734ED5 /* RCTKeyCommands+NCL.m in Sources */ = {isa = PBXBuildFile; fileRef = 31D80D37220DA45B00734ED5 /* RCTKeyCommands+NCL.m */; };
 		ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
 		FE610BA1A7974C9C86BB23C5 /* libPods-NativeComponentList.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 33E405A75F5CC405DB09F30C /* libPods-NativeComponentList.a */; };
 /* End PBXBuildFile section */
@@ -24,6 +26,10 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NativeComponentList/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = NativeComponentList/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = NativeComponentList/main.m; sourceTree = "<group>"; };
+		31D80D33220DA35E00734ED5 /* RCTDevMenu+NCL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTDevMenu+NCL.h"; path = "NativeComponentList/RCTDevMenu+NCL.h"; sourceTree = "<group>"; };
+		31D80D34220DA35E00734ED5 /* RCTDevMenu+NCL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTDevMenu+NCL.m"; path = "NativeComponentList/RCTDevMenu+NCL.m"; sourceTree = "<group>"; };
+		31D80D36220DA45B00734ED5 /* RCTKeyCommands+NCL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTKeyCommands+NCL.h"; path = "NativeComponentList/RCTKeyCommands+NCL.h"; sourceTree = "<group>"; };
+		31D80D37220DA45B00734ED5 /* RCTKeyCommands+NCL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTKeyCommands+NCL.m"; path = "NativeComponentList/RCTKeyCommands+NCL.m"; sourceTree = "<group>"; };
 		33E405A75F5CC405DB09F30C /* libPods-NativeComponentList.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NativeComponentList.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DE8C21A95AD9A41BE6205BB /* Pods-NativeComponentList.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NativeComponentList.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NativeComponentList/Pods-NativeComponentList.debug.xcconfig"; sourceTree = "<group>"; };
 		BA95114FD575B5F7C5498B5E /* Pods-NativeComponentList.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NativeComponentList.release.xcconfig"; path = "Pods/Target Support Files/Pods-NativeComponentList/Pods-NativeComponentList.release.xcconfig"; sourceTree = "<group>"; };
@@ -53,6 +59,10 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				31D80D33220DA35E00734ED5 /* RCTDevMenu+NCL.h */,
+				31D80D34220DA35E00734ED5 /* RCTDevMenu+NCL.m */,
+				31D80D36220DA45B00734ED5 /* RCTKeyCommands+NCL.h */,
+				31D80D37220DA45B00734ED5 /* RCTKeyCommands+NCL.m */,
 			);
 			name = NativeComponentList;
 			sourceTree = "<group>";
@@ -208,6 +218,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				31D80D35220DA35E00734ED5 /* RCTDevMenu+NCL.m in Sources */,
+				31D80D38220DA45B00734ED5 /* RCTKeyCommands+NCL.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -385,7 +397,7 @@
 				13B07F951A680F5B00A75B9A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "NativeComponentList" */ = {
 			isa = XCConfigurationList;
@@ -394,7 +406,7 @@
 				83CBBA211A601CBA00E9B192 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
