@@ -353,8 +353,7 @@ PODS:
     - EXTaskManagerInterface
   - EXBarCodeScanner (2.0.0):
     - EXCore
-  - EXBarCodeScannerInterface (2.0.0):
-    - EXCore
+  - EXBarCodeScannerInterface (2.0.0)
   - EXBlur (1.0.0):
     - EXCore
   - EXBrightness (1.0.0):
@@ -369,13 +368,11 @@ PODS:
     - EXFileSystemInterface
     - EXImageLoaderInterface
     - EXPermissionsInterface
-  - EXCameraInterface (2.0.0):
-    - EXCore
+  - EXCameraInterface (2.0.0)
   - EXConstants (2.0.0):
     - EXConstantsInterface
     - EXCore
-  - EXConstantsInterface (2.0.0):
-    - EXCore
+  - EXConstantsInterface (2.0.0)
   - EXContacts (2.0.0):
     - EXCore
     - EXFileSystemInterface
@@ -396,18 +393,15 @@ PODS:
     - EXFaceDetectorInterface
     - GoogleMobileVision/FaceDetector (~> 1.1.0)
     - GoogleMobileVision/MVDataOutput (~> 1.1.0)
-  - EXFaceDetectorInterface (2.0.0):
-    - EXCore
+  - EXFaceDetectorInterface (2.0.0)
   - EXFileSystem (2.0.0):
     - EXCore
     - EXFileSystemInterface
-  - EXFileSystemInterface (2.0.0):
-    - EXCore
+  - EXFileSystemInterface (2.0.0)
   - EXFont (2.0.0):
     - EXCore
     - EXFontInterface
-  - EXFontInterface (2.0.0):
-    - EXCore
+  - EXFontInterface (2.0.0)
   - EXGL (2.0.0):
     - EXCameraInterface
     - EXCore
@@ -421,8 +415,7 @@ PODS:
     - GoogleSignIn (~> 4.4)
   - EXHaptics (1.0.0):
     - EXCore
-  - EXImageLoaderInterface (2.0.0):
-    - EXCore
+  - EXImageLoaderInterface (2.0.0)
   - EXImageManipulator (1.0.0):
     - EXCore
     - EXFileSystemInterface
@@ -445,14 +438,13 @@ PODS:
     - EXTaskManagerInterface
   - EXMailComposer (1.0.0):
     - EXCore
-  - EXMediaLibrary (2.0.0):
+  - EXMediaLibrary (2.1.1):
     - EXCore
     - EXPermissionsInterface
   - EXPermissions (2.0.0):
     - EXCore
     - EXPermissionsInterface
-  - EXPermissionsInterface (2.0.0):
-    - EXCore
+  - EXPermissionsInterface (2.0.0)
   - EXPrint (2.0.0):
     - EXCore
   - EXReactNativeAdapter (2.0.0):
@@ -468,8 +460,7 @@ PODS:
   - EXSensors (2.0.0):
     - EXCore
     - EXSensorsInterface
-  - EXSensorsInterface (2.0.0):
-    - EXCore
+  - EXSensorsInterface (2.0.0)
   - EXSMS (2.0.0):
     - EXCore
   - EXSpeech (1.0.0):
@@ -480,8 +471,7 @@ PODS:
     - EXConstantsInterface
     - EXCore
     - EXTaskManagerInterface
-  - EXTaskManagerInterface (1.0.0):
-    - EXCore
+  - EXTaskManagerInterface (1.0.0)
   - EXWebBrowser (1.0.0):
     - EXCore
   - Fabric (1.9.0)
@@ -2010,30 +2000,30 @@ SPEC CHECKSUMS:
   EXAV: f005cfd3df93cee2ba9856336d780beaffc9c4d8
   EXBackgroundFetch: 1b5444a094fc71e0361c80720482946c4388c9b7
   EXBarCodeScanner: 0ed39b41ccec72935521823eceed3d60c73fc43d
-  EXBarCodeScannerInterface: 4453aa03ca1e0a1c9b320aaf4ce5b7d88064d192
+  EXBarCodeScannerInterface: e652b42b1d585fe1ee373cf56a4ce52bb516e5ca
   EXBlur: 33a24162664da1367d5454366341b01ad7d9506d
   EXBrightness: 9ffd9f0462552397c0c217115610a17862b08f84
   EXCalendar: 6d75bc6681c9088a5d003f0c15d136dbf89f11b3
   EXCamera: 00936f79aafe16125c6cdc7c7ea2bf2d2c976dfe
-  EXCameraInterface: 6d990173e3f6355e575f44b38dcf61d0c90bc47e
+  EXCameraInterface: 869fde055d1d4b01757e60168087444a0c22f4e8
   EXConstants: 4ab8da18840ebae518e15541164fbaf7907e58c2
-  EXConstantsInterface: c60c068f94b78c8805bfeb35bd2bbaf859293de5
+  EXConstantsInterface: 46e32b9f7d4d5ba6a92f5eb3957d1e1984a02b06
   EXContacts: 50843152d15328802c57b0382759595848959371
   EXCore: 81304a0284b7f2e0f691b8a6bc642854e730f5e2
   EXDocumentPicker: aa5a1ecf084d3a09c74c801e0357c7739c201990
   EXErrors: 4f9a7181ac46a4acb5f11ff7d6035cd8ae36821e
   EXFacebook: 68c4f555b96c9caf02771f897cc33638a2fa68c6
   EXFaceDetector: 06f1ea23a1252b82eb06af3472b9fcf44aab74e6
-  EXFaceDetectorInterface: 8727fe51fbd189a94ccd70152a25cdef913a0ae5
+  EXFaceDetectorInterface: f70217bc92ef61b44a81a8972b72df307d6ba8f0
   EXFileSystem: 0872826fd9ebc7d842a5e389b088c93f5b9fab88
-  EXFileSystemInterface: 8e1225e4e1776ea7abf997a7ded593b4b8e86863
+  EXFileSystemInterface: a80b0cb779e18d541e9f337bc941ffa147ae7604
   EXFont: 5c0220788732ef1c4bfe0f5079a003b4c64add95
-  EXFontInterface: 06126ec4f6a67415426074c3383a82b241f087c1
+  EXFontInterface: 4f43034d716abf729495cca5940e64b45837be25
   EXGL: 9a5dd454a7ed9660b25b71d82d8009ac9bd6f85a
   EXGL-CPP: 46b589a3ed0c59ae2e7f9434897b66cd8dd2e70c
   EXGoogleSignIn: 646a6097f0e6ca5c4812b5dc2fcda1979ad9d333
   EXHaptics: fd08f1e2a9d7722f031f6da4036aad1a57ad37c9
-  EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
+  EXImageLoaderInterface: 6681d014975ef57f8a1d59371482d35c53be4e05
   EXImageManipulator: fbee2f5a70d1b976f5dcf7815fb2cdd9d556f545
   EXImagePicker: b78781a9dcfd04c6e5ea76d88ee5dc1c721a617b
   EXKeepAwake: f8d01da0507d5921135ba63799c98ac4e059ff36
@@ -2044,18 +2034,18 @@ SPEC CHECKSUMS:
   EXMailComposer: 2054a17624144bd1a210cab55e20fbe207b08908
   EXMediaLibrary: f91c4f6ff2c9be8102e06d0a4d08987231a7e286
   EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
-  EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
+  EXPermissionsInterface: 1039a5300898455d90c19a8270f8880aa36f31ca
   EXPrint: b6aab9715518cf67954ae260b71e28afd843353e
   EXReactNativeAdapter: 253efa069b53a6c8be7c3f2afd49ef6b4e97e902
   EXSecureStore: 43381aa4ebd5e6ba9df063f74a6567d2374bd6d5
   EXSegment: cfe9aed31dbd7f1455724afe89a4920e5dad0049
   EXSensors: 6aa3b3b9906beb0b574a88943d171ebc226b0fe5
-  EXSensorsInterface: 9e845bc03ad23a846fa6bcd4e2a60f1d0b1a6906
+  EXSensorsInterface: 2a6acb2a763a5cade55fe172a024c9ecde514923
   EXSMS: 2a2f1abfb2f37b686e892261678c70f39c9b7fa8
   EXSpeech: ce84a1b607b39840e42cfeddbc82e2408734d05a
   EXSQLite: 0a4c0e7bf79f4210743fc6cc8d282bd34d79fdac
   EXTaskManager: c4b3dd6936b827b040899a33e9788b42b17d5c25
-  EXTaskManagerInterface: f9869b0f902ba7ccead16e0768c6dd75603163e0
+  EXTaskManagerInterface: edb75b6d0a6d6063b5d040124ebb111b931feede
   EXWebBrowser: 536d4307fc5c994d31385b342c38abb0976dbf25
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645

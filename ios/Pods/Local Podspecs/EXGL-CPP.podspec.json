@@ -5,7 +5,7 @@
   "description": "C++ bindings for WebGL 2.0 used in Expo GL module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-gl-cpp",
   "platforms": {
     "ios": "10.0"
   },

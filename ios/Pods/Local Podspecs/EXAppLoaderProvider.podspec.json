@@ -5,7 +5,7 @@
   "description": "Expo module that provides application loaders",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-app-loader-provider",
   "platforms": {
     "ios": "10.0"
   },

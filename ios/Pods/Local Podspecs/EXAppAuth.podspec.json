@@ -5,7 +5,7 @@
   "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-ads-facebook",
   "platforms": {
     "ios": "10.0"
   },

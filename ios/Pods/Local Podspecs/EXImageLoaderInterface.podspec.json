@@ -5,7 +5,7 @@
   "description": "Expo Module interface for ImageLoader",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-image-loader-interface",
   "platforms": {
     "ios": "10.0"
   },
@@ -14,10 +14,5 @@
   },
   "source_files": "EXImageLoaderInterface/**/*.{h,m}",
   "preserve_paths": "EXImageLoaderInterface/**/*.{h,m}",
-  "requires_arc": true,
-  "dependencies": {
-    "EXCore": [
-
-    ]
-  }
+  "requires_arc": true
 }
