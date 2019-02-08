@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'dart:io' show Platform;
 
 const _methodChannel = MethodChannel('flutter_adapter.expo.io/method_calls');
 
@@ -14,15 +15,30 @@ class ExpoEvent {
 
 class ExpoModulesProxy {
   /// Call a method exposed by an Expo module. The returned [Future] is
-  /// completed with the return value of the method call, or with an error if
+  /// completed with the return value of the method call, or throws an error if
   /// the native module call failed.
   static Future<dynamic> callMethod(String moduleName, String methodName,
-          [List<dynamic> arguments = const []]) async =>
-      await _methodChannel.invokeMethod('callMethod', {
+      [List<dynamic> arguments = const []]) async {
+    if (Platform.isIOS) {
+      Map result = await _methodChannel.invokeMethod('callMethod', {
         'moduleName': moduleName,
         'methodName': methodName,
         'arguments': arguments,
       });
+
+      if (result["status"] == "error") {
+        throw result;
+      } else {
+        return result["payload"];
+      }
+    } else {
+      return await _methodChannel.invokeMethod('callMethod', {
+        'moduleName': moduleName,
+        'methodName': methodName,
+        'arguments': arguments,
+      });
+    }
+  }
 
   // Get a constant exposed by an Expo module.
   static Future<dynamic> getConstant(

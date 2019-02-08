@@ -44,17 +44,17 @@
             
             if ([methodName isEqualToString:@"startObserving"]) {
                 [eventEmitter startObserving];
-                result(nil);
+                 result(@{@"status": @"success", @"payload":[NSNull null]});
             } else if ([methodName isEqualToString:@"stopObserving"]) {
                 [eventEmitter stopObserving];
-                result(nil);
+               result(@{@"status": @"success", @"payload":[NSNull null]});
             }
         } else {
             EXPromiseResolveBlock resolve = ^(id res) {
-                result(res);
+                result(@{@"status": @"success",@"payload":res});
             };
             EXPromiseRejectBlock reject = ^(NSString* code, NSString* message, NSError* error) {
-                result([FlutterError errorWithCode:code message:message details:error]);
+                result(@{ @"status": @"error", @"code":code, @"message":message, @"details":[error localizedDescription]});
             };
             
             dispatch_async([module methodQueue], ^{

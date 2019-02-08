@@ -2,39 +2,34 @@
 # yarn lockfile v1
 
 
-"expo-core@file:../../expo-core":
-  version "2.0.0-rc.2"
-
-expo-core@~2.0.0-rc.2, expo-core@~2.0.0-rc.3:
-  version "2.0.0-rc.3"
-  resolved "https://registry.yarnpkg.com/expo-core/-/expo-core-2.0.0-rc.3.tgz#44e5df5a6a34b35b40aacaee256c70de6f03623b"
-  integrity sha512-nmZi1SPsHBc6flDY0LwfoP0ZPNk5dkYtsI0J5R53lOF9jx7DKYiWjGs3wh+TvgKvqiZfNeg9+3NrwVcXKDSbUg==
+"expo-core@file:../../expo-core", expo-core@~2.0.0:
+  version "2.0.0"
 
 "expo-permissions-interface@file:../../expo-permissions-interface":
-  version "2.0.0-rc.1"
+  version "2.0.0"
   dependencies:
-    expo-core "~2.0.0-rc.2"
+    expo-core "~2.0.0"
 
-expo-permissions-interface@~2.0.0-rc.1:
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/expo-permissions-interface/-/expo-permissions-interface-2.0.0-rc.2.tgz#9ec33c9cd49fcd07016d5ab036ed185966d78cc7"
-  integrity sha512-OZmFu6749IvQ38vBr5lhA9gC4S4pIN78mbOSMeAYx/GbbdE4GlL2m4XfoLS6Ga1Ro29TqS6Oj3uS7xP1M78sCA==
+expo-permissions-interface@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-permissions-interface/-/expo-permissions-interface-2.0.0.tgz#563fd815925fd472a1b04f292afc9bef77f14774"
+  integrity sha512-hk9oR6CtV2MLONdtPkKvOfpfmbJ48BDbYjvW/Na31znVvUAPHs7owckqSgh5BVoIAz8tMgp7fptaifEhPOayvg==
   dependencies:
-    expo-core "~2.0.0-rc.3"
+    expo-core "~2.0.0"
 
 "expo-permissions@file:../../expo-permissions":
-  version "2.0.0-rc.1"
+  version "2.0.0"
   dependencies:
-    expo-core "~2.0.0-rc.2"
-    expo-permissions-interface "~2.0.0-rc.1"
+    expo-core "~2.0.0"
+    expo-permissions-interface "~2.0.0"
 
 "expo-sensors-interface@file:../../expo-sensors-interface":
-  version "2.0.0-rc.1"
+  version "2.0.0"
   dependencies:
-    expo-core "~2.0.0-rc.2"
+    expo-core "~2.0.0"
 
 "expo-sensors@file:../../expo-sensors":
-  version "2.0.0-rc.2"
+  version "2.0.0"
   dependencies:
     invariant "^2.2.4"
 

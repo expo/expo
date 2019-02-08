@@ -1,10 +1,9 @@
 PODS:
-  - EXCore (2.0.0-rc.2)
-  - EXPermissions (2.0.0-rc.1):
+  - EXCore (2.0.0)
+  - EXPermissions (2.0.0):
     - EXCore
     - EXPermissionsInterface
-    - Flutter
-  - EXPermissionsInterface (2.0.0-rc.1):
+  - EXPermissionsInterface (2.0.0):
     - EXCore
   - expo_flutter_adapter (0.0.1):
     - Flutter
@@ -12,10 +11,10 @@ PODS:
     - Flutter
   - expo_sensors (0.0.1):
     - Flutter
-  - EXSensors (2.0.0-rc.2):
+  - EXSensors (2.0.0):
     - EXCore
     - EXSensorsInterface
-  - EXSensorsInterface (2.0.0-rc.1):
+  - EXSensorsInterface (2.0.0):
     - EXCore
   - Flutter (1.0.0)
 
@@ -52,7 +51,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   EXCore: 81304a0284b7f2e0f691b8a6bc642854e730f5e2
-  EXPermissions: 0dcce9de629a7461cd03fc760f0b926f826ddc70
+  EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
   EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
   expo_flutter_adapter: 7e896acbcd8c4da143f0a6375d5af956154242a4
   expo_permissions: 625b0ae1155810e5891df06feef86af44228903a

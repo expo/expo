@@ -55,7 +55,9 @@ class _AccelerometerWidgetState extends State<AccelerometerWidget> {
   @override
   dispose() {
     super.dispose();
-    subscription.cancel();
+    if (subscription != null) {
+      subscription.cancel();
+    }
   }
 
   @override
@@ -117,7 +119,9 @@ class _GyroscopeWidgetState extends State<GyroscopeWidget> {
   @override
   dispose() {
     super.dispose();
-    subscription.cancel();
+    if (subscription != null) {
+      subscription.cancel();
+    }
   }
 
   @override
@@ -179,7 +183,9 @@ class _MagnetometerWidgetState extends State<MagnetometerWidget> {
   @override
   dispose() {
     super.dispose();
-    subscription.cancel();
+    if (subscription != null) {
+      subscription.cancel();
+    }
   }
 
   @override
@@ -241,7 +247,9 @@ class _DeviceMotionWidgetState extends State<DeviceMotionWidget> {
   @override
   dispose() {
     super.dispose();
-    subscription.cancel();
+    if (subscription != null) {
+      subscription.cancel();
+    }
   }
 
   @override
@@ -310,7 +318,11 @@ class _PedometerWidgetState extends State<PedometerWidget> {
     Pedometer.getStepCount(
             DateTime.now().subtract(Duration(days: 1)), DateTime.now())
         .then((stepCount) {
-      setState(() => stepsSinceYesterday = stepCount);
+      setState(() {
+        if (stepCount != null) {
+          stepsSinceYesterday = stepCount;
+        }
+      });
     });
 
     Pedometer.getAvailability().then((b) {
@@ -329,7 +341,9 @@ class _PedometerWidgetState extends State<PedometerWidget> {
   @override
   dispose() {
     super.dispose();
-    subscription.cancel();
+    if (subscription != null) {
+      subscription.cancel();
+    }
   }
 
   @override

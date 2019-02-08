@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:expo_flutter_adapter/expo_modules_proxy.dart';
 
 /// The step count object returned from the events stream.
@@ -23,13 +24,23 @@ class Pedometer {
       );
 
   /// Returns the number of steps taken in the specified timeframe.
+  /// This method returns null if an error occurs, or if run on Android which doesn't have this capability.
   static Future<int> getStepCount(DateTime startDate, DateTime endDate) async {
-    return ((await ExpoModulesProxy.callMethod(
-            'ExponentPedometer', 'getStepCountAsync', [
-      startDate.millisecondsSinceEpoch,
-      endDate.millisecondsSinceEpoch
-    ]))["steps"] as num)
-        .toInt();
+    if (Platform.isIOS) {
+      try {
+        return ((await ExpoModulesProxy.callMethod(
+                'ExponentPedometer', 'getStepCountAsync', [
+          startDate.millisecondsSinceEpoch,
+          endDate.millisecondsSinceEpoch
+        ]))["steps"] as num)
+            .toInt();
+      } catch (e) {
+        print(e);
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   /// Checks if a pedometer is available on the device, and asks for permission to use it if necessary.
