@@ -32,6 +32,7 @@ On both iOS and Android platforms, changes to the screen orientation will overri
 - [`ScreenOrientation.Orientation`](#screenorientationorientation)
 - [`ScreenOrientation.OrientationLock`](#screenorientationorientationlock)
 - [`ScreenOrientation.SizeClassIOS`](#screenorientationsizeclassios)
+- [`ScreenOrientation.WebOrientationLock`](#screenorientationweborientationlock)
 
 ### Object Types
 
@@ -211,12 +212,26 @@ Each iOS device has a default set of [size classes](https://developer.apple.com/
 - **`SizeClassIOS.COMPACT`**
 - **`SizeClassIOS.UNKNOWN`**
 
+### `ScreenOrientation.WebOrientationLock`
+
+An enum representing the lock policies that can be applied on the web platform, modelled after the [W3C specification](https://w3c.github.io/screen-orientation/#dom-orientationlocktype). These values can be applied through the [`lockPlatformAsync`](#screenorientationlockplatformasyncplatforminfo) method.
+
+- **`PORTRAIT_PRIMARY`**
+- **`PORTRAIT_SECONDARY`**
+- **`PORTRAIT`**
+- **`LANDSCAPE_PRIMARY`**
+- **`LANDSCAPE_SECONDARY`**
+- **`LANDSCAPE`**
+- **`ANY`**
+- **`UNKNOWN`**
+
 ## Object Types
 
 ### `ScreenOrientation.PlatformOrientationInfo`
 
     - screenOrientationConstantAndroid (_integer_): A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation). For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED), -1 should be passed in. (Android only)
     - screenOrientationArrayIOS (Array[Orientation]): An array of orientations to allow on the iOS platform (iOS only)
+    - screenOrientationLockWebOrientation (_WebOrientationLock_): A web orientation lock to apply in the browser (web only)
 
 ### `ScreenOrientation.OrientationInfo`
 
