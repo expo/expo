@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoCalendar.web.js","sourceRoot":"","sources":["../src/ExpoCalendar.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,cAAc,CAAC;IACxB,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExpoCalendar';\n  },\n};\n"]}

@@ -43,7 +43,6 @@
 #define FBSDK_SERVER_CONFIGURATION_SMART_LOGIN_MENU_ICON_URL_KEY @"smarstLoginBookmarkMenuURL"
 #define FBSDK_SERVER_CONFIGURATION_UPDATE_MESSAGE_KEY @"SDKUpdateMessage"
 #define FBSDK_SERVER_CONFIGURATION_EVENT_BINDINGS  @"eventBindings"
-#define FBSDK_SERVER_CONFIGURATION_CODELESS_SETUP_ENABLED_KEY @"codelessSetupEnabled"
 #define FBSDK_SERVER_CONFIGURATION_VERSION_KEY @"version"
 #define FBSDK_SERVER_CONFIGURATION_TRACK_UNINSTALL_ENABLED_KEY @"trackAppUninstallEnabled"
 
@@ -102,7 +101,6 @@ implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
         smartLoginMenuIconURL:(NSURL *)smartLoginMenuIconURL
                 updateMessage:(NSString *)updateMessage
                 eventBindings:(NSArray *)eventBindings
-         codelessSetupEnabled:(BOOL)codelessSetupEnabled
 {
   if ((self = [super init])) {
     _appID = [appID copy];
@@ -129,7 +127,6 @@ implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
     _smartLoginBookmarkIconURL = [smartLoginBookmarkIconURL copy];
     _updateMessage = [updateMessage copy];
     _eventBindings = eventBindings;
-    _codelessSetupEnabled = codelessSetupEnabled;
     _version = FBSDKServerConfigurationVersion;
   }
   return self;
@@ -215,7 +212,6 @@ implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
   NSURL *smartLoginMenuIconURL = [decoder decodeObjectOfClass:[NSURL class] forKey:FBSDK_SERVER_CONFIGURATION_SMART_LOGIN_MENU_ICON_URL_KEY];
   NSString *updateMessage = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDK_SERVER_CONFIGURATION_UPDATE_MESSAGE_KEY];
   NSArray *eventBindings = [decoder decodeObjectOfClass:[NSArray class] forKey:FBSDK_SERVER_CONFIGURATION_EVENT_BINDINGS];
-  BOOL codelessSetupEnabled = [decoder decodeBoolForKey:FBSDK_SERVER_CONFIGURATION_CODELESS_SETUP_ENABLED_KEY];
   NSInteger version = [decoder decodeIntegerForKey:FBSDK_SERVER_CONFIGURATION_VERSION_KEY];
   FBSDKServerConfiguration *configuration = [self initWithAppID:appID
                                                         appName:appName
@@ -241,7 +237,6 @@ implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
                                           smartLoginMenuIconURL:smartLoginMenuIconURL
                                                   updateMessage:updateMessage
                                                   eventBindings:eventBindings
-                                           codelessSetupEnabled:codelessSetupEnabled
                                              ];
   configuration->_version = version;
   return configuration;
@@ -275,7 +270,6 @@ implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
   [encoder encodeObject:_smartLoginMenuIconURL forKey:FBSDK_SERVER_CONFIGURATION_SMART_LOGIN_MENU_ICON_URL_KEY];
   [encoder encodeObject:_updateMessage forKey:FBSDK_SERVER_CONFIGURATION_UPDATE_MESSAGE_KEY];
   [encoder encodeObject:_eventBindings forKey:FBSDK_SERVER_CONFIGURATION_EVENT_BINDINGS];
-  [encoder encodeBool:_codelessSetupEnabled forKey:FBSDK_SERVER_CONFIGURATION_CODELESS_SETUP_ENABLED_KEY];
   [encoder encodeInteger:_version forKey:FBSDK_SERVER_CONFIGURATION_VERSION_KEY];
 }
 

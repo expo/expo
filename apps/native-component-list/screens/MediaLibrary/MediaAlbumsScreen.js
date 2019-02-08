@@ -1,6 +1,6 @@
 import React from 'react';
 import { MediaLibrary } from 'expo';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, Platform, Switch } from 'react-native';
 
 import MonoText from '../../components/MonoText';
 
@@ -10,11 +10,24 @@ export default class MediaAlbumsScreen extends React.Component {
   };
 
   state = {
+    includeSmartAlbums: false,
     albums: [],
   };
 
-  async componentWillMount() {
-    const albums = await MediaLibrary.getAlbumsAsync();
+  componentDidMount() {
+    this.fetchAlbums();
+  }
+
+  componentDidUpdate(lastProps, lastState) {
+    if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
+      this.fetchAlbums();
+    }
+  }
+
+  async fetchAlbums() {
+    const albums = await MediaLibrary.getAlbumsAsync({
+      includeSmartAlbums: this.state.includeSmartAlbums,
+    });
     this.setState({ albums });
   }
 
@@ -36,7 +49,7 @@ export default class MediaAlbumsScreen extends React.Component {
     );
   };
 
-  render() {
+  renderContent() {
     const { albums } = this.state;
 
     if (albums.length === 0) {
@@ -58,9 +71,44 @@ export default class MediaAlbumsScreen extends React.Component {
       />
     );
   }
+
+  renderSmartAlbumsToggle() {
+    return (
+      <View style={styles.includeSmartAlbumsRow}>
+        <Text style={styles.includeSmartAlbumsTitle}>Include smart albums</Text>
+        <Switch
+          value={this.state.includeSmartAlbums}
+          onValueChange={() =>
+            this.setState(state => ({ includeSmartAlbums: !state.includeSmartAlbums }))
+          }
+        />
+      </View>
+    );
+  }
+
+  render() {
+    return (
+      <View style={styles.fill}>
+        {Platform.OS === 'ios' && this.renderSmartAlbumsToggle()}
+        {this.renderContent()}
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
+  includeSmartAlbumsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#cccccc',
+  },
+  includeSmartAlbumsTitle: { flex: 1, fontSize: 16 },
   album: {
     flex: 1,
     paddingVertical: 5,

@@ -126,6 +126,6 @@ didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result
  @param loginButton the sender
  @return YES if the login should be allowed to proceed, NO otherwise
  */
-- (BOOL) loginButtonWillLogin:(FBSDKLoginButton *)loginButton;
+- (BOOL)loginButtonWillLogin:(FBSDKLoginButton *)loginButton;
 
 @end

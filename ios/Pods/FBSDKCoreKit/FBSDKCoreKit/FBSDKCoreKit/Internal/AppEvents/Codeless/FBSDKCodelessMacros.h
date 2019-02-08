@@ -58,6 +58,12 @@
 #define CODELESS_INDEXING_ENDPOINT              @"app_indexing"
 #define CODELESS_INDEXING_SESSION_ENDPOINT      @"app_indexing_session"
 
+#define CODELESS_SETUP_ENABLED_FIELD            @"auto_event_setup_enabled"
+#define CODELESS_SETUP_ENABLED_KEY              @"codeless_setup_enabled"
+#define CODELESS_SETTING_KEY                    @"com.facebook.sdk:codelessSetting%@"
+#define CODELESS_SETTING_TIMESTAMP_KEY          @"codeless_setting_timestamp"
+#define CODELESS_SETTING_CACHE_TIMEOUT          (7 * 24 * 60 * 60)
+
 //  keys for view tree
 #define CODELESS_VIEW_TREE_CLASS_NAME_KEY       @"classname"
 #define CODELESS_VIEW_TREE_CLASS_TYPE_BIT_MASK_KEY  @"classtypebitmask"

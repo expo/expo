@@ -68,6 +68,8 @@ export default class ExpoApisScreen extends React.Component {
   _getApis = () => {
     return Platform.select({
       web: [
+        'ActionSheet',
+        'Audio',
         'AuthSession',
         'Constants',
         'DocumentPicker',
@@ -90,8 +92,10 @@ export default class ExpoApisScreen extends React.Component {
         'SMS',
         'TextToSpeech',
         'Util',
+        'ViewShot',
       ],
       default: [
+        'ActionSheet',
         'AppAuth',
         'Audio',
         'AuthSession',
@@ -107,7 +111,7 @@ export default class ExpoApisScreen extends React.Component {
         'Geocoding',
         'Google',
         'GoogleSignIn',
-        'Haptic',
+        'Haptics',
         'ImagePicker',
         'ImageManipulator',
         'IntentLauncher',

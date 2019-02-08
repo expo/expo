@@ -40,6 +40,10 @@
   [_kernelService sensorModuleDidSubscribeForMagnetometerUpdatesOfExperience:_experienceId withHandler:handlerBlock];
 }
 
+- (void)sensorModuleDidSubscribeForBarometerUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *))handlerBlock {
+  [_kernelService sensorModuleDidSubscribeForBarometerUpdatesOfExperience:_experienceId withHandler:handlerBlock];
+}
+
 - (void)sensorModuleDidUnsubscribeForAccelerometerUpdates:(id)scopedSensorModule {
   [_kernelService sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:_experienceId];
 }
@@ -58,6 +62,10 @@
 
 - (void)sensorModuleDidUnsubscribeForMagnetometerUpdates:(id)scopedSensorModule {
   [_kernelService sensorModuleDidUnsubscribeForMagnetometerUpdatesOfExperience:_experienceId];
+}
+
+- (void)sensorModuleDidUnsubscribeForBarometerUpdates:(id)scopedSensorModule {
+  [_kernelService sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:_experienceId];
 }
 
 - (void)setAccelerometerUpdateInterval:(NSTimeInterval)intervalMs {
@@ -104,8 +112,12 @@
   return [_kernelService isMagnetometerAvailable];
 }
 
+- (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs {
+  [_kernelService setBarometerUpdateInterval:intervalMs];
+}
+
 + (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(EXAccelerometerInterface), @protocol(EXDeviceMotionInterface), @protocol(EXGyroscopeInterface), @protocol(EXMagnetometerInterface), @protocol(EXMagnetometerUncalibratedInterface)];
+  return @[@protocol(EXAccelerometerInterface), @protocol(EXBarometerInterface),  @protocol(EXDeviceMotionInterface), @protocol(EXGyroscopeInterface), @protocol(EXMagnetometerInterface), @protocol(EXMagnetometerUncalibratedInterface)];
 }
 
 @end

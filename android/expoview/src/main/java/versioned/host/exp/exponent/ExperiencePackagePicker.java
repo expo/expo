@@ -7,6 +7,8 @@ import java.util.List;
 
 import expo.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.ads.facebook.AdsFacebookPackage;
+import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
@@ -14,6 +16,8 @@ import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.bluetooth.BluetoothPackage;
 import expo.modules.blurview.BlurViewPackage;
+import expo.modules.brightness.BrightnessPackage;
+import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -24,6 +28,10 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.haptics.HapticsPackage;
+import expo.modules.imagemanipulator.ImageManipulatorPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
+import expo.modules.intentlauncher.IntentLauncherPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
@@ -40,26 +48,35 @@ import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.webbrowser.WebBrowserPackage;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
       new AVPackage(),
       new AdMobPackage(),
+      new AdsFacebookPackage(),
       new AppAuthPackage(),
+      new AmplitudePackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
       new BluetoothPackage(),
       new BlurViewPackage(),
+      new BrightnessPackage(),
+      new CalendarPackage(),
       new CameraPackage(),
       new ConstantsPackage(),
       new ContactsPackage(),
       new DocumentPickerPackage(),
-      new FaceDetectorPackage(),
       new FacebookPackage(),
+      new FaceDetectorPackage(),
       new FileSystemPackage(),
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),
+      new HapticsPackage(),
+      new ImageManipulatorPackage(),
+      new ImagePickerPackage(),
+      new IntentLauncherPackage(),
       new KeepAwakePackage(),
       new LinearGradientPackage(),
       new LocalAuthenticationPackage(),
@@ -76,7 +93,8 @@ public class ExperiencePackagePicker {
       new SensorsPackage(),
       new SpeechPackage(),
       new StripePackage(),
-      new TaskManagerPackage()
+      new TaskManagerPackage(),
+      new WebBrowserPackage()
   );
 
   /**

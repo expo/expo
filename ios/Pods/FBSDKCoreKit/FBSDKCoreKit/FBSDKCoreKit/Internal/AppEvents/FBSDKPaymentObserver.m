@@ -33,6 +33,8 @@ static NSString *const FBSDKAppEventParameterNameProductTitle = @"fb_content_tit
 static NSString *const FBSDKAppEventParameterNameTransactionID = @"fb_transaction_id";
 static NSString *const FBSDKAppEventParameterNameTransactionDate = @"fb_transaction_date";
 static NSString *const FBSDKAppEventParameterNameSubscriptionPeriod = @"fb_iap_subs_period";
+static NSString *const FBSDKAppEventParameterNameTrialPeriod = @"fb_iap_trial_period";
+static NSString *const FBSDKAppEventParameterNameTrialPrice = @"fb_iap_trial_price";
 static int const FBSDKMaxParameterValueLength = 100;
 static NSMutableArray *g_pendingRequestors;
 
@@ -235,23 +237,21 @@ static NSMutableArray *g_pendingRequestors;
                                                  FBSDKAppEventParameterNameProductTitle: [self getTruncatedString:product.localizedTitle],
                                                  FBSDKAppEventParameterNameDescription: [self getTruncatedString:product.localizedDescription],
                                                  }];
+
 #if !TARGET_OS_TV
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_2
     if (@available(iOS 11.2, *)) {
       BOOL isSubscription = (product.subscriptionPeriod != nil) && ((unsigned long)product.subscriptionPeriod.numberOfUnits > 0);
       if (isSubscription) {
         // subs inapp
-        SKProductSubscriptionPeriod *period = product.subscriptionPeriod;
-        NSString *unit = nil;
-        switch (period.unit) {
-          case SKProductPeriodUnitDay: unit = @"D"; break;
-          case SKProductPeriodUnitWeek: unit = @"W"; break;
-          case SKProductPeriodUnitMonth: unit = @"M"; break;
-          case SKProductPeriodUnitYear: unit = @"Y"; break;
-        }
-        NSString *p = [NSString stringWithFormat:@"P%lu%@", (unsigned long)period.numberOfUnits, unit];
-        eventParameters[FBSDKAppEventParameterNameSubscriptionPeriod] = p;
+        eventParameters[FBSDKAppEventParameterNameSubscriptionPeriod] = [self lengthOfSubscriptionPeriod:product.subscriptionPeriod];
         eventParameters[FBSDKAppEventParameterNameInAppPurchaseType] = @"subs";
+        // trial information for subs
+        SKProductDiscount *discount = product.introductoryPrice;
+        if (discount) {
+          eventParameters[FBSDKAppEventParameterNameTrialPeriod] = [self lengthOfSubscriptionPeriod:discount.subscriptionPeriod];
+          eventParameters[FBSDKAppEventParameterNameTrialPrice] = discount.price;
+        }
       } else {
         eventParameters[FBSDKAppEventParameterNameInAppPurchaseType] = @"inapp";
       }
@@ -266,6 +266,28 @@ static NSMutableArray *g_pendingRequestors;
   [self logImplicitPurchaseEvent:eventName
                       valueToSum:totalAmount
                       parameters:eventParameters];
+}
+
+- (NSString *)lengthOfSubscriptionPeriod:(id)subcriptionPeriod
+{
+#if !TARGET_OS_TV
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_2
+  if (@available(iOS 11.2, *)) {
+    if (subcriptionPeriod && [subcriptionPeriod isKindOfClass:[SKProductSubscriptionPeriod class]]) {
+      SKProductSubscriptionPeriod *period = (SKProductSubscriptionPeriod *)subcriptionPeriod;
+      NSString *unit = nil;
+      switch (period.unit) {
+        case SKProductPeriodUnitDay: unit = @"D"; break;
+        case SKProductPeriodUnitWeek: unit = @"W"; break;
+        case SKProductPeriodUnitMonth: unit = @"M"; break;
+        case SKProductPeriodUnitYear: unit = @"Y"; break;
+      }
+      return [NSString stringWithFormat:@"P%lu%@", (unsigned long)period.numberOfUnits, unit];
+    }
+  }
+#endif
+#endif
+  return nil;
 }
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response

@@ -6,11 +6,13 @@
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;
 - (BOOL)hasGrantedPermission:(NSString *)permissionType;
+
 - (void)askForPermission:(NSString *)permissionType
-              withResult:(nonnull void (^)(BOOL result))onResult
+              withResult:(void (^)(NSDictionary *))onResult
             withRejecter:(EXPromiseRejectBlock)reject;
+
 - (void)askForPermissions:(NSArray<NSString *> *)permissionsTypes
-              withResults:(nonnull void (^)(NSArray<NSNumber *> *results))onResults
+              withResults:(void (^)(NSArray<NSDictionary *> *))onResults
              withRejecter:(EXPromiseRejectBlock)reject;
 
 @end

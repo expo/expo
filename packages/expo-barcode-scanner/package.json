@@ -2,7 +2,16 @@
   "name": "expo-barcode-scanner",
   "version": "2.0.0",
   "description": "Expo BarCode Scanner standalone universal module",
-  "main": "index.js",
+  "main": "build/BarCodeScanner.js",
+  "types": "build/BarCodeScanner.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "barcode",
     "barcode-scanner",
@@ -12,8 +21,12 @@
   "homepage": "https://docs.expo.io/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "peerDependencies": {
-    "expo-core": "~2.0.0"
+    "expo-core": "~2.0.0",
+    "expo-errors": "^1.0.0"
   },
   "dependencies": {
     "expo-barcode-scanner-interface": "~2.0.0",
@@ -21,7 +34,7 @@
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
-    "flow-bin": "0.79.1"
+    "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

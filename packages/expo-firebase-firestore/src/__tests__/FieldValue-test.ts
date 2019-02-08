@@ -1,0 +1,43 @@
+import firebase from 'expo-firebase-app';
+
+export default function test({
+  TestHelpers: {
+    firestore: { DOC_2, DOC_2_PATH, testCollectionDoc, resetTestCollectionDoc },
+  },
+}) {
+  describe('firestore()', () => {
+    describe('FieldValue', async () => {
+      await resetTestCollectionDoc(DOC_2_PATH, DOC_2);
+
+      describe('delete()', () => {
+        it('should delete a field', async () => {
+          const { data } = await testCollectionDoc(DOC_2_PATH).get();
+          expect(data().title).toBe(DOC_2.title);
+
+          await testCollectionDoc(DOC_2_PATH).update({
+            title: firebase.firestore.FieldValue.delete(),
+          });
+
+          const { data: dataAfterUpdate } = await testCollectionDoc(DOC_2_PATH).get();
+
+          expect(dataAfterUpdate().title).toBeUndefined();
+        });
+      });
+
+      describe('serverTimestamp()', () => {
+        it('should set timestamp', async () => {
+          const { data } = await testCollectionDoc(DOC_2_PATH).get();
+          expect(data().creationDate).toBeUndefined();
+
+          await testCollectionDoc(DOC_2_PATH).update({
+            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+
+          const { data: dataAfterUpdate } = await testCollectionDoc(DOC_2_PATH).get();
+
+          expect(dataAfterUpdate().creationDate instanceof Date).toBeTruthy();
+        });
+      });
+    });
+  });
+}

@@ -1,0 +1,23 @@
+{
+  "name": "EXBrightness",
+  "version": "1.0.0",
+  "summary": "Brightness universal module",
+  "description": "Brightness universal module",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-brightness",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXBrightness/**/*.{h,m}",
+  "preserve_paths": "EXBrightness/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "EXCore": [
+
+    ]
+  }
+}

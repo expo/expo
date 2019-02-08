@@ -26,6 +26,10 @@
   "peerDependencies": {
     "expo-core": "~1.2.0"
   },
+  "dependencies": {
+    "@expo/websql": "^1.0.1",
+    "@types/websql": "^0.0.27"
+  },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   }

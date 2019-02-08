@@ -208,7 +208,7 @@ EX_EXPORT_METHOD_AS(getTokensAsync,
 {
   GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
   if (currentUser == nil) {
-    resolve([NSNull null]);
+    reject(EX_E_EXCEPTION, @"getTokens requires a user to be signed in", nil);
     return;
   }
 

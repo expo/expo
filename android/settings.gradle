@@ -29,6 +29,8 @@ def includeUniversalModule = { name ->
 
 [
     'expo-ads-admob',
+    'expo-ads-facebook',
+    'expo-analytics-amplitude',
     'expo-analytics-segment',
     'expo-app-auth',
     'expo-app-loader-provider',
@@ -38,6 +40,8 @@ def includeUniversalModule = { name ->
     'expo-barcode-scanner-interface',
     'expo-bluetooth',
     'expo-blur',
+    'expo-brightness',
+    'expo-calendar',
     'expo-camera',
     'expo-camera-interface',
     'expo-constants',
@@ -56,7 +60,11 @@ def includeUniversalModule = { name ->
     'expo-gl',
     'expo-gl-cpp',
     'expo-google-sign-in',
+    'expo-haptics',
     'expo-image-loader-interface',
+    'expo-image-manipulator',
+    'expo-image-picker',
+    'expo-intent-launcher',
     'expo-keep-awake',
     'expo-linear-gradient',
     'expo-local-authentication',
@@ -76,5 +84,6 @@ def includeUniversalModule = { name ->
     'expo-speech',
     'expo-sqlite',
     'expo-task-manager',
-    'expo-task-manager-interface'
+    'expo-task-manager-interface',
+    'expo-web-browser'
 ].forEach({ moduleName -> includeUniversalModule(moduleName) })

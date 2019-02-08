@@ -51,6 +51,8 @@ RCT_EXPORT_MODULE()
   return map;
 }
 
+RCT_EXPORT_VIEW_PROPERTY(initialCamera, GMSCameraPosition)
+RCT_REMAP_VIEW_PROPERTY(camera, cameraProp, GMSCameraPosition)
 RCT_EXPORT_VIEW_PROPERTY(initialRegion, MKCoordinateRegion)
 RCT_EXPORT_VIEW_PROPERTY(region, MKCoordinateRegion)
 RCT_EXPORT_VIEW_PROPERTY(showsBuildings, BOOL)
@@ -84,6 +86,64 @@ RCT_EXPORT_VIEW_PROPERTY(mapType, GMSMapViewType)
 RCT_EXPORT_VIEW_PROPERTY(minZoomLevel, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(maxZoomLevel, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(kmlSrc, NSString)
+
+RCT_EXPORT_METHOD(getCamera:(nonnull NSNumber *)reactTag
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        id view = viewRegistry[reactTag];
+        if (![view isKindOfClass:[AIRGoogleMap class]]) {
+            reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid view returned from registry, expecting AIRGoogleMap, got: %@", view], NULL);
+        } else {
+            AIRGoogleMap *mapView = (AIRGoogleMap *)view;
+            resolve(@{
+                      @"center": @{
+                              @"latitude": @(mapView.camera.target.latitude),
+                              @"longitude": @(mapView.camera.target.longitude),
+                              },
+                      @"pitch": @(mapView.camera.viewingAngle),
+                      @"heading": @(mapView.camera.bearing),
+                      @"zoom": @(mapView.camera.zoom),
+                    });
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(setCamera:(nonnull NSNumber *)reactTag
+                  camera:(id)json)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        id view = viewRegistry[reactTag];
+        if (![view isKindOfClass:[AIRGoogleMap class]]) {
+            RCTLogError(@"Invalid view returned from registry, expecting AIRGoogleMap, got: %@", view);
+        } else {
+            AIRGoogleMap *mapView = (AIRGoogleMap *)view;
+            GMSCameraPosition *camera = [RCTConvert GMSCameraPositionWithDefaults:json existingCamera:[mapView camera]];
+            [mapView setCamera:camera];
+        }
+    }];
+}
+
+
+RCT_EXPORT_METHOD(animateCamera:(nonnull NSNumber *)reactTag
+                  withCamera:(id)json
+                  withDuration:(CGFloat)duration)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        id view = viewRegistry[reactTag];
+        if (![view isKindOfClass:[AIRGoogleMap class]]) {
+            RCTLogError(@"Invalid view returned from registry, expecting AIRGoogleMap, got: %@", view);
+        } else {
+            [CATransaction begin];
+            [CATransaction setAnimationDuration:duration/1000];
+            AIRGoogleMap *mapView = (AIRGoogleMap *)view;
+            GMSCameraPosition *camera = [RCTConvert GMSCameraPositionWithDefaults:json existingCamera:[mapView camera]];
+            [mapView animateToCameraPosition:camera];
+            [CATransaction commit];
+        }
+    }];
+}
 
 RCT_EXPORT_METHOD(animateToNavigation:(nonnull NSNumber *)reactTag
                   withRegion:(MKCoordinateRegion)region
@@ -385,6 +445,31 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
                 @"latitude": @(coordinate.latitude),
                 @"longitude": @(coordinate.longitude),
                 });
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(getMapBoundaries:(nonnull NSNumber *)reactTag
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    id view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[AIRGoogleMap class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting AIRGoogleMap, got: %@", view);
+    } else {
+        NSArray *boundingBox = [view getMapBoundaries];
+
+        resolve(@{
+          @"northEast" : @{
+            @"longitude" : boundingBox[0][0],
+            @"latitude" : boundingBox[0][1]
+          },
+          @"southWest" : @{
+            @"longitude" : boundingBox[1][0],
+            @"latitude" : boundingBox[1][1]
+          }
+        });
     }
   }];
 }

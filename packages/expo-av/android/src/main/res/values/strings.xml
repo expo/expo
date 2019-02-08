@@ -1,0 +1,5 @@
+<resources>
+  <string name="enter_fullscreen_mode">Enter fullscreen mode</string>
+  <string name="exit_fullscreen_mode">Exit fullscreen mode</string>
+  <string name="default_media_controller_time">00:00</string>
+</resources>

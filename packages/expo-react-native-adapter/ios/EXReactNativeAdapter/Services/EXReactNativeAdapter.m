@@ -55,6 +55,19 @@ EX_REGISTER_MODULE();
 
 # pragma mark - Public API
 
+- (void)addUIBlock:(void (^)(NSDictionary<id, UIView *> *))block
+{
+  __weak EXReactNativeAdapter *weakSelf = self;
+  dispatch_async(_bridge.uiManager.methodQueue, ^{
+    __strong EXReactNativeAdapter *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        block(viewRegistry);
+      }];
+    }
+  });
+}
+
 - (void)addUIBlock:(void (^)(id))block forView:(id)viewId ofClass:(Class)klass
 {
   [self addUIBlock:^(UIView *view) {

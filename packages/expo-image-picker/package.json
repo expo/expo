@@ -1,0 +1,32 @@
+{
+  "name": "expo-image-picker",
+  "version": "1.0.0",
+  "description": "Expo ImagePicker universal module",
+  "main": "build/ImagePicker.js",
+  "types": "build/ImagePicker.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo-core": "~2.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  }
+}

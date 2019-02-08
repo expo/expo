@@ -169,5 +169,49 @@ EX_REGISTER_MODULE();
   }
 }
 
+// Copied from RN
++ (NSDate *)NSDate:(id)json
+{
+  if ([json isKindOfClass:[NSNumber class]]) {
+    return [NSDate dateWithTimeIntervalSince1970:[json doubleValue] / 1000.0];
+  } else if ([json isKindOfClass:[NSString class]]) {
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      formatter = [NSDateFormatter new];
+      formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
+      formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+      formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    });
+    NSDate *date = [formatter dateFromString:json];
+    if (!date) {
+      EXLogError(@"JSON String '%@' could not be interpreted as a date. "
+                  "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
+    }
+    return date;
+  } else if (json) {
+    EXLogError(json, @"a date");
+  }
+  return nil;
+}
+
+// https://stackoverflow.com/questions/14051807/how-can-i-get-a-hex-string-from-uicolor-or-from-rgb
++ (NSString *)hexStringWithCGColor:(CGColorRef)color
+{
+  const CGFloat *components = CGColorGetComponents(color);
+  size_t count = CGColorGetNumberOfComponents(color);
+
+  if (count == 2) {
+    return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
+            lroundf(components[0] * 255.0),
+            lroundf(components[0] * 255.0),
+            lroundf(components[0] * 255.0)];
+  } else {
+    return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
+            lroundf(components[0] * 255.0),
+            lroundf(components[1] * 255.0),
+            lroundf(components[2] * 255.0)];
+  }
+}
 
 @end

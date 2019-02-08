@@ -18,6 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void(^FBSDKCodelessSettingLoadBlock)(BOOL isCodelessSetupEnabled, NSError *error);
+
 @interface FBSDKCodelessIndexer : NSObject
 
 + (NSString *)extInfo;

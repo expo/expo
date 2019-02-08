@@ -1,4 +1,4 @@
-import GlobalPlatformEmitter from './GlobalPlatformEmitter';
+import { SyntheticPlatformEmitter } from 'expo-core';
 export default {
     get name() {
         return 'ExponentDeviceMotion';
@@ -11,7 +11,7 @@ export default {
     },
     _handleMotion(motion) {
         // TODO: Bacon: Can rotation be calculated?
-        GlobalPlatformEmitter.emit('deviceMotionDidUpdate', {
+        SyntheticPlatformEmitter.emit('deviceMotionDidUpdate', {
             acceleration: motion.acceleration,
             accelerationIncludingGravity: motion.accelerationIncludingGravity,
             interval: motion.interval,

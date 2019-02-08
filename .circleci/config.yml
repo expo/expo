@@ -64,7 +64,7 @@ commands:
       - save_cache:
           key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
-            - ~/.cache/yarn  # `yarn cache dir`
+            - ~/.cache/yarn # `yarn cache dir`
   restore_gradle_cache:
     steps:
       - restore_cache:
@@ -114,9 +114,17 @@ executors:
   js:
     <<: *nix
     resource_class: small
+  web:
+    docker:
+      - image: circleci/node:latest-browsers
+    shell: /bin/bash -leo pipefail
+    working_directory: ~/expo
+    resource_class: small
+    environment:
+      USER: circleci
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
-      xcode: "10.1.0"
+      xcode: '10.1.0'
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
@@ -132,6 +140,7 @@ workflows:
   sdk:
     jobs:
       - expo_sdk
+      - web_test_suite
       - babel_preset
 
   # Android and iOS clients
@@ -180,7 +189,13 @@ jobs:
           working_directory: ~/expo/packages/expo
       - yarn:
           command: build
+          working_directory: ~/expo/packages/expo-barcode-scanner
+      - yarn:
+          command: build
           working_directory: ~/expo/packages/expo-ads-admob
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-analytics-segment
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-asset
@@ -188,11 +203,38 @@ jobs:
           command: build
           working_directory: ~/expo/packages/expo-camera
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-constants
+      - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-contacts
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-analytics-amplitude
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-face-detector
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-facebook
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-font
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-file-system
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-google-sign-in
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-local-authentication
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-localization
+      - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-permissions
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-react-native-adapter
@@ -206,6 +248,19 @@ jobs:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-sms
 
+  web_test_suite:
+    executor: web
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/expo
+      - save_yarn_cache
+      - yarn:
+          command: test:web:ci
+          working_directory: ~/expo/apps/test-suite
 
   babel_preset:
     executor: js
@@ -260,7 +315,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: fastlane ios create_simulator_build
+      - run: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
@@ -275,11 +330,12 @@ jobs:
       - yarn_install:
           working_directory: ~/project/tools-public
       - run: ~/project/tools-public/generate-files-ios.js
+      - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
           name: Build ios shell app simulator
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
-          command: gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+          command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
 
   android_test_suite:
     executor: android
@@ -356,7 +412,7 @@ jobs:
           background: true
       - run:
           working_directory: docs
-          command: yarn run test-links:all http://localhost:8000
+          command: yarn run test-links http://localhost:8000
       - deploy:
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
