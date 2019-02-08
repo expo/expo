@@ -21,17 +21,24 @@
     "faceID",
     "fingerprint"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-local-authentication",
   "jest": {
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo-constants-interface": "~2.0.0"
+    "expo-constants-interface": "~2.0.0",
+    "expo-core": "~2.0.0"
   },
   "dependencies": {
-    "expo-core": "~2.0.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
