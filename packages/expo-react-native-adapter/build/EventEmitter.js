@@ -8,18 +8,9 @@ export class EventEmitter {
     constructor(nativeModule) {
         this._listenerCount = 0;
         this._nativeModule = nativeModule;
-        this._eventEmitter = null;
-        if (nativeModule) {
-            this._eventEmitter = new NativeEventEmitter(nativeModule);
-        }
+        this._eventEmitter = new NativeEventEmitter(nativeModule);
     }
     addListener(eventName, listener) {
-        if (!this._eventEmitter) {
-            console.warn('');
-            return {
-                remove: () => undefined
-            };
-        }
         if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
             this._nativeModule.startObserving();
         }
@@ -34,9 +25,6 @@ export class EventEmitter {
         return subscription;
     }
     removeAllListeners(eventName) {
-        if (!this._eventEmitter) {
-            return;
-        }
         const removedListenerCount = this._eventEmitter.listeners(eventName).length;
         this._eventEmitter.removeAllListeners(eventName);
         this._listenerCount -= removedListenerCount;
@@ -47,7 +35,7 @@ export class EventEmitter {
     }
     removeSubscription(subscription) {
         const nativeEmitterSubscription = subscription[nativeEmitterSubscriptionKey];
-        if (!nativeEmitterSubscription || !this._eventEmitter) {
+        if (!nativeEmitterSubscription) {
             return;
         }
         this._eventEmitter.removeSubscription(nativeEmitterSubscription);
@@ -62,9 +50,7 @@ export class EventEmitter {
         }
     }
     emit(eventName, ...params) {
-        if (this._eventEmitter) {
-            this._eventEmitter.emit(eventName, ...params);
-        }
+        this._eventEmitter.emit(eventName, ...params);
     }
 }
 //# sourceMappingURL=EventEmitter.js.map

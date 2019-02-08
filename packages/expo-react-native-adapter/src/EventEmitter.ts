@@ -20,24 +20,14 @@ export type Subscription = {
 export class EventEmitter {
   _listenerCount = 0;
   _nativeModule: NativeModule;
-  _eventEmitter: NativeEventEmitter | null;
+  _eventEmitter: NativeEventEmitter;
 
   constructor(nativeModule: NativeModule) {
     this._nativeModule = nativeModule;
-    this._eventEmitter = null;
-    if (nativeModule) {
-      this._eventEmitter = new NativeEventEmitter(nativeModule);
-    }
+    this._eventEmitter = new NativeEventEmitter(nativeModule);
   }
 
   addListener<T>(eventName: string, listener: (event: T) => void): Subscription {
-    if (!this._eventEmitter) {
-      console.warn('')
-      return {
-        remove: () => undefined
-      };
-    }
-
     if (!this._listenerCount && Platform.OS !== 'ios' && this._nativeModule.startObserving) {
       this._nativeModule.startObserving();
     }
@@ -54,10 +44,6 @@ export class EventEmitter {
   }
 
   removeAllListeners(eventName: string): void {
-    if (!this._eventEmitter) {
-      return;
-    }
-
     const removedListenerCount = this._eventEmitter.listeners(eventName).length;
     this._eventEmitter.removeAllListeners(eventName);
     this._listenerCount -= removedListenerCount;
@@ -73,7 +59,7 @@ export class EventEmitter {
 
   removeSubscription(subscription: Subscription): void {
     const nativeEmitterSubscription = subscription[nativeEmitterSubscriptionKey];
-    if (!nativeEmitterSubscription || !this._eventEmitter) {
+    if (!nativeEmitterSubscription) {
       return;
     }
 
@@ -93,8 +79,6 @@ export class EventEmitter {
   }
 
   emit(eventName: string, ...params: any[]): void {
-    if (this._eventEmitter) {
-      this._eventEmitter.emit(eventName, ...params);
-    }
+    this._eventEmitter.emit(eventName, ...params);
   }
 }

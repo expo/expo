@@ -1,2 +1,2 @@
 import { NativeModulesProxy } from 'expo-core';
-export default NativeModulesProxy.ExpoLocation || {};
+export default NativeModulesProxy.ExpoLocation;

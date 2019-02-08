@@ -19,7 +19,6 @@ Pod::Spec.new do |s|
   s.dependency 'React'
   s.dependency 'EXCore'
   s.dependency 'EXFontInterface'
-  s.dependency 'EXImageLoaderInterface'
 end
 
   

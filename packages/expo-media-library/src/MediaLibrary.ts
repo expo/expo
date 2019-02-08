@@ -149,8 +149,8 @@ function checkSortByKey(sortBy: any): void {
 }
 
 // export constants
-export const MediaType: MediaTypeObject = MediaLibrary.MediaType || {};
-export const SortBy: SortByObject = MediaLibrary.SortBy || {};
+export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
+export const SortBy: SortByObject = MediaLibrary.SortBy;
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {
   if (!MediaLibrary.createAssetAsync) {

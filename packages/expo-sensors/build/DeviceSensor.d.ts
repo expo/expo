@@ -7,7 +7,7 @@ declare type NativeSensorModule = any;
  */
 export default class DeviceSensor<M> {
     _nativeModule: NativeSensorModule;
-    _nativeEmitter: EventEmitter | null;
+    _nativeEmitter: EventEmitter;
     _nativeEventName: string;
     _listenerCount: number;
     constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string);

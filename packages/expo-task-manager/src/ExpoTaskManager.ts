@@ -1,2 +1,2 @@
 import { NativeModulesProxy } from 'expo-core';
-export default NativeModulesProxy.ExpoTaskManager || {};
+export default NativeModulesProxy.ExpoTaskManager;

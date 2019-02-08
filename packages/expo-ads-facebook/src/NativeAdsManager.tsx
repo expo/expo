@@ -1,12 +1,9 @@
 import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from 'expo-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import { UnavailabilityError } from 'expo-errors';
 
-let { CTKNativeAdManager } = NativeModulesProxy;
+const { CTKNativeAdManager } = NativeModulesProxy;
 
-const nativeAdEmitter = CTKNativeAdManager && new NativeEventEmitter(CTKNativeAdManager);
-
-CTKNativeAdManager = CTKNativeAdManager || {};
+const nativeAdEmitter = new NativeEventEmitter(CTKNativeAdManager);
 
 const EVENT_DID_BECOME_VALID = 'AdsManagerDidBecomeValid';
 
@@ -50,9 +47,6 @@ class NativeAdsManager {
    * AdsManager will become loading ads immediately
    */
   constructor(placementId: string, adsToRequest: number = 10) {
-    if (!CTKNativeAdManager.init) {
-      throw new UnavailabilityError('CTKNativeAdManager', 'init');
-    }
     this.placementId = placementId;
     this.adsToRequest = adsToRequest;
 
@@ -66,10 +60,6 @@ class NativeAdsManager {
    * callers will be notified of a change
    */
   _listenForStateChanges() {
-    if (!nativeAdEmitter) {
-      console.warn('CTKNativeAdManager native module is not available, are you sure all the native dependencies are linked properly?');
-      return;
-    }
     nativeAdEmitter.addListener('CTKNativeAdsManagersChanged', managers => {
       const isValidNew = managers[this.placementId];
       const isValid = this.isValid;

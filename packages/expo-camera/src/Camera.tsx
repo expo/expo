@@ -140,10 +140,10 @@ export default class Camera extends React.Component<Props> {
     ratio: '4:3',
     focusDepth: 0,
     faceDetectorSettings: {},
-    type: CameraManager.Type && CameraManager.Type.back,
-    autoFocus: CameraManager.AutoFocus && CameraManager.AutoFocus.on,
-    flashMode: CameraManager.FlashMode && CameraManager.FlashMode.off,
-    whiteBalance: CameraManager.WhiteBalance && CameraManager.WhiteBalance.auto,
+    type: CameraManager.Type.back,
+    autoFocus: CameraManager.AutoFocus.on,
+    flashMode: CameraManager.FlashMode.off,
+    whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
   _cameraHandle?: number | null;
