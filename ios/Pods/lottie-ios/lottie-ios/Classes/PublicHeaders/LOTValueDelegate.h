@@ -11,7 +11,7 @@
 
 /*!
  @brief LOTValueDelegate is not intended to be used directly. It is used for type safety.
- @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delagate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath methond on LOTAnimationView.
+ @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delegate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath method on LOTAnimationView.
 
  Prebuild delegates can be found in LOTBlockCallback, LOTInterpolatorCallback, and LOTValueCallback. These delegates allow direct setting and driving of an animated value.
  See LOTColorValueDelegate, LOTNumberValueDelegate, LOTPointValueDelegate, LOTSizeValueDelegate, LOTPathValueDelegate.
@@ -25,7 +25,7 @@
 @required
 /*!
  @brief LOTColorValueDelegate is called at runtime to override the color value of a property in a LOTAnimation. The property is defined by at LOTKeypath. The delegate is set via setValueDelegate:forKeypath on LOTAnimationView.
- @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delagate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath methond on LOTAnimationView.
+ @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delegate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath method on LOTAnimationView.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyframe When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyframe When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.
@@ -51,7 +51,7 @@
 @required
 /*!
  @brief LOTNumberValueDelegate is called at runtime to override the number value of a property in a LOTAnimation. The property is defined by at LOTKeypath. The delegate is set via setValueDelegate:forKeypath on LOTAnimationView.
- @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delagate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath methond on LOTAnimationView.
+ @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delegate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath method on LOTAnimationView.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyframe When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyframe When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.
@@ -76,7 +76,7 @@
 @required
 /*!
  @brief LOTPointValueDelegate is called at runtime to override the point value of a property in a LOTAnimation. The property is defined by at LOTKeypath. The delegate is set via setValueDelegate:forKeypath on LOTAnimationView.
- @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delagate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath methond on LOTAnimationView.
+ @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delegate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath method on LOTAnimationView.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyframe When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyframe When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.
@@ -101,7 +101,7 @@
 @required
 /*!
  @brief LOTSizeValueDelegate is called at runtime to override the size value of a property in a LOTAnimation. The property is defined by at LOTKeypath. The delegate is set via setValueDelegate:forKeypath on LOTAnimationView.
- @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delagate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath methond on LOTAnimationView.
+ @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delegate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath method on LOTAnimationView.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyframe When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyframe When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.
@@ -127,7 +127,7 @@
 @required
 /*!
  @brief LOTPathValueDelegate is called at runtime to override the path value of a property in a LOTAnimation. The property is defined by at LOTKeypath. The delegate is set via setValueDelegate:forKeypath on LOTAnimationView.
- @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delagate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath methond on LOTAnimationView.
+ @discussion LOTValueDelegates are used to dynamically change animation data at runtime. A delegate is set for a keypath, defined by LOTKeypath. While the animation is running the delegate is asked for the value for the keypath at each frame of the animation. The delegate is given the computed animation value for the the current frame. See LOTKeypath and the setValueDelegate:forKeypath method on LOTAnimationView.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyframe When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyframe When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.

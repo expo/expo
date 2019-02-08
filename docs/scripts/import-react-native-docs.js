@@ -74,6 +74,32 @@ let mainAsync = async () => {
         '(https://facebook.github.io/react-native/docs/more-resources.html)'
       );
 
+      l.replace(
+       /\[`Toolbar` widget\]\([^\)]+\)/,
+       '[`Toolbar` widget](https://developer.android.com/reference/android/support/v7/widget/Toolbar.html)'
+      );
+      l.replace(
+        /\[navigator\.geolocation\]\([^\)]+\)/g,
+        '[navigator.geolocation](../../sdk/location/)'
+      );
+
+      l.replace(
+        /\[CameraRoll\]([^\)]+\)/g,
+        '[CameraRoll](https://facebook.github.io/react-native/docs/cameraroll.html)'
+      );
+
+      // `](./foo` -> `](foo`
+      l = l.replace(
+        /\]\(\.\/([^\):]+)/g,
+        (_match, path) => `](${path}`
+      );
+      // `](foo.md)` -> `](../foo/)`
+      // `](foo.md#bar)` -> `](../foo/#bar]`
+      l = l.replace(
+        /\]\(([^\):]+).md(#[^\)]+)?\)/g,
+        (_match, path, anchor) => `](../${path}/${anchor ? anchor : ''})`
+      );
+
       // TODO: Make these global replaces instead of just first instance
       l = l.replace(
         '<img src="/react-native/docs/assets/',
@@ -114,21 +140,8 @@ let mainAsync = async () => {
           if (c === '`') {
             inInlineCodeBlock = !inInlineCodeBlock;
           }
-          if (!inInlineCodeBlock) {
-            switch (c) {
-              case '<':
-                if (l.indexOf('|') < 0) {
-                  break;
-                }
-              case '{':
-              case '}':
-                // case '>':
-                nc = '${"' + c + '"}';
-                break;
-              default:
-                nc = c;
-                break;
-            }
+          if (!inInlineCodeBlock && ['<', '>'].includes(c)) {
+            nc = '\\' + c;
           }
           nl += nc;
         }

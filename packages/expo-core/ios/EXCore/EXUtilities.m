@@ -116,4 +116,102 @@ EX_REGISTER_MODULE();
   return scale;
 }
 
+
+// Kind of copied from RN to make UIColor:(id)json work
++ (NSArray<NSNumber *> *)NSNumberArray:(id)json
+{
+  return json;
+}
+
++ (NSNumber *)NSNumber:(id)json
+{
+  return json;
+}
+
++ (CGFloat)CGFloat:(id)json
+{
+  return [[self NSNumber:json] floatValue];
+}
+
++ (NSInteger)NSInteger:(id)json
+{
+  return [[self NSNumber:json] integerValue];
+}
+
++ (NSUInteger)NSUInteger:(id)json
+{
+  return [[self NSNumber:json] unsignedIntegerValue];
+}
+
+// Copied from RN
++ (UIColor *)UIColor:(id)json
+{
+  if (!json) {
+    return nil;
+  }
+  if ([json isKindOfClass:[NSArray class]]) {
+    NSArray *components = [self NSNumberArray:json];
+    CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
+    return [UIColor colorWithRed:[self CGFloat:components[0]]
+                           green:[self CGFloat:components[1]]
+                            blue:[self CGFloat:components[2]]
+                           alpha:alpha];
+  } else if ([json isKindOfClass:[NSNumber class]]) {
+    NSUInteger argb = [self NSUInteger:json];
+    CGFloat a = ((argb >> 24) & 0xFF) / 255.0;
+    CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
+    CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
+    CGFloat b = (argb & 0xFF) / 255.0;
+    return [UIColor colorWithRed:r green:g blue:b alpha:a];
+  } else {
+    EXLogInfo(@"%@ cannot be converted to a UIColor", json);
+    return nil;
+  }
+}
+
+// Copied from RN
++ (NSDate *)NSDate:(id)json
+{
+  if ([json isKindOfClass:[NSNumber class]]) {
+    return [NSDate dateWithTimeIntervalSince1970:[json doubleValue] / 1000.0];
+  } else if ([json isKindOfClass:[NSString class]]) {
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      formatter = [NSDateFormatter new];
+      formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ";
+      formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+      formatter.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    });
+    NSDate *date = [formatter dateFromString:json];
+    if (!date) {
+      EXLogError(@"JSON String '%@' could not be interpreted as a date. "
+                  "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
+    }
+    return date;
+  } else if (json) {
+    EXLogError(json, @"a date");
+  }
+  return nil;
+}
+
+// https://stackoverflow.com/questions/14051807/how-can-i-get-a-hex-string-from-uicolor-or-from-rgb
++ (NSString *)hexStringWithCGColor:(CGColorRef)color
+{
+  const CGFloat *components = CGColorGetComponents(color);
+  size_t count = CGColorGetNumberOfComponents(color);
+
+  if (count == 2) {
+    return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
+            lroundf(components[0] * 255.0),
+            lroundf(components[0] * 255.0),
+            lroundf(components[0] * 255.0)];
+  } else {
+    return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
+            lroundf(components[0] * 255.0),
+            lroundf(components[1] * 255.0),
+            lroundf(components[2] * 255.0)];
+  }
+}
+
 @end

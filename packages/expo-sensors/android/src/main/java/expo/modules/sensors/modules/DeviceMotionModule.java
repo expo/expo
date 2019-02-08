@@ -107,6 +107,21 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
     });
   }
 
+  @ExpoMethod
+  public void isAvailableAsync(Promise promise) {
+    SensorManager mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+    ArrayList<Integer> sensorTypes = new ArrayList<>(Arrays.asList(Sensor.TYPE_GYROSCOPE, Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_GRAVITY));
+
+    for (Integer type : sensorTypes) {
+      if (mSensorManager.getDefaultSensor(type) == null) {
+        promise.resolve(false);
+        return;
+      }
+    }
+
+    promise.resolve(true);
+  }
+
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);

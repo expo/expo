@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Button, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Text, Button, Platform, ScrollView, StyleSheet, View, Picker } from 'react-native';
 import { Speech } from 'expo';
 import Touchable from 'react-native-platform-touchable';
 import HeadingText from '../components/HeadingText';
@@ -43,9 +43,23 @@ export default class TextToSpeechScreen extends React.Component {
     paused: false,
     pitch: 1,
     rate: 0.75,
+    voiceList: null,
+    voice: null,
   };
 
+  async componentDidMount() {
+    if (Platform.OS === 'ios') {
+      await this._loadAllVoices();
+    }
+  }
+
   render() {
+    const voiceList = [];
+    if (this.state.voiceList) {
+      for (let voice of this.state.voiceList) {
+        voiceList.push(<Picker.Item label={voice.name} value={voice.identifier} />);
+      }
+    }
     return (
       <ScrollView style={styles.container}>
         <HeadingText>Select a phrase</HeadingText>
@@ -68,6 +82,16 @@ export default class TextToSpeechScreen extends React.Component {
               title="Pause"
             />
             <Button disabled={!this.state.paused} onPress={this._resume} title="Resume" />
+          </View>
+        )}
+
+        {Platform.OS === 'ios' && this.state.voiceList && (
+          <View>
+            <Picker
+              selectedValue={this.state.voice}
+              onValueChange={(itemValue, itemIndex) => this.setState({ voice: itemValue })}>
+              {voiceList}
+            </Picker>
           </View>
         )}
 
@@ -116,6 +140,7 @@ export default class TextToSpeechScreen extends React.Component {
     };
 
     Speech.speak(this.state.selectedExample.text, {
+      voice: this.state.voice,
       language: this.state.selectedExample.language,
       pitch: this.state.pitch,
       rate: this.state.rate,
@@ -126,12 +151,17 @@ export default class TextToSpeechScreen extends React.Component {
     });
   };
 
+  _loadAllVoices = async () => {
+    const availableVoices = await Speech.getAvailableVoicesAsync();
+    this.setState({ voiceList: availableVoices, voice: availableVoices[0].identifier });
+  };
+
   _stop = () => {
     Speech.stop();
   };
 
-  _pause = () => {
-    Speech.pause();
+  _pause = async () => {
+    await Speech.pause();
     this.setState({ paused: true });
   };
 

@@ -400,12 +400,15 @@ const AvailabilityErrorMessages = {
 };
 
 export function isAvailable(): boolean {
+  // Device has A9 chip
+  const hasA9Chip = Constants.deviceYearClass && Constants.deviceYearClass > 2014;
+
   if (
     !Constants.isDevice || // Prevent Simulators
     // @ts-ignore
     Platform.isTVOS ||
     Platform.OS !== 'ios' || // Device is iOS
-    Constants.deviceYearClass < 2015 || // Device has A9 chip
+    !hasA9Chip ||
     !ExponentAR.isSupported || // ARKit is included in the build
     !ExponentAR.startAsync // Older SDK versions (27 and lower) that are fully compatible
   ) {
@@ -420,7 +423,7 @@ export function getUnavailabilityReason(): string {
     return AvailabilityErrorMessages.Simulator;
   } else if (Platform.OS !== 'ios') {
     return `${AvailabilityErrorMessages.ARKitOnlyOnIOS} ${Platform.OS} device`;
-  } else if (Constants.deviceYearClass < 2015) {
+  } else if (Constants.deviceYearClass == null || Constants.deviceYearClass < 2015) {
     return `${AvailabilityErrorMessages.ANineChip} ${Constants.deviceYearClass} device`;
   }
   return 'Unknown Reason';

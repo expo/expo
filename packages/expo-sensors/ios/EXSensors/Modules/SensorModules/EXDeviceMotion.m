@@ -31,6 +31,11 @@ EX_EXPORT_MODULE(ExponentDeviceMotion);
   [sensorService setDeviceMotionUpdateInterval:updateInterval];
 }
 
+- (BOOL)isAvailable:(id)sensorService
+{
+  return [sensorService isDeviceMotionAvailable];
+}
+
 - (void)subscribeToSensorService:(id)sensorService withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   [sensorService sensorModuleDidSubscribeForDeviceMotionUpdates:self withHandler:handlerBlock];

@@ -1,5 +1,3 @@
-import { orderBy } from 'lodash';
-
 import styled, { keyframes, css } from 'react-emotion';
 
 import * as React from 'react';
@@ -41,36 +39,34 @@ const STYLES_SELECT_ELEMENT = css`
   border-radius: 0px;
 `;
 
+const versionNumber = vString => {
+  const pattern = /v([0-9]+)\./,
+    match = vString.match(pattern),
+    number = parseInt(match[1], 10);
+  return number;
+};
+
 const orderVersions = versions => {
-  versions = [...versions];
-
-  if (versions.indexOf('unversioned') >= 0) {
-    versions.splice(versions.indexOf('unversioned'), 1);
-  }
-
-  if (versions.indexOf('latest') >= 0) {
-    versions.splice(versions.indexOf('latest'), 1);
-  }
-
-  versions = orderBy(
-    versions,
-    v => {
-      let match = v.match(/v([0-9]+)\./);
-      return parseInt(match[1], 10);
-    },
-    ['asc']
-  );
-
-  versions.push('latest');
-
-  if (
-    (typeof window === 'object' && window._NODE_ENV === 'development') ||
-    (process.env.NODE_ENV && process.env.NODE_ENV === 'development')
-  ) {
-    versions.push('unversioned');
-  }
-
-  return versions;
+  return versions.sort((a, b) => {
+    switch (a) {
+      case 'unversioned':
+        return 1;
+      case 'latest':
+        if (b == 'unversioned') {
+          return -1;
+        } else {
+          return 1;
+        }
+      default:
+        switch (b) {
+          case 'unversioned':
+          case 'latest':
+            return 1;
+          default:
+            return versionNumber(a) - versionNumber(b);
+        }
+    }
+  });
 };
 
 export default class VersionSelector extends React.Component {
@@ -80,6 +76,10 @@ export default class VersionSelector extends React.Component {
         <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
           {this.props.version} <ChevronDownIcon style={{ marginLeft: 8 }} />
         </label>
+        {// hidden links to help test-links spidering
+        VERSIONS.map(v => (
+          <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
+        ))}
         <select
           className={STYLES_SELECT_ELEMENT}
           id="version-menu"

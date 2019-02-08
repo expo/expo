@@ -42,7 +42,6 @@
   },
   "devDependencies": {
     "@types/url-parse": "^1.4.1",
-    "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"

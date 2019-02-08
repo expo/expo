@@ -72,7 +72,6 @@ implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
         smartLoginMenuIconURL:(NSURL *)smartLoginMenuIconURL
                 updateMessage:(NSString *)updateMessage
                 eventBindings:(NSArray *)eventBindings
-         codelessSetupEnabled:(BOOL)codelessSetupEnabled
 NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, assign, readonly, getter=isAdvertisingIDEnabled) BOOL advertisingIDEnabled;
@@ -97,7 +96,6 @@ NS_DESIGNATED_INITIALIZER;
 @property (nonatomic, copy, readonly) NSURL *smartLoginMenuIconURL;
 @property (nonatomic, copy, readonly) NSString *updateMessage;
 @property (nonatomic, copy, readonly) NSArray *eventBindings;
-@property (nonatomic, assign, readonly, getter=isCodelessSetupEnabled) BOOL codelessSetupEnabled;
 @property (nonatomic, readonly) NSInteger version;
 
 - (FBSDKDialogConfiguration *)dialogConfigurationForDialogName:(NSString *)dialogName;

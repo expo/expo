@@ -1,28 +1,24 @@
 import * as React from 'react';
 import GithubSlugger from 'github-slugger';
+import { withRouter } from 'next/router';
+import { MDXProvider } from '@mdx-js/tag';
 
 import DocumentationPage from '~/components/DocumentationPage';
 import { SluggerContext } from '~/components/page-higher-order/withSlugger';
+import * as components from '~/common/translate-markdown';
 
-export default options => {
-  return content => {
+export default meta =>
+  withRouter(
     class DocumentationPageHOC extends React.Component {
-      static async getInitialProps(context) {
-        return { asPath: context.asPath };
-      }
-
       render() {
+        const { router } = this.props;
         return (
-          <DocumentationPage title={options.title} url={this.props.url} asPath={this.props.asPath}>
+          <DocumentationPage title={meta.title} url={router} asPath={router.asPath}>
             <SluggerContext.Provider value={new GithubSlugger()}>
-              {content}
+              <MDXProvider components={components}>{this.props.children}</MDXProvider>
             </SluggerContext.Provider>
           </DocumentationPage>
         );
       }
     }
-
-    return DocumentationPageHOC;
-  };
-};
-
+  );

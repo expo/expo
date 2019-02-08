@@ -1,10 +1,32 @@
-const LATEST_VERSION = 'v' + require('./package.json').version;
+const { join } = require('path');
+const { copySync, removeSync } = require('fs-extra');
+
+// copy versions/v(latest version) to versions/latest
+// (Next.js only half-handles symlinks)
+const vLatest = join('pages', 'versions', `v${require('./package.json').version}/`);
+const latest = join('pages', 'versions', 'latest/');
+removeSync(latest);
+copySync(vLatest, latest);
 
 module.exports = {
-  async exportPathMap(defaultPathMap, {dev}) {
+  // Rather than use `@zeit/next-mdx`, we replicate it
+  pageExtensions: ['js', 'jsx', 'md', 'mdx'],
+  webpack: (config, options) => {
+    config.module.rules.push({
+      test: /.mdx?$/, // load both .md and .mdx files
+      use: [
+        options.defaultLoaders.babel,
+        '@mdx-js/loader',
+        join(__dirname, './common/fm-loader'), // turn frontmatter into `meta`
+      ],
+    });
+    return config;
+  },
+  async exportPathMap(defaultPathMap, { dev, dir, outDir }) {
     if (dev) {
-      return defaultPathMap
+      return defaultPathMap;
     }
+    copySync(join(dir, 'robots.txt'), join(outDir, 'robots.txt'));
     return Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
         if (pathname.match(/\/v[1-9][^\/]*$/)) {
@@ -12,25 +34,11 @@ module.exports = {
           pathname += '/index.html'; // TODO: find out why we need to do this
         }
 
-        result = { [pathname]: page };
-
-        // For every path which doesn't end in ".html" (except "/"), create a matching copy with ".html" added
-        // (We have many internal links of this sort)
-        if (! pathname.match(/\.html$/) && pathname.match(/[a-z]$/)) {
-          result[pathname + ".html"] = page;
+        if (pathname.match(/unversioned/)) {
+          return {};
+        } else {
+          return { [pathname]: page };
         }
-
-        // For every path for the latest version, create a matching `latest` one
-        if (pathname.match(LATEST_VERSION)) {
-          latestPath = pathname.replace(LATEST_VERSION, 'latest');
-          result[latestPath] = page;
-          // TODO: fix duplication
-          if (! pathname.match(/\.html$/) && pathname.match(/[a-z]$/)) {
-            result[latestPath + ".html"] = page;
-          }
-        }
-
-        return result;
       })
     );
   },

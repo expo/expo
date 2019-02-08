@@ -97,13 +97,13 @@ EX_EXPORT_METHOD_AS(executeAsync,
   NSURL *authorizationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"authorizationEndpoint"]];
   NSURL *tokenEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"tokenEndpoint"]];
   NSURL *registrationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"registrationEndpoint"]];
-  
+
   OIDServiceConfiguration *configuration =
   [[OIDServiceConfiguration alloc]
    initWithAuthorizationEndpoint:authorizationEndpoint
    tokenEndpoint:tokenEndpoint
    registrationEndpoint:registrationEndpoint];
-  
+
   return configuration;
 }
 
@@ -123,10 +123,10 @@ EX_EXPORT_METHOD_AS(executeAsync,
                                              redirectURL:redirectURL
                                             responseType:OIDResponseTypeCode
                                     additionalParameters:additionalParameters];
-  
+
   [EXUtilities performSynchronouslyOnMainThread:^{
     __weak typeof(self) weakSelf = self;
-    
+
     OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
       typeof(self) strongSelf = weakSelf;
       if (strongSelf != nil) {
@@ -140,7 +140,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
         EXrejectWithError(reject, error);
       }
     };
-    
+
     // On iOS < 11 presenting authorization request on currentViewController
     // resulted in freezed SFSafariViewController.
     // See issue https://github.com/google/GTMAppAuth/issues/6
@@ -161,16 +161,16 @@ EX_EXPORT_METHOD_AS(executeAsync,
 {
   NSDictionary *tokenResponse = [EXAppAuth tokenResponseNativeToJSON:input];
   NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary:tokenResponse];
-  
+
   NSString *refreshToken;
   if (!input.refreshToken) {
     refreshToken = request[@"refreshToken"];
   } else {
-    refreshToken = input.accessToken;
+    refreshToken = input.refreshToken;
   }
-  
-  [output setValue:@"refreshToken" forKey:EXnullIfEmpty(refreshToken)];
-  
+
+  [output setValue:EXnullIfEmpty(refreshToken) forKey:@"refreshToken"];
+
   return output;
 }
 
@@ -180,7 +180,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
                            reject:(EXPromiseRejectBlock)reject {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
-  
+
   OIDTokenRequest *tokenRefreshRequest =
   [[OIDTokenRequest alloc] initWithConfiguration:configuration
                                        grantType:@"refresh_token"
@@ -192,7 +192,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
                                     refreshToken:options[@"refreshToken"]
                                     codeVerifier:nil
                             additionalParameters:additionalParameters];
-  
+
   OIDTokenCallback callback = ^(OIDTokenResponse *_Nullable response, NSError *_Nullable error) {
     if (response) {
       NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:response request:options];
@@ -233,10 +233,9 @@ void EXrejectWithError(EXPromiseRejectBlock reject, NSError *error) {
   NSString *errorMessage = [NSString stringWithFormat:@"%@: %@", EXAppAuthError, error.localizedDescription];
   if (error.localizedFailureReason != nil && ![error.localizedFailureReason isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Reason: %@", errorMessage, error.localizedFailureReason];
   if (error.localizedRecoverySuggestion != nil && ![error.localizedRecoverySuggestion isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Try: %@", errorMessage, error.localizedRecoverySuggestion];
-  
+
   NSString *errorCode = [NSString stringWithFormat:@"%ld", error.code];
   reject(errorCode, errorMessage, error);
 }
 
 @end
-

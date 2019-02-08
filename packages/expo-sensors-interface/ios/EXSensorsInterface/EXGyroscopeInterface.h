@@ -5,5 +5,6 @@
 - (void)sensorModuleDidSubscribeForGyroscopeUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *event))handlerBlock;
 - (void)sensorModuleDidUnsubscribeForGyroscopeUpdates:(id)scopedSensorModule;
 - (void)setGyroscopeUpdateInterval:(NSTimeInterval)intervalMs;
+- (BOOL)isGyroAvailable;
 
 @end

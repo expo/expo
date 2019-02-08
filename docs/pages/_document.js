@@ -44,16 +44,6 @@ export default class MyDocument extends Document {
           <script src="/static/libs/nprogress/nprogress.js" />
 
           <style dangerouslySetInnerHTML={{ __html: this.props.css }} />
-
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-             window._NODE_ENV = '${process.env.NODE_ENV}';
-             window._LATEST_VERSION = '${LATEST_VERSION}';
-              `,
-            }}
-          />
-
           <style dangerouslySetInnerHTML={{ __html: globalFonts }} />
           <style dangerouslySetInnerHTML={{ __html: globalReset }} />
           <style dangerouslySetInnerHTML={{ __html: globalNProgress }} />

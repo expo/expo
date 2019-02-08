@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoWebBrowser.web.js","sourceRoot":"","sources":["../src/ExpoWebBrowser.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,gBAAgB,CAAC;IAC1B,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name() {\n    return 'ExpoWebBrowser';\n  },\n};\n"]}

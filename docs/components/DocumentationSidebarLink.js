@@ -39,6 +39,11 @@ const STYLES_DEFAULT = css`
 `;
 
 export default class DocumentationSidebarLink extends React.Component {
+  componentDidMount() {
+    // Consistent link behavior across dev server and static export
+    global.__NEXT_DATA__.nextExport = true
+  }
+
   isSelected() {
     if (!this.props.url) {
       return false;
@@ -61,7 +66,6 @@ export default class DocumentationSidebarLink extends React.Component {
 
     return (
       <NextLink
-        prefetch
         href={this.props.info.href}
         as={this.props.info.as || this.props.info.href}>
         <a

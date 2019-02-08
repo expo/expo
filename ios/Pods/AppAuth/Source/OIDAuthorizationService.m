@@ -306,8 +306,9 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSURLRequest *URLRequest = [request URLRequest];
   
-  AppAuthRequestTrace(@"Token Request: %@\nHTTPBody: %@",
+  AppAuthRequestTrace(@"Token Request: %@\nHeaders:%@\nHTTPBody: %@",
                       URLRequest.URL,
+                      URLRequest.allHTTPHeaderFields,
                       [[NSString alloc] initWithData:URLRequest.HTTPBody
                                             encoding:NSUTF8StringEncoding]);
 

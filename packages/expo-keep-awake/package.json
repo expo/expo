@@ -1,0 +1,28 @@
+{
+  "name": "expo-keep-awake",
+  "version": "1.0.0",
+  "description": "KeepAwake universal module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo-core": "~2.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  }
+}

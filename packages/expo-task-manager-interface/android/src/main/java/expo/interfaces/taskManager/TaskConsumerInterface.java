@@ -37,5 +37,13 @@ public interface TaskConsumerInterface {
    */
   boolean didCancelJob(JobService jobService, JobParameters params);
 
+  /**
+   * Called when registering already registered task with different options.
+   */
   void setOptions(Map<String, Object> options);
+
+  /**
+   * Should return a boolean value whether the consumer can receive custom broadcast with given action.
+   */
+  boolean canReceiveCustomBroadcast(String action);
 }

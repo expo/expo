@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import ExponentAV from './ExponentAV';
 export * from './Audio/Recording';
 export * from './Audio/Sound';
 export { setIsEnabledAsync } from './Audio/AudioAvailability';
@@ -46,6 +46,6 @@ export async function setAudioModeAsync(mode) {
         typeof mode.playThroughEarpieceAndroid !== 'boolean') {
         throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", and "shouldDuckAndroid" must be booleans.');
     }
-    return await NativeModulesProxy.ExponentAV.setAudioMode(mode);
+    return await ExponentAV.setAudioMode(mode);
 }
 //# sourceMappingURL=Audio.js.map

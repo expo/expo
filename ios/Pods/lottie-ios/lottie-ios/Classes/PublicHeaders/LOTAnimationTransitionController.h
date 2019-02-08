@@ -11,7 +11,7 @@
 
 /** LOTAnimationTransitionController
  *
- *  This class creates a custom UIViewController transisiton animation
+ *  This class creates a custom UIViewController transition animation
  *  using a Lottie animation to transition between two view controllers
  *  The transition can use custom defined layers in After Effects for to/from
  *

@@ -22,6 +22,11 @@ EX_EXPORT_MODULE(ExponentMagnetometer);
   [sensorService setMagnetometerUpdateInterval:updateInterval];
 }
 
+- (BOOL)isAvailable:(id)sensorService
+{
+  return [sensorService isMagnetometerAvailable];
+}
+
 - (void)subscribeToSensorService:(id)sensorService withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   [sensorService sensorModuleDidSubscribeForMagnetometerUpdates:self withHandler:handlerBlock];

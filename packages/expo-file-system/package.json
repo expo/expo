@@ -2,7 +2,16 @@
   "name": "expo-file-system",
   "version": "2.0.0",
   "description": "Expo File System standalone universal module",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -15,10 +24,17 @@
   "dependencies": {
     "expo-core": "~2.0.0",
     "expo-file-system-interface": "~2.0.0",
+    "jest-expo": "^32.0.0",
     "uuid-js": "^0.7.5"
   },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "peerDependencies": {
+    "expo-core": "~2.0.0"
+  },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
+    "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

@@ -25,8 +25,6 @@ import expo.interfaces.taskManager.TaskManagerUtilsInterface;
 import expo.interfaces.taskManager.TaskConsumerInterface;
 import expo.interfaces.taskManager.TaskInterface;
 import expo.modules.location.LocationHelpers;
-import expo.modules.location.LocationModule;
-import io.nlopez.smartlocation.location.config.LocationParams;
 
 public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerInterface {
   private static final String TAG = "LocationTaskConsumer";
@@ -89,7 +87,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
         // Some devices may broadcast the same location multiple times (mostly twice) so we're filtering out these locations,
         // so only one location at the specific timestamp can schedule a job.
         if (timestamp > sLastTimestamp) {
-          PersistableBundle bundle = LocationModule.locationToBundle(location, PersistableBundle.class);
+          PersistableBundle bundle = LocationHelpers.locationToBundle(location, PersistableBundle.class);
           data.putPersistableBundle(Integer.valueOf(length).toString(), bundle);
 
           sLastTimestamp = timestamp;
@@ -154,7 +152,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       return;
     }
 
-    mLocationRequest = prepareLocationRequest();
+    mLocationRequest = LocationHelpers.prepareLocationRequest(mTask.getOptions());
     mPendingIntent = preparePendingIntent();
 
     try {
@@ -172,36 +170,8 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
     }
   }
 
-  private LocationRequest prepareLocationRequest() {
-    Map<String, Object> options = mTask.getOptions();
-    LocationParams locationParams = LocationHelpers.mapOptionsToLocationParams(options);
-    int accuracy = LocationHelpers.getAccuracyFromOptions(options);
-
-    return new LocationRequest()
-        .setFastestInterval(locationParams.getInterval())
-        .setInterval(locationParams.getInterval())
-        .setSmallestDisplacement(locationParams.getDistance())
-        .setPriority(mapAccuracyToPriority(accuracy));
-  }
-
   private PendingIntent preparePendingIntent() {
     return getTaskManagerUtils().createTaskIntent(getContext(), mTask);
-  }
-
-  private int mapAccuracyToPriority(int accuracy) {
-    switch (accuracy) {
-      case LocationModule.ACCURACY_BEST_FOR_NAVIGATION:
-      case LocationModule.ACCURACY_HIGHEST:
-      case LocationModule.ACCURACY_HIGH:
-        return LocationRequest.PRIORITY_HIGH_ACCURACY;
-      case LocationModule.ACCURACY_BALANCED:
-      default:
-        return LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
-      case LocationModule.ACCURACY_LOW:
-        return LocationRequest.PRIORITY_LOW_POWER;
-      case LocationModule.ACCURACY_LOWEST:
-        return LocationRequest.PRIORITY_NO_POWER;
-    }
   }
 
   //endregion

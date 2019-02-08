@@ -21,7 +21,7 @@ for version in $*; do
     echo Patching in `pwd`
 
     # copy new files
-    pushd versions/$src_version > /dev/null
+    pushd pages/versions/$src_version > /dev/null
     for f in $(git ls-files -o --exclude-standard); do
         mkdir -p ../$version/$(dirname $f)
         cp $f ../$version/$(dirname $f)/
@@ -29,7 +29,7 @@ for version in $*; do
     popd > /dev/null
 
     # patch changes in existing files
-    pushd versions/$version > /dev/null
-    git diff -- ../$src_version | patch -p4
+    pushd pages/versions/$version > /dev/null
+    git diff -- ../$src_version | patch -p5
     popd > /dev/null
 done

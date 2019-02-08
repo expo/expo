@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAC,OAAO,EAAE,OAAO,IAAI,MAAM,EAAE,MAAM,UAAU,CAAC","sourcesContent":[" export { default as SQLite } from './SQLite';\n"]}

@@ -29,12 +29,12 @@
 /// NOTE: Apps targeting iOS 8 or OS X 10.10 and later should use
 ///       NSURLComponents and NSURLQueryItem to create URLs with
 ///       query arguments instead of using these category methods.
-+ (NSDictionary *)gtm_dictionaryWithHttpArgumentsString:(NSString *)argString;
++ (NSDictionary *)gtm_dictionaryWithHttpArgumentsString:(NSString *)argString NS_DEPRECATED(10_0, 10_10, 2_0, 8_0, "Use NSURLComponents and NSURLQueryItem.");
 
 /// Gets a string representation of the dictionary in the form
 /// key1=value1&key2=value2&...&keyN=valueN, suitable for use as either
 /// URL arguments (after a '?') or POST body. Keys and values will be escaped
 /// automatically, so should be unescaped in the dictionary.
-- (NSString *)gtm_httpArgumentsString;
+- (NSString *)gtm_httpArgumentsString NS_DEPRECATED(10_0, 10_10, 2_0, 8_0, "Use NSURLComponents and NSURLQueryItem.");
 
 @end

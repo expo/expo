@@ -136,6 +136,13 @@ function parse(url: string): ParsedURL {
 
 async function parseInitialURLAsync(): Promise<ParsedURL> {
   const initialUrl = await Linking.getInitialURL();
+  if (!initialUrl) {
+    return {
+      path: null,
+      queryParams: null,
+    };
+  }
+
   return parse(initialUrl);
 }
 

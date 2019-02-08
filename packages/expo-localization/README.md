@@ -1,6 +1,8 @@
 # expo-localization
 
-`expo-localization` enables you to interface with the native device locale.
+> Supports: iOS, Android, Web
+
+`expo-localization` provides an interface for native user localization information. You can create full **i18n** integration in your cross-platform experience.
 
 ## Installation
 
@@ -66,11 +68,18 @@ public List<Package> expoPackages() {
 
 ## Usage
 
-```javascript
+Import the library like so:
+
+```js
+import * as Localization from 'expo-localization';
+```
+
+This library was designed to work well with popular localization libraries like `i18n-js`.
+
+```ts
 import React from 'react';
 import { Text } from 'react-native';
 import { Localization } from 'expo-localization';
-
 import i18n from 'i18n-js';
 
 const en = {
@@ -87,19 +96,7 @@ i18n.fallbacks = true;
 i18n.translations = { fr, en };
 i18n.locale = Localization.locale;
 
-export default class LitView extends React.Component {
-  componentWillMount() {
-    this._subscription = Localization.addListener(({ locale }) => {
-      i18n.locale = locale;
-    });
-  }
-
-  componentWillUnmount() {
-    if (!!this._subscription) {
-      this._subscription.remove();
-    }
-  }
-
+export default class ExampleView extends React.Component {
   render() {
     return (
       <Text>
@@ -112,46 +109,76 @@ export default class LitView extends React.Component {
 
 ## API
 
+This API is mostly synchronous and driven by constants. On iOS the constants will always be correct, on Android you should check if the locale has updated using `AppState` and `Localization.getLocalizationAsync()`. Initally the constants will be correct on both platforms, but on Android a user can change the language and return, more on this later.
+
 ### Constants
 
-This API is mostly synchronous and driven by constants.
+| Name             | Type       | Description                                                                                                                                  | iOS | Android | Web |
+| ---------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------- | --- |
+| locale           | `string`   | Native device language, returned in standard format. Ex: `en`, `en-US`, `es-US`.                                                             | ✅  | ✅      | ✅  |
+| locales          | `string[]` | List of all the native languages provided by the user settings. These are sorted in the order the user has defined in their native settings. | ✅  | ✅      | ✅  |
+| country          | `string?`  | Country code for your device.                                                                                                                | ✅  | ✅      | ✅  |
+| timezone         | `string`   | The current time zone in display format. ex: `America/Los_Angeles`. Read more about web usage below.                                         | ✅  | ✅      | ✅  |
+| isRTL            | `boolean`  | This will return `true` if the current language is Right-to-Left.                                                                            | ✅  | ✅      | ✅  |
+| isoCurrencyCodes | `string[]` | A list of all the supported ISO codes.                                                                                                       | ✅  | ✅      | ❌  |
 
-#### `Localization.locale: string`
+**Web Timezone**
 
-Native device language, returned in standard format. ex: `en-US`, `es-US`.
+On web we will attempt to get the timezone with the standard `Intl` API but if the time zone cannot be found, the default value `Etc/UTC` will be returned. For more accurate results you could use the library `moment/timezone`. Because [`moment.js` is so large](https://github.com/moment/moment/issues/3376) we don't include it.
 
-#### `Localization.locales: Array<string>`
+```js
+import { timezone } from 'expo-localization';
+import moment from 'moment';
+import 'moment-timezone';
 
-List of all the native languages provided by the user settings. These are returned in the order the user defines in their native settings.
+const expensiveTimezone = moment.tz.guess();
 
-#### `Localization.country: ?string`
-
-Country code for your device.
-
-#### `Localization.isoCurrencyCodes: ?Array<string>`
-
-A list of all the supported ISO codes.
-
-#### `Localization.timezone: string`
-
-The current time zone in display format. ex: `America/Los_Angeles`
-
-#### `Localization.isRTL: boolean`
-
-This will return `true` if the current language is Right-to-Left.
+const cheapTimezone = timezone;
+```
 
 ### Methods
 
-> Callbacks are Android only, changing the native locale on iOS will cause all the apps to reset.
+#### `getLocalizationAsync()`
 
-#### `Localization.addListener(listener: Listener): ?Subscription`
+```js
+Localization.getLocalizationAsync(): Promise<Localization>
+```
 
-Observe when a language is added or moved in the Android settings.
+Refresh and return the localization data with any user defined changes.
 
-#### `Localization.removeAllListeners(): void`
+**Support**
 
-Clear all language observers.
+| iOS | Android | Web |
+| --- | ------- | --- |
+| ❌  | ✅      | ✅  |
 
-#### `Localization.removeSubscription(subscription: Subscription): void`
+> On iOS the phone will reset if a user changes the locale in their native settings.
 
-Stop observing when the native languages are edited.
+**Returns**
+
+| Name         | Type           | Description                                |
+| ------------ | -------------- | ------------------------------------------ |
+| localization | `Localization` | All of the user defined localization data. |
+
+**Example**
+
+```js
+const { locale } = await Localization.getLocalizationAsync();
+```
+
+### Types
+
+#### Localization
+
+```ts
+import { Localization } from 'expo-localization';
+```
+
+| Name             | Type       | Description                                                                                                                                  | iOS | Android | Web |
+| ---------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------- | --- |
+| locale           | `string`   | Native device language, returned in standard format. Ex: `en`, `en-US`, `es-US`.                                                             | ✅  | ✅      | ✅  |
+| locales          | `string[]` | List of all the native languages provided by the user settings. These are sorted in the order the user has defined in their native settings. | ✅  | ✅      | ✅  |
+| country          | `string?`  | Country code for your device.                                                                                                                | ✅  | ✅      | ✅  |
+| timezone         | `string`   | The current time zone in display format. ex: `America/Los_Angeles`. Read more about web usage below.                                         | ✅  | ✅      | ✅  |
+| isRTL            | `boolean`  | This will return `true` if the current language is Right-to-Left.                                                                            | ✅  | ✅      | ✅  |
+| isoCurrencyCodes | `string[]` | A list of all the supported ISO codes.                                                                                                       | ✅  | ✅      | ❌  |

@@ -1,0 +1,1 @@
+{"version":3,"file":"Localization.types.js","sourceRoot":"","sources":["../src/Localization.types.ts"],"names":[],"mappings":"","sourcesContent":["export type Localization = {\n  locale: string;\n  locales: string[];\n  timezone: string;\n  isoCurrencyCodes?: string[];\n  country?: string;\n  isRTL: boolean;\n};\n"]}

@@ -147,17 +147,17 @@
     return 1;
   }
 
-  CGFloat progession = LOT_RemapValue(frame.floatValue, self.leadingKeyframe.keyframeTime.floatValue, self.trailingKeyframe.keyframeTime.floatValue, 0, 1);
+  CGFloat progression = LOT_RemapValue(frame.floatValue, self.leadingKeyframe.keyframeTime.floatValue, self.trailingKeyframe.keyframeTime.floatValue, 0, 1);
   
   if ((self.leadingKeyframe.outTangent.x != self.leadingKeyframe.outTangent.y ||
       self.trailingKeyframe.inTangent.x != self.trailingKeyframe.inTangent.y) &&
       (!LOT_CGPointIsZero(self.leadingKeyframe.outTangent) &&
        !LOT_CGPointIsZero(self.trailingKeyframe.inTangent))) {
-    // Bezeir Time Curve
-    progession = LOT_CubicBezeirInterpolate(CGPointMake(0, 0), self.leadingKeyframe.outTangent, self.trailingKeyframe.inTangent, CGPointMake(1, 1), progession);
+    // Bezier Time Curve
+    progression = LOT_CubicBezierInterpolate(CGPointMake(0, 0), self.leadingKeyframe.outTangent, self.trailingKeyframe.inTangent, CGPointMake(1, 1), progression);
   }
   
-  return progession;
+  return progression;
 }
 
 - (void)setValueDelegate:(id<LOTValueDelegate> _Nonnull)delegate {

@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoKeepAwake.web.js","sourceRoot":"","sources":["../src/ExpoKeepAwake.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,QAAQ,KAAI,CAAC;IACb,UAAU,KAAI,CAAC;CAChB,CAAC","sourcesContent":["export default {\n  activate() {},\n  deactivate() {},\n};\n"]}

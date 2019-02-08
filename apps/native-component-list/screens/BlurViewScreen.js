@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Image, StyleSheet, View } from 'react-native';
+import { Animated, Image, StyleSheet, View, findNodeHandle } from 'react-native';
 import { BlurView } from 'expo';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
@@ -15,6 +15,9 @@ export default class BlurViewScreen extends React.Component {
   componentDidMount() {
     this._animate();
   }
+
+  _imageRef = imageRef =>
+    this.setState({ imageRef: imageRef ? findNodeHandle(imageRef) : undefined });
 
   _animate = () => {
     let { intensity } = this.state;
@@ -41,13 +44,16 @@ export default class BlurViewScreen extends React.Component {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Image style={{ width: 180, height: 180 }} source={{ uri }} />
+        <Image style={{ width: 180, height: 180 }} source={{ uri }} ref={this._imageRef} />
 
-        <AnimatedBlurView
-          tint="default"
-          intensity={this.state.intensity}
-          style={StyleSheet.absoluteFill}
-        />
+        {this.state.imageRef ? (
+          <AnimatedBlurView
+            blurType="light"
+            blurAmount={this.state.intensity}
+            style={StyleSheet.absoluteFill}
+            viewRef={this.state.imageRef}
+          />
+        ) : null}
       </View>
     );
   }

@@ -32,6 +32,12 @@
   NSAssert(false, @"You've subclassed EXBaseSensorModule, but didn't override the `setUpdateInterval:onSensorService:` method.");
 }
 
+- (BOOL)isAvailable:(id)sensorService
+{
+  NSAssert(false, @"You've subclassed EXBaseSensorModule, but didn't override the `isAvailable` method.");
+  return NO;
+}
+
 - (void)subscribeToSensorService:(id)sensorService withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   NSAssert(false, @"You've subclassed EXBaseSensorModule, but didn't override the `subscribeToSensorService:withHandler:` method.");
@@ -101,6 +107,11 @@
 EX_EXPORT_METHOD_AS(setUpdateInterval, setUpdateInterval:(nonnull NSNumber *)intervalMs resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)rejecter) {
   [self setUpdateInterval:([intervalMs doubleValue] / 1000) onSensorService:_sensorManager];
   resolve(nil);
+}
+
+EX_EXPORT_METHOD_AS(isAvailableAsync, isAvailableAsync:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve(@([self isAvailable:_sensorManager]));
 }
 
 # pragma mark - EXAppLifecycleListener

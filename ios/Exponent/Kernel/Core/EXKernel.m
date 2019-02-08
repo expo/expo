@@ -23,8 +23,6 @@ NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 
-const NSUInteger kEXErrorCodeAppForbidden = 424242;
-
 @interface EXKernel () <EXKernelAppRegistryDelegate>
 
 @end
@@ -166,7 +164,7 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 - (BOOL)sendNotification:(EXPendingNotification *)notification
 {
-  EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:notification.experienceId];
+  EXKernelAppRecord *destinationApp = [_appRegistry standaloneAppRecord] ?: [_appRegistry newestRecordWithExperienceId:notification.experienceId];
 
   // This allows home app record to receive notification events as well.
   if (!destinationApp && [_appRegistry.homeAppRecord.experienceId isEqualToString:notification.experienceId]) {

@@ -10,7 +10,7 @@
 #import "LOTAnimationView.h"
 
 @implementation LOTAnimationTransitionController {
-  LOTAnimationView *tranistionAnimationView_;
+  LOTAnimationView *transitionAnimationView_;
   NSString *fromLayerName_;
   NSString *toLayerName_;
   NSBundle *inBundle_;
@@ -36,7 +36,7 @@
                               inBundle:(NSBundle *)bundle {
   self = [super init];
   if (self) {
-    tranistionAnimationView_ = [LOTAnimationView animationNamed:animation inBundle:bundle];
+    transitionAnimationView_ = [LOTAnimationView animationNamed:animation inBundle:bundle];
     fromLayerName_ = fromLayer;
     toLayerName_ = toLayer;
     _applyTransform = applyAnimationTransform;
@@ -45,7 +45,7 @@
 }
 
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
-  return tranistionAnimationView_.animationDuration;
+  return transitionAnimationView_.animationDuration;
 }
 
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
@@ -63,20 +63,20 @@
                                                       withCapInsets:UIEdgeInsetsZero];
   fromSnapshot.frame = containerView.bounds;
   
-  tranistionAnimationView_.frame = containerView.bounds;
-  tranistionAnimationView_.contentMode = UIViewContentModeScaleAspectFill;
-  [containerView addSubview:tranistionAnimationView_];
+  transitionAnimationView_.frame = containerView.bounds;
+  transitionAnimationView_.contentMode = UIViewContentModeScaleAspectFill;
+  [containerView addSubview:transitionAnimationView_];
   
   BOOL crossFadeViews = NO;
   
   if (toLayerName_.length) {
     LOTKeypath *toKeypath = [LOTKeypath keypathWithString:toLayerName_];
-    CGRect convertedBounds = [tranistionAnimationView_ convertRect:containerView.bounds toKeypathLayer:toKeypath];
+    CGRect convertedBounds = [transitionAnimationView_ convertRect:containerView.bounds toKeypathLayer:toKeypath];
     toSnapshot.frame = convertedBounds;
     if (_applyTransform) {
-      [tranistionAnimationView_ addSubview:toSnapshot toKeypathLayer:toKeypath];
+      [transitionAnimationView_ addSubview:toSnapshot toKeypathLayer:toKeypath];
     } else {
-      [tranistionAnimationView_ maskSubview:toSnapshot toKeypathLayer:toKeypath];
+      [transitionAnimationView_ maskSubview:toSnapshot toKeypathLayer:toKeypath];
     }
   } else {
     [containerView addSubview:toSnapshot];
@@ -87,12 +87,12 @@
   
   if (fromLayerName_.length) {
     LOTKeypath *fromKeypath = [LOTKeypath keypathWithString:fromLayerName_];
-    CGRect convertedBounds = [tranistionAnimationView_ convertRect:containerView.bounds fromKeypathLayer:fromKeypath];
+    CGRect convertedBounds = [transitionAnimationView_ convertRect:containerView.bounds fromKeypathLayer:fromKeypath];
     fromSnapshot.frame = convertedBounds;
     if (_applyTransform) {
-      [tranistionAnimationView_ addSubview:fromSnapshot toKeypathLayer:fromKeypath];
+      [transitionAnimationView_ addSubview:fromSnapshot toKeypathLayer:fromKeypath];
     } else {
-      [tranistionAnimationView_ maskSubview:fromSnapshot toKeypathLayer:fromKeypath];
+      [transitionAnimationView_ maskSubview:fromSnapshot toKeypathLayer:fromKeypath];
     }
   } else {
     [containerView addSubview:fromSnapshot];
@@ -103,8 +103,8 @@
   toVC.view.hidden = YES;
   
   if (crossFadeViews) {
-    CGFloat duration = tranistionAnimationView_.animationDuration * 0.25;
-    CGFloat delay = (tranistionAnimationView_.animationDuration - duration) / 2.f;
+    CGFloat duration = transitionAnimationView_.animationDuration * 0.25;
+    CGFloat delay = (transitionAnimationView_.animationDuration - duration) / 2.f;
     
     [UIView animateWithDuration:duration
                           delay:delay
@@ -116,9 +116,9 @@
                      }];
   }
   
-  [tranistionAnimationView_ playWithCompletion:^(BOOL animationFinished) {
+  [transitionAnimationView_ playWithCompletion:^(BOOL animationFinished) {
     toVC.view.hidden = false;
-    [tranistionAnimationView_ removeFromSuperview];
+    [self->transitionAnimationView_ removeFromSuperview];
     [transitionContext completeTransition:animationFinished];
   }];
 }

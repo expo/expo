@@ -20,6 +20,12 @@
 - (void)didRegisterTask:(id<EXTaskInterface>)task
 {
   _task = task;
+  [self updateMinimumInterval];
+}
+
+- (void)setOptions:(NSDictionary *)options
+{
+  [self updateMinimumInterval];
 }
 
 // Method that is being called when the JS app just finished launching,
@@ -46,6 +52,16 @@
     default:
       return UIBackgroundFetchResultNoData;
   }
+}
+
+- (void)updateMinimumInterval
+{
+  NSNumber *interval = _task.options[@"minimumInterval"];
+  NSTimeInterval timeInterval = [interval doubleValue] ?: UIApplicationBackgroundFetchIntervalMinimum;
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:timeInterval];
+  });
 }
 
 @end

@@ -35,9 +35,7 @@
     "expo-core": "~2.0.0",
     "expo-font-interface": "~2.0.0"
   },
-  "dependencies": {
-    "invariant": "^2.2.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },

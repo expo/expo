@@ -52,5 +52,10 @@ public abstract class TaskConsumer implements TaskConsumerInterface {
     // nothing
   }
 
+  public boolean canReceiveCustomBroadcast(String action) {
+    // Override it if you want your task consumer to receive custom broadcast like `Intent.ACTION_BOOT_COMPLETED`.
+    return false;
+  }
+
   //endregion
 }

@@ -2,8 +2,6 @@ package expo.adapters.react;
 
 import com.facebook.react.bridge.Dynamic;
 
-import java.util.Map;
-
 import expo.core.arguments.MapArguments;
 import expo.core.arguments.ReadableArguments;
 

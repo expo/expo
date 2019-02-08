@@ -15,7 +15,7 @@
 extern NSInteger indentation_level;
 @interface LOTAnimatorNode : NSObject
 
-/// Initializes the node with and optional intput node and keyname.
+/// Initializes the node with and optional input node and keyname.
 - (instancetype _Nonnull)initWithInputNode:(LOTAnimatorNode *_Nullable)inputNode
                                     keyName:(NSString *_Nullable)keyname;
 

@@ -434,7 +434,7 @@ CGFloat LOT_Cubed(CGFloat f) { return f * f * f; }
 
 CGFloat LOT_CubicRoot(CGFloat f) { return powf(f, 1.0 / 3.0); }
 
-CGFloat LOT_CubicBezeirInterpolate(CGPoint P0, CGPoint P1, CGPoint P2, CGPoint P3, CGFloat x) {
+CGFloat LOT_CubicBezierInterpolate(CGPoint P0, CGPoint P1, CGPoint P2, CGPoint P3, CGFloat x) {
   CGFloat t;
   if (x == P0.x) {
     // Handle corner cases explicitly to prevent rounding errors

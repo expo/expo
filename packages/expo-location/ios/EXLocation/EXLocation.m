@@ -20,8 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString * const EXLocationChangedEventName = @"Exponent.locationChanged";
-NSString * const EXHeadingChangedEventName = @"Exponent.headingChanged";
+NSString * const EXLocationChangedEventName = @"Expo.locationChanged";
+NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 
 @interface EXLocation ()
 
@@ -117,7 +117,9 @@ EX_EXPORT_METHOD_AS(getCurrentPositionAsync,
       [weakSelf.retainedDelegates removeObject:delegate];
       delegate = nil;
     }
-  } onUpdateHeadings:nil onError:nil];
+  } onUpdateHeadings:nil onError:^(NSError *error) {
+    reject(@"E_LOCATION_UNAVAILABLE", [@"Cannot obtain current location: " stringByAppendingString:error.description], nil);
+  }];
 
   // retain location manager delegate so it will not dealloc until onUpdateLocations gets called
   [_retainedDelegates addObject:delegate];
@@ -310,18 +312,10 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsResolver:(EXPromiseResolveBlock)resolve
                                       rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (_permissions == nil) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module is null. Are you sure all the installed Expo modules are properly linked?", nil);
+  if (!_permissions) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
-  
-  [_permissions askForPermission:@"location"
-                      withResult:^(BOOL result){
-                        if (!result) {
-                          return reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
-                        }
-                        resolve(nil);
-                      }
-                    withRejecter:reject];
+  [_permissions askForPermission:@"location" withResult:resolve withRejecter:reject];
 }
 
 EX_EXPORT_METHOD_AS(hasServicesEnabledAsync,

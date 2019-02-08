@@ -38,7 +38,7 @@
     if (ENABLE_DEBUG_SHAPES) {
       [self.wrapperLayer addSublayer:DEBUG_Center];
     }
-    if (layer.startFrame) {
+    if (layer.startFrame != nil) {
       _frameOffset = layer.startFrame;
     } else {
       _frameOffset = @0;
