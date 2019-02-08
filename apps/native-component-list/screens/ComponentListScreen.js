@@ -6,13 +6,13 @@ import { withNavigation } from 'react-navigation';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
 class ComponentListScreen extends React.Component {
-  _renderExampleSection = ({ item: exampleName }) => {
+  _renderExampleSection = ({ item: { name: exampleName, isAvailable } }) => {
     return (
       <TouchableHighlight
         underlayColor="#dddddd"
         style={styles.rowTouchable}
-        onPress={() => this.props.navigation.navigate(exampleName)}>
-        <View style={styles.row}>
+        onPress={isAvailable ? () => this.props.navigation.navigate(exampleName) : undefined}>
+        <View style={[styles.row, !isAvailable && styles.disabledRow]}>
           <ExpoAPIIcon name={exampleName} style={styles.rowIcon} />
           <Text style={styles.rowLabel}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
@@ -23,7 +23,7 @@ class ComponentListScreen extends React.Component {
     );
   };
 
-  _keyExtractor = item => item;
+  _keyExtractor = item => item.name;
 
   render() {
     return (
@@ -67,6 +67,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#dddddd',
+  },
+  disabledRow: {
+    opacity: 0.3,
   },
   rowLabel: {
     flex: 1,
