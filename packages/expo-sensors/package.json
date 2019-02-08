@@ -20,7 +20,8 @@
     "devicemotion",
     "gyroscope",
     "magnetometer",
-    "pedometer"
+    "pedometer",
+    "barometer"
   ],
   "repository": {
     "type": "git",
