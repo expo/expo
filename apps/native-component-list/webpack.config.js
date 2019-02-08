@@ -12,10 +12,13 @@ const pckg = require('./package.json');
 
 const absolutePath = location => path.resolve(__dirname, location);
 
+const nativeAppManifest = require(absolutePath('./app.json'));
+
+const { productionPath = 'web-build' } = nativeAppManifest.expo.web;
+
 const locations = {
   // Shouldn't change
   root: absolutePath('.'),
-  output: absolutePath('build'),
   contentBase: absolutePath('web'),
   rootHtml: absolutePath('web/index.html'),
   packageJson: absolutePath('package.json'),
@@ -24,7 +27,6 @@ const locations = {
   // TODO: Bacon: Only use this in expo/apps/
   modules: absolutePath('../../node_modules'),
 };
-const nativeAppManifest = require(absolutePath('./app.json'));
 
 function getAppManifest() {
   if (nativeAppManifest && nativeAppManifest.expo) {
@@ -119,7 +121,7 @@ function generateHTMLFromAppJSON() {
      * You can specify a subdirectory here too (eg: `assets/admin.html`).
      * Default: `'index.html'`.
      */
-    filename: absolutePath('build/index.html'),
+    filename: absolutePath(`${productionPath}/index.html`),
     /**
      * The title to use for the generated HTML document.
      * Default: `'Webpack App'`.
@@ -269,7 +271,7 @@ module.exports = {
   entry,
   // configures where the build ends up
   output: {
-    path: locations.output,
+    path: absolutePath(productionPath),
     filename: 'bundle.js',
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: '[name].chunk.js',
@@ -306,7 +308,7 @@ module.exports = {
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
       PUBLIC_URL: publicUrl,
       WEB_TITLE: nativeAppManifest.expo.name,
-      SERVICE_WORKER: `<script>if ('serviceWorker' in navigator) window.addEventListener('load', function() {navigator.serviceWorker.register('/service-worker.js'));}</script>`,
+      SERVICE_WORKER: `<script>if ('serviceWorker' in navigator) window.addEventListener('load', function() { navigator.serviceWorker.register('/service-worker.js') });</script>`,
     }),
 
     new webpack.HotModuleReplacementPlugin(),

@@ -57,7 +57,8 @@
       }
     },
     "web": {
-      "favicon": "web/favicon.ico"
+      "favicon": "web/favicon.ico",
+      "productionPath": "web-build"
     },
     "assetBundlePatterns": [
       "assets/**",
