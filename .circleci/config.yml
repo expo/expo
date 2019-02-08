@@ -276,6 +276,9 @@ jobs:
               expo-client-build/Exponent.xcarchive \
               ios
             aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+      - run:
+          name: Expo Client shell app url
+          command: echo "Expo Client shell app tarball uploaded to s3://exp-artifacts/ios-expo-client-$CIRCLE_SHA1.tar.gz"
 
   shell_app_sim_base_ios:
     executor: mac
