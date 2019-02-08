@@ -56,7 +56,7 @@ const { URLSchemes } = AppAuth;
 
 ## Initialize the API
 
-Before using the API we first need to call `GoogleSignIn.initAsync({ ... })` which configures how sign-in functionality will work.
+Before using the API we first need to call `GoogleSignIn.initAsync({ ... })` which configures how sign in functionality will work.
 
 ```js
 try {
@@ -80,9 +80,7 @@ signInAsync = async () => {
     alert('login: Error:' + message);
   }
 };
-```
 
-```js
 signOutAsync = async () => {
   try {
     await GoogleSignIn.signOutAsync();
@@ -100,7 +98,7 @@ signOutAsync = async () => {
 > Android Only, this method always returns true on iOS
 
 Use this method to determine if a user's device can utilize Google Sign-In functionality.
-By default this method will assume the option is `false` and silently check for Play Services, whereas passing `true` will present a modal if the Play Services aren't available.
+By default this method will assume the option is `false` and silently check for Play Services, whereas passing `true` will present a modal if the Play Services aren't available, prompting the user to update Play Services.
 
 ### `askForPlayServicesAsync(): Promise<boolean>`
 
@@ -112,7 +110,7 @@ Returns true after the user successfully updates.
 
 ### `initAsync(options: ?GoogleSignInOptions): Promise<void>`
 
-Configures how the `GoogleSignIn` module will attempt to sign-in. You can call this method multiple times.
+Configures how the `GoogleSignIn` module will attempt to sign in. You can call this method multiple times.
 
 See all the available options under the `GoogleSignInOptions` type.
 
@@ -199,7 +197,7 @@ type GoogleSignInOptions = {
   /*
    * [Android][optional]: `signInType?: GoogleSignIn.TYPES.DEFAULT | GoogleSignIn.TYPES.GAMES`
    * [default]: `undefined`
-   * The service you wish to sign-in to
+   * The service you wish to sign in to
    * GoogleSignIn.TYPES.DEFAULT | GoogleSignIn.TYPES.GAMES
    */
   signInType: ?GoogleSignInType,
@@ -223,7 +221,7 @@ type GoogleSignInOptions = {
   /*
    * [iOS][optional]: `clientId: ?string`
    * [default]: Read from GoogleService-info.plist `CLIENT_ID` on iOS, and google-services.json `oauth_client.client_id` on Android.
-   * The client ID of the app from the Google APIs (or Firebase) console, this must be set for sign-in to work.
+   * The client ID of the app from the Google APIs (or Firebase) console, this must be set for sign in to work.
    * This value must be defined in the google-services.json on Android, you can define your custom google-services.json
    */
   clientId: ?string,
@@ -231,7 +229,7 @@ type GoogleSignInOptions = {
   /*
    * [iOS][optional]: `language: ?string`
    * [default]: `undefined`
-   * The language for sign-in, in the form of ISO 639-1 language code optionally followed by a dash
+   * The language for sign in, in the form of ISO 639-1 language code optionally followed by a dash
    * and ISO 3166-1 alpha-2 region code, such as |@"it"| or |@"pt-PT"|. Only set if different from
    * system default.
    */
