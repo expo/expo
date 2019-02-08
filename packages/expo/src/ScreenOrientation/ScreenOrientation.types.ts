@@ -56,7 +56,7 @@ export type OrientationInfo = {
 export type PlatformOrientationInfo = {
   screenOrientationConstantAndroid?: number;
   screenOrientationArrayIOS?: Orientation[];
-  screenOrientationLockWeb?: Orientation[];
+  screenOrientationLockWeb?: WebOrientationLock;
 };
 
 export type OrientationChangeListener = (event: OrientationChangeEvent) => void;
