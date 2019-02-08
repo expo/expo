@@ -18,7 +18,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'EXCore'
   s.dependency 'EXPermissionsInterface'
-  s.dependency 'Flutter'
 
 end
 
