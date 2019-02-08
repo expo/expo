@@ -388,6 +388,7 @@ jobs:
     executor: android
     steps:
       - setup
+      - update_submodules
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
