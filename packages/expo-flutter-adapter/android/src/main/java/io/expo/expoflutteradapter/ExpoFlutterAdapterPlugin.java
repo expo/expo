@@ -245,6 +245,11 @@ class ExpoFlutterAdapterModule implements
     }
 
     @Override
+    public void emit(int viewId, String eventName, Bundle eventBody) {
+        emit(eventName, eventBody);
+    };
+
+    @Override
     public void emit(final int viewId, final Event event) {
     }
 
@@ -291,6 +296,10 @@ class ExpoFlutterAdapterModule implements
     }
 
     @Override
+    public void unregisterActivityEventListener(ActivityEventListener listener) {
+    }
+
+    @Override
     public void onPostResume() {
         for (LifecycleEventListener listener : mLifeCycleEventListeners) {
             listener.onHostResume();
@@ -323,4 +332,7 @@ class ExpoFlutterAdapterModule implements
     public <T> void addUIBlock(int viewTag, UIBlock<T> block, Class<T> tClass) {
         throw new UnsupportedOperationException("Unimplemented!");
     }
+    public void addUIBlock(GroupUIBlock block) {
+        throw new UnsupportedOperationException("Unimplemented!");
+    };
 }
