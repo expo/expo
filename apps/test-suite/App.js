@@ -43,6 +43,7 @@ async function getTestModulesAsync() {
     require('./tests/Location'),
     require('./tests/Linking'),
     require('./tests/Recording'),
+    require('./tests/ScreenOrientation'),
     require('./tests/SecureStore'),
     require('./tests/Segment'),
     require('./tests/Speech'),
