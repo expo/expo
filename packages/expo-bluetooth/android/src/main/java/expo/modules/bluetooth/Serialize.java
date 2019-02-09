@@ -249,7 +249,7 @@ public class Serialize {
 
   // Central
 
-  public static Bundle BluetoothAdapter_NativeToJSON(BluetoothAdapter input) {
+  public static Bundle BluetoothAdapter_NativeToJSON(BluetoothAdapter input, boolean isDiscovering) {
     if (input == null) return null;
 
 
@@ -257,7 +257,7 @@ public class Serialize {
 
     // Parity
     map.putString("state", Serialize.AdapterState_NativeToJSON(input.getState()));
-    map.putBoolean("isScanning", input.isDiscovering());
+    map.putBoolean("isDiscovering", input.isDiscovering());
 
     // Android only
     map.putBoolean("isOffloadedScanBatchingSupported", input.isOffloadedScanBatchingSupported());
@@ -269,6 +269,7 @@ public class Serialize {
     map.putBoolean("isOffloadedScanBatchingSupported", input.isOffloadedScanBatchingSupported());
     map.putString("scanMode", Serialize.BluetoothAdapterScanMode_NativeToJSON(input.getScanMode()));
 
+    map.putBoolean("isScanning", isDiscovering);
     // Oreo
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       map.putBoolean("isLe2MPhySupported", input.isLe2MPhySupported());

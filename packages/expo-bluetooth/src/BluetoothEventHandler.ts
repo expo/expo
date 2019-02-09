@@ -43,8 +43,6 @@ export async function resetHandlersForKey(key) {
   for (const listener of multiEventHandlers[key]) {
     if (listener.remove instanceof Function) {
       promises.push(listener.remove());
-    } else if (listener instanceof Function) {
-      promises.push(listener());
     }
   }
   multiEventHandlers[key] = [];
@@ -77,6 +75,8 @@ export function getHandlersForKey(key) {
 }
 
 export function addListener(listener: (event: any) => void): Subscription {
+  // eventEmitter.removeAllListeners(BLUETOOTH_EVENT);
+  console.log('EXBLUE_INTERNAL: listener count: ', eventEmitter._listenerCount);
   return eventEmitter.addListener(BLUETOOTH_EVENT, listener);
 }
 

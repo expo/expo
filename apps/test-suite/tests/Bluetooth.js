@@ -9,7 +9,7 @@ import {
 } from 'expo-bluetooth-utils';
 import * as Bluetooth from 'expo-bluetooth';
 import { Permissions } from 'expo';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy, Platform } from 'expo-core';
 
 const { ExpoBluetooth } = NativeModulesProxy;
 
@@ -64,16 +64,49 @@ function getStaticInfoFromGATT(gatt) {
 
 export const name = 'Bluetooth';
 
+
+async function attemptQuickConnectionAsync(peripheralUUID, timeout) {
+    try {
+        return await Bluetooth.connectAsync(peripheralUUID, { timeout });
+    } catch (error) {
+        return;
+    }
+}
 async function getConnectedPeripheralAsync(options = {}) {
-  const peripheral = await scanForSinglePeripheral();
-  try {
-    console.log('attempt to connect to ', peripheral);
-    return await Bluetooth.connectAsync(peripheral.id, { timeout: 240000, ...options });
-  } catch (error) {
-    throw new Error(
-      'Failed to connect to a peripheral in time, this is expected. Please try again.'
-    );
-  }
+    let attemptedConnections = [];
+    return new Promise(resolve => {
+        let connected;
+        const stopScanning = Bluetooth.startScan(options, async peripheral => {
+            /* Named peripherals have a higher chance of interaction. For brevity let's use them. */
+            if (Platform.OS === 'ios' && peripheral.name === "BaconBook") {
+                await stopScanning();
+                const _connected = await attemptQuickConnectionAsync(peripheral.id, 5000);
+                resolve(peripheral);
+                return;
+            }
+            if (!connected && peripheral.name && peripheral.name.length && attemptedConnections.indexOf(peripheral.id) < 0) {
+                attemptedConnections.push(peripheral.id);
+                console.log('attempt to connect to ', peripheral.id);
+                const _connected = await attemptQuickConnectionAsync(peripheral.id, 3000);
+                if (!connected && _connected) {
+                    connected = _connected;
+                    console.log("actually connected to: ", connected.id, connected.name);
+                    stopScanning();
+                    
+                    resolve(peripheral);
+                }
+            }
+        });
+});
+//   const peripheral = await scanForSinglePeripheral();
+//   try {
+//     console.log('attempt to connect to ', peripheral);
+//     return await Bluetooth.connectAsync(peripheral.id, { timeout: 240000, ...options });
+//   } catch (error) {
+//     throw new Error(
+//       'Failed to connect to a peripheral in time, this is expected. Please try again.'
+//     );
+//   }
 }
 
 function scanForSinglePeripheral(options) {
@@ -96,7 +129,6 @@ function validatePeripheral(peripheral, expect) {
   expect(peripheral.advertisementData).toBeDefined();
 }
 
-let enquedPeripheral;
 export async function test({
   describe,
   xdescribe,
@@ -109,18 +141,46 @@ export async function test({
 }) {
   await Permissions.askAsync(Permissions.LOCATION);
 
+
+
+  async function clearAllConnections() {
+    try {
+        
+        const connected = await Bluetooth.getConnectedPeripheralsAsync();
+        console.log("- CLEAR", connected.length);
+        
+        await Promise.all(connected.map(({ id }) => Promise.all([Bluetooth.disconnectAsync(id), Bluetooth.android.clearCacheForPeripheralAsync(id)]) ));
+
+        // for (const peripheral of connected) {
+        //     await Bluetooth.disconnectAsync(peripheral.id);
+        //     console.log("- DISCONNECTED: ", peripheral.id);
+        //     if (Bluetooth.android.refreshPeripheralAsync) {
+        //         await Bluetooth.android.refreshPeripheralAsync(peripheral.id);
+        //         console.log("- REFRESHED: ", peripheral.id);
+
+        //     }
+        // }
+
+        // const thenConnected = await Bluetooth.getConnectedPeripheralsAsync();
+        console.log("- SUCCESSFUL CLEAR: ", 
+        // thenConnected.length
+        );
+    } catch (e) {
+        console.log("FAILED TO CLEAR: ", e.message);
+    }
+    await Bluetooth._reset();
+  }
+
+//   await clearAllConnections();
+
+
   let originalTimeout;
-  const longerTimeout = 30000;
+  const longerTimeout = 35000;
+  
+  
   beforeEach(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = longerTimeout;
-
-    try {
-      if (enquedPeripheral) {
-        await Bluetooth.disconnectPeripheralAsync(enquedPeripheral.id);
-      }
-    } catch (e) {}
-    await Bluetooth._reset();
   });
 
   afterEach(() => {
@@ -148,21 +208,22 @@ export async function test({
       expect(message).toBe('expo-bluetooth: Invalid UUID provided');
     });
   }
-  afterEach(unmockAllProperties);
+  //   afterEach(unmockAllProperties);
   describe('startScanAsync', () => {
-    xit(`get's a valid peripheral`, async () => {
+    it(`get's a valid peripheral`, async () => {
       const peripheral = await scanForSinglePeripheral();
       validatePeripheral(peripheral, expect);
     });
   });
   describe('stopScanAsync', () => {
-    xit(`doesn't fail`, async () => {
+    it(`doesn't fail`, async () => {
       await Bluetooth.startScan({}, () => {});
       await Bluetooth.stopScanAsync();
     });
   });
+
   describe('observeUpdates', () => {
-    xit('works', async () => {
+    it('works', async () => {
       function getsUpdated() {
         return new Promise(async res => {
           const subscription = await Bluetooth.observeUpdates(({ peripherals }) => {
@@ -196,22 +257,19 @@ export async function test({
     });
   });
 
-  xdescribe('readRSSIAsync', () => {
+  describe('readRSSIAsync', () => {
     rejectsInvalidPeripheralUUID(Bluetooth.readRSSIAsync);
 
     it('fails if the peripheral is not connected.', async () => {
       const peripheral = await scanForSinglePeripheral();
-      enquedPeripheral = peripheral;
-
       const { message: errorMessage } = await toThrowAsync(() =>
         Bluetooth.readRSSIAsync(peripheral.id)
       );
       expect(errorMessage.includes('not connected')).toBe(true);
     });
 
-    it('invokes native method', async () => {
+    xit('invokes native method', async () => {
       const peripheral = await getConnectedPeripheralAsync();
-      enquedPeripheral = peripheral;
       const RSSI = await Bluetooth.readRSSIAsync(peripheral.id);
       console.log('HEYYYYY', RSSI);
       expect(RSSI).toBeDefined();
@@ -226,12 +284,13 @@ export async function test({
         function connectThenDisconnect() {
           return new Promise(async (resolve, reject) => {
             try {
-              enquedPeripheral = await getConnectedPeripheralAsync({
+              const peripheral = await getConnectedPeripheralAsync({
                 onDisconnect: () => {
                   resolve(true);
                 },
               });
-              await Bluetooth.disconnectAsync(enquedPeripheral.id);
+              await Bluetooth.disconnectAsync(peripheral.id);
+              console.log("Disconnected...")
               await sleep(20);
             } catch (error) {
               throw error;
@@ -243,10 +302,7 @@ export async function test({
 
       it('times out', async () => {
         const peripheral = await scanForSinglePeripheral();
-        const { code } = await toThrowAsync(
-          async () =>
-            (enquedPeripheral = await Bluetooth.connectAsync(peripheral.id, { timeout: 2 }))
-        );
+        const { code } = await toThrowAsync(() => Bluetooth.connectAsync(peripheral.id, { timeout: 2 }));
         expect(code).toBe('timeout');
       });
     });
@@ -255,149 +311,216 @@ export async function test({
     });
   });
 
-  //   describe('reading', () => {
-  //     describe('readCharacteristicAsync', async () => {
-  //       const someReadValue = await Bluetooth.readCharacteristicAsync(
-  //         getGATTNumbersFromID(internalCharacteristicID)
-  //       );
-  //     });
-  //     describe('readDescriptorAsync', async () => {
-  //       const someReadValue = await Bluetooth.readDescriptorAsync(
-  //         getGATTNumbersFromID(internalDescriptorID)
-  //       );
-  //     });
+    describe('reading', async () => {
+
+        const connectedPeripheral = await getConnectedPeripheralAsync();
+        const loaded = await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
+
+        console.log(" LOADED ", loaded);
+    //     it('readCharacteristicAsync', async () => {
+    //     const someReadValue = await Bluetooth.readCharacteristicAsync(
+    //       getGATTNumbersFromID(internalCharacteristicID)
+    //     );
+    //   });
+    //   it('readDescriptorAsync', async () => {
+    //     const someReadValue = await Bluetooth.readDescriptorAsync(
+    //       getGATTNumbersFromID(internalDescriptorID)
+    //     );
+    //   });
+    });
+    xdescribe('writing', () => {
+        it('writeCharacteristicAsync', async () => {
+        // properties.includes('write');
+        await Bluetooth.writeCharacteristicAsync({
+          ...getGATTNumbersFromID(internalCharacteristicID),
+          data: JSONToNative('bacon'),
+        });
+      });
+      it('writeCharacteristicWithoutResponseAsync', async () => {
+        await Bluetooth.writeCharacteristicWithoutResponseAsync({
+          ...getGATTNumbersFromID(internalCharacteristicID),
+          data: JSONToNative('bacon'),
+        });
+      });
+      it('writeDescriptorAsync', async () => {
+        await Bluetooth.writeDescriptorAsync({
+          ...getGATTNumbersFromID(internalDescriptorID),
+          data: JSONToNative('bacon'),
+        });
+      });
+    });
+    // describe('modify notifications', () => {
+    //   describe('shouldNotifyDescriptorAsync', () => {
+    //     //   if (!isNotifying && properties.includes('notify')) {
+    //     //     await Bluetooth.shouldNotifyDescriptorAsync({
+    //     //       ...getGATTNumbersFromID(this.props.id),
+    //     //       shouldNotify: true,
+    //     //     });
+    //     //   }
+    //   });
+    // });
+
+
+  xdescribe('get async', () => {
+      let connectedPeripheral;
+    it('connect', async () => {
+        connectedPeripheral = await getConnectedPeripheralAsync();
+        // peripheral
+        // const loaded = await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
+        console.log({connectedPeripheral});
+      });
+
+    //   if (connectedPeripheral) {
+    //     it('load', async () => {
+    //         // connectedPeripheral = await getConnectedPeripheralAsync();
+    //         // peripheral
+    //         const loaded = await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
+    //         console.log({loaded});
+    //       });
+    //   }
+
+    it('getPeripheralsAsync', async () => {
+      const arr = await Bluetooth.getPeripheralsAsync();
+      expect(Array.isArray(arr)).toBe(true);
+      // expect(ExpoBluetooth.getPeripheralsAsync).toHaveBeenLastCalledWith();
+    });
+    it('getConnectedPeripheralsAsync', async () => {
+      const arr = await Bluetooth.getConnectedPeripheralsAsync();
+      expect(Array.isArray(arr)).toBe(true);
+      // expect(ExpoBluetooth.getConnectedPeripheralsAsync).toHaveBeenLastCalledWith();
+    });
+    it('getCentralAsync', async () => {
+      const central = await Bluetooth.getCentralAsync();
+      expect(central).toBeDefined();
+      expect(Object.values(Bluetooth.CentralState).includes(central.state)).toBe(true);
+      // expect(ExpoBluetooth.getCentralAsync).toHaveBeenLastCalledWith();
+    });
+    xit('isScanningAsync', async () => {
+      const central = await Bluetooth.getCentralAsync();
+      console.log({ central });
+
+      let isScanning = await Bluetooth.isScanningAsync();
+      expect(typeof isScanning).toBe('boolean');
+
+      const stopScan = await Bluetooth.startScan({}, async () => {
+        const central = await Bluetooth.getCentralAsync();
+        console.log({ central });
+      });
+
+      // TODO: Bacon: Broken on Android.
+      await sleep(5000);
+      expect(await Bluetooth.isScanningAsync()).toBe(true);
+
+      await stopScan();
+
+      expect(await Bluetooth.isScanningAsync()).toBe(false);
+    });
+  });
+
+ 
+  // const debugPeripheral = { id: peripheralUUID };
+  // const debugService = { id: internalServiceID };
+  // const debugCharacteristic = { id: internalCharacteristicID };
+  // describe('discovery', () => {
+  //   describe('discoverServicesForPeripheralAsync', async () => {
+  //     const {
+  //       peripheral: { services },
+  //     } = await Bluetooth.discoverServicesForPeripheralAsync({ id: debugPeripheral.id });
+  //     expect(Array.isArray(services)).toBe(true);
   //   });
-  //   describe('writing', () => {
-  //     describe('writeCharacteristicAsync', async () => {
-  //       // properties.includes('write');
-  //       await Bluetooth.writeCharacteristicAsync({
-  //         ...getGATTNumbersFromID(internalCharacteristicID),
-  //         data: JSONToNative('bacon'),
-  //       });
-  //     });
-  //     describe('writeCharacteristicWithoutResponseAsync', async () => {
-  //       await Bluetooth.writeCharacteristicWithoutResponseAsync({
-  //         ...getGATTNumbersFromID(internalCharacteristicID),
-  //         data: JSONToNative('bacon'),
-  //       });
-  //     });
-  //     describe('writeDescriptorAsync', async () => {
-  //       await Bluetooth.writeDescriptorAsync({
-  //         ...getGATTNumbersFromID(internalDescriptorID),
-  //         data: JSONToNative('bacon'),
-  //       });
-  //     });
+  //   describe('discoverIncludedServicesForServiceAsync', async () => {
+  //     const {
+  //       peripheral: { includedServices },
+  //     } = await Bluetooth.discoverIncludedServicesForServiceAsync({ id: debugPeripheral.id });
+  //     expect(Array.isArray(includedServices)).toBe(true);
   //   });
-  //   describe('modify notifications', () => {
-  //     describe('shouldNotifyDescriptorAsync', () => {
-  //       //   if (!isNotifying && properties.includes('notify')) {
-  //       //     await Bluetooth.shouldNotifyDescriptorAsync({
-  //       //       ...getGATTNumbersFromID(this.props.id),
-  //       //       shouldNotify: true,
-  //       //     });
-  //       //   }
-  //     });
+  //   describe('discoverCharacteristicsForServiceAsync', async () => {
+  //     const {
+  //       service: { characteristics },
+  //     } = await Bluetooth.discoverCharacteristicsForServiceAsync({ id: debugService.id });
+  //     expect(Array.isArray(characteristics)).toBe(true);
   //   });
-  //   describe('get async', () => {
-  //     describe('getPeripheralsAsync', async () => {
-  //       const arr = await Bluetooth.getPeripheralsAsync();
-  //       expect(Array.isArray(arr)).toBe(true);
-  //       expect(ExpoBluetooth.getPeripheralsAsync).toHaveBeenLastCalledWith();
-  //     });
-  //     describe('getConnectedPeripheralsAsync', async () => {
-  //       const arr = await Bluetooth.getConnectedPeripheralsAsync();
-  //       expect(Array.isArray(arr)).toBe(true);
-  //       expect(ExpoBluetooth.getConnectedPeripheralsAsync).toHaveBeenLastCalledWith();
-  //     });
-  //     describe('getCentralAsync', async () => {
-  //       const central = await Bluetooth.getPeripheralsAsync();
-  //       expect(ExpoBluetooth.getCentralAsync).toHaveBeenLastCalledWith();
-  //     });
-  //     describe('isScanningAsync', async () => {
-  //       const isScanning = await Bluetooth.isScanningAsync();
-  //       expect(typeof isScanning).toBe('boolean');
-  //       expect(ExpoBluetooth.getCentralAsync).toHaveBeenLastCalledWith();
-  //     });
+  //   describe('discoverDescriptorsForCharacteristicAsync', async () => {
+  //     const {
+  //       characteristic: { descriptors },
+  //     } = await Bluetooth.discoverDescriptorsForCharacteristicAsync({ id: debugCharacteristic.id });
+  //     expect(Array.isArray(descriptors)).toBe(true);
   //   });
-  //   const debugPeripheral = { id: peripheralUUID };
-  //   const debugService = { id: internalServiceID };
-  //   const debugCharacteristic = { id: internalCharacteristicID };
-  //   describe('discovery', () => {
-  //     describe('discoverServicesForPeripheralAsync', async () => {
-  //       const {
-  //         peripheral: { services },
-  //       } = await Bluetooth.discoverServicesForPeripheralAsync({ id: debugPeripheral.id });
-  //       expect(Array.isArray(services)).toBe(true);
-  //     });
-  //     describe('discoverIncludedServicesForServiceAsync', async () => {
-  //       const {
-  //         peripheral: { includedServices },
-  //       } = await Bluetooth.discoverIncludedServicesForServiceAsync({ id: debugPeripheral.id });
-  //       expect(Array.isArray(includedServices)).toBe(true);
-  //     });
-  //     describe('discoverCharacteristicsForServiceAsync', async () => {
-  //       const {
-  //         service: { characteristics },
-  //       } = await Bluetooth.discoverCharacteristicsForServiceAsync({ id: debugService.id });
-  //       expect(Array.isArray(characteristics)).toBe(true);
-  //     });
-  //     describe('discoverDescriptorsForCharacteristicAsync', async () => {
-  //       const {
-  //         characteristic: { descriptors },
-  //       } = await Bluetooth.discoverDescriptorsForCharacteristicAsync({ id: debugCharacteristic.id });
-  //       expect(Array.isArray(descriptors)).toBe(true);
-  //     });
+  // });
+  // describe('requestMTUAsync', async () => {
+  //   const debugMTU = 24;
+  //   await Bluetooth.android.requestMTUAsync(peripheralUUID, debugMTU);
+  // });
+  // // describe('getPeripherals', () => {
+  // // });
+  // describe('loadPeripheralAsync', async () => {
+  //   // TODO: Bacon: Test shape
+  //   it('loads', async () => {
+  //     try {
+  //       await Bluetooth.loadPeripheralAsync({
+  //         id: debugPeripheral.id,
+  //       });
+  //     } catch (error) {}
   //   });
-  //   describe('requestMTUAsync', async () => {
-  //     const debugMTU = 24;
-  //     await Bluetooth.android.requestMTUAsync(peripheralUUID, debugMTU);
-  //   });
-  //   // describe('getPeripherals', () => {
-  //   // });
-  //   describe('loadPeripheralAsync', async () => {
-  //     // TODO: Bacon: Test shape
-  //     it('loads', async () => {
-  //       try {
-  //         await Bluetooth.loadPeripheralAsync({
-  //           id: debugPeripheral.id,
-  //         });
-  //       } catch (error) {}
-  //     });
-  //     //       discoveryDate = new Date(discoveryTimestamp).toISOString();
-  //   });
-  //   describe('Android only', () => {
-  //     beforeEach(mockPlatformAndroid);
-  //     afterEach(unmockAllProperties);
-  //     describe('requestMTUAsync', () => {
-  //       it(`works as expected`, async () => {
-  //         await Bluetooth.android.requestMTUAsync(peripheralUUID, 512);
-  //       });
-  //     });
-  //     describe('createBondAsync', () => {
-  //       it(`works as expected`, async () => {
-  //         await Bluetooth.android.createBondAsync(peripheralUUID);
-  //       });
-  //     });
-  //     describe('removeBondAsync', () => {
-  //       it(`works as expected`, async () => {
-  //         await Bluetooth.android.removeBondAsync(peripheralUUID);
-  //       });
-  //     });
-  //     describe('enableBluetoothAsync', () => {
-  //       it(`works as expected`, async () => {
-  //         await Bluetooth.android.enableBluetoothAsync(true);
-  //       });
-  //     });
-  //     describe('getBondedPeripheralsAsync', () => {
-  //       it(`works as expected`, async () => {
-  //         await Bluetooth.android.getBondedPeripheralsAsync();
-  //       });
-  //     });
-  //     describe('requestConnectionPriorityAsync', () => {
-  //       it(`works as expected`, async () => {
-  //         await Bluetooth.android.requestConnectionPriorityAsync(peripheralUUID, -1);
-  //       });
-  //     });
-  //   });
+  //   //       discoveryDate = new Date(discoveryTimestamp).toISOString();
+  // });
+  xdescribe('Android only', () => {
+    //   beforeEach(mockPlatformAndroid);
+    //   afterEach(unmockAllProperties);
+    xdescribe('requestMTUAsync', () => {
+      it(`works as expected`, async () => {
+        const peripheral = await getConnectedPeripheralAsync();
+        await Bluetooth.android.requestMTUAsync(peripheral.id, 4);
+      });
+    });
+
+    describe('clearCacheForPeripheralAsync', () => {
+        beforeEach(async () => {
+            console.log("BEFORE EACH");
+            await clearAllConnections();
+        });
+        
+    //     it(`works as expected`, async () => {
+    //     const peripheral = await getConnectedPeripheralAsync();
+    //     await Bluetooth.android.clearCacheForPeripheralAsync(peripheral.id);
+    //   });
+      it(`b works as expected`, async () => {
+        const peripheral = await getConnectedPeripheralAsync();
+
+      });
+      it(`c works as expected`, async () => {
+        const peripheral = await getConnectedPeripheralAsync();
+
+      });
+      it(`d works as expected`, async () => {
+        const peripheral = await getConnectedPeripheralAsync();
+      });
+    });
+    xdescribe('bonding', () => {
+      it(`works as expected`, async () => {
+        const peripheral = await scanForSinglePeripheral();
+        await Bluetooth.android.createBondAsync(peripheral.id);
+
+        await Bluetooth.android.removeBondAsync(peripheral.id);
+      });
+    });
+    xdescribe('enableBluetoothAsync', () => {
+      it(`works as expected`, async () => {
+        // Bluetooth.android.observeBluetoothAvailabilty(central => {})
+        await Bluetooth.android.enableBluetoothAsync(true);
+      });
+    });
+    xdescribe('getBondedPeripheralsAsync', () => {
+      it(`works as expected`, async () => {
+        await Bluetooth.android.getBondedPeripheralsAsync();
+      });
+    });
+    xdescribe('requestConnectionPriorityAsync', () => {
+      it(`works as expected`, async () => {
+        const peripheral = await scanForSinglePeripheral();
+        await Bluetooth.android.requestConnectionPriorityAsync(peripheral.id, 1);
+      });
+    });
+  });
 }
 // getStaticInfoFromGATT(this.props);

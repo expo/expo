@@ -32,9 +32,6 @@ export async function resetHandlersForKey(key) {
         if (listener.remove instanceof Function) {
             promises.push(listener.remove());
         }
-        else if (listener instanceof Function) {
-            promises.push(listener());
-        }
     }
     multiEventHandlers[key] = [];
     return await Promise.all(promises);
@@ -61,6 +58,8 @@ export function getHandlersForKey(key) {
     return multiEventHandlers[key];
 }
 export function addListener(listener) {
+    // eventEmitter.removeAllListeners(BLUETOOTH_EVENT);
+    console.log('EXBLUE_INTERNAL: listener count: ', eventEmitter._listenerCount);
     return eventEmitter.addListener(BLUETOOTH_EVENT, listener);
 }
 // TODO: Bacon: How do we plan on calling this...

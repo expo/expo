@@ -15,6 +15,7 @@ import android.os.ParcelUuid;
 import android.util.Base64;
 import android.util.Log;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,6 +155,24 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     }
   }
 
+  public void refreshCache(Promise promise) {
+    if (mGatt != null) {
+      try {
+        Method localMethod = mGatt.getClass().getMethod("refresh", new Class[0]);
+        if (localMethod == null) {
+          BluetoothError.reject(promise, "Could not clear device cache for peripheral: " + getID());
+        } else {
+          boolean didRefresh = ((Boolean) localMethod.invoke(mGatt, new Object[0])).booleanValue();
+          promise.resolve(didRefresh);
+        }
+      } catch (Exception localException) {
+        promise.reject(localException);
+      }
+    } else {
+      promise.resolve(false);
+    }
+  }
+
   // TODO: Bacon: Is this overriding the StateChange method
   public void disconnect(Promise promise) {
     connected = false;
@@ -167,24 +186,31 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //        sendDisconnectedEvent(null);
       } catch (Exception e) {
 
+        promise.reject(e);
         //TODO: Bacon: Add more of a standard around errors
-        Bundle errorPayload = new Bundle();
-        errorPayload.putString(BluetoothConstants.JSON.MESSAGE, e.getMessage());
-
-        BluetoothError.reject(_didDisconnectPeripheralBlock, e.getMessage());
+//        Bundle errorPayload = new Bundle();
+//        errorPayload.putString(BluetoothConstants.JSON.MESSAGE, e.getMessage());
+//
+//        BluetoothError.reject(_didDisconnectPeripheralBlock, e.getMessage());
         _didDisconnectPeripheralBlock = null;
 //        sendDisconnectedEvent(errorPayload);
         return;
       }
     } else {
+      Bundle output = new Bundle();
+      output.putString("status", "unavailable");
+      promise.resolve(output);
       _didDisconnectPeripheralBlock = null;
-      BluetoothError.reject(_didDisconnectPeripheralBlock, BluetoothConstants.ERRORS.GENERAL);
+//      BluetoothError.reject(_didDisconnectPeripheralBlock, BluetoothConstants.ERRORS.GENERAL);
       Log.d(BluetoothConstants.ERRORS.GENERAL, "GATT is null");
     }
   }
 
   // TODO: Bacon: [iOS] Are solicitedServiceUUIDs overflowServiceUUIDs possible
   public Bundle advertisementData() {
+    if (advertisingData == null) {
+      return null;
+    }
     Bundle advertising = new Bundle();
 //    AdvertisementData advertisementData = AdvertisementData.parseScanResponseData(advertisingDataBytes);
     String name = device.getName();
@@ -678,7 +704,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
         promise.resolve(mtu);
         BluetoothModule.emitState();
       }
-      _didRequestMTUBlock.remove(getID());
+      _didRequestMTUBlock.remove(id);
     }
     // TODO: Bacon: Should we do something if an event is fired and there is no promise to resolve?
 

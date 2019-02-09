@@ -1,5 +1,5 @@
 import { Subscription } from 'expo-core';
-import { Base64, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
+import { Base64, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, EVENTS, TYPES } from './BluetoothConstants';
 export * from './Bluetooth.types';
 export { BLUETOOTH_EVENT, TYPES, EVENTS };
@@ -76,7 +76,7 @@ export declare function loadPeripheralAsync({ id }: {
 export declare function _loadChildrenRecursivelyAsync({ id }: {
     id: any;
 }): Promise<any[]>;
-export declare function getConnectedPeripheralsAsync(): Promise<NativePeripheral[]>;
+export declare function getConnectedPeripheralsAsync(serviceUUIDsToQuery?: UUID[]): Promise<NativePeripheral[]>;
 declare const android: {
     requestMTUAsync(peripheralUUID: string, MTU: number): Promise<number>;
     createBondAsync(peripheralUUID: string): Promise<any>;
@@ -84,6 +84,8 @@ declare const android: {
     enableBluetoothAsync(isBluetoothEnabled: boolean): Promise<void>;
     getBondedPeripheralsAsync(): Promise<NativePeripheral[]>;
     requestConnectionPriorityAsync(peripheralUUID: string, connectionPriority: number): Promise<any>;
+    clearCacheForPeripheralAsync(peripheralUUID: string): Promise<boolean>;
+    observeBluetoothAvailabilty(callback: (updates: Central) => void): Subscription;
 };
 export { android };
 export declare function _reset(): Promise<void>;

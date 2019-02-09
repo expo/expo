@@ -186,8 +186,10 @@ EX_EXPORT_METHOD_AS(getPeripheralsAsync,
   [self emitFullState];
 }
 
+// TODO: Bacon: Use serviceUUIDStrings for Android parity
 EX_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
-                    getConnectedPeripheralsAsync:(EXPromiseResolveBlock)resolve
+                    getConnectedPeripheralsAsync:(NSArray<NSString *> *)serviceUUIDStrings
+                    resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {

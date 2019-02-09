@@ -32,10 +32,15 @@ public class BluetoothScanManager {
     this.mScanCallback = scanCallback;
   }
 
+  public void clear() {
+    stopScan();;
+    mScanCallback = null;
+    scanSessionId = null;
+  }
+
   public void stopScan() {
     // update scanSessionId to prevent stopping next scan by running timeout thread
     scanSessionId.incrementAndGet();
-
     adapter.getBluetoothLeScanner().stopScan(mScanCallback);
   }
 
