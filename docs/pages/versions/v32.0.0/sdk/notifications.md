@@ -161,6 +161,7 @@ An object used to describe the local notification that you would like to present
 -   **categoryId : `optional` : `string`** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
 -   **ios : `optional` : `object`** -- notification configuration specific to iOS.
     -   **sound** : `optional` : `boolean` -- if `true`, play a sound. Default: `false`.
+    -   **count** : `optional` : `number` -- Number to display in the badge on the app icon. Specify zero to clear the badge.
 -   **android : `optional` : `object`** -- notification configuration specific to Android.
     -   **channelId** : `optional, but recommended` : `string` -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
     -   **icon** : `optional` : `string` -- URL of icon to display in notification drawer.
