@@ -228,6 +228,17 @@ export async function test({
           const error = toThrowAsync(() => Bluetooth.startScanningAsync({}, () => {}));
           expect(error).toBeDefined();
       });
+
+      // TODO: Bacon: Broken on Android.
+      it('can stop scanning with the returned function.', async () => {
+        let isScanning = await Bluetooth.isScanningAsync();
+        expect(typeof isScanning).toBe('boolean');
+        const stopScan = await Bluetooth.startScanningAsync({}, async () => {});
+        expect(await Bluetooth.isScanningAsync()).toBe(true);
+        await stopScan();
+        expect(await Bluetooth.isScanningAsync()).toBe(false);
+      });
+
     });
 
     describe('stopScanAsync', () => {
@@ -271,8 +282,8 @@ export async function test({
     });
 
 
-    xdescribe('3. Retrieving', () => {
-        xit('getPeripheralsAsync', async () => {
+    describe('3. Retrieving', () => {
+        it('getPeripheralsAsync', async () => {
           const arr = await Bluetooth.getPeripheralsAsync();
           expect(Array.isArray(arr)).toBe(true);
           // expect(ExpoBluetooth.getPeripheralsAsync).toHaveBeenLastCalledWith();
@@ -282,32 +293,13 @@ export async function test({
           expect(Array.isArray(arr)).toBe(true);
           // expect(ExpoBluetooth.getConnectedPeripheralsAsync).toHaveBeenLastCalledWith();
         });
-        xit('getCentralAsync', async () => {
+        it('getCentralAsync', async () => {
           const central = await Bluetooth.getCentralAsync();
           expect(central).toBeDefined();
           expect(Object.values(Bluetooth.CentralState).includes(central.state)).toBe(true);
           // expect(ExpoBluetooth.getCentralAsync).toHaveBeenLastCalledWith();
         });
-        xit('isScanningAsync', async () => {
-          const central = await Bluetooth.getCentralAsync();
-          console.log({ central });
-    
-          let isScanning = await Bluetooth.isScanningAsync();
-          expect(typeof isScanning).toBe('boolean');
-    
-          const stopScan = await Bluetooth.startScanningAsync({}, async () => {
-            const central = await Bluetooth.getCentralAsync();
-            console.log({ central });
-          });
-    
-          // TODO: Bacon: Broken on Android.
-          await sleep(5000);
-          expect(await Bluetooth.isScanningAsync()).toBe(true);
-    
-          await stopScan();
-    
-          expect(await Bluetooth.isScanningAsync()).toBe(false);
-        });
+     
       });
 
 //   const peripheral = await scanForSinglePeripheral();
