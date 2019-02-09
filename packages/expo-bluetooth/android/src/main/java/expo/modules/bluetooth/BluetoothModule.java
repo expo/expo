@@ -208,7 +208,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     peripheral.requestMTU(mtuValue, promise);
   }
 
-  private void createBluetoothInstance() {
+  private void createScanner() {
     BluetoothAdapter adapter = getBluetoothAdapter();
     if (adapter == null) {
       return;
@@ -217,6 +217,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       scanManager.stopScan();
       scanManager = null;
     }
+
     scanManager = new BluetoothScanManager(adapter, mModuleRegistry, new ScanCallback() {
       @Override
       public void onScanResult(final int callbackType, final ScanResult result) {
@@ -243,6 +244,14 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         emitState();
       }
     });
+  }
+
+  private void createBluetoothInstance() {
+    BluetoothAdapter adapter = getBluetoothAdapter();
+    if (adapter == null) {
+      return;
+    }
+    createScanner();
 
     IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
     filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
@@ -282,7 +291,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
                 break;
               case BluetoothDevice.BOND_NONE:
               case BluetoothDevice.ERROR:
-                createBond.promise.reject(BluetoothConstants.ERRORS.GENERAL, "Bond request has been denied");
+                createBond.promise.reject(BluetoothConstants.ERRORS.GENERAL, "The peripheral you attempted to bond with has denied the request.");
                 createBond = null;
                 break;
                 default:
@@ -309,7 +318,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     Set<BluetoothDevice> deviceSet = getBluetoothAdapter().getBondedDevices();
     for (BluetoothDevice device : deviceSet) {
       if (peripheralUUID.equalsIgnoreCase(device.getAddress())) {
-        promise.resolve(null);
+        String bondStateString = Serialize.Bonding_NativeToJSON(BluetoothDevice.BOND_BONDED);
+        promise.resolve(bondStateString);
         return;
       }
     }
@@ -319,13 +329,13 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       promise.reject("ERR_NO_PERIPHERAL", "No valid peripheral with UUID " + peripheralUUID);
       return;
     } else if (createBond != null) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "You can only create one bond at a time. Bonding: " + createBond.uuid);
+      promise.reject(BluetoothConstants.ERRORS.GENERAL, "You are already attempting to Bond: " + createBond.uuid);
       return;
     } else if (!peripheral.getDevice().createBond()) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Failed to create bonding request to peripheral: " + peripheralUUID);
+      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Couldn't bond to peripheral: " + peripheralUUID);
       return;
     }
-    createBond = new BondingPromise(peripheralUUID, promise); // request bond success, waiting for boradcast
+    createBond = new BondingPromise(peripheralUUID, promise);
   }
 
   @ExpoMethod
@@ -433,6 +443,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       timeout = (int) options.get("timeout");
     }
 
+    createScanner();
     scanManager.scan(serviceUUIDStrings, timeout, options, promise);
 
     // TODO: EMIT

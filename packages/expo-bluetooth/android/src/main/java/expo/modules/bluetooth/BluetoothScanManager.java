@@ -43,18 +43,18 @@ public class BluetoothScanManager {
     ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
     List<ScanFilter> filters = new ArrayList<>();
 
-    if (options.containsKey("scanMode") && options.get("scanMode") != null) {
-      String scanModeString = (String) options.get("scanMode");
+    if (options.containsKey("androidScanMode") && options.get("androidScanMode") != null) {
+      String scanModeString = (String) options.get("androidScanMode");
       int scanMode = Serialize.ScanMode_JSONToNative(scanModeString);
       scanSettingsBuilder.setScanMode(scanMode);
     }
 
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-      if (options.containsKey("numberOfMatches") && options.get("numberOfMatches") != null) {
-        scanSettingsBuilder.setNumOfMatches(((Number) options.get("numberOfMatches")).intValue());
+      if (options.containsKey("androidNumberOfMatches") && options.get("androidNumberOfMatches") != null) {
+        scanSettingsBuilder.setNumOfMatches(((Number) options.get("androidNumberOfMatches")).intValue());
       }
-      if (options.containsKey("matchMode") && options.get("matchMode") != null) {
-        scanSettingsBuilder.setMatchMode(((Number) options.get("matchMode")).intValue());
+      if (options.containsKey("androidMatchMode") && options.get("androidMatchMode") != null) {
+        scanSettingsBuilder.setMatchMode(((Number) options.get("androidMatchMode")).intValue());
       }
     }
 
@@ -62,11 +62,16 @@ public class BluetoothScanManager {
       for (int i = 0; i < serviceUUIDs.size(); i++) {
         ScanFilter filter = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(UUIDHelper.toUUID((String) serviceUUIDs.get(i)))).build();
         filters.add(filter);
-        Log.d(BluetoothModule.TAG, "Filter service: " + serviceUUIDs.get(i));
       }
     }
 
-    adapter.getBluetoothLeScanner().startScan(filters, scanSettingsBuilder.build(), mScanCallback);
+    adapter
+        .getBluetoothLeScanner()
+        .startScan(
+            filters,
+            scanSettingsBuilder.build(),
+            mScanCallback);
+
     if (timeout > 0) {
       Thread thread = new Thread() {
         private int currentScanSession = scanSessionId.incrementAndGet();

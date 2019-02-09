@@ -124,8 +124,15 @@ export interface NativePeripheral extends NativeBluetoothElement {
     name: string | null;
     RSSI: number | null;
     state: PeripheralState;
-    canSendWriteWithoutResponse: boolean;
     services: NativeService[];
+    includedServices: NativeService[];
+    /**
+     * **ios**
+     */
+    canSendWriteWithoutResponse?: boolean;
+    /**
+     * **Android**
+     */
     discoveryTimestamp?: number;
 }
 export declare type PeripheralFoundCallback = (peripheral: NativePeripheral) => void;

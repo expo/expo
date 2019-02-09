@@ -21,6 +21,8 @@ async function getTestModulesAsync() {
     }
   }
 
+  return [require('./tests/Bluetooth')];
+
   if (Platform.OS === 'web') {
     return [require('./tests/Import1')];
   }

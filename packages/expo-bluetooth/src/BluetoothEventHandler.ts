@@ -36,8 +36,25 @@ function ensureKey(key) {
   }
 }
 
-export function resetHandlersForKey(key) {
+export async function resetHandlersForKey(key) {
+  ensureKey(key);
+
+  let promises: any[] = [];
+  for (const listener of multiEventHandlers[key]) {
+    if (listener.remove instanceof Function) {
+      promises.push(listener.remove());
+    } else if (listener instanceof Function) {
+      promises.push(listener());
+    }
+  }
   multiEventHandlers[key] = [];
+  return await Promise.all(promises);
+}
+
+export async function _resetAllHandlers() {
+  for (const key of Object.keys(multiEventHandlers)) {
+    await resetHandlersForKey(key);
+  }
 }
 
 export function addHandlerForKey(key: string, callback: (updates: any) => void): Subscription {

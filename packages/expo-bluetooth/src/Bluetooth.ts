@@ -31,6 +31,7 @@ import {
   firePeripheralObservers,
   getHandlersForKey,
   resetHandlersForKey,
+  _resetAllHandlers,
 } from './BluetoothEventHandler';
 import { invariantAvailability, invariantUUID } from './BluetoothInvariant';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
@@ -38,28 +39,7 @@ import { peripheralIdFromId } from './BluetoothTransactions';
 import ExpoBluetooth from './ExpoBluetooth';
 import Transaction from './Transaction';
 
-export {
-  CentralState,
-  PeripheralState,
-  Base64,
-  UUID,
-  Identifier,
-  TransactionId,
-  NativeBluetoothElement,
-  NativeDescriptor,
-  NativeEventData,
-  NativeError,
-  NativeCharacteristic,
-  NativeService,
-  NativeAdvertismentData,
-  NativePeripheral,
-  TransactionType,
-  PeripheralFoundCallback,
-  StateUpdatedCallback,
-  ScanSettings,
-  Central,
-  CharacteristicProperty,
-};
+export * from './Bluetooth.types';
 
 /*
 initializeManagerAsync
@@ -84,21 +64,46 @@ disconnectPeripheralAsync
 */
 export { BLUETOOTH_EVENT, TYPES, EVENTS };
 
-export async function startScanAsync(scanSettings: ScanSettings = {}): Promise<Subscription> {
-  invariantAvailability('startScanningAsync');
-  const { serviceUUIDsToQuery = [], scanningOptions = {}, callback = function() {} } = scanSettings;
-  /* Prevents the need for CBCentralManagerScanOptionAllowDuplicatesKey in the info.plist */
-  const serviceUUIDsWithoutDuplicates = [...new Set(serviceUUIDsToQuery)];
-  /* iOS:
-   *
-   * Although strongly discouraged,
-   * if <i>serviceUUIDs</i> is <i>nil</i> all discovered peripherals will be returned.
-   * If the central is already scanning with different
-   * <i>serviceUUIDs</i> or <i>options</i>, the provided parameters will replace them.
+type ScanOptions = {
+  serviceUUIDsToQuery?: string[];
+  androidScanMode?: any;
+  androidMatchMode?: any;
+  /**
+   * Match as many advertisement per filter as hw could allow
+   * dependes on current capability and availability of the resources in hw.
    */
+  androidNumberOfMatches?: any;
+};
 
-  return await ExpoBluetooth.startScanningAsync(serviceUUIDsWithoutDuplicates, scanningOptions);
-  // return addHandlerForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, callback)
+type CancelScanningCallback = () => void;
+/**
+ * **iOS:**
+ *
+ * Although strongly discouraged,
+ * if `serviceUUIDsToQuery` is `null | undefined` all discovered peripherals will be returned.
+ * If the central is already scanning with different
+ * `serviceUUIDsToQuery` or `scanSettings`, the provided parameters will replace them.
+ */
+export function startScan(
+  scanSettings: ScanOptions = {},
+  callback: (peripheral: NativePeripheral) => void
+): CancelScanningCallback {
+  invariantAvailability('startScanningAsync');
+  const { serviceUUIDsToQuery = [], ...scanningOptions } = scanSettings;
+
+  ExpoBluetooth.startScanningAsync([...new Set(serviceUUIDsToQuery)], scanningOptions);
+
+  const subscription = addHandlerForKey(
+    EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL,
+    ({ peripheral }) => {
+      callback(peripheral);
+    }
+  );
+
+  return async () => {
+    subscription.remove();
+    await stopScanAsync();
+  };
 }
 
 export async function stopScanAsync(): Promise<void> {
@@ -109,13 +114,14 @@ export async function stopScanAsync(): Promise<void> {
 }
 
 // Avoiding using "start" in passive method names
-export async function observeUpdatesAsync(callback: (updates: any) => void): Promise<Subscription> {
+export function observeUpdates(callback: (updates: any) => void): Subscription {
   return addHandlerForKey('everything', callback);
 }
 
 export async function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription> {
   const central = await getCentralAsync();
-  callback(central.state);
+  // Make the callback async so the subscription returns first.
+  setTimeout(() => callback(central.state));
   return addHandlerForKey(EVENTS.CENTRAL_DID_UPDATE_STATE, callback);
 }
 
@@ -275,12 +281,6 @@ export async function readRSSIAsync(peripheralUUID: UUID): Promise<number> {
   return await ExpoBluetooth.readRSSIAsync(peripheralUUID);
 }
 
-export async function requestMTUAsync(peripheralUUID: UUID, MTU: number): Promise<number> {
-  invariantAvailability('requestMTUAsync');
-  invariantUUID(peripheralUUID);
-  return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
-}
-
 export async function getPeripheralsAsync(): Promise<any[]> {
   invariantAvailability('getPeripheralsAsync');
   return await ExpoBluetooth.getPeripheralsAsync();
@@ -310,6 +310,7 @@ export async function discoverServicesForPeripheralAsync(options: {
     characteristicProperties: options.characteristicProperties,
   });
 }
+
 export async function discoverIncludedServicesForServiceAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
@@ -374,15 +375,15 @@ export async function loadPeripheralAsync(
       // This should never be called because in theory connectAsync would throw an error.
     }
   } else if (peripheral.state === 'connected') {
-    console.log('loadPeripheralAsync(): loadChildrenRecursivelyAsync!');
-    await loadChildrenRecursivelyAsync({ id: peripheralId });
+    console.log('loadPeripheralAsync(): _loadChildrenRecursivelyAsync!');
+    await _loadChildrenRecursivelyAsync({ id: peripheralId });
   }
 
   // In case any updates occured during this function.
   return getPeripherals()[peripheralId];
 }
 
-export async function loadChildrenRecursivelyAsync({ id }): Promise<any[]> {
+export async function _loadChildrenRecursivelyAsync({ id }): Promise<any[]> {
   const components = id.split(DELIMINATOR);
   console.log({ components });
   if (components.length === 4) {
@@ -405,7 +406,7 @@ export async function loadChildrenRecursivelyAsync({ id }): Promise<any[]> {
     const { service } = await discoverCharacteristicsForServiceAsync({ id });
     console.log('LOADED CHARACTERISTICS FROM SERVICE', service);
     return await Promise.all(
-      service.characteristics.map(characteristic => loadChildrenRecursivelyAsync(characteristic))
+      service.characteristics.map(characteristic => _loadChildrenRecursivelyAsync(characteristic))
     );
   } else if (components.length === 1) {
     // Peripheral ID
@@ -413,10 +414,57 @@ export async function loadChildrenRecursivelyAsync({ id }): Promise<any[]> {
     const {
       peripheral: { services },
     } = await discoverServicesForPeripheralAsync({ id });
-    return await Promise.all(services.map(service => loadChildrenRecursivelyAsync(service)));
+    return await Promise.all(services.map(service => _loadChildrenRecursivelyAsync(service)));
   } else {
     throw new Error(`Unknown ID ${id}`);
   }
+}
+
+export async function getConnectedPeripheralsAsync(): Promise<NativePeripheral[]> {
+  invariantAvailability('getConnectedPeripheralsAsync');
+  return await ExpoBluetooth.getConnectedPeripheralsAsync();
+}
+
+const android = {
+  async requestMTUAsync(peripheralUUID: UUID, MTU: number): Promise<number> {
+    invariantAvailability('requestMTUAsync');
+    invariantUUID(peripheralUUID);
+    return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
+  },
+  async createBondAsync(peripheralUUID: UUID): Promise<any> {
+    invariantAvailability('createBondAsync');
+    invariantUUID(peripheralUUID);
+    return await ExpoBluetooth.createBondAsync(peripheralUUID);
+  },
+  async removeBondAsync(peripheralUUID: UUID): Promise<any> {
+    invariantAvailability('removeBondAsync');
+    invariantUUID(peripheralUUID);
+    return await ExpoBluetooth.removeBondAsync(peripheralUUID);
+  },
+  async enableBluetoothAsync(isBluetoothEnabled: boolean): Promise<void> {
+    invariantAvailability('enableBluetoothAsync');
+    return await ExpoBluetooth.enableBluetoothAsync(isBluetoothEnabled);
+  },
+  async getBondedPeripheralsAsync(): Promise<NativePeripheral[]> {
+    invariantAvailability('getBondedPeripheralsAsync');
+    return await ExpoBluetooth.getBondedPeripheralsAsync();
+  },
+  async requestConnectionPriorityAsync(
+    peripheralUUID: UUID,
+    connectionPriority: number
+  ): Promise<any> {
+    invariantAvailability('requestConnectionPriorityAsync');
+    invariantUUID(peripheralUUID);
+    return await ExpoBluetooth.requestConnectionPriorityAsync(peripheralUUID, connectionPriority);
+  },
+};
+
+export { android };
+
+export async function _reset(): Promise<void> {
+  await stopScanAsync();
+  clearPeripherals();
+  await _resetAllHandlers();
 }
 
 addListener(({ data, event }: { data: NativeEventData; event: string }) => {

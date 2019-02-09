@@ -161,9 +161,15 @@ export interface NativePeripheral extends NativeBluetoothElement {
   name: string | null;
   RSSI: number | null;
   state: PeripheralState;
-  canSendWriteWithoutResponse: boolean;
   services: NativeService[];
-  // Android
+  includedServices: NativeService[];
+  /**
+   * **ios**
+   */
+  canSendWriteWithoutResponse?: boolean;
+  /**
+   * **Android**
+   */
   // mtu: number;
   // JS
   discoveryTimestamp?: number;

@@ -4,6 +4,9 @@
  */
 
 export default {
+  get Bluetooth() {
+    return require('expo-bluetooth');
+  },
   get Lottie() {
     return require('lottie-react-native');
   },

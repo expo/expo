@@ -1,0 +1,1 @@
+../../../../../packages/expo-bluetooth/ios/EXBluetooth/EXBluetoothCharacteristic.h

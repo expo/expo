@@ -42,20 +42,20 @@
 
 - (NSArray<EXBluetoothService *> *)includedServices
 {
-  NSMutableArray *array = [[NSMutableArray alloc] init];
-  for(CBService *service in _service.includedServices) {
-    [array addObject:[[EXBluetoothService alloc] initWithService:service peripheral:_peipheral]];
+  NSMutableArray *output = [[NSMutableArray alloc] init];
+  for (CBService *service in _service.includedServices) {
+    [output addObject:[[EXBluetoothService alloc] initWithService:service peripheral:_peipheral]];
   }
-  return array;
+  return output;
 }
 
 - (NSArray<EXBluetoothCharacteristic *> *)characteristics
 {
-  NSMutableArray *array = [[NSMutableArray alloc] init];
-  for(CBCharacteristic *characteristic in _service.characteristics) {
-    [array addObject:[[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:_peipheral]];
+  NSMutableArray *output = [[NSMutableArray alloc] init];
+  for (CBCharacteristic *characteristic in _service.characteristics) {
+    [output addObject:[[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:_peipheral]];
   }
-  return array;
+  return output;
 }
 
 - (void)discoverCharacteristics:(NSArray<CBUUID *> *)characteristicUUIDs withBlock:(EXBluetoothPeripheralDiscoverCharacteristicsBlock)block

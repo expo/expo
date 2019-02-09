@@ -18,7 +18,7 @@ Expo Bluetooth provides access to native Bluetooth Low-Energy features in React 
 
 ## Methods
 
-### startScanAsync
+### startScan
 
 ```js
 Signature;

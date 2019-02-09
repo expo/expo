@@ -309,7 +309,7 @@
 {
   EXBluetoothPeripheralReadValueForDescriptorsBlock block = [_readValueForDescriptorsBlock objectForKey:descriptor.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
-    return
+    return;
   }
   EXBluetoothDescriptor *mDescriptor = [[EXBluetoothDescriptor alloc] initWithDescriptor:descriptor peripheral:self];
   block(self, mDescriptor, error);

@@ -186,6 +186,30 @@ EX_EXPORT_METHOD_AS(getPeripheralsAsync,
   [self emitFullState];
 }
 
+EX_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
+                    getConnectedPeripheralsAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  if ([_manager guardEnabled:reject]) {
+    return;
+  }
+  resolve([EXBluetooth.class EXBluetoothPeripheralList_NativeToJSON:[_manager.discoveredPeripherals allValues]]);
+  [self emitFullState];
+
+  NSMutableArray *output = [NSMutableArray array];
+  NSArray<EXBluetoothPeripheral *> *peripherals = [_manager.discoveredPeripherals allValues];
+  @synchronized(peripherals) {
+      for (CBPeripheral *peripheral in peripherals){
+          if ([peripheral state] == CBPeripheralStateConnected){
+            [output addObject:[[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral]];
+          }
+      }
+  }
+
+  resolve([EXBluetooth.class EXBluetoothPeripheralList_NativeToJSON:output]);
+}
+
+ 
 EX_EXPORT_METHOD_AS(getCentralAsync,
                     getCentralAsync:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
@@ -319,6 +343,7 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   if ([_manager guardEnabled:reject]) {
     return;
   }
+  
   EXBluetoothPeripheral *peripheral = [_manager getPeripheralOrReject:peripheralUUID reject:reject];
   if (!peripheral || [peripheral guardIsConnected:reject]) {
     return;
@@ -477,8 +502,6 @@ EX_EXPORT_METHOD_AS(writeCharacteristicAsync,
     return;
   }
   __weak EXBluetooth *weakSelf = self;
-
-  // TODO: Bacon ::::: perhaps infer
   [characteristic writeValue:data type:CBCharacteristicWriteWithResponse withBlock:^(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error) {
       if (error) {
         reject(EXBluetoothErrorKey, error.localizedDescription, error);
@@ -569,7 +592,6 @@ EX_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
  case CBCharacteristicPropertyIndicateEncryptionRequired:
  */
 
-
 // Bacon: Predict the following, and throw an error without crashing the app.
 // TODO: Bacon: Can we try to auto-resolve this
 - (BOOL)guardCharacteristicConfiguration:(CBDescriptor *)descriptor reject:(EXPromiseRejectBlock)reject
@@ -580,16 +602,6 @@ EX_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
   }
   return NO;
 }
-
-//- (void)ensureDescriptorIsConfiguredBeforeWriting:(CBDescriptor *)descriptor
-//{
-//  if ([descriptor.UUID.UUIDString isEqualToString:CBUUIDClientCharacteristicConfigurationString]) {
-//    reject(EXBluetoothErrorWrite, [NSString stringWithFormat:@"Client Characteristic Configuration descriptors must be configured using setNotifyValue:forCharacteristic: | Descriptor UUID: %@ | Expected: %@", descriptor.UUID.UUIDString, CBUUIDClientCharacteristicConfigurationString], nil);
-//    return YES;
-//  }
-//  return NO;
-//}
-
 
 EX_EXPORT_METHOD_AS(discoverDescriptorsForCharacteristicAsync,
                     discoverDescriptorsForCharacteristicAsync:(NSDictionary *)options
