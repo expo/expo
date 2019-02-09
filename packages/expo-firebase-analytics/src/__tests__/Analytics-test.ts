@@ -1,189 +1,158 @@
+import { NativeModulesProxy } from 'expo-core';
 import firebase from 'expo-firebase-app';
 
-describe('analytics()', () => {
-  describe('logEvent()', () => {
-    it('errors on using a reserved name', () => {
-      try {
-        firebase.analytics().logEvent('session_start');
-      } catch (e) {
-        expect(e.message).toContainEqual('reserved event');
+const { ExpoFirebaseAnalytics } = NativeModulesProxy;
+
+describe('logEvent()', () => {
+  it(`rejects reserved names`, () => {
+    try {
+      firebase.analytics().logEvent('session_start');
+    } catch (e) {
+      expect(e.message).toContainEqual('reserved event');
+    }
+  });
+
+  it(`rejects non-alphanumeric names`, () => {
+    try {
+      firebase.analytics().logEvent('!@£$%^&*');
+    } catch (e) {
+      expect(e.message).toContainEqual('is invalid');
+    }
+  });
+
+  it(`rejects more than 25 props`, () => {
+    try {
+      const output = {};
+      for (const value of Array.from(Array(25).keys())) {
+        output[value] = value;
       }
-    });
-
-    it('errors if name not alphanumeric', () => {
-      try {
-        firebase.analytics().logEvent('!@£$%^&*');
-      } catch (e) {
-        expect(e.message).toContainEqual('is invalid');
-      }
-    });
-
-    it('errors if more than 25 params provided', () => {
-      try {
-        firebase.analytics().logEvent('fooby', {
-          1: 1,
-          2: 2,
-          3: 3,
-          4: 4,
-          5: 5,
-          6: 6,
-          7: 7,
-          8: 8,
-          9: 9,
-          10: 10,
-          11: 11,
-          12: 12,
-          13: 13,
-          14: 14,
-          15: 15,
-          16: 16,
-          17: 17,
-          18: 18,
-          19: 19,
-          20: 20,
-          21: 21,
-          22: 22,
-          23: 23,
-          24: 24,
-          25: 25,
-          26: 26,
-        });
-      } catch (e) {
-        expect(e.message).toContainEqual('Maximum number of parameters exceeded');
-      }
-    });
-
-    it('errors if name is not a string', () => {
-      expect(firebase.analytics().logEvent(123456)).toThrow(
-        `analytics.logEvent(): First argument 'name' is required and must be a string value.`
-      );
-    });
-
-    it('errors if params is not an object', () => {
-      expect(firebase.analytics().logEvent('test_event', 'this should be an object')).toThrow(
-        `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`
-      );
-    });
-
-    it('log an event without parameters', () => {
-      firebase.analytics().logEvent('test_event');
-    });
-
-    it('log an event with parameters', () => {
-      firebase.analytics().logEvent('test_event', {
-        boolean: true,
-        number: 1,
-        string: 'string',
-      });
-    });
+      firebase.analytics().logEvent('fooby', output);
+    } catch (e) {
+      expect(e.message).toContainEqual('Maximum number of parameters exceeded');
+    }
   });
 
-  describe('setAnalyticsCollectionEnabled()', () => {
-    it('true', () => {
-      firebase.analytics().setAnalyticsCollectionEnabled(true);
-    });
-
-    it('false', () => {
-      firebase.analytics().setAnalyticsCollectionEnabled(false);
-    });
+  it(`rejects non-string names`, () => {
+    expect(firebase.analytics().logEvent(123456)).toThrow(
+      `analytics.logEvent(): First argument 'name' is required and must be a string value.`
+    );
   });
 
-  describe('setCurrentScreen()', () => {
-    it('screenName only', () => {
-      firebase.analytics().setCurrentScreen('test screen');
-    });
-
-    it('screenName with screenClassOverride', () => {
-      firebase.analytics().setCurrentScreen('test screen', 'test class override');
-    });
-
-    xit('errors if screenName not a string', () => {
-      // TODO needs validations adding to lib
-    });
-
-    xit('errors if screenClassOverride not a string', () => {
-      // TODO needs validations adding to lib
-    });
+  it(`rejects non-object params`, () => {
+    expect(firebase.analytics().logEvent('test_event', 'this should be an object')).toThrow(
+      `analytics.logEvent(): Second optional argument 'params' must be an object if provided.`
+    );
   });
 
-  describe('setMinimumSessionDuration()', () => {
-    it('default duration', () => {
-      firebase.analytics().setMinimumSessionDuration();
-    });
-
-    it('custom duration', () => {
-      firebase.analytics().setMinimumSessionDuration(10001);
-    });
+  it(`logs an event without parameters`, () => {
+    firebase.analytics().logEvent('test_event');
+    expect(ExpoFirebaseAnalytics.logEvent).toHaveBeenLastCalledWith('test_event', {});
   });
 
-  describe('setSessionTimeoutDuration()', () => {
-    it('default duration', () => {
-      firebase.analytics().setSessionTimeoutDuration();
-    });
-
-    it('custom duration', () => {
-      firebase.analytics().setSessionTimeoutDuration(1800001);
+  it(`logs an event with parameters`, () => {
+    firebase.analytics().logEvent('test_event', {
+      boolean: true,
+      number: 1,
+      string: 'string',
     });
   });
+});
 
-  describe('setUserId()', () => {
-    // nulls remove the field on firebase
-    it('allows a null values to be set', () => {
-      firebase.analytics().setUserId(null);
-    });
+describe('setAnalyticsCollectionEnabled()', () => {
+  it(`toggles as expected`, () => {
+    firebase.analytics().setAnalyticsCollectionEnabled(true);
+    expect(ExpoFirebaseAnalytics.setAnalyticsCollectionEnabled).toHaveBeenLastCalledWith(true);
+    firebase.analytics().setAnalyticsCollectionEnabled(false);
+    expect(ExpoFirebaseAnalytics.setAnalyticsCollectionEnabled).toHaveBeenLastCalledWith(false);
+  });
+});
 
-    it('accepts string values', () => {
-      firebase.analytics().setUserId('test-id');
-    });
+describe('setCurrentScreen()', () => {
+  it(`can set the screen name without an override class`, () => {
+    const screenName = 'Expo Screen';
+    firebase.analytics().setCurrentScreen(screenName);
+    expect(ExpoFirebaseAnalytics.setCurrentScreen).toHaveBeenLastCalledWith(screenName);
+  });
+  it(`can override a class with a screen name`, () => {
+    const screenName = 'Expo Screen';
+    const override = 'EXViewController';
+    firebase.analytics().setCurrentScreen(screenName, override);
+    expect(ExpoFirebaseAnalytics.setCurrentScreen).toHaveBeenLastCalledWith(screenName, override);
+  });
+});
 
-    it('rejects none string none null values', () => {
-      try {
-        firebase.analytics().setUserId(33.3333);
-      } catch (e) {
-        expect(e.message).toContainEqual('must be a string');
-      }
-    });
+describe('setMinimumSessionDuration()', () => {
+  it(`can set a custom duration`, () => {
+    const defaultValue = 10000;
+    firebase.analytics().setMinimumSessionDuration();
+    expect(ExpoFirebaseAnalytics.setMinimumSessionDuration).toHaveBeenLastCalledWith(defaultValue);
+
+    const customValue = 8000;
+    firebase.analytics().setMinimumSessionDuration(customValue);
+    expect(ExpoFirebaseAnalytics.setMinimumSessionDuration).toHaveBeenLastCalledWith(customValue);
+  });
+});
+
+describe('setSessionTimeoutDuration()', () => {
+  it('default duration', () => {
+    firebase.analytics().setSessionTimeoutDuration();
   });
 
-  describe('setUserProperty()', () => {
-    // nulls remove the field on firebase
-    it('allows a null values to be set', () => {
-      firebase.analytics().setUserProperty('fooby', null);
-    });
+  it('custom duration', () => {
+    firebase.analytics().setSessionTimeoutDuration(1800001);
+  });
+});
 
-    it('accepts string values', () => {
-      firebase.analytics().setUserProperty('fooby2', 'test-id');
-    });
-
-    it('rejects none string none null values', () => {
-      try {
-        firebase.analytics().setUserProperty('fooby3', 33.3333);
-      } catch (e) {
-        expect(e.message).toContainEqual('must be a string');
-      }
-    });
-
-    xit('errors if property name not a string', () => {
-      // TODO needs validations adding to lib
-    });
+describe('setUserId()', () => {
+  it('allows a null values to be set', () => {
+    firebase.analytics().setUserId(null);
   });
 
-  describe('setUserProperties()', () => {
-    // nulls remove the field on firebase
-    it('allows a null values to be set', () => {
-      firebase.analytics().setUserProperties({ fooby: null });
-    });
+  it('accepts string values', () => {
+    firebase.analytics().setUserId('test-id');
+  });
 
-    it('accepts string values', () => {
-      firebase.analytics().setUserProperties({ fooby2: 'test-id' });
-    });
+  it('rejects none string none null values', () => {
+    try {
+      firebase.analytics().setUserId(33.3333);
+    } catch (e) {
+      expect(e.message).toContainEqual('must be a string');
+    }
+  });
+});
 
-    it('rejects none string none null values', () => {
-      try {
-        firebase.analytics().setUserProperties({ fooby3: 33.3333 });
-      } catch (e) {
-        expect(e.message).toContainEqual('must be a string');
-      }
-    });
+describe('setUserProperty()', () => {
+  it('allows a null values to be set', () => {
+    firebase.analytics().setUserProperty('fooby', null);
+  });
+
+  it('accepts string values', () => {
+    firebase.analytics().setUserProperty('fooby2', 'test-id');
+  });
+
+  it('rejects none string none null values', () => {
+    try {
+      firebase.analytics().setUserProperty('fooby3', 33.3333);
+    } catch (e) {
+      expect(e.message).toContainEqual('must be a string');
+    }
+  });
+});
+
+describe('setUserProperties()', () => {
+  it('allows a null values to be set', () => {
+    firebase.analytics().setUserProperties({ fooby: null });
+  });
+
+  it('accepts string values', () => {
+    firebase.analytics().setUserProperties({ fooby2: 'test-id' });
+  });
+
+  it('rejects none string none null values', () => {
+    try {
+      firebase.analytics().setUserProperties({ fooby3: 33.3333 });
+    } catch (e) {
+      expect(e.message).toContainEqual('must be a string');
+    }
   });
 });
