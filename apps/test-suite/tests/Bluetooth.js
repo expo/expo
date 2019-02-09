@@ -149,7 +149,13 @@ export async function test({
         const connected = await Bluetooth.getConnectedPeripheralsAsync();
         console.log("- CLEAR", connected.length);
         
-        // await Promise.all(connected.map(({ id }) => Promise.all([Bluetooth.disconnectAsync(id), Bluetooth.android.clearCacheForPeripheralAsync(id)]) ));
+        await Promise.all(connected.map(({ id }) => {
+
+            return Promise.all([
+                Bluetooth.disconnectAsync(id), 
+                // Bluetooth.android.clearCacheForPeripheralAsync(id)
+            ]) 
+        }));
 
         // for (const peripheral of connected) {
         //     await Bluetooth.disconnectAsync(peripheral.id);
@@ -161,14 +167,14 @@ export async function test({
         //     }
         // }
 
-        // const thenConnected = await Bluetooth.getConnectedPeripheralsAsync();
+        const thenConnected = await Bluetooth.getConnectedPeripheralsAsync();
         console.log("- SUCCESSFUL CLEAR: ", 
-        // thenConnected.length
+        thenConnected.length
         );
     } catch (e) {
         console.log("FAILED TO CLEAR: ", e.message);
     }
-    // await Bluetooth._reset();
+    await Bluetooth._reset();
   }
 
 //   await clearAllConnections();
@@ -263,6 +269,46 @@ export async function test({
             expect(loaded).toBeDefined();
         });
     });
+
+
+    xdescribe('3. Retrieving', () => {
+        xit('getPeripheralsAsync', async () => {
+          const arr = await Bluetooth.getPeripheralsAsync();
+          expect(Array.isArray(arr)).toBe(true);
+          // expect(ExpoBluetooth.getPeripheralsAsync).toHaveBeenLastCalledWith();
+        });
+        it('getConnectedPeripheralsAsync', async () => {
+          const arr = await Bluetooth.getConnectedPeripheralsAsync();
+          expect(Array.isArray(arr)).toBe(true);
+          // expect(ExpoBluetooth.getConnectedPeripheralsAsync).toHaveBeenLastCalledWith();
+        });
+        xit('getCentralAsync', async () => {
+          const central = await Bluetooth.getCentralAsync();
+          expect(central).toBeDefined();
+          expect(Object.values(Bluetooth.CentralState).includes(central.state)).toBe(true);
+          // expect(ExpoBluetooth.getCentralAsync).toHaveBeenLastCalledWith();
+        });
+        xit('isScanningAsync', async () => {
+          const central = await Bluetooth.getCentralAsync();
+          console.log({ central });
+    
+          let isScanning = await Bluetooth.isScanningAsync();
+          expect(typeof isScanning).toBe('boolean');
+    
+          const stopScan = await Bluetooth.startScanningAsync({}, async () => {
+            const central = await Bluetooth.getCentralAsync();
+            console.log({ central });
+          });
+    
+          // TODO: Bacon: Broken on Android.
+          await sleep(5000);
+          expect(await Bluetooth.isScanningAsync()).toBe(true);
+    
+          await stopScan();
+    
+          expect(await Bluetooth.isScanningAsync()).toBe(false);
+        });
+      });
 
 //   const peripheral = await scanForSinglePeripheral();
 //       validatePeripheral(peripheral, expect);
@@ -410,61 +456,7 @@ export async function test({
     // });
 
 
-  xdescribe('get async', () => {
-      let connectedPeripheral;
-    it('connect', async () => {
-        connectedPeripheral = await getConnectedPeripheralAsync();
-        // peripheral
-        // const loaded = await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
-        console.log({connectedPeripheral});
-      });
 
-    //   if (connectedPeripheral) {
-    //     it('load', async () => {
-    //         // connectedPeripheral = await getConnectedPeripheralAsync();
-    //         // peripheral
-    //         const loaded = await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
-    //         console.log({loaded});
-    //       });
-    //   }
-
-    it('getPeripheralsAsync', async () => {
-      const arr = await Bluetooth.getPeripheralsAsync();
-      expect(Array.isArray(arr)).toBe(true);
-      // expect(ExpoBluetooth.getPeripheralsAsync).toHaveBeenLastCalledWith();
-    });
-    it('getConnectedPeripheralsAsync', async () => {
-      const arr = await Bluetooth.getConnectedPeripheralsAsync();
-      expect(Array.isArray(arr)).toBe(true);
-      // expect(ExpoBluetooth.getConnectedPeripheralsAsync).toHaveBeenLastCalledWith();
-    });
-    it('getCentralAsync', async () => {
-      const central = await Bluetooth.getCentralAsync();
-      expect(central).toBeDefined();
-      expect(Object.values(Bluetooth.CentralState).includes(central.state)).toBe(true);
-      // expect(ExpoBluetooth.getCentralAsync).toHaveBeenLastCalledWith();
-    });
-    xit('isScanningAsync', async () => {
-      const central = await Bluetooth.getCentralAsync();
-      console.log({ central });
-
-      let isScanning = await Bluetooth.isScanningAsync();
-      expect(typeof isScanning).toBe('boolean');
-
-      const stopScan = await Bluetooth.startScanningAsync({}, async () => {
-        const central = await Bluetooth.getCentralAsync();
-        console.log({ central });
-      });
-
-      // TODO: Bacon: Broken on Android.
-      await sleep(5000);
-      expect(await Bluetooth.isScanningAsync()).toBe(true);
-
-      await stopScan();
-
-      expect(await Bluetooth.isScanningAsync()).toBe(false);
-    });
-  });
 
  
   // const debugPeripheral = { id: peripheralUUID };

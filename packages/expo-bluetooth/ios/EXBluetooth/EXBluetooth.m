@@ -197,20 +197,19 @@ EX_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
   if ([_manager guardEnabled:reject]) {
     return;
   }
-  resolve([EXBluetooth.class EXBluetoothPeripheralList_NativeToJSON:[_manager.discoveredPeripherals allValues]]);
-  [self emitFullState];
 
   NSMutableArray *output = [NSMutableArray array];
   NSArray<EXBluetoothPeripheral *> *peripherals = [_manager.discoveredPeripherals allValues];
   @synchronized(peripherals) {
       for (CBPeripheral *peripheral in peripherals){
-          if ([peripheral state] == CBPeripheralStateConnected){
+          if (peripheral.state == CBPeripheralStateConnected){
             [output addObject:[[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral]];
           }
       }
   }
 
   resolve([EXBluetooth.class EXBluetoothPeripheralList_NativeToJSON:output]);
+//  [self emitFullState];
 }
 
  

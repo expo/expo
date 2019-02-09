@@ -193,6 +193,7 @@
     [self updateLocalPeripheralStore:peripheral];
     _connectedPeripheral = [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral];
     _didConnectPeripheralBlock(self, [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral], nil);
+    _didConnectPeripheralBlock = nil;
   }
 }
 
@@ -234,6 +235,7 @@
 {
   if (_didConnectPeripheralBlock) {
     _didConnectPeripheralBlock(self, [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral], error);
+    _didConnectPeripheralBlock = nil;
   }
 }
 
