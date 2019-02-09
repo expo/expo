@@ -14,9 +14,10 @@
 
 @interface EXBluetoothCentralManager()<CBCentralManagerDelegate>
 {
+  EXBluetoothCentralDidChangeScanningBlock _didChangeScanningBlock;
   EXBluetoothCentralDidDiscoverPeripheralBlock _didDiscoverPeripheralBlock;
   EXBluetoothCentralDidConnectPeripheralBlock _didConnectPeripheralBlock;
-  EXBluetoothCentralDidDisconnectPeripheralBlock _didDisconnectPeripheralBlock;
+  NSMutableDictionary<NSString *, EXBluetoothCentralDidDisconnectPeripheralBlock>  *_didDisconnectPeripheralBlocks;
 }
 
 @property (nonatomic, strong) CBCentralManager *centralManager;
@@ -36,11 +37,30 @@
 {
   self = [super init];
   if (self) {
+    _didDisconnectPeripheralBlocks = [NSMutableDictionary new];
     _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:queue options:options];
     _discoveredPeripherals = [NSMutableDictionary dictionary];
+    [_centralManager addObserver:self forKeyPath:@"isScanning"     options:NSKeyValueObservingOptionNew context:(__bridge void *)self];
+
   }
   return self;
 }
+
+- (void)dealloc
+{
+  [_centralManager removeObserver:self forKeyPath:@"isScanning"];
+}
+
+#pragma mark - Observer
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+  if (context == (__bridge void *)self && _centralManager) {
+    [self scanningDidChange:[_centralManager isScanning]];
+  } else {
+    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+  }
+}
+
 
 - (BOOL)isScanning
 {
@@ -50,6 +70,15 @@
 - (CBManagerState)state
 {
   return _centralManager.state;
+}
+
+- (void)scanningDidChange:(BOOL)isScanning
+{
+  if (_didChangeScanningBlock) {
+    _didChangeScanningBlock(self, isScanning);
+    _didChangeScanningBlock = nil;
+  }
+  NSLog(@"Change isScanning %@", @(isScanning));
 }
 
 - (NSArray<EXBluetoothPeripheral *> *)retrievePeripheralsWithIdentifiers:(NSArray<NSUUID *> *)identifiers
@@ -76,14 +105,16 @@
 
 - (void)scanForPeripheralsWithServices:(NSArray<CBUUID *> *)serviceUUIDs
                                options:(NSDictionary<NSString *,id> *)options
-                             withBlock:(EXBluetoothCentralDidDiscoverPeripheralBlock)block
+                             withScanningStateBlock:(EXBluetoothCentralDidChangeScanningBlock)scanningStateBlock withBlock:(nullable EXBluetoothCentralDidDiscoverPeripheralBlock)block
 {
+  _didChangeScanningBlock = scanningStateBlock;
   _didDiscoverPeripheralBlock = block;
   [_centralManager scanForPeripheralsWithServices:serviceUUIDs options:options];
 }
 
-- (void)stopScan
+- (void)stopScanWithBlock:(EXBluetoothCentralDidChangeScanningBlock)block
 {
+  _didChangeScanningBlock = block;
   _didDiscoverPeripheralBlock = nil;
 //  [_discoveredPeripherals removeAllObjects];
   [_centralManager stopScan];
@@ -94,15 +125,28 @@
          withSuccessBlock:(EXBluetoothCentralDidConnectPeripheralBlock)successBlock
       withDisconnectBlock:(nullable EXBluetoothCentralDidDisconnectPeripheralBlock)disconnectBlock
 {
+  NSString *peripheralID = peripheral.identifier.UUIDString;
   _didConnectPeripheralBlock = successBlock;
-  _didDisconnectPeripheralBlock = disconnectBlock;
+  
+
+  if ([_didDisconnectPeripheralBlocks objectForKey:peripheralID]) {
+    NSLog(@"Invalid transaction: Disconnection block was replaced");
+    [_didDisconnectPeripheralBlocks objectForKey:peripheralID](self, peripheral, nil);
+  }
+  [_didDisconnectPeripheralBlocks setObject:disconnectBlock forKey:peripheralID];
   [_centralManager connectPeripheral:peripheral.peripheral options:options];
 }
 
 - (void)cancelPeripheralConnection:(EXBluetoothPeripheral *)peripheral withBlock:(EXBluetoothCentralDidDisconnectPeripheralBlock)block
 {
   peripheral.delegate = nil;
-  _didDisconnectPeripheralBlock = block;
+  NSString *peripheralID = peripheral.identifier.UUIDString;
+
+  if ([_didDisconnectPeripheralBlocks objectForKey:peripheralID]) {
+    NSLog(@"Invalid transaction: Disconnection block was replaced");
+    [_didDisconnectPeripheralBlocks objectForKey:peripheralID](self, peripheral, nil);
+  }
+  [_didDisconnectPeripheralBlocks setObject:block forKey:peripheralID];
   
   if (peripheral.state == CBPeripheralStateDisconnected) {
     [self centralManager:_centralManager didDisconnectPeripheral:peripheral.peripheral error:nil];
@@ -155,10 +199,12 @@
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
   [self updateLocalPeripheralStore:peripheral];
+  NSString *peripheralID = peripheral.identifier.UUIDString;
 
-  if (_didDisconnectPeripheralBlock) {
+  if ([_didDisconnectPeripheralBlocks objectForKey:peripheralID]) {
     [self updateLocalPeripheralStore:peripheral];
-    _didDisconnectPeripheralBlock(self, [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral], error);
+    [_didDisconnectPeripheralBlocks objectForKey:peripheralID](self, [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral], error);
+    [_didDisconnectPeripheralBlocks removeObjectForKey:peripheralID];
   }
 }
 

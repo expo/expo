@@ -38,13 +38,13 @@ export { BLUETOOTH_EVENT, TYPES, EVENTS };
  * If the central is already scanning with different
  * `serviceUUIDsToQuery` or `scanSettings`, the provided parameters will replace them.
  */
-export function startScan(scanSettings = {}, callback) {
+export async function startScanningAsync(scanSettings = {}, callback) {
     invariantAvailability('startScanningAsync');
     const { serviceUUIDsToQuery = [], ...scanningOptions } = scanSettings;
-    ExpoBluetooth.startScanningAsync([...new Set(serviceUUIDsToQuery)], scanningOptions);
-    const subscription = addHandlerForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, (event) => {
+    console.log('STARTTT:', await ExpoBluetooth.startScanningAsync([...new Set(serviceUUIDsToQuery)], scanningOptions));
+    const subscription = addHandlerForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, event => {
         if (!event) {
-            throw new Error("UNEXPECTED " + EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL);
+            throw new Error('UNEXPECTED ' + EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL);
         }
         callback(event.peripheral);
     });

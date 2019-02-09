@@ -86,24 +86,24 @@ type CancelScanningCallback = () => void;
  * If the central is already scanning with different
  * `serviceUUIDsToQuery` or `scanSettings`, the provided parameters will replace them.
  */
-export function startScan(
+export async function startScanningAsync(
   scanSettings: ScanOptions = {},
   callback: (peripheral: NativePeripheral) => void
-): CancelScanningCallback {
+): Promise<CancelScanningCallback> {
   invariantAvailability('startScanningAsync');
   const { serviceUUIDsToQuery = [], ...scanningOptions } = scanSettings;
 
-  ExpoBluetooth.startScanningAsync([...new Set(serviceUUIDsToQuery)], scanningOptions);
-
-  const subscription = addHandlerForKey(
-    EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL,
-    (event) => {
-      if (!event) {
-        throw new Error("UNEXPECTED " + EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL);
-      }
-      callback(event.peripheral);
-    }
+  console.log(
+    'STARTTT:',
+    await ExpoBluetooth.startScanningAsync([...new Set(serviceUUIDsToQuery)], scanningOptions)
   );
+
+  const subscription = addHandlerForKey(EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, event => {
+    if (!event) {
+      throw new Error('UNEXPECTED ' + EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL);
+    }
+    callback(event.peripheral);
+  });
 
   return async () => {
     subscription.remove();

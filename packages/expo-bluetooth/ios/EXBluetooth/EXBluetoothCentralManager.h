@@ -65,10 +65,11 @@
  */
 - (void)scanForPeripheralsWithServices:(nullable NSArray<CBUUID *> *)serviceUUIDs
                                options:(nullable NSDictionary<NSString *, id> *)options
+                withScanningStateBlock:(EXBluetoothCentralDidChangeScanningBlock)scanningStateBlock
                              withBlock:(nullable EXBluetoothCentralDidDiscoverPeripheralBlock)block;
 
 // Stops scanning for peripherals.
-- (void)stopScan;
+- (void)stopScanWithBlock:(EXBluetoothCentralDidChangeScanningBlock)block;
 
 /*
  * Initiates a connection to <i>peripheral</i>. Connection attempts never time out and, depending on the outcome, will result

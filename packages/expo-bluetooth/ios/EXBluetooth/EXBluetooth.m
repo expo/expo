@@ -25,7 +25,9 @@
   
   if (_manager) {
     if ([_manager isScanning]) {
-      [_manager stopScan];
+      [_manager stopScanWithBlock:^(EXBluetoothCentralManager *centralManager, BOOL isScanning) {
+        
+      }];
     }
     _manager = nil;
   }
@@ -241,19 +243,16 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
   
   // SCAN_OPTIONS
   __weak EXBluetooth *weakSelf = self;
-  [_manager
-   scanForPeripheralsWithServices:serviceUUIDs
-   options:options
-   withBlock:^(
-               EXBluetoothCentralManager *centralManager,
-               EXBluetoothPeripheral *peripheral,
-               NSDictionary *advertisementData,
-               NSNumber *RSSI
-               ) {
+  [_manager scanForPeripheralsWithServices:serviceUUIDs options:options withScanningStateBlock:^(EXBluetoothCentralManager *centralManager, BOOL isScanning) {
+    resolve(@(isScanning));
+    if (weakSelf) {
+      [weakSelf emitFullState];
+    }
+  } withBlock:^(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSDictionary *advertisementData, NSNumber *RSSI) {
     
     if (weakSelf) {
       NSDictionary *peripheralData = [peripheral getJSON];
-
+      
       [weakSelf emit:EXBluetoothCentralDidDiscoverPeripheralEvent data:@{
                                                                          EXBluetoothCentralKey: EXNullIfNil([EXBluetooth.class EXBluetoothCentralManager_NativeToJSON:centralManager]),
                                                                          EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
@@ -264,8 +263,7 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
       [weakSelf emitFullState];
     }
   }];
-  resolve(nil);
-  [self emitFullState];
+  
 }
 
 EX_EXPORT_METHOD_AS(stopScanningAsync,
@@ -275,9 +273,11 @@ EX_EXPORT_METHOD_AS(stopScanningAsync,
   if ([_manager guardEnabled:reject]) {
     return;
   }
-  [_manager stopScan];
-  [self emitFullState];
-  resolve(nil);
+  [_manager stopScanWithBlock:^(EXBluetoothCentralManager *centralManager, BOOL isScanning) {
+    [self emitFullState];
+    resolve(@(isScanning));
+  }];
+  
 }
 
 EX_EXPORT_METHOD_AS(connectPeripheralAsync,

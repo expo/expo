@@ -22,7 +22,7 @@ declare type CancelScanningCallback = () => void;
  * If the central is already scanning with different
  * `serviceUUIDsToQuery` or `scanSettings`, the provided parameters will replace them.
  */
-export declare function startScan(scanSettings: ScanOptions | undefined, callback: (peripheral: NativePeripheral) => void): CancelScanningCallback;
+export declare function startScanningAsync(scanSettings: ScanOptions | undefined, callback: (peripheral: NativePeripheral) => void): Promise<CancelScanningCallback>;
 export declare function stopScanAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
 export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;

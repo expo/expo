@@ -29,7 +29,8 @@ typedef void (^EXBluetoothPeripheralReadRSSIBlock)(EXBluetoothPeripheral *periph
 
 #pragma mark - central
 
-typedef void (^EXBluetoothCentralDidDiscoverPeripheralBlock)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSDictionary *advertisementData,NSNumber *RSSI);
+typedef void (^EXBluetoothCentralDidChangeScanningBlock)(EXBluetoothCentralManager *centralManager, BOOL isScanning);
+typedef void (^EXBluetoothCentralDidDiscoverPeripheralBlock)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSDictionary *advertisementData, NSNumber *RSSI);
 typedef void (^EXBluetoothCentralDidConnectPeripheralBlock)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error);
 typedef void (^EXBluetoothCentralDidDisconnectPeripheralBlock)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error);
 typedef void (^EXBluetoothCentralDidUpdateStateBlock)(EXBluetoothCentralManager *centralManager);
