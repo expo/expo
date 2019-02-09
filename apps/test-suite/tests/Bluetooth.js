@@ -64,11 +64,24 @@ function getStaticInfoFromGATT(gatt) {
 
 export const name = 'Bluetooth';
 
+async function getConnectedPeripheralAsync(options = {}) {
+  const peripheral = await scanForSinglePeripheral();
+  try {
+    console.log('attempt to connect to ', peripheral);
+    return await Bluetooth.connectAsync(peripheral.id, { timeout: 240000, ...options });
+  } catch (error) {
+    throw new Error(
+      'Failed to connect to a peripheral in time, this is expected. Please try again.'
+    );
+  }
+}
+
 function scanForSinglePeripheral(options) {
   return new Promise(resolve => {
     const stopScanning = Bluetooth.startScan(options, peripheral => {
       /* Named peripherals have a higher chance of interaction. For brevity let's use them. */
       if (peripheral.name && peripheral.name.length) {
+        //   if (peripheral.name === 'LE-reserved') {
         stopScanning();
         resolve(peripheral);
       }
@@ -83,7 +96,17 @@ function validatePeripheral(peripheral, expect) {
   expect(peripheral.advertisementData).toBeDefined();
 }
 
-export async function test({ describe, it, xit, expect, afterEach, beforeEach, jasmine }) {
+let enquedPeripheral;
+export async function test({
+  describe,
+  xdescribe,
+  it,
+  xit,
+  expect,
+  afterEach,
+  beforeEach,
+  jasmine,
+}) {
   await Permissions.askAsync(Permissions.LOCATION);
 
   let originalTimeout;
@@ -92,6 +115,11 @@ export async function test({ describe, it, xit, expect, afterEach, beforeEach, j
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = longerTimeout;
 
+    try {
+      if (enquedPeripheral) {
+        await Bluetooth.disconnectPeripheralAsync(enquedPeripheral.id);
+      }
+    } catch (e) {}
     await Bluetooth._reset();
   });
 
@@ -104,7 +132,7 @@ export async function test({ describe, it, xit, expect, afterEach, beforeEach, j
       await method();
       expect('Method').toBe('To Fail');
     } catch (error) {
-      return error.message;
+      return error;
     }
   }
 
@@ -168,51 +196,65 @@ export async function test({ describe, it, xit, expect, afterEach, beforeEach, j
     });
   });
 
-  describe('readRSSIAsync', () => {
+  xdescribe('readRSSIAsync', () => {
     rejectsInvalidPeripheralUUID(Bluetooth.readRSSIAsync);
+
     it('fails if the peripheral is not connected.', async () => {
       const peripheral = await scanForSinglePeripheral();
+      enquedPeripheral = peripheral;
 
-      const errorMessage = await toThrowAsync(() => Bluetooth.readRSSIAsync(peripheral.id));
+      const { message: errorMessage } = await toThrowAsync(() =>
+        Bluetooth.readRSSIAsync(peripheral.id)
+      );
       expect(errorMessage.includes('not connected')).toBe(true);
     });
-    xit('invokes native method', async () => {
-      const peripheral = await scanForSinglePeripheral();
 
+    it('invokes native method', async () => {
+      const peripheral = await getConnectedPeripheralAsync();
+      enquedPeripheral = peripheral;
       const RSSI = await Bluetooth.readRSSIAsync(peripheral.id);
       console.log('HEYYYYY', RSSI);
       expect(RSSI).toBeDefined();
-      // expect(ExpoBluetooth.readRSSIAsync).toHaveBeenLastCalledWith(peripheralUUID);
     });
   });
-  //   describe('connecting/disconnecting', () => {
-  //     describe('connectAsync', () => {
-  //       rejectsInvalidPeripheralUUID(() => Bluetooth.connectAsync(null));
-  //       it('times out', async () => {
-  //         const timeout = 5;
-  //         const callback = jest.fn();
-  //         Bluetooth.connectAsync(peripheralUUID, { onDisconnect: callback, timeout });
-  //         expect(callback).not.toBeCalled();
-  //         await sleep(timeout + 1);
-  //         expect(callback).toBeCalled();
-  //       });
-  //       it('invokes native method', async () => {
-  //         const options = { some: 'v' };
-  //         await Bluetooth.connectAsync(peripheralUUID, { options });
-  //         expect(ExpoBluetooth.connectPeripheralAsync).toHaveBeenLastCalledWith(
-  //           peripheralUUID,
-  //           options
-  //         );
-  //       });
-  //     });
-  //     describe('disconnectAsync', () => {
-  //       rejectsInvalidPeripheralUUID(() => Bluetooth.disconnectAsync(null));
-  //       it('invokes native method', async () => {
-  //         await Bluetooth.disconnectAsync(peripheralUUID);
-  //         expect(ExpoBluetooth.disconnectPeripheralAsync).toHaveBeenLastCalledWith(peripheralUUID);
-  //       });
-  //     });
-  //   });
+
+  describe('connecting/disconnecting', () => {
+    describe('connectAsync', () => {
+      rejectsInvalidPeripheralUUID(Bluetooth.connectAsync);
+
+      xit('calls onDisconnect', async () => {
+        function connectThenDisconnect() {
+          return new Promise(async (resolve, reject) => {
+            try {
+              enquedPeripheral = await getConnectedPeripheralAsync({
+                onDisconnect: () => {
+                  resolve(true);
+                },
+              });
+              await Bluetooth.disconnectAsync(enquedPeripheral.id);
+              await sleep(20);
+            } catch (error) {
+              throw error;
+            }
+          });
+        }
+        expect(await connectThenDisconnect()).toBe(true);
+      });
+
+      it('times out', async () => {
+        const peripheral = await scanForSinglePeripheral();
+        const { code } = await toThrowAsync(
+          async () =>
+            (enquedPeripheral = await Bluetooth.connectAsync(peripheral.id, { timeout: 2 }))
+        );
+        expect(code).toBe('timeout');
+      });
+    });
+    describe('disconnectAsync', () => {
+      rejectsInvalidPeripheralUUID(Bluetooth.disconnectAsync);
+    });
+  });
+
   //   describe('reading', () => {
   //     describe('readCharacteristicAsync', async () => {
   //       const someReadValue = await Bluetooth.readCharacteristicAsync(

@@ -39,6 +39,8 @@ import { peripheralIdFromId } from './BluetoothTransactions';
 import ExpoBluetooth from './ExpoBluetooth';
 import Transaction from './Transaction';
 
+import BluetoothError from './BluetoothError';
+
 export * from './Bluetooth.types';
 
 /*
@@ -143,22 +145,31 @@ export async function connectAsync(
 
   let timeoutTag: number | undefined;
 
-  if (options.timeout) {
-    timeoutTag = setTimeout(() => {
-      disconnectAsync(peripheralUUID);
-      throw new Error('request timeout');
-    }, options.timeout);
-  }
+  return new Promise(async (resolve, reject) => {
+    if (options.timeout) {
+      timeoutTag = setTimeout(() => {
+        disconnectAsync(peripheralUUID);
+        reject(
+          new BluetoothError({
+            message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${
+              options.timeout
+            }ms`,
+            code: 'timeout',
+          })
+        );
+      }, options.timeout);
+    }
 
-  let result;
-  try {
-    result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
-  } catch (error) {
-    throw error;
-  } finally {
-    clearTimeout(timeoutTag);
-  }
-  return result;
+    let result;
+    try {
+      result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
+    } catch (error) {
+      reject(error);
+    } finally {
+      clearTimeout(timeoutTag);
+    }
+    resolve(result);
+  });
 }
 
 export async function disconnectAsync(peripheralUUID: UUID): Promise<any> {

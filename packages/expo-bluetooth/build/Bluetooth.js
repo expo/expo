@@ -6,6 +6,7 @@ import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './B
 import { peripheralIdFromId } from './BluetoothTransactions';
 import ExpoBluetooth from './ExpoBluetooth';
 import Transaction from './Transaction';
+import BluetoothError from './BluetoothError';
 export * from './Bluetooth.types';
 /*
 initializeManagerAsync
@@ -73,23 +74,28 @@ export async function connectAsync(peripheralUUID, options = {}) {
         addHandlerForKey(EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL, onDisconnect);
     }
     let timeoutTag;
-    if (options.timeout) {
-        timeoutTag = setTimeout(() => {
-            disconnectAsync(peripheralUUID);
-            throw new Error('request timeout');
-        }, options.timeout);
-    }
-    let result;
-    try {
-        result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
-    }
-    catch (error) {
-        throw error;
-    }
-    finally {
-        clearTimeout(timeoutTag);
-    }
-    return result;
+    return new Promise(async (resolve, reject) => {
+        if (options.timeout) {
+            timeoutTag = setTimeout(() => {
+                disconnectAsync(peripheralUUID);
+                reject(new BluetoothError({
+                    message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${options.timeout}ms`,
+                    code: 'timeout',
+                }));
+            }, options.timeout);
+        }
+        let result;
+        try {
+            result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
+        }
+        catch (error) {
+            reject(error);
+        }
+        finally {
+            clearTimeout(timeoutTag);
+        }
+        resolve(result);
+    });
 }
 export async function disconnectAsync(peripheralUUID) {
     invariantAvailability('disconnectPeripheralAsync');

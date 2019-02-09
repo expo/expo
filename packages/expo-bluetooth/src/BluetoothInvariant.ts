@@ -3,7 +3,7 @@ import { UnavailabilityError } from 'expo-errors';
 import ExpoBluetooth from './ExpoBluetooth';
 
 export function invariantUUID(uuid: string | undefined) {
-  if (uuid === undefined || (typeof uuid !== 'string' && uuid === '')) {
+  if (uuid == null || typeof uuid !== 'string' || !uuid.length) {
     throw new Error('expo-bluetooth: Invalid UUID provided');
   }
 }
