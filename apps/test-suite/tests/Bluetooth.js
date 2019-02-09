@@ -259,6 +259,10 @@ export async function test({
             await clearAllConnections()
         })
 
+        describe('disconnectAsync', () => {
+            rejectsInvalidPeripheralUUID(Bluetooth.disconnectAsync);
+        });
+
         describe('connectAsync()', () => {
             rejectsInvalidPeripheralUUID(Bluetooth.connectAsync);
       
@@ -352,6 +356,43 @@ export async function test({
           expect(typeof RSSI).toBe('number');
         });
       });
+
+      describe('5. Observing', () => {
+        describe('observeUpdates()', () => {
+            it('will be called with all of the current peripheral data.', async () => {
+              function getsUpdated() {
+                return new Promise(async res => {
+                  const subscription = await Bluetooth.observeUpdates(({ peripherals }) => {
+                    console.log('BLE Screen: observeUpdatesAsync: ', peripherals);
+                    res(peripherals);
+                    subscription.remove();
+                  });
+                });
+              }
+        
+              const stopScanning = await Bluetooth.startScanningAsync({}, peripheral => {});
+              expect(await getsUpdated()).toBeDefined();
+              stopScanning();
+            });
+          });
+          describe('observeStateAsync()', () => {
+            function getCentralManagerStateAsync() {
+              return new Promise(async resolve => {
+                const subscription = await Bluetooth.observeStateAsync(state => {
+                  subscription.remove();
+                  resolve(state);
+                });
+              });
+            }
+        
+            it(`get's the central manager state.`, async () => {
+              const state = await getCentralManagerStateAsync();
+              expect(Object.values(Bluetooth.CentralState).includes(state)).toBe(true);
+            });
+          });
+
+          
+      })
 //   const peripheral = await scanForSinglePeripheral();
 //       validatePeripheral(peripheral, expect);
 
@@ -359,50 +400,8 @@ export async function test({
 
   return;
 
-  xdescribe('observeUpdates', () => {
-    it('works', async () => {
-      function getsUpdated() {
-        return new Promise(async res => {
-          const subscription = await Bluetooth.observeUpdates(({ peripherals }) => {
-            console.log('BLE Screen: observeUpdatesAsync: ', peripherals);
-            res(peripherals);
-            subscription.remove();
-          });
-        });
-      }
-
-      const stopScanning = await Bluetooth.startScanningAsync({}, peripheral => {});
-
-      expect(await getsUpdated()).toBeDefined();
-
-      stopScanning();
-    });
-  });
-  xdescribe('observeStateAsync', () => {
-    function getCentralManagerStateAsync() {
-      return new Promise(async resolve => {
-        const subscription = await Bluetooth.observeStateAsync(state => {
-          subscription.remove();
-          resolve(state);
-        });
-      });
-    }
-
-    it(`get's the central state`, async () => {
-      const state = await getCentralManagerStateAsync();
-      expect(Object.values(Bluetooth.CentralState).includes(state)).toBe(true);
-    });
-  });
-
+  
  
-
-  xdescribe('connecting/disconnecting', () => {
-   
-    describe('disconnectAsync', () => {
-      rejectsInvalidPeripheralUUID(Bluetooth.disconnectAsync);
-    });
-  });
-
     xdescribe('reading', async () => {
 
         const connectedPeripheral = await getConnectedPeripheralAsync();
