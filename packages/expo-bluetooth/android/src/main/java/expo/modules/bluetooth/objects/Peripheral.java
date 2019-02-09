@@ -155,21 +155,37 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     }
   }
 
-  public void refreshCache(Promise promise) {
-    if (mGatt != null) {
-      try {
-        Method localMethod = mGatt.getClass().getMethod("refresh", new Class[0]);
-        if (localMethod == null) {
-          BluetoothError.reject(promise, "Could not clear device cache for peripheral: " + getID());
-        } else {
-          boolean didRefresh = ((Boolean) localMethod.invoke(mGatt, new Object[0])).booleanValue();
-          promise.resolve(didRefresh);
-        }
-      } catch (Exception localException) {
-        promise.reject(localException);
+  /**
+   * BluetoothGatt has a refresh() method in but it's private.
+   * We can only invoke it using reflections.
+   */
+  private static boolean refreshGattCacheIgnoringErrors(BluetoothGatt gatt) {
+    try {
+      final Method refreshGatt = BluetoothGatt.class.getMethod("refresh");
+      if (refreshGatt != null) {
+        final boolean success = (Boolean) refreshGatt.invoke(gatt);
+        return success;
+      } else {
+        // If the method doesn't exist, we have no recourse. Just return false.
       }
-    } else {
-      promise.resolve(false);
+    } catch (Exception e) {
+    }
+    return false;
+  }
+
+  public static void closeGatt(BluetoothGatt gatt) {
+    if (gatt != null) {
+      gatt.disconnect();
+      refreshGattCacheIgnoringErrors(gatt);
+      gatt.close();
+    }
+  }
+
+
+  private void disconnectGATT() {
+    if (mGatt != null) {
+      closeGatt(mGatt);
+      mGatt = null;
     }
   }
 
@@ -179,10 +195,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     if (mGatt != null) {
       try {
         _didDisconnectPeripheralBlock = promise;
-        mGatt.disconnect();
-        mGatt.close();
-        mGatt = null;
-//        Log.d(BluetoothConstants.ERRORS.GENERAL, "Disconnect");
+        disconnectGATT();
 //        sendDisconnectedEvent(null);
       } catch (Exception e) {
 
@@ -320,11 +333,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
       case BluetoothProfile.STATE_DISCONNECTED:
         if (connected) {
           connected = false;
-          if (gatt != null) {
-            gatt.disconnect();
-            gatt.close();
-            mGatt = null;
-          }
+          disconnectGATT();
         }
         if (_didDisconnectPeripheralBlock != null) {
           if (autoResolvePromiseWithStatusAndData(_didDisconnectPeripheralBlock, status)) {
@@ -634,21 +643,6 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     }
     promise.resolve(null);
   }
-
-//  public void refreshCache(Promise promise) {
-//    try {
-//
-//      Method localMethod = mGatt.getClass().getMethod("refresh", new Class[0]);
-//      if (localMethod != null) {
-//        boolean res = ((Boolean) localMethod.invoke(mGatt, new Object[0])).booleanValue();
-//        promise.resolve(res);
-//      } else {
-//        promise.reject(BluetoothConstants.ERRORS.GENERAL, "Could not refresh cache for device.");
-//      }
-//    } catch (Exception localException) {
-//      promise.reject(localException);
-//    }
-//  }
 
   public void retrieveServices(Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {

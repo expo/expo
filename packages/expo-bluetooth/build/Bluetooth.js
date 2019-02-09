@@ -320,11 +320,6 @@ const android = {
         invariantUUID(peripheralUUID);
         return await ExpoBluetooth.requestConnectionPriorityAsync(peripheralUUID, connectionPriority);
     },
-    async clearCacheForPeripheralAsync(peripheralUUID) {
-        invariantAvailability('clearCacheForPeripheralAsync');
-        invariantUUID(peripheralUUID);
-        return await ExpoBluetooth.clearCacheForPeripheralAsync(peripheralUUID);
-    },
     observeBluetoothAvailabilty(callback) {
         return addHandlerForKey(EVENTS.ENABLE_BLUETOOTH, callback);
     },

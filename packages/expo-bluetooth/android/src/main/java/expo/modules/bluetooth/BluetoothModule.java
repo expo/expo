@@ -675,28 +675,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     peripheral.disconnect(promise);
   }
 
-  @ExpoMethod
-  public void clearCacheForPeripheralAsync(
-      final String peripheralUUID,
-      final Promise promise
-  ) {
-    if (guardPeripheralAction(promise)) {
-      return;
-    }
-    Peripheral peripheral = peripherals.get(peripheralUUID);
-    if (peripheral == null) {
-      Bundle output = new Bundle();
-      output.putString("status", "unavailable");
-      promise.resolve(output);
-      return;
-    }
-//    Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
-//    if (peripheral == null) {
-//      return;
-//    }
-    peripheral.refreshCache(promise);
-  }
-
   private Service getServiceFromOptionsOrReject(Map<String, Object> options, Promise promise) {
     if (guardPeripheralAction(promise)) {
       return null;

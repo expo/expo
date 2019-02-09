@@ -84,7 +84,6 @@ declare const android: {
     enableBluetoothAsync(isBluetoothEnabled: boolean): Promise<void>;
     getBondedPeripheralsAsync(): Promise<NativePeripheral[]>;
     requestConnectionPriorityAsync(peripheralUUID: string, connectionPriority: number): Promise<any>;
-    clearCacheForPeripheralAsync(peripheralUUID: string): Promise<boolean>;
     observeBluetoothAvailabilty(callback: (updates: Central) => void): Subscription;
 };
 export { android };
