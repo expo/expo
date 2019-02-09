@@ -270,6 +270,7 @@
   EXBluetoothPeripheralNotifyValueForCharacteristicsBlock notifyBlock = [_notifyValueForCharacteristics objectForKey:characteristic.UUID.UUIDString];
   if (notifyBlock) {
     notifyBlock(self, mCharacteristic, error);
+    [_notifyValueForCharacteristics removeObjectForKey:characteristic.UUID.UUIDString];
   }
 }
 
@@ -292,6 +293,8 @@
   }
   EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
   block(self, mCharacteristic, error);
+  [_notifyValueForCharacteristics removeObjectForKey:characteristic.UUID.UUIDString];
+
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error

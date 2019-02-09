@@ -129,16 +129,15 @@ export async function writeDescriptorAsync({ peripheralUUID, serviceUUID, charac
     });
     return descriptor;
 }
-export async function shouldNotifyDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, shouldNotify, }) {
+export async function setNotifyCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, shouldNotify, }) {
     invariantAvailability('setNotifyCharacteristicAsync');
-    const { descriptor } = await ExpoBluetooth.setNotifyCharacteristicAsync({
+    const { characteristic } = await ExpoBluetooth.setNotifyCharacteristicAsync({
         peripheralUUID,
         serviceUUID,
         characteristicUUID,
-        descriptorUUID,
         shouldNotify,
     });
-    return descriptor;
+    return characteristic;
 }
 /* TODO: Bacon: Add a return type */
 export async function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }) {

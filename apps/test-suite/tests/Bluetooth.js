@@ -1,14 +1,6 @@
-import { mockPlatformIOS, unmockAllProperties, mockPlatformAndroid } from 'jest-expo';
-
-import {
-  Characteristics,
-  Descriptors,
-  JSONToNative,
-  nativeToJSON,
-  Services,
-} from 'expo-bluetooth-utils';
-import * as Bluetooth from 'expo-bluetooth';
 import { Permissions } from 'expo';
+import * as Bluetooth from 'expo-bluetooth';
+import { Characteristics, Descriptors, Services, nativeToJSON, JSONToNative } from 'expo-bluetooth-utils';
 import { NativeModulesProxy, Platform } from 'expo-core';
 
 const { ExpoBluetooth } = NativeModulesProxy;
@@ -182,8 +174,7 @@ export async function test({
 
   let originalTimeout;
   const longerTimeout = 35000;
-  
-  
+
   beforeEach(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = longerTimeout;
@@ -407,7 +398,7 @@ export async function test({
 //     });
 //   });
 
-    describe('6. Discovery', () => {
+    xdescribe('6. Discovery', () => {
 
     describe('discoverServicesForPeripheralAsync()', async () => {
 
@@ -501,64 +492,129 @@ export async function test({
    
 
     });
-   
-
   });
 
-  return;
 
-  
- 
-    xdescribe('reading', async () => {
 
-        const connectedPeripheral = await getConnectedPeripheralAsync();
-        const loaded = await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
+  async function getLoadedPeripheralAsync() {
+    const connectedPeripheral = await getConnectedPeripheralAsync();
+    // validatePeripheral(connectedPeripheral, expect);
+    return await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
+  }
+  function arrInAny(arr, arr2) {
+      for (const v of arr2) {
+          if (arr.includes(v)) {
+              return true;
+          }
+      }
+      return false;
+  }
 
-        console.log(" LOADED ", loaded);
-    //     it('readCharacteristicAsync', async () => {
-    //     const someReadValue = await Bluetooth.readCharacteristicAsync(
-    //       getGATTNumbersFromID(internalCharacteristicID)
-    //     );
-    //   });
-    //   it('readDescriptorAsync', async () => {
-    //     const someReadValue = await Bluetooth.readDescriptorAsync(
-    //       getGATTNumbersFromID(internalDescriptorID)
-    //     );
-    //   });
-    });
-    xdescribe('writing', () => {
-        it('writeCharacteristicAsync', async () => {
+    function getCharacteristicsWithProperties(loadedPeripheral, properties) {
+      const specialCharacteristics = [];
+      for (const service of loadedPeripheral.services) {
+          for (const characteristic of service.characteristics) {
+              console.log("single", characteristic);
+              if (arrInAny(characteristic.properties, properties)) {
+                  specialCharacteristics.push(characteristic);
+              }
+          }
+      }
+        return specialCharacteristics;
+  }
+
+  describe('7. Writing', () => {
+    // TODO: Bacon: This isn't complete
+    xit('writeDescriptorAsync()', async () => {
+        const loadedPeripheral = await getLoadedPeripheralAsync();
+        validatePeripheral(loadedPeripheral, expect);
+
         // properties.includes('write');
-        await Bluetooth.writeCharacteristicAsync({
-          ...getGATTNumbersFromID(internalCharacteristicID),
-          data: JSONToNative('bacon'),
-        });
-      });
-      it('writeCharacteristicWithoutResponseAsync', async () => {
-        await Bluetooth.writeCharacteristicWithoutResponseAsync({
-          ...getGATTNumbersFromID(internalCharacteristicID),
-          data: JSONToNative('bacon'),
-        });
-      });
-      it('writeDescriptorAsync', async () => {
+        const characteristics = getCharacteristicsWithProperties(loadedPeripheral, ['write']);
+        console.log({ characteristics });
+        expect(!!characteristics.length).toBe(true);
+        const targetCharacteristic = characteristics[0];
+
+        // await Bluetooth.writeCharacteristicWithoutResponseAsync({
+        //     ...getGATTNumbersFromID(targetCharacteristic.id),
+        //     data: JSONToNative('bacon'),
+        // });
+
         await Bluetooth.writeDescriptorAsync({
-          ...getGATTNumbersFromID(internalDescriptorID),
+          ...getGATTNumbersFromID(targetCharacteristic.descriptors[0].id),
           data: JSONToNative('bacon'),
         });
       });
-    });
+
+      describe('setNotifyCharacteristicAsync()', () => {
+        it('can make a characteristic notifiable', async () => {
+            const loadedPeripheral = await getLoadedPeripheralAsync();
+            validatePeripheral(loadedPeripheral, expect);
     
+            // properties.includes('write');
+            const characteristics = getCharacteristicsWithProperties(loadedPeripheral, ['notify']);
+            expect(!!characteristics.length).toBe(true);
+            const targetCharacteristic = characteristics.filter(({ isNotifying }) => !isNotifying)[0];
+            expect(targetCharacteristic.isNotifying).toBe(false);
+            const modifiedCharacteristic = await Bluetooth.setNotifyCharacteristicAsync({
+                ...getGATTNumbersFromID(targetCharacteristic.id),
+                shouldNotify: true,
+            });
+            expect(modifiedCharacteristic.isNotifying).toBe(true);
+            // TODO: Bacon: modifiedCharacteristic validation
+            console.log({modifiedCharacteristic});
+        });
+        // TODO: Bacon: iOS: The request is not supported.
+        xit('writeCharacteristicAsync()', async () => {
+            const loadedPeripheral = await getLoadedPeripheralAsync();
+            validatePeripheral(loadedPeripheral, expect);
+    
+            // properties.includes('write');
+            const characteristics = getCharacteristicsWithProperties(loadedPeripheral, ['write']);
+            console.log({ characteristics });
+            expect(!!characteristics.length).toBe(true);
+            const targetCharacteristic = characteristics.filter(({ isNotifying }) => isNotifying)[0];
+
+            await Bluetooth.writeCharacteristicAsync({
+                ...getGATTNumbersFromID(targetCharacteristic.id),
+                data: JSONToNative('bacon'),
+            });
+        });
+
+        // TODO: Bacon: iOS: hard to test.
+        xit('writeCharacteristicWithoutResponseAsync()', async () => {
+            const loadedPeripheral = await getLoadedPeripheralAsync();
+            validatePeripheral(loadedPeripheral, expect);
+    
+            // properties.includes('write');
+            const characteristics = getCharacteristicsWithProperties(loadedPeripheral, ['writeWithoutResponse']);
+            console.log({ characteristics });
+            expect(!!characteristics.length).toBe(true);
+            const targetCharacteristic = characteristics.filter(({ isNotifying }) => isNotifying)[0];
+
+            await Bluetooth.writeCharacteristicWithoutResponseAsync({
+                ...getGATTNumbersFromID(targetCharacteristic.id),
+                data: JSONToNative('bacon'),
+            });
+        });
+    });
+});
 
 
+/**
+ * TODO: Bacon
+ * - test utils
+ * - get all descriptors
+ * - read a descriptor
+ * - decode the value
+ * - fix all android things
+ * - unify and test errors
+ * - fix android specific bugs
+ * - test writing data somehow
+ * - test android scan options
+ */
 
 
- 
-  // const debugPeripheral = { id: peripheralUUID };
-  // const debugService = { id: internalServiceID };
-  // const debugCharacteristic = { id: internalCharacteristicID };
- 
-  
- 
   if (Platform.OS === 'android') {
 
     xdescribe('Android only', () => {
@@ -619,8 +675,31 @@ export async function test({
           });
         });
       });
-
-  }
-
+    
+    }
 }
 // getStaticInfoFromGATT(this.props);
+
+
+
+ 
+// xdescribe('reading', async () => {
+
+//     const connectedPeripheral = await getConnectedPeripheralAsync();
+//     const loaded = await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
+
+//     console.log(" LOADED ", loaded);
+// //     it('readCharacteristicAsync', async () => {
+// //     const someReadValue = await Bluetooth.readCharacteristicAsync(
+// //       getGATTNumbersFromID(internalCharacteristicID)
+// //     );
+// //   });
+// //   it('readDescriptorAsync', async () => {
+// //     const someReadValue = await Bluetooth.readDescriptorAsync(
+// //       getGATTNumbersFromID(internalDescriptorID)
+// //     );
+// //   });
+// });
+
+
+
