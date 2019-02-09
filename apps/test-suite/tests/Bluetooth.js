@@ -99,9 +99,25 @@ export async function test({ describe, it, xit, expect, afterEach, beforeEach, j
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
+  async function toThrowAsync(method) {
+    try {
+      await method();
+      expect('Method').toBe('To Fail');
+    } catch (error) {
+      return error.message;
+    }
+  }
+
   function rejectsInvalidPeripheralUUID(method) {
     it('rejects an invalid peripheral UUID', async () => {
-      await expect(method()).rejects.toThrow('expo-bluetooth: Invalid UUID provided');
+      let message;
+      try {
+        await method();
+        expect('Method').toBe('To Fail');
+      } catch (error) {
+        message = error.message;
+      }
+      expect(message).toBe('expo-bluetooth: Invalid UUID provided');
     });
   }
   afterEach(unmockAllProperties);
@@ -138,9 +154,8 @@ export async function test({ describe, it, xit, expect, afterEach, beforeEach, j
   });
   describe('observeStateAsync', () => {
     function getCentralManagerStateAsync() {
-      return new Promise(async (resolve) => {
+      return new Promise(async resolve => {
         const subscription = await Bluetooth.observeStateAsync(state => {
-          console.log('HEYLOOKLISTEN: ', subscription);
           subscription.remove();
           resolve(state);
         });
@@ -152,13 +167,24 @@ export async function test({ describe, it, xit, expect, afterEach, beforeEach, j
       expect(Object.values(Bluetooth.CentralState).includes(state)).toBe(true);
     });
   });
-  //   describe('readRSSIAsync', () => {
-  //     rejectsInvalidPeripheralUUID(() => Bluetooth.readRSSIAsync(null));
-  //     it('invokes native method', async () => {
-  //       await Bluetooth.readRSSIAsync(peripheralUUID);
-  //       expect(ExpoBluetooth.readRSSIAsync).toHaveBeenLastCalledWith(peripheralUUID);
-  //     });
-  //   });
+
+  describe('readRSSIAsync', () => {
+    rejectsInvalidPeripheralUUID(Bluetooth.readRSSIAsync);
+    it('fails if the peripheral is not connected.', async () => {
+      const peripheral = await scanForSinglePeripheral();
+
+      const errorMessage = await toThrowAsync(() => Bluetooth.readRSSIAsync(peripheral.id));
+      expect(errorMessage.includes('not connected')).toBe(true);
+    });
+    xit('invokes native method', async () => {
+      const peripheral = await scanForSinglePeripheral();
+
+      const RSSI = await Bluetooth.readRSSIAsync(peripheral.id);
+      console.log('HEYYYYY', RSSI);
+      expect(RSSI).toBeDefined();
+      // expect(ExpoBluetooth.readRSSIAsync).toHaveBeenLastCalledWith(peripheralUUID);
+    });
+  });
   //   describe('connecting/disconnecting', () => {
   //     describe('connectAsync', () => {
   //       rejectsInvalidPeripheralUUID(() => Bluetooth.connectAsync(null));
