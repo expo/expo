@@ -60,10 +60,10 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   private static final int ENABLE_REQUEST = 65072;
   static ModuleRegistry moduleRegistry;
+  static BluetoothManager bluetoothManager;
   public BluetoothScanManager scanManager;
   static private Map<String, Peripheral> peripherals = new LinkedHashMap<>();
   private ModuleRegistry mModuleRegistry;
-  private BluetoothManager bluetoothManager;
   private BondingPromise createBond;
   private BondingPromise removeBond;
   private BroadcastReceiver mReceiver;
@@ -73,6 +73,16 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   public BluetoothModule(Context context) {
     super(context);
+  }
+
+  public static boolean isDeviceConnected(String peripheralUUID) {
+    if (bluetoothManager == null) return false;
+
+    BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(peripheralUUID);
+
+    if (device == null) return false;
+
+    return bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device);
   }
 
   public static void sendEvent(final String eventName, Bundle data) {
@@ -161,6 +171,14 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     constants.put("EVENTS", events);
 
+
+    final Map<String, Object> priority = new HashMap<>();
+    priority.put("High", BluetoothConstants.PRIORITY.HIGH);
+    priority.put("LowPower", BluetoothConstants.PRIORITY.LOW_POWER);
+    priority.put("Balanced", BluetoothConstants.PRIORITY.BALANCED);
+
+    constants.put("PRIORITY", priority);
+
     return constants;
   }
 
@@ -193,7 +211,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   @ExpoMethod
-  public void requestConnectionPriorityAsync(String peripheralUUID, Integer connectionPriority, Promise promise) {
+  public void requestConnectionPriorityAsync(String peripheralUUID, String connectionPriority, Promise promise) {
     if (guardPeripheralAction(promise)) {
       return;
     }
@@ -201,10 +219,10 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (peripheral == null) {
       return;
     }
-    peripheral.requestConnectionPriority(connectionPriority.intValue(), promise);
+    int connection = Serialize.Priority_JSONToNative(connectionPriority);
+    peripheral.requestConnectionPriority(connection, promise);
   }
 
-  // TODO: Bacon: Add to JS - Android only
   @ExpoMethod
   public void requestMTUAsync(String peripheralUUID, Integer mtuValue, Promise promise) {
     if (guardPeripheralAction(promise)) {
@@ -338,7 +356,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-
     Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
     if (peripheral == null) {
       return;
@@ -370,7 +387,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-
     Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
     if (peripheral == null) {
       return;
@@ -673,17 +689,33 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-    Peripheral peripheral = peripherals.get(peripheralUUID);
-    if (peripheral == null) {
+
+    BluetoothDevice device = getBluetoothAdapter().getRemoteDevice(peripheralUUID);
+
+    if (device == null) {
       Bundle output = new Bundle();
       output.putString("status", "unavailable");
       promise.resolve(output);
       return;
     }
 
-    List<BluetoothDevice> peripherals = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT);
+    boolean isConnected = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT).contains(device);
 
-    peripheral.disconnect(promise);
+    Peripheral peripheral = new Peripheral(device, getCurrentActivity());
+
+    if (isConnected) {
+      promise.resolve(peripheral.toJSON());
+      return;
+    }
+
+    if (peripheral == null) {
+      Bundle output = new Bundle();
+      output.putString("status", "unavailable");
+      promise.resolve(output);
+      return;
+    } else {
+      peripheral.disconnect(promise);
+    }
   }
 
   private Service getServiceFromOptionsOrReject(Map<String, Object> options, Promise promise) {
@@ -823,8 +855,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   private boolean isBluetoothAvailable() {
       try {
-          if (getBluetoothAdapter() == null || getBluetoothAdapter().getAddress().equals(null))
-              return false;
+          if (getBluetoothAdapter() == null || getBluetoothAdapter().getAddress().equals(null)) {
+            return false;
+          }
       } catch (NullPointerException e) {
             return false;
       }
@@ -851,12 +884,11 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   private Peripheral _getPeripheralOrReject(String peripheralUUID, Promise promise) {
-    Peripheral peripheral = peripherals.get(peripheralUUID);
-
+    Peripheral peripheral = ensurePeripheral(peripheralUUID);
     if (peripheral == null) {
       promise.reject("ERR_NO_PERIPHERAL", "No valid peripheral with UUID " + peripheralUUID);
+      return null;
     }
-
     return peripheral;
   }
 
@@ -887,32 +919,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
 
     return serviceUUIDs.toArray(new UUID[jsonArray.length()]);
-  }
-
-  private Peripheral savePeripheral(BluetoothDevice device) {
-    String address = device.getAddress();
-    synchronized (peripherals) {
-      if (!peripherals.containsKey(address)) {
-        Peripheral peripheral = new Peripheral(device, getCurrentActivity());
-        peripherals.put(device.getAddress(), peripheral);
-      }
-    }
-    return peripherals.get(address);
-  }
-
-  Peripheral savePeripheral(BluetoothDevice device, int RSSI, byte[] scanRecord) {
-    String address = device.getAddress();
-    synchronized (peripherals) {
-      if (!peripherals.containsKey(address)) {
-        Peripheral peripheral = new Peripheral(device, RSSI, scanRecord);
-        peripherals.put(device.getAddress(), peripheral);
-      } else {
-        Peripheral peripheral = peripherals.get(address);
-        peripheral.updateRSSI(RSSI);
-        peripheral.updateData(scanRecord);
-      }
-    }
-    return peripherals.get(address);
   }
 
   Peripheral savePeripheral(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {

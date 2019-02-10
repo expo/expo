@@ -9,6 +9,8 @@ export const {
   CENTRAL_OPTIONS,
   SCAN_OPTIONS,
   CONNECT_PERIPHERAL_OPTIONS,
+  /* Android */
+  PRIORITY,
 } = ExpoBluetooth;
 
 export const DELIMINATOR = '|';

@@ -1,5 +1,5 @@
 import { Subscription } from 'expo-core';
-import { Base64, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
+import { Base64, Priority, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, EVENTS, TYPES } from './BluetoothConstants';
 export * from './Bluetooth.types';
 export { BLUETOOTH_EVENT, TYPES, EVENTS };
@@ -25,6 +25,7 @@ declare type CancelScanningCallback = () => void;
 export declare function startScanningAsync(scanSettings: ScanOptions | undefined, callback: (peripheral: NativePeripheral) => void): Promise<CancelScanningCallback>;
 export declare function stopScanAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
+export declare function observeScanningErrors(callback: (updates: any) => void): Subscription;
 export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
 export declare function connectAsync(peripheralUUID: UUID, options?: {
     timeout?: number;
@@ -83,7 +84,7 @@ declare const android: {
     removeBondAsync(peripheralUUID: string): Promise<any>;
     enableBluetoothAsync(isBluetoothEnabled: boolean): Promise<void>;
     getBondedPeripheralsAsync(): Promise<NativePeripheral[]>;
-    requestConnectionPriorityAsync(peripheralUUID: string, connectionPriority: number): Promise<any>;
+    requestConnectionPriorityAsync(peripheralUUID: string, connectionPriority: Priority): Promise<any>;
     observeBluetoothAvailabilty(callback: (updates: Central) => void): Subscription;
 };
 export { android };

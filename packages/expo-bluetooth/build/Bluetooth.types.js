@@ -1,3 +1,9 @@
+export var Priority;
+(function (Priority) {
+    Priority["High"] = "high";
+    Priority["LowPower"] = "lowPower";
+    Priority["Balanced"] = "balanced";
+})(Priority || (Priority = {}));
 export var CentralState;
 (function (CentralState) {
     CentralState["Unknown"] = "unknown";

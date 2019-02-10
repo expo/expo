@@ -299,6 +299,43 @@ public class Serialize {
     }
   }
 
+  public static String Priority_NativeToJSON(int input) {
+    switch (input) {
+      case BluetoothGatt.CONNECTION_PRIORITY_BALANCED:
+        /**
+         * Connection paramter update - Use the connection paramters recommended by the
+         * Bluetooth SIG. This is the default value if no connection parameter update
+         * is requested.
+         */
+        return BluetoothConstants.PRIORITY.BALANCED;
+      case BluetoothGatt.CONNECTION_PRIORITY_HIGH:
+        /**
+         * Connection paramter update - Request a high priority, low latency connection.
+         * An application should only request high priority connection paramters to transfer
+         * large amounts of data over LE quickly. Once the transfer is complete, the application
+         * should request {@link BluetoothGatt#CONNECTION_PRIORITY_BALANCED} connectoin parameters
+         * to reduce energy use.
+         */
+        return BluetoothConstants.PRIORITY.HIGH;
+      case BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER:
+        /** Connection paramter update - Request low power, reduced data rate connection parameters. */
+        return BluetoothConstants.PRIORITY.LOW_POWER;
+      default:
+        return "unknown";
+    }
+  }
+
+  public static int Priority_JSONToNative(String input) {
+    if (input.equals(BluetoothConstants.PRIORITY.BALANCED)) {
+      return BluetoothGatt.CONNECTION_PRIORITY_BALANCED;
+    } else if (input.equals(BluetoothConstants.PRIORITY.HIGH)) {
+      return BluetoothGatt.CONNECTION_PRIORITY_HIGH;
+    } else if (input.equals(BluetoothConstants.PRIORITY.LOW_POWER)) {
+      return BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER;
+    }
+    return -1;
+  }
+
   public static String Bonding_NativeToJSON(int input) {
     switch (input) {
       case BluetoothDevice.BOND_BONDED:

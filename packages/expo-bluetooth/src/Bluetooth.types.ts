@@ -1,3 +1,9 @@
+export enum Priority {
+  High = 'high',
+  LowPower = 'lowPower',
+  Balanced = 'balanced',
+}
+
 export enum CentralState {
   Unknown = 'unknown',
   Resetting = 'resetting',

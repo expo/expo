@@ -39,7 +39,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   public BluetoothGatt mGatt;
   public int advertisingRSSI;
   public int MTU;
-  Promise _didDisconnectPeripheralBlock;
+  private Promise _didDisconnectPeripheralBlock;
   HashMap<String, Promise> _didConnectPeripheralBlock = new HashMap<>();
   HashMap<String, Promise> _readValueBlocks = new HashMap<>();
   HashMap<String, Promise> _writeValueBlocks = new HashMap<>();
@@ -48,7 +48,6 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   Promise _readRSSIBlock;
   private ScanRecord advertisingData;
   private byte[] advertisingDataBytes;
-  private boolean connected = false;
 
   public Peripheral(BluetoothDevice device, int advertisingRSSI, byte[] scanRecord) {
     this.device = device;
@@ -135,10 +134,10 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   }
 
   public void connect(Promise promise, Activity activity) {
-    if (!connected) {
+    if (!isConnected()) {
       assignGATT(activity);
       if (_didConnectPeripheralBlock.containsKey(getID())) {
-        promise.reject(BluetoothConstants.ERRORS.GENERAL, "Running concurrent task: connect");
+        BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
         return;
       }
       _didConnectPeripheralBlock.put(getID(), promise);
@@ -203,16 +202,9 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
       return;
     }
 
-    // If the device already is disconnected. Then bail out.
-    if (!connected) {
-      promise.resolve(toJSON());
-      return;
-    }
-
     try {
       _didDisconnectPeripheralBlock = promise;
       disconnectGATT();
-//        sendDisconnectedEvent(null);
     } catch (Exception e) {
       promise.reject(e);
       //TODO: Bacon: Add more of a standard around errors
@@ -221,7 +213,6 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //
 //        BluetoothError.reject(_didDisconnectPeripheralBlock, e.getMessage());
       _didDisconnectPeripheralBlock = null;
-//        sendDisconnectedEvent(errorPayload);
       return;
     }
   }
@@ -271,7 +262,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   }
 
   public boolean isConnected() {
-    return connected;
+    return BluetoothModule.isDeviceConnected(getID());
   }
 
   public BluetoothDevice getDevice() {
@@ -320,7 +311,6 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 
     switch (newState) {
       case BluetoothProfile.STATE_CONNECTED:
-        connected = true;
         device.createBond();
 
         // Send Connection event
@@ -338,8 +328,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 
         break;
       case BluetoothProfile.STATE_DISCONNECTED:
-        if (connected) {
-          connected = false;
+        if (isConnected()) {
           disconnectGATT();
         }
         if (_didDisconnectPeripheralBlock != null) {
@@ -656,7 +645,8 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
       return;
     }
     if (_didDiscoverServicesBlock.containsKey(getID())) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Running concurrent task");
+      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
+
       return;
     }
     _didDiscoverServicesBlock.put(getID(), promise);
@@ -681,7 +671,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 
     String id = getID();
     if (_didRequestMTUBlock.containsKey(id)) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Running concurrent task");
+      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
     }
     if (mGatt.requestMtu(mtu)) {

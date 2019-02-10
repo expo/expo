@@ -63,6 +63,9 @@ export async function stopScanAsync() {
 export function observeUpdates(callback) {
     return addHandlerForKey('everything', callback);
 }
+export function observeScanningErrors(callback) {
+    return addHandlerForKey(EVENTS.CENTRAL_DID_STOP_SCANNING, callback);
+}
 export async function observeStateAsync(callback) {
     const central = await getCentralAsync();
     // Make the callback async so the subscription returns first.
@@ -345,6 +348,7 @@ addListener(({ data, event }) => {
         return;
     }
     switch (event) {
+        case EVENTS.CENTRAL_DID_STOP_SCANNING:
         case EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL:
         case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
             fireMultiEventHandlers(event, { peripheral });

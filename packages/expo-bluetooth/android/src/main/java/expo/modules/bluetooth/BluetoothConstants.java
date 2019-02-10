@@ -1,6 +1,14 @@
 package expo.modules.bluetooth;
 
+import android.bluetooth.BluetoothGatt;
+
 public class BluetoothConstants {
+
+  public interface PRIORITY {
+    String HIGH = "high";
+    String LOW_POWER = "lowPower";
+    String BALANCED = "balanced";
+  }
 
   public interface EVENTS {
     String CENTRAL_DID_UPDATE_STATE = "bluetoothCentralDidUpdateState";

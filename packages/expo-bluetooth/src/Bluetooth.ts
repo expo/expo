@@ -2,6 +2,7 @@ import { Platform, Subscription } from 'expo-core';
 
 import {
   Base64,
+  Priority,
   Central,
   CentralState,
   CharacteristicProperty,
@@ -123,6 +124,10 @@ export async function stopScanAsync(): Promise<void> {
 // Avoiding using "start" in passive method names
 export function observeUpdates(callback: (updates: any) => void): Subscription {
   return addHandlerForKey('everything', callback);
+}
+
+export function observeScanningErrors(callback: (updates: any) => void): Subscription {
+  return addHandlerForKey(EVENTS.CENTRAL_DID_STOP_SCANNING, callback);
 }
 
 export async function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription> {
@@ -468,7 +473,7 @@ const android = {
   },
   async requestConnectionPriorityAsync(
     peripheralUUID: UUID,
-    connectionPriority: number
+    connectionPriority: Priority
   ): Promise<any> {
     invariantAvailability('requestConnectionPriorityAsync');
     invariantUUID(peripheralUUID);
@@ -503,6 +508,7 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   }
 
   switch (event) {
+    case EVENTS.CENTRAL_DID_STOP_SCANNING:
     case EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL:
     case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
       fireMultiEventHandlers(event, { peripheral });
