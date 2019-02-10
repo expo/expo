@@ -70,7 +70,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   private BroadcastReceiver mBondingReceiver;
 
   private Permissions mPermissions;
-  private boolean isScanning = false;
 
   public BluetoothModule(Context context) {
     super(context);
@@ -219,11 +218,13 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   private boolean isScanning() {
-    return isScanning;
+    if (scanManager != null) {
+      return scanManager.isScanning;
+    }
+    return false;
   }
 
   private void createScanner() {
-    isScanning = false;
 
     BluetoothAdapter adapter = getBluetoothAdapter();
     if (adapter == null) {
@@ -234,32 +235,20 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       scanManager = null;
     }
 
-//    isScanning = true;
-    scanManager = new BluetoothScanManager(adapter, mModuleRegistry, new ScanCallback() {
+    scanManager = new BluetoothScanManager(adapter, mModuleRegistry, new PeripheralScanningDelegate() {
       @Override
-      public void onScanResult(final int callbackType, final ScanResult result) {
-        if (!isScanning()) {
-          return;
-        }
-        sendScanResult(result);
+      public void onPeripheralFound(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {
+        Peripheral peripheral = savePeripheral(device, RSSI, scanRecord);
+        Bundle output = new Bundle();
+        output.putInt(BluetoothConstants.JSON.RSSI, RSSI);
+        output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, peripheral.advertisementData());
+        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheral.toJSON());
+        output.putBundle(BluetoothConstants.JSON.CENTRAL, Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter(), isScanning()));
+        BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, output);
       }
 
       @Override
-      public void onBatchScanResults(final List<ScanResult> results) {
-        if (!isScanning()) {
-          return;
-        }
-        for (ScanResult result : results) {
-          sendScanResult(result);
-        }
-      }
-
-      @Override
-      public void onScanFailed(final int errorCode) {
-        isScanning = false;
-
-        BluetoothError error = BluetoothError.fromScanCallbackErrorCode(errorCode);
-
+      public void onPeripheralScanningError(BluetoothError error) {
         Bundle map = new Bundle();
         map.putBundle(BluetoothConstants.JSON.ERROR, error.toJSON());
         BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_DID_STOP_SCANNING, map);
@@ -268,30 +257,15 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     });
   }
 
-  private void sendScanResult(final ScanResult result) {
-    Peripheral peripheral = savePeripheral(result.getDevice(), result.getRssi(), result.getScanRecord());
-    Bundle output = new Bundle();
-    output.putInt(BluetoothConstants.JSON.RSSI, result.getRssi());
-    output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, peripheral.advertisementData());
-    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheral.toJSON());
-    output.putBundle(BluetoothConstants.JSON.CENTRAL, Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter(), isScanning));
-    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, output);
-  }
-
-
   private void onBluetoothAdapterStateChange(int state) {
     if (state == BluetoothAdapter.STATE_OFF) {
       removeAllCachedPeripherals();
       /** since we cleared all the peripherals, update the full state */
       emitState();
-      isScanning = false;
+      scanManager.stopScan();
     }
 
-    Bundle map = Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter(), isScanning);
-//    String stringState = Serialize.AdapterState_NativeToJSON(state);
-//    // TODO: Bacon: Is stringState not equal to existing state??
-//    map.putString("state", stringState);
-
+    Bundle map = Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter(), isScanning());
     Bundle output = new Bundle();
     output.putBundle(BluetoothConstants.JSON.CENTRAL, map);
     BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_DID_UPDATE_STATE, output);
@@ -454,7 +428,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     } else {
       Bundle output = new Bundle();
       BluetoothAdapter adapter = getBluetoothAdapter();
-      output.putBundle(BluetoothConstants.JSON.CENTRAL, Serialize.BluetoothAdapter_NativeToJSON(adapter, isScanning));
+      output.putBundle(BluetoothConstants.JSON.CENTRAL, Serialize.BluetoothAdapter_NativeToJSON(adapter, isScanning()));
       BluetoothModule.sendEvent(BluetoothConstants.EVENTS.ENABLE_BLUETOOTH, output);
     }
     promise.resolve(getBluetoothAdapter().isEnabled());
@@ -511,10 +485,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     removeAllCachedPeripherals();
 
-//    createScanner();
-    isScanning = true;
     scanManager.scan(serviceUUIDStrings, options);
-
     promise.resolve(null);
 
     // TODO: EMIT
@@ -530,7 +501,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       return;
     }
     BluetoothAdapter adapter = getBluetoothAdapter();
-    promise.resolve(Serialize.BluetoothAdapter_NativeToJSON(adapter, isScanning));
+    promise.resolve(Serialize.BluetoothAdapter_NativeToJSON(adapter, isScanning()));
   }
 
   // TODO: Bacon: Done!
@@ -694,39 +665,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     characteristic.getPeripheral().readCharacteristicAsync(characteristic, promise);
   }
 
-
-//  @ExpoMethod
-//  public void updateCharacteristicAsync(
-//      final Map<String, Object> options,
-//      final Promise promise
-//  ) {
-//    if (guardPeripheralAction(promise)) {
-//      return;
-//    }
-//    Peripheral peripheral = _getPeripheralOrReject((String) options.get(BluetoothConstants.JSON.PERIPHERAL_UUID), promise);
-//    if (peripheral == null) {
-//      return;
-//    }
-//
-//    peripheral.updateCharacteristicAsync(options, promise);
-//  }
-//
-//  @ExpoMethod
-//  public void updateDescriptorAsync(
-//      final Map<String, Object> options,
-//      final Promise promise
-//  ) {
-//    if (guardPeripheralAction(promise)) {
-//      return;
-//    }
-//    Peripheral peripheral = _getPeripheralOrReject((String) options.get(BluetoothConstants.JSON.PERIPHERAL_UUID), promise);
-//    if (peripheral == null) {
-//      return;
-//    }
-//
-//    peripheral.updateDescriptorAsync(options, promise);
-//  }
-
   @ExpoMethod
   public void disconnectPeripheralAsync(
       final String peripheralUUID,
@@ -861,76 +799,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     peripheral.retrieveServices(promise);
   }
 
-//  @ExpoMethod
-//  public void discoverAsync(
-//      final Map<String, Object> options,
-//      final Promise promise
-//  ) {
-//    if (guardPeripheralAction(promise)) {
-//      return;
-//    }
-//    String peripheralUUID = (String) options.get(BluetoothConstants.JSON.PERIPHERAL_UUID);
-//    Peripheral peripheral = _getPeripheralOrReject(peripheralUUID, promise);
-//    if (peripheral == null) {
-//      return;
-//    }
-//
-//    if (!options.containsKey(BluetoothConstants.JSON.SERVICE_UUID)) {
-//      peripheral.retrieveServices(promise);
-//      return;
-//    }
-//
-//    String serviceUUIDString = (String) options.get(BluetoothConstants.JSON.SERVICE_UUID);
-//    Service service = peripheral.getServiceOrReject(serviceUUIDString, promise);
-//    if (service == null) {
-//      return;
-//    }
-//
-//    if (!options.containsKey(BluetoothConstants.JSON.CHARACTERISTIC_UUID)) {
-//      promise.resolve(null);
-//
-//      //TODO: Bacon: Are these gotten automatically?
-//      Bundle output = new Bundle();
-//      Bundle peripheralData = peripheral.toJSON();
-//      output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheralData);
-//      output.putBundle(BluetoothConstants.JSON.SERVICE, service.toJSON());
-//      output.putString(BluetoothConstants.JSON.TRANSACTION_ID, service.transactionIdForOperation(BluetoothConstants.OPERATIONS.SCAN));
-//      BluetoothModule.sendEvent(BluetoothConstants.EVENTS.PERIPHERAL_DID_DISCOVER_SERVICES, output);
-//      return;
-//    }
-//
-//    String characteristicUUIDString = (String) options.get(BluetoothConstants.JSON.CHARACTERISTIC_UUID);
-//    Characteristic characteristic = peripheral.getCharacteristicOrReject(service, characteristicUUIDString, promise);
-//    if (characteristic == null) {
-//      return;
-//    }
-//
-//    if (!options.containsKey(BluetoothConstants.JSON.DESCRIPTOR_UUID)) {
-//      promise.resolve(null);
-//
-//      Bundle output = new Bundle();
-//      output.putString(BluetoothConstants.JSON.TRANSACTION_ID, characteristic.transactionIdForOperation(BluetoothConstants.OPERATIONS.SCAN));
-//      output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheral.toJSON());
-//      output.putBundle(BluetoothConstants.JSON.SERVICE, service.toJSON());
-//      BluetoothModule.sendEvent(BluetoothConstants.EVENTS.PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE, output);
-//      return;
-//    }
-//
-//    String descriptorUUIDString = (String) options.get(BluetoothConstants.JSON.DESCRIPTOR_UUID);
-//    Descriptor descriptor = peripheral.getDescriptorOrReject(characteristic, descriptorUUIDString, promise);
-//    if (descriptor == null) {
-//      return;
-//    }
-//    promise.resolve(null);
-//
-//
-//    Bundle output = new Bundle();
-//    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, descriptor.transactionIdForOperation(BluetoothConstants.OPERATIONS.SCAN));
-//    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheral.toJSON());
-//    output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, characteristic.toJSON());
-//    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.PERIPHERAL_DID_DISCOVER_DESCRIPTORS_FOR_CHARACTERISTIC, output);
-//  }
-
   private List<Peripheral> peripheralsFromDevices(List<BluetoothDevice> devices) {
     ArrayList bonded = new ArrayList<>();
     for (BluetoothDevice device : devices) {
@@ -951,15 +819,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         }
       }
     }
-  }
-
-  // TODO: Bacon: is this needed?
-  private boolean guardBluetoothScanning(Promise promise) {
-    if (scanManager == null) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Bluetooth scanning is not ready yet: Maybe you forgot to call initializeManagerAsync()");
-      return true;
-    }
-    return false;
   }
 
   private boolean isBluetoothAvailable() {
@@ -1082,7 +941,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       Bundle output = new Bundle();
       if (resultCode == RESULT_OK) {
         BluetoothAdapter adapter = getBluetoothAdapter();
-        output.putBundle(BluetoothConstants.JSON.CENTRAL, Serialize.BluetoothAdapter_NativeToJSON(adapter, isScanning));
+        output.putBundle(BluetoothConstants.JSON.CENTRAL, Serialize.BluetoothAdapter_NativeToJSON(adapter, isScanning()));
       } else {
         output.putBundle(BluetoothConstants.JSON.ERROR, buildError("User denied enable request"));
       }

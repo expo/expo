@@ -1,8 +1,11 @@
 package expo.modules.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanRecord;
+import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,29 +21,68 @@ import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.interfaces.services.UIManager;
 import expo.modules.bluetooth.helpers.UUIDHelper;
+import expo.modules.bluetooth.objects.Peripheral;
+
+interface PeripheralScanningDelegate {
+  void onPeripheralFound(BluetoothDevice device, int RSSI, ScanRecord scanRecord);
+
+  void onPeripheralScanningError(BluetoothError error);
+}
 
 public class BluetoothScanManager {
 
   protected BluetoothAdapter adapter;
   protected ModuleRegistry moduleRegistry;
-  protected AtomicInteger scanSessionId = new AtomicInteger();
-  private ScanCallback mScanCallback;
+  protected boolean isScanning = false;
+  PeripheralScanningDelegate mDelegate;
+  private ScanCallback mScanCallback = new ScanCallback() {
+    @Override
+    public void onScanResult(int callbackType, ScanResult result) {
+      super.onScanResult(callbackType, result);
+      if (!isScanning) {
+        return;
+      }
+      sendScanResult(result);
+    }
 
-  public BluetoothScanManager(BluetoothAdapter adapter, ModuleRegistry moduleRegistry, ScanCallback scanCallback) {
+    @Override
+    public void onBatchScanResults(List<ScanResult> results) {
+      super.onBatchScanResults(results);
+      if (!isScanning) {
+        return;
+      }
+      for (ScanResult result : results) {
+        sendScanResult(result);
+      }
+    }
+
+    @Override
+    public void onScanFailed(int errorCode) {
+      super.onScanFailed(errorCode);
+      isScanning = false;
+
+      BluetoothError error = BluetoothError.fromScanCallbackErrorCode(errorCode);
+
+      if (mDelegate != null) {
+        mDelegate.onPeripheralScanningError(error);
+      }
+    }
+  };
+
+  public BluetoothScanManager(BluetoothAdapter adapter, ModuleRegistry moduleRegistry, PeripheralScanningDelegate delegate) {
     this.adapter = adapter;
     this.moduleRegistry = moduleRegistry;
-    this.mScanCallback = scanCallback;
+    mDelegate = delegate;
   }
 
-  public void clear() {
-    stopScan();;
-    mScanCallback = null;
-    scanSessionId = null;
+  private void sendScanResult(final ScanResult result) {
+    if (mDelegate != null) {
+      mDelegate.onPeripheralFound(result.getDevice(), result.getRssi(), result.getScanRecord());
+    }
   }
 
   public void stopScan() {
-    // update scanSessionId to prevent stopping next scan by running timeout thread
-    scanSessionId.incrementAndGet();
+    isScanning = false;
     adapter.getBluetoothLeScanner().stopScan(mScanCallback);
   }
 
@@ -70,6 +112,7 @@ public class BluetoothScanManager {
       }
     }
 
+    isScanning = true;
     adapter
         .getBluetoothLeScanner()
         .startScan(

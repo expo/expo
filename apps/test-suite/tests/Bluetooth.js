@@ -154,6 +154,7 @@ export async function test({
   const central = await Bluetooth.getCentralAsync();
   console.log("CENTRAL", central);
   const stopScanning = await Bluetooth.startScanningAsync({}, async (props) => {
+    console.log("BEFORE CENTRAL:", await Bluetooth.getCentralAsync());
     console.log("FOUND", props);
     await stopScanning();
     const central = await Bluetooth.getCentralAsync();
