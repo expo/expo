@@ -150,19 +150,17 @@ export async function test({
 }) {
   await Permissions.askAsync(Permissions.LOCATION);
 
+  // const central = await Bluetooth.getCentralAsync();
+  // console.log("CENTRAL", central);
+  // const stopScanning = await Bluetooth.startScanningAsync({}, async (props) => {
+  //   console.log("BEFORE CENTRAL:", await Bluetooth.getCentralAsync());
+  //   console.log("FOUND", props);
+  //   await stopScanning();
+  //   const central = await Bluetooth.getCentralAsync();
+  //   console.log("STOPPED CENTRAL:", central);
+  // });
 
-  const central = await Bluetooth.getCentralAsync();
-  console.log("CENTRAL", central);
-  const stopScanning = await Bluetooth.startScanningAsync({}, async (props) => {
-    console.log("BEFORE CENTRAL:", await Bluetooth.getCentralAsync());
-    console.log("FOUND", props);
-    await stopScanning();
-    const central = await Bluetooth.getCentralAsync();
-    console.log("STOPPED CENTRAL:", central);
-  });
-
-
-  return;
+  // return;
   async function clearAllConnections() {
     try {
       const connected = await Bluetooth.getConnectedPeripheralsAsync();
@@ -232,12 +230,12 @@ export async function test({
   }
 
   describe('1. Scanning', () => {
-    // beforeEach(async () => {
-    //   await Bluetooth.stopScanAsync();
-    // });
+    beforeEach(async () => {
+      await Bluetooth.stopScanAsync();
+    });
 
     describe('startScanAsync', () => {
-      xit(`throws an error when the device is already scanning.`, async () => {
+      it(`throws an error when the device is already scanning.`, async () => {
         expect(await Bluetooth.isScanningAsync()).toBe(false);
         await Bluetooth.startScanningAsync({}, () => {});
         const error = toThrowAsync(() => Bluetooth.startScanningAsync({}, () => {}));
@@ -245,7 +243,7 @@ export async function test({
       });
 
       // TODO: Bacon: Broken on Android.
-      xit('can stop scanning with the returned function.', async () => {
+      it('can stop scanning with the returned function.', async () => {
         let isScanning = await Bluetooth.isScanningAsync();
         expect(typeof isScanning).toBe('boolean');
         const stopScan = await Bluetooth.startScanningAsync({}, async () => {});
