@@ -64,16 +64,16 @@ public class BluetoothConstants {
     String CHARACTERISTIC_PROPERTIES = "characteristicProperties";
     String INCLUDED_SERVICES_UUIDS = "includedServicesUUIDs";
 
-
+    String BOND_STATE = "bondState";
     String RSSI = "RSSI";
     String ADVERTISEMENT_DATA = "advertisementData";
   }
 
   public interface BONDING {
-    String BONDED = "BONDED";
-    String BONDING = "BONDING";
-    String UNKNOWN = "UNKNOWN";
-    String NONE = "NONE";
+    String BONDED = "bonded";
+    String BONDING = "bonding";
+    String UNKNOWN = "unknown";
+    String NONE = "none";
   }
 
   public interface OPERATIONS {

@@ -83,4 +83,11 @@ export var Permissions;
     /* Writeable by trusted devices. */
     Permissions["WriteEncryptionRequired"] = "WriteEncryptionRequired";
 })(Permissions || (Permissions = {}));
+export var BondState;
+(function (BondState) {
+    BondState["Bonded"] = "bonded";
+    BondState["Bonding"] = "bonding";
+    BondState["Unknown"] = "unknown";
+    BondState["None"] = "none";
+})(BondState || (BondState = {}));
 //# sourceMappingURL=Bluetooth.types.js.map

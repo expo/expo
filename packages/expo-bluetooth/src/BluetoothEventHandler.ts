@@ -20,6 +20,17 @@ export function firePeripheralObservers() {
   }
 }
 
+export function fireSingleEventHandlers(
+  event: string,
+  { central, peripheral }: { central?: Central | null; peripheral?: NativePeripheral | null }
+) {
+  ensureKey(event);
+  for (const callback of multiEventHandlers[event]) {
+    callback({ central, peripheral });
+  }
+  resetHandlersForKey(event);
+}
+
 export function fireMultiEventHandlers(
   event: string,
   { central, peripheral }: { central?: Central | null; peripheral?: NativePeripheral | null }
@@ -64,6 +75,25 @@ export function addHandlerForKey(key: string, callback: (updates: any) => void):
       const index = multiEventHandlers[key].indexOf(callback);
       if (index != -1) {
         multiEventHandlers[key].splice(index, 1);
+      }
+    },
+  };
+}
+
+export function addHandlerForID(
+  key: string,
+  id: string,
+  callback: (updates: any) => void
+): Subscription {
+  const _key = `${key}_${id}`;
+  ensureKey(_key);
+  multiEventHandlers[_key].push(callback);
+
+  return {
+    remove() {
+      const index = multiEventHandlers[_key].indexOf(callback);
+      if (index != -1) {
+        multiEventHandlers[_key].splice(index, 1);
       }
     },
   };

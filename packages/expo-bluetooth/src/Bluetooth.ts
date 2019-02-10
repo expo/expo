@@ -28,7 +28,9 @@ import {
   addHandlerForKey,
   addListener,
   fireMultiEventHandlers,
+  fireSingleEventHandlers,
   firePeripheralObservers,
+  addHandlerForID,
   getHandlersForKey,
   resetHandlersForKey,
   _resetAllHandlers,
@@ -143,7 +145,7 @@ export async function connectAsync(
 
   const { onDisconnect } = options;
   if (onDisconnect) {
-    addHandlerForKey(EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL, onDisconnect);
+    addHandlerForID(EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL, peripheralUUID, onDisconnect);
   }
 
   let timeoutTag: number | undefined;
@@ -304,7 +306,8 @@ export async function getCentralAsync(): Promise<any> {
 }
 
 export async function isScanningAsync(): Promise<any> {
-  const { isScanning } = await getCentralAsync();
+  const { isScanning, ...props } = await getCentralAsync();
+  console.log('central', isScanning, props);
   return isScanning;
 }
 
@@ -503,6 +506,11 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
     case EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL:
     case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
       fireMultiEventHandlers(event, { peripheral });
+      if (peripheral) {
+        // Send specific events for things like disconnect.
+        const uid = `${event}_${peripheral.id}`;
+        fireSingleEventHandlers(uid, { peripheral });
+      }
       firePeripheralObservers();
       return;
     case EVENTS.CENTRAL_DID_UPDATE_STATE:

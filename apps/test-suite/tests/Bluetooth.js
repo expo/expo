@@ -150,6 +150,18 @@ export async function test({
 }) {
   await Permissions.askAsync(Permissions.LOCATION);
 
+
+  const central = await Bluetooth.getCentralAsync();
+  console.log("CENTRAL", central);
+  const stopScanning = await Bluetooth.startScanningAsync({}, async (props) => {
+    console.log("FOUND", props);
+    await stopScanning();
+    const central = await Bluetooth.getCentralAsync();
+    console.log("STOPPED CENTRAL:", central);
+  });
+
+
+  return;
   async function clearAllConnections() {
     try {
       const connected = await Bluetooth.getConnectedPeripheralsAsync();
@@ -219,12 +231,12 @@ export async function test({
   }
 
   describe('1. Scanning', () => {
-    beforeEach(async () => {
-      await Bluetooth.stopScanAsync();
-    });
+    // beforeEach(async () => {
+    //   await Bluetooth.stopScanAsync();
+    // });
 
     describe('startScanAsync', () => {
-      it(`throws an error when the device is already scanning.`, async () => {
+      xit(`throws an error when the device is already scanning.`, async () => {
         expect(await Bluetooth.isScanningAsync()).toBe(false);
         await Bluetooth.startScanningAsync({}, () => {});
         const error = toThrowAsync(() => Bluetooth.startScanningAsync({}, () => {}));
@@ -232,7 +244,7 @@ export async function test({
       });
 
       // TODO: Bacon: Broken on Android.
-      it('can stop scanning with the returned function.', async () => {
+      xit('can stop scanning with the returned function.', async () => {
         let isScanning = await Bluetooth.isScanningAsync();
         expect(typeof isScanning).toBe('boolean');
         const stopScan = await Bluetooth.startScanningAsync({}, async () => {});
@@ -242,7 +254,7 @@ export async function test({
       });
     });
 
-    describe('stopScanAsync', () => {
+    xdescribe('stopScanAsync', () => {
       it(`correctly works with isScanningAsync()`, async () => {
         expect(await Bluetooth.isScanningAsync()).toBe(false);
         await Bluetooth.startScanningAsync({}, () => {});
@@ -253,7 +265,9 @@ export async function test({
     });
   });
 
-  describe('2. Connecting', async () => {
+  return;
+
+  xdescribe('2. Connecting', async () => {
     beforeEach(async () => {
       await Bluetooth.stopScanAsync();
       await clearAllConnections();
@@ -314,7 +328,7 @@ export async function test({
     });
   });
 
-  describe('3. Retrieving', () => {
+  xdescribe('3. Retrieving', () => {
     it('getPeripheralsAsync', async () => {
       const arr = await Bluetooth.getPeripheralsAsync();
       expect(Array.isArray(arr)).toBe(true);
@@ -333,7 +347,7 @@ export async function test({
     });
   });
 
-  describe('4. RSSI - readRSSIAsync()', () => {
+  xdescribe('4. RSSI - readRSSIAsync()', () => {
     rejectsInvalidPeripheralUUID(Bluetooth.readRSSIAsync);
 
     it('fails if the peripheral is not connected.', async () => {
@@ -358,7 +372,7 @@ export async function test({
     });
   });
 
-  describe('5. Observing', () => {
+  xdescribe('5. Observing', () => {
     describe('observeUpdates()', () => {
       it('will be called with all of the current peripheral data.', async () => {
         function getsUpdated() {
@@ -408,7 +422,7 @@ export async function test({
   //     });
   //   });
 
-  describe('6. Discovery', () => {
+  xdescribe('6. Discovery', () => {
     describe('discoverServicesForPeripheralAsync()', async () => {
       it(`discovers, then connects to a peripheral, the peripheral then discovers it's services.`, async () => {
         const connectedPeripheral = await getConnectedPeripheralAsync();
@@ -523,7 +537,7 @@ export async function test({
     return specialCharacteristics;
   }
 
-  describe('7. Writing', () => {
+  xdescribe('7. Writing', () => {
     // TODO: Bacon: This isn't complete
     xit('writeDescriptorAsync()', async () => {
       const loadedPeripheral = await getLoadedPeripheralAsync();

@@ -1,6 +1,6 @@
 import { CharacteristicProperty, } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
-import { addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, getHandlersForKey, resetHandlersForKey, _resetAllHandlers, } from './BluetoothEventHandler';
+import { addHandlerForKey, addListener, fireMultiEventHandlers, fireSingleEventHandlers, firePeripheralObservers, addHandlerForID, getHandlersForKey, resetHandlersForKey, _resetAllHandlers, } from './BluetoothEventHandler';
 import { invariantAvailability, invariantUUID } from './BluetoothInvariant';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
 import { peripheralIdFromId } from './BluetoothTransactions';
@@ -74,7 +74,7 @@ export async function connectAsync(peripheralUUID, options = {}) {
     invariantUUID(peripheralUUID);
     const { onDisconnect } = options;
     if (onDisconnect) {
-        addHandlerForKey(EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL, onDisconnect);
+        addHandlerForID(EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL, peripheralUUID, onDisconnect);
     }
     let timeoutTag;
     return new Promise(async (resolve, reject) => {
@@ -187,7 +187,8 @@ export async function getCentralAsync() {
     return await ExpoBluetooth.getCentralAsync();
 }
 export async function isScanningAsync() {
-    const { isScanning } = await getCentralAsync();
+    const { isScanning, ...props } = await getCentralAsync();
+    console.log('central', isScanning, props);
     return isScanning;
 }
 // TODO: Bacon: Add serviceUUIDs
@@ -347,6 +348,11 @@ addListener(({ data, event }) => {
         case EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL:
         case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
             fireMultiEventHandlers(event, { peripheral });
+            if (peripheral) {
+                // Send specific events for things like disconnect.
+                const uid = `${event}_${peripheral.id}`;
+                fireSingleEventHandlers(uid, { peripheral });
+            }
             firePeripheralObservers();
             return;
         case EVENTS.CENTRAL_DID_UPDATE_STATE:

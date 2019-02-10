@@ -15,6 +15,7 @@ import android.os.ParcelUuid;
 import android.util.Base64;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import expo.core.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.BluetoothError;
 import expo.modules.bluetooth.BluetoothModule;
+import expo.modules.bluetooth.Serialize;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 
 
@@ -99,6 +101,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     output.putString(BluetoothConstants.JSON.UUID, getID());
     output.putString(BluetoothConstants.JSON.STATE, isConnected() ? "connected" : "disconnected");
     output.putInt(BluetoothConstants.JSON.RSSI, advertisingRSSI);
+    output.putString(BluetoothConstants.JSON.BOND_STATE, Serialize.bondingState_NativeToJSON(getBondState()));
     output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, advertisementData());
 
     if (mGatt != null) {
@@ -147,6 +150,10 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     }
   }
 
+  public int getBondState() {
+    return device.getBondState();
+  }
+
   private void assignGATT(Activity activity) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       mGatt = device.connectGatt(activity, false, this);
@@ -189,33 +196,33 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     }
   }
 
+
   // TODO: Bacon: Is this overriding the StateChange method
   public void disconnect(Promise promise) {
-    connected = false;
-    if (mGatt != null) {
-      try {
-        _didDisconnectPeripheralBlock = promise;
-        disconnectGATT();
-//        sendDisconnectedEvent(null);
-      } catch (Exception e) {
+    if (guardGATT(promise)) {
+      return;
+    }
 
-        promise.reject(e);
-        //TODO: Bacon: Add more of a standard around errors
+    // If the device already is disconnected. Then bail out.
+    if (!connected) {
+      promise.resolve(toJSON());
+      return;
+    }
+
+    try {
+      _didDisconnectPeripheralBlock = promise;
+      disconnectGATT();
+//        sendDisconnectedEvent(null);
+    } catch (Exception e) {
+      promise.reject(e);
+      //TODO: Bacon: Add more of a standard around errors
 //        Bundle errorPayload = new Bundle();
 //        errorPayload.putString(BluetoothConstants.JSON.MESSAGE, e.getMessage());
 //
 //        BluetoothError.reject(_didDisconnectPeripheralBlock, e.getMessage());
-        _didDisconnectPeripheralBlock = null;
-//        sendDisconnectedEvent(errorPayload);
-        return;
-      }
-    } else {
-      Bundle output = new Bundle();
-      output.putString("status", "unavailable");
-      promise.resolve(output);
       _didDisconnectPeripheralBlock = null;
-//      BluetoothError.reject(_didDisconnectPeripheralBlock, BluetoothConstants.ERRORS.GENERAL);
-      Log.d(BluetoothConstants.ERRORS.GENERAL, "GATT is null");
+//        sendDisconnectedEvent(errorPayload);
+      return;
     }
   }
 

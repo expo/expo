@@ -133,6 +133,7 @@ export interface NativePeripheral extends NativeBluetoothElement {
     /**
      * **Android**
      */
+    bondState?: BondState;
     discoveryTimestamp?: number;
 }
 export declare type PeripheralFoundCallback = (peripheral: NativePeripheral) => void;
@@ -142,6 +143,12 @@ export declare type ScanSettings = {
     scanningOptions?: any;
     callback?: PeripheralFoundCallback;
 };
+export declare enum BondState {
+    Bonded = "bonded",
+    Bonding = "bonding",
+    Unknown = "unknown",
+    None = "none"
+}
 export interface Central {
     state: CentralState;
     isScanning: boolean;

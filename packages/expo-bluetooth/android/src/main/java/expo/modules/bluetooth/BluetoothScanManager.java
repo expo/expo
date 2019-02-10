@@ -44,7 +44,7 @@ public class BluetoothScanManager {
     adapter.getBluetoothLeScanner().stopScan(mScanCallback);
   }
 
-  public void scan(ArrayList serviceUUIDs, final int timeout, Map<String, Object> options, Promise callback) {
+  public void scan(ArrayList serviceUUIDs, Map<String, Object> options) {
     ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
     List<ScanFilter> filters = new ArrayList<>();
 
@@ -76,40 +76,5 @@ public class BluetoothScanManager {
             filters,
             scanSettingsBuilder.build(),
             mScanCallback);
-
-    if (timeout > 0) {
-      Thread thread = new Thread() {
-        private int currentScanSession = scanSessionId.incrementAndGet();
-
-        @Override
-        public void run() {
-          try {
-            Thread.sleep(timeout);
-          } catch (InterruptedException ignored) {
-
-          }
-
-          moduleRegistry.getModule(UIManager.class).runOnUiQueueThread(new Runnable() {
-            @Override
-            public void run() {
-
-              // check current scan session was not stopped
-              if (scanSessionId.intValue() == currentScanSession) {
-                if (adapter.getState() == BluetoothAdapter.STATE_ON) {
-                  adapter.getBluetoothLeScanner().stopScan(mScanCallback);
-                }
-                Bundle map = new Bundle();
-                // TODO: Bacon: I don't think this can fail, so maybe it doesn't matter
-                BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_DID_STOP_SCANNING, map);
-              }
-            }
-          });
-        }
-      };
-      thread.start();
-    }
-    callback.resolve(null);
   }
-
-
 }
