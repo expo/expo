@@ -1,6 +1,8 @@
 package expo.modules.bluetooth;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.le.ScanCallback;
 import android.os.Bundle;
 
 import expo.core.Promise;
@@ -18,6 +20,23 @@ public class BluetoothError {
   public String serviceUUID;
   public String characteristicUUID;
   public String descriptorUUID;
+
+
+  public static BluetoothError fromScanCallbackErrorCode(int errorCode) {
+    switch (errorCode) {
+      case ScanCallback.SCAN_FAILED_ALREADY_STARTED:
+        return SCAN_REDUNDANT_INIT();
+      case ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED:
+        return APP_REGISTRATION();
+      case ScanCallback.SCAN_FAILED_INTERNAL_ERROR:
+        return SCAN_INTERNAL();
+      case ScanCallback.SCAN_FAILED_FEATURE_UNSUPPORTED:
+        return BLE_UNSUPPORTED();
+      default:
+        return UNKOWN();
+    }
+  }
+
 
   public BluetoothError(String code, String message) {
     this.code = code;
@@ -47,7 +66,34 @@ public class BluetoothError {
     return output;
   }
 
+  public static final BluetoothError UNKOWN() {
+    return new BluetoothError("ERR_UNKNOWN", "An unknown error has occurred.");
+  }
+
+
+  public static final BluetoothError BLE_UNSUPPORTED() {
+    return new BluetoothError("ERR_BLE_UNSUPPORTED", "Failed to start power optimized scan as this feature is not supported.");
+  }
+
+  public static final BluetoothError SCAN_INTERNAL() {
+    return new BluetoothError("ERR_SCAN_INTERNAL", "Failed to start scan due to an internal error.");
+  }
+
+  public static final BluetoothError SCAN_REDUNDANT_INIT() {
+    return new BluetoothError("ERR_SCAN_REDUNDANT_INIT", "Failed to start scan because a BLE scan with the same settings is already started by the app.");
+  }
+
+  public static final BluetoothError APP_REGISTRATION() {
+    return new BluetoothError("ERR_APP_REGISTRATION", "Failed to start scan because the app couldn't be registered.");
+  }
+
+
+
   public class Codes {
+
+
+    public static final String UNKNOWN = "ERR_UNKNOWN";
+
     public static final String PLACEHOLDER = "ERR_BLUETOOTH";
 
     public static final String NO_PERIPHERAL = "ERR_NO_PERIPHERAL";
@@ -59,6 +105,8 @@ public class BluetoothError {
   }
 
   public class Messages {
+    public static final String UNKNOWN = "An unknown error has occurred.";
+
     public static final String PLACEHOLDER = "An unknown error has occurred";
     public static final String NO_PERIPHERAL = "ERR_NO_PERIPHERAL";
     public static final String NO_SERVICE = "ERR_NO_SERVICE";

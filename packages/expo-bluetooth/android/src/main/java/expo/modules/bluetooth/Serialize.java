@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanSettings;
 import android.os.Build;
 import android.os.Bundle;
@@ -255,9 +256,11 @@ public class Serialize {
 
     Bundle map = new Bundle();
 
+
     // Parity
     map.putString("state", Serialize.AdapterState_NativeToJSON(input.getState()));
     map.putBoolean("isDiscovering", input.isDiscovering());
+    map.putBoolean("isDiscoverable", input.getScanMode() == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE);
 
     // Android only
     map.putBoolean("isOffloadedScanBatchingSupported", input.isOffloadedScanBatchingSupported());

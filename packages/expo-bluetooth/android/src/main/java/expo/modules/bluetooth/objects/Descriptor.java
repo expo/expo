@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import java.util.UUID;
 
+import expo.core.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.BluetoothModule;
 import expo.modules.bluetooth.Serialize;
@@ -41,6 +42,17 @@ public class Descriptor extends EXBluetoothChildObject {
     return (BluetoothGattDescriptor) getNativeData();
   }
 
+  public boolean setShouldNotifiy(boolean enable, final Promise promise) {
+    if (getPeripheral().mGatt != null) {
+      if (enable) {
+        getDescriptor().setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+      } else {
+        getDescriptor().setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+      }
+      return getPeripheral().mGatt.writeDescriptor(getDescriptor());
+    }
+    return false;
+  }
 
   public boolean setValue(byte[] data) {
     return getDescriptor().setValue(data);

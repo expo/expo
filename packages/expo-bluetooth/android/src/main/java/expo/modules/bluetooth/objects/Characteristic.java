@@ -89,6 +89,4 @@ public class Characteristic extends EXBluetoothChildObject {
 //    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE, output);
     promise.resolve(output);
   }
-
-
 }
