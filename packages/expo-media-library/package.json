@@ -14,15 +14,27 @@
   },
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "media",
+    "library",
+    "cameraroll",
+    "photos",
+    "videos"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-media-library",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "homepage": "https://docs.expo.io/",
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-errors": "~1.0.0",
     "expo-permissions-interface": "~2.0.0"

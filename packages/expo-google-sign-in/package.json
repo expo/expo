@@ -21,24 +21,30 @@
     "sign-in",
     "oauth"
   ],
-  "homepage": "https://docs.expo.io/",
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "contributors": [
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
-  "readmeFilename": "README.md",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-google-sign-in",
   "jest": {
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
     "react-native": "^0.55.4",
     "expo-constants": "~2.0.0",
-    "expo-core": "~2.0.0"
+    "expo-core": "~2.0.0",
+    "expo-errors": "~1.0.0"
   },
   "dependencies": {
-    "invariant": "^2.2.4",
-    "expo-errors": "~1.0.0"
+    "invariant": "^2.2.4"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

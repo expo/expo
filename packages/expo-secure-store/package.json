@@ -15,11 +15,16 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-secure-store"
+    "expo-secure-store",
+    "secure",
+    "store"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -27,7 +32,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {},
   "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-errors": "~1.0.0"
