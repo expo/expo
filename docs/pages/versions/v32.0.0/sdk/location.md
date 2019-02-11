@@ -36,7 +36,7 @@ Get the current position of the device.
 #### Arguments
 
 -   **options : `object`** -- A map of options:
-    -   **accuracy : `[Location.Accuracy](#expolocationaccuracy)`** -- Location manager accuracy. Pass one of [Location.Accuracy](#expolocationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+    -   **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
     -   **maximumAge : `number`** -- (Android only). If specified, allow returning a previously cached position that is at most this old in milliseconds. If not specified, always gets a new location. On iOS this option is ignored and a new location is always returned.
 
 #### Returns
@@ -45,12 +45,12 @@ Returns a promise resolving to an object representing [Location](#typelocation) 
 
 ### `Location.watchPositionAsync(options, callback)`
 
-Subscribe to location updates from the device. Please note that updates will only occur while the application is in the foreground. To get location updates while in background you'll need to use [`Location.startLocationUpdatesAsync`](#expolocationstartlocationupdatesasync).
+Subscribe to location updates from the device. Please note that updates will only occur while the application is in the foreground. To get location updates while in background you'll need to use [Location.startLocationUpdatesAsync](#locationstartlocationupdatesasync).
 
 #### Arguments
 
 -   **options : `object`** -- A map of options:
-    -   **accuracy (_[Location.Accuracy](#expolocationaccuracy)_** -- Location manager accuracy. Pass one of [Location.Accuracy](#expolocationaccuracy) enum values. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+    -   **accuracy (_[Location.Accuracy](#locationaccuracy)_)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
     -   **timeInterval : `number`** -- Minimum time to wait between each update in milliseconds.
     -   **distanceInterval : `number`** -- Receive updates only when the location has changed by at least this distance in meters.
 
@@ -72,7 +72,7 @@ Check status of location providers.
 
 Returns a promise resolving to an object with the following fields:
 
--   **locationServicesEnabled : `boolean`** -- Whether location services are enabled. See [Location.hasServicesEnabledAsync](#expolocationhasservicesenabledasync) for a more convenient solution to get this value.
+-   **locationServicesEnabled : `boolean`** -- Whether location services are enabled. See [Location.hasServicesEnabledAsync](#locationhasservicesenabledasync) for a more convenient solution to get this value.
 -   **gpsAvailable : `boolean`** (android only) -- If the GPS provider is available, if yes, location data will be from GPS.
 -   **networkAvailable : `boolean`** (android only) -- If the network provider is available, if yes, location data will be from cellular network.
 -   **passiveAvailable : `boolean`** (android only) -- If the passive provider is available, if yes, location data will be determined passively.
@@ -178,7 +178,7 @@ Polyfills `navigator.geolocation` for interop with the core React Native and Web
 
 Background Location API can notify your app about new locations, also while it's in background. There are some requirements in order to use Background Location API:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [`Permissions.LOCATION`](../permissions#expopermissionslocation) for more details.
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions#permissionslocation) for more details.
 - `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (*iOS only*)
 - Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
 
@@ -190,7 +190,7 @@ Registers for receiving location updates that can also come when the app is in t
 
 -   **taskName : `string`** -- Name of the task receiving location updates.
 -   **options : `object`** -- An object of options passed to the location manager.
-    -   **accuracy : `[Location.Accuracy](#expolocationaccuracy)`** -- Location manager accuracy. Pass one of [Location.Accuracy](#expolocationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+    -   **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
     -   **timeInterval : `number`** -- Minimum time to wait between each update in milliseconds. Default value depends on `accuracy` option. (**Android only**)
     -   **distanceInterval : `number`** -- Receive updates only when the location has changed by at least this distance in meters. Default value may depend on `accuracy` option.
     -   **showsBackgroundLocationIndicator : `boolean`** -- A boolean indicating whether the status bar changes its appearance when location services are used in the background. Defaults to `false`. (**Takes effect only on iOS 11.0 and later**)
@@ -203,7 +203,7 @@ A promise resolving once the task with location updates is registered.
 
 Background location task will be receiving following data:
 
--   **locations : `Array&lt;[Location](#typelocation)&gt;`** - An array of the new locations.
+-   **locations : [Location](#typelocation)[]** - An array of the new locations.
 
 ```javascript
 import { TaskManager } from 'expo';
@@ -244,9 +244,9 @@ A promise resolving to boolean value indicating whether the location task is sta
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
 To make it work in the background, it uses [TaskManager](../task-manager) Native API under the hood. There are some requirements in order to use Geofencing API:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [`Permissions.LOCATION`](../permissions#expopermissionslocation) for more details.
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions#permissionslocation) for more details.
 - `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (*iOS only*)
-- Geofencing task must be defined in the top-level scope, using [`TaskManager.defineTask`](../task-manager#taskmanagerdefinetasktaskname-task).
+- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
 
 ### `Location.startGeofencingAsync(taskName, regions)`
 
@@ -271,8 +271,8 @@ A promise resolving as soon as the task is registered.
 #### Task parameters
 
 Geofencing task will be receiving following data:
--   **eventType : `[Location.GeofencingEventType](#expolocationgeofencingeventtype)`** -- Indicates the reason for calling the task, which can be triggered by entering or exiting the region. See [Location.GeofencingEventType](#expolocationgeofencingeventtype).
--   **region : `[Region](#typeregion)`** -- Object containing details about updated region. See [Region](#typeregion) for more details.
+-   **eventType : [Location.GeofencingEventType](#locationgeofencingeventtype)** -- Indicates the reason for calling the task, which can be triggered by entering or exiting the region. See [Location.GeofencingEventType](#locationgeofencingeventtype).
+-   **region : [Region](#typeregion)** -- Object containing details about updated region. See [Region](#typeregion) for more details.
 
 ```javascript
 import { Location, TaskManager } from 'expo';
@@ -336,7 +336,7 @@ Object of type `Region` includes following fields:
 -   **latitude : `number`** -- The latitude in degress of region's center point.
 -   **longitude : `number`** -- The longitude in degress of region's center point.
 -   **radius : `number`** -- The radius measured in meters that defines the region's outer boundary.
--   **state : `[Location.GeofencingRegionState](#expolocationgeofencingregionstate)`** -- One of [Location.GeofencingRegionState](#expolocationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
+-   **state : [Location.GeofencingRegionState](#locationgeofencingregionstate)** -- One of [Location.GeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
 
 ## Enums
 
