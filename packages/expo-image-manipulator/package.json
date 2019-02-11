@@ -22,10 +22,12 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-image-manipulator",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {},
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-image-manipulator",
   "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-errors": "~1.0.0",

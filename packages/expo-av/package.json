@@ -9,7 +9,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -24,11 +23,11 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "author": "Expo",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-av",
   "peerDependencies": {
     "expo-core": "~1.2.0"

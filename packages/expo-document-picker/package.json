@@ -23,9 +23,12 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-document-picker",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-document-picker",
   "jest": {
     "preset": "expo-module-scripts"
   },
