@@ -8,7 +8,7 @@
   "scripts": {
     "web:https": "webpack-dev-server -d --config ./webpack.dev.js --https",
     "web": "webpack-dev-server -d --config ./webpack.dev.js",
-    "web:http": "http-server web-build",
+    "build:serve": "http-server web-build",
     "build": "NODE_ENV=production webpack -p --config ./webpack.prod.js",
     "postinstall": "expo-yarn-workspaces postinstall"
   },

@@ -46,7 +46,7 @@ const REACT_APP = /^REACT_APP_/i;
 
 const publicUrl = '';
 
-function getClientEnvironment(publicUrl) {
+function getClientEnvironment() {
   let processEnv = Object.keys(process.env)
     .filter(key => REACT_APP.test(key))
     .reduce(
@@ -135,7 +135,7 @@ function generateHTMLFromAppJSON() {
   });
 }
 
-const env = getClientEnvironment(publicUrl);
+const env = getClientEnvironment();
 
 const includeModule = module => {
   return path.resolve(locations.modules, module);
@@ -276,8 +276,8 @@ module.exports = {
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
       PUBLIC_URL: publicUrl,
       WEB_TITLE: nativeAppManifest.expo.name,
-      // SERVICE_WORKER: ``,
     }),
+
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
     // having to parse `index.html`.
