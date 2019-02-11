@@ -50,7 +50,7 @@ Subscribe to location updates from the device. Please note that updates will onl
 #### Arguments
 
 -   **options : `object`** -- A map of options:
-    -   **accuracy (_[Location.Accuracy](#locationaccuracy)_** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+    -   **accuracy (_[Location.Accuracy](#locationaccuracy)_)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
     -   **timeInterval : `number`** -- Minimum time to wait between each update in milliseconds.
     -   **distanceInterval : `number`** -- Receive updates only when the location has changed by at least this distance in meters.
 
