@@ -6,9 +6,10 @@
   "private": true,
   "main": "__generated__/AppEntry.js",
   "scripts": {
-    "web:https": "webpack-dev-server -d --config ./webpack.config.js --https",
-    "web": "webpack-dev-server -d --config ./webpack.config.js",
-    "build": "NODE_ENV=production webpack -p --config ./webpack.config.js",
+    "web:https": "webpack-dev-server -d --config ./webpack.dev.js --https",
+    "web": "webpack-dev-server -d --config ./webpack.dev.js",
+    "web:http": "http-server web-build",
+    "build": "NODE_ENV=production webpack -p --config ./webpack.prod.js",
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "powertools": {
@@ -56,15 +57,18 @@
     "babel-loader": "^8.0.4",
     "babel-preset-expo": "^5.0.0",
     "case-sensitive-paths-webpack-plugin": "^2.1.2",
+    "clean-webpack-plugin": "^1.0.1",
     "css-loader": "^1.0.1",
     "expo-yarn-workspaces": "^1.0.0",
     "file-loader": "^2.0.0",
+    "http-server": "^0.11.1",
     "react-native-scripts": "^2.0.1",
     "style-loader": "^0.23.1",
     "webpack": "^4.24.0",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "3.1.11",
+    "webpack-merge": "^4.2.1",
     "workbox-webpack-plugin": "^3.6.3"
   },
   "browserslist": [

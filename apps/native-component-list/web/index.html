@@ -31,6 +31,11 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="main"></div>
 
-    %SERVICE_WORKER%
+    <script>
+      if ('serviceWorker' in navigator)
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+    </script>
   </body>
 </html>

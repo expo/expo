@@ -1,35 +1,19 @@
 const path = require('path');
 const webpack = require('webpack');
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
-const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
-const pckg = require('./package.json');
+const locations = require('./webpackLocations');
 
-const absolutePath = location => path.resolve(__dirname, location);
-
-const nativeAppManifest = require(absolutePath('./app.json'));
+const nativeAppManifest = require(locations.absolute('./app.json'));
 
 const { productionPath = 'web-build' } = nativeAppManifest.expo.web;
-
-const locations = {
-  // Shouldn't change
-  root: absolutePath('.'),
-  contentBase: absolutePath('web'),
-  rootHtml: absolutePath('web/index.html'),
-  packageJson: absolutePath('package.json'),
-  appMain: absolutePath(pckg.main),
-
-  // TODO: Bacon: Only use this in expo/apps/
-  modules: absolutePath('../../node_modules'),
-};
 
 function getAppManifest() {
   if (nativeAppManifest && nativeAppManifest.expo) {
     const { expo } = nativeAppManifest;
-    const PWAManifest = require(absolutePath('./web/manifest.json'));
+    const PWAManifest = require(locations.absolute('./web/manifest.json'));
     const web = PWAManifest || {};
 
     return {
@@ -119,7 +103,7 @@ function generateHTMLFromAppJSON() {
      * You can specify a subdirectory here too (eg: `assets/admin.html`).
      * Default: `'index.html'`.
      */
-    filename: absolutePath(`${productionPath}/index.html`),
+    filename: locations.absolute(`${productionPath}/index.html`),
     /**
      * The title to use for the generated HTML document.
      * Default: `'Webpack App'`.
@@ -224,7 +208,7 @@ const ttfLoaderConfiguration = {
 const htmlLoaderConfiguration = {
   test: /\.html$/,
   use: ['html-loader'],
-  include: [absolutePath('./assets')],
+  include: [locations.absolute('./assets')],
 };
 
 const mediaLoaderConfiguration = {
@@ -241,53 +225,50 @@ const mediaLoaderConfiguration = {
 
 // This method intercepts modules being referenced in react-native
 // and redirects them to web friendly versions in expo.
-function useWebModule(modulePathToHiJack, redirectPath, initialRoot = 'expo/build/web/') {
-  return new webpack.NormalModuleReplacementPlugin(new RegExp(modulePathToHiJack), function(res) {
+function getWebModule(initialRoot, moduleName) {
+  return function(res) {
     if (res.context.includes('node_modules/react-native/')) {
-      res.request = includeModule(initialRoot + redirectPath);
+      res.request = includeModule(initialRoot + moduleName);
     }
-  });
+  };
+}
+
+function useWebModule(modulePathToHiJack, redirectPath, initialRoot = 'expo/build/web/') {
+  return new webpack.NormalModuleReplacementPlugin(
+    new RegExp(modulePathToHiJack),
+    getWebModule(initialRoot, redirectPath)
+  );
 }
 
 const publicPath = '/';
 
-const entry = __DEV__
-  ? [require.resolve('react-dev-utils/webpackHotDevClient'), locations.appMain]
-  : locations.appMain;
-
 module.exports = {
   mode: environment,
   devtool: 'cheap-module-source-map',
-
-  entry,
   // configures where the build ends up
   output: {
-    path: absolutePath(productionPath),
-    filename: '[name].[contenthash].js',
+    path: locations.absolute(productionPath),
+    filename: 'bundle.js',
+
+    // filename: '[name].[contenthash].js',
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: '[name].chunk.js',
     // This is the URL that app is served from. We use "/" in development.
     publicPath,
   },
   optimization: {
-    runtimeChunk: 'single',
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
-    },
-  },
-  devServer: {
-    progress: true,
-    historyApiFallback: true,
-    compress: true,
-    disableHostCheck: true,
-    contentBase: locations.contentBase,
-    inline: true,
+    runtimeChunk: true,
+
+    // runtimeChunk: 'single',
+    // splitChunks: {
+    //   cacheGroups: {
+    //     vendor: {
+    //       test: /[\\/]node_modules[\\/]/,
+    //       name: 'vendors',
+    //       chunks: 'all',
+    //     },
+    //   },
+    // },
   },
   module: {
     rules: [
@@ -302,8 +283,6 @@ module.exports = {
     ],
   },
   plugins: [
-    // new CleanWebpackPlugin([productionPath]),
-
     // Generates an `index.html` file with the <script> injected.
     generateHTMLFromAppJSON(),
 
@@ -312,7 +291,6 @@ module.exports = {
       WEB_TITLE: nativeAppManifest.expo.name,
       // SERVICE_WORKER: ``,
     }),
-
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
     // having to parse `index.html`.
@@ -343,24 +321,6 @@ module.exports = {
       'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
       'react-native/Libraries/Image/resolveAssetSource$': 'expo/build/web/Image/resolveAssetSource',
     },
-    plugins: [
-      // Adds support for installing with Plug'n'Play, leading to faster installs and adding
-      // guards against forgotten dependencies and such.
-      PnpWebpackPlugin,
-      // Prevents users from importing files from outside of node_modules/.
-      // This often causes confusion because we only process files within the root folder with babel.
-      // To fix this, we prevent you from importing files out of the root folder -- if you'd like to,
-      // please link the files into your node_modules/ and let module-resolution kick in.
-      // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(locations.contentBase, [locations.packageJson]),
-    ],
-  },
-  resolveLoader: {
-    plugins: [
-      // Also related to Plug'n'Play, but this time it tells Webpack to load its loaders
-      // from the current package.
-      PnpWebpackPlugin.moduleLoader(module),
-    ],
   },
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
@@ -371,7 +331,4 @@ module.exports = {
     tls: 'empty',
     child_process: 'empty',
   },
-  // Turn off performance processing because we utilize
-  // our own hints via the FileSizeReporter
-  performance: false,
 };
