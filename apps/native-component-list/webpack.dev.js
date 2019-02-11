@@ -9,9 +9,7 @@ const locations = require('./webpackLocations');
 
 module.exports = merge(common, {
   entry: [require.resolve('react-dev-utils/webpackHotDevClient'), locations.appMain],
-  mode: 'development',
-  //   devtool: 'cheap-module-source-map',
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-source-map',
   devServer: {
     progress: true,
     historyApiFallback: true,

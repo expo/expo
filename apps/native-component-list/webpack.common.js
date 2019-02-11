@@ -249,8 +249,6 @@ module.exports = {
   output: {
     path: locations.absolute(productionPath),
     filename: 'bundle.js',
-
-    // filename: '[name].[contenthash].js',
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: '[name].chunk.js',
     // This is the URL that app is served from. We use "/" in development.
@@ -258,17 +256,6 @@ module.exports = {
   },
   optimization: {
     runtimeChunk: true,
-
-    // runtimeChunk: 'single',
-    // splitChunks: {
-    //   cacheGroups: {
-    //     vendor: {
-    //       test: /[\\/]node_modules[\\/]/,
-    //       name: 'vendors',
-    //       chunks: 'all',
-    //     },
-    //   },
-    // },
   },
   module: {
     rules: [
@@ -306,7 +293,7 @@ module.exports = {
     useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
     useWebModule('RCTNetworking', 'Network/RCTNetworking'),
 
-    new webpack.HashedModuleIdsPlugin(),
+    // new webpack.HashedModuleIdsPlugin(),
     new WorkboxPlugin.GenerateSW(),
   ],
   resolve: {
