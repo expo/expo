@@ -148,7 +148,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mLayout.addView(mContainer);
     mLoadingView = new LoadingView(this);
     if (!Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
-      mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
+      mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.splashBackground));
       mLayout.addView(mLoadingView);
     }
 

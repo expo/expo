@@ -1,3 +1,4 @@
+import { Platform as PlatformExpo } from 'expo-core';
 import { Linking, Platform } from 'react-native';
 import { EventEmitter } from 'fbemitter';
 
@@ -61,14 +62,17 @@ export function unmockAllProperties() {
 
 export function mockPlatformIOS() {
   mockProperty(Platform, 'OS', 'ios');
+  mockProperty(PlatformExpo, 'OS', 'ios');
 }
 
 export function mockPlatformAndroid() {
   mockProperty(Platform, 'OS', 'android');
+  mockProperty(PlatformExpo, 'OS', 'android');
 }
 
 export function mockPlatformWeb() {
   mockProperty(Platform, 'OS', 'web');
+  mockProperty(PlatformExpo, 'OS', 'web');
 }
 
 export function describeCrossPlatform(message, tests) {
@@ -77,6 +81,7 @@ export function describeCrossPlatform(message, tests) {
     tests();
     afterAll(() => {
       unmockProperty(Platform, 'OS');
+      unmockProperty(PlatformExpo, 'OS');
     });
   });
   describe(`🤖  ${message}`, () => {
@@ -84,6 +89,7 @@ export function describeCrossPlatform(message, tests) {
     tests();
     afterAll(() => {
       unmockProperty(Platform, 'OS');
+      unmockProperty(PlatformExpo, 'OS');
     });
   });
 }

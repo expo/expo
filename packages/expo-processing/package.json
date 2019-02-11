@@ -6,10 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "github.com/expo/expo-processing"
-  },
   "keywords": [
     "expo",
     "processing.js",
@@ -17,8 +13,16 @@
     "opengl",
     "gl"
   ],
-  "author": "Nikhilesh Sigatapu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
   "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-processing",
   "peerDependencies": {
     "processing-js": "^1.6.6",
     "expo-gl": "^1.0.0"

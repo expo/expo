@@ -4,7 +4,7 @@
   "summary": "Expo universal module for Audio and Video playback",
   "description": "Expo universal module for Audio and Video playback",
   "license": "MIT",
-  "authors": "Expo",
+  "authors": "650 Industries, Inc.",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-av",
   "platforms": {
     "ios": "10.0"

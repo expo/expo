@@ -9,11 +9,15 @@
     "file-system",
     "file"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
-    "expo-core": "~2.0.0"
-  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-file-system-interface",
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

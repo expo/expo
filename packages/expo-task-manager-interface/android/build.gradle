@@ -58,6 +58,7 @@ android {
     }
 }
 
+
 if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
     apply from: project(":expo_core").file("../expo-core.gradle")
 } else if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {

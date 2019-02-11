@@ -20,10 +20,17 @@
     "task",
     "background"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-task-manager",
+  "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-errors": "~1.0.0",
     "expo-task-manager-interface": "~1.0.0"

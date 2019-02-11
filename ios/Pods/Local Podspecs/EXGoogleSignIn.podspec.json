@@ -5,7 +5,7 @@
   "description": "Expo Unimodule for interfacing with the native GoogleSignIn library.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-google-sign-in",
   "platforms": {
     "ios": "10.0"
   },

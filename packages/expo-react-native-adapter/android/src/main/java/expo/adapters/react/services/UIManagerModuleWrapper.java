@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
@@ -226,7 +227,7 @@ public class UIManagerModuleWrapper implements
   }
 
   @Override
-  public void loadImageFromURL(String url, final ResultListener resultListener) {
+  public void loadImageFromURL(@NonNull String url, final ResultListener resultListener) {
     ImageRequest imageRequest = ImageRequest.fromUri(url);
 
     ImagePipeline imagePipeline = Fresco.getImagePipeline();

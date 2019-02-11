@@ -80,7 +80,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
 -   **Add the Client IDs to your app**
 
     ```javascript
-    import Expo from 'expo';
+    import { Google } from 'expo';
 
     async function signInWithGoogleAsync() {
       try {

@@ -5,7 +5,7 @@
   "description": "Expo universal module for printing",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-print",
   "platforms": {
     "ios": "10.0"
   },

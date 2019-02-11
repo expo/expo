@@ -39,7 +39,7 @@ export declare const statics: {
     FieldValue: typeof FieldValue;
     GeoPoint: typeof GeoPoint;
     enableLogging(enabled: boolean): void;
-    setLogLevel(logLevel: "debug" | "error" | "silent"): void;
+    setLogLevel(logLevel: "error" | "debug" | "silent"): void;
 };
 /**
  * @class Firestore
@@ -53,7 +53,7 @@ export default class Firestore extends ModuleBase {
         FieldValue: typeof FieldValue;
         GeoPoint: typeof GeoPoint;
         enableLogging(enabled: boolean): void;
-        setLogLevel(logLevel: "debug" | "error" | "silent"): void;
+        setLogLevel(logLevel: "error" | "debug" | "silent"): void;
     };
     _referencePath: Path;
     _transactionHandler: TransactionHandler;
