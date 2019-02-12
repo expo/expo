@@ -1,1 +1,1 @@
-export declare function getRandomIntegerAsync(length: number): Promise<Uint8Array>;
+export declare function getRandomBytesAsync(byteCount: number): Promise<Uint8Array>;

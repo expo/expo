@@ -629,7 +629,7 @@ module.exports = {
     notification: { type: 'function', functionType: 'async' },
     selection: { type: 'function', functionType: 'async' },
   },
-  ExpoRandom: [{ key: 0, argumentsCount: 1, name: 'getRandomIntegerAsync' }],
+  ExpoRandom: [{ key: 0, argumentsCount: 1, name: 'getRandomBytesAsync' }],
   ExponentImageManipulator: { manipulate: { type: 'function', functionType: 'promise' } },
   ExponentNotifications: {
     cancelAllScheduledNotificationsAsync: { type: 'function', functionType: 'promise' },

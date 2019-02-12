@@ -13,12 +13,17 @@ import expo.core.Promise;
 
 public class RandomModule extends ExportedModule implements ModuleRegistryConsumer {
 
+  SecureRandom random;
+
   public RandomModule(Context context) {
     super(context);
   }
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    if (moduleRegistry != null) {
+      random = new SecureRandom();
+    }
   }
 
   @Override
@@ -27,9 +32,8 @@ public class RandomModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @ExpoMethod
-  public void getRandomIntegerAsync(int length, final Promise promise) {
-    SecureRandom random = new SecureRandom();
-    byte[] output = new byte[length];
+  public void getRandomBase64StringAsync(int randomByteCount, final Promise promise) {
+    byte[] output = new byte[randomByteCount];
     random.nextBytes(output);
     promise.resolve(Base64.encodeToString(output, Base64.NO_WRAP));
   }

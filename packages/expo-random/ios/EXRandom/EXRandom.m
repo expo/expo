@@ -6,12 +6,12 @@
 
 EX_EXPORT_MODULE(ExpoRandom);
 
-EX_EXPORT_METHOD_AS(getRandomIntegerAsync,
-                    getRandomIntegerAsync:(NSNumber *)length
+EX_EXPORT_METHOD_AS(getRandomBase64StringAsync,
+                    getRandomBase64StringAsync:(NSNumber *)count
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSUInteger _length = [length unsignedIntegerValue];
+  NSUInteger _length = [count unsignedIntegerValue];
   NSMutableData *bytes = [NSMutableData dataWithLength:_length];
   
   OSStatus result = SecRandomCopyBytes(kSecRandomDefault, _length, [bytes mutableBytes]);
