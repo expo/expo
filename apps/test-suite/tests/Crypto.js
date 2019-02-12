@@ -1,21 +1,29 @@
+import { Platform } from 'expo-core';
 import { Crypto } from 'expo';
 
 export const name = 'Crypto';
 
+function supportedAlgorithm(algorithm) {
+  if (Platform.OS === 'web' && ['MD2', 'MD4', 'MD5'].includes(algorithm)) {
+    return false;
+  }
+  return true;
+}
+
 export async function test({ describe, it, expect }) {
-  describe('Crypto', async () => {
-    describe('digestStringAsync()', async () => {
+  describe('Crypto', () => {
+    describe('digestStringAsync()', () => {
       for (const entry of Object.entries(Crypto.Algorithm)) {
         const [key, algorithm] = entry;
         it(`Crypto.Hash.${key}`, async () => {
-          const value = await Crypto.digestStringAsync(algorithm, 'Expo');
-          console.log({ value });
-          // const length = 3;
-          // const bytes = await Random.getRandomBytesAsync(length);
-          // expect(bytes instanceof Uint8Array).toBe(true);
-          // expect(bytes.length).toBe(length);
-          // const moreBytes = await Random.getRandomBytesAsync(length);
-          // expect(moreBytes[0]).not.toBe(bytes[0]);
+          if (supportedAlgorithm(algorithm)) {
+            const value = await Crypto.digestStringAsync(algorithm, 'Expo');
+            console.log({ value });
+          } else {
+            await expect(Crypto.digestStringAsync(algorithm, 'Expo')).rejects.toThrowError(
+              TypeError
+            );
+          }
         });
       }
     });
