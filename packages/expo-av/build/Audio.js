@@ -21,6 +21,7 @@ export async function setAudioModeAsync(mode) {
         'allowsRecordingIOS',
         'interruptionModeIOS',
         'playsInSilentModeIOS',
+        'staysActiveInBackgroundIOS',
         'interruptionModeAndroid',
         'shouldDuckAndroid',
         'playThroughEarpieceAndroid',
@@ -43,6 +44,7 @@ export async function setAudioModeAsync(mode) {
     }
     if (typeof mode.allowsRecordingIOS !== 'boolean' ||
         typeof mode.playsInSilentModeIOS !== 'boolean' ||
+        typeof mode.staysActiveInBackgroundIOS !== 'boolean' ||
         typeof mode.shouldDuckAndroid !== 'boolean' ||
         typeof mode.playThroughEarpieceAndroid !== 'boolean') {
         throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", and "shouldDuckAndroid" must be booleans.');

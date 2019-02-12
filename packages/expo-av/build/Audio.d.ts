@@ -6,6 +6,7 @@ export declare type AudioMode = {
     allowsRecordingIOS: boolean;
     interruptionModeIOS: number;
     playsInSilentModeIOS: boolean;
+    staysActiveInBackgroundIOS: boolean;
     interruptionModeAndroid: number;
     shouldDuckAndroid: boolean;
     playThroughEarpieceAndroid: boolean;

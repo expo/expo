@@ -9,6 +9,7 @@ export type AudioMode = {
   allowsRecordingIOS: boolean;
   interruptionModeIOS: number;
   playsInSilentModeIOS: boolean;
+  staysActiveInBackgroundIOS: boolean;
   interruptionModeAndroid: number;
   shouldDuckAndroid: boolean;
   playThroughEarpieceAndroid: boolean;
@@ -36,6 +37,7 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
     'allowsRecordingIOS',
     'interruptionModeIOS',
     'playsInSilentModeIOS',
+    'staysActiveInBackgroundIOS',
     'interruptionModeAndroid',
     'shouldDuckAndroid',
     'playThroughEarpieceAndroid',
@@ -65,6 +67,7 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
   if (
     typeof mode.allowsRecordingIOS !== 'boolean' ||
     typeof mode.playsInSilentModeIOS !== 'boolean' ||
+    typeof mode.staysActiveInBackgroundIOS !== 'boolean' ||
     typeof mode.shouldDuckAndroid !== 'boolean' ||
     typeof mode.playThroughEarpieceAndroid !== 'boolean'
   ) {
