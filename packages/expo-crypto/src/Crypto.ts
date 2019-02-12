@@ -1,34 +1,47 @@
-import { Platform } from 'react-native';
 import { UnavailabilityError } from 'expo-errors';
 import ExpoCrypto from './ExpoCrypto';
 
-export enum Hash {
-  sha1 = 'SHA-1' /* (but don't use this in cryptographic applications) */,
+import { Algorithm, Encoding, DigestOptions } from './Crypto.types';
+export * from './Crypto.types';
 
-  sha256 = 'SHA-256',
-  sha384 = 'SHA-384',
-  sha512 = 'SHA-512.',
-
-  // md5 = 'MD-5.',
-  // rmd160 = 'RMD-160.',
+function assertAlgorithm(algorithm: Algorithm): void {
+  if (!Object.values(Algorithm).includes(algorithm)) {
+    throw new TypeError(
+      `expo-crypto: Invalid algorithm provided. Expected one of: Algorithm.${Object.keys(
+        Algorithm
+      ).join(', Algorithm.')}`
+    );
+  }
 }
 
-type DigestOptions = { encoding: 'hex' };
+function assertData(data: string): void {
+  if (data == null || typeof data !== 'string' || !data.length) {
+    throw new TypeError(`expo-crypto: Invalid data provided. Expected a valid string.`);
+  }
+}
+
+function assertEncoding(encoding: Encoding): void {
+  if (!Object.values(Encoding).includes(encoding)) {
+    throw new TypeError(
+      `expo-crypto: Invalid encoding provided. Expected one of: Encoding.${Object.keys(
+        Encoding
+      ).join(', Encoding.')}`
+    );
+  }
+}
 
 export async function digestStringAsync(
-  algorithm: Hash,
+  algorithm: Algorithm,
   data: string,
-  options: DigestOptions = { encoding: 'hex' }
+  options: DigestOptions = { encoding: Encoding.hex }
 ): Promise<string> {
   if (!ExpoCrypto.digestStringAsync) {
     throw new UnavailabilityError('expo-crypto', 'digestStringAsync');
   }
-  if (!Object.values(algorithm).includes(algorithm)) {
-    throw new TypeError(
-      `expo-crypto: digestStringAsync() Invalid algorithm provided. Expected one of: Hash.${Object.keys(
-        algorithm
-      ).join(', Hash.')}`
-    );
-  }
+
+  assertAlgorithm(algorithm);
+  assertData(data);
+  assertEncoding(options.encoding);
+
   return await ExpoCrypto.digestStringAsync(algorithm, data, options);
 }
