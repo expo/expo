@@ -1,12 +1,11 @@
 import React from 'react';
-import { Audio } from 'expo';
 import { ScrollView, StyleSheet, PixelRatio } from 'react-native';
 
 import Recorder from './Recorder';
 import HeadingText from '../../components/HeadingText';
 
 import AudioModeSelector from './AudioModeSelector';
-import Player from './Player';
+import Player from './AudioPlayer';
 
 export default class AuthSessionScreen extends React.Component {
   static navigationOptions = {
