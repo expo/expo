@@ -18,7 +18,9 @@
     "random",
     "crypto",
     "random-bytes",
-    "secure"
+    "secure",
+    "generator",
+    "bytes"
   ],
   "repository": {
     "type": "git",
