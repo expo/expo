@@ -3,10 +3,6 @@ id: systrace
 title: Systrace
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Methods
 
 * [`installReactHook`](../systrace/#installreacthook)

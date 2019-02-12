@@ -2,10 +2,6 @@
 title: ScreenOrientation
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](../devicemotion/).
 
 ![Portrait orientation in different physical orientations](/static/images/screen-orientation-portrait.png)

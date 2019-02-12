@@ -2,10 +2,6 @@
 title: DeviceMotion
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Access the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.
 
 ### `DangerZone.DeviceMotion.isAvailableAsync()`

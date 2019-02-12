@@ -2,10 +2,6 @@
 title: TaskManager
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API that allows to manage tasks, especially these running while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of modules using TaskManager:
 

@@ -3,10 +3,6 @@ id: using-a-listview
 title: Using List Views
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 React Native provides a suite of components for presenting lists of data. Generally, you'll want to use either [FlatList](../flatlist/) or [SectionList](../sectionlist/).
 
 The `FlatList` component displays a scrolling list of changing, but similarly structured, data. `FlatList` works well for long lists of data, where the number of items might change over time. Unlike the more generic [`ScrollView`](../using-a-scrollview/), the `FlatList` only renders elements that are currently showing on the screen, not all the elements at once.

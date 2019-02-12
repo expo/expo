@@ -2,10 +2,6 @@
 title: Calendar
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
 Requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.

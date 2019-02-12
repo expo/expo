@@ -2,10 +2,6 @@
 title: Barometer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
 | OS      | Units   | Provider                                                                                                | Description                                                                                                                         |

@@ -2,10 +2,6 @@
 title: BarCodeScanner
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A React component that renders a viewfinder for the device's either front or back camera viewfinder and will scan bar codes that show up in the frame.
 
 ## Supported formats

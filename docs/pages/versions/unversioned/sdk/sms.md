@@ -2,10 +2,6 @@
 title: SMS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to the system's UI/app for sending SMS messages.
 
 ### `SMS.isAvailableAsync()`

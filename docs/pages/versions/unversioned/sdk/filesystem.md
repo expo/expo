@@ -2,10 +2,6 @@
 title: FileSystem
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to a file system stored locally on the device. Each Expo app has a separate file systems and has no access to the file system of other Expo apps. The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:
 
 -   **`FileSystem.documentDirectory`**
