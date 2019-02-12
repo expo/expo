@@ -45,7 +45,7 @@ const subscription = Barometer.addListener(({ pressure, relativeAltitude }) => {
 
 #### Arguments
 
-- **listener : `function`** -- A callback that is invoked when an barometer update is available. When invoked, the listener is provided a single argument that is an object containing: `pressure: number` (_`hPa`_). On **iOS** the `relativeAltitude: number` (_`meters`_) value will also be available.
+- **listener (_function_)** -- A callback that is invoked when an barometer update is available. When invoked, the listener is provided a single argument that is an object containing: `pressure: number` (_`hPa`_). On **iOS** the `relativeAltitude: number` (_`meters`_) value will also be available.
 
 #### Returns
 

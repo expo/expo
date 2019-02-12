@@ -22,8 +22,8 @@ Segment requires separate write keys for iOS and Android. You will need to log i
 
 Accepts an object with the following keys:
 
--   **androidWriteKey : `string`** – Write key for Android source.
--   **iosWriteKey : `string`** – Write key for iOS source.
+-   **androidWriteKey (_string_)** – Write key for Android source.
+-   **iosWriteKey (_string_)** – Write key for iOS source.
 
 ### `Segment.identify(userId)`
 
@@ -31,14 +31,14 @@ Associates the current user with a user ID. Call this after calling [`Segment.in
 
 #### Arguments
 
--   **userId : `string`** – User ID for the current user.
+-   **userId (_string_)** – User ID for the current user.
 
 ### `Segment.identifyWithTraits(userId, traits)`
 
 #### Arguments
 
--   **userId : `string`** – User ID for the current user.
--   **traits : `object`** – A map of custom properties.
+-   **userId (_string_)** – User ID for the current user.
+-   **traits (_object_)** – A map of custom properties.
 
 ### `Segment.reset()`
 
@@ -50,7 +50,7 @@ Log an event to Segment. See <https://segment.com/docs/spec/track/>.
 
 #### Arguments
 
--   **event : `string`** – The event name.
+-   **event (_string_)** – The event name.
 
 ### `Segment.trackWithProperties(event, properties)`
 
@@ -58,8 +58,8 @@ Log an event to Segment with custom properties. See <https://segment.com/docs/sp
 
 #### Arguments
 
--   **event : `string`** – The event name.
--   **properties : `object`** – A map of custom properties.
+-   **event (_string_)** – The event name.
+-   **properties (_object_)** – A map of custom properties.
 
 ### `Segment.group(groupId)`
 
@@ -67,7 +67,7 @@ Associate the user with a group. See <https://segment.com/docs/spec/group/>.
 
 #### Arguments
 
--   **groupId : `string`** – ID of the group.
+-   **groupId (_string_)** – ID of the group.
 
 ### `Segment.groupWithTraits(groupId, traits)`
 
@@ -75,8 +75,8 @@ Associate the user with a group with traits. See <https://segment.com/docs/spec/
 
 #### Arguments
 
--   **groupId : `string`** – ID of the group.
--   **traits : `object`** – free-form dictionary of traits of the group.
+-   **groupId (_string_)** – ID of the group.
+-   **traits (_object_)** – free-form dictionary of traits of the group.
 
 ### `Segment.alias(newId, [options])`
 
@@ -84,8 +84,8 @@ Associate current identity with a new identifier. See <https://segment.com/docs/
 
 #### Arguments
 
--   **newId : `string`** – Identifier to associate with.
--   **options : `object`** – _(optional)_ extra dictionary with options for the call. You could pass a dictionary of form `{ [integrationKey]: { enabled: boolean, options: object } }` to configure destinations of the call.
+-   **newId (_string_)** – Identifier to associate with.
+-   **options (_object_)** – _(optional)_ extra dictionary with options for the call. You could pass a dictionary of form `{ [integrationKey]: { enabled: boolean, options: object } }` to configure destinations of the call.
 
 #### Returns
 
@@ -97,14 +97,14 @@ Record that a user has seen a screen to Segment. See <https://segment.com/docs/s
 
 #### Arguments
 
--   **screenName : `string`** – Name of the screen.
+-   **screenName (_string_)** – Name of the screen.
 
 ### `Segment.screenWithProperties(screenName, properties)`
 
 Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
 
--   **screenName : `string`** – Name of the screen.
--   **properties : `object`** – A map of custom properties.
+-   **screenName (_string_)** – Name of the screen.
+-   **properties (_object_)** – A map of custom properties.
 
 ### `Segment.flush()`
 
