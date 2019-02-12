@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node server.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
-    "export": "yarn run build && cross-env NODE_OPTIONS=--max-old-space-size=8192 next export",
+    "export": "yarn run build && next export",
     "export-server": "cd out && python -m SimpleHTTPServer 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "blc --recursive --exclude-external --filter-level 2"
