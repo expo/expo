@@ -23,12 +23,12 @@
     "fs-extra": "^6.0.1",
     "github-slugger": "^1.2.0",
     "hotshot": "^1.0.5",
-    "next": "^7.0.2",
+    "next": "^8.0.0",
     "nprogress": "0.2.0",
     "prismjs": "^1.11.0",
     "prop-types": "15.6.2",
-    "react": "16.4.2",
-    "react-dom": "16.4.2",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
     "react-emotion": "^9.2.9"
   },
   "devDependencies": {
