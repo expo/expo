@@ -27,6 +27,7 @@ export default class AudioModeSelector extends React.Component {
         allowsRecordingIOS: false,
         playsInSilentModeIOS: false,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+        staysActiveInBackgroundIOS: false,
       });
       this.setState({ setMode: this.state.modeToSet });
     } catch (error) {
