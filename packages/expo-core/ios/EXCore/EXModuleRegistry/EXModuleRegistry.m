@@ -107,14 +107,6 @@
   [self maybeAddRegistryConsumer:internalModule];
 }
 
-- (id<EXInternalModule>)unregisterInternalModuleForProtocol:(Protocol *)protocol
-{
-  id<EXInternalModule> module = [_internalModules objectForKey:protocol];
-  [_internalModulesSet removeObject:module];
-  [_internalModules removeObjectForKey:protocol];
-  return module;
-}
-
 - (void)registerExportedModule:(EXExportedModule *)exportedModule
 {
   const NSString *exportedModuleName = [[exportedModule class] exportedModuleName];
