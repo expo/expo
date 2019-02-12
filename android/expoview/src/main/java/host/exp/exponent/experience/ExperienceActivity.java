@@ -192,7 +192,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
 
     if (mManifestUrl != null && shouldOpenImmediately) {
-      new AppLoader(mManifestUrl) {
+      boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
+      new AppLoader(mManifestUrl, forceCache) {
         @Override
         public void onOptimisticManifest(final JSONObject optimisticManifest) {
           Exponent.getInstance().runOnUiThread(new Runnable() {
