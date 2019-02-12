@@ -165,6 +165,7 @@ const babelLoaderConfiguration = {
   use: {
     loader: 'babel-loader',
     options: {
+      cacheDirectory: false,
       babelrc: false,
     },
   },
@@ -174,11 +175,7 @@ const babelLoaderConfiguration = {
 const imageLoaderConfiguration = {
   test: /\.(gif|jpe?g|png|svg)$/,
   use: {
-    loader: 'url-loader',
-    options: {
-      limit: 10000,
-      name: '[name].[ext]',
-    },
+    loader: 'file-loader',
   },
 };
 
@@ -244,6 +241,7 @@ const publicPath = '/';
 
 module.exports = {
   mode: environment,
+  context: __dirname,
   devtool: 'cheap-module-source-map',
   // configures where the build ends up
   output: {
@@ -299,15 +297,45 @@ module.exports = {
   resolve: {
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx', '.json'],
-    alias: {
-      /* Alias direct react-native imports to react-native-web */
-      'react-native$': 'react-native-web',
-      /* Add polyfills for modules that react-native-web doesn't support */
-      'react-native/Libraries/Image/AssetSourceResolver$':
-        'expo/build/web/Image/AssetSourceResolver',
-      'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
-      'react-native/Libraries/Image/resolveAssetSource$': 'expo/build/web/Image/resolveAssetSource',
-    },
+    alias: Object.assign(
+      {
+        /* Alias direct react-native imports to react-native-web */
+        'react-native$': 'react-native-web',
+      },
+      // mock haste resolver
+      [
+        'ActivityIndicator',
+        'Alert',
+        'AsyncStorage',
+        'Button',
+        'DeviceInfo',
+        'Modal',
+        'NativeModules',
+        'Network',
+        'Platform',
+        'SafeAreaView',
+        'SectionList',
+        'StyleSheet',
+        'Switch',
+        'Text',
+        'TextInput',
+        'TouchableHighlight',
+        'TouchableWithoutFeedback',
+        'View',
+        'ViewPropTypes',
+      ].reduce(
+        (acc, curr) => {
+          acc[curr] = `react-native-web/dist/cjs/exports/${curr}`;
+          return acc;
+        },
+        {
+          JSEventLoopWatchdog: 'react-native-web/dist/cjs/vendor/react-native/JSEventLoopWatchdog',
+          React$: 'react',
+          ReactNative$: 'react-native-web/dist/cjs',
+          infoLog$: 'react-native-web/dist/cjs/vendor/react-native/infoLog',
+        }
+      )
+    ),
   },
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
