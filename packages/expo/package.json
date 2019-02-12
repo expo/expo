@@ -104,6 +104,7 @@
     "expo-permissions": "~2.0.0",
     "expo-permissions-interface": "~2.0.0",
     "expo-print": "~2.0.0",
+    "expo-random": "~1.0.0",
     "expo-react-native-adapter": "~2.0.0",
     "expo-secure-store": "~1.0.0",
     "expo-sensors": "~2.0.0",
