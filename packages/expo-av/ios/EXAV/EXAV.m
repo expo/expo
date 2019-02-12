@@ -41,6 +41,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @property (nonatomic, assign) EXAudioInterruptionMode audioInterruptionMode;
 @property (nonatomic, assign) BOOL playsInSilentMode;
 @property (nonatomic, assign) BOOL allowsAudioRecording;
+@property (nonatomic, assign) BOOL staysActiveInBackground;
 
 @property (nonatomic, assign) int soundDictionaryKeyCount;
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, EXAVPlayerData *> *soundDictionary;
@@ -73,6 +74,7 @@ UM_EXPORT_MODULE(ExponentAV);
     _audioInterruptionMode = EXAudioInterruptionModeMixWithOthers;
     _playsInSilentMode = false;
     _allowsAudioRecording = false;
+    _staysActiveInBackground = false;
     
     _soundDictionaryKeyCount = 0;
     _soundDictionary = [NSMutableDictionary new];
@@ -135,12 +137,14 @@ UM_EXPORT_MODULE(ExponentAV);
 - (void)onAppBackgrounded
 {
   _isBackgrounded = YES;
-  [self _deactivateAudioSession]; // This will pause all players and stop all recordings
-  
-  [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-    [exAVObject appDidBackground];
-  }];
-  [_kernelAudioSessionManagerDelegate scopedModuleDidBackground:self];
+  if (!_staysActiveInBackground) {
+    [self _deactivateAudioSession]; // This will pause all players and stop all recordings
+
+    [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
+      [exAVObject appDidBackground];
+    }];
+    [_kernelAudioSessionManagerDelegate scopedModuleDidBackground:self];
+  }
 }
 
 #pragma mark - RCTEventEmitter
@@ -189,6 +193,8 @@ UM_EXPORT_MODULE(ExponentAV);
     return UMErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and duckOthers == true cannot be set on iOS.");
   } else if (!playsInSilentMode && allowsRecording) {
     return UMErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and allowsRecording == true cannot be set on iOS.");
+  } else if (!playsInSilentMode && shouldPlayInBackground) {
+    return UMErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and staysActiveInBackground == true cannot be set on iOS.");
   } else {
     if (!allowsRecording) {
       if (_audioRecorder && [_audioRecorder isRecording]) {
@@ -199,6 +205,7 @@ UM_EXPORT_MODULE(ExponentAV);
     _playsInSilentMode = playsInSilentMode;
     _audioInterruptionMode = interruptionMode;
     _allowsAudioRecording = allowsRecording;
+    _staysActiveInBackground = shouldPlayInBackground;
     
     if (_currentAudioSessionMode != EXAVAudioSessionModeInactive) {
       return [self _updateAudioSessionCategoryForAudioSessionMode:[self _getAudioSessionModeRequired]];
