@@ -21,10 +21,10 @@ export default class DocumentationSidebar extends React.Component {
     routes: [],
   };
 
-  _renderPostElements = info => {
+  _renderPostElements = (info, category) => {
     return (
       <DocumentationSidebarLink
-        key={`${this.props.url}-${info.name}`}
+        key={`${category}-${info.name}`}
         info={info}
         url={this.props.url}
         asPath={this.props.asPath}>
@@ -36,7 +36,7 @@ export default class DocumentationSidebar extends React.Component {
   _renderCategoryElements = info => {
     const titleElement = (
       <DocumentationSidebarTitle
-        key={`${this.props.url}-${info.name}`}
+        key={info.name}
         info={info}
         url={this.props.url}
         asPath={this.props.asPath}>
@@ -46,7 +46,7 @@ export default class DocumentationSidebar extends React.Component {
 
     let postElements;
     if (info.posts) {
-      postElements = info.posts.map(postInfo => this._renderPostElements(postInfo));
+      postElements = info.posts.map(postInfo => this._renderPostElements(postInfo, info.name));
     }
 
     return (

@@ -21,8 +21,6 @@
 
 - (void)setDelegate:(id<EXModuleRegistryDelegate>)delegate;
 
-- (id<EXInternalModule>)unregisterInternalModuleForProtocol:(Protocol *)protocol;
-
 // Call this method once all the modules are set up and registered in the registry.
 - (void)initialize;
 
