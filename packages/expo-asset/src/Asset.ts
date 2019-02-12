@@ -183,11 +183,10 @@ export class Asset {
 
   async _downloadAsyncUnmanagedEnv(): Promise<void> {
     const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
-    let { exists } = await FileSystem.getInfoAsync(localUri);
-    if (!exists) {
-      // No integrity check! Should we could compute sha1 with FileSystem in the same way as metro?
-      await FileSystem.downloadAsync(this.uri, localUri);
-    }
+
+    // We don't check the FileSystem for an existing version of the asset and we
+    // also don't perform an integrity check!
+    await FileSystem.downloadAsync(this.uri, localUri);
 
     this.localUri = localUri;
   }
