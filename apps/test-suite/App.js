@@ -24,7 +24,8 @@ async function getTestModulesAsync() {
   if (Platform.OS === 'web') {
     return [
       require('./tests/Import1'),
-      require('./tests/Crypto')
+      require('./tests/Crypto'),
+      require('./tests/Random'),
     ];
   }
 
@@ -52,6 +53,7 @@ async function getTestModulesAsync() {
     require('./tests/Segment'),
     require('./tests/Speech'),
     require('./tests/SQLite'),
+    require('./tests/Random'),
     require('./tests/Payments'),
     require('./tests/AdMobInterstitial'),
     require('./tests/AdMobBanner'),

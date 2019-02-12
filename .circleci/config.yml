@@ -240,6 +240,9 @@ jobs:
           working_directory: ~/expo/packages/expo-permissions
       - yarn:
           command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-random
+      - yarn:
+          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-react-native-adapter
       - yarn:
           command: test --maxWorkers 1

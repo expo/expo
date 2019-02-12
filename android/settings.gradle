@@ -75,6 +75,7 @@ def includeUniversalModule = { name ->
     'expo-permissions',
     'expo-permissions-interface',
     'expo-print',
+    'expo-random',
     'expo-react-native-adapter',
     'expo-secure-store',
     'expo-sensors',
