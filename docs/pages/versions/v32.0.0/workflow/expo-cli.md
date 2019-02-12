@@ -39,8 +39,8 @@ Commands:
   export [options] [project-dir]                      Exports the static files of the app for hosting it on a web server.
   fetch:ios:certs [options] [project-dir]             Fetch this project's iOS certificates/keys and provisioning profile. Writes files to the PROJECT_DIR and prints passwords to stdout.
   fetch:android:keystore [options] [project-dir]      Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.
-  fetch:android:hashes [options] [project-dir]        Fetch this project's Android key hashes needed to setup Google/Facebook authentication. If you are using Google Play signing this app will be signed with difrent key after publishing to the store, in that case you need to use hashes displayed in Google Play console
-  fetch:android:upload-cert [options] [project-dir]   Fetch this project's upload certificate needed after opting into App Signing by Google Play or after reseting previous upload certifacate.
+  fetch:android:hashes [options] [project-dir]        Fetch this project's Android key hashes needed to set up Google/Facebook authentication. Note: if you are using Google Play signing, this app will be signed with a different key after publishing to the store, and you'll need to use the hashes displayed in the Google Play console.
+  fetch:android:upload-cert [options] [project-dir]   Fetch this project's upload certificate needed after opting in to App Signing by Google Play or after resetting a previous upload certificate.
   generate-module [options] [new-module-project]      Generate a universal module for Expo from a template in [new-module-project] directory.
   init|i [options] [project-dir]                      Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
   install:ios [options]                               Install the latest version of Expo Client for iOS on the simulator
@@ -48,7 +48,7 @@ Commands:
   ios [options] [project-dir]                         Opens your app in Expo in an iOS simulator on your computer
   login|signin [options]                              Login with your Expo account
   logout [options]                                    Logout from your Expo account
-  opt-in-google-play-signing [options] [project-dir]  Switch from old method of signing APKs to App Signing by Google Play. APK will be signed with upload key and after uploading to store signature will be stripped and app will be signed with key from original keystore.
+  opt-in-google-play-signing [options] [project-dir]  Switch from the old method of signing APKs to the new App Signing by Google Play. The APK will be signed with an upload key and after uploading to it to the store, app will be re-signed with the key from the original keystore.
   prepare-detached-build [options] [project-dir]      Prepares a detached project for building
   publish:history|ph [options] [project-dir]          View a log of your published releases.
   publish:details|pd [options] [project-dir]          View the details of a published release.
