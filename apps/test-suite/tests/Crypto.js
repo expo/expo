@@ -20,9 +20,14 @@ export async function test({ describe, it, expect }) {
             const value = await Crypto.digestStringAsync(algorithm, 'Expo');
             console.log({ value });
           } else {
-            await expect(Crypto.digestStringAsync(algorithm, 'Expo')).rejects.toThrowError(
-              TypeError
-            );
+            let error = null;
+            try {
+              await Crypto.digestStringAsync(algorithm, 'Expo');
+            } catch (e) {
+              error = e;
+            }
+            expect(error).not.toBeNull();
+            // expect(error instanceof DOMException).toBe(true);
           }
         });
       }
