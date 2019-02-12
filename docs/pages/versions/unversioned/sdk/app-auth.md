@@ -2,6 +2,10 @@
 title: App Auth
 ---
 
+import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+
+export default withDocumentationElements(meta);
+
 > Introduced in Expo v32
 
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
