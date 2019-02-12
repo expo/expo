@@ -1,6 +1,6 @@
 import { Platform } from 'expo-core';
 import * as FileSystem from 'expo-file-system';
-import * as Constants from 'expo-constants';
+import Constants from 'expo-constants';
 import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 import resolveAssetSource, {
   setCustomSourceTransformer,
@@ -27,7 +27,7 @@ type DownloadPromiseCallbacks = {
 
 export type AssetMetadata = AssetSources.AssetMetadata;
 
-const MANAGED_ENV = Constants.hasOwnProperty('manifest');
+const MANAGED_ENV = !!Constants.manifest;
 
 export class Asset {
   static byHash = {};

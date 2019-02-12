@@ -1,13 +1,13 @@
 import { Platform } from 'expo-core';
 import * as FileSystem from 'expo-file-system';
-import * as Constants from 'expo-constants';
+import Constants from 'expo-constants';
 import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 import resolveAssetSource, { setCustomSourceTransformer, } from 'react-native/Libraries/Image/resolveAssetSource';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as EmbeddedAssets from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
-const MANAGED_ENV = Constants.hasOwnProperty('manifest');
+const MANAGED_ENV = !!Constants.manifest;
 export class Asset {
     constructor({ name, type, hash = null, uri, width, height }) {
         this.hash = null;
