@@ -1,4 +1,4 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+// Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <EXRandom/EXRandom.h>
 
