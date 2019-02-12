@@ -12,13 +12,13 @@ Print a document or HTML.
 
 #### Arguments
 
--   **options : `object`** -- A map defining what should be printed:
+-   **options (_object_)** -- A map defining what should be printed:
     
-    -   **uri : `string`** -- URI of a PDF file to print. Remote or local (ex. selected via `DocumentPicker`). This only supports PDF, not other types of document (e.g. images).
+    -   **uri (_string_)** -- URI of a PDF file to print. Remote or local (ex. selected via `DocumentPicker`). This only supports PDF, not other types of document (e.g. images).
     
-    -   **html : `string`** -- HTML string to print.
+    -   **html (_string_)** -- HTML string to print.
     
-    -   **printerUrl : `string`** -- iOS only. URL of the printer to use. Returned from `selectPrinterAsync`.
+    -   **printerUrl (_string_)** -- iOS only. URL of the printer to use. Returned from `selectPrinterAsync`.
 
 #### Returns
 

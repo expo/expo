@@ -11,7 +11,7 @@ Subscribe for updates to the accelerometer.
 
 #### Arguments
 
--   **listener : `function`** -- A callback that is invoked when an
+-   **listener (_function_)** -- A callback that is invoked when an
     accelerometer update is available. When invoked, the listener is
     provided a single argument that is an object    containing keys x, y,
     z.
@@ -31,7 +31,7 @@ Subscribe for updates to the accelerometer.
 
 #### Arguments
 
--   **intervalMs : `number`** Desired interval in milliseconds between
+-   **intervalMs (_number_)** Desired interval in milliseconds between
     accelerometer updates.
 
 ## Example: basic subscription

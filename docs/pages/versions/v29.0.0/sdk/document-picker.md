@@ -10,12 +10,12 @@ Display the system UI for choosing a document. By default, the chosen file is co
 
 #### Arguments
 
--   **options : `object`** --
+-   **options (_object_)** --
 
       A map of options:
 
-    -   **type : `string`** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
-    -   **copyToCacheDirectory : `boolean`** -- If `true`, the picked file is copied to [`Expo.FileSystem.CacheDirectory`](../filesystem/#expofilesystemcachedirectory), which allows other Expo APIs to read the file immediately. Defaults to `true`. This may impact performance for large files, so you should consider setting this to `false` if you expect users to pick particularly large files and your app does not need immediate read access.
+    -   **type (_string_)** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
+    -   **copyToCacheDirectory (_boolean_)** -- If `true`, the picked file is copied to [`Expo.FileSystem.CacheDirectory`](../filesystem/#expofilesystemcachedirectory), which allows other Expo APIs to read the file immediately. Defaults to `true`. This may impact performance for large files, so you should consider setting this to `false` if you expect users to pick particularly large files and your app does not need immediate read access.
 
 #### Returns
 

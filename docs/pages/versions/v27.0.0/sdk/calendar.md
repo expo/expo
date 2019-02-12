@@ -14,7 +14,7 @@ Gets an array of calendar objects with details about the different calendars sto
 
 #### Arguments
 
--   **entityType : `string`** -- (iOS only) Not required, but if defined, filters the returned calendars to a specific entity type. Possible values are `Expo.Calendar.EntityTypes.EVENT` (for calendars shown in the Calendar app) and `Expo.Calendar.EntityTypes.REMINDER` (for the Reminders app).
+-   **entityType (_string_)** -- (iOS only) Not required, but if defined, filters the returned calendars to a specific entity type. Possible values are `Expo.Calendar.EntityTypes.EVENT` (for calendars shown in the Calendar app) and `Expo.Calendar.EntityTypes.REMINDER` (for the Reminders app).
 
 #### Returns
 
@@ -26,29 +26,29 @@ Creates a new calendar on the device, allowing events to be added later and disp
 
 #### Arguments
 
--   **details : `object`** --
+-   **details (_object_)** --
 
       A map of details for the calendar to be created (see below for a description of these fields):
 
-    -   **title : `string`** -- Required
-    -   **color : `string`** -- Required
-    -   **entityType : `string`** -- Required (iOS only)
-    -   **sourceId : `string`** -- Required (iOS only). ID of the source to be used for the calendar. Likely the same as the source for any other locally stored calendars.
-    -   **source : `object`** -- Required (Android only). Object representing the source to be used for the calendar.
+    -   **title (_string_)** -- Required
+    -   **color (_string_)** -- Required
+    -   **entityType (_string_)** -- Required (iOS only)
+    -   **sourceId (_string_)** -- Required (iOS only). ID of the source to be used for the calendar. Likely the same as the source for any other locally stored calendars.
+    -   **source (_object_)** -- Required (Android only). Object representing the source to be used for the calendar.
 
-        -   **isLocalAccount : `boolean`** -- Whether this source is the local phone account. Must be `true` if `type` is undefined.
-        -   **name : `string`** -- Required. Name for the account that owns this calendar and was used to sync the calendar to the device.
-        -   **type : `string`** -- Type of the account that owns this calendar and was used to sync it to the device. If `isLocalAccount` is falsy then this must be defined, and must match an account on the device along with `name`, or the OS will delete the calendar.
+        -   **isLocalAccount (_boolean_)** -- Whether this source is the local phone account. Must be `true` if `type` is undefined.
+        -   **name (_string_)** -- Required. Name for the account that owns this calendar and was used to sync the calendar to the device.
+        -   **type (_string_)** -- Type of the account that owns this calendar and was used to sync it to the device. If `isLocalAccount` is falsy then this must be defined, and must match an account on the device along with `name`, or the OS will delete the calendar.
 
-    -   **name : `string`** -- Required (Android only)
-    -   **ownerAccount : `string`** -- Required (Android only)
-    -   **timeZone : `string`** -- (Android only)
-    -   **allowedAvailabilities : `array`** -- (Android only)
-    -   **allowedReminders : `array`** -- (Android only)
-    -   **allowedAttendeeTypes : `array`** -- (Android only)
-    -   **isVisible : `boolean`** -- (Android only)
-    -   **isSynced : `boolean`** -- (Android only)
-    -   **accessLevel : `string`** -- Required (Android only)
+    -   **name (_string_)** -- Required (Android only)
+    -   **ownerAccount (_string_)** -- Required (Android only)
+    -   **timeZone (_string_)** -- (Android only)
+    -   **allowedAvailabilities (_array_)** -- (Android only)
+    -   **allowedReminders (_array_)** -- (Android only)
+    -   **allowedAttendeeTypes (_array_)** -- (Android only)
+    -   **isVisible (_boolean_)** -- (Android only)
+    -   **isSynced (_boolean_)** -- (Android only)
+    -   **accessLevel (_string_)** -- Required (Android only)
 
 #### Returns
 
@@ -60,17 +60,17 @@ Updates the provided details of an existing calendar stored on the device. To re
 
 #### Arguments
 
--   **id : `string`** -- ID of the calendar to update. Required.
--   **details : `object`** --
+-   **id (_string_)** -- ID of the calendar to update. Required.
+-   **details (_object_)** --
 
       A map of properties to be updated (see below for a description of these fields):
 
-    -   **title : `string`**
-    -   **sourceId : `string`** -- (iOS only)
-    -   **color : `string`** -- (iOS only)
-    -   **name : `string`** -- (Android only)
-    -   **isVisible : `boolean`** -- (Android only)
-    -   **isSynced : `boolean`** -- (Android only)
+    -   **title (_string_)**
+    -   **sourceId (_string_)** -- (iOS only)
+    -   **color (_string_)** -- (iOS only)
+    -   **name (_string_)** -- (Android only)
+    -   **isVisible (_boolean_)** -- (Android only)
+    -   **isSynced (_boolean_)** -- (Android only)
 
 ### `Expo.Calendar.deleteCalendarAsync(id)`
 
@@ -78,7 +78,7 @@ Deletes an existing calendar and all associated events/reminders/attendees from 
 
 #### Arguments
 
--   **id : `string`** -- ID of the calendar to delete.
+-   **id (_string_)** -- ID of the calendar to delete.
 
 ### `Expo.Calendar.getEventsAsync(calendarIds, startDate, endDate)`
 
@@ -86,9 +86,9 @@ Returns all events in a given set of calendars over a specified time period. The
 
 #### Arguments
 
--   **calendarIds : `array`** -- Array of IDs of calendars to search for events in. Required.
--   **startDate : `Date`** -- Beginning of time period to search for events in. Required.
--   **endDate : `Date`** -- End of time period to search for events in. Required.
+-   **calendarIds (_array_)** -- Array of IDs of calendars to search for events in. Required.
+-   **startDate (_Date_)** -- Beginning of time period to search for events in. Required.
+-   **endDate (_Date_)** -- End of time period to search for events in. Required.
 
 #### Returns
 
@@ -100,12 +100,12 @@ Returns a specific event selected by ID. If a specific instance of a recurring e
 
 #### Arguments
 
--   **id : `string`** -- ID of the event to return. Required.
--   **recurringEventOptions : `object`** --
+-   **id (_string_)** -- ID of the event to return. Required.
+-   **recurringEventOptions (_object_)** --
 
       A map of options for recurring events:
 
-    -   **instanceStartDate : `Date`** -- Date object representing the start time of the desired instance, if looking for a single instance of a recurring event. If this is not provided and **id** represents a recurring event, the first instance of that event will be returned by default.
+    -   **instanceStartDate (_Date_)** -- Date object representing the start time of the desired instance, if looking for a single instance of a recurring event. If this is not provided and **id** represents a recurring event, the first instance of that event will be returned by default.
 
 #### Returns
 
@@ -117,28 +117,28 @@ Creates a new event on the specified calendar.
 
 #### Arguments
 
--   **calendarId : `string`** -- ID of the calendar to create this event in (or `Expo.Calendar.DEFAULT` to add the calendar to the OS-specified default calendar for events). Required.
--   **details : `object`** --
+-   **calendarId (_string_)** -- ID of the calendar to create this event in (or `Expo.Calendar.DEFAULT` to add the calendar to the OS-specified default calendar for events). Required.
+-   **details (_object_)** --
 
       A map of details for the event to be created (see below for a description of these fields):
 
-    -   **title : `string`**
-    -   **startDate : `Date`** -- Required.
-    -   **endDate : `Date`** -- Required on Android.
-    -   **allDay : `boolean`**
-    -   **location : `string`**
-    -   **notes : `string`**
-    -   **alarms : `Array<Alarm>`**
-    -   **recurrenceRule : `RecurrenceRule`**
-    -   **availability : `string`**
-    -   **timeZone : `string`** -- Required on Android.
-    -   **endTimeZone : `string`** -- (Android only)
-    -   **url : `string`** -- (iOS only)
-    -   **organizerEmail : `string`** -- (Android only)
-    -   **accessLevel : `string`** -- (Android only)
-    -   **guestsCanModify : `boolean`** -- (Android only)
-    -   **guestsCanInviteOthers : `boolean`** -- (Android only)
-    -   **guestsCanSeeGuests : `boolean`** -- (Android only)
+    -   **title (_string_)**
+    -   **startDate (_Date_)** -- Required.
+    -   **endDate (_Date_)** -- Required on Android.
+    -   **allDay (_boolean_)**
+    -   **location (_string_)**
+    -   **notes (_string_)**
+    -   **alarms (_Array\<Alarm\>_)**
+    -   **recurrenceRule (_RecurrenceRule_)**
+    -   **availability (_string_)**
+    -   **timeZone (_string_)** -- Required on Android.
+    -   **endTimeZone (_string_)** -- (Android only)
+    -   **url (_string_)** -- (iOS only)
+    -   **organizerEmail (_string_)** -- (Android only)
+    -   **accessLevel (_string_)** -- (Android only)
+    -   **guestsCanModify (_boolean_)** -- (Android only)
+    -   **guestsCanInviteOthers (_boolean_)** -- (Android only)
+    -   **guestsCanSeeGuests (_boolean_)** -- (Android only)
 
 #### Returns
 
@@ -150,35 +150,35 @@ Updates the provided details of an existing calendar stored on the device. To re
 
 #### Arguments
 
--   **id : `string`** -- ID of the event to be updated. Required.
--   **details : `object`** --
+-   **id (_string_)** -- ID of the event to be updated. Required.
+-   **details (_object_)** --
 
       A map of properties to be updated (see below for a description of these fields):
 
-    -   **title : `string`**
-    -   **startDate : `Date`**
-    -   **endDate : `Date`**
-    -   **allDay : `boolean`**
-    -   **location : `string`**
-    -   **notes : `string`**
-    -   **alarms : `Array<Alarm>`**
-    -   **recurrenceRule : `RecurrenceRule`**
-    -   **availability : `string`**
-    -   **timeZone : `string`**
-    -   **endTimeZone : `string`** -- (Android only)
-    -   **url : `string`** -- (iOS only)
-    -   **organizerEmail : `string`** -- (Android only)
-    -   **accessLevel : `string`** -- (Android only)
-    -   **guestsCanModify : `boolean`** -- (Android only)
-    -   **guestsCanInviteOthers : `boolean`** -- (Android only)
-    -   **guestsCanSeeGuests : `boolean`** -- (Android only)
+    -   **title (_string_)**
+    -   **startDate (_Date_)**
+    -   **endDate (_Date_)**
+    -   **allDay (_boolean_)**
+    -   **location (_string_)**
+    -   **notes (_string_)**
+    -   **alarms (_Array\<Alarm\>_)**
+    -   **recurrenceRule (_RecurrenceRule_)**
+    -   **availability (_string_)**
+    -   **timeZone (_string_)**
+    -   **endTimeZone (_string_)** -- (Android only)
+    -   **url (_string_)** -- (iOS only)
+    -   **organizerEmail (_string_)** -- (Android only)
+    -   **accessLevel (_string_)** -- (Android only)
+    -   **guestsCanModify (_boolean_)** -- (Android only)
+    -   **guestsCanInviteOthers (_boolean_)** -- (Android only)
+    -   **guestsCanSeeGuests (_boolean_)** -- (Android only)
 
--   **recurringEventOptions : `object`** --
+-   **recurringEventOptions (_object_)** --
 
       A map of options for recurring events:
 
-    -   **instanceStartDate : `Date`** -- Date object representing the start time of the desired instance, if wanting to update a single instance of a recurring event. If this is not provided and **id** represents a recurring event, the first instance of that event will be updated by default.
-    -   **futureEvents : `boolean`** -- Whether or not future events in the recurring series should also be updated. If `true`, will apply the given changes to the recurring instance specified by `instanceStartDate` and all future events in the series. If `false`, will only apply the given changes to the instance specified by `instanceStartDate`.
+    -   **instanceStartDate (_Date_)** -- Date object representing the start time of the desired instance, if wanting to update a single instance of a recurring event. If this is not provided and **id** represents a recurring event, the first instance of that event will be updated by default.
+    -   **futureEvents (_boolean_)** -- Whether or not future events in the recurring series should also be updated. If `true`, will apply the given changes to the recurring instance specified by `instanceStartDate` and all future events in the series. If `false`, will only apply the given changes to the instance specified by `instanceStartDate`.
 
 ### `Expo.Calendar.deleteEventAsync(id, recurringEventOptions)`
 
@@ -186,13 +186,13 @@ Deletes an existing event from the device. Use with caution.
 
 #### Arguments
 
--   **id : `string`** -- ID of the event to be deleted. Required.
--   **recurringEventOptions : `object`** --
+-   **id (_string_)** -- ID of the event to be deleted. Required.
+-   **recurringEventOptions (_object_)** --
 
       A map of options for recurring events:
 
-    -   **instanceStartDate : `Date`** -- Date object representing the start time of the desired instance, if wanting to delete a single instance of a recurring event. If this is not provided and **id** represents a recurring event, the first instance of that event will be deleted by default.
-    -   **futureEvents : `boolean`** -- Whether or not future events in the recurring series should also be deleted. If `true`, will delete the instance specified by `instanceStartDate` and all future events in the series. If `false`, will only delete the instance specified by `instanceStartDate`.
+    -   **instanceStartDate (_Date_)** -- Date object representing the start time of the desired instance, if wanting to delete a single instance of a recurring event. If this is not provided and **id** represents a recurring event, the first instance of that event will be deleted by default.
+    -   **futureEvents (_boolean_)** -- Whether or not future events in the recurring series should also be deleted. If `true`, will delete the instance specified by `instanceStartDate` and all future events in the series. If `false`, will only delete the instance specified by `instanceStartDate`.
 
 
 ### `Expo.Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)`
@@ -201,12 +201,12 @@ Gets all attendees for a given event (or instance of a recurring event).
 
 #### Arguments
 
--   **eventId : `string`** -- ID of the event to return attendees for. Required.
--   **recurringEventOptions : `object`** --
+-   **eventId (_string_)** -- ID of the event to return attendees for. Required.
+-   **recurringEventOptions (_object_)** --
 
       A map of options for recurring events:
 
-    -   **instanceStartDate : `Date`** -- Date object representing the start time of the desired instance, if looking for a single instance of a recurring event. If this is not provided and **eventId** represents a recurring event, the attendees of the first instance of that event will be returned by default.
+    -   **instanceStartDate (_Date_)** -- Date object representing the start time of the desired instance, if looking for a single instance of a recurring event. If this is not provided and **eventId** represents a recurring event, the attendees of the first instance of that event will be returned by default.
 
 #### Returns
 
@@ -218,17 +218,17 @@ An array of [attendee objects](#attendee "Attendee") associated with the specifi
 
 #### Arguments
 
--   **eventId : `string`** -- ID of the event to add this attendee to. Required.
--   **details : `object`** --
+-   **eventId (_string_)** -- ID of the event to add this attendee to. Required.
+-   **details (_object_)** --
 
       A map of details for the attendee to be created (see below for a description of these fields):
 
-    -   **id : `string`** Required.
-    -   **email : `string`** Required.
-    -   **name : `string`**
-    -   **role : `string`** Required.
-    -   **status : `string`** Required.
-    -   **type : `string`** Required.
+    -   **id (_string_)** Required.
+    -   **email (_string_)** Required.
+    -   **name (_string_)**
+    -   **role (_string_)** Required.
+    -   **status (_string_)** Required.
+    -   **type (_string_)** Required.
 
 #### Returns
 
@@ -240,17 +240,17 @@ A string representing the ID of the newly created attendee record.
 
 #### Arguments
 
--   **id : `string`** -- ID of the attendee record to be updated. Required.
--   **details : `object`** --
+-   **id (_string_)** -- ID of the attendee record to be updated. Required.
+-   **details (_object_)** --
 
       A map of properties to be updated (see below for a description of these fields):
 
-    -   **id : `string`**
-    -   **email : `string`**
-    -   **name : `string`**
-    -   **role : `string`**
-    -   **status : `string`**
-    -   **type : `string`**
+    -   **id (_string_)**
+    -   **email (_string_)**
+    -   **name (_string_)**
+    -   **role (_string_)**
+    -   **status (_string_)**
+    -   **type (_string_)**
 
 ### `Expo.Calendar.deleteAttendeeAsync(id)`
 
@@ -258,7 +258,7 @@ A string representing the ID of the newly created attendee record.
 
 #### Arguments
 
--   **id : `string`** -- ID of the attendee to delete.
+-   **id (_string_)** -- ID of the attendee to delete.
 
 ### `Expo.Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)`
 
@@ -266,10 +266,10 @@ A string representing the ID of the newly created attendee record.
 
 #### Arguments
 
--   **calendarIds : `array`** -- Array of IDs of calendars to search for reminders in. Required.
--   **status : `string`** -- One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`.
--   **startDate : `Date`** -- Beginning of time period to search for reminders in. Required if `status` is defined.
--   **endDate : `Date`** -- End of time period to search for reminders in. Required if `status` is defined.
+-   **calendarIds (_array_)** -- Array of IDs of calendars to search for reminders in. Required.
+-   **status (_string_)** -- One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`.
+-   **startDate (_Date_)** -- Beginning of time period to search for reminders in. Required if `status` is defined.
+-   **endDate (_Date_)** -- End of time period to search for reminders in. Required if `status` is defined.
 
 #### Returns
 
@@ -281,7 +281,7 @@ An array of [reminder objects](#reminder "Reminder") matching the search criteri
 
 #### Arguments
 
--   **id : `string`** -- ID of the reminder to return. Required.
+-   **id (_string_)** -- ID of the reminder to return. Required.
 
 #### Returns
 
@@ -293,22 +293,22 @@ An [reminder object](#reminder "Reminder") matching the provided ID, if one exis
 
 #### Arguments
 
--   **calendarId : `string`** -- ID of the calendar to create this reminder in (or `Expo.Calendar.DEFAULT` to add the calendar to the OS-specified default calendar for reminders). Required.
--   **details : `object`** --
+-   **calendarId (_string_)** -- ID of the calendar to create this reminder in (or `Expo.Calendar.DEFAULT` to add the calendar to the OS-specified default calendar for reminders). Required.
+-   **details (_object_)** --
 
       A map of details for the reminder to be created: (see below for a description of these fields)
 
-    -   **title : `string`**
-    -   **startDate : `Date`**
-    -   **dueDate : `Date`**
-    -   **completed : `boolean`**
-    -   **completionDate : `Date`**
-    -   **location : `string`**
-    -   **notes : `string`**
-    -   **alarms : `array`**
-    -   **recurrenceRule : `RecurrenceRule`**
-    -   **timeZone : `string`**
-    -   **url : `string`**
+    -   **title (_string_)**
+    -   **startDate (_Date_)**
+    -   **dueDate (_Date_)**
+    -   **completed (_boolean_)**
+    -   **completionDate (_Date_)**
+    -   **location (_string_)**
+    -   **notes (_string_)**
+    -   **alarms (_array_)**
+    -   **recurrenceRule (_RecurrenceRule_)**
+    -   **timeZone (_string_)**
+    -   **url (_string_)**
 
 #### Returns
 
@@ -320,21 +320,21 @@ A string representing the ID of the newly created reminder.
 
 #### Arguments
 
--   **id : `string`** -- ID of the reminder to be updated. Required.
--   **details : `object`** --
+-   **id (_string_)** -- ID of the reminder to be updated. Required.
+-   **details (_object_)** --
 
       A map of properties to be updated (see below for a description of these fields):
 
-    -   **title : `string`**
-    -   **startDate : `Date`**
-    -   **dueDate : `Date`**
-    -   **completionDate : `Date`** -- Setting this property of a nonnull Date will automatically set the reminder's `completed` value to `true`.
-    -   **location : `string`**
-    -   **notes : `string`**
-    -   **alarms : `array`**
-    -   **recurrenceRule : `RecurrenceRule`**
-    -   **timeZone : `string`**
-    -   **url : `string`**
+    -   **title (_string_)**
+    -   **startDate (_Date_)**
+    -   **dueDate (_Date_)**
+    -   **completionDate (_Date_)** -- Setting this property of a nonnull Date will automatically set the reminder's `completed` value to `true`.
+    -   **location (_string_)**
+    -   **notes (_string_)**
+    -   **alarms (_array_)**
+    -   **recurrenceRule (_RecurrenceRule_)**
+    -   **timeZone (_string_)**
+    -   **url (_string_)**
 
 ### `Expo.Calendar.deleteReminderAsync(id)`
 
@@ -342,7 +342,7 @@ A string representing the ID of the newly created reminder.
 
 #### Arguments
 
--   **id : `string`** -- ID of the reminder to be deleted. Required.
+-   **id (_string_)** -- ID of the reminder to be deleted. Required.
 
 ### `Expo.Calendar.getSourcesAsync()`
 
@@ -358,7 +358,7 @@ An array of [source objects](#source "Source") all sources for calendars stored 
 
 #### Arguments
 
--   **id : `string`** -- ID of the source to return. Required.
+-   **id (_string_)** -- ID of the source to return. Required.
 
 #### Returns
 
@@ -370,7 +370,7 @@ A [source object](#source "Source") matching the provided ID, if one exists.
 
 #### Arguments
 
--   **id : `string`** -- ID of the event to open. Required.
+-   **id (_string_)** -- ID of the event to open. Required.
 
 ## List of object properties
 

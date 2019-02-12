@@ -12,23 +12,23 @@ Get a list of all entries in the system contacts. This returns a set of data rel
 
 A map of options:
 
--   **fields : `array`** -- An array describing fields to retrieve per contact. Each element must be one of constants listed in the table below.
+-   **fields (_array_)** -- An array describing fields to retrieve per contact. Each element must be one of constants listed in the table below.
 
--   **pageSize : `number`** -- The number of contacts per page that will be returned. Defaults to 100.
+-   **pageSize (_number_)** -- The number of contacts per page that will be returned. Defaults to 100.
 
--   **pageOffset : `number`** -- The number of contacts to skip before those that will be returned. Defaults to 0.
+-   **pageOffset (_number_)** -- The number of contacts to skip before those that will be returned. Defaults to 0.
 
 #### Returns
 
 A pagination object that contains the following fields.
 
--   **data : `array`** -- An array of objects of the form `{ id, name, firstName, middleName, lastName, nickname, jobTitle, company, department, imageAvailable  }`. iOS also includes `previousLastName`. The additional fields are listed in the table below.
+-   **data (_array_)** -- An array of objects of the form `{ id, name, firstName, middleName, lastName, nickname, jobTitle, company, department, imageAvailable  }`. iOS also includes `previousLastName`. The additional fields are listed in the table below.
 
--   **hasNextPage : `boolean`** -- If there is more contacts available.
+-   **hasNextPage (_boolean_)** -- If there is more contacts available.
 
--   **hasPreviousPage : `boolean`** -- If there was contacts skipped. Will be true when passing a pageOffset greater than 0.
+-   **hasPreviousPage (_boolean_)** -- If there was contacts skipped. Will be true when passing a pageOffset greater than 0.
 
--   **total : `number`** -- The total number of contacts available.
+-   **total (_number_)** -- The total number of contacts available.
 
 ### `Expo.Contacts.getContactByIdAsync(options)`
 
@@ -38,9 +38,9 @@ Get a single contact from system contacts associated to specified `id`.
 
 A map of options:
 
--   **id : `string`** - ID of the contact to fetch.
+-   **id (_string_)** - ID of the contact to fetch.
 
--   **fields : `array`** -- An array describing fields to retrieve. Each element must be one of constants listed in the table below.
+-   **fields (_array_)** -- An array describing fields to retrieve. Each element must be one of constants listed in the table below.
 
 #### Returns
 

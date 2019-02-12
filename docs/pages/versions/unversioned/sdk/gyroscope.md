@@ -18,7 +18,7 @@ Subscribe for updates to the gyroscope.
 
 #### Arguments
 
-- **listener : `function`** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
+- **listener (_function_)** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
 
 #### Returns
 
@@ -35,7 +35,7 @@ Subscribe for updates to the gyroscope.
 
 #### Arguments
 
-- **intervalMs : `number`** -- Desired interval in milliseconds between gyroscope updates.
+- **intervalMs (_number_)** -- Desired interval in milliseconds between gyroscope updates.
 
 ## Example: basic subscription
 

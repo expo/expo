@@ -43,8 +43,8 @@ Your Facebook application ID. [Facebook's developer documentation](https://devel
 
 A map of options:
 
-- **permissions : `array`** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email']`.
-- **behavior : `string`** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
+- **permissions (_array_)** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email']`.
+- **behavior (_string_)** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
 
   - `'system'` (default) -- Attempts to log in through the Facebook account currently signed in through the device Settings. This will fallback to `native` behavior on iOS 11+ as Facebook has been removed from iOS's Settings.
   - `'web'` -- Attempts to log in through a modal `UIWebView` pop up.

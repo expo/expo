@@ -40,7 +40,7 @@ Sets the current screen brightness. On iOS, this setting will persist until the 
 
 #### Arguments
 
-- **brightnessValue : `number`** - A number between 0 and 1, inclusive, representing the desired screen brightness.
+- **brightnessValue (_number_)** - A number between 0 and 1, inclusive, representing the desired screen brightness.
 
 #### Returns
 
@@ -98,7 +98,7 @@ A `Promise` that is resolved with a number between 0 and 1, inclusive, represent
 
 #### Arguments
 
-- **brightnessValue : `number`** - A number between 0 and 1, inclusive, representing the desired screen brightness.
+- **brightnessValue (_number_)** - A number between 0 and 1, inclusive, representing the desired screen brightness.
 
 #### Returns
 

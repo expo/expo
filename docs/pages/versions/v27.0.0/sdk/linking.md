@@ -12,8 +12,8 @@ Helper method for constructing a deep link into your app, given an optional path
 
 #### Arguments
 
--   **path : `string`** -- Any path into your app.
--   **queryParams : `object`** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
+-   **path (_string_)** -- Any path into your app.
+-   **queryParams (_object_)** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
 
 #### Returns
 
@@ -25,14 +25,14 @@ Helper method for parsing out deep link information from a URL.
 
 #### Arguments
 
--   **url : `string`** -- A URL that points to the currently running experience (e.g. an output of `Expo.Linking.makeUrl()`).
+-   **url (_string_)** -- A URL that points to the currently running experience (e.g. an output of `Expo.Linking.makeUrl()`).
 
 #### Returns
 
 An object with the following keys:
 
--   **path : `string`** -- The path into the app specified by the url.
--   **queryParams : `object`** -- The set of query parameters specified by the query string of the url.
+-   **path (_string_)** -- The path into the app specified by the url.
+-   **queryParams (_object_)** -- The set of query parameters specified by the query string of the url.
 
 ### `Expo.Linking.parseInitialURLAsync()`
 
@@ -42,5 +42,5 @@ Helper method which wraps React Native's `Linking.getInitalURL()` in `Expo.Linki
 
 An object with the following keys:
 
--   **path : `string`** -- The path specified by the url used to open the app.
--   **queryParams : `object`** -- The set of query parameters specified by the query string of the url used to open the app.
+-   **path (_string_)** -- The path specified by the url used to open the app.
+-   **queryParams (_object_)** -- The set of query parameters specified by the query string of the url used to open the app.

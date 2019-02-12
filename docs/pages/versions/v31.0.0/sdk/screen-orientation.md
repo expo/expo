@@ -17,7 +17,7 @@ Allow a screen orientation. You can call this function multiple times with multi
 
 #### Arguments
 
--   **orientation : `string`** -- The allowed orientation. See the `Orientation` enum for possible values.
+-   **orientation (_string_)** -- The allowed orientation. See the `Orientation` enum for possible values.
 
 #### Returns
 

@@ -14,11 +14,11 @@ Display the system UI for choosing a document.
 
 #### Arguments
 
--   **options : `object`** --
+-   **options (_object_)** --
 
       A map of options:
 
-    -   **type : `string`** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
+    -   **type (_string_)** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
 
 #### Returns
 

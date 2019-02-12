@@ -12,7 +12,7 @@ Convenience form of [`Font.loadAsync()`](#fontloadasync) that loads multiple fon
 
 #### Arguments
 
--   **map : `object`** -- A map of names to `require` statements as in [`Font.loadAsync()`](#fontloadasync).
+-   **map (_object_)** -- A map of names to `require` statements as in [`Font.loadAsync()`](#fontloadasync).
 
 #### Example
 

@@ -12,20 +12,20 @@ Snapshots the given view.
 
 #### Arguments
 
--   **view : `number|ReactElement`** -- The `ref` or `reactTag` (also known as node handle) for the view to snapshot.
--   **options : `object`** --
+-   **view (_number|ReactElement_)** -- The `ref` or `reactTag` (also known as node handle) for the view to snapshot.
+-   **options (_object_)** --
 
       An optional map of optional options
 
-    -   **format : `string`** -- `"png" | "jpg" | "webm"`, defaults to `"png"`, `"webm"` supported only on Android.
-    -   **quality : `number`** -- Number between 0 and 1 where 0 is worst quality and 1 is best, defaults to `1`
-    -   **result : `string`** -- The type for the resulting image.
+    -   **format (_string_)** -- `"png" | "jpg" | "webm"`, defaults to `"png"`, `"webm"` supported only on Android.
+    -   **quality (_number_)** -- Number between 0 and 1 where 0 is worst quality and 1 is best, defaults to `1`
+    -   **result (_string_)** -- The type for the resulting image.
             \-   `'tmpfile'` -- (default) Return a temporary file uri.
             \-   `'base64'` -- base64 encoded image.
             \-   `'data-uri'` -- base64 encoded image with data-uri prefix.
-    -   **height : `number`** -- Height of result in pixels
-    -   **width : `number`** -- Width of result in pixels
-    -   **snapshotContentContainer : `bool`** -- if true and when view is a ScrollView, the "content container" height will be evaluated instead of the container height
+    -   **height (_number_)** -- Height of result in pixels
+    -   **width (_number_)** -- Width of result in pixels
+    -   **snapshotContentContainer (_bool_)** -- if true and when view is a ScrollView, the "content container" height will be evaluated instead of the container height
 
 #### Returns
 

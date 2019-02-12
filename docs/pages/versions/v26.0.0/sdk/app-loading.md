@@ -60,6 +60,6 @@ export default class App extends React.Component {
 
 The following props are recommended, but optional for the sake of backwards compatibility (they were introduced in SDK21). If you do not provide any props, you are responsible for coordinating loading assets, handling errors, and updating state to unmount the `AppLoading` component.
 
-- **startAsync : `function`** -- A `function` that returns a `Promise`, and the `Promise` should resolve when the app is done loading required data and assets.
-- **onError : `function`** -- If `startAsync` throws an error, it is caught and passed into the function provided to `onError`.
-- **onFinish : `function`** -- **(Required if you provide `startAsync`)**. Called when `startAsync` resolves or rejects. This should be used to set state and unmount the `AppLoading` component.
+- **startAsync (_function_)** -- A `function` that returns a `Promise`, and the `Promise` should resolve when the app is done loading required data and assets.
+- **onError (_function_)** -- If `startAsync` throws an error, it is caught and passed into the function provided to `onError`.
+- **onFinish (_function_)** -- **(Required if you provide `startAsync`)**. Called when `startAsync` resolves or rejects. This should be used to set state and unmount the `AppLoading` component.

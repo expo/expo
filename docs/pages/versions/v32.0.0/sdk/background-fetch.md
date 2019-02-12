@@ -23,7 +23,7 @@ Registers background fetch task with given name. Registered tasks are saved in p
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task) for more details.
+-   **taskName (_string_)** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task) for more details.
 
 #### Returns
 
@@ -57,7 +57,7 @@ Unregisters background fetch task, so the application will no longer be executin
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task to unregister.
+-   **taskName (_string_)** -- Name of the task to unregister.
 
 #### Returns
 
@@ -71,7 +71,7 @@ Sets the minimum number of seconds that must elapse before another background fe
 
 #### Arguments
 
--   **minimumInterval : `number`** -- Number of seconds that must elapse before another background fetch can be called.
+-   **minimumInterval (_number_)** -- Number of seconds that must elapse before another background fetch can be called.
 
 #### Returns
 

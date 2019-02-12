@@ -22,8 +22,8 @@ Get the step count between two dates.
 
 #### Arguments
 
-- **start : `Date`** -- A date indicating the start of the range over which to measure steps.
-- **end : `Date`** -- A date indicating the end of the range over which to measure steps.
+- **start (_Date_)** -- A date indicating the start of the range over which to measure steps.
+- **end (_Date_)** -- A date indicating the end of the range over which to measure steps.
 
 #### Returns
 
@@ -35,7 +35,7 @@ Subscribe to pedometer updates.
 
 #### Arguments
 
-- **callback : `function`** A callback that is invoked when new step count data is available. The callback is provided a single argument that is an object with a `steps` key.
+- **callback (_function_)** A callback that is invoked when new step count data is available. The callback is provided a single argument that is an object with a `steps` key.
 
 #### Returns
 

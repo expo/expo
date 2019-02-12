@@ -18,19 +18,19 @@ Subscribe for updates to DeviceMotion.
 
 #### Arguments
 
-- **listener : `function`** -- A callback that is invoked when a
+- **listener (_function_)** -- A callback that is invoked when a
   DeviceMotion update is available. When invoked, the listener is
   provided a single argument that is an object containing following fields:
 
-  - **acceleration : `object`** -- Device acceleration on the three axis as an object with x, y, z keys. Expressed in m/s<sup>2</sup>.
+  - **acceleration (_object_)** -- Device acceleration on the three axis as an object with x, y, z keys. Expressed in m/s<sup>2</sup>.
 
-  - **accelerationIncludingGravity : `object`** -- Device acceleration with the effect of gravity on the three axis as an object with x, y, z keys. Expressed in m/s<sup>2</sup>.
+  - **accelerationIncludingGravity (_object_)** -- Device acceleration with the effect of gravity on the three axis as an object with x, y, z keys. Expressed in m/s<sup>2</sup>.
 
-  - **rotation : `object`** -- Device's orientation in space as an object with alpha, beta, gamma keys where alpha is for rotation around Z axis, beta for X axis rotation and gamma for Y axis rotation.
+  - **rotation (_object_)** -- Device's orientation in space as an object with alpha, beta, gamma keys where alpha is for rotation around Z axis, beta for X axis rotation and gamma for Y axis rotation.
 
-  - **rotationRate : `object`** -- Rotation rates of the device around each of its axes as an object with alpha, beta, gamma keys where alpha is around Z axis, beta for X axis and gamma for Y axis.
+  - **rotationRate (_object_)** -- Rotation rates of the device around each of its axes as an object with alpha, beta, gamma keys where alpha is around Z axis, beta for X axis and gamma for Y axis.
 
-  - **orientation : `number`** -- Device orientation based on screen rotation. Value is on of `0` (portrait), `90` (right landscape), `180` (upside down), `-90` (left landscape).
+  - **orientation (_number_)** -- Device orientation based on screen rotation. Value is on of `0` (portrait), `90` (right landscape), `180` (upside down), `-90` (left landscape).
 
 #### Returns
 
@@ -47,5 +47,5 @@ Subscribe for updates to DeviceMotion.
 
 #### Arguments
 
-- **intervalMs : `number`** Desired interval in milliseconds between
+- **intervalMs (_number_)** Desired interval in milliseconds between
   DeviceMotion updates.

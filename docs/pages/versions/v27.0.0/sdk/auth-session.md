@@ -99,13 +99,13 @@ Initiate an authentication session with the given options. Only one `AuthSession
 
 #### Arguments
 
--   **options : `object`** --
+-   **options (_object_)** --
 
       A map of options:
 
-    -   **authUrl : `string`** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
+    -   **authUrl (_string_)** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
 
-    -   **returnUrl : `string`** -- The URL to return to the application. Defaults to `${Expo.Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
+    -   **returnUrl (_string_)** -- The URL to return to the application. Defaults to `${Expo.Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
 
 
 #### Returns

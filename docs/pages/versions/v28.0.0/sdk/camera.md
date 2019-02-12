@@ -89,7 +89,7 @@ Camera flash mode. Use one of `Camera.Constants.FlashMode`. When `on`, the flash
 
 State of camera auto focus. Use one of `Camera.Constants.AutoFocus`. When `on`, auto focus will be enabled, when `off`, it wont't and focus will lock as it was in the moment of change but it can be adjusted on some devices via `focusDepth` prop.
 
-- **zoom** : `float`
+- **zoom** (_float_)
 
 A value between 0 and 1 being a percentage of device's max zoom. 0 - not zoomed, 1 - maximum zoom. Default: 0.
 
@@ -97,40 +97,40 @@ A value between 0 and 1 being a percentage of device's max zoom. 0 - not zoomed,
 
 Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny`, `cloudy`, `shadow`, `fluorescent`, `incandescent`. If a device does not support any of these values previous one is used.
 
-- **focusDepth** : `float`
+- **focusDepth** (_float_)
 
 Distance to plane of sharpest focus. A value between 0 and 1: 0 - infinity focus, 1 - focus as close as possible. Default: 0. For Android this is available only for some devices and when `useCamera2Api` is set to true.
 
-- **ratio** : `string`
+- **ratio** (_string_)
 
 Android only. A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported by the device use `getSupportedRatiosAsync`. Default: `4:3`.
 
-- **pictureSize** : `string`
+- **pictureSize** (_string_)
 
 A string representing the size of pictures `takePictureAsync` will take. Available sizes can be fetched with `getAvailablePictureSizesAsync`.
 
-- **onCameraReady** : `function`
+- **onCameraReady** (_function_)
 
 Callback invoked when camera preview has been set.
 
-- **onFacesDetected** : `function`
+- **onFacesDetected** (_function_)
 
 Callback invoked with results of face detection on the preview. It will receive an object containing:
 
-- **faces** : `array` - array of faces objects:
-  - **faceID : `number`** -- a face identifier (used for tracking, if the same face appears on consecutive frames it will have the same `faceID`).
-  - **bounds : `object`** -- an object containing:
+- **faces** (_array_) - array of faces objects:
+  - **faceID (_number_)** -- a face identifier (used for tracking, if the same face appears on consecutive frames it will have the same `faceID`).
+  - **bounds (_object_)** -- an object containing:
     - **origin (`{ x: number, y: number }`)** -- position of the top left corner of a square containing the face in view coordinates,
     - **size (`{ width: number, height: number }`)** -- size of the square containing the face in view coordinates,
-  - **rollAngle : `number`** -- roll angle of the face (bank),
-  - **yawAngle : `number`** -- yaw angle of the face (heading, turning head left or right),
-  - **smilingProbability : `number`** -- probability that the face is smiling,
+  - **rollAngle (_number_)** -- roll angle of the face (bank),
+  - **yawAngle (_number_)** -- yaw angle of the face (heading, turning head left or right),
+  - **smilingProbability (_number_)** -- probability that the face is smiling,
   - **leftEarPosition (`{ x: number, y: number}`)** -- position of the left ear in view coordinates,
   - **rightEarPosition (`{ x: number, y: number}`)** -- position of the right ear in view coordinates,
   - **leftEyePosition (`{ x: number, y: number}`)** -- position of the left eye in view coordinates,
-  - **leftEyeOpenProbability : `number`** -- probability that the left eye is open,
+  - **leftEyeOpenProbability (_number_)** -- probability that the left eye is open,
   - **rightEyePosition (`{ x: number, y: number}`)** -- position of the right eye in view coordinates,
-  - **rightEyeOpenProbability : `number`** -- probability that the right eye is open,
+  - **rightEyeOpenProbability (_number_)** -- probability that the right eye is open,
   - **leftCheekPosition (`{ x: number, y: number}`)** -- position of the left cheek in view coordinates,
   - **rightCheekPosition (`{ x: number, y: number}`)** -- position of the right cheek in view coordinates,
   - **mouthPosition (`{ x: number, y: number}`)** -- position of the center of the mouth in view coordinates,
@@ -144,31 +144,31 @@ Positions of face landmarks are returned only if `faceDetectionLandmarks` proper
 
 See also `FaceDetector` component.
 
-- **faceDetectionMode** : `Camera.Constants.FaceDetection.Mode`
+- **faceDetectionMode** (_Camera.Constants.FaceDetection.Mode_)
 
 Mode of the face detection. Use one of `Camera.Constants.FaceDetection.Mode.{fast, accurate}`.
 
-- **faceDetectionLandmarks** : `Camera.Constants.FaceDetection.Landmarks`
+- **faceDetectionLandmarks** (_Camera.Constants.FaceDetection.Landmarks_)
 
 Whether to detect landmarks on the faces. Use one of `Camera.Constants.FaceDetection.Landmarks.{all, none}`. See FaceDetector documentation for details.
 
-- **faceDetectionClassifications** : `Camera.Constants.FaceDetection.Classifications`
+- **faceDetectionClassifications** (_Camera.Constants.FaceDetection.Classifications_)
 
 Whether to run additional classifications on the faces. Use one of `Camera.Constants.FaceDetection.Classifications.{all, none}`. See FaceDetector documentation for details.
 
-- **onMountError** : `function`
+- **onMountError** (_function_)
 
 Callback invoked when camera preview could not been started. It is provided with an error object that contains a `message`.
 
-- **onBarCodeRead : `function`**
+- **onBarCodeRead (_function_)**
 
 Callback that is invoked when a bar code has been successfully read. The callback is provided with an Object of the shape `{ type: string, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL)
 
-- **barCodeTypes : `Array<string>`**
+- **barCodeTypes (_Array\<string\>_)**
 
 An array of bar code types. Usage: `Camera.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[Camera.Constants.BarCodeType.qr]}`
 
-- **useCamera2Api** : `boolean`
+- **useCamera2Api** (_boolean_)
 
 Android only. Whether to use Android's Camera2 API. See `Note` at the top of this page.
 
@@ -193,14 +193,14 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 #### Arguments
 
--   **options : `object`** --
+-   **options (_object_)** --
 
       A map of options:
 
-    -   **quality : `number`** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
-    -   **base64 : `boolean`** -- Whether to also include the image data in Base64 format.
-    -   **exif : `boolean`** -- Whether to also include the EXIF data for the image.
-    -   **onPictureSaved : `function`** -- A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured. The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it is not your case, this callback lets you skip waiting for it to be saved.
+    -   **quality (_number_)** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
+    -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
+    -   **exif (_boolean_)** -- Whether to also include the EXIF data for the image.
+    -   **onPictureSaved (_function_)** -- A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured. The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it is not your case, this callback lets you skip waiting for it to be saved.
 
 #### Returns
 
@@ -214,14 +214,14 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
 
 #### Arguments
 
--   **options : `object`** --
+-   **options (_object_)** --
 
       A map of options:
 
-    -   **quality : `VideoQuality`** -- Specify the quality of recorded video. Usage: `Camera.Constants.VideoQuality['<value>']`, possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480). If the chosen quality is not available for a device, the highest available is chosen.
-    -   **maxDuration : `number`** -- Maximum video duration in seconds.
-    -   **maxFileSize : `number`** -- Maximum video file size in bytes.
-    -   **mute : `boolean`** -- If present, video will be recorded with no sound.
+    -   **quality (_VideoQuality_)** -- Specify the quality of recorded video. Usage: `Camera.Constants.VideoQuality['<value>']`, possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480). If the chosen quality is not available for a device, the highest available is chosen.
+    -   **maxDuration (_number_)** -- Maximum video duration in seconds.
+    -   **maxFileSize (_number_)** -- Maximum video file size in bytes.
+    -   **mute (_boolean_)** -- If present, video will be recorded with no sound.
 
 #### Returns
 
@@ -245,7 +245,7 @@ Get picture sizes that are supported by the device for given `ratio`.
 
 #### Arguments
 
--   **ratio : `string`** -- A string representing aspect ratio of sizes to be returned.
+-   **ratio (_string_)** -- A string representing aspect ratio of sizes to be returned.
 
 #### Returns
 

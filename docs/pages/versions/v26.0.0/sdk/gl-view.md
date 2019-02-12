@@ -25,10 +25,10 @@ Takes a snapshot of the framebuffer and saves it as JPEG file to app's cache dir
 
 #### Arguments
 
--   **options : `object`** -- A map of options:
-    -   **framebuffer : `WebGLFramebuffer`** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view.
+-   **options (_object_)** -- A map of options:
+    -   **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view.
     -   **rect (`{ x: number, y: number, width: number, height: number }`)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
-    -   **flip : `boolean`** -- Whether to flip the snapshot vertically. Defaults to `false`.
+    -   **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
 
 #### Returns
 

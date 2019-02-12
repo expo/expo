@@ -19,7 +19,7 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 
 #### Arguments
 
--   **localUri : `string`** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+-   **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
 
 #### Returns
 
@@ -30,25 +30,25 @@ An object representing an [asset](#asset).
 Fetches a page of assets matching the provided criteria.
 
 #### Arguments
--   **options : `object`**
+-   **options (_object_)**
 
-    -   **first : `number`** -- The maximum number of items on a single page.
-    -   **after : `string`** -- Asset ID of the last item returned on the previous page.
+    -   **first (_number_)** -- The maximum number of items on a single page.
+    -   **after (_string_)** -- Asset ID of the last item returned on the previous page.
     -   **album (_string_ | _Album_)** -- [Album](#album) or its ID to get assets from specific album.
-    -   **sortBy : `array`** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` 
+    -   **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` 
     -   value that means whether to use ascending order.
     Earlier items have higher priority when sorting out the results.
     If empty, this method will use the default sorting that is provided by the platform.
-    -   **mediaType : `array`** -- An array of [MediaType](#expomedialibrarymediatype) types. By default `MediaType.photo` is set.
+    -   **mediaType (_array_)** -- An array of [MediaType](#expomedialibrarymediatype) types. By default `MediaType.photo` is set.
 
 #### Returns
 
 A promise that resolves to an object that contains following keys:
 
--   **assets : `array`** -- A page of [assets](#asset) fetched by the query.
--   **endCursor : `string`** -- ID of the last fetched asset. It should be passed as `after` option in order to get the next page.
--   **hasNextPage : `boolean`** -- Whether there are more assets to fetch.
--   **totalCount : `number`** -- Estimated total number of assets that match the query.
+-   **assets (_array_)** -- A page of [assets](#asset) fetched by the query.
+-   **endCursor (_string_)** -- ID of the last fetched asset. It should be passed as `after` option in order to get the next page.
+-   **hasNextPage (_boolean_)** -- Whether there are more assets to fetch.
+-   **totalCount (_number_)** -- Estimated total number of assets that match the query.
 
 ### `Expo.MediaLibrary.getAssetInfoAsync(asset)`
 
@@ -70,7 +70,7 @@ Also, there is additional dialog on iOS that requires user to confirm this actio
 
 #### Arguments
 
--   **assets : `array`** -- An array of [assets](#asset) or their IDs.
+-   **assets (_array_)** -- An array of [assets](#asset) or their IDs.
 
 #### Returns
 
@@ -90,7 +90,7 @@ Queries for an album with a specific name.
 
 #### Arguments
 
--   **albumName : `string`** -- Name of the album to look for.
+-   **albumName (_string_)** -- Name of the album to look for.
 
 #### Returns
 
@@ -105,9 +105,9 @@ In case it's copied you should keep in mind that `getAssetsAsync` will return du
 
 #### Arguments
 
--   **albumName : `string`** -- Name of the album to create.
+-   **albumName (_string_)** -- Name of the album to create.
 -   **asset (_string_ | _Asset_)** -- [Asset](#asset) or its ID. Required on Android.
--   **copyAsset : `boolean`** -- Whether to copy asset to the new album instead of move it. Defaults to `true`. (**Android only**)
+-   **copyAsset (_boolean_)** -- Whether to copy asset to the new album instead of move it. Defaults to `true`. (**Android only**)
 
 #### Returns
 
@@ -121,8 +121,8 @@ On Android by default it deletes assets belonging to given albums from the libra
 
 #### Arguments
 
--   **albums : `array`** -- Array of [albums](#album) or their IDs, that will be removed from the library.
--   **deleteAssets : `boolean`** -- Whether to also delete assets belonging to given albums. Defaults to `false`. (**iOS only**)
+-   **albums (_array_)** -- Array of [albums](#album) or their IDs, that will be removed from the library.
+-   **deleteAssets (_boolean_)** -- Whether to also delete assets belonging to given albums. Defaults to `false`. (**iOS only**)
 
 #### Returns
 
@@ -137,9 +137,9 @@ In case they're copied you should keep in mind that `getAssetsAsync` will return
 
 #### Arguments
 
--   **assets : `array`** -- Array of [assets](#assets) to add.
+-   **assets (_array_)** -- Array of [assets](#assets) to add.
 -   **album (_string_ | _Album_)** -- [Album](#album) or its ID, to which the assets will be added.
--   **copyAssets : `boolean`** -- Whether to copy assets to the new album instead of move them. Defaults to `true`. (**Android only**)
+-   **copyAssets (_boolean_)** -- Whether to copy assets to the new album instead of move them. Defaults to `true`. (**Android only**)
 
 #### Returns
 
@@ -153,7 +153,7 @@ On Android, album will be automatically deleted if there are no more assets insi
 
 #### Arguments
 
--   **assets : `array`** -- Array of [assets](#assets) to remove from album.
+-   **assets (_array_)** -- Array of [assets](#assets) to remove from album.
 -   **album (_string_ | _Album_)** -- [Album](#album) or its ID, from which the assets will be removed.
 
 #### Returns
@@ -175,9 +175,9 @@ Subscribes for updates in user's media library.
 
 #### Arguments
 
--   **listener : `function`** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
-    -   **insertedAssets : `array`** -- Array of [assets](#assets) that have been inserted to the library.
-    -   **deletedAssets : `array`** -- Array of [assets](#assets) that have been deleted from the library.
+-   **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
+    -   **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
+    -   **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
 
 #### Returns
 

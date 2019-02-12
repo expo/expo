@@ -16,7 +16,7 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Arguments
 
--   **type : `string`** -- The name of the permission.
+-   **type (_string_)** -- The name of the permission.
 
 #### Returns
 
@@ -40,7 +40,7 @@ Prompt the user for a permission. If they have already granted access, response 
 
 #### Arguments
 
--   **type : `string`** -- The name of the permission.
+-   **type (_string_)** -- The name of the permission.
 
 #### Returns
 

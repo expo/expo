@@ -20,8 +20,8 @@ Check if a new published version of your project is available. Does not actually
 
 An object with the following keys:
 
--   **isAvailable : `boolean`** -- True if an update is available, false if you're already running the most up-to-date JS bundle.
--   **manifest : `object`** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
+-   **isAvailable (_boolean_)** -- True if an update is available, false if you're already running the most up-to-date JS bundle.
+-   **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
 
 ### `Expo.Updates.fetchUpdateAsync(params?)`
 
@@ -31,14 +31,14 @@ Downloads the most recent published version of your experience to the device's l
 
 An optional `params` object with the following keys:
 
--   **eventListener : `function`** -- A callback to receive updates events. Will be called with the same events as a function passed into [`Updates.addListener`](#expoupdatesaddlistenereventlistener) but will be subscribed and unsubscribed from events automatically.
+-   **eventListener (_function_)** -- A callback to receive updates events. Will be called with the same events as a function passed into [`Updates.addListener`](#expoupdatesaddlistenereventlistener) but will be subscribed and unsubscribed from events automatically.
 
 #### Returns
 
 An object with the following keys:
 
--   **isNew : `boolean`** -- True if the fetched bundle is new (i.e. a different version that the what's currently running).
--   **manifest : `object`** -- Manifest of the fetched update.
+-   **isNew (_boolean_)** -- True if the fetched bundle is new (i.e. a different version that the what's currently running).
+-   **manifest (_object_)** -- Manifest of the fetched update.
 
 ### `Expo.Updates.addListener(eventListener)`
 
@@ -46,7 +46,7 @@ Invokes a callback when updates-related events occur, either on the initial app 
 
 #### Arguments
 
--   **eventListener : `function`** -- A callback that is invoked with an updates event.
+-   **eventListener (_function_)** -- A callback that is invoked with an updates event.
 
 #### Returns
 
@@ -58,15 +58,15 @@ An [EventSubscription](#eventsubscription) object that you can call `remove()` o
 
 Returned from `addListener`.
 
--   **remove() : `function`** -- Unsubscribe the listener from future updates.
+-   **remove() (_function_)** -- Unsubscribe the listener from future updates.
 
 ### `Event`
 
 An object that is passed into each event listener when a new version is available.
 
--   **type : `string`** -- Type of the event (see [EventType](#eventtype)).
--   **manifest : `object`** -- If `type === Expo.Updates.EventType.DOWNLOAD_FINISHED`, the manifest of the newly downloaded update. Undefined otherwise.
--   **message : `string`** -- If `type === Expo.Updates.EventType.ERROR`, the error message. Undefined otherwise.
+-   **type (_string_)** -- Type of the event (see [EventType](#eventtype)).
+-   **manifest (_object_)** -- If `type === Expo.Updates.EventType.DOWNLOAD_FINISHED`, the manifest of the newly downloaded update. Undefined otherwise.
+-   **message (_string_)** -- If `type === Expo.Updates.EventType.ERROR`, the error message. Undefined otherwise.
 
 ### `EventType`
 

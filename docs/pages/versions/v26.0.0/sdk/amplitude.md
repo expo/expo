@@ -12,7 +12,7 @@ Initializes Amplitude with your Amplitude API key. If you're having trouble find
 
 #### Arguments
 
--   **apiKey : `string`** -- Your Amplitude application's API key.
+-   **apiKey (_string_)** -- Your Amplitude application's API key.
 
 ### `Amplitude.setUserId(userId)`
 
@@ -20,7 +20,7 @@ Assign a user ID to the current user. If you don't have a system for user IDs yo
 
 #### Arguments
 
--   **userId : `string`** -- User ID for the current user.
+-   **userId (_string_)** -- User ID for the current user.
 
 ### `Amplitude.setUserProperties(userProperties)`
 
@@ -28,7 +28,7 @@ Set properties for the current user. See [here for details](https://amplitude.ze
 
 #### Arguments
 
--   **userProperties : `object`** -- A map of custom properties.
+-   **userProperties (_object_)** -- A map of custom properties.
 
 ### `Amplitude.clearUserProperties()`
 
@@ -40,7 +40,7 @@ Log an event to Amplitude. For more information about what kind of events to tra
 
 #### Arguments
 
--   **eventName : `string`** -- The event name.
+-   **eventName (_string_)** -- The event name.
 
 ### `Amplitude.logEventWithProperties(eventName, properties)`
 
@@ -48,8 +48,8 @@ Log an event to Amplitude with custom properties. For more information about wha
 
 #### Arguments
 
--   **eventName : `string`** -- The event name.
--   **properties : `object`** -- A map of custom properties.
+-   **eventName (_string_)** -- The event name.
+-   **properties (_object_)** -- A map of custom properties.
 
 ### `Amplitude.setGroup(groupType, groupNames)`
 
@@ -57,5 +57,5 @@ Add the current user to a group. For more  information, see here for [iOS](https
 
 #### Arguments
 
--   **groupType : `string`** -- The group name, e.g. "sports".
--   **groupNames : `object`** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
+-   **groupType (_string_)** -- The group name, e.g. "sports".
+-   **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.

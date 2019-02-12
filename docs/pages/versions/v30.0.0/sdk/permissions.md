@@ -18,7 +18,7 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Arguments
 
--   **permissionTypes : `string`** -- The names of the permissions types.
+-   **permissionTypes (_string_)** -- The names of the permissions types.
 
 #### Returns
 
@@ -71,7 +71,7 @@ Prompt the user for types of permissions. If they have already granted access, r
 
 #### Arguments
 
--   **types : `string`** -- The names of the permissions types.
+-   **types (_string_)** -- The names of the permissions types.
 
 #### Returns
 

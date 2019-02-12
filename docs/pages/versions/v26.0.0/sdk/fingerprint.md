@@ -27,7 +27,7 @@ Attempts to authenticate via Fingerprint.
 
 #### Arguments
 
-- (**iOS only**) **promptMessage : `string`** A message that is shown alongside the TouchID prompt.
+- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID prompt.
 
 #### Returns
 

@@ -73,9 +73,9 @@ On the `playbackObject` reference, the following API is provided:
 
         There are two sets of audio and video formats supported on Android: [formats supported by ExoPlayer](https://google.github.io/ExoPlayer/supported-formats.html) and [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table). Expo uses ExoPlayer implementation by default; to use `MediaPlayer`, add `androidImplementation: 'MediaPlayer'` to the initial status of the AV object.
 
-    -   **initialStatus : `PlaybackStatusToSet`** -- The initial intended `PlaybackStatusToSet` of the `playbackObject`, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See below for details on `PlaybackStatusToSet` and the default initial playback status.
+    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the `playbackObject`, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See below for details on `PlaybackStatusToSet` and the default initial playback status.
 
-    -   **downloadFirst : `boolean`** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
+    -   **downloadFirst (_boolean_)** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
 
     #### Returns
 
@@ -105,7 +105,7 @@ On the `playbackObject` reference, the following API is provided:
 
     #### Parameters
 
-    -   **onPlaybackStatusUpdate : `function`** -- A function taking a single parameter `PlaybackStatus` (a dictionary, described below).
+    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus` (a dictionary, described below).
 
 -   `playbackObject.replayAsync(statusToSet)`
 
@@ -113,7 +113,7 @@ On the `playbackObject` reference, the following API is provided:
 
     #### Parameters
 
-     -   **statusToSet : `PlaybackStatusToSet`** -- The new `PlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `PlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overriden with respectively `0` and `true`.
+     -   **statusToSet (_PlaybackStatusToSet_)** -- The new `PlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `PlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overriden with respectively `0` and `true`.
 
     #### Returns
 
@@ -125,7 +125,7 @@ On the `playbackObject` reference, the following API is provided:
 
     #### Parameters
 
-    -   **statusToSet : `PlaybackStatusToSet`** -- The new `PlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `PlaybackStatusToSet`.
+    -   **statusToSet (_PlaybackStatusToSet_)** -- The new `PlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `PlaybackStatusToSet`.
 
     #### Returns
 
@@ -153,7 +153,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     #### Parameters
 
-    -   **millis : `number`** -- The desired position of playback in milliseconds.
+    -   **millis (_number_)** -- The desired position of playback in milliseconds.
 
 -   `playbackObject.pauseAsync()`
 
@@ -173,7 +173,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     #### Parameters
 
-    -   **millis : `number`** -- The desired position of playback in milliseconds.
+    -   **millis (_number_)** -- The desired position of playback in milliseconds.
 
 -   `playbackObject.setRateAsync(value, shouldCorrectPitch)`
 
@@ -181,9 +181,9 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     #### Parameters
 
-    -   **value : `number`** -- The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
+    -   **value (_number_)** -- The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
 
-    -   **shouldCorrectPitch : `boolean`** -- A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio).
+    -   **shouldCorrectPitch (_boolean_)** -- A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio).
 
 -   `playbackObject.setVolumeAsync(value)`
 
@@ -191,7 +191,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     #### Parameters
 
-    -   **value : `number`** -- A number between `0.0` (silence) and `1.0` (maximum volume).
+    -   **value (_number_)** -- A number between `0.0` (silence) and `1.0` (maximum volume).
 
 -   `playbackObject.setIsMutedAsync(value)`
 
@@ -199,7 +199,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     #### Parameters
 
-    -   **value : `boolean`** -- A boolean describing if the audio of this media should be muted.
+    -   **value (_boolean_)** -- A boolean describing if the audio of this media should be muted.
 
 -   `playbackObject.setIsLoopingAsync(value)`
 
@@ -207,7 +207,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     #### Parameters
 
-    -   **value : `boolean`** -- A boolean describing if the media should play once (`false`) or loop indefinitely (`true`).
+    -   **value (_boolean_)** -- A boolean describing if the media should play once (`false`) or loop indefinitely (`true`).
 
 -   `playbackObject.setProgressUpdateIntervalAsync(millis)`
 
@@ -215,7 +215,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     #### Parameters
 
-    -   **millis : `number`** -- The new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
+    -   **millis (_number_)** -- The new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
 
 ## Playback Status
 

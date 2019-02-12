@@ -46,7 +46,7 @@ A helper that wraps `Asset.fromModule(module).downloadAsync` for convenience.
 
 #### Arguments
 
--   **modules : `Array<number>|number`** -- An array of `require('path/to/file')`. Can also be just one module without an Array.
+-   **modules (_Array\<number\>|number_)** -- An array of `require('path/to/file')`. Can also be just one module without an Array.
 
 #### Returns
 
@@ -58,7 +58,7 @@ Returns the [`Asset`](#expoasset "Asset") instance representing an asset given i
 
 #### Arguments
 
--   **module : `number`** -- The value of `require('path/to/file')` for the asset
+-   **module (_number_)** -- The value of `require('path/to/file')` for the asset
 
 #### Returns
 

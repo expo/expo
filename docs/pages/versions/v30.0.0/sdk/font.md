@@ -12,7 +12,7 @@ Convenience form of [`Expo.Font.loadAsync()`](#expofontloadasync "Expo.Font.load
 
 #### Arguments
 
--   **map : `object`** -- A map of names to `require` statements as in [`Expo.Font.loadAsync()`](#expofontloadasync "Expo.Font.loadAsync").
+-   **map (_object_)** -- A map of names to `require` statements as in [`Expo.Font.loadAsync()`](#expofontloadasync "Expo.Font.loadAsync").
 
 #### Example
 

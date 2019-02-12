@@ -14,8 +14,8 @@ Segment requires separate write keys for iOS and Android. You will need to log i
 
 Accepts an object with the following keys:
 
--   **androidWriteKey : `string`** -- Write key for Android source.
--   **iosWriteKey : `string`** -- Write key for iOS source.
+-   **androidWriteKey (_string_)** -- Write key for Android source.
+-   **iosWriteKey (_string_)** -- Write key for iOS source.
 
 ### `Expo.Segment.identify(userId)`
 
@@ -23,7 +23,7 @@ Associates the current user with a user ID. Call this after calling [`Expo.Segme
 
 #### Arguments
 
--   **userId : `string`** -- User ID for the current user.
+-   **userId (_string_)** -- User ID for the current user.
 
 ### `Expo.Segment.identifyWithTraits(userId, traits)`
 
@@ -31,8 +31,8 @@ Associates the current user with a user ID and some metadata. Call this after ca
 
 #### Arguments
 
--   **userId : `string`** -- User ID for the current user.
--   **traits : `object`** -- A map of custom properties.
+-   **userId (_string_)** -- User ID for the current user.
+-   **traits (_object_)** -- A map of custom properties.
 
 ### `Expo.Segment.reset()`
 
@@ -44,7 +44,7 @@ Log an event to Segment. See <https://segment.com/docs/spec/track/>.
 
 #### Arguments
 
--   **event : `string`** -- The event name.
+-   **event (_string_)** -- The event name.
 
 ### `Expo.Segment.trackWithProperties(event, properties)`
 
@@ -52,8 +52,8 @@ Log an event to Segment with custom properties. See <https://segment.com/docs/sp
 
 #### Arguments
 
--   **event : `string`** -- The event name.
--   **properties : `object`** -- A map of custom properties.
+-   **event (_string_)** -- The event name.
+-   **properties (_object_)** -- A map of custom properties.
 
 ### `Expo.Segment.screen(screenName)`
 
@@ -61,14 +61,14 @@ Record that a user has seen a screen to Segment. See <https://segment.com/docs/s
 
 #### Arguments
 
--   **screenName : `string`** -- Name of the screen.
+-   **screenName (_string_)** -- Name of the screen.
 
 ### `Expo.Segment.screenWithProperties(screenName, properties)`
 
 Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
 
--   **screenName : `string`** -- Name of the screen.
--   **properties : `object`** -- A map of custom properties.
+-   **screenName (_string_)** -- Name of the screen.
+-   **properties (_object_)** -- A map of custom properties.
 
 ### `Expo.Segment.flush()`
 

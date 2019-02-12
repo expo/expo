@@ -16,26 +16,26 @@ Get the current position of the device.
 
 #### Arguments
 
--   **options : `object`** --
+-   **options (_object_)** --
 
       A map of options:
 
-    -   **enableHighAccuracy : `boolean`** -- Whether to enable high-accuracy mode. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
-    -   **maximumAge : `number`** -- (Android only). If specified, allow returning a previously cached position that is at most this old in milliseconds. If not specified, always gets a new location. On iOS this option is ignored and a new location is always returned.
+    -   **enableHighAccuracy (_boolean_)** -- Whether to enable high-accuracy mode. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+    -   **maximumAge (_number_)** -- (Android only). If specified, allow returning a previously cached position that is at most this old in milliseconds. If not specified, always gets a new location. On iOS this option is ignored and a new location is always returned.
 
 #### Returns
 
 Returns a promise resolving to an object with the following fields:
 
--   **coords : `object`** -- The coordinates of the position, with the following fields:
-    -   **latitude : `number`** -- The latitude in degrees.
-    -   **longitude : `number`** -- The longitude in degrees.
-    -   **altitude : `number`** -- The altitude in meters above the WGS 84 reference ellipsoid.
-    -   **accuracy : `number`** -- The radius of uncertainty for the location, measured in meters.
-    -   **altitudeAccuracy : `number`** -- The accuracy of the altitude value, in meters (iOS only).
-    -   **heading : `number`** -- Horizontal direction of travel of this device, measured in degrees starting at due north and continuing clockwise around the compass. Thus, north is 0 degrees, east is 90 degrees, south is 180 degrees, and so on.
-    -   **speed : `number`** -- The instantaneous speed of the device in meters per second.
--   **timestamp : `number`** -- The time at which this position information was obtained, in milliseconds since epoch.
+-   **coords (_object_)** -- The coordinates of the position, with the following fields:
+    -   **latitude (_number_)** -- The latitude in degrees.
+    -   **longitude (_number_)** -- The longitude in degrees.
+    -   **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
+    -   **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
+    -   **altitudeAccuracy (_number_)** -- The accuracy of the altitude value, in meters (iOS only).
+    -   **heading (_number_)** -- Horizontal direction of travel of this device, measured in degrees starting at due north and continuing clockwise around the compass. Thus, north is 0 degrees, east is 90 degrees, south is 180 degrees, and so on.
+    -   **speed (_number_)** -- The instantaneous speed of the device in meters per second.
+-   **timestamp (_number_)** -- The time at which this position information was obtained, in milliseconds since epoch.
 
 ### `Expo.Location.watchPositionAsync(options, callback)`
 
@@ -43,33 +43,33 @@ Subscribe to location updates from the device. Please note that updates will onl
 
 #### Arguments
 
--   **options : `object`** --
+-   **options (_object_)** --
 
       A map of options:
 
-    -   **enableHighAccuracy : `boolean`** -- Whether to enable high accuracy mode. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
-    -   **timeInterval : `number`** -- Minimum time to wait between each update in milliseconds.
-    -   **distanceInterval : `number`** -- Receive updates only when the location has changed by at least this distance in meters.
+    -   **enableHighAccuracy (_boolean_)** -- Whether to enable high accuracy mode. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+    -   **timeInterval (_number_)** -- Minimum time to wait between each update in milliseconds.
+    -   **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters.
 
--   **callback : `function`** --
+-   **callback (_function_)** --
 
       This function is called on each location update. It is passed exactly one parameter: an object with the following fields:
 
-    -   **coords : `object`** -- The coordinates of the position, with the following fields:
-        -   **latitude : `number`** -- The latitude in degrees.
-        -   **longitude : `number`** -- The longitude in degrees.
-        -   **altitude : `number`** -- The altitude in meters above the WGS 84 reference ellipsoid.
-        -   **accuracy : `number`** -- The radius of uncertainty for the location, measured in meters.
-        -   **altitudeAccuracy : `number`** -- The accuracy of the altitude value, in meters (iOS only).
-        -   **heading : `number`** -- Horizontal direction of travel of this device, measured in degrees starting at due north and continuing clockwise around the compass. Thus, north is 0 degrees, east is 90 degrees, south is 180 degrees, and so on.
-        -   **speed : `number`** -- The instantaneous speed of the device in meters per second.
-    -   **timestamp : `number`** -- The time at which this position information was obtained, in milliseconds since epoch.
+    -   **coords (_object_)** -- The coordinates of the position, with the following fields:
+        -   **latitude (_number_)** -- The latitude in degrees.
+        -   **longitude (_number_)** -- The longitude in degrees.
+        -   **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
+        -   **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
+        -   **altitudeAccuracy (_number_)** -- The accuracy of the altitude value, in meters (iOS only).
+        -   **heading (_number_)** -- Horizontal direction of travel of this device, measured in degrees starting at due north and continuing clockwise around the compass. Thus, north is 0 degrees, east is 90 degrees, south is 180 degrees, and so on.
+        -   **speed (_number_)** -- The instantaneous speed of the device in meters per second.
+    -   **timestamp (_number_)** -- The time at which this position information was obtained, in milliseconds since epoch.
 
 #### Returns
 
 Returns a promise resolving to a subscription object, which has one field:
 
--   **remove : `function`** -- Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
+-   **remove (_function_)** -- Call this function with no arguments to remove this subscription. The callback will no longer be called for location updates.
 
 ### `Expo.Location.getProviderStatusAsync()`
 
@@ -79,10 +79,10 @@ Check status of location providers.
 
 Returns a promise resolving to an object with the following fields:
 
--   **locationServicesEnabled : `boolean`** -- Whether location services are enabled.
--   **gpsAvailable : `boolean`** (android only) -- If the GPS provider is available, if yes, location data will be from GPS.
--   **networkAvailable : `boolean`** (android only) -- If the network provider is available, if yes, location data will be from cellular network.
--   **passiveAvailable : `boolean`** (android only) -- If the passive provider is available, if yes, location data will be determined passively.
+-   **locationServicesEnabled (_boolean_)** -- Whether location services are enabled.
+-   **gpsAvailable (_boolean_)** (android only) -- If the GPS provider is available, if yes, location data will be from GPS.
+-   **networkAvailable (_boolean_)** (android only) -- If the network provider is available, if yes, location data will be from cellular network.
+-   **passiveAvailable (_boolean_)** (android only) -- If the passive provider is available, if yes, location data will be determined passively.
 
 ### `Expo.Location.getHeadingAsync()`
 
@@ -92,9 +92,9 @@ Gets the current heading information from the device
 
 Object with:
 
-- **magHeading : `number`** — measure of magnetic north in degrees
-- **trueHeading : `number`** — measure of true north in degrees (needs location permissions, will return -1 if not given)
-- **accuracy : `number`** — level of callibration of compass.
+- **magHeading (_number_)** — measure of magnetic north in degrees
+- **trueHeading (_number_)** — measure of true north in degrees (needs location permissions, will return -1 if not given)
+- **accuracy (_number_)** — level of callibration of compass.
   - 3: high accuracy, 2: medium accuracy, 1: low accuracy, 0: none
   - Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
 
@@ -105,13 +105,13 @@ Suscribe to compass updates from the device
 
 #### Arguments
 
-- **callback : `function`** --
+- **callback (_function_)** --
 
     This function is called on each compass update. It is passed exactly one parameter: an object with the following fields:
 
-    - **magHeading : `number`** — measure of magnetic north in degrees
-    - **trueHeading : `number`** — measure of true north in degrees (needs location permissions, will return -1 if not given)
-    - **accuracy : `number`** — level of callibration of compass.
+    - **magHeading (_number_)** — measure of magnetic north in degrees
+    - **trueHeading (_number_)** — measure of true north in degrees (needs location permissions, will return -1 if not given)
+    - **accuracy (_number_)** — level of callibration of compass.
     	- 3: high accuracy, 2: medium accuracy, 1: low accuracy, 0: none
     	- Reference for iOS: 3: < 20 degrees uncertainty, 2: < 35 degrees, 1: < 50 degrees, 0: > 50 degrees
 
@@ -131,16 +131,16 @@ Geocode an address string to latitiude-longitude location.
 
 #### Arguments
 
-- **address : `string`** -- A string representing address, eg. "Baker Street London"
+- **address (_string_)** -- A string representing address, eg. "Baker Street London"
 
 #### Returns
 
 Returns a promise resolving to an array (in most cases its size is 1) of geocoded location objects with the following fields:
 
--   **latitude : `number`** -- The latitude in degrees.
--   **longitude : `number`** -- The longitude in degrees.
--   **altitude : `number`** -- The altitude in meters above the WGS 84 reference ellipsoid.
--   **accuracy : `number`** -- The radius of uncertainty for the location, measured in meters.
+-   **latitude (_number_)** -- The latitude in degrees.
+-   **longitude (_number_)** -- The longitude in degrees.
+-   **altitude (_number_)** -- The altitude in meters above the WGS 84 reference ellipsoid.
+-   **accuracy (_number_)** -- The radius of uncertainty for the location, measured in meters.
 
 ### `Expo.Location.reverseGeocodeAsync(location)`
 
@@ -152,22 +152,22 @@ Reverse geocode a location to postal address.
 
 #### Arguments
 
--   **location : `object`** -- An object representing a location:
+-   **location (_object_)** -- An object representing a location:
 
-    -   **latitude : `number`** -- The latitude of location to reverse geocode, in degrees.
-    -   **longitude : `number`** -- The longitude of location to reverse geocode, in degrees.
+    -   **latitude (_number_)** -- The latitude of location to reverse geocode, in degrees.
+    -   **longitude (_number_)** -- The longitude of location to reverse geocode, in degrees.
 
 
 #### Returns
 
 Returns a promise resolving to an array (in most cases its size is 1) of address objects with following fields:
 
--   **city : `string`** -- City name of the address.
--   **street : `string`** -- Street name of the address.
--   **region : `string`** -- Region/area name of the address.
--   **postalCode : `string`** -- Postal code of the address.
--   **country : `string`** -- Localized country name of the address.
--   **name : `string`** -- Place name of the address, for example, "Tower Bridge".
+-   **city (_string_)** -- City name of the address.
+-   **street (_string_)** -- Street name of the address.
+-   **region (_string_)** -- Region/area name of the address.
+-   **postalCode (_string_)** -- Postal code of the address.
+-   **country (_string_)** -- Localized country name of the address.
+-   **name (_string_)** -- Place name of the address, for example, "Tower Bridge".
 
 ### `Expo.Location.setApiKey(apiKey)`
 
@@ -175,4 +175,4 @@ Sets a Google API Key for using Geocoding API. This method can be useful for And
 
 #### Arguments
 
--   **apiKey : `string`** -- API key collected from Google Developer site.
+-   **apiKey (_string_)** -- API key collected from Google Developer site.

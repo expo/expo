@@ -12,7 +12,7 @@ Open a database, creating it if it doesn't exist, and return a `Database` object
 
 #### Arguments
 
--   **name : `string`** -- Name of the database file to open.
+-   **name (_string_)** -- Name of the database file to open.
 
   The `version`, `description` and `size` arguments are ignored, but are accepted by the function for compatibility with the WebSQL specification.
 
@@ -30,9 +30,9 @@ Returns a `Database` object, described below.
 
     #### Parameters
 
-    -   **callback : `function`** -- A function representing the transaction to perform. Takes a `Transaction` (see below) as its only parameter, on which it can add SQL statements to execute.
-    -   **error : `function`** -- Called if an error occured processing this transaction. Takes a single parameter describing the error.
-    -   **success : `function`** -- Called when the transaction has completed executing on the database.
+    -   **callback (_function_)** -- A function representing the transaction to perform. Takes a `Transaction` (see below) as its only parameter, on which it can add SQL statements to execute.
+    -   **error (_function_)** -- Called if an error occured processing this transaction. Takes a single parameter describing the error.
+    -   **success (_function_)** -- Called when the transaction has completed executing on the database.
 
 ### `Transaction` objects
 
@@ -44,10 +44,10 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
 
     #### Parameters
 
-    -   **sqlStatement : `string`** -- A string containing a database query to execute expressed as SQL. The string may contain `?` placeholders, with values to be substituted listed in the `arguments` parameter.
-    -   **arguments : `array`** -- An array of values (numbers or strings) to substitute for `?` placeholders in the SQL statement.
-    -   **success : `function`** -- Called when the query is successfully completed during the transaction. Takes two parameters: the transaction itself, and a `ResultSet` object (see below) with the results of the query.
-    -   **error : `function`** -- Called if an error occured executing this particular query in the transaction. Takes two parameters: the transaction itself, and the error object.
+    -   **sqlStatement (_string_)** -- A string containing a database query to execute expressed as SQL. The string may contain `?` placeholders, with values to be substituted listed in the `arguments` parameter.
+    -   **arguments (_array_)** -- An array of values (numbers or strings) to substitute for `?` placeholders in the SQL statement.
+    -   **success (_function_)** -- Called when the query is successfully completed during the transaction. Takes two parameters: the transaction itself, and a `ResultSet` object (see below) with the results of the query.
+    -   **error (_function_)** -- Called if an error occured executing this particular query in the transaction. Takes two parameters: the transaction itself, and the error object.
 
 ### `ResultSet` objects
 
@@ -65,12 +65,12 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
 }
 ```
 
--   **insertId : `number`** -- The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
+-   **insertId (_number_)** -- The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
 
--   **rowsAffected : `number`** -- The number of rows that were changed by the SQL statement.
+-   **rowsAffected (_number_)** -- The number of rows that were changed by the SQL statement.
 
--   **rows.length : `number`** -- The number of rows returned by the query.
+-   **rows.length (_number_)** -- The number of rows returned by the query.
 
--   **rows.item : `function`** -- `rows.item(index)` returns the row with the given `index`. If there is no such row, returns `null`.
+-   **rows.item (_function_)** -- `rows.item(index)` returns the row with the given `index`. If there is no such row, returns `null`.
 
--   **rows._array : `number`** -- The actual array of rows returned by the query. Can be used directly instead of getting rows through `rows.item()`.
+-   **rows._array (_number_)** -- The actual array of rows returned by the query. Can be used directly instead of getting rows through `rows.item()`.
