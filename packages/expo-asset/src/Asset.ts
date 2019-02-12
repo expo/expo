@@ -182,12 +182,16 @@ export class Asset {
   }
 
   async _downloadAsyncUnmanagedEnv(): Promise<void> {
-    const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
+    // Bail out if it was bundled with the app
+    if (this.uri.startsWith('file://')) {
+      this.localUri = this.uri;
+      return;
+    }
 
+    const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
     // We don't check the FileSystem for an existing version of the asset and we
     // also don't perform an integrity check!
     await FileSystem.downloadAsync(this.uri, localUri);
-
     this.localUri = localUri;
   }
 
@@ -229,7 +233,7 @@ setCustomSourceTransformer(resolver => {
   try {
     const asset = Asset.fromMetadata(resolver.asset);
     return resolver.fromSource(asset.downloaded ? asset.localUri! : asset.uri);
-  } catch(e) {
+  } catch (e) {
     return resolver.defaultAsset();
   }
 });

@@ -137,6 +137,11 @@ export class Asset {
         this.localUri = localUri;
     }
     async _downloadAsyncUnmanagedEnv() {
+        // Bail out if it was bundled with the app
+        if (this.uri.startsWith('file://')) {
+            this.localUri = this.uri;
+            return;
+        }
         const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
         // We don't check the FileSystem for an existing version of the asset and we
         // also don't perform an integrity check!
