@@ -1,11 +1,13 @@
 import { Platform } from 'expo-core';
 import * as FileSystem from 'expo-file-system';
+import * as Constants from 'expo-constants';
 import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
-import { setCustomSourceTransformer } from 'react-native/Libraries/Image/resolveAssetSource';
+import resolveAssetSource, { setCustomSourceTransformer, } from 'react-native/Libraries/Image/resolveAssetSource';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as EmbeddedAssets from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
+const MANAGED_ENV = Constants.hasOwnProperty('manifest');
 export class Asset {
     constructor({ name, type, hash = null, uri, width, height }) {
         this.hash = null;
@@ -25,7 +27,8 @@ export class Asset {
         if (typeof height === 'number') {
             this.height = height;
         }
-        if (hash) {
+        // This only applies to assets that are bundled in Expo standalone apps
+        if (MANAGED_ENV && hash) {
             this.localUri = EmbeddedAssets.getEmbeddedAssetUri(hash, type);
             if (this.localUri) {
                 this.downloaded = true;
@@ -44,6 +47,21 @@ export class Asset {
         if (!meta) {
             throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);
         }
+        // Outside of the managed env we need the moduleId to initialize the asset
+        // because resolveAssetSource depends on it
+        if (!MANAGED_ENV) {
+            const { uri } = resolveAssetSource(virtualAssetModule);
+            const asset = new Asset({
+                name: meta.name,
+                type: meta.type,
+                hash: meta.hash,
+                uri,
+                width: meta.width,
+                height: meta.height,
+            });
+            Asset.byHash[meta.hash] = asset;
+            return asset;
+        }
         return Asset.fromMetadata(meta);
     }
     static fromMetadata(meta) {
@@ -52,6 +70,9 @@ export class Asset {
         const metaHash = meta.hash;
         if (Asset.byHash[metaHash]) {
             return Asset.byHash[metaHash];
+        }
+        else if (!MANAGED_ENV && !Asset.byHash[metaHash]) {
+            throw new Error('Assets must be initialized with Asset.fromModule');
         }
         const { uri, hash } = AssetSources.selectAssetSource(meta);
         const asset = new Asset({
@@ -86,6 +107,44 @@ export class Asset {
         Asset.byUri[uri] = asset;
         return asset;
     }
+    async _downloadAsyncWeb() {
+        if (ImageAssets.isImageType(this.type)) {
+            const { width, height, name } = await ImageAssets.getImageInfoAsync(this.uri);
+            this.width = width;
+            this.height = height;
+            this.name = name;
+        }
+        else {
+            this.name = AssetUris.getFilename(this.uri);
+        }
+        this.localUri = this.uri;
+    }
+    async _downloadAsyncManagedEnv() {
+        const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
+        let { exists, md5 } = await FileSystem.getInfoAsync(localUri, {
+            md5: true,
+        });
+        if (!exists || md5 !== this.hash) {
+            ({ md5 } = await FileSystem.downloadAsync(this.uri, localUri, {
+                md5: true,
+            }));
+            if (md5 !== this.hash) {
+                throw new Error(`Downloaded file for asset '${this.name}.${this.type}' ` +
+                    `Located at ${this.uri} ` +
+                    `failed MD5 integrity check`);
+            }
+        }
+        this.localUri = localUri;
+    }
+    async _downloadAsyncUnmanagedEnv() {
+        const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
+        let { exists } = await FileSystem.getInfoAsync(localUri);
+        if (!exists) {
+            // No integrity check! Should we could compute sha1 with FileSystem in the same way as metro?
+            await FileSystem.downloadAsync(this.uri, localUri);
+        }
+        this.localUri = localUri;
+    }
     async downloadAsync() {
         if (this.downloaded) {
             return;
@@ -99,33 +158,13 @@ export class Asset {
         this.downloading = true;
         try {
             if (Platform.OS === 'web') {
-                if (ImageAssets.isImageType(this.type)) {
-                    const { width, height, name } = await ImageAssets.getImageInfoAsync(this.uri);
-                    this.width = width;
-                    this.height = height;
-                    this.name = name;
-                }
-                else {
-                    this.name = AssetUris.getFilename(this.uri);
-                }
-                this.localUri = this.uri;
+                await this._downloadAsyncWeb();
+            }
+            else if (MANAGED_ENV) {
+                await this._downloadAsyncManagedEnv();
             }
             else {
-                const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
-                let { exists, md5 } = await FileSystem.getInfoAsync(localUri, {
-                    md5: true,
-                });
-                if (!exists || md5 !== this.hash) {
-                    ({ md5 } = await FileSystem.downloadAsync(this.uri, localUri, {
-                        md5: true,
-                    }));
-                    if (md5 !== this.hash) {
-                        throw new Error(`Downloaded file for asset '${this.name}.${this.type}' ` +
-                            `Located at ${this.uri} ` +
-                            `failed MD5 integrity check`);
-                    }
-                }
-                this.localUri = localUri;
+                await this._downloadAsyncUnmanagedEnv();
             }
             this.downloaded = true;
             this._downloadCallbacks.forEach(({ resolve }) => resolve());
@@ -144,7 +183,12 @@ Asset.byHash = {};
 Asset.byUri = {};
 // Override React Native's asset resolution for `Image` components
 setCustomSourceTransformer(resolver => {
-    const asset = Asset.fromMetadata(resolver.asset);
-    return resolver.fromSource(asset.downloaded ? asset.localUri : asset.uri);
+    try {
+        const asset = Asset.fromMetadata(resolver.asset);
+        return resolver.fromSource(asset.downloaded ? asset.localUri : asset.uri);
+    }
+    catch (e) {
+        return resolver.defaultAsset();
+    }
 });
 //# sourceMappingURL=Asset.js.map
