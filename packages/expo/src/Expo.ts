@@ -89,6 +89,8 @@ export { default as DangerZone } from './DangerZone';
 export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 export { Facebook };
 export { Google };
+import * as Random from 'expo-random';
+export { Random };
 export { default as Icon } from './Icon';
 export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { default as Linking } from './Linking/Linking';

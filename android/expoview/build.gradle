@@ -169,6 +169,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-media-library:2.0.0'
   compileOnly 'host.exp.exponent:expo-payments-stripe:2.0.0'
   compileOnly 'host.exp.exponent:expo-print:2.0.0'
+  compileOnly 'host.exp.exponent:expo-random:1.0.0'
   compileOnly 'host.exp.exponent:expo-sensors:2.0.0'
   compileOnly 'host.exp.exponent:expo-sms:2.0.0'
   compileOnly 'host.exp.exponent:expo-speech:1.0.0'
@@ -233,6 +234,7 @@ dependencies {
   api project(':expo-media-library')
   api project(':expo-payments-stripe')
   api project(':expo-print')
+  api project(':expo-random')
   api project(':expo-secure-store')
   api project(':expo-sensors')
   api project(':expo-sms')
