@@ -8,4 +8,7 @@ module.exports = merge(common, {
   entry: locations.appMain,
   devtool: 'cheap-module-source-map',
   plugins: [new CleanWebpackPlugin([locations.production])],
+  optimization: {
+    minimize: true,
+  },
 });
