@@ -3,10 +3,6 @@ id: animations
 title: Animations
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Animations are very important to create a great user experience. Stationary objects must overcome inertia as they start moving. Objects in motion have momentum and rarely come to a stop immediately. Animations allow you to convey physically believable motion in your interface.
 
 React Native provides two complementary animation systems: [`Animated`](../animations/#animated-api) for granular and interactive control of specific values, and [`LayoutAnimation`](../animations/#layoutanimation-api) for animated global layout transactions.

@@ -2,10 +2,6 @@
 title: Expo & "Create React Native App"
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### WARNING
 
 [Create React Native

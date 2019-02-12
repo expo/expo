@@ -2,10 +2,6 @@
 title: Accelerometer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Access the device accelerometer sensor(s) to respond to changes in
 acceleration in 3d space.
 

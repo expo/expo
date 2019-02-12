@@ -2,10 +2,6 @@
 title: MediaLibrary
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to user's media library.
 
 Requires `Permissions.CAMERA_ROLL` permissions.

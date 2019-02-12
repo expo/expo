@@ -3,10 +3,6 @@ id: layout-props
 title: Layout Props
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [`alignContent`](../layout-props/#aligncontent)

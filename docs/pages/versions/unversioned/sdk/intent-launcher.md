@@ -2,10 +2,6 @@
 title: IntentLauncher
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides a way to launch android intents. e.g. - opening a specific settings screen.
 
 ## Usage

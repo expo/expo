@@ -2,10 +2,6 @@
 title: Gyroscope
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Access the device gyroscope sensor to respond to changes in rotation in 3d space.
 
 ### `Expo.Gyroscope.addListener(listener)`

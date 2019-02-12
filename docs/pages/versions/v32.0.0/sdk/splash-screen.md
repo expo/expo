@@ -2,10 +2,6 @@
 title: SplashScreen
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A module that tells Expo to keep the splash screen visible until you make it hide.
 
 This is useful to let you create an impression of a pure React component splash screen. You can combine it with [AppLoading](../app-loading/). Read more about [creating a splash screen.](../../guides/splash-screens/)

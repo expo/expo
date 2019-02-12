@@ -2,10 +2,7 @@
 title: Lottie
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
 

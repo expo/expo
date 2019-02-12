@@ -2,10 +2,6 @@
 title: Payments
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.

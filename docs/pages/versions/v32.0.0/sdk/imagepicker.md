@@ -2,10 +2,7 @@
 title: ImagePicker
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 

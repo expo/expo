@@ -3,10 +3,6 @@ id: image-style-props
 title: Image Style Props
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [`borderTopRightRadius`](../image-style-props/#bordertoprightradius)

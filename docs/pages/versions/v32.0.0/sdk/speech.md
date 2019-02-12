@@ -2,10 +2,6 @@
 title: Speech
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 This module allows using Text-to-speech utility.
 
 ### `Speech.speak(text, options)`

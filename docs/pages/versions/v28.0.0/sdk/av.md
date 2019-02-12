@@ -2,10 +2,6 @@
 title: AV
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 The [`Expo.Audio.Sound`](../audio/) objects and [`Expo.Video`](../video/) components share a unified imperative API for media playback.
 
 Note that for `Expo.Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.

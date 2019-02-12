@@ -2,10 +2,6 @@
 title: Camera
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
 
 > **Note**: Only one Camera preview is supported by Expo right now. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.

@@ -3,10 +3,6 @@ id: stylesheet
 title: StyleSheet
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A StyleSheet is an abstraction similar to CSS StyleSheets
 
 Create a new StyleSheet:

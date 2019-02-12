@@ -2,10 +2,6 @@
 title: Fingerprint
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
 ### `Expo.Fingerprint.hasHardwareAsync()`

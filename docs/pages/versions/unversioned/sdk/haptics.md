@@ -2,10 +2,6 @@
 title: Haptics
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides haptic feedback for
 - iOS 10+ devices using the Taptic Engine
 - Android devices using Vibrator system service.

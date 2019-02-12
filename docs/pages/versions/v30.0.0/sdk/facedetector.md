@@ -2,10 +2,6 @@
 title: FaceDetector
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `FaceDetector` lets you use the power of [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
 ## Known issues

@@ -2,10 +2,6 @@
 title: Configuring OTA Updates
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo provides various settings to configure how your app receives over-the-air (OTA) JavaScript updates. OTA updates allow you to publish a new version of your app JavaScript and assets without building a new version of your standalone app and re-submitting to app stores ([read more about the limitations](../../workflow/publishing/)).
 
 To perform an over-the-air update of your app, you simply run `expo publish`. If you're using release channels, specify one with `--release-channel <channel-name>` option. Please note that if you wish to update the SDK version which your app is using, you need to rebuild your app with `expo build:*` command and upload the binary file to the appropriate app store ([see the docs here](../../distribution/building-standalone-apps)).

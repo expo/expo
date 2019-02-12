@@ -2,10 +2,6 @@
 title: KeepAwake
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.
 
 ## Example: component

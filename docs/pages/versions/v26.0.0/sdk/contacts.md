@@ -2,10 +2,6 @@
 title: Contacts
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to the phone's system contacts.
 
 ### `Expo.Contacts.getContactsAsync(options)`

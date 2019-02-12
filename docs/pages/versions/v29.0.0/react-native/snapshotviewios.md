@@ -3,10 +3,6 @@ id: snapshotviewios
 title: SnapshotViewIOS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [View props...](../view/#props)

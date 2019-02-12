@@ -3,10 +3,6 @@ id: text-style-props
 title: Text Style Props
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [`textShadowOffset`](../text-style-props/#textshadowoffset)

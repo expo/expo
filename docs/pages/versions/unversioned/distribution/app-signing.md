@@ -2,10 +2,6 @@
 title: App signing
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Process is automated for iOS and Android, but in both cases you can choose to provide your own overrides. Both `expo build:ios` and
 `expo build:android` commands generate signed applications ready to be uploaded into respective stores.
 

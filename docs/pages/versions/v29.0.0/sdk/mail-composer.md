@@ -2,10 +2,6 @@
 title: MailComposer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API to compose mails using OS specific UI.
 
 ### `Expo.MailComposer.composeAsync(options)`

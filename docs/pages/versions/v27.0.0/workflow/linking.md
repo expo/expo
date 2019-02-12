@@ -2,10 +2,7 @@
 title: Linking
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 ## Introduction
 

@@ -2,10 +2,6 @@
 title: Google
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 > As of SDK 32 `Expo.Google` is just a JS wrapper for the `Expo.AppAuth` library.
 
 Provides Google authentication integration for Expo apps using a system web browser (not WebView, so credentials saved on the device can be re-used!).

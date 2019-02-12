@@ -2,10 +2,6 @@
 title: DocumentPicker
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to the system's UI for selecting documents from the available providers on the user's device.
 
 ### `Expo.DocumentPicker.getDocumentAsync(options)`

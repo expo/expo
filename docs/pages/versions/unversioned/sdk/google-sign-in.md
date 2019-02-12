@@ -2,10 +2,6 @@
 title: Google Sign-In
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 > Introduced in Expo v32
 
 This library provides full Google authentication for **standalone** Expo apps. It cannot be used in the Expo Client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo Client, check out `Expo.Google` or `Expo.AppAuth`.

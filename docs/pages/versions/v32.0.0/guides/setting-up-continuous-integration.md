@@ -2,10 +2,6 @@
 title: Setting up Continuous Integration
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Continuous Integration (CI) and Continuous Delivery (CD) are concepts which can help you to build and deploy with confidence.
 It's the idea of automating as much as you can, like running tests or creating new releases.
 

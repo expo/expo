@@ -3,10 +3,6 @@ id: layoutanimation
 title: LayoutAnimation
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Automatically animates views to their new positions when the next layout happens.
 
 A common way to use this API is to call it before calling `setState`.

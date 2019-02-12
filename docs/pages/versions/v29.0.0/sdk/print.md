@@ -2,10 +2,6 @@
 title: Print
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API for iOS (AirPrint) and Android printing functionality.
 
 ### `Expo.Print.printAsync(options)`

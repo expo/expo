@@ -3,10 +3,6 @@ id: segmentedcontrolios
 title: SegmentedControlIOS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Use `SegmentedControlIOS` to render a UISegmentedControl iOS.
 
 #### Programmatically changing selected index

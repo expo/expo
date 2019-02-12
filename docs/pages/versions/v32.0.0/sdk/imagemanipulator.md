@@ -2,10 +2,6 @@
 title: ImageManipulator
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API to modify images stored in app scope.
 
 ### `ImageManipulator.manipulateAsync(uri, actions, saveOptions)`

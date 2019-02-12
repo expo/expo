@@ -2,10 +2,6 @@
 title: Brightness
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API to get and set screen brightness.
 
 ### `Expo.Brightness.setBrightness(brightnessValue)`

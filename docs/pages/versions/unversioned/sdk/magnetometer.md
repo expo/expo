@@ -2,10 +2,6 @@
 title: Magnetometer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Access the device magnetometer sensor(s) to respond to measure the changes
 in the magnetic field. You can access the calibrated values with `Magnetometer.`
 and uncalibrated raw values with `MagnetometerUncalibrated`.

@@ -2,10 +2,6 @@
 title: Troubleshooting Proxies
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ## Mac OS Proxy Configuration (Sierra)
 
 > If anything goes wrong, you can revert back to the "Automatic Proxy settings" in System Network Preferences using Automatic Proxy Configuration `your-corporate-proxy-uri:port-number/proxy.pac`

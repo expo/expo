@@ -3,10 +3,6 @@ id: vibration
 title: Vibration
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 The Vibration API is exposed at `Vibration.vibrate()`. The vibration is asynchronous so this method will return immediately.
 
 There will be no effect on devices that do not support Vibration, eg. the simulator.

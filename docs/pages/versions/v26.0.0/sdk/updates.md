@@ -2,10 +2,6 @@
 title: Updates
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 API for controlling and responding to over-the-air updates to your app.
 
 ### `Expo.Updates.reload()`

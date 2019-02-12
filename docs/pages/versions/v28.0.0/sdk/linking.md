@@ -2,10 +2,6 @@
 title: Linking
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 This module allows your app to interact with other apps via deep links. It provides helper methods for constructing and parsing deep links into your app.
 
 This module is an extension of the React Native [Linking module](https://facebook.github.io/react-native/docs/linking.html), meaning that all methods in the RN module can be accessed via `Expo.Linking`, on top of the extra methods provided by Expo (detailed here).

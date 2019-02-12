@@ -2,10 +2,6 @@
 title: Additional Resources
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 The following resources are useful for learning Expo and some of the projects that it depends on.
 
 ## Expo Blog

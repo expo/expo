@@ -3,10 +3,6 @@ id: activityindicator
 title: ActivityIndicator
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Displays a circular loading indicator.
 
 ### Example

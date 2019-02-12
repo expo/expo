@@ -2,10 +2,6 @@
 title: Expo CLI
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo CLI is a command line interface for developing Expo apps. It also includes a web-based inteface (Expo Dev Tools) for using some of the most often used features also from a quick to use graphical interface.
 
 ## Installation
