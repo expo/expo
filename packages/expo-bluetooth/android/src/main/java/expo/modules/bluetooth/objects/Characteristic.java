@@ -16,21 +16,8 @@ import expo.modules.bluetooth.helpers.UUIDHelper;
 public class Characteristic extends EXBluetoothChildObject {
   public static final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-  Promise writePromise;
-  Promise readPromise;
-  Promise notifyPromise;
-  Promise indicatePromise;
-
   public Characteristic(BluetoothGattCharacteristic nativeData, Object parent) {
     super(nativeData, (parent instanceof EXBluetoothObject) ? parent : new Service(nativeData.getService(), parent));
-  }
-
-  public void handleWrite(int status) {
-    Bundle event = sendEvent(BluetoothConstants.OPERATIONS.WRITE, BluetoothConstants.EVENTS.PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC, status);
-    if (writePromise != null && Peripheral.autoResolvePromiseWithStatusAndData(writePromise, status)) {
-      writePromise.resolve(event);
-    }
-    writePromise = null;
   }
 
   public Descriptor getDescriptor(UUID uuid) {

@@ -80,8 +80,8 @@ export declare function _loadChildrenRecursivelyAsync({ id }: {
 export declare function getConnectedPeripheralsAsync(serviceUUIDsToQuery?: UUID[]): Promise<NativePeripheral[]>;
 declare const android: {
     requestMTUAsync(peripheralUUID: string, MTU: number): Promise<number>;
-    createBondAsync(peripheralUUID: string): Promise<any>;
-    removeBondAsync(peripheralUUID: string): Promise<any>;
+    bondAsync(peripheralUUID: string): Promise<any>;
+    unbondAsync(peripheralUUID: string): Promise<any>;
     enableBluetoothAsync(isBluetoothEnabled: boolean): Promise<void>;
     getBondedPeripheralsAsync(): Promise<NativePeripheral[]>;
     requestConnectionPriorityAsync(peripheralUUID: string, connectionPriority: Priority): Promise<any>;

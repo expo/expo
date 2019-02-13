@@ -103,6 +103,12 @@ async function getConnectedPeripheralAsync(onDisconnect) {
           stopScanning();
 
           resolve(peripheral);
+
+          for (const connection of attemptedConnections) {
+            if (connection.id !== connected.id) {
+              Bluetooth.disconnectAsync(connection.id);
+            }
+          }
         }
       }
     });
@@ -162,13 +168,25 @@ export async function test({
 
   // return;
   async function clearAllConnections() {
+    let intervalID = setInterval(async () => {
+      const connected = await Bluetooth.getConnectedPeripheralsAsync();
+      console.log('- UPDATED', connected.length);
+    }, 1000);
     try {
       const connected = await Bluetooth.getConnectedPeripheralsAsync();
       console.log('- CLEAR', connected.length);
 
       console.log(
         'RESULTS: ',
-        await Promise.all(connected.map(({ id }) => Bluetooth.disconnectAsync(id)))
+        await Promise.all(
+          connected.map(async ({ id }) => {
+            try {
+              return await Bluetooth.disconnectAsync(id);
+            } catch (error) {
+              console.log('- FAILED STEP: ', id, error);
+            }
+          })
+        )
       );
 
       const thenConnected = await Bluetooth.getConnectedPeripheralsAsync();
@@ -180,6 +198,7 @@ export async function test({
     } catch (e) {
       console.log('FAILED TO CLEAR: ', e.message);
     }
+    clearInterval(intervalID);
     await Bluetooth._reset();
   }
 
@@ -219,7 +238,7 @@ export async function test({
     });
   }
 
-  xdescribe('1. Scanning', () => {
+  describe('1. Scanning', () => {
     beforeEach(async () => {
       await Bluetooth.stopScanAsync();
     });
@@ -266,13 +285,24 @@ export async function test({
 
     describe('connectAsync()', () => {
       // rejectsInvalidPeripheralUUID(Bluetooth.connectAsync);
+      let intervalID;
 
+      beforeEach(() => {
+        intervalID = setInterval(async () => {
+          const connected = await Bluetooth.getConnectedPeripheralsAsync();
+          console.log('- still connected: ', connected.length);
+        }, 1000);
+      });
+      afterEach(() => {
+        clearInterval(intervalID);
+      }); 
       it(`can discover and connect to a peripheral`, async () => {
         const connectedPeripheral = await getConnectedPeripheralAsync();
         validatePeripheral(connectedPeripheral, expect);
+        console.log('Disconnect from peripheral: ', connectedPeripheral.id);
         await Bluetooth.disconnectAsync(connectedPeripheral.id);
       });
-
+      
       xit(`can discover, connect, and load a peripheral`, async () => {
         const connectedPeripheral = await getConnectedPeripheralAsync();
         validatePeripheral(connectedPeripheral, expect);

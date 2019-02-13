@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.ScanRecord;
@@ -21,6 +22,8 @@ import org.json.JSONException;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -65,6 +68,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   private BondingPromise removeBond;
   private BroadcastReceiver mReceiver;
   private BroadcastReceiver mBondingReceiver;
+  public static HashMap<String, BluetoothGatt> connectedDevices = new HashMap<>();
 
   private Permissions mPermissions;
 
@@ -73,13 +77,17 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   public static boolean isDeviceConnected(String peripheralUUID) {
+
+    /** Native method seems to not be as accurate as simply caching data. */
     if (bluetoothManager == null) return false;
 
     BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(peripheralUUID);
 
     if (device == null) return false;
 
-    return bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device);
+//    return bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device);
+    Log.d("BLE_TEST", "connectedMethods: " + connectedDevices.containsKey(peripheralUUID) + ", Native: " + bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device));
+    return connectedDevices.containsKey(peripheralUUID);
   }
 
   public static void sendEvent(final String eventName, Bundle data) {
@@ -534,8 +542,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       device.getBondState();
       int type = device.getType();
       if (type == DEVICE_TYPE_LE || type == DEVICE_TYPE_DUAL) {
-        Peripheral peripheral = new Peripheral(device, getCurrentActivity());
-        bonded.add(peripheral);
+        bonded.add(peripheralFromDevice(device));
       }
     }
     promise.resolve(EXBluetoothObject.listToJSON(bonded));
@@ -546,8 +553,15 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-    List<BluetoothDevice> peripherals = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT);
-    promise.resolve(Peripheral.listToJSON(peripheralsFromDevices(peripherals)));
+    promise.resolve(Peripheral.listToJSON(peripheralsFromGATTs(getConnectedGATTs())));
+
+    /** Bluetooth native might be more accurate but it doesn't seem to sync as expected when devices disconnect */
+//    List<BluetoothDevice> peripherals = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT);
+//    promise.resolve(Peripheral.listToJSON(peripheralsFromDevices(peripherals)));
+  }
+
+  private List<BluetoothGatt> getConnectedGATTs() {
+    return new ArrayList<>(BluetoothModule.connectedDevices.values());
   }
 
   @ExpoMethod
@@ -605,7 +619,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (peripheral == null) {
       return;
     }
-    peripheral.readRSSI(promise);
+    peripheral.readRSSIAsync(promise);
   }
 
   @ExpoMethod
@@ -675,30 +689,35 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       return;
     }
 
-    BluetoothDevice device = getBluetoothAdapter().getRemoteDevice(peripheralUUID);
+    Peripheral peripheral = ensurePeripheral(peripheralUUID);
 
-    if (device == null) {
+    if (peripheral == null) {
       Bundle output = new Bundle();
       output.putString("status", "unavailable");
       promise.resolve(output);
       return;
     }
 
-    boolean isConnected = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT).contains(device);
+//    boolean isConnected = isDeviceConnected(peripheralUUID);
 
-    Peripheral peripheral = new Peripheral(device, getCurrentActivity());
-
-    if (isConnected) {
-      promise.resolve(peripheral.toJSON());
-      return;
-    } else if (peripheral == null) {
-      Bundle output = new Bundle();
-      output.putString("status", "unavailable");
-      promise.resolve(output);
-      return;
-    } else {
+    /** Don't guard connection because we can cancel a pending connection attempt this way.*/
+//    Log.d("BLE_TEST", "disconnectPeripheralAsync: " + peripheralUUID + ", connected: " + isConnected);
+//    if (!isConnected) {
+//      promise.resolve(peripheral.toJSON());
+//      return;
+//    } else {
       peripheral.disconnect(promise);
+//      return;
+//    }
+  }
+
+  public void disconnectAllPeripherals() {
+
+    for (BluetoothGatt gatt : connectedDevices.values()) {
+      Peripheral.closeGatt(gatt);
     }
+
+    connectedDevices = new HashMap<>();
   }
 
   private Service getServiceFromOptionsOrReject(Map<String, Object> options, Promise promise) {
@@ -809,27 +828,40 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (peripheral == null) {
       return;
     }
-    peripheral.retrieveServices(promise);
+    peripheral.discoverServicesForPeripheralAsync(promise);
   }
 
   private List<Peripheral> peripheralsFromDevices(List<BluetoothDevice> devices) {
-    ArrayList bonded = new ArrayList<>();
+    ArrayList peripherals = new ArrayList<>();
     for (BluetoothDevice device : devices) {
-      Peripheral p = new Peripheral(device, getCurrentActivity());
-      bonded.add(p);
+      peripherals.add(peripheralFromDevice(device));
     }
-    return bonded;
+    return peripherals;
   }
 
+  private Peripheral peripheralFromDevice(BluetoothDevice device) {
+    if (peripherals.containsKey(device.getAddress())) {
+      return peripherals.get(device.getAddress());
+    } else {
+      return new Peripheral(device, getCurrentActivity());
+    }
+  }
+
+  private List<Peripheral> peripheralsFromGATTs(List<BluetoothGatt> gatts) {
+    ArrayList peripherals = new ArrayList<>();
+    for (BluetoothGatt gatt : gatts) {
+      BluetoothDevice device = gatt.getDevice();
+      peripherals.add(peripheralFromDevice(device));
+    }
+    return peripherals;
+  }
 
   private void removeAllCachedPeripherals() {
     synchronized (peripherals) {
       for (Iterator<Map.Entry<String, Peripheral>> iterator = peripherals.entrySet().iterator(); iterator.hasNext(); ) {
         Map.Entry<String, Peripheral> entry = iterator.next();
-        entry.getValue().tearDown();
-        if (!entry.getValue().isConnected()) {
-          iterator.remove();
-        }
+        entry.getValue().disconnect();
+        iterator.remove();
       }
     }
   }
@@ -882,8 +914,10 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         }
         if (BluetoothAdapter.checkBluetoothAddress(peripheralUUID)) {
           BluetoothDevice device = getBluetoothAdapter().getRemoteDevice(peripheralUUID);
-          peripheral = new Peripheral(device, getCurrentActivity());
-          peripherals.put(peripheralUUID, peripheral);
+          if (device != null) {
+            peripheral = peripheralFromDevice(device);
+            peripherals.put(peripheralUUID, peripheral);
+          }
         }
       }
     }
@@ -911,6 +945,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         emitState();
       } else {
         Peripheral peripheral = peripherals.get(address);
+        //TODO: Bacon: Sync new device data maybe
         peripheral.updateRSSI(RSSI);
         peripheral.updateData(scanRecord);
       }

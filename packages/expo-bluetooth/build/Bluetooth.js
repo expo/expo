@@ -299,17 +299,20 @@ const android = {
     async requestMTUAsync(peripheralUUID, MTU) {
         invariantAvailability('requestMTUAsync');
         invariantUUID(peripheralUUID);
+        if (MTU > 512) {
+            throw new Error('expo-bluetooth: Max MTU size is 512');
+        }
         return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
     },
-    async createBondAsync(peripheralUUID) {
-        invariantAvailability('createBondAsync');
+    async bondAsync(peripheralUUID) {
+        invariantAvailability('bondAsync');
         invariantUUID(peripheralUUID);
-        return await ExpoBluetooth.createBondAsync(peripheralUUID);
+        return await ExpoBluetooth.bondAsync(peripheralUUID);
     },
-    async removeBondAsync(peripheralUUID) {
-        invariantAvailability('removeBondAsync');
+    async unbondAsync(peripheralUUID) {
+        invariantAvailability('unbondAsync');
         invariantUUID(peripheralUUID);
-        return await ExpoBluetooth.removeBondAsync(peripheralUUID);
+        return await ExpoBluetooth.unbondAsync(peripheralUUID);
     },
     async enableBluetoothAsync(isBluetoothEnabled) {
         invariantAvailability('enableBluetoothAsync');
@@ -348,9 +351,15 @@ addListener(({ data, event }) => {
         return;
     }
     switch (event) {
+        case EVENTS.CENTRAL_DID_CONNECT_PERIPHERAL:
+            console.log('Connect peripheral: ', peripheral.id);
+            break;
         case EVENTS.CENTRAL_DID_STOP_SCANNING:
         case EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL:
         case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
+            if (event === EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL) {
+                console.log('disconnect peripheral: ', peripheral.id);
+            }
             fireMultiEventHandlers(event, { peripheral });
             if (peripheral) {
                 // Send specific events for things like disconnect.

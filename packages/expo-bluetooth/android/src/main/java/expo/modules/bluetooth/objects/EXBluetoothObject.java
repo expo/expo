@@ -3,15 +3,19 @@ package expo.modules.bluetooth.objects;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import expo.modules.bluetooth.BluetoothConstants;
 
-public class EXBluetoothObject implements EXBluetoothObjectInterface {
+
+public class EXBluetoothObject implements EXBluetoothObjectInterface, EXBluetoothParentObjectInterface{
 
   protected EXBluetoothObject mParent;
   protected Object mNativeData;
+  protected HashMap<String, EXBluetoothChildObject> mChildren;
+
   public EXBluetoothObject(Object nativeData, Object parent) {
     mNativeData = nativeData;
     if (parent != null && parent instanceof EXBluetoothObject) {
@@ -64,5 +68,26 @@ public class EXBluetoothObject implements EXBluetoothObjectInterface {
   @Override
   public String transactionIdForOperation(String operation) {
     return operation + "|" + getID();
+  }
+
+  @Override
+  public void clearChildren() {
+    for (EXBluetoothChildObject child : mChildren.values()) {
+      child.clearChildren();
+    }
+    mChildren = new HashMap<>();
+  }
+
+  @Override
+  public EXBluetoothChildObject getChild(String uuid) {
+    if (mChildren.containsKey(uuid)) {
+      return mChildren.get(uuid);
+    }
+    return null;
+  }
+
+  @Override
+  public HashMap<String, EXBluetoothChildObject> getChildren() {
+    return mChildren;
   }
 }

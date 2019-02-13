@@ -394,7 +394,7 @@ public class Serialize {
   public static String messageForGATTStatus(int input) {
     switch (input) {
       case BluetoothGatt.GATT_SUCCESS:
-        return "A GATT operation completed successfully";
+        return "GATT operation completed successfully";
       case BluetoothGatt.GATT_READ_NOT_PERMITTED:
         return "GATT read operation is not permitted";
       case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
@@ -406,15 +406,15 @@ public class Serialize {
       case BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
         return "Insufficient encryption for a given operation";
       case BluetoothGatt.GATT_INVALID_OFFSET:
-        return "A read or write operation was requested with an invalid offset";
+        return "Read or write operation was requested with an invalid offset";
       case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
-        return "A write operation exceeds the maximum length of the attribute";
+        return "Write operation exceeds the maximum length of the attribute";
       case BluetoothGatt.GATT_CONNECTION_CONGESTED:
-        return "A remote device connection is congested";
+        return "Remote device connection is congested";
       case BluetoothGatt.GATT_FAILURE:
-        return "A GATT operation failed, errors other than the above";
+        return "GATT operation failed";
       default:
-        return "An unknown error occurred";
+        return "An unknown GATT error occurred " + input;
     }
   }
 

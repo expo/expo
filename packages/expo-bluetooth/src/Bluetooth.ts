@@ -511,9 +511,15 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   }
 
   switch (event) {
+    case EVENTS.CENTRAL_DID_CONNECT_PERIPHERAL:
+    console.log('Connect peripheral: ', peripheral!.id);
+    break;
     case EVENTS.CENTRAL_DID_STOP_SCANNING:
     case EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL:
     case EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL:
+      if (event === EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL) {
+        console.log('disconnect peripheral: ', peripheral!.id);
+      }
       fireMultiEventHandlers(event, { peripheral });
       if (peripheral) {
         // Send specific events for things like disconnect.
