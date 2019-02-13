@@ -54,8 +54,9 @@ public class Descriptor extends EXBluetoothChildObject {
     return false;
   }
 
-  public boolean setValue(byte[] data) {
-    return getDescriptor().setValue(data);
+  public Descriptor setValue(byte[] data) {
+    getDescriptor().setValue(data);
+    return this;
   }
 
   @Override

@@ -60,10 +60,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   private static final int ENABLE_REQUEST = 65072;
   static ModuleRegistry moduleRegistry;
-  static BluetoothManager bluetoothManager;
+  public static BluetoothManager bluetoothManager;
   static private Map<String, Peripheral> peripherals = new LinkedHashMap<>();
   public BluetoothScanManager scanManager;
-  private ModuleRegistry mModuleRegistry;
   private BondingPromise createBond;
   private BondingPromise removeBond;
   private BroadcastReceiver mReceiver;
@@ -78,7 +77,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   public static boolean isDeviceConnected(String peripheralUUID) {
 
-    /** Native method seems to not be as accurate as simply caching data. */
+    /** Native method seems to jump around and not be as accurate as simply caching data. */
     if (bluetoothManager == null) return false;
 
     BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(peripheralUUID);
@@ -86,7 +85,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (device == null) return false;
 
 //    return bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device);
-    Log.d("BLE_TEST", "connectedMethods: " + connectedDevices.containsKey(peripheralUUID) + ", Native: " + bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device));
+//    Log.d("BLE_TEST", "connectedMethods: " + connectedDevices.containsKey(peripheralUUID) + ", Native: " + bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device));
     return connectedDevices.containsKey(peripheralUUID);
   }
 
@@ -115,7 +114,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
   }
 
-
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     if (mReceiver != null) {
@@ -130,14 +128,14 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     removeAllCachedPeripherals();
     bluetoothManager = null;
+
     BluetoothModule.moduleRegistry = moduleRegistry;
-    mModuleRegistry = moduleRegistry;
     mPermissions = moduleRegistry.getModule(Permissions.class);
 
-    if (mModuleRegistry != null) {
+    if (moduleRegistry != null) {
       // Register to new UIManager
-      if (mModuleRegistry.getModule(UIManager.class) != null) {
-        mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
+      if (moduleRegistry.getModule(UIManager.class) != null) {
+        moduleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
       }
       createBluetoothInstance();
       createBondingReceiver();
@@ -188,8 +186,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   private Activity getCurrentActivity() {
-    if (mModuleRegistry != null) {
-      ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+    if (moduleRegistry != null) {
+      ActivityProvider activityProvider = moduleRegistry.getModule(ActivityProvider.class);
       return activityProvider.getCurrentActivity();
     }
     return null;
@@ -258,7 +256,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       scanManager = null;
     }
 
-    scanManager = new BluetoothScanManager(adapter, mModuleRegistry, new PeripheralScanningDelegate() {
+    scanManager = new BluetoothScanManager(adapter, moduleRegistry, new PeripheralScanningDelegate() {
       @Override
       public void onPeripheralFound(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {
         Peripheral peripheral = savePeripheral(device, RSSI, scanRecord);
@@ -373,18 +371,16 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       String bondStateString = Serialize.Bonding_NativeToJSON(bondState);
       promise.resolve(bondStateString);
       return;
-    }
-
-    if (createBond != null) {
+    } else if (createBond != null) {
       promise.reject(BluetoothConstants.ERRORS.GENERAL, "You are already attempting to Bond: " + createBond.uuid);
       return;
-    }
-
-    if (!peripheral.getDevice().createBond()) {
+    } else if (peripheral.getDevice().createBond()) {
+      createBond = new BondingPromise(peripheralUUID, promise);
+      return;
+    } else {
       promise.reject(BluetoothConstants.ERRORS.GENERAL, "Couldn't bond to peripheral: " + peripheralUUID);
       return;
     }
-    createBond = new BondingPromise(peripheralUUID, promise);
   }
 
   @ExpoMethod
@@ -843,7 +839,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (peripherals.containsKey(device.getAddress())) {
       return peripherals.get(device.getAddress());
     } else {
-      return new Peripheral(device, getCurrentActivity());
+      return new Peripheral(device.getAddress());
     }
   }
 
@@ -921,7 +917,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         }
       }
     }
-
     return peripheral;
   }
 
@@ -940,8 +935,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     String address = device.getAddress();
     synchronized (peripherals) {
       if (!peripherals.containsKey(address)) {
-        Peripheral peripheral = new Peripheral(device, RSSI, scanRecord);
-        peripherals.put(device.getAddress(), peripheral);
+        Peripheral peripheral = new Peripheral(device.getAddress(), RSSI, scanRecord);
+        peripherals.put(peripheral.getID(), peripheral);
         emitState();
       } else {
         Peripheral peripheral = peripherals.get(address);

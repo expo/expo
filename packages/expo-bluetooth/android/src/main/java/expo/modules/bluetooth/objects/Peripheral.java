@@ -36,9 +36,8 @@ import expo.modules.bluetooth.helpers.UUIDHelper;
 // Wrapper for GATT because GATT can access Device
 public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParentObjectInterface {
 
-  public final BluetoothDevice device;
   public BluetoothGatt mGatt;
-  private int advertisingRSSI;
+  private int mRSSI;
   private int mMTU;
   private Promise mDidDisconnectPeripheralBlock;
   private HashMap<String, Promise> mDidConnectPeripheralBlock = new HashMap<>();
@@ -48,36 +47,48 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   private PromiseListHashMap<String, ArrayList<Promise>> mReadDescriptorPromises = new PromiseListHashMap<>();
   private PromiseListHashMap<String, ArrayList<Promise>> mNotifyCharacteristicPromises = new PromiseListHashMap<>();
   private HashMap<String, Promise> mDidDiscoverServicesBlock = new HashMap<>();
-  private Promise mDidRequestMTUBlock;
-  private Promise mReadRSSIBlock;
+  private Promise mMTUBlock;
+  private Promise mRSSIBlock;
   private ScanRecord advertisingData;
   private byte[] advertisingDataBytes;
+  private HashMap<String, Service> mServices;
 
-  public Peripheral(BluetoothDevice device, int advertisingRSSI, ScanRecord scanRecord) {
-    this.device = device;
-    this.advertisingRSSI = advertisingRSSI;
-    this.advertisingData = scanRecord;
-    this.advertisingDataBytes = scanRecord.getBytes();
+  private String mDeviceID;
+  public Peripheral(String deviceID, int RSSI, ScanRecord scanRecord) {
+    mDeviceID = deviceID;
+    mRSSI = RSSI;
+    advertisingData = scanRecord;
+    advertisingDataBytes = scanRecord.getBytes();
   }
 
-  public Peripheral(BluetoothDevice device, Activity activity) {
-    this.device = device;
-    connectToGATT(activity);
+  public Peripheral(String deviceID) {
+//    connectToGATT(activity);
+    mDeviceID = deviceID;
   }
 
   public Peripheral(BluetoothGatt gatt) {
-    this.device = gatt.getDevice();
-    this.mGatt = gatt;
+    mGatt = gatt;
+    mDeviceID = gatt.getDevice().getAddress();
   }
 
   public static ArrayList<Bundle> listToJSON(List<Peripheral> input) {
-    if (input == null) return null;
+    if (input == null) {
+      return null;
+    }
 
     ArrayList<Bundle> output = new ArrayList();
     for (Peripheral value : input) {
       output.add(value.toJSON());
     }
     return output;
+  }
+
+  public BluetoothDevice getDevice() {
+    if (mGatt != null) {
+      return mGatt.getDevice();
+    }
+    /** Alternative to caching the immutable device instance */
+    return BluetoothModule.bluetoothManager.getAdapter().getRemoteDevice(getID());
   }
 
   @Override
@@ -92,11 +103,11 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     ArrayList<Bundle> services = Service.listToJSON((List) getServices());
     output.putParcelableArrayList(BluetoothConstants.JSON.SERVICES, services);
-    output.putString(BluetoothConstants.JSON.NAME, device.getName());
+    output.putString(BluetoothConstants.JSON.NAME, getDevice().getName());
     output.putString(BluetoothConstants.JSON.ID, getID());
     output.putString(BluetoothConstants.JSON.UUID, getID());
     output.putString(BluetoothConstants.JSON.STATE, isConnected() ? "connected" : "disconnected");
-    output.putInt(BluetoothConstants.JSON.RSSI, advertisingRSSI);
+    output.putInt(BluetoothConstants.JSON.RSSI, mRSSI);
     output.putString(BluetoothConstants.JSON.BOND_STATE, Serialize.bondingState_NativeToJSON(getBondState()));
     output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, advertisementData());
 
@@ -122,7 +133,8 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   @Override
   public String getID() {
-    return device.getAddress();
+    return mDeviceID;
+//    return getDevice().getAddress();
   }
 
   @Override
@@ -148,15 +160,20 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public int getBondState() {
-    return device.getBondState();
+    return getDevice().getBondState();
   }
 
   private void connectToGATT(Activity activity) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      mGatt = device.connectGatt(activity, false, bluetoothGattCallback);
+      mGatt = getDevice().connectGatt(activity, false, bluetoothGattCallback);
     } else {
-      mGatt = device.connectGatt(activity, false, bluetoothGattCallback, BluetoothDevice.TRANSPORT_LE);
+      mGatt = getDevice().connectGatt(activity, false, bluetoothGattCallback, BluetoothDevice.TRANSPORT_LE);
     }
+  }
+
+  public void setGatt(BluetoothGatt gatt) {
+    mGatt = gatt;
+    mDeviceID = gatt.getDevice().getAddress();
   }
 
   private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
@@ -173,19 +190,21 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
       super.onConnectionStateChange(gatt, status, newState);
-      mGatt = gatt;
+
+      setGatt(gatt);
+//      mGatt = gatt;
 
       if (newState == BluetoothProfile.STATE_CONNECTED) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
           BluetoothModule.connectedDevices.put(gatt.getDevice().getAddress(), gatt);
         }
-//      device.createBond();
+//      getDevice().createBond();
         // Send Connection event
         sendEvent(BluetoothConstants.OPERATIONS.CONNECT, BluetoothConstants.EVENTS.CENTRAL_DID_CONNECT_PERIPHERAL, null);
         String UUIDString = getID();
         if (mDidConnectPeripheralBlock.containsKey(UUIDString)) {
           Promise promise = mDidConnectPeripheralBlock.get(UUIDString);
-          if (autoResolvePromiseWithStatusAndData(promise, status)) {
+          if (shouldResolvePromiseWithStatusAndData(promise, status)) {
             promise.resolve(toJSON());
             BluetoothModule.emitState();
           }
@@ -194,11 +213,8 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       } else { /** BluetoothProfile.STATE_DISCONNECTED */
         BluetoothModule.connectedDevices.remove(gatt.getDevice().getAddress());
         Log.d("BLE_TEST", "DISCONNECT" + getID() + ", connected: " + isConnected() + ", has callback: " + mDidDisconnectPeripheralBlock);
-//        if (isConnected()) {
-//          disconnectGATT();
-//        }
         if (mDidDisconnectPeripheralBlock != null) {
-          if (autoResolvePromiseWithStatusAndData(mDidDisconnectPeripheralBlock, status)) {
+          if (shouldResolvePromiseWithStatusAndData(mDidDisconnectPeripheralBlock, status)) {
             mDidDisconnectPeripheralBlock.resolve(toJSON());
           }
           mDidDisconnectPeripheralBlock = null;
@@ -216,7 +232,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       String id = getID();
       if (mDidDiscoverServicesBlock.containsKey(id)) {
         Promise promise = mDidDiscoverServicesBlock.get(id);
-        if (autoResolvePromiseWithStatusAndData(promise, status)) {
+        if (shouldResolvePromiseWithStatusAndData(promise, status)) {
           Bundle output = new Bundle();
           output.putBundle(BluetoothConstants.JSON.PERIPHERAL, toJSON());
           promise.resolve(output);
@@ -235,7 +251,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
       ArrayList<Promise> promises = mReadCharacteristicPromises.get(input.getID());
       for (Promise promise : promises) {
-        if (autoResolvePromiseWithStatusAndData(promise, status)) {
+        if (shouldResolvePromiseWithStatusAndData(promise, status)) {
           promise.resolve(output);
 //        Bundle output = new Bundle();
 //        output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, characteristicInstance.toJSON());
@@ -256,7 +272,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
       ArrayList<Promise> promises = mWriteCharacteristicPromises.get(input.getID());
       for (Promise promise : promises) {
-        if (autoResolvePromiseWithStatusAndData(promise, status)) {
+        if (shouldResolvePromiseWithStatusAndData(promise, status)) {
           promise.resolve(output);
         }
       }
@@ -286,7 +302,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
       ArrayList<Promise> promises = mReadDescriptorPromises.get(input.getID());
       for (Promise promise : promises) {
-        if (autoResolvePromiseWithStatusAndData(promise, status)) {
+        if (shouldResolvePromiseWithStatusAndData(promise, status)) {
           promise.resolve(output);
 //        Bundle output = new Bundle();
 //        output.putBundle(BluetoothConstants.JSON.DESCRIPTOR, input.toJSON());
@@ -308,7 +324,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
       ArrayList<Promise> promises = mWriteDescriptorPromises.get(input.getID());
       for (Promise promise : promises) {
-        if (autoResolvePromiseWithStatusAndData(promise, status)) {
+        if (shouldResolvePromiseWithStatusAndData(promise, status)) {
           promise.resolve(output);
 //        Bundle output = new Bundle();
 //        output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, characteristic.toJSON());
@@ -350,12 +366,12 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
         updateRSSI(rssi);
       }
 
-      if (mReadRSSIBlock != null) {
-        if (autoResolvePromiseWithStatusAndData(mReadRSSIBlock, status)) {
-          mReadRSSIBlock.resolve(toJSON());
+      if (mRSSIBlock != null) {
+        if (shouldResolvePromiseWithStatusAndData(mRSSIBlock, status)) {
+          mRSSIBlock.resolve(toJSON());
           BluetoothModule.emitState();
         }
-        mReadRSSIBlock = null;
+        mRSSIBlock = null;
       }
       // TODO: Bacon: Send RSSI event here - not done on iOS either
     }
@@ -365,12 +381,12 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       super.onMtuChanged(gatt, mtu, status);
       mMTU = mtu;
 
-      if (mDidRequestMTUBlock != null) {
-        if (autoResolvePromiseWithStatusAndData(mDidRequestMTUBlock, status)) {
-          mDidRequestMTUBlock.resolve(mtu);
+      if (mMTUBlock != null) {
+        if (shouldResolvePromiseWithStatusAndData(mMTUBlock, status)) {
+          mMTUBlock.resolve(mtu);
           BluetoothModule.emitState();
         }
-        mDidRequestMTUBlock = null;
+        mMTUBlock = null;
       }
     }
   };
@@ -447,7 +463,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       return null;
     }
     Bundle advertising = new Bundle();
-    String name = device.getName();
+    String name = getDevice().getName();
     advertising.putString(BluetoothConstants.JSON.LOCAL_NAME, name);
     advertising.putInt(BluetoothConstants.JSON.TX_POWER_LEVEL, advertisingData.getTxPowerLevel());
     advertising.putBoolean(BluetoothConstants.JSON.IS_CONNECTABLE, true);
@@ -488,9 +504,9 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     return BluetoothModule.isDeviceConnected(getID());
   }
 
-  public BluetoothDevice getDevice() {
-    return device;
-  }
+//  public BluetoothDevice getDevice() {
+//    return device;
+//  }
 
   protected void sendEvent(String transaction, String eventName, Bundle error) {
     Bundle output = new Bundle();
@@ -500,7 +516,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     BluetoothModule.sendEvent(eventName, output);
   }
 
-  public static boolean autoResolvePromiseWithStatusAndData(Promise promise, int status) {
+  private boolean shouldResolvePromiseWithStatusAndData(Promise promise, int status) {
     if (status == BluetoothGatt.GATT_SUCCESS) {
       return true;
     }
@@ -509,42 +525,12 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void updateRSSI(int RSSI) {
-    advertisingRSSI = RSSI;
+    mRSSI = RSSI;
   }
 
   public void updateData(ScanRecord scanRecord) {
     advertisingData = scanRecord;
     advertisingDataBytes = scanRecord.getBytes();
-  }
-
-  private HashMap<String, Service> mServices;
-
-  @Override
-  public void clearChildren() {
-    for (EXBluetoothChildObject child : mServices.values()) {
-      child.clearChildren();
-    }
-    mServices = new HashMap<>();
-  }
-
-  @Override
-  public EXBluetoothChildObject getChild(String uuid) {
-    if (mServices.containsKey(uuid)) {
-      return mServices.get(uuid);
-    }
-    BluetoothGattService child = mGatt.getService(UUIDHelper.toUUID(uuid));
-    Service service = new Service(child, mGatt);
-    mServices.put(uuid, service);
-    return service;
-  }
-
-  @Override
-  public HashMap<String, EXBluetoothChildObject> getChildren() {
-    HashMap<String, EXBluetoothChildObject> children = new HashMap<>();
-    for (String key : mServices.keySet()) {
-      children.put(key, mServices.get(key));
-    }
-    return children;
   }
 
   public Service getServiceOrReject(String serviceUUIDString, Promise promise) {
@@ -575,7 +561,6 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     return null;
   }
 
-
   public static Characteristic getCharacteristicOrReject(Service service, String characteristicUUIDString, Promise promise) {
     UUID uuid = UUIDHelper.toUUID(characteristicUUIDString);
     Characteristic characteristic = service.getCharacteristic(uuid);
@@ -597,18 +582,10 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     return descriptor;
   }
 
-  public void writeDescriptor(
-      byte[] data,
-      final Descriptor descriptor,
-      final Promise promise
-  ) {
+  public void writeDescriptor(byte[] data, final Descriptor descriptor, final Promise promise) {
     if (guardGATT(promise) || guardIsConnected(promise)) {
       return;
-    }
-
-    descriptor.setValue(data); // Bacon: Always returns true.
-
-    if (mGatt.writeDescriptor(descriptor.getDescriptor())) {
+    } else if (mGatt.writeDescriptor(descriptor.setValue(data).getDescriptor())) {
       mWriteDescriptorPromises.add(descriptor.getID(), promise);
       return;
     } else {
@@ -617,28 +594,17 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     }
   }
 
-  public void writeCharacteristicAsync(
-      byte[] data,
-      final Characteristic characteristic,
-      final Promise promise
-  ) {
+  public void writeCharacteristicAsync(byte[] data, final Characteristic characteristic, final Promise promise) {
     if (guardGATT(promise) || guardIsConnected(promise)) {
       return;
-    }
-
-    characteristic.setValue(data); // Bacon: Always returns true.
-
-    if (mGatt.writeCharacteristic(characteristic.getCharacteristic())) {
+    } else if (mGatt.writeCharacteristic(characteristic.setValue(data).getCharacteristic())) {
       mWriteCharacteristicPromises.add(characteristic.getID(), promise);
     } else {
       BluetoothError.reject(promise, "Failed to write characteristic: " + characteristic.getID());
     }
   }
 
-  public void readDescriptor(
-      final Descriptor descriptor,
-      final Promise promise
-  ) {
+  public void readDescriptor(final Descriptor descriptor, final Promise promise) {
     if (guardGATT(promise) || guardIsConnected(promise)) {
       return;
     } else if (mGatt.readDescriptor(descriptor.getDescriptor())) {
@@ -650,10 +616,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     }
   }
 
-  public void readCharacteristicAsync(
-      final Characteristic characteristic,
-      final Promise promise
-  ) {
+  public void readCharacteristicAsync(final Characteristic characteristic, final Promise promise) {
     if (guardGATT(promise) || guardIsConnected(promise)) {
       return;
     } else if (mGatt.readCharacteristic(characteristic.getCharacteristic())) {
@@ -710,10 +673,10 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void readRSSIAsync(Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mReadRSSIBlock)) {
+    if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mRSSIBlock)) {
       return;
     } else if (mGatt.readRemoteRssi()) {
-      mReadRSSIBlock = promise;
+      mRSSIBlock = promise;
       return;
     } else {
       BluetoothError.reject(promise, "Failed to read RSSI from peripheral: " + getID());
@@ -745,19 +708,65 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     }
   }
 
-  public void requestMTU(int mtu, Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mDidRequestMTUBlock)) {
+  public void requestMTU(int MTU, Promise promise) {
+    if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mMTUBlock)) {
       return;
-    } else if (mGatt.requestMtu(mtu)) {
-      mDidRequestMTUBlock = promise;
+    } else if (mGatt.requestMtu(MTU)) {
+      mMTUBlock = promise;
       return;
     } else {
-      BluetoothError.reject(promise, "Failed to request MTU: " + mtu);
+      BluetoothError.reject(promise, "Failed to request MTU: " + MTU);
       return;
     }
   }
 
+  /** Parent Interface */
+
+  @Override
+  public void clearChildren() {
+    for (EXBluetoothChildObject child : mServices.values()) {
+      child.clearChildren();
+    }
+    mServices = new HashMap<>();
+  }
+
+  @Override
+  public EXBluetoothChildObject getChild(String uuid) {
+    if (mServices.containsKey(uuid)) {
+      return mServices.get(uuid);
+    }
+    BluetoothGattService child = mGatt.getService(UUIDHelper.toUUID(uuid));
+    Service service = new Service(child, mGatt);
+    mServices.put(uuid, service);
+    return service;
+  }
+
+  @Override
+  public HashMap<String, EXBluetoothChildObject> getChildren() {
+    HashMap<String, EXBluetoothChildObject> children = new HashMap<>();
+    for (String key : mServices.keySet()) {
+      children.put(key, mServices.get(key));
+    }
+    return children;
+  }
+
+  /** Object Interface */
+
+  @Override
+  public Peripheral getPeripheral() {
+    return this;
+  }
+
+  @Override
+  public String transactionIdForOperation(String operation) {
+    return operation + "|" + getID();
+  }
+
+
+  /** Guards */
+
   public boolean guardIsConnected(Promise promise) {
+    /** A connected device will have a valid GATT */
     if (!isConnected()) {
       promise.reject(BluetoothConstants.ERRORS.GENERAL, "Peripheral is not connected: " + getID());
       return true;
@@ -767,7 +776,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   private boolean guardGATT(Promise promise) {
     if (mGatt == null) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "GATT is not defined");
+      promise.reject(BluetoothConstants.ERRORS.GENERAL, "GATT is not defined. Connect to the peripheral " + getID() + " to create one.");
       return true;
     }
     return false;
@@ -781,14 +790,5 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     return false;
   }
 
-  @Override
-  public Peripheral getPeripheral() {
-    return this;
-  }
-
-  @Override
-  public String transactionIdForOperation(String operation) {
-    return operation + "|" + getID();
-  }
 
 }

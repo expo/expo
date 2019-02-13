@@ -74,8 +74,9 @@ public class Characteristic extends EXBluetoothChildObject {
     return output;
   }
 
-  public boolean setValue(byte[] data) {
-    return getCharacteristic().setValue(data);
+  public Characteristic setValue(byte[] data) {
+    getCharacteristic().setValue(data);
+    return this;
   }
 
   public void discoverDescriptors(Promise promise) {
