@@ -1,6 +1,5 @@
 package expo.modules.bluetooth;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.le.ScanCallback;
 import android.os.Bundle;
@@ -16,12 +15,6 @@ public class BluetoothError {
   public String suggestion;
   public String underlayingError;
 
-  public String deviceID;
-  public String serviceUUID;
-  public String characteristicUUID;
-  public String descriptorUUID;
-
-
   public static BluetoothError fromScanCallbackErrorCode(int errorCode) {
     switch (errorCode) {
       case ScanCallback.SCAN_FAILED_ALREADY_STARTED:
@@ -36,7 +29,6 @@ public class BluetoothError {
         return UNKOWN();
     }
   }
-
 
   public BluetoothError(String code, String message) {
     this.code = code;
@@ -70,7 +62,6 @@ public class BluetoothError {
     return new BluetoothError("ERR_UNKNOWN", "An unknown error has occurred.");
   }
 
-
   public static final BluetoothError BLE_UNSUPPORTED() {
     return new BluetoothError("ERR_BLE_UNSUPPORTED", "Failed to start power optimized scan as this feature is not supported.");
   }
@@ -91,9 +82,7 @@ public class BluetoothError {
     return new BluetoothError("ERR_CONCURRENT_TASK", "Running concurrent task.");
   }
 
-
   public class Codes {
-
 
     public static final String UNKNOWN = "ERR_UNKNOWN";
 

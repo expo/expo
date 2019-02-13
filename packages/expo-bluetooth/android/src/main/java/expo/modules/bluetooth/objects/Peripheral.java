@@ -16,9 +16,11 @@ import android.util.Base64;
 import android.util.Log;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,33 +30,32 @@ import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.BluetoothError;
 import expo.modules.bluetooth.BluetoothModule;
 import expo.modules.bluetooth.Serialize;
+import expo.modules.bluetooth.helpers.PromiseListHashMap;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 
 
 // Wrapper for GATT because GATT can access Device
 public class Peripheral extends BluetoothGattCallback implements EXBluetoothObjectInterface {
 
-  private static final String CHARACTERISTIC_NOTIFICATION_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
   public final BluetoothDevice device;
   public BluetoothGatt mGatt;
   public int advertisingRSSI;
   public int MTU;
   private Promise _didDisconnectPeripheralBlock;
   HashMap<String, Promise> _didConnectPeripheralBlock = new HashMap<>();
-  HashMap<String, Promise> _readValueBlocks = new HashMap<>();
-  HashMap<String, Promise> _writeValueBlocks = new HashMap<>();
+  PromiseListHashMap<String, ArrayList<Promise>> _writeCharacteristicPromises = new PromiseListHashMap<>();
+  PromiseListHashMap<String, ArrayList<Promise>> _writeDescriptorPromises = new PromiseListHashMap<>();
+
+  PromiseListHashMap<String, ArrayList<Promise>> _readCharacteristicPromises = new PromiseListHashMap<>();
+  PromiseListHashMap<String, ArrayList<Promise>> _readDescriptorPromises = new PromiseListHashMap<>();
+
+  PromiseListHashMap<String, ArrayList<Promise>> _notifyCharacteristicPromises = new PromiseListHashMap<>();
+
   HashMap<String, Promise> _didDiscoverServicesBlock = new HashMap<>();
-  HashMap<String, Promise> _didRequestMTUBlock = new HashMap<>();
+  Promise _didRequestMTUBlock;
   Promise _readRSSIBlock;
   private ScanRecord advertisingData;
   private byte[] advertisingDataBytes;
-
-  public Peripheral(BluetoothDevice device, int advertisingRSSI, byte[] scanRecord) {
-    this.device = device;
-    this.advertisingRSSI = advertisingRSSI;
-    this.advertisingDataBytes = scanRecord;
-  }
-
 
   public Peripheral(BluetoothDevice device, int advertisingRSSI, ScanRecord scanRecord) {
     this.device = device;
@@ -141,11 +142,12 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
         return;
       }
       _didConnectPeripheralBlock.put(getID(), promise);
+      return;
+    } else if (guardGATT(promise)) {
+      return;
     } else {
-      if (guardGATT(promise)) {
-        return;
-      }
       promise.resolve(toJSON());
+      return;
     }
   }
 
@@ -174,7 +176,16 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
       } else {
         // If the method doesn't exist, we have no recourse. Just return false.
       }
+    } catch (SecurityException e) {
+      // TODO: Bacon: Do something with the security exception
+    } catch (NoSuchMethodException e) {
+
+    } catch (IllegalAccessException e) {
+
+    } catch (IllegalArgumentException e) {
+
     } catch (Exception e) {
+
     }
     return false;
   }
@@ -187,6 +198,9 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     }
   }
 
+  public void disconnect() {
+    disconnectGATT();
+  }
 
   private void disconnectGATT() {
     if (mGatt != null) {
@@ -195,10 +209,12 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     }
   }
 
-
   // TODO: Bacon: Is this overriding the StateChange method
   public void disconnect(Promise promise) {
     if (guardGATT(promise)) {
+      return;
+    } else if (_didDisconnectPeripheralBlock != null) {
+      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
     }
 
@@ -223,7 +239,6 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
       return null;
     }
     Bundle advertising = new Bundle();
-//    AdvertisementData advertisementData = AdvertisementData.parseScanResponseData(advertisingDataBytes);
     String name = device.getName();
     advertising.putString(BluetoothConstants.JSON.LOCAL_NAME, name);
     advertising.putInt(BluetoothConstants.JSON.TX_POWER_LEVEL, advertisingData.getTxPowerLevel());
@@ -296,8 +311,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     BluetoothModule.sendEvent(eventName, output);
   }
 
-
-  private boolean autoResolvePromiseWithStatusAndData(Promise promise, int status) {
+  public static boolean autoResolvePromiseWithStatusAndData(Promise promise, int status) {
     if (status == BluetoothGatt.GATT_SUCCESS) {
       return true;
     }
@@ -328,9 +342,9 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 
         break;
       case BluetoothProfile.STATE_DISCONNECTED:
-        if (isConnected()) {
-          disconnectGATT();
-        }
+//        if (isConnected()) {
+//          disconnectGATT();
+//        }
         if (_didDisconnectPeripheralBlock != null) {
           if (autoResolvePromiseWithStatusAndData(_didDisconnectPeripheralBlock, status)) {
             _didDisconnectPeripheralBlock.resolve(toJSON());
@@ -352,49 +366,60 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     advertisingRSSI = RSSI;
   }
 
-  public void updateData(byte[] data) {
-    advertisingDataBytes = data;
-  }
-
   public void updateData(ScanRecord scanRecord) {
     advertisingData = scanRecord;
     advertisingDataBytes = scanRecord.getBytes();
   }
 
+  // Enable or disable notifications/indications for a given characteristic.
   @Override
   public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
     super.onCharacteristicChanged(gatt, characteristic);
-    Characteristic characteristicInstance = new Characteristic(characteristic, gatt);
-    characteristicInstance.sendEvent(BluetoothConstants.OPERATIONS.READ, BluetoothConstants.EVENTS.PERIPHERAL_DID_UPDATE_VALUE_FOR_CHARACTERISTIC, BluetoothGatt.GATT_SUCCESS);
+    Characteristic input = new Characteristic(characteristic, gatt);
+    Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.NOTIFY, BluetoothConstants.EVENTS.PERIPHERAL_DID_CHANGE_NOTIFICATIONS_VALUE_FOR_CHARACTERISTIC, BluetoothGatt.GATT_SUCCESS);
+
+    ArrayList<Promise> promises = _notifyCharacteristicPromises.get(input.getID());
+    for (Promise promise : promises) {
+      promise.resolve(output);
+    }
+    _notifyCharacteristicPromises.clearKey(input.getID());
   }
 
   @Override
   public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     super.onCharacteristicRead(gatt, characteristic, status);
-    Characteristic characteristicInstance = new Characteristic(characteristic, gatt);
+    Characteristic input = new Characteristic(characteristic, gatt);
 
-    if (_readValueBlocks.containsKey(characteristicInstance.getID())) {
-      Promise promise = _readValueBlocks.get(characteristicInstance.getID());
+    Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.READ, BluetoothConstants.EVENTS.PERIPHERAL_DID_UPDATE_VALUE_FOR_CHARACTERISTIC, status);
 
+    ArrayList<Promise> promises = _readCharacteristicPromises.get(input.getID());
+    for (Promise promise : promises) {
       if (autoResolvePromiseWithStatusAndData(promise, status)) {
-        Bundle output = new Bundle();
-        output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, characteristicInstance.toJSON());
-        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, this.toJSON());
-        /* peripheral, characteristic */
         promise.resolve(output);
-        BluetoothModule.emitState();
+//        Bundle output = new Bundle();
+//        output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, characteristicInstance.toJSON());
+//        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, this.toJSON());
+//        /* peripheral, characteristic */
+//        promise.resolve(output);
+//        BluetoothModule.emitState();
       }
-      _readValueBlocks.remove(characteristicInstance.getID());
     }
-
-//    characteristicInstance.sendEvent(BluetoothConstants.OPERATIONS.READ, BluetoothConstants.EVENTS.PERIPHERAL_DID_UPDATE_VALUE_FOR_CHARACTERISTIC, status);
+    _readCharacteristicPromises.clearKey(input.getID());
   }
 
   @Override
   public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
     super.onCharacteristicWrite(gatt, characteristic, status);
     Characteristic input = new Characteristic(characteristic, gatt);
-    input.sendEvent(BluetoothConstants.OPERATIONS.WRITE, BluetoothConstants.EVENTS.PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC, status);
+    Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.WRITE, BluetoothConstants.EVENTS.PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC, status);
+
+    ArrayList<Promise> promises = _writeCharacteristicPromises.get(input.getID());
+    for (Promise promise : promises) {
+      if (autoResolvePromiseWithStatusAndData(promise, status)) {
+        promise.resolve(output);
+      }
+    }
+    _writeCharacteristicPromises.clearKey(input.getID());
   }
 
   @Override
@@ -402,40 +427,58 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     super.onDescriptorRead(gatt, descriptor, status);
     Descriptor input = new Descriptor(descriptor, gatt);
 
-    if (_readValueBlocks.containsKey(input.getID())) {
-      Promise promise = _readValueBlocks.get(input.getID());
+    Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.READ, BluetoothConstants.EVENTS.PERIPHERAL_DID_UPDATE_VALUE_FOR_DESCRIPTOR, status);
 
+    ArrayList<Promise> promises = _readDescriptorPromises.get(input.getID());
+    for (Promise promise : promises) {
       if (autoResolvePromiseWithStatusAndData(promise, status)) {
-        Bundle output = new Bundle();
-        output.putBundle(BluetoothConstants.JSON.DESCRIPTOR, input.toJSON());
-        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, this.toJSON());
-        /* peripheral, descriptor */
         promise.resolve(output);
-        BluetoothModule.emitState();
+//        Bundle output = new Bundle();
+//        output.putBundle(BluetoothConstants.JSON.DESCRIPTOR, input.toJSON());
+//        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, this.toJSON());
+//        /* peripheral, descriptor */
+//        promise.resolve(output);
+//        BluetoothModule.emitState();
       }
-      _readValueBlocks.remove(input.getID());
     }
-
-//    input.sendEvent(BluetoothConstants.OPERATIONS.READ, BluetoothConstants.EVENTS.PERIPHERAL_DID_UPDATE_VALUE_FOR_DESCRIPTOR, status);
+    _readDescriptorPromises.clearKey(input.getID());
   }
 
   @Override
   public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
     super.onDescriptorWrite(gatt, descriptor, status);
-    String characteristicUUIDString = UUIDHelper.fromUUID(descriptor.getCharacteristic().getUuid());
-    if (_writeValueBlocks.containsKey(characteristicUUIDString)) {
-      Promise promise = _writeValueBlocks.get(characteristicUUIDString);
+
+    Descriptor input = new Descriptor(descriptor, gatt);
+    Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.WRITE, BluetoothConstants.EVENTS.PERIPHERAL_DID_WRITE_VALUE_FOR_DESCRIPTOR, status);
+
+    ArrayList<Promise> promises = _writeDescriptorPromises.get(input.getID());
+    for (Promise promise : promises) {
       if (autoResolvePromiseWithStatusAndData(promise, status)) {
-        Characteristic characteristic = new Characteristic(descriptor.getCharacteristic(), gatt);
-        Bundle output = new Bundle();
-        output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, characteristic.toJSON());
-        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, this.toJSON());
-        /* peripheral, descriptor */
         promise.resolve(output);
-        BluetoothModule.emitState();
+//        Bundle output = new Bundle();
+//        output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, characteristic.toJSON());
+//        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, this.toJSON());
+//        /* peripheral, descriptor */
+//        promise.resolve(output);
+//        BluetoothModule.emitState();
       }
-      _writeValueBlocks.remove(characteristicUUIDString);
     }
+    _writeDescriptorPromises.clearKey(input.getID());
+//
+//    String characteristicUUIDString = UUIDHelper.fromUUID(descriptor.getCharacteristic().getUuid());
+//    if (_writeValueBlocks.containsKey(characteristicUUIDString)) {
+//      Promise promise = _writeValueBlocks.get(characteristicUUIDString);
+//      if (autoResolvePromiseWithStatusAndData(promise, status)) {
+//        Characteristic characteristic = new Characteristic(descriptor.getCharacteristic(), gatt);
+//        Bundle output = new Bundle();
+//        output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, characteristic.toJSON());
+//        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, this.toJSON());
+//        /* peripheral, descriptor */
+//        promise.resolve(output);
+//        BluetoothModule.emitState();
+//      }
+//      _writeValueBlocks.remove(characteristicUUIDString);
+//    }
 //    Descriptor input = new Descriptor(descriptor, gatt);
 //    input.sendEvent(BluetoothConstants.OPERATIONS.WRITE, BluetoothConstants.EVENTS.PERIPHERAL_DID_WRITE_VALUE_FOR_DESCRIPTOR, status);
   }
@@ -495,7 +538,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   }
 
 
-  public Characteristic getCharacteristicOrReject(Service service, String characteristicUUIDString, Promise promise) {
+  public static Characteristic getCharacteristicOrReject(Service service, String characteristicUUIDString, Promise promise) {
     UUID uuid = UUIDHelper.toUUID(characteristicUUIDString);
     Characteristic characteristic = service.getCharacteristic(uuid);
     if (characteristic == null) {
@@ -506,7 +549,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     return characteristic;
   }
 
-  public Descriptor getDescriptorOrReject(Characteristic characteristic, String descriptorUUIDString, Promise promise) {
+  public static Descriptor getDescriptorOrReject(Characteristic characteristic, String descriptorUUIDString, Promise promise) {
     UUID uuid = UUIDHelper.toUUID(descriptorUUIDString);
     Descriptor descriptor = characteristic.getDescriptor(uuid);
     if (descriptor == null) {
@@ -525,12 +568,14 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
       return;
     }
 
-    descriptor.setValue(data);
+    descriptor.setValue(data); // Bacon: Always returns true.
 
     if (mGatt.writeDescriptor(descriptor.getDescriptor())) {
-      _writeValueBlocks.put(descriptor.getID(), promise);
+      _writeDescriptorPromises.add(descriptor.getID(), promise);
+      return;
     } else {
       BluetoothError.reject(promise, "Failed to write descriptor: " + descriptor.getID());
+      return;
     }
   }
 
@@ -540,12 +585,12 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   ) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    }
-
-    if (mGatt.readDescriptor(descriptor.getDescriptor())) {
-      _readValueBlocks.put(descriptor.getID(), promise);
+    } else if (mGatt.readDescriptor(descriptor.getDescriptor())) {
+      _readDescriptorPromises.add(descriptor.getID(), promise);
+      return;
     } else {
       BluetoothError.reject(promise, "Failed to read descriptor: " + descriptor.getID());
+      return;
     }
   }
 
@@ -558,10 +603,10 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
       return;
     }
 
-    characteristic.setValue(data);
+    characteristic.setValue(data); // Bacon: Always returns true.
 
     if (mGatt.writeCharacteristic(characteristic.getCharacteristic())) {
-      _writeValueBlocks.put(characteristic.getID(), promise);
+      _writeCharacteristicPromises.add(characteristic.getID(), promise);
     } else {
       BluetoothError.reject(promise, "Failed to write characteristic: " + characteristic.getID());
     }
@@ -573,16 +618,13 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   ) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    }
-
-    if (mGatt.readCharacteristic(characteristic.getCharacteristic())) {
-      _readValueBlocks.put(characteristic.getID(), promise);
+    } else if (mGatt.readCharacteristic(characteristic.getCharacteristic())) {
+      _readCharacteristicPromises.add(characteristic.getID(), promise);
     } else {
       BluetoothError.reject(promise, "Failed to read characteristic: " + characteristic.getID());
     }
   }
 
-  // TODO: Bacon: Use writeDescriptor
   public void setNotify(Service service, String characteristicUUID, Boolean notify, Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
@@ -591,95 +633,99 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     Characteristic characteristic = getCharacteristicOrReject(service, characteristicUUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, promise);
     if (characteristic == null) {
       return;
-    }
-
-    if (!mGatt.setCharacteristicNotification(characteristic.getCharacteristic(), notify)) {
+    } else if (mGatt.setCharacteristicNotification(characteristic.getCharacteristic(), notify)) {
+      _notifyCharacteristicPromises.add(characteristic.getID(), promise);
+      return;
+    } else {
       promise.reject(BluetoothConstants.ERRORS.GENERAL, "Failed to register notification for " + characteristicUUID);
       return;
     }
 
-    Descriptor descriptor = characteristic.getDescriptor(UUIDHelper.toUUID(CHARACTERISTIC_NOTIFICATION_CONFIG));
-
-    if (descriptor == null) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Set notification failed for " + characteristicUUID);
-      return;
-    }
-
-    // try notify before indicate
-    if ((characteristic.getCharacteristic().getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
-      descriptor.setValue(notify ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
-    } else if ((characteristic.getCharacteristic().getProperties() & BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0) {
-      descriptor.setValue(notify ? BluetoothGattDescriptor.ENABLE_INDICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
-    } else {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Characteristic " + characteristicUUID + " does not have NOTIFY or INDICATE property set");
-      return;
-    }
-    try {
-      if (mGatt.writeDescriptor(descriptor.getDescriptor())) {
-        _writeValueBlocks.put(characteristic.getID(), promise);
-        return;
-      } else {
-        promise.reject(BluetoothConstants.ERRORS.GENERAL, "Failed to set client characteristic notification for " + characteristicUUID);
-        return;
-      }
-    } catch (Exception e) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Failed to set client characteristic notification for " + characteristicUUID + ", error: " + e.getMessage());
-      return;
-    }
+//    Descriptor descriptor = characteristic.getDescriptor(UUIDHelper.toUUID(CHARACTERISTIC_NOTIFICATION_CONFIG));
+//
+//    if (descriptor == null) {
+//      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Set notification failed for " + characteristicUUID);
+//      return;
+//    }
+//
+//    // try notify before indicate
+//    if ((characteristic.getCharacteristic().getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
+//      descriptor.setValue(notify ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+//    } else if ((characteristic.getCharacteristic().getProperties() & BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0) {
+//      descriptor.setValue(notify ? BluetoothGattDescriptor.ENABLE_INDICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+//    } else {
+//      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Characteristic " + characteristicUUID + " does not have NOTIFY or INDICATE property set");
+//      return;
+//    }
+//    try {
+//      if (mGatt.writeDescriptor(descriptor.getDescriptor())) {
+//        _writeDescriptorPromises.add(descriptor.getID(), promise);
+//        return;
+//      } else {
+//        promise.reject(BluetoothConstants.ERRORS.GENERAL, "Failed to set client characteristic notification for " + characteristicUUID);
+//        return;
+//      }
+//    } catch (Exception e) {
+//      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Failed to set client characteristic notification for " + characteristicUUID + ", error: " + e.getMessage());
+//      return;
+//    }
   }
 
   public void readRSSI(Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    }
-
-    if (!mGatt.readRemoteRssi()) {
-      BluetoothError.reject(promise, "Failed  to read RSSI from peripheral: " + getID());
+    } else if (_readRSSIBlock != null) {
+      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
+      return;
+    } else if (!mGatt.readRemoteRssi()) {
+      _readRSSIBlock = promise;
+      return;
+    } else {
+      BluetoothError.reject(promise, "Failed to read RSSI from peripheral: " + getID());
       return;
     }
-    promise.resolve(null);
   }
 
   public void retrieveServices(Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    }
-    if (_didDiscoverServicesBlock.containsKey(getID())) {
+    } else if (_didDiscoverServicesBlock.containsKey(getID())) {
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
-
+      return;
+    } else if (mGatt.discoverServices()) {
+      _didDiscoverServicesBlock.put(getID(), promise);
+      return;
+    } else {
+      BluetoothError.reject(promise, "Failed to discover services for peripheral: " + getID());
       return;
     }
-    _didDiscoverServicesBlock.put(getID(), promise);
-    mGatt.discoverServices();
   }
 
   public void requestConnectionPriority(int connectionPriority, Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    }
-    if (mGatt.requestConnectionPriority(connectionPriority)) {
+    } else if (mGatt.requestConnectionPriority(connectionPriority)) {
+      promise.resolve(null);
+      return;
+    } else {
       BluetoothError.reject(promise, "Failed to request connection priority: " + connectionPriority);
       return;
     }
-    promise.resolve(null);
   }
 
   public void requestMTU(int mtu, Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    }
-
-    String id = getID();
-    if (_didRequestMTUBlock.containsKey(id)) {
+    } else if (_didRequestMTUBlock != null) {
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
-    }
-    if (mGatt.requestMtu(mtu)) {
-      _didRequestMTUBlock.put(id, promise);
+    } else if (mGatt.requestMtu(mtu)) {
+      _didRequestMTUBlock = promise;
+      return;
+    } else {
+      BluetoothError.reject(promise, "Failed to request MTU: " + mtu);
       return;
     }
-    BluetoothError.reject(promise, "Failed to request MTU: " + mtu);
-
   }
 
   @Override
@@ -687,23 +733,13 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     super.onMtuChanged(gatt, mtu, status);
     MTU = mtu;
 
-    String id = getID();
-
-    if (_didRequestMTUBlock.containsKey(id)) {
-      Promise promise = _didRequestMTUBlock.get(id);
-      if (autoResolvePromiseWithStatusAndData(promise, status)) {
-        promise.resolve(mtu);
+    if (_didRequestMTUBlock != null) {      
+      if (autoResolvePromiseWithStatusAndData(_didRequestMTUBlock, status)) {
+        _didRequestMTUBlock.resolve(mtu);
         BluetoothModule.emitState();
       }
-      _didRequestMTUBlock.remove(id);
+      _didRequestMTUBlock = null;
     }
-    // TODO: Bacon: Should we do something if an event is fired and there is no promise to resolve?
-
-//    Bundle output = new Bundle();
-//    output.putInt(BluetoothConstants.JSON.MTU, mtu);
-//    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(BluetoothConstants.OPERATIONS.MTU));
-//    output.putBundle(BluetoothConstants.JSON.ERROR, BluetoothError.errorFromGattStatus(status));
-//    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_DID_CONNECT_PERIPHERAL, output);
   }
 
   public boolean guardIsConnected(Promise promise) {

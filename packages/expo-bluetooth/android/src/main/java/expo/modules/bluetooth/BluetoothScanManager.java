@@ -61,10 +61,8 @@ public class BluetoothScanManager {
       super.onScanFailed(errorCode);
       isScanning = false;
 
-      BluetoothError error = BluetoothError.fromScanCallbackErrorCode(errorCode);
-
       if (mDelegate != null) {
-        mDelegate.onPeripheralScanningError(error);
+        mDelegate.onPeripheralScanningError(BluetoothError.fromScanCallbackErrorCode(errorCode));
       }
     }
   };

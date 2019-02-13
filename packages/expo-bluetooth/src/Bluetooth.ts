@@ -451,17 +451,20 @@ const android = {
   async requestMTUAsync(peripheralUUID: UUID, MTU: number): Promise<number> {
     invariantAvailability('requestMTUAsync');
     invariantUUID(peripheralUUID);
+    if (MTU > 512) {
+      throw new Error('expo-bluetooth: Max MTU size is 512');
+    }
     return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
   },
-  async createBondAsync(peripheralUUID: UUID): Promise<any> {
-    invariantAvailability('createBondAsync');
+  async bondAsync(peripheralUUID: UUID): Promise<any> {
+    invariantAvailability('bondAsync');
     invariantUUID(peripheralUUID);
-    return await ExpoBluetooth.createBondAsync(peripheralUUID);
+    return await ExpoBluetooth.bondAsync(peripheralUUID);
   },
-  async removeBondAsync(peripheralUUID: UUID): Promise<any> {
-    invariantAvailability('removeBondAsync');
+  async unbondAsync(peripheralUUID: UUID): Promise<any> {
+    invariantAvailability('unbondAsync');
     invariantUUID(peripheralUUID);
-    return await ExpoBluetooth.removeBondAsync(peripheralUUID);
+    return await ExpoBluetooth.unbondAsync(peripheralUUID);
   },
   async enableBluetoothAsync(isBluetoothEnabled: boolean): Promise<void> {
     invariantAvailability('enableBluetoothAsync');

@@ -4,12 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanRecord;
-import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -61,8 +58,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   private static final int ENABLE_REQUEST = 65072;
   static ModuleRegistry moduleRegistry;
   static BluetoothManager bluetoothManager;
-  public BluetoothScanManager scanManager;
   static private Map<String, Peripheral> peripherals = new LinkedHashMap<>();
+  public BluetoothScanManager scanManager;
   private ModuleRegistry mModuleRegistry;
   private BondingPromise createBond;
   private BondingPromise removeBond;
@@ -352,7 +349,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   @ExpoMethod
-  public void createBondAsync(String peripheralUUID, Promise promise) {
+  public void bondAsync(String peripheralUUID, Promise promise) {
     if (guardPeripheralAction(promise)) {
       return;
     }
@@ -383,7 +380,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   @ExpoMethod
-  private void removeBondAsync(String peripheralUUID, Promise promise) {
+  private void unbondAsync(String peripheralUUID, Promise promise) {
     if (guardPeripheralAction(promise)) {
       return;
     }
@@ -399,9 +396,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       String bondStateString = Serialize.Bonding_NativeToJSON(bondState);
       promise.resolve(bondStateString);
       return;
-    }
-
-    if (removeBond != null) {
+    } else if (removeBond != null) {
       promise.reject(BluetoothConstants.ERRORS.GENERAL, "You are already attempting to remove the bond: " + removeBond.uuid);
       return;
     }
@@ -464,10 +459,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   private boolean isMissingPermissions() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      return mPermissions == null || mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
-    }
-    return false;
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (mPermissions == null || mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED);
   }
 
   private boolean guardPermission(Promise promise) {
@@ -482,7 +474,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     return (guardPermission(promise) || guardBluetoothEnabled(promise));
   }
 
-  // TODO: Bacon: Maybe done?
   @ExpoMethod
   public void startScanningAsync(
       final ArrayList<String> serviceUUIDStrings,
@@ -507,8 +498,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     // TODO: EMIT
   }
 
-
-  // TODO: Bacon: Done!
   @ExpoMethod
   public void getCentralAsync(
       final Promise promise
@@ -520,7 +509,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     promise.resolve(Serialize.BluetoothAdapter_NativeToJSON(adapter, isScanning()));
   }
 
-  // TODO: Bacon: Done!
   @ExpoMethod
   public void getPeripheralsAsync(
       final Promise promise
@@ -533,7 +521,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     promise.resolve(Peripheral.listToJSON(input));
   }
 
-  // TODO: Bacon: Done!
   @ExpoMethod
   public void getBondedPeripheralsAsync(
       final Promise promise
@@ -554,7 +541,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     promise.resolve(EXBluetoothObject.listToJSON(bonded));
   }
 
-  // TODO: Bacon: Done!
   @ExpoMethod
   public void getConnectedPeripheralsAsync(List serviceUUIDs, final Promise promise) {
     if (guardPeripheralAction(promise)) {
@@ -577,7 +563,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (peripheral == null) {
       return;
     }
-
 
     peripheral.connect(promise, getCurrentActivity());
   }
@@ -665,7 +650,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     List data = (List) options.get(BluetoothConstants.JSON.DATA);
     byte[] decoded = Serialize.Base64_JSONToNative(data);
 
-    characteristic.getPeripheral().writeCharacteristicAsync(decoded,characteristic, promise);
+    characteristic.getPeripheral().writeCharacteristicAsync(decoded, characteristic, promise);
   }
 
   @ExpoMethod
@@ -706,9 +691,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (isConnected) {
       promise.resolve(peripheral.toJSON());
       return;
-    }
-
-    if (peripheral == null) {
+    } else if (peripheral == null) {
       Bundle output = new Bundle();
       output.putString("status", "unavailable");
       promise.resolve(output);
@@ -741,7 +724,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     // TODO: Bacon: Restructure
     Characteristic characteristic;
     if (options.containsKey(BluetoothConstants.JSON.CHARACTERISTIC_PROPERTIES)) {
-      String characteristicPropertiesString = (String)options.get(BluetoothConstants.JSON.CHARACTERISTIC_PROPERTIES);
+      String characteristicPropertiesString = (String) options.get(BluetoothConstants.JSON.CHARACTERISTIC_PROPERTIES);
       characteristic = service.getPeripheral().getCharacteristicOrReject(service, characteristicUUIDString, Serialize.CharacteristicProperties_JSONToNative(characteristicPropertiesString), promise);
     } else {
       characteristic = service.getPeripheral().getCharacteristicOrReject(service, characteristicUUIDString, promise);
@@ -751,7 +734,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   private Descriptor getDescriptorFromOptionsOrReject(Map<String, Object> options, Promise promise) {
     Characteristic characteristic = getCharacteristicFromOptionsOrReject(options, promise);
-    if (characteristic  != null) {
+    if (characteristic != null) {
       return null;
     }
     String descriptorUUIDString = (String) options.get(BluetoothConstants.JSON.DESCRIPTOR_UUID);
@@ -759,7 +742,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     Descriptor descriptor = characteristic.getPeripheral().getDescriptorOrReject(characteristic, descriptorUUIDString, promise);
     return descriptor;
   }
-
 
   @ExpoMethod
   public void discoverDescriptorsForCharacteristicAsync(
@@ -804,7 +786,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (service == null) {
       return;
     }
-
 
     ArrayList<UUID> includedServicesUUIDs = null;
     if (options.containsKey(BluetoothConstants.JSON.INCLUDED_SERVICES_UUIDS)) {
@@ -854,14 +835,14 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   private boolean isBluetoothAvailable() {
-      try {
-          if (getBluetoothAdapter() == null || getBluetoothAdapter().getAddress().equals(null)) {
-            return false;
-          }
-      } catch (NullPointerException e) {
-            return false;
+    try {
+      if (getBluetoothAdapter() == null || getBluetoothAdapter().getAddress().equals(null)) {
+        return false;
       }
-      return true;
+    } catch (NullPointerException e) {
+      return false;
+    }
+    return true;
   }
 
   private boolean guardBluetoothAvailability(Promise promise) {
@@ -921,7 +902,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     return serviceUUIDs.toArray(new UUID[jsonArray.length()]);
   }
 
-  Peripheral savePeripheral(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {
+  private Peripheral savePeripheral(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {
     String address = device.getAddress();
     synchronized (peripherals) {
       if (!peripherals.containsKey(address)) {
@@ -963,7 +944,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   @Override
   public void onNewIntent(Intent intent) {
-
+    // noop
   }
-
 }

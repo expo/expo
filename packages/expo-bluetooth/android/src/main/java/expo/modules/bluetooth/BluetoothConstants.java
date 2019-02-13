@@ -1,7 +1,5 @@
 package expo.modules.bluetooth;
 
-import android.bluetooth.BluetoothGatt;
-
 public class BluetoothConstants {
 
   public interface PRIORITY {
@@ -22,6 +20,8 @@ public class BluetoothConstants {
     String PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE = "peripheral.didDiscoverCharacteristicsForService";
     String PERIPHERAL_DID_DISCOVER_DESCRIPTORS_FOR_CHARACTERISTIC = "peripheral.didDiscoverDescriptorsForCharacteristic";
     String PERIPHERAL_DID_UPDATE_VALUE_FOR_CHARACTERISTIC = "peripheral.didUpdateValueForCharacteristic";
+    String PERIPHERAL_DID_CHANGE_NOTIFICATIONS_VALUE_FOR_CHARACTERISTIC = "peripheral.didChangeNotificationValueForCharacteristic";
+
     String PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC = "peripheral.didWriteValueForCharacteristic";
     String PERIPHERAL_DID_UPDATE_NOTIFICATION_STATE_FOR_CHARACTERISTIC = "peripheral.didUpdateNotificationStateForCharacteristic";
     String PERIPHERAL_DID_UPDATE_VALUE_FOR_DESCRIPTOR = "peripheral.didUpdateValueForDescriptor";
@@ -85,6 +85,7 @@ public class BluetoothConstants {
   }
 
   public interface OPERATIONS {
+    String NOTIFY = "notify";
     String READ = "read";
     String WRITE = "write";
     String DISCONNECT = "disconnect";
