@@ -4,7 +4,6 @@ import ExpoRandom from './ExpoRandom';
 
 function assertByteCount(value: any): void {
   if (
-    value == null ||
     typeof value !== 'number' ||
     isNaN(value) ||
     Math.floor(value) < 0 ||
