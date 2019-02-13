@@ -29,7 +29,7 @@ public class Descriptor extends EXBluetoothChildObject {
 
     BluetoothGattDescriptor input = getDescriptor();
 
-    output.putString(BluetoothConstants.JSON.CHARACTERISTIC_UUID, UUIDHelper.fromUUID(input.getCharacteristic().getUuid()));
+    output.putString(BluetoothConstants.JSON.CHARACTERISTIC_UUID, UUIDHelper.toString(input.getCharacteristic().getUuid()));
     output.putString(BluetoothConstants.JSON.VALUE, Base64Helper.fromBase64(input.getValue()));
     if (input.getPermissions() > 0) {
       output.putStringArrayList(BluetoothConstants.JSON.PERMISSIONS, Serialize.DescriptorPermissions_NativeToJSON(input.getPermissions()));

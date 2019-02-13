@@ -21,9 +21,10 @@ public class Characteristic extends EXBluetoothChildObject {
   }
 
   public Descriptor getDescriptor(UUID uuid) {
-    BluetoothGattDescriptor child = getCharacteristic().getDescriptor(uuid);
-    if (child == null) return null;
-    return new Descriptor(child, this);
+    return getDescriptor(UUIDHelper.toString(uuid));
+//    BluetoothGattDescriptor child = getCharacteristic().getDescriptor(uuid);
+//    if (child == null) return null;
+//    return new Descriptor(child, this);
   }
 
   @Override
@@ -51,7 +52,7 @@ public class Characteristic extends EXBluetoothChildObject {
 
     Bundle output = super.toJSON();
 
-    String serviceUUIDString = UUIDHelper.fromUUID(characteristic.getService().getUuid());
+    String serviceUUIDString = UUIDHelper.toString(characteristic.getService().getUuid());
 
     output.putString(BluetoothConstants.JSON.SERVICE_UUID, serviceUUIDString);
     output.putString(BluetoothConstants.JSON.PERIPHERAL_UUID, peripheralUUIDString);
@@ -87,6 +88,30 @@ public class Characteristic extends EXBluetoothChildObject {
     output.putBundle(BluetoothConstants.JSON.SERVICE, getParent().toJSON());
 //    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE, output);
     promise.resolve(output);
+  }
+
+  @Override
+  public EXBluetoothChildObject getChild(String uuid) {
+    EXBluetoothChildObject child = super.getChild(uuid);
+    if (child != null) {
+      return child;
+    }
+
+    BluetoothGattDescriptor nativeDescriptor = getCharacteristic().getDescriptor(UUIDHelper.toUUID(uuid));
+    if (nativeDescriptor != null) {
+      Descriptor descriptor = new Descriptor(nativeDescriptor, getPeripheral().mGatt);
+      mChildren.put(uuid, descriptor);
+      return descriptor;
+    }
+    return null;
+  }
+
+  public Descriptor getDescriptor(String uuid) {
+    EXBluetoothChildObject child = getChild(uuid);
+    if (child != null) {
+      return (Descriptor) child;
+    }
+    return null;
   }
 
 }

@@ -24,6 +24,10 @@ public class UUIDHelper {
   }
 
   public static String fromUUID(UUID uuid) {
+    return toString(uuid);
+  }
+
+  public static String toString(UUID uuid) {
     if (uuid == null) return null;
     String longUUID = uuid.toString();
     Pattern pattern = Pattern.compile("0000(.{4})-0000-1000-8000-00805f9b34fb", Pattern.CASE_INSENSITIVE);

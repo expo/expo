@@ -5,6 +5,9 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.ScanRecord;
@@ -95,6 +98,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       if (eventEmitter != null) {
         Bundle message = new Bundle();
         message.putString(BluetoothConstants.JSON.EVENT, eventName);
+//        message.putString(BluetoothConstants.JSON.DEVICE_TYPE, eventName);
         message.putBundle(BluetoothConstants.JSON.DATA, data);
         eventEmitter.emit(BluetoothConstants.JSON.BLUETOOTH_EVENT, message);
         return;
@@ -156,7 +160,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     final Map<String, Object> events = new HashMap<>();
 
     events.put("CENTRAL_DID_UPDATE_STATE", BluetoothConstants.EVENTS.CENTRAL_DID_UPDATE_STATE);
-    events.put("CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS", BluetoothConstants.EVENTS.CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS);
     events.put("CENTRAL_DID_RETRIEVE_PERIPHERALS", BluetoothConstants.EVENTS.CENTRAL_DID_RETRIEVE_PERIPHERALS);
     events.put("CENTRAL_DID_DISCOVER_PERIPHERAL", BluetoothConstants.EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL);
     events.put("CENTRAL_DID_CONNECT_PERIPHERAL", BluetoothConstants.EVENTS.CENTRAL_DID_CONNECT_PERIPHERAL);
@@ -835,7 +838,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     return peripherals;
   }
 
-  private Peripheral peripheralFromDevice(BluetoothDevice device) {
+  private static Peripheral peripheralFromDevice(BluetoothDevice device) {
     if (peripherals.containsKey(device.getAddress())) {
       return peripherals.get(device.getAddress());
     } else {
@@ -976,4 +979,137 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   public void onNewIntent(Intent intent) {
     // noop
   }
+
+  static public final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
+    @Override
+    public void onPhyUpdate(BluetoothGatt gatt, int txPhy, int rxPhy, int status) {
+      super.onPhyUpdate(gatt, txPhy, rxPhy, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onPhyUpdate(txPhy, rxPhy, status);
+      }
+    }
+
+    @Override
+    public void onPhyRead(BluetoothGatt gatt, int txPhy, int rxPhy, int status) {
+      super.onPhyRead(gatt, txPhy, rxPhy, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onPhyRead(txPhy, rxPhy, status);
+      }
+    }
+
+    @Override
+    public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+      super.onConnectionStateChange(gatt, status, newState);
+
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        /** Update the connected cache locally */
+        if (newState == BluetoothProfile.STATE_CONNECTED) {
+          if (status == BluetoothGatt.GATT_SUCCESS) {
+            BluetoothModule.connectedDevices.put(gatt.getDevice().getAddress(), gatt);
+          }
+        } else {
+          BluetoothModule.connectedDevices.remove(gatt.getDevice().getAddress());
+        }
+
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onConnectionStateChange(status, newState);
+      }
+    }
+
+    @Override
+    public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+      super.onServicesDiscovered(gatt, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onServicesDiscovered(status);
+      }
+    }
+
+    @Override
+    public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+      super.onCharacteristicRead(gatt, characteristic, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onCharacteristicRead(characteristic, status);
+      }
+    }
+
+    @Override
+    public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+      super.onCharacteristicWrite(gatt, characteristic, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onCharacteristicWrite(characteristic, status);
+      }
+    }
+
+    /** Enable or disable notifications/indications for a given characteristic. */
+    @Override
+    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+      super.onCharacteristicChanged(gatt, characteristic);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onCharacteristicChanged(characteristic);
+      }
+    }
+
+    @Override
+    public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+      super.onDescriptorRead(gatt, descriptor, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onDescriptorRead(descriptor, status);
+      }
+    }
+
+    @Override
+    public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+      super.onDescriptorWrite(gatt, descriptor, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onDescriptorWrite(descriptor, status);
+      }
+    }
+
+    @Override
+    public void onReliableWriteCompleted(BluetoothGatt gatt, int status) {
+      super.onReliableWriteCompleted(gatt, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onReliableWriteCompleted(status);
+      }
+    }
+
+    @Override
+    public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
+      super.onReadRemoteRssi(gatt, rssi, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onReadRemoteRssi(rssi, status);
+      }
+    }
+
+    @Override
+    public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+      super.onMtuChanged(gatt, mtu, status);
+      Peripheral peripheral = peripheralFromDevice(gatt.getDevice());
+      if (peripheral != null) {
+        peripheral.setGatt(gatt); /** This may not do anything. */
+        peripheral.onMtuChanged(mtu, status);
+      }
+    }
+  };
 }

@@ -30,6 +30,8 @@ public class BluetoothConstants {
   }
 
   public interface JSON {
+    String SYSTEM = "system";
+    String DEVICE_TYPE = "deviceType";
     String CENTRAL = "central";
     String PERIPHERAL = "peripheral";
     String PERIPHERALS = "peripherals";

@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import expo.core.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
+import expo.modules.bluetooth.helpers.UUIDHelper;
 
 
 // Device -> Service -> Characteristic -> Descriptor
@@ -31,9 +32,10 @@ public class Service extends EXBluetoothChildObject {
   }
 
   public Characteristic getCharacteristic(UUID uuid) {
-    BluetoothGattCharacteristic characteristic = getService().getCharacteristic(uuid);
-    if (characteristic == null) return null;
-    return new Characteristic(characteristic, this);
+    return getCharacteristic(UUIDHelper.toString(uuid));
+//    BluetoothGattCharacteristic characteristic = getService().getCharacteristic(uuid);
+//    if (characteristic == null) return null;
+//    return new Characteristic(characteristic, this);
   }
 
   public List<Characteristic> getCharacteristics() {
@@ -89,5 +91,37 @@ public class Service extends EXBluetoothChildObject {
     output.putBundle(BluetoothConstants.JSON.SERVICE, toJSON());
 //    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(BluetoothConstants.OPERATIONS.SCAN));
     promise.resolve(output);
+  }
+
+  @Override
+  public EXBluetoothChildObject getChild(String uuid) {
+    EXBluetoothChildObject child = super.getChild(uuid);
+    if (child != null) {
+      return child;
+    }
+
+    BluetoothGattCharacteristic nativeCharacteristic = getService().getCharacteristic(UUIDHelper.toUUID(uuid));
+    if (nativeCharacteristic != null) {
+      Characteristic characteristic = new Characteristic(nativeCharacteristic, getPeripheral().mGatt);
+      mChildren.put(uuid, characteristic);
+      return characteristic;
+    }
+    return null;
+  }
+
+  public Characteristic getCharacteristic(String uuid) {
+    EXBluetoothChildObject child = getChild(uuid);
+    if (child != null) {
+      return (Characteristic) child;
+    }
+    return null;
+  }
+
+  public Descriptor getDescriptor(String uuid) {
+    Characteristic child = getCharacteristic(uuid);
+    if (child != null) {
+      return child.getDescriptor(uuid);
+    }
+    return null;
   }
 }
