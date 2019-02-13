@@ -98,6 +98,15 @@
   return props;
 }
 
++ (CBCharacteristicProperties)CBCharacteristicPropertiesList_JSONToNative:(NSArray<NSString *> *)input
+{
+  CBCharacteristicProperty characteristicProperties = 0;
+  for (NSString *property in input) {
+    characteristicProperties |= [self.class CBCharacteristicProperties_JSONToNative:property];
+  }
+  return characteristicProperties;
+}
+
 + (CBCharacteristicProperties)CBCharacteristicProperties_JSONToNative:(NSString *)input
 {
   if ([input isEqualToString:@"broadcast"]) {

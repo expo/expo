@@ -30,11 +30,11 @@ public class EXBluetoothChildObject extends EXBluetoothObject {
     return output;
   }
 
-  protected Bundle sendEvent(String transaction, String eventName, int status) {
+  protected Bundle sendEvent(String eventName, int gattStatusCode) {
     Bundle output = new Bundle();
-    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(transaction));
+//    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(transaction));
     output.putBundle(BluetoothConstants.JSON.PERIPHERAL, getPeripheral().toJSON());
-    output.putBundle(BluetoothConstants.JSON.ERROR, BluetoothError.errorFromGattStatus(status));
+    output.putBundle(BluetoothConstants.JSON.ERROR, BluetoothError.fromGattStatusCodeAsJSON(gattStatusCode));
     return output;
   }
 }

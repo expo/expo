@@ -61,24 +61,24 @@ function getStaticInfoFromGATT(gatt) {
 
 afterEach(unmockAllProperties);
 
-describe('startScanAsync', () => {
+describe('startScanningAsync', () => {
   it(`get's a subscription`, () => {
     const serviceUUIDsToQuery = ['<DEBUG>'];
     const androidScanMode = '<DEBUG_ANDROID_SCAN_MODE>';
-    const subscription = Bluetooth.startScan(
+    const subscription = Bluetooth.startScanningAsync(
       { serviceUUIDsToQuery, androidScanMode },
       peripheral => {}
     );
     expect(ExpoBluetooth.startScanningAsync).toHaveBeenLastCalledWith(serviceUUIDsToQuery, {
       androidScanMode,
     });
-    expect(subscription.remove).toBeDefined();
+    expect(subscription).toBeDefined();
   });
 });
 
-describe('stopScanAsync', () => {
+describe('stopScanningAsync', () => {
   it(`doesn't fail`, async () => {
-    await Bluetooth.stopScanAsync();
+    await Bluetooth.stopScanningAsync();
     expect(ExpoBluetooth.stopScanningAsync).toHaveBeenLastCalledWith();
   });
 });

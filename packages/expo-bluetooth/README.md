@@ -46,7 +46,7 @@ Basic Usage
 
 ```
 
-### stopScanAsync
+### stopScanningAsync
 
 ```js
 ```

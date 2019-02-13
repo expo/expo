@@ -1,7 +1,7 @@
 // @flow
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Bluetooth from 'expo-bluetooth';
-import { Permissions } from 'expo-permissions';
+import { Permissions } from 'expo';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -69,7 +69,7 @@ import Colors from '../../constants/Colors';
  * Use-case: I just want to scan for peripherals, I'll update my UI from within the view.
  *
 
-Bluetooth.startScanAsync({}, ({ peripheral }) => {
+Bluetooth.startScanningAsync({}, ({ peripheral }) => {
 
   // Update the view state
   this.setState(({ peripherals }) => {
@@ -100,10 +100,13 @@ export default class BluetoothScreen extends React.Component {
 
   async componentDidMount() {
     await Permissions.askAsync(Permissions.LOCATION);
-    this.stateListener = await Bluetooth.observeStateAsync(state => {
-      console.log('observeStateAsync', state);
-      this.setState({ centralState: state });
-    });
+    // this.stateListener = await Bluetooth.observeStateAsync(state => {
+    //   console.log('observeStateAsync', state);
+    //   this.setState({ centralState: state });
+    // });
+
+    return;
+
     this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals }) => {
       console.log('BLE Screen: observeUpdatesAsync: ', peripherals);
       this.setState(({ peripherals: currentPeripherals }) => {
@@ -116,15 +119,15 @@ export default class BluetoothScreen extends React.Component {
       });
     });
 
-    // await Bluetooth.startScanAsync();
-    // await Bluetooth.stopScanAsync();
+    // await Bluetooth.startScanningAsync();
+    // await Bluetooth.stopScanningAsync();
 
     // await new Promise(res => setTimeout(res, 10));
     // const SnapChatSpectaclesServiceUUID = '3E400001-B5A3-F393-E0A9-E50E24DCCA9E';
     // const TileServiceUUID = 'FEED';
     // Load in one or more peripherals
     this.setState({ isScanning: true }, () => {
-      Bluetooth.startScanAsync({
+      Bluetooth.startScanningAsync({
         /* This will query peripherals with a value found in the peripheral's `advertisementData.serviceUUIDs` */
         // serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
         callback: async ({ peripheral }) => {
@@ -135,7 +138,7 @@ export default class BluetoothScreen extends React.Component {
           //   const isBacon = name.indexOf('baconbook') !== -1; // My computer's name
           //   if (isBacon) {
           //     // this.updatePeripheral(peripheral);
-          //     Bluetooth.stopScanAsync();
+          //     Bluetooth.stopScanningAsync();
           //     this.setState({ isScanning: false });
 
           //     const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
@@ -153,7 +156,7 @@ export default class BluetoothScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    Bluetooth.stopScanAsync();
+    Bluetooth.stopScanningAsync();
     if (this.stateListener) this.stateListener.remove();
     if (this.subscription) this.subscription.remove();
   }
@@ -164,6 +167,8 @@ export default class BluetoothScreen extends React.Component {
   onPressInfo = async peripheral => {
     this.props.navigation.push('BluetoothPeripheralScreen', { peripheral });
   };
+
+  stopScanningAsync;
 
   render() {
     const { centralState, peripherals, isScanning } = this.state;
@@ -183,14 +188,15 @@ export default class BluetoothScreen extends React.Component {
             <ScanningItem
               isDisabled={!canUseBluetooth}
               value={isScanning}
-              onValueChange={value => {
+              onValueChange={async value => {
                 // ExpoBluetooth.enableBluetoothAsync(true)
-                this.setState({ isScanning: value });
-                if (value) {
-                  Bluetooth.startScanAsync();
+                if (value && !this.stopScanningAsync) {
+                  this.stopScanningAsync = await Bluetooth.startScanningAsync({}, () => {});
                 } else {
-                  Bluetooth.stopScanAsync();
+                  await this.stopScanningAsync();
+                  this.stopScanningAsync = null;
                 }
+                this.setState({ isScanning: value });
               }}
             />
             <Text style={{ marginLeft: 16, marginVertical: 8, fontSize: 14, opacity: 0.6 }}>

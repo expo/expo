@@ -59,7 +59,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
       // TODO: Bacon: dont use [weakSelf emitFullState];
       [weakSelf emitFullState];
       [weakSelf
-       emit:EXBluetoothCentralDidUpdateStateEvent
+       emit:EXBluetoothEvent_CENTRAL_STATE_CHANGED
        data:@{
               EXBluetoothCentralKey: EXNullIfNil([[EXBluetooth class] EXBluetoothCentralManager_NativeToJSON:centralManager])
               }];
@@ -99,21 +99,29 @@ EX_EXPORT_MODULE(ExpoBluetooth);
               @"CHARACTERISTIC": EXBluetoothCharacteristicKey,
                },
            @"EVENTS": @{
-               @"CENTRAL_DID_UPDATE_STATE": EXBluetoothCentralDidUpdateStateEvent,
-               @"CENTRAL_DID_RETRIEVE_CONNECTED_PERIPHERALS": EXBluetoothCentralDidRetrieveConnectedPeripheralsEvent,
-               @"CENTRAL_DID_RETRIEVE_PERIPHERALS": EXBluetoothCentralDidRetrievePeripheralsEvent,
-               @"CENTRAL_DID_DISCOVER_PERIPHERAL": EXBluetoothCentralDidDiscoverPeripheralEvent,
-               @"CENTRAL_DID_CONNECT_PERIPHERAL": EXBluetoothCentralDidConnectPeripheralEvent,
-               @"CENTRAL_DID_DISCONNECT_PERIPHERAL": EXBluetoothCentralDidDisconnectPeripheralEvent,
-               @"PERIPHERAL_DID_DISCOVER_SERVICES": EXBluetoothPeripheralDidDiscoverServicesEvent,
-               @"PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE": EXBluetoothPeripheralDidDiscoverCharacteristicsForServiceEvent,
-               @"PERIPHERAL_DID_DISCOVER_DESCRIPTORS_FOR_CHARACTERISTIC": EXBluetoothPeripheralDidDiscoverDescriptorsForCharacteristicEvent,
-               @"PERIPHERAL_DID_UPDATE_VALUE_FOR_CHARACTERISTIC": EXBluetoothPeripheralDidUpdateValueForCharacteristicEvent,
-               @"PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC": EXBluetoothPeripheralDidWriteValueForCharacteristicEvent,
-               @"PERIPHERAL_DID_UPDATE_NOTIFICATION_STATE_FOR_CHARACTERISTIC": EXBluetoothPeripheralDidUpdateNotificationStateForCharacteristicEvent,
-               @"PERIPHERAL_DID_UPDATE_VALUE_FOR_DESCRIPTOR": EXBluetoothPeripheralDidUpdateValueForDescriptorEvent,
-               @"PERIPHERAL_DID_WRITE_VALUE_FOR_DESCRIPTOR": EXBluetoothPeripheralDidWriteValueForDescriptorEvent,
-               @"PERIPHERAL_DID_READ_RSSI": EXBluetoothPeripheralDidReadRSSIEvent
+                  @"SYSTEM_RESET": EXBluetoothEvent_SYSTEM_RESET,
+                  @"SYSTEM_ENABLED_STATE_CHANGED": EXBluetoothEvent_SYSTEM_ENABLED_STATE_CHANGED,
+                  @"SYSTEM_AVAILABILITY_CHANGED": EXBluetoothEvent_SYSTEM_AVAILABILITY_CHANGED,
+                  @"SYSTEM_PERMISSION_CHANGED": EXBluetoothEvent_SYSTEM_PERMISSION_CHANGED,
+                  @"CENTRAL_SCAN_STARTED": EXBluetoothEvent_CENTRAL_SCAN_STARTED,
+                  @"CENTRAL_SCAN_STOPPED": EXBluetoothEvent_CENTRAL_SCAN_STOPPED,
+                  @"CENTRAL_STATE_CHANGED": EXBluetoothEvent_CENTRAL_STATE_CHANGED,
+                  @"CENTRAL_DISCOVERED_PERIPHERAL": EXBluetoothEvent_CENTRAL_DISCOVERED_PERIPHERAL,
+                  @"PERIPHERAL_DISCOVERED_SERVICES": EXBluetoothEvent_PERIPHERAL_DISCOVERED_SERVICES,
+                  @"PERIPHERAL_CONNECTED": EXBluetoothEvent_PERIPHERAL_CONNECTED,
+                  @"PERIPHERAL_DISCONNECTED": EXBluetoothEvent_PERIPHERAL_DISCONNECTED,
+                  @"PERIPHERAL_BONDED": EXBluetoothEvent_PERIPHERAL_BONDED,
+                  @"PERIPHERAL_UNBONDED": EXBluetoothEvent_PERIPHERAL_UNBONDED,
+                  @"PERIPHERAL_UPDATED_RSSI": EXBluetoothEvent_PERIPHERAL_UPDATED_RSSI,
+                  @"PERIPHERAL_UPDATED_MTU": EXBluetoothEvent_PERIPHERAL_UPDATED_MTU,
+                  @"SERVICE_DISCOVERED_INCLUDED_SERVICES": EXBluetoothEvent_SERVICE_DISCOVERED_INCLUDED_SERVICES,
+                  @"SERVICE_DISCOVERED_CHARACTERISTICS": EXBluetoothEvent_SERVICE_DISCOVERED_CHARACTERISTICS,
+                  @"CHARACTERISTIC_DISCOVERED_DESCRIPTORS": EXBluetoothEvent_CHARACTERISTIC_DISCOVERED_DESCRIPTORS,
+                  @"CHARACTERISTIC_DID_WRITE": EXBluetoothEvent_CHARACTERISTIC_DID_WRITE,
+                  @"CHARACTERISTIC_DID_READ": EXBluetoothEvent_CHARACTERISTIC_DID_READ,
+                  @"CHARACTERISTIC_DID_NOTIFY": EXBluetoothEvent_CHARACTERISTIC_DID_NOTIFY,
+                  @"DESCRIPTOR_DID_WRITE": EXBluetoothEvent_DESCRIPTOR_DID_WRITE,
+                  @"DESCRIPTOR_DID_READ": EXBluetoothEvent_DESCRIPTOR_DID_READ,
                }
            };
 }
@@ -235,7 +243,7 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
   
   // TODO: Bacon: Should we stop
   if ([_manager isScanning]) {
-    reject(EXBluetoothErrorScanning, @"Bluetooth is already scanning.", nil);
+    reject(@"ERR_SCAN_REDUNDANT_INIT", @"Bluetooth is already scanning.", nil);
     return;
   }
   NSArray *serviceUUIDs = [EXBluetooth.class CBUUIDList_JSONToNative:serviceUUIDStrings];
@@ -245,6 +253,7 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
   [_manager scanForPeripheralsWithServices:serviceUUIDs options:options withScanningStateBlock:^(EXBluetoothCentralManager *centralManager, BOOL isScanning) {
     resolve(@(isScanning));
     if (weakSelf) {
+      // TODO: Bacon: We emit on android when we start scanning. Figure out parity
       [weakSelf emitFullState];
     }
   } withBlock:^(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSDictionary *advertisementData, NSNumber *RSSI) {
@@ -252,7 +261,7 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
     if (weakSelf) {
       NSDictionary *peripheralData = [peripheral getJSON];
       
-      [weakSelf emit:EXBluetoothCentralDidDiscoverPeripheralEvent data:@{
+      [weakSelf emit:EXBluetoothEvent_CENTRAL_DISCOVERED_PERIPHERAL data:@{
                                                                          EXBluetoothCentralKey: EXNullIfNil([EXBluetooth.class EXBluetoothCentralManager_NativeToJSON:centralManager]),
                                                                          EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
                                                                          EXBluetoothAdvertisementDataKey: EXNullIfNil([EXBluetooth.class advertisementData_NativeToJSON:advertisementData]),
@@ -309,7 +318,7 @@ EX_EXPORT_METHOD_AS(connectPeripheralAsync,
                
                // TODO: Bacon: Legacy?
 //               [self
-//                emit:EXBluetoothCentralDidConnectPeripheralEvent
+//                emit:EXBluetoothEvent_PERIPHERAL_CONNECTED
 //                data:@{
 //                       EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", @"connect", peripheralData[@"id"]],
 //                       EXBluetoothCentralKey: EXNullIfNil([centralManager getJSON]),
@@ -324,7 +333,7 @@ EX_EXPORT_METHOD_AS(connectPeripheralAsync,
     
     // TODO: Bacon: Is this the best way to do this?
     [self
-     emit:EXBluetoothCentralDidDisconnectPeripheralEvent
+     emit:EXBluetoothEvent_PERIPHERAL_DISCONNECTED
      data:@{
             EXBluetoothCentralKey: EXNullIfNil([centralManager getJSON]),
             EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
@@ -366,7 +375,7 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
 //    }
     // TODO: Bacon: Legacy?
 //    [self
-//     emit:EXBluetoothPeripheralDidReadRSSIEvent
+//     emit:EXBluetoothEvent_PERIPHERAL_UPDATED_RSSI
 //     data:@{
 //            EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", EXBluetoothRSSIKey, peripheralData[@"id"]],
 //            EXBluetoothRSSIKey: RSSI,
@@ -402,6 +411,7 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   
   EXBluetoothCharacteristic *characteristic;
   if (options[@"characteristicProperties"]) {
+    // TODO: Bacon: CBCharacteristicPropertiesList_JSONToNative
     CBCharacteristicProperties characteristicProperties = [EXBluetooth.class CBCharacteristicProperties_JSONToNative:options[@"characteristicProperties"]];
     characteristic = [service getCharacteristicOrReject:options[EXBluetoothCharacteristicUUID] characteristicProperties:characteristicProperties reject:reject];
   } else {
@@ -836,7 +846,7 @@ EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
 {
   //  This method returns the result of a `discoverIncludedServices:forService:` call. If the included service(s) were read successfully, they can be retrieved via `service`'s `includedServices` property.
 //  [self
-//   emit:EXBluetoothPeripheralDidDiscoverServicesEvent
+//   emit:EXBluetoothEvent_PERIPHERAL_DISCOVERED_SERVICES
 //   data:@{
 //          EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", @"scan", peripheralData[@"id"]],
 //          EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),

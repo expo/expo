@@ -23,7 +23,7 @@ declare type CancelScanningCallback = () => void;
  * `serviceUUIDsToQuery` or `scanSettings`, the provided parameters will replace them.
  */
 export declare function startScanningAsync(scanSettings: ScanOptions | undefined, callback: (peripheral: NativePeripheral) => void): Promise<CancelScanningCallback>;
-export declare function stopScanAsync(): Promise<void>;
+export declare function stopScanningAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
 export declare function observeScanningErrors(callback: (updates: any) => void): Subscription;
 export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
@@ -41,7 +41,26 @@ export declare function writeCharacteristicAsync({ peripheralUUID, serviceUUID, 
 export declare function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: WriteCharacteristicOptions): Promise<NativeCharacteristic>;
 export declare function readRSSIAsync(peripheralUUID: UUID): Promise<number>;
 export declare function getPeripheralsAsync(): Promise<any[]>;
+export declare function getConnectedPeripheralsAsync(serviceUUIDsToQuery?: UUID[]): Promise<NativePeripheral[]>;
 export declare function getCentralAsync(): Promise<any>;
+export declare function getPeripheralAsync({ peripheralUUID }: {
+    peripheralUUID: any;
+}): Promise<any[]>;
+export declare function getServiceAsync({ peripheralUUID, serviceUUID }: {
+    peripheralUUID: any;
+    serviceUUID: any;
+}): Promise<any[]>;
+export declare function getCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }: {
+    peripheralUUID: any;
+    serviceUUID: any;
+    characteristicUUID: any;
+}): Promise<any[]>;
+export declare function getDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: {
+    peripheralUUID: any;
+    serviceUUID: any;
+    characteristicUUID: any;
+    descriptorUUID: any;
+}): Promise<any[]>;
 export declare function isScanningAsync(): Promise<any>;
 export declare function discoverServicesForPeripheralAsync(options: {
     id: string;
@@ -77,7 +96,6 @@ export declare function loadPeripheralAsync({ id }: {
 export declare function _loadChildrenRecursivelyAsync({ id }: {
     id: any;
 }): Promise<any[]>;
-export declare function getConnectedPeripheralsAsync(serviceUUIDsToQuery?: UUID[]): Promise<NativePeripheral[]>;
 declare const android: {
     requestMTUAsync(peripheralUUID: string, MTU: number): Promise<number>;
     bondAsync(peripheralUUID: string): Promise<any>;
@@ -86,6 +104,7 @@ declare const android: {
     getBondedPeripheralsAsync(): Promise<NativePeripheral[]>;
     requestConnectionPriorityAsync(peripheralUUID: string, connectionPriority: Priority): Promise<any>;
     observeBluetoothAvailabilty(callback: (updates: Central) => void): Subscription;
+    observeBluetoothEnabled(callback: (updates: Central) => void): Subscription;
 };
 export { android };
 export declare function _reset(): Promise<void>;

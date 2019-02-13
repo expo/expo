@@ -3,6 +3,32 @@
 #ifndef EXBluetoothConstants_h
 #define EXBluetoothConstants_h
 
+
+static NSString *const EXBluetoothEvent_SYSTEM_RESET = @"SYSTEM_RESET";
+static NSString *const EXBluetoothEvent_SYSTEM_ENABLED_STATE_CHANGED = @"SYSTEM_ENABLED_STATE_CHANGED";
+static NSString *const EXBluetoothEvent_SYSTEM_AVAILABILITY_CHANGED = @"SYSTEM_AVAILABILITY_CHANGED";
+static NSString *const EXBluetoothEvent_SYSTEM_PERMISSION_CHANGED = @"SYSTEM_PERMISSION_CHANGED";
+static NSString *const EXBluetoothEvent_CENTRAL_SCAN_STARTED = @"CENTRAL_SCAN_STARTED";
+static NSString *const EXBluetoothEvent_CENTRAL_SCAN_STOPPED = @"CENTRAL_SCAN_STOPPED";
+static NSString *const EXBluetoothEvent_CENTRAL_STATE_CHANGED = @"CENTRAL_STATE_CHANGED";
+static NSString *const EXBluetoothEvent_CENTRAL_DISCOVERED_PERIPHERAL = @"CENTRAL_DISCOVERED_PERIPHERAL";
+static NSString *const EXBluetoothEvent_PERIPHERAL_DISCOVERED_SERVICES = @"PERIPHERAL_DISCOVERED_SERVICES";
+static NSString *const EXBluetoothEvent_PERIPHERAL_CONNECTED = @"PERIPHERAL_CONNECTED";
+static NSString *const EXBluetoothEvent_PERIPHERAL_DISCONNECTED = @"PERIPHERAL_DISCONNECTED";
+static NSString *const EXBluetoothEvent_PERIPHERAL_BONDED = @"PERIPHERAL_BONDED";
+static NSString *const EXBluetoothEvent_PERIPHERAL_UNBONDED = @"PERIPHERAL_UNBONDED";
+static NSString *const EXBluetoothEvent_PERIPHERAL_UPDATED_RSSI = @"PERIPHERAL_UPDATED_RSSI";
+static NSString *const EXBluetoothEvent_PERIPHERAL_UPDATED_MTU = @"PERIPHERAL_UPDATED_MTU";
+static NSString *const EXBluetoothEvent_SERVICE_DISCOVERED_INCLUDED_SERVICES = @"SERVICE_DISCOVERED_INCLUDED_SERVICES";
+static NSString *const EXBluetoothEvent_SERVICE_DISCOVERED_CHARACTERISTICS = @"SERVICE_DISCOVERED_CHARACTERISTICS";
+static NSString *const EXBluetoothEvent_CHARACTERISTIC_DISCOVERED_DESCRIPTORS = @"CHARACTERISTIC_DISCOVERED_DESCRIPTORS";
+static NSString *const EXBluetoothEvent_CHARACTERISTIC_DID_WRITE = @"CHARACTERISTIC_DID_WRITE";
+static NSString *const EXBluetoothEvent_CHARACTERISTIC_DID_READ = @"CHARACTERISTIC_DID_READ";
+static NSString *const EXBluetoothEvent_CHARACTERISTIC_DID_NOTIFY = @"CHARACTERISTIC_DID_NOTIFY";
+static NSString *const EXBluetoothEvent_DESCRIPTOR_DID_WRITE = @"DESCRIPTOR_DID_WRITE";
+static NSString *const EXBluetoothEvent_DESCRIPTOR_DID_READ = @"DESCRIPTOR_DID_READ";
+
+
 static NSString *const EXBluetoothErrorUnimplemented = @"ERR_UNIMPLEMENTED";
 static NSString *const EXBluetoothErrorNoPeripheral = @"ERR_NO_PERIPHERAL";
 static NSString *const EXBluetoothErrorNoService = @"ERR_NO_SERVICE";
@@ -15,24 +41,6 @@ static NSString *const EXBluetoothErrorState = @"ERR_STATE";
 static NSString *const EXBluetoothErrorScanning = @"ERR_SCANNING";
 
 static NSString *const EXBluetoothEvent = @"bluetoothEvent";
-static NSString *const EXBluetoothDisconnectEvent = @"bluetoothDisconnect";
-static NSString *const EXBluetoothDidFailToConnectEvent = @"bluetoothDidFailToConnect";
-
-static NSString *const EXBluetoothCentralDidUpdateStateEvent = @"bluetoothCentralDidUpdateState";
-static NSString *const EXBluetoothCentralDidRetrieveConnectedPeripheralsEvent = @"central.didRetrieveConnectedPeripherals";
-static NSString *const EXBluetoothCentralDidRetrievePeripheralsEvent = @"central.didRetrievePeripherals";
-static NSString *const EXBluetoothCentralDidDiscoverPeripheralEvent = @"central.didDiscoverPeripheral";
-static NSString *const EXBluetoothCentralDidConnectPeripheralEvent = @"central.didConnectPeripheral";
-static NSString *const EXBluetoothCentralDidDisconnectPeripheralEvent = @"central.didDisconnectPeripheral";
-static NSString *const EXBluetoothPeripheralDidDiscoverServicesEvent = @"peripheral.didDiscoverServices";
-static NSString *const EXBluetoothPeripheralDidDiscoverCharacteristicsForServiceEvent = @"peripheral.didDiscoverCharacteristicsForService";
-static NSString *const EXBluetoothPeripheralDidDiscoverDescriptorsForCharacteristicEvent = @"peripheral.didDiscoverDescriptorsForCharacteristic";
-static NSString *const EXBluetoothPeripheralDidUpdateValueForCharacteristicEvent = @"peripheral.didUpdateValueForCharacteristic";
-static NSString *const EXBluetoothPeripheralDidWriteValueForCharacteristicEvent = @"peripheral.didWriteValueForCharacteristic";
-static NSString *const EXBluetoothPeripheralDidUpdateNotificationStateForCharacteristicEvent = @"peripheral.didUpdateNotificationStateForCharacteristic";
-static NSString *const EXBluetoothPeripheralDidUpdateValueForDescriptorEvent = @"peripheral.didUpdateValueForDescriptor";
-static NSString *const EXBluetoothPeripheralDidWriteValueForDescriptorEvent = @"peripheral.didWriteValueForDescriptor";
-static NSString *const EXBluetoothPeripheralDidReadRSSIEvent = @"peripheral.didReadRSSI";
 
 static NSString *const EXBluetoothCentralKey = @"central";
 static NSString *const EXBluetoothPeripheralKey = @"peripheral";

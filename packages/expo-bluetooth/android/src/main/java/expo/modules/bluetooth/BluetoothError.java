@@ -8,6 +8,8 @@ import expo.core.Promise;
 
 public class BluetoothError {
 
+  private static String PREFIX = "ERR_BLE_";
+
   public String code;
   public String domain;
   public String message;
@@ -20,8 +22,10 @@ public class BluetoothError {
     this.message = message;
   }
 
-  public static BluetoothError fromScanCallbackErrorCode(int errorCode) {
-    switch (errorCode) {
+  public static BluetoothError fromScanCallbackErrorCode(int scanCallbackErrorCode) {
+    switch (scanCallbackErrorCode) {
+      case 0: /** NO_ERROR */
+        return null;
       case ScanCallback.SCAN_FAILED_ALREADY_STARTED:
         return SCAN_REDUNDANT_INIT();
       case ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED:
@@ -30,9 +34,34 @@ public class BluetoothError {
         return SCAN_INTERNAL();
       case ScanCallback.SCAN_FAILED_FEATURE_UNSUPPORTED:
         return BLE_UNSUPPORTED();
+      case 5: /** SCAN_FAILED_OUT_OF_HARDWARE_RESOURCES */
+        return OUT_OF_HARDWARE_RESOURCES();
       default:
-        return UNKOWN();
+        return UNKOWN_SCANNING_ERROR();
     }
+  }
+
+  public static Bundle fromScanCallbackErrorCodeAsJSON(int scanCallbackErrorCode) {
+    BluetoothError error = fromScanCallbackErrorCode(scanCallbackErrorCode);
+    if (error != null) {
+      return error.toJSON();
+    }
+    return null;
+  }
+
+  public static BluetoothError fromGattStatusCode(int gattStatusCode) {
+    if (gattStatusCode == BluetoothGatt.GATT_SUCCESS) {
+      return null;
+    }
+    return new BluetoothError(PREFIX + "GATT", Serialize.messageForGATTStatus(gattStatusCode));
+  }
+
+  public static Bundle fromGattStatusCodeAsJSON(int gattStatusCode) {
+    BluetoothError error = fromGattStatusCode(gattStatusCode);
+    if (error != null) {
+      return error.toJSON();
+    }
+    return null;
   }
 
   public static void reject(Promise promise, BluetoothError error) {
@@ -48,37 +77,41 @@ public class BluetoothError {
   }
 
   public static final BluetoothError UNKOWN() {
-    return new BluetoothError("ERR_UNKNOWN", "An unknown error has occurred.");
+    return new BluetoothError(PREFIX + "UNKNOWN", "An unknown error has occurred.");
+  }
+
+  public static final BluetoothError UNKOWN_SCANNING_ERROR() {
+    return new BluetoothError(PREFIX + "UNKNOWN", "An unknown error has occurred while scanning for peripherals.");
   }
 
   public static final BluetoothError BLE_UNSUPPORTED() {
-    return new BluetoothError("ERR_BLE_UNSUPPORTED", "Failed to start power optimized scan as this feature is not supported.");
+    return new BluetoothError(PREFIX + "UNSUPPORTED", "Failed to start power optimized scan as this feature is not supported.");
+  }
+
+  public static final BluetoothError OUT_OF_HARDWARE_RESOURCES() {
+    return new BluetoothError(PREFIX + "OUT_OF_HARDWARE_RESOURCES", "Failed to start scanning because the device is out of hardware resources.");
   }
 
   public static final BluetoothError SCAN_INTERNAL() {
-    return new BluetoothError("ERR_SCAN_INTERNAL", "Failed to start scan due to an internal error.");
+    return new BluetoothError(PREFIX + "INTERNAL", "Failed to start scan due to an internal error.");
   }
 
   public static final BluetoothError SCAN_REDUNDANT_INIT() {
-    return new BluetoothError("ERR_SCAN_REDUNDANT_INIT", "Failed to start scan because a BLE scan with the same settings is already started by the app.");
+    return new BluetoothError(PREFIX + "REDUNDANT_INIT", "Failed to start scan because a BLE scan with the same settings is already started by the app.");
   }
 
   public static final BluetoothError APP_REGISTRATION() {
-    return new BluetoothError("ERR_APP_REGISTRATION", "Failed to start scan because the app couldn't be registered.");
+    return new BluetoothError(PREFIX + "APP_REGISTRATION", "Failed to start scan because the app couldn't be registered.");
   }
 
   public static final BluetoothError CONCURRENT_TASK() {
-    return new BluetoothError("ERR_CONCURRENT_TASK", "Running concurrent task.");
+    return new BluetoothError(PREFIX + "CONCURRENT_TASK", "Running concurrent task.");
   }
 
-  public static Bundle errorFromGattStatus(int status) {
-    if (status != BluetoothGatt.GATT_SUCCESS) {
-      Bundle output = new Bundle();
-      output.putString(BluetoothConstants.JSON.MESSAGE, Serialize.messageForGATTStatus(status));
-      return output;
-    }
-    return null;
+  public static final BluetoothError ENABLE_REQUEST_DENIED() {
+    return new BluetoothError(PREFIX + "ENABLE_REQUEST_DENIED", "User denied enable request.");
   }
+
 
   public Bundle toJSON() {
     Bundle output = new Bundle();
@@ -93,26 +126,26 @@ public class BluetoothError {
 
   public class Codes {
 
-    public static final String UNKNOWN = "ERR_UNKNOWN";
+    public static final String UNKNOWN = "UNKNOWN";
 
-    public static final String PLACEHOLDER = "ERR_BLUETOOTH";
+    public static final String PLACEHOLDER = "BLUETOOTH";
 
-    public static final String NO_PERIPHERAL = "ERR_NO_PERIPHERAL";
-    public static final String NO_SERVICE = "ERR_NO_SERVICE";
-    public static final String NO_CHARACTERISTIC = "ERR_NO_CHARACTERISTIC";
-    public static final String NO_DESCRIPTOR = "ERR_NO_DESCRIPTOR";
+    public static final String NO_PERIPHERAL = "NO_PERIPHERAL";
+    public static final String NO_SERVICE = "NO_SERVICE";
+    public static final String NO_CHARACTERISTIC = "NO_CHARACTERISTIC";
+    public static final String NO_DESCRIPTOR = "NO_DESCRIPTOR";
 
-    public static final String UNIMPLEMENTED = "ERR_UNIMPLEMENTED";
+    public static final String UNIMPLEMENTED = "UNIMPLEMENTED";
   }
 
   public class Messages {
     public static final String UNKNOWN = "An unknown error has occurred.";
 
     public static final String PLACEHOLDER = "An unknown error has occurred";
-    public static final String NO_PERIPHERAL = "ERR_NO_PERIPHERAL";
-    public static final String NO_SERVICE = "ERR_NO_SERVICE";
-    public static final String NO_CHARACTERISTIC = "ERR_NO_CHARACTERISTIC";
-    public static final String NO_DESCRIPTOR = "ERR_NO_DESCRIPTOR";
-    public static final String UNIMPLEMENTED = "ERR_UNIMPLEMENTED";
+    public static final String NO_PERIPHERAL = "NO_PERIPHERAL";
+    public static final String NO_SERVICE = "NO_SERVICE";
+    public static final String NO_CHARACTERISTIC = "NO_CHARACTERISTIC";
+    public static final String NO_DESCRIPTOR = "NO_DESCRIPTOR";
+    public static final String UNIMPLEMENTED = "UNIMPLEMENTED";
   }
 }

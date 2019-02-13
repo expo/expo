@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import expo.core.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
+import expo.modules.bluetooth.BluetoothError;
 import expo.modules.bluetooth.BluetoothModule;
 import expo.modules.bluetooth.Serialize;
 import expo.modules.bluetooth.helpers.Base64Helper;
@@ -22,14 +23,11 @@ public class Characteristic extends EXBluetoothChildObject {
 
   public Descriptor getDescriptor(UUID uuid) {
     return getDescriptor(UUIDHelper.toString(uuid));
-//    BluetoothGattDescriptor child = getCharacteristic().getDescriptor(uuid);
-//    if (child == null) return null;
-//    return new Descriptor(child, this);
   }
 
   @Override
-  protected Bundle sendEvent(String transaction, String eventName, int status) {
-    Bundle output = super.sendEvent(transaction, eventName, status);
+  protected Bundle sendEvent(String eventName, int gattStatusCode) {
+    Bundle output = super.sendEvent(eventName, gattStatusCode);
     output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, toJSON());
     BluetoothModule.sendEvent(eventName, output);
     return output;
@@ -83,10 +81,10 @@ public class Characteristic extends EXBluetoothChildObject {
   public void discoverDescriptors(Promise promise) {
     //TODO: Bacon: Are these gotten automatically?
     Bundle output = new Bundle();
-    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(BluetoothConstants.OPERATIONS.SCAN));
+//    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(BluetoothConstants.OPERATIONS.SCAN));
     output.putBundle(BluetoothConstants.JSON.PERIPHERAL, getPeripheral().toJSON());
     output.putBundle(BluetoothConstants.JSON.SERVICE, getParent().toJSON());
-//    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE, output);
+    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CHARACTERISTIC_DISCOVERED_DESCRIPTORS, output);
     promise.resolve(output);
   }
 

@@ -60,8 +60,8 @@ public class Descriptor extends EXBluetoothChildObject {
   }
 
   @Override
-  protected Bundle sendEvent(String transaction, String eventName, int status) {
-    Bundle output = super.sendEvent(transaction, eventName, status);
+  protected Bundle sendEvent(String eventName, int status) {
+    Bundle output = super.sendEvent(eventName, status);
     output.putBundle(BluetoothConstants.JSON.DESCRIPTOR, toJSON());
     BluetoothModule.sendEvent(eventName, output);
     return output;
