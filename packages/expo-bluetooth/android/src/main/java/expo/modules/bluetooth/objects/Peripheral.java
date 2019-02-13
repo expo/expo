@@ -39,21 +39,18 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 
   public final BluetoothDevice device;
   public BluetoothGatt mGatt;
-  public int advertisingRSSI;
-  public int MTU;
-  private Promise _didDisconnectPeripheralBlock;
-  HashMap<String, Promise> _didConnectPeripheralBlock = new HashMap<>();
-  PromiseListHashMap<String, ArrayList<Promise>> _writeCharacteristicPromises = new PromiseListHashMap<>();
-  PromiseListHashMap<String, ArrayList<Promise>> _writeDescriptorPromises = new PromiseListHashMap<>();
-
-  PromiseListHashMap<String, ArrayList<Promise>> _readCharacteristicPromises = new PromiseListHashMap<>();
-  PromiseListHashMap<String, ArrayList<Promise>> _readDescriptorPromises = new PromiseListHashMap<>();
-
-  PromiseListHashMap<String, ArrayList<Promise>> _notifyCharacteristicPromises = new PromiseListHashMap<>();
-
-  HashMap<String, Promise> _didDiscoverServicesBlock = new HashMap<>();
-  Promise _didRequestMTUBlock;
-  Promise _readRSSIBlock;
+  private int advertisingRSSI;
+  private int mMTU;
+  private Promise mDidDisconnectPeripheralBlock;
+  private HashMap<String, Promise> mDidConnectPeripheralBlock = new HashMap<>();
+  private PromiseListHashMap<String, ArrayList<Promise>> mWriteCharacteristicPromises = new PromiseListHashMap<>();
+  private PromiseListHashMap<String, ArrayList<Promise>> mWriteDescriptorPromises = new PromiseListHashMap<>();
+  private PromiseListHashMap<String, ArrayList<Promise>> mReadCharacteristicPromises = new PromiseListHashMap<>();
+  private PromiseListHashMap<String, ArrayList<Promise>> mReadDescriptorPromises = new PromiseListHashMap<>();
+  private PromiseListHashMap<String, ArrayList<Promise>> mNotifyCharacteristicPromises = new PromiseListHashMap<>();
+  private HashMap<String, Promise> mDidDiscoverServicesBlock = new HashMap<>();
+  private Promise mDidRequestMTUBlock;
+  private Promise mReadRSSIBlock;
   private ScanRecord advertisingData;
   private byte[] advertisingDataBytes;
 
@@ -105,7 +102,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, advertisementData());
 
     if (mGatt != null) {
-      output.putInt(BluetoothConstants.JSON.MTU, MTU);
+      output.putInt(BluetoothConstants.JSON.MTU, mMTU);
     } else {
       output.putInt(BluetoothConstants.JSON.MTU, 576); // TODO: Bacon: annotate
     }
@@ -137,11 +134,11 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   public void connect(Promise promise, Activity activity) {
     if (!isConnected()) {
       assignGATT(activity);
-      if (_didConnectPeripheralBlock.containsKey(getID())) {
+      if (mDidConnectPeripheralBlock.containsKey(getID())) {
         BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
         return;
       }
-      _didConnectPeripheralBlock.put(getID(), promise);
+      mDidConnectPeripheralBlock.put(getID(), promise);
       return;
     } else if (guardGATT(promise)) {
       return;
@@ -213,13 +210,13 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   public void disconnect(Promise promise) {
     if (guardGATT(promise)) {
       return;
-    } else if (_didDisconnectPeripheralBlock != null) {
+    } else if (mDidDisconnectPeripheralBlock != null) {
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
     }
 
     try {
-      _didDisconnectPeripheralBlock = promise;
+      mDidDisconnectPeripheralBlock = promise;
       disconnectGATT();
     } catch (Exception e) {
       promise.reject(e);
@@ -227,8 +224,8 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //        Bundle errorPayload = new Bundle();
 //        errorPayload.putString(BluetoothConstants.JSON.MESSAGE, e.getMessage());
 //
-//        BluetoothError.reject(_didDisconnectPeripheralBlock, e.getMessage());
-      _didDisconnectPeripheralBlock = null;
+//        BluetoothError.reject(mDidDisconnectPeripheralBlock, e.getMessage());
+      mDidDisconnectPeripheralBlock = null;
       return;
     }
   }
@@ -291,15 +288,15 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //    sendEvent(BluetoothConstants.OPERATIONS.SCAN, BluetoothConstants.EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL, BluetoothError.errorFromGattStatus(status));
 
     String id = getID();
-    if (_didDiscoverServicesBlock.containsKey(id)) {
-      Promise promise = _didDiscoverServicesBlock.get(id);
+    if (mDidDiscoverServicesBlock.containsKey(id)) {
+      Promise promise = mDidDiscoverServicesBlock.get(id);
       if (autoResolvePromiseWithStatusAndData(promise, status)) {
         Bundle output = new Bundle();
         output.putBundle(BluetoothConstants.JSON.PERIPHERAL, toJSON());
         promise.resolve(output);
         BluetoothModule.emitState();
       }
-      _didDiscoverServicesBlock.remove(id);
+      mDidDiscoverServicesBlock.remove(id);
     }
   }
 
@@ -331,13 +328,13 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //        sendEvent(BluetoothConstants.OPERATIONS.CONNECT, BluetoothConstants.EVENTS.CENTRAL_DID_CONNECT_PERIPHERAL, null);
 
         String UUIDString = getID();
-        if (_didConnectPeripheralBlock.containsKey(UUIDString)) {
-          Promise promise = _didConnectPeripheralBlock.get(UUIDString);
+        if (mDidConnectPeripheralBlock.containsKey(UUIDString)) {
+          Promise promise = mDidConnectPeripheralBlock.get(UUIDString);
           if (autoResolvePromiseWithStatusAndData(promise, status)) {
             promise.resolve(toJSON());
             BluetoothModule.emitState();
           }
-          _didConnectPeripheralBlock.remove(UUIDString);
+          mDidConnectPeripheralBlock.remove(UUIDString);
         }
 
         break;
@@ -345,11 +342,11 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //        if (isConnected()) {
 //          disconnectGATT();
 //        }
-        if (_didDisconnectPeripheralBlock != null) {
-          if (autoResolvePromiseWithStatusAndData(_didDisconnectPeripheralBlock, status)) {
-            _didDisconnectPeripheralBlock.resolve(toJSON());
+        if (mDidDisconnectPeripheralBlock != null) {
+          if (autoResolvePromiseWithStatusAndData(mDidDisconnectPeripheralBlock, status)) {
+            mDidDisconnectPeripheralBlock.resolve(toJSON());
           }
-          _didDisconnectPeripheralBlock = null;
+          mDidDisconnectPeripheralBlock = null;
         }
         sendEvent(BluetoothConstants.OPERATIONS.DISCONNECT, BluetoothConstants.EVENTS.CENTRAL_DID_DISCONNECT_PERIPHERAL, null);
         BluetoothModule.emitState();
@@ -378,11 +375,11 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     Characteristic input = new Characteristic(characteristic, gatt);
     Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.NOTIFY, BluetoothConstants.EVENTS.PERIPHERAL_DID_CHANGE_NOTIFICATIONS_VALUE_FOR_CHARACTERISTIC, BluetoothGatt.GATT_SUCCESS);
 
-    ArrayList<Promise> promises = _notifyCharacteristicPromises.get(input.getID());
+    ArrayList<Promise> promises = mNotifyCharacteristicPromises.get(input.getID());
     for (Promise promise : promises) {
       promise.resolve(output);
     }
-    _notifyCharacteristicPromises.clearKey(input.getID());
+    mNotifyCharacteristicPromises.clearKey(input.getID());
   }
 
   @Override
@@ -392,7 +389,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 
     Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.READ, BluetoothConstants.EVENTS.PERIPHERAL_DID_UPDATE_VALUE_FOR_CHARACTERISTIC, status);
 
-    ArrayList<Promise> promises = _readCharacteristicPromises.get(input.getID());
+    ArrayList<Promise> promises = mReadCharacteristicPromises.get(input.getID());
     for (Promise promise : promises) {
       if (autoResolvePromiseWithStatusAndData(promise, status)) {
         promise.resolve(output);
@@ -404,7 +401,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //        BluetoothModule.emitState();
       }
     }
-    _readCharacteristicPromises.clearKey(input.getID());
+    mReadCharacteristicPromises.clearKey(input.getID());
   }
 
   @Override
@@ -413,13 +410,13 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     Characteristic input = new Characteristic(characteristic, gatt);
     Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.WRITE, BluetoothConstants.EVENTS.PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC, status);
 
-    ArrayList<Promise> promises = _writeCharacteristicPromises.get(input.getID());
+    ArrayList<Promise> promises = mWriteCharacteristicPromises.get(input.getID());
     for (Promise promise : promises) {
       if (autoResolvePromiseWithStatusAndData(promise, status)) {
         promise.resolve(output);
       }
     }
-    _writeCharacteristicPromises.clearKey(input.getID());
+    mWriteCharacteristicPromises.clearKey(input.getID());
   }
 
   @Override
@@ -429,7 +426,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 
     Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.READ, BluetoothConstants.EVENTS.PERIPHERAL_DID_UPDATE_VALUE_FOR_DESCRIPTOR, status);
 
-    ArrayList<Promise> promises = _readDescriptorPromises.get(input.getID());
+    ArrayList<Promise> promises = mReadDescriptorPromises.get(input.getID());
     for (Promise promise : promises) {
       if (autoResolvePromiseWithStatusAndData(promise, status)) {
         promise.resolve(output);
@@ -441,7 +438,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //        BluetoothModule.emitState();
       }
     }
-    _readDescriptorPromises.clearKey(input.getID());
+    mReadDescriptorPromises.clearKey(input.getID());
   }
 
   @Override
@@ -451,7 +448,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     Descriptor input = new Descriptor(descriptor, gatt);
     Bundle output = input.sendEvent(BluetoothConstants.OPERATIONS.WRITE, BluetoothConstants.EVENTS.PERIPHERAL_DID_WRITE_VALUE_FOR_DESCRIPTOR, status);
 
-    ArrayList<Promise> promises = _writeDescriptorPromises.get(input.getID());
+    ArrayList<Promise> promises = mWriteDescriptorPromises.get(input.getID());
     for (Promise promise : promises) {
       if (autoResolvePromiseWithStatusAndData(promise, status)) {
         promise.resolve(output);
@@ -463,7 +460,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //        BluetoothModule.emitState();
       }
     }
-    _writeDescriptorPromises.clearKey(input.getID());
+    mWriteDescriptorPromises.clearKey(input.getID());
 //
 //    String characteristicUUIDString = UUIDHelper.fromUUID(descriptor.getCharacteristic().getUuid());
 //    if (_writeValueBlocks.containsKey(characteristicUUIDString)) {
@@ -490,12 +487,12 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
       updateRSSI(rssi);
     }
 
-    if (_readRSSIBlock != null) {
-      if (autoResolvePromiseWithStatusAndData(_readRSSIBlock, status)) {
-        _readRSSIBlock.resolve(toJSON());
+    if (mReadRSSIBlock != null) {
+      if (autoResolvePromiseWithStatusAndData(mReadRSSIBlock, status)) {
+        mReadRSSIBlock.resolve(toJSON());
         BluetoothModule.emitState();
       }
-      _readRSSIBlock = null;
+      mReadRSSIBlock = null;
     }
     // TODO: Bacon: Send RSSI event here - not done on iOS either
   }
@@ -571,7 +568,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     descriptor.setValue(data); // Bacon: Always returns true.
 
     if (mGatt.writeDescriptor(descriptor.getDescriptor())) {
-      _writeDescriptorPromises.add(descriptor.getID(), promise);
+      mWriteDescriptorPromises.add(descriptor.getID(), promise);
       return;
     } else {
       BluetoothError.reject(promise, "Failed to write descriptor: " + descriptor.getID());
@@ -586,7 +583,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
     } else if (mGatt.readDescriptor(descriptor.getDescriptor())) {
-      _readDescriptorPromises.add(descriptor.getID(), promise);
+      mReadDescriptorPromises.add(descriptor.getID(), promise);
       return;
     } else {
       BluetoothError.reject(promise, "Failed to read descriptor: " + descriptor.getID());
@@ -606,7 +603,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     characteristic.setValue(data); // Bacon: Always returns true.
 
     if (mGatt.writeCharacteristic(characteristic.getCharacteristic())) {
-      _writeCharacteristicPromises.add(characteristic.getID(), promise);
+      mWriteCharacteristicPromises.add(characteristic.getID(), promise);
     } else {
       BluetoothError.reject(promise, "Failed to write characteristic: " + characteristic.getID());
     }
@@ -619,7 +616,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
     } else if (mGatt.readCharacteristic(characteristic.getCharacteristic())) {
-      _readCharacteristicPromises.add(characteristic.getID(), promise);
+      mReadCharacteristicPromises.add(characteristic.getID(), promise);
     } else {
       BluetoothError.reject(promise, "Failed to read characteristic: " + characteristic.getID());
     }
@@ -634,7 +631,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
     if (characteristic == null) {
       return;
     } else if (mGatt.setCharacteristicNotification(characteristic.getCharacteristic(), notify)) {
-      _notifyCharacteristicPromises.add(characteristic.getID(), promise);
+      mNotifyCharacteristicPromises.add(characteristic.getID(), promise);
       return;
     } else {
       promise.reject(BluetoothConstants.ERRORS.GENERAL, "Failed to register notification for " + characteristicUUID);
@@ -659,7 +656,7 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
 //    }
 //    try {
 //      if (mGatt.writeDescriptor(descriptor.getDescriptor())) {
-//        _writeDescriptorPromises.add(descriptor.getID(), promise);
+//        mWriteDescriptorPromises.add(descriptor.getID(), promise);
 //        return;
 //      } else {
 //        promise.reject(BluetoothConstants.ERRORS.GENERAL, "Failed to set client characteristic notification for " + characteristicUUID);
@@ -674,11 +671,11 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   public void readRSSI(Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    } else if (_readRSSIBlock != null) {
+    } else if (mReadRSSIBlock != null) {
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
     } else if (!mGatt.readRemoteRssi()) {
-      _readRSSIBlock = promise;
+      mReadRSSIBlock = promise;
       return;
     } else {
       BluetoothError.reject(promise, "Failed to read RSSI from peripheral: " + getID());
@@ -689,11 +686,11 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   public void retrieveServices(Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    } else if (_didDiscoverServicesBlock.containsKey(getID())) {
+    } else if (mDidDiscoverServicesBlock.containsKey(getID())) {
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
     } else if (mGatt.discoverServices()) {
-      _didDiscoverServicesBlock.put(getID(), promise);
+      mDidDiscoverServicesBlock.put(getID(), promise);
       return;
     } else {
       BluetoothError.reject(promise, "Failed to discover services for peripheral: " + getID());
@@ -716,11 +713,11 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   public void requestMTU(int mtu, Promise promise) {
     if (guardIsConnected(promise) || guardGATT(promise)) {
       return;
-    } else if (_didRequestMTUBlock != null) {
+    } else if (mDidRequestMTUBlock != null) {
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
     } else if (mGatt.requestMtu(mtu)) {
-      _didRequestMTUBlock = promise;
+      mDidRequestMTUBlock = promise;
       return;
     } else {
       BluetoothError.reject(promise, "Failed to request MTU: " + mtu);
@@ -731,14 +728,14 @@ public class Peripheral extends BluetoothGattCallback implements EXBluetoothObje
   @Override
   public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
     super.onMtuChanged(gatt, mtu, status);
-    MTU = mtu;
+    mMTU = mtu;
 
-    if (_didRequestMTUBlock != null) {      
-      if (autoResolvePromiseWithStatusAndData(_didRequestMTUBlock, status)) {
-        _didRequestMTUBlock.resolve(mtu);
+    if (mDidRequestMTUBlock != null) {      
+      if (autoResolvePromiseWithStatusAndData(mDidRequestMTUBlock, status)) {
+        mDidRequestMTUBlock.resolve(mtu);
         BluetoothModule.emitState();
       }
-      _didRequestMTUBlock = null;
+      mDidRequestMTUBlock = null;
     }
   }
 

@@ -15,6 +15,11 @@ public class BluetoothError {
   public String suggestion;
   public String underlayingError;
 
+  public BluetoothError(String code, String message) {
+    this.code = code;
+    this.message = message;
+  }
+
   public static BluetoothError fromScanCallbackErrorCode(int errorCode) {
     switch (errorCode) {
       case ScanCallback.SCAN_FAILED_ALREADY_STARTED:
@@ -30,11 +35,6 @@ public class BluetoothError {
     }
   }
 
-  public BluetoothError(String code, String message) {
-    this.code = code;
-    this.message = message;
-  }
-
   public static void reject(Promise promise, BluetoothError error) {
     promise.reject(error.code, error.message);
   }
@@ -45,17 +45,6 @@ public class BluetoothError {
 
   public static void reject(Promise promise, String message) {
     promise.reject(Codes.UNIMPLEMENTED, message);
-  }
-
-  public Bundle toJSON() {
-    Bundle output = new Bundle();
-    output.putString("code", this.code);
-    output.putString("domain", this.domain);
-    output.putString("message", this.message);
-    output.putString("reason", this.reason);
-    output.putString("suggestion", this.suggestion);
-    output.putString("underlayingError", this.underlayingError);
-    return output;
   }
 
   public static final BluetoothError UNKOWN() {
@@ -82,6 +71,26 @@ public class BluetoothError {
     return new BluetoothError("ERR_CONCURRENT_TASK", "Running concurrent task.");
   }
 
+  public static Bundle errorFromGattStatus(int status) {
+    if (status != BluetoothGatt.GATT_SUCCESS) {
+      Bundle output = new Bundle();
+      output.putString(BluetoothConstants.JSON.MESSAGE, Serialize.messageForGATTStatus(status));
+      return output;
+    }
+    return null;
+  }
+
+  public Bundle toJSON() {
+    Bundle output = new Bundle();
+    output.putString("code", this.code);
+    output.putString("domain", this.domain);
+    output.putString("message", this.message);
+    output.putString("reason", this.reason);
+    output.putString("suggestion", this.suggestion);
+    output.putString("underlayingError", this.underlayingError);
+    return output;
+  }
+
   public class Codes {
 
     public static final String UNKNOWN = "ERR_UNKNOWN";
@@ -105,15 +114,5 @@ public class BluetoothError {
     public static final String NO_CHARACTERISTIC = "ERR_NO_CHARACTERISTIC";
     public static final String NO_DESCRIPTOR = "ERR_NO_DESCRIPTOR";
     public static final String UNIMPLEMENTED = "ERR_UNIMPLEMENTED";
-  }
-
-
-  public static Bundle errorFromGattStatus(int status) {
-    if (status != BluetoothGatt.GATT_SUCCESS) {
-      Bundle output = new Bundle();
-      output.putString(BluetoothConstants.JSON.MESSAGE, Serialize.messageForGATTStatus(status));
-      return output;
-    }
-    return null;
   }
 }

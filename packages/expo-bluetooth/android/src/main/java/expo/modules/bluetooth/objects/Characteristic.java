@@ -4,12 +4,10 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Bundle;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import expo.core.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
-import expo.modules.bluetooth.BluetoothError;
 import expo.modules.bluetooth.BluetoothModule;
 import expo.modules.bluetooth.Serialize;
 import expo.modules.bluetooth.helpers.Base64Helper;
@@ -23,16 +21,16 @@ public class Characteristic extends EXBluetoothChildObject {
   Promise notifyPromise;
   Promise indicatePromise;
 
+  public Characteristic(BluetoothGattCharacteristic nativeData, Object parent) {
+    super(nativeData, (parent instanceof EXBluetoothObject) ? parent : new Service(nativeData.getService(), parent));
+  }
+
   public void handleWrite(int status) {
     Bundle event = sendEvent(BluetoothConstants.OPERATIONS.WRITE, BluetoothConstants.EVENTS.PERIPHERAL_DID_WRITE_VALUE_FOR_CHARACTERISTIC, status);
     if (writePromise != null && Peripheral.autoResolvePromiseWithStatusAndData(writePromise, status)) {
       writePromise.resolve(event);
     }
     writePromise = null;
-  }
-
-  public Characteristic(BluetoothGattCharacteristic nativeData, Object parent) {
-    super(nativeData, (parent instanceof EXBluetoothObject) ? parent : new Service(nativeData.getService(), parent));
   }
 
   public Descriptor getDescriptor(UUID uuid) {
@@ -102,5 +100,5 @@ public class Characteristic extends EXBluetoothChildObject {
 //    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.PERIPHERAL_DID_DISCOVER_CHARACTERISTICS_FOR_SERVICE, output);
     promise.resolve(output);
   }
-  
+
 }

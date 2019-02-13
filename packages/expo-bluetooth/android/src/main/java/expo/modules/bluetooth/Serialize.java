@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanSettings;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import java.util.UUID;
 
 import expo.modules.bluetooth.helpers.Base64Helper;
 import expo.modules.bluetooth.helpers.UUIDHelper;
-import expo.modules.bluetooth.objects.Peripheral;
 
 public class Serialize {
 
@@ -339,13 +337,13 @@ public class Serialize {
   public static String Bonding_NativeToJSON(int input) {
     switch (input) {
       case BluetoothDevice.BOND_BONDED:
-      return BluetoothConstants.BONDING.BONDED;
+        return BluetoothConstants.BONDING.BONDED;
       case BluetoothDevice.BOND_BONDING:
-      return BluetoothConstants.BONDING.BONDING;
+        return BluetoothConstants.BONDING.BONDING;
       case BluetoothDevice.BOND_NONE:
-      return BluetoothConstants.BONDING.NONE;
+        return BluetoothConstants.BONDING.NONE;
       default:
-      return BluetoothConstants.BONDING.UNKNOWN;
+        return BluetoothConstants.BONDING.UNKNOWN;
     }
   }
 

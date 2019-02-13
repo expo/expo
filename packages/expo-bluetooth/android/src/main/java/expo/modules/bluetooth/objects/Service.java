@@ -19,8 +19,7 @@ public class Service extends EXBluetoothChildObject {
   public Service(BluetoothGattService nativeData, Object parent) {
     super(nativeData, (parent instanceof EXBluetoothObject) ? parent : new Peripheral((BluetoothGatt) parent));
   }
-
-
+  
   // TODO: Bacon: Test characteristicProperties query works / is standard
   public Characteristic getCharacteristic(UUID uuid, int characteristicProperties) {
     BluetoothGattCharacteristic characteristic = getService().getCharacteristic(uuid);
