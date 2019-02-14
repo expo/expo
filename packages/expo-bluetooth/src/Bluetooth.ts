@@ -78,6 +78,8 @@ type ScanOptions = {
    * dependes on current capability and availability of the resources in hw.
    */
   androidNumberOfMatches?: any;
+  /** Oreo (26)+ */
+  androidOnlyConnectable?: boolean;
 };
 
 type CancelScanningCallback = () => void;
@@ -94,7 +96,7 @@ export async function startScanningAsync(
   callback: (peripheral: NativePeripheral) => void
 ): Promise<CancelScanningCallback> {
   invariantAvailability('startScanningAsync');
-  invariant(callback, 'expo-bluetooth: startScanningAsync({ ... }, null): callback is not defined');
+  invariant(callback, 'startScanningAsync({ ... }, null): callback is not defined');
 
   const { serviceUUIDsToQuery = [], ...scanningOptions } = scanSettings;
 
@@ -104,7 +106,7 @@ export async function startScanningAsync(
   );
 
   const subscription = addHandlerForKey(EVENTS.CENTRAL_DISCOVERED_PERIPHERAL, event => {
-    invariant(callback, 'expo-bluetooth: startScanningAsync({ ... }, null): callback is not defined');
+    invariant(callback, 'startScanningAsync({ ... }, null): callback is not defined');
     if (!event) {
       throw new Error('UNEXPECTED ' + EVENTS.CENTRAL_DISCOVERED_PERIPHERAL);
     }

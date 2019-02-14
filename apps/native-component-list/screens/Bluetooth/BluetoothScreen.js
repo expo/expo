@@ -100,10 +100,10 @@ export default class BluetoothScreen extends React.Component {
 
   async componentDidMount() {
     await Permissions.askAsync(Permissions.LOCATION);
-    // this.stateListener = await Bluetooth.observeStateAsync(state => {
-    //   console.log('observeStateAsync', state);
-    //   this.setState({ centralState: state });
-    // });
+    this.stateListener = await Bluetooth.observeStateAsync(state => {
+      console.log('observeStateAsync', state);
+      this.setState({ centralState: state });
+    });
 
     return;
 
@@ -126,8 +126,8 @@ export default class BluetoothScreen extends React.Component {
     // const SnapChatSpectaclesServiceUUID = '3E400001-B5A3-F393-E0A9-E50E24DCCA9E';
     // const TileServiceUUID = 'FEED';
     // Load in one or more peripherals
-    this.setState({ isScanning: true }, () => {
-      Bluetooth.startScanningAsync({
+    this.setState({ isScanning: true }, async () => {
+      this.stopScanningAsync = await Bluetooth.startScanningAsync({
         /* This will query peripherals with a value found in the peripheral's `advertisementData.serviceUUIDs` */
         // serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
         callback: async ({ peripheral }) => {
@@ -156,7 +156,9 @@ export default class BluetoothScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    Bluetooth.stopScanningAsync();
+    if (this.stopScanningAsync) {
+      this.stopScanningAsync();
+    }
     if (this.stateListener) this.stateListener.remove();
     if (this.subscription) this.subscription.remove();
   }

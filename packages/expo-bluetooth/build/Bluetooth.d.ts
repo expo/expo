@@ -12,6 +12,8 @@ declare type ScanOptions = {
      * dependes on current capability and availability of the resources in hw.
      */
     androidNumberOfMatches?: any;
+    /** Oreo (26)+ */
+    androidOnlyConnectable?: boolean;
 };
 declare type CancelScanningCallback = () => void;
 /**

@@ -65,7 +65,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   static ModuleRegistry moduleRegistry;
   public static BluetoothManager bluetoothManager;
   static private Map<String, Peripheral> peripherals = new LinkedHashMap<>();
-  public BluetoothScanManager scanManager;
+  private BluetoothScanManager mScanManager;
   private BondingPromise createBond;
   private BondingPromise removeBond;
   private BroadcastReceiver mReceiver;
@@ -249,8 +249,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   private boolean isScanning() {
-    if (scanManager != null) {
-      return scanManager.isScanning();
+    if (mScanManager != null) {
+      return mScanManager.isScanning();
     }
     return false;
   }
@@ -261,12 +261,11 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (adapter == null) {
       return;
     }
-    if (scanManager != null) {
-      scanManager.stopScan();
-      scanManager = null;
+    if (mScanManager != null) {
+      mScanManager.stopScan();
     }
 
-    scanManager = new BluetoothScanManager(adapter, moduleRegistry, new PeripheralScanningDelegate() {
+    mScanManager = new BluetoothScanManager(new PeripheralScanningDelegate() {
 
       @Override
       public void onStartScanning() {
@@ -308,9 +307,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   private void onBluetoothAdapterStateChange(int state) {
     if (state == BluetoothAdapter.STATE_OFF) {
       removeAllCachedPeripherals();
-      /** since we cleared all the peripherals, update the full state */
-      emitState();
-      scanManager.stopScan();
+      if (mScanManager != null) {
+        mScanManager.stopScan();
+      }
     }
 
     Bundle output = new Bundle();
@@ -482,7 +481,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-    scanManager.stopScan();
+    mScanManager.stopScan();
     // TODO: EMIT STATE
     promise.resolve(null);
   }
@@ -521,7 +520,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     removeAllCachedPeripherals();
 
-    scanManager.scan(serviceUUIDStrings, options);
+    mScanManager.startScan(serviceUUIDStrings, options);
 
     promise.resolve(null);
   }
