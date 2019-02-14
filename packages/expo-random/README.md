@@ -34,7 +34,7 @@ yarn add expo-random
 <summary>👉 Expand Code</summary>
 
 ```ruby
-pod 'EXFirebaseInstanceID', path: '../node_modules/expo-random/ios'
+pod 'EXRandom', path: '../node_modules/expo-random/ios'
 ```
 
 </details>
