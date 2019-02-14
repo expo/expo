@@ -15,7 +15,11 @@ public class EXBluetoothChildObject extends EXBluetoothObject {
 
   @Override
   public String getID() {
-    return this.getParent().getID() + "|" + UUIDHelper.fromUUID(getUUID());
+    EXBluetoothObjectInterface parent = this.getParent();
+    if (parent != null) {
+      return parent.getID() + "|" + UUIDHelper.fromUUID(getUUID());
+    }
+    return UUIDHelper.fromUUID(getUUID());
   }
 
   @Override

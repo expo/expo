@@ -15,7 +15,7 @@ import expo.modules.bluetooth.helpers.UUIDHelper;
 public class Descriptor extends EXBluetoothChildObject {
 
   public Descriptor(BluetoothGattDescriptor nativeData, Object parent) {
-    super(nativeData, (parent instanceof EXBluetoothObject) ? parent : new Characteristic(nativeData.getCharacteristic(), parent));
+    super(nativeData, (parent instanceof EXBluetoothObjectInterface) ? parent : new Characteristic(nativeData.getCharacteristic(), parent));
   }
 
   @Override

@@ -18,7 +18,7 @@ import expo.modules.bluetooth.helpers.UUIDHelper;
 public class Service extends EXBluetoothChildObject {
 
   public Service(BluetoothGattService nativeData, Object parent) {
-    super(nativeData, (parent instanceof EXBluetoothObject) ? parent : new Peripheral((BluetoothGatt) parent));
+    super(nativeData, (parent instanceof EXBluetoothObjectInterface) ? parent : new Peripheral((BluetoothGatt) parent));
   }
   
   // TODO: Bacon: Test characteristicProperties query works / is standard
@@ -61,7 +61,9 @@ public class Service extends EXBluetoothChildObject {
   @Override
   public Bundle toJSON() {
     Bundle output = super.toJSON();
-    output.putString(BluetoothConstants.JSON.PERIPHERAL_UUID, getPeripheral().getID());
+    if (getPeripheral() != null) {
+      output.putString(BluetoothConstants.JSON.PERIPHERAL_UUID, getPeripheral().getID());
+    }
     output.putBoolean(BluetoothConstants.JSON.IS_PRIMARY, getService().getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
     output.putParcelableArrayList(BluetoothConstants.JSON.INCLUDED_SERVICES, EXBluetoothObject.listToJSON((List)getIncludedServices()));
     output.putParcelableArrayList(BluetoothConstants.JSON.CHARACTERISTICS, EXBluetoothObject.listToJSON((List)getCharacteristics()));
@@ -78,7 +80,6 @@ public class Service extends EXBluetoothChildObject {
     // TODO: Emit full state
     // TODO: Bacon: How do we refresh these?
     Bundle output = new Bundle();
-    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, getPeripheral().toJSON());
     output.putBundle(BluetoothConstants.JSON.SERVICE, toJSON());
     promise.resolve(output);
   }

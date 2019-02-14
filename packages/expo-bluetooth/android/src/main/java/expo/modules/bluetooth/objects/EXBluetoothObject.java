@@ -12,22 +12,22 @@ import expo.modules.bluetooth.BluetoothConstants;
 
 public class EXBluetoothObject implements EXBluetoothObjectInterface, EXBluetoothParentObjectInterface{
 
-  protected EXBluetoothObject mParent;
+  protected EXBluetoothObjectInterface mParent;
   protected Object mNativeData;
-  protected HashMap<String, EXBluetoothChildObject> mChildren;
+  protected HashMap<String, EXBluetoothChildObject> mChildren = new HashMap<>();
 
   public EXBluetoothObject(Object nativeData, Object parent) {
     mNativeData = nativeData;
-    if (parent != null && parent instanceof EXBluetoothObject) {
-      mParent = (EXBluetoothObject) parent;
+    if (parent != null && parent instanceof EXBluetoothObjectInterface) {
+      mParent = (EXBluetoothObjectInterface) parent;
     }
   }
 
-  public static ArrayList<Bundle> listToJSON(List<EXBluetoothObject> input) {
+  public static ArrayList<Bundle> listToJSON(List<EXBluetoothObjectInterface> input) {
     if (input == null) return null;
 
     ArrayList<Bundle> output = new ArrayList();
-    for (EXBluetoothObject value : input) {
+    for (EXBluetoothObjectInterface value : input) {
       output.add(value.toJSON());
     }
     return output;
@@ -56,7 +56,7 @@ public class EXBluetoothObject implements EXBluetoothObjectInterface, EXBluetoot
   }
 
   @Override
-  public EXBluetoothObject getParent() {
+  public EXBluetoothObjectInterface getParent() {
     return mParent;
   }
 

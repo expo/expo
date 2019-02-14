@@ -18,7 +18,7 @@ public class Characteristic extends EXBluetoothChildObject {
   public static final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
   public Characteristic(BluetoothGattCharacteristic nativeData, Object parent) {
-    super(nativeData, (parent instanceof EXBluetoothObject) ? parent : new Service(nativeData.getService(), parent));
+    super(nativeData, (parent instanceof EXBluetoothObjectInterface) ? parent : new Service(nativeData.getService(), parent));
   }
 
   public Descriptor getDescriptor(UUID uuid) {

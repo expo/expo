@@ -51,8 +51,10 @@ export async function startScanningAsync(scanSettings = {}, callback) {
         callback(event.peripheral);
     });
     return async () => {
-        subscription.remove();
-        await stopScanningAsync();
+        if (subscription) {
+            subscription.remove();
+            await stopScanningAsync();
+        }
     };
 }
 export async function stopScanningAsync() {
@@ -232,6 +234,7 @@ export async function isScanningAsync() {
 export async function discoverServicesForPeripheralAsync(options) {
     invariantAvailability('discoverServicesForPeripheralAsync');
     const transaction = Transaction.fromTransactionId(options.id);
+    console.log("discoverServicesForPeripheralAsync: Before Native: ", options);
     return await ExpoBluetooth.discoverServicesForPeripheralAsync({
         ...transaction.getUUIDs(),
         serviceUUIDs: options.serviceUUIDs,
@@ -320,6 +323,7 @@ export async function _loadChildrenRecursivelyAsync({ id }) {
         // Peripheral ID
         console.log('Load Peripheral ', id);
         const { peripheral: { services }, } = await discoverServicesForPeripheralAsync({ id });
+        console.log('discoverServicesForPeripheralAsync(): ', services);
         return await Promise.all(services.map(service => _loadChildrenRecursivelyAsync(service)));
     }
     else {
@@ -374,7 +378,6 @@ export async function _reset() {
 let lastEvent;
 addListener(({ data, event }) => {
     const { peripheral, peripherals, central, advertisementData, RSSI, error } = data;
-    console.log('Event: ' + event + (lastEvent ? ', last: ' + lastEvent : ''));
     lastEvent = event;
     // console.log('GOT EVENT: ', { data, event });
     if (event === 'UPDATE') {
@@ -387,16 +390,27 @@ addListener(({ data, event }) => {
         firePeripheralObservers();
         return;
     }
+    if (event === EVENTS.PERIPHERAL_DISCOVERED_SERVICES) {
+        console.log("SERVICES: ", peripheral);
+    }
+    else {
+        console.log('Event: ' + event + (lastEvent ? ', last: ' + lastEvent : ''));
+    }
     switch (event) {
-        // case EVENTS.CENTRAL_SCAN_STARTED:
-        //   // noop
-        //   break;
+        case EVENTS.PERIPHERAL_DISCOVERED_SERVICES:
+        case EVENTS.SERVICE_DISCOVERED_CHARACTERISTICS:
+        case EVENTS.SERVICE_DISCOVERED_INCLUDED_SERVICES:
+        case EVENTS.CHARACTERISTIC_DISCOVERED_DESCRIPTORS:
+        case EVENTS.CHARACTERISTIC_DISCOVERED_DESCRIPTORS:
+            // noop
+            break;
         case EVENTS.PERIPHERAL_CONNECTED:
             console.log('Connect peripheral: ', peripheral.id);
             break;
         case EVENTS.CENTRAL_STATE_CHANGED:
         case EVENTS.PERIPHERAL_DISCONNECTED:
         case EVENTS.CENTRAL_DISCOVERED_PERIPHERAL:
+        case EVENTS.SYSTEM_ENABLED_STATE_CHANGED:
             fireMultiEventHandlers(event, { peripheral, central, error });
             if (peripheral) {
                 // Send specific events for things like disconnect.
@@ -404,9 +418,6 @@ addListener(({ data, event }) => {
                 fireSingleEventHandlers(uid, { peripheral, central, error });
             }
             firePeripheralObservers();
-            return;
-        case EVENTS.SYSTEM_ENABLED_STATE_CHANGED:
-            fireMultiEventHandlers(event, { central, error });
             return;
         default:
             throw new Error('EXBluetooth: Unhandled event: ' + event);

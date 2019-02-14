@@ -94,13 +94,13 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   public static boolean isDeviceConnected(String peripheralUUID) {
 
     /** Native method seems to jump around and not be as accurate as simply caching data. */
-    if (bluetoothManager == null) return false;
-
-    BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(peripheralUUID);
-
-    if (device == null) {
-      return false;
-    }
+//    if (bluetoothManager == null) return false;
+//
+//    BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(peripheralUUID);
+//
+//    if (device == null) {
+//      return false;
+//    }
 
 //    return bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device);
 //    Log.d("BLE_TEST", "connectedMethods: " + connectedDevices.containsKey(peripheralUUID) + ", Native: " + bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device));
@@ -123,6 +123,14 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
     String errorMessage = "Could not emit " + eventName + " event, no event emitter or module registry present.";
     Log.e(TAG, errorMessage);
+  }
+
+  public static Activity getActivity() {
+    if (mModuleRegistry != null) {
+      ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+      return activityProvider.getCurrentActivity();
+    }
+    return null;
   }
 
   public static void emitState() {

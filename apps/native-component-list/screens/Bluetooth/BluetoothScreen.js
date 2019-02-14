@@ -131,20 +131,22 @@ export default class BluetoothScreen extends React.Component {
           // console.log('Found: ', peripheral);
           const hasName = peripheral.name && peripheral.name !== '';
           if (hasName) {
-            if (Object.values(this.state.peripherals).length > 2) {
-              this.stopScanningAsync();
-            }
-            // const name = peripheral.name.toLowerCase();
-            // const isBacon = name.indexOf('baconbook') !== -1; // My computer's name
-            // if (isBacon) {
-            // this.updatePeripheral(peripheral);
-            // Bluetooth.stopScanningAsync();
-            // this.setState({ isScanning: false });
-            // const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
-            // this.props.navigation.push('BluetoothPeripheralScreen', {
-            //   peripheral: loadedPeripheral,
-            // });
+            // if (Object.values(this.state.peripherals).length > 2) {
             // }
+            const name = peripheral.name.toLowerCase();
+            const isBacon = name.indexOf('samsung') !== -1; // My computer's name
+            if (isBacon) {
+              this.setState({ isScanning: false });
+              await this.stopScanningAsync();
+
+              setTimeout(async () => {
+                const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
+                console.log('FINISHED!', loadedPeripheral);
+                // this.props.navigation.push('BluetoothPeripheralScreen', {
+                //   peripheral: loadedPeripheral,
+                // });
+              }, 100);
+            }
           }
         }
       );

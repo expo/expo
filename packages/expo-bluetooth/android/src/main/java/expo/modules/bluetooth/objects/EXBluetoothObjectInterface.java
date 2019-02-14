@@ -11,7 +11,7 @@ public interface EXBluetoothObjectInterface {
 
   Bundle toJSON();
 
-  EXBluetoothObject getParent();
+  EXBluetoothObjectInterface getParent();
 
   Peripheral getPeripheral();
 
