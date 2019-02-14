@@ -140,13 +140,17 @@ workflows:
       - expotools
       - client_android
       - client_ios
-      - expo_client_build
+      - expo_client_build:
+          requires:
+            - expo_client_approve_build
       - test_suite_publish
       # TODO: fix devicefarm running tests
       #- android_test_suite:
       #   requires:
       #     - test_suite_publish
       - shell_app_sim_base_ios
+      - expo_client_approve_build:
+          type: approval
       - client_android_approve_google_play:
           type: approval
           requires:
