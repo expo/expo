@@ -59,6 +59,13 @@ export class Asset {
                 width: meta.width,
                 height: meta.height,
             });
+            // TODO: FileSystem should probably support 'downloading' from drawable resources
+            // But for now it doesn't and React Native's Image works fine with drawable resource
+            // names for images.
+            if (Platform.OS === 'android' && !uri.includes(':') && (meta.width || meta.height)) {
+                asset.localUri = asset.uri;
+                asset.downloaded = true;
+            }
             Asset.byHash[meta.hash] = asset;
             return asset;
         }
@@ -137,7 +144,7 @@ export class Asset {
         this.localUri = localUri;
     }
     async _downloadAsyncUnmanagedEnv() {
-        // Bail out if it was bundled with the app
+        // Bail out if it's already at a file URL because it's already available locally
         if (this.uri.startsWith('file://')) {
             this.localUri = this.uri;
             return;
