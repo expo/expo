@@ -13,7 +13,7 @@ function supportedAlgorithm(algorithm) {
 export async function test({ describe, it, expect }) {
   describe('Crypto', () => {
     describe('digestStringAsync()', () => {
-      for (const entry of Object.entries(Crypto.Algorithm)) {
+      for (const entry of Object.entries(Crypto.CryptoDigestAlgorithm)) {
         const [key, algorithm] = entry;
         it(`Crypto.Hash.${key}`, async () => {
           if (supportedAlgorithm(algorithm)) {

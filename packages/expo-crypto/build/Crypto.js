@@ -1,23 +1,23 @@
 import { UnavailabilityError } from 'expo-errors';
 import ExpoCrypto from './ExpoCrypto';
-import { Algorithm, Encoding } from './Crypto.types';
+import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';
 export * from './Crypto.types';
 function assertAlgorithm(algorithm) {
-    if (!Object.values(Algorithm).includes(algorithm)) {
-        throw new TypeError(`expo-crypto: Invalid algorithm provided. Expected one of: Algorithm.${Object.keys(Algorithm).join(', Algorithm.')}`);
+    if (!Object.values(CryptoDigestAlgorithm).includes(algorithm)) {
+        throw new TypeError(`expo-crypto: Invalid algorithm provided. Expected one of: CryptoDigestAlgorithm.${Object.keys(CryptoDigestAlgorithm).join(', AlgCryptoDigestAlgorithmorithm.')}`);
     }
 }
 function assertData(data) {
     if (data == null || typeof data !== 'string' || !data.length) {
-        throw new TypeError(`expo-crypto: Invalid data provided. Expected a valid string.`);
+        throw new TypeError(`expo-crypto: Invalid data provided. Expected a string.`);
     }
 }
 function assertEncoding(encoding) {
-    if (!Object.values(Encoding).includes(encoding)) {
-        throw new TypeError(`expo-crypto: Invalid encoding provided. Expected one of: Encoding.${Object.keys(Encoding).join(', Encoding.')}`);
+    if (!Object.values(CryptoEncoding).includes(encoding)) {
+        throw new TypeError(`expo-crypto: Invalid encoding provided. Expected one of: CryptoEncoding.${Object.keys(CryptoEncoding).join(', CryptoEncoding.')}`);
     }
 }
-export async function digestStringAsync(algorithm, data, options = { encoding: Encoding.hex }) {
+export async function digestStringAsync(algorithm, data, options = { encoding: CryptoEncoding.HEX }) {
     if (!ExpoCrypto.digestStringAsync) {
         throw new UnavailabilityError('expo-crypto', 'digestStringAsync');
     }

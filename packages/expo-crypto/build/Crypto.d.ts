@@ -1,3 +1,3 @@
-import { Algorithm, DigestOptions } from './Crypto.types';
+import { CryptoDigestAlgorithm, CryptoDigestOptions } from './Crypto.types';
 export * from './Crypto.types';
-export declare function digestStringAsync(algorithm: Algorithm, data: string, options?: DigestOptions): Promise<string>;
+export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data: string, options?: CryptoDigestOptions): Promise<string>;

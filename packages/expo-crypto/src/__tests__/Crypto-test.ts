@@ -3,19 +3,17 @@ import * as Crypto from '../Crypto';
 
 it(`invokes native method correctly`, async () => {
   ExpoCrypto.digestStringAsync.mockImplementationOnce(() => '');
-  const value = await Crypto.digestStringAsync(Crypto.Algorithm.sha1, '<DEBUG>', {
-    encoding: Crypto.Encoding.hex,
+  const value = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', {
+    encoding: Crypto.CryptoEncoding.HEX,
   });
   expect(typeof value).toBe('string');
-  expect(ExpoCrypto.digestStringAsync).toHaveBeenLastCalledWith(Crypto.Algorithm.sha1, '<DEBUG>', {
-    encoding: Crypto.Encoding.hex,
-  });
-});
-
-it(`can unhash`, async () => {
-  // ExpoCrypto.digestStringAsync.mockImplementationOnce(async () => 'r6ip');
-  // const value = await Crypto.digestStringAsync(Crypto.Algorithm.sha1, '<DEBUG>');
-  // expect(value.length).toBe(3);
+  expect(ExpoCrypto.digestStringAsync).toHaveBeenLastCalledWith(
+    Crypto.CryptoDigestAlgorithm.SHA1,
+    '<DEBUG>',
+    {
+      encoding: Crypto.CryptoEncoding.HEX,
+    }
+  );
 });
 
 it(`asserts invalid algorithm errors`, async () => {
@@ -30,43 +28,49 @@ it(`asserts invalid algorithm errors`, async () => {
 });
 
 it(`asserts invalid data errors`, async () => {
-  await expect(Crypto.digestStringAsync(Crypto.Algorithm.sha1, null as any)).rejects.toThrowError(
-    TypeError
-  );
-  await expect(Crypto.digestStringAsync(Crypto.Algorithm.sha1, '' as any)).rejects.toThrowError(
-    TypeError
-  );
-  await expect(Crypto.digestStringAsync(Crypto.Algorithm.sha1, 2 as any)).rejects.toThrowError(
-    TypeError
-  );
-  await expect(Crypto.digestStringAsync(Crypto.Algorithm.sha1, true as any)).rejects.toThrowError(
-    TypeError
-  );
   await expect(
-    Crypto.digestStringAsync(Crypto.Algorithm.sha1, undefined as any)
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, null as any)
   ).rejects.toThrowError(TypeError);
-  await expect(Crypto.digestStringAsync(Crypto.Algorithm.sha1, {} as any)).rejects.toThrowError(
-    TypeError
-  );
+  await expect(
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '' as any)
+  ).rejects.toThrowError(TypeError);
+  await expect(
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, 2 as any)
+  ).rejects.toThrowError(TypeError);
+  await expect(
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, true as any)
+  ).rejects.toThrowError(TypeError);
+  await expect(
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, undefined as any)
+  ).rejects.toThrowError(TypeError);
+  await expect(
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, {} as any)
+  ).rejects.toThrowError(TypeError);
 });
 
 it(`asserts invalid encoding errors`, async () => {
   await expect(
-    Crypto.digestStringAsync(Crypto.Algorithm.sha1, '<DEBUG>', { encoding: null as any })
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', {
+      encoding: null as any,
+    })
   ).rejects.toThrowError(TypeError);
   await expect(
-    Crypto.digestStringAsync(Crypto.Algorithm.sha1, '<DEBUG>', { encoding: '' as any })
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', { encoding: '' as any })
   ).rejects.toThrowError(TypeError);
   await expect(
-    Crypto.digestStringAsync(Crypto.Algorithm.sha1, '<DEBUG>', { encoding: 2 as any })
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', { encoding: 2 as any })
   ).rejects.toThrowError(TypeError);
   await expect(
-    Crypto.digestStringAsync(Crypto.Algorithm.sha1, '<DEBUG>', { encoding: true as any })
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', {
+      encoding: true as any,
+    })
   ).rejects.toThrowError(TypeError);
   await expect(
-    Crypto.digestStringAsync(Crypto.Algorithm.sha1, '<DEBUG>', { encoding: undefined as any })
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', {
+      encoding: undefined as any,
+    })
   ).rejects.toThrowError(TypeError);
   await expect(
-    Crypto.digestStringAsync(Crypto.Algorithm.sha1, '<DEBUG>', { encoding: {} as any })
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', { encoding: {} as any })
   ).rejects.toThrowError(TypeError);
 });

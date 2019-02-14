@@ -1,16 +1,17 @@
-export enum Algorithm {
-  sha1 = 'SHA-1' /* (but don't use this in cryptographic applications) */,
-  sha256 = 'SHA-256',
-  sha384 = 'SHA-384',
-  sha512 = 'SHA-512',
-  md2 = 'MD2',
-  md4 = 'MD4',
-  md5 = 'MD5',
+export enum CryptoDigestAlgorithm {
+  SHA1 = 'SHA-1' /* (but don't use this in cryptographic applications) */,
+  SHA256 = 'SHA-256',
+  SHA384 = 'SHA-384',
+  SHA512 = 'SHA-512',
+  /* Not supported on web */
+  MD2 = 'MD2',
+  MD4 = 'MD4',
+  MD5 = 'MD5',
 }
 
-export enum Encoding {
-  hex = 'hex',
-  base64 = 'base64',
+export enum CryptoEncoding {
+  HEX = 'hex',
+  Base64 = 'base64',
 }
 
-export type DigestOptions = { encoding: Encoding };
+export type CryptoDigestOptions = { encoding: CryptoEncoding };

@@ -28,29 +28,31 @@ public class CryptoModule extends ExportedModule implements ModuleRegistryConsum
 
   @ExpoMethod
   public void digestStringAsync(String algorithm, String data, final Map<String, Object> options, final Promise promise) {
-    // hex
     String encoding = (String)options.get("encoding");
 
+    MessageDigest md;
     try { 
-      MessageDigest md = MessageDigest.getInstance(algorithm);
+      md = MessageDigest.getInstance(algorithm);
       md.update(data.getBytes());
-      byte[] digest = md.digest();
-      if (encoding.equals("base64")) {
-        String output = Base64.encodeToString(digest, Base64.DEFAULT);
-        promise.resolve(output);
-      } else if (encoding.equals("hex")) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i=0; i < digest.length; i++) {
-          stringBuilder.append(Integer.toString((digest[i] & 0xff) +
-              0x100, 16).substring(1));
-        }
-        String output = stringBuilder.toString();
-        promise.resolve(output);
-      } else {
-        promise.reject("ERR_CRYPTO", "Invalid encoding type provided.");
-      }
     } catch (NoSuchAlgorithmException e) {
-      promise.reject("ERR_DIGEST", e);
+      promise.reject("ERR_CRYPTO_DIGEST", e);
+      return;
+    }
+
+    byte[] digest = md.digest();
+    if (encoding.equals("base64")) {
+      String output = Base64.encodeToString(digest, Base64.DEFAULT);
+      promise.resolve(output);
+    } else if (encoding.equals("hex")) {
+      StringBuilder stringBuilder = new StringBuilder(digest.length * 2);
+      for (int i = 0; i < digest.length; i++) {
+        stringBuilder.append(Integer.toString((digest[i] & 0xff) +
+            0x100, 16).substring(1));
+      }
+      String output = stringBuilder.toString();
+      promise.resolve(output);
+    } else {
+      promise.reject("ERR_CRYPTO_DIGEST", "Invalid encoding type provided.");
     }
   }
 }

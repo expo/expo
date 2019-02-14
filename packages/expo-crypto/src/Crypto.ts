@@ -1,39 +1,39 @@
 import { UnavailabilityError } from 'expo-errors';
 import ExpoCrypto from './ExpoCrypto';
 
-import { Algorithm, Encoding, DigestOptions } from './Crypto.types';
+import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions } from './Crypto.types';
 export * from './Crypto.types';
 
-function assertAlgorithm(algorithm: Algorithm): void {
-  if (!Object.values(Algorithm).includes(algorithm)) {
+function assertAlgorithm(algorithm: CryptoDigestAlgorithm): void {
+  if (!Object.values(CryptoDigestAlgorithm).includes(algorithm)) {
     throw new TypeError(
-      `expo-crypto: Invalid algorithm provided. Expected one of: Algorithm.${Object.keys(
-        Algorithm
-      ).join(', Algorithm.')}`
+      `expo-crypto: Invalid algorithm provided. Expected one of: CryptoDigestAlgorithm.${Object.keys(
+        CryptoDigestAlgorithm
+      ).join(', AlgCryptoDigestAlgorithmorithm.')}`
     );
   }
 }
 
 function assertData(data: string): void {
   if (data == null || typeof data !== 'string' || !data.length) {
-    throw new TypeError(`expo-crypto: Invalid data provided. Expected a valid string.`);
+    throw new TypeError(`expo-crypto: Invalid data provided. Expected a string.`);
   }
 }
 
-function assertEncoding(encoding: Encoding): void {
-  if (!Object.values(Encoding).includes(encoding)) {
+function assertEncoding(encoding: CryptoEncoding): void {
+  if (!Object.values(CryptoEncoding).includes(encoding)) {
     throw new TypeError(
-      `expo-crypto: Invalid encoding provided. Expected one of: Encoding.${Object.keys(
-        Encoding
-      ).join(', Encoding.')}`
+      `expo-crypto: Invalid encoding provided. Expected one of: CryptoEncoding.${Object.keys(
+        CryptoEncoding
+      ).join(', CryptoEncoding.')}`
     );
   }
 }
 
 export async function digestStringAsync(
-  algorithm: Algorithm,
+  algorithm: CryptoDigestAlgorithm,
   data: string,
-  options: DigestOptions = { encoding: Encoding.hex }
+  options: CryptoDigestOptions = { encoding: CryptoEncoding.HEX }
 ): Promise<string> {
   if (!ExpoCrypto.digestStringAsync) {
     throw new UnavailabilityError('expo-crypto', 'digestStringAsync');

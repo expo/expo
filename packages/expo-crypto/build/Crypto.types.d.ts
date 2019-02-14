@@ -1,16 +1,16 @@
-export declare enum Algorithm {
-    sha1 = "SHA-1",
-    sha256 = "SHA-256",
-    sha384 = "SHA-384",
-    sha512 = "SHA-512",
-    md2 = "MD2",
-    md4 = "MD4",
-    md5 = "MD5"
+export declare enum CryptoDigestAlgorithm {
+    SHA1 = "SHA-1",
+    SHA256 = "SHA-256",
+    SHA384 = "SHA-384",
+    SHA512 = "SHA-512",
+    MD2 = "MD2",
+    MD4 = "MD4",
+    MD5 = "MD5"
 }
-export declare enum Encoding {
-    hex = "hex",
-    base64 = "base64"
+export declare enum CryptoEncoding {
+    HEX = "hex",
+    Base64 = "base64"
 }
-export declare type DigestOptions = {
-    encoding: Encoding;
+export declare type CryptoDigestOptions = {
+    encoding: CryptoEncoding;
 };
