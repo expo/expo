@@ -6,6 +6,7 @@
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccentLight</item>
     <item name="android:windowBackground">@color/white</item>
+     <item name="android:editTextBackground">@android:color/transparent</item>
   </style>
 
   <style name="Theme.Exponent.Dark" parent="Theme.AppCompat.Light.NoActionBar">
@@ -14,6 +15,7 @@
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccentDark</item>
     <item name="android:windowBackground">@color/colorPrimary</item>
+     <item name="android:editTextBackground">@android:color/transparent</item>
   </style>
 
   <style name="ExponentCheckBox">
@@ -31,7 +33,9 @@
     <item name="android:padding">0dp</item>
     <item name="android:textColorHint">#c8c8c8</item>
     <item name="android:textColor">#000000</item>
+  <item name="android:background">@android:color/transparent</item>
   </style>
+  
 
   <style name="DevAppTheme">
     <item name="android:colorAccent">
