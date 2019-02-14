@@ -210,9 +210,9 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     public void onConnectionStateChange(int status, int newState) {
 
       if (mDidConnectStateChangePeripheralBlock != null) {
+          BluetoothModule.emitState();
         if (shouldResolvePromiseWithStatusAndData(mDidConnectStateChangePeripheralBlock.mPromise, status)) {
           mDidConnectStateChangePeripheralBlock.mPromise.resolve(toJSON());
-          BluetoothModule.emitState();
         }
         /**
          * If you attempt to connect and the process fails, the "newState" will be disconnected event though it was never connected.
@@ -236,12 +236,12 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_DISCOVERED_SERVICES, status);
       String id = getID();
       if (mDidDiscoverServicesBlock.containsKey(id)) {
+          BluetoothModule.emitState();
         Promise promise = mDidDiscoverServicesBlock.get(id);
         if (shouldResolvePromiseWithStatusAndData(promise, status)) {
           Bundle output = new Bundle();
           output.putBundle(BluetoothConstants.JSON.PERIPHERAL, toJSON());
           promise.resolve(output);
-          BluetoothModule.emitState();
         }
         mDidDiscoverServicesBlock.remove(id);
       }
@@ -269,6 +269,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     public void onCharacteristicRead(BluetoothGattCharacteristic characteristic, int status) {
       Characteristic input = getCharacteristic(characteristic);
       if (input != null) {
+        BluetoothModule.emitState();
         Bundle output = input.sendEvent(BluetoothConstants.EVENTS.CHARACTERISTIC_DID_READ, status);
 
         ArrayList<Promise> promises = mReadCharacteristicPromises.get(input.getID());
@@ -280,7 +281,6 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 //        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, this.toJSON());
 //        /* peripheral, characteristic */
 //        promise.resolve(output);
-//        BluetoothModule.emitState();
           }
         }
         mReadCharacteristicPromises.clearKey(input.getID());
@@ -291,6 +291,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     public void onCharacteristicWrite(BluetoothGattCharacteristic characteristic, int status) {
       Characteristic input = getCharacteristic(characteristic);
       if (input != null) {
+        BluetoothModule.emitState();
         Bundle output = input.sendEvent(BluetoothConstants.EVENTS.CHARACTERISTIC_DID_WRITE, status);
 
         ArrayList<Promise> promises = mWriteCharacteristicPromises.get(input.getID());
@@ -307,6 +308,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
       Characteristic input = getCharacteristic(characteristic);
       if (input != null) {
+        BluetoothModule.emitState();
         Bundle output = input.sendEvent(BluetoothConstants.EVENTS.CHARACTERISTIC_DID_NOTIFY, BluetoothGatt.GATT_SUCCESS);
 
         ArrayList<Promise> promises = mNotifyCharacteristicPromises.get(input.getID());
@@ -321,6 +323,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       Descriptor input = getDescriptor(descriptor);
       if (input != null) {
 
+        BluetoothModule.emitState();
         Bundle output = input.sendEvent(BluetoothConstants.EVENTS.DESCRIPTOR_DID_READ, status);
 
         ArrayList<Promise> promises = mReadDescriptorPromises.get(input.getID());
@@ -343,6 +346,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     public void onDescriptorWrite(BluetoothGattDescriptor descriptor, int status) {
       Descriptor input = getDescriptor(descriptor);
       if (input != null) {
+        BluetoothModule.emitState();
 
         Bundle output = input.sendEvent(BluetoothConstants.EVENTS.DESCRIPTOR_DID_WRITE, status);
 
@@ -386,8 +390,8 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     public void onReadRemoteRssi(int rssi, int status) {
 
+      BluetoothModule.emitState();
       sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_UPDATED_RSSI, status);
-
       if (status == BluetoothGatt.GATT_SUCCESS) {
         updateRSSI(rssi);
       }
@@ -395,7 +399,6 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       if (mRSSIBlock != null) {
         if (shouldResolvePromiseWithStatusAndData(mRSSIBlock, status)) {
           mRSSIBlock.resolve(toJSON());
-          BluetoothModule.emitState();
         }
         mRSSIBlock = null;
       }
@@ -405,12 +408,11 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     public void onMtuChanged(int mtu, int status) {
       mMTU = mtu;
 
+      BluetoothModule.emitState();
       sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_UPDATED_MTU, status);
-
       if (mMTUBlock != null) {
         if (shouldResolvePromiseWithStatusAndData(mMTUBlock, status)) {
           mMTUBlock.resolve(mtu);
-          BluetoothModule.emitState();
         }
         mMTUBlock = null;
       }

@@ -193,8 +193,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     events.put("SYSTEM_ENABLED_STATE_CHANGED", BluetoothConstants.EVENTS.SYSTEM_ENABLED_STATE_CHANGED);
     events.put("SYSTEM_AVAILABILITY_CHANGED", BluetoothConstants.EVENTS.SYSTEM_AVAILABILITY_CHANGED);
     events.put("SYSTEM_PERMISSION_CHANGED", BluetoothConstants.EVENTS.SYSTEM_PERMISSION_CHANGED);
-    events.put("CENTRAL_SCAN_STARTED", BluetoothConstants.EVENTS.CENTRAL_SCAN_STARTED);
-    events.put("CENTRAL_SCAN_STOPPED", BluetoothConstants.EVENTS.CENTRAL_SCAN_STOPPED);
+    events.put("ADAPTER_STATE_CHANGED", BluetoothConstants.EVENTS.ADAPTER_STATE_CHANGED);
+//    events.put("CENTRAL_SCAN_STARTED", BluetoothConstants.EVENTS.CENTRAL_SCAN_STARTED);
+//    events.put("CENTRAL_SCAN_STOPPED", BluetoothConstants.EVENTS.CENTRAL_SCAN_STOPPED);
     events.put("CENTRAL_STATE_CHANGED", BluetoothConstants.EVENTS.CENTRAL_STATE_CHANGED);
     events.put("CENTRAL_DISCOVERED_PERIPHERAL", BluetoothConstants.EVENTS.CENTRAL_DISCOVERED_PERIPHERAL);
     events.put("PERIPHERAL_DISCOVERED_SERVICES", BluetoothConstants.EVENTS.PERIPHERAL_DISCOVERED_SERVICES);
@@ -280,7 +281,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     Bundle output = new Bundle();
     output.putBundle(BluetoothConstants.JSON.CENTRAL, centralAsJSON());
-    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CENTRAL_STATE_CHANGED, output);
+    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.ADAPTER_STATE_CHANGED, output);
   }
 
   private void createBondingReceiver() {
@@ -508,8 +509,10 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       @Override
       public void onStartScanning() {
         /** It seems that scanning starts in sync */
-        sendEvent(BluetoothConstants.EVENTS.CENTRAL_SCAN_STARTED, centralAsJSON());
+        Bundle map = new Bundle();
+        map.putBundle(BluetoothConstants.JSON.CENTRAL, centralAsJSON());
         emitState();
+        sendEvent(BluetoothConstants.EVENTS.CENTRAL_STATE_CHANGED, map);
       }
 
       @Override
@@ -537,8 +540,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         if (error != null) {
           map.putBundle(BluetoothConstants.JSON.ERROR, error.toJSON());
         }
-        sendEvent(BluetoothConstants.EVENTS.CENTRAL_SCAN_STOPPED, map);
+        map.putBundle(BluetoothConstants.JSON.CENTRAL, centralAsJSON());
         emitState(); // TODO: Bacon
+        sendEvent(BluetoothConstants.EVENTS.CENTRAL_STATE_CHANGED, map);
       }
     }, getBluetoothAdapter());
 

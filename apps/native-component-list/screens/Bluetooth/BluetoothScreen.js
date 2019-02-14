@@ -253,19 +253,19 @@ class Item extends React.Component {
       this.setState({ isConnecting: true });
       try {
         const peripheralUUID = item.id;
-        await Bluetooth.connectAsync(peripheralUUID, {
-          // timeout: 5000,
-          onDisconnect(props) {
-            console.log('IMA Disconnected Peripheral!', props);
-          },
-        });
+        // await Bluetooth.connectAsync(peripheralUUID, {
+        //   // timeout: 5000,
+        //   onDisconnect(props) {
+        //     console.log('IMA Disconnected Peripheral!', props);
+        //   },
+        // });
 
         // return;
 
-        // const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
-        //   id: peripheralUUID,
-        // });
-        // console.log({ loadedPeripheral });
+        const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
+          id: peripheralUUID,
+        });
+        console.log({ loadedPeripheral });
       } catch (error) {
         Alert.alert(
           'Connection Unsuccessful',

@@ -27,7 +27,6 @@ declare type CancelScanningCallback = () => void;
 export declare function startScanningAsync(scanSettings: ScanOptions | undefined, callback: (peripheral: NativePeripheral) => void): Promise<CancelScanningCallback>;
 export declare function stopScanningAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
-export declare function observeScanningErrors(callback: (updates: any) => void): Subscription;
 export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
 export declare function connectAsync(peripheralUUID: UUID, options?: {
     timeout?: number;

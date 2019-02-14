@@ -1,6 +1,6 @@
 import { CharacteristicProperty, } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
-import { addHandlerForKey, addListener, fireMultiEventHandlers, fireSingleEventHandlers, firePeripheralObservers, addHandlerForID, getHandlersForKey, resetHandlersForKey, _resetAllHandlers, } from './BluetoothEventHandler';
+import { addHandlerForKey, addListener, fireMultiEventHandlers, fireSingleEventHandlers, firePeripheralObservers, addHandlerForID, resetHandlersForKey, _resetAllHandlers, } from './BluetoothEventHandler';
 import { invariantAvailability, invariant, invariantUUID } from './BluetoothInvariant';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
 import { peripheralIdFromId } from './BluetoothTransactions';
@@ -65,14 +65,14 @@ export async function stopScanningAsync() {
 export function observeUpdates(callback) {
     return addHandlerForKey('everything', callback);
 }
-export function observeScanningErrors(callback) {
-    return addHandlerForKey(EVENTS.CENTRAL_SCAN_STOPPED, callback);
-}
+// export function observeScanningErrors(callback: (updates: any) => void): Subscription {
+//   return addHandlerForKey(EVENTS.CENTRAL_SCAN_STOPPED, callback);
+// }
 export async function observeStateAsync(callback) {
     const central = await getCentralAsync();
     // Make the callback async so the subscription returns first.
     setTimeout(() => callback(central.state));
-    return addHandlerForKey(EVENTS.CENTRAL_STATE_CHANGED, callback);
+    return addHandlerForKey(EVENTS.CENTRAL_STATE_CHANGED, ({ central = {} }) => callback(central.state));
 }
 export async function connectAsync(peripheralUUID, options = {}) {
     invariantAvailability('connectPeripheralAsync');
@@ -281,20 +281,21 @@ export async function loadPeripheralAsync({ id }, skipConnecting = false) {
             console.log('loadPeripheralAsync(): connected!');
             return loadPeripheralAsync(connectedPeripheral, true);
         }
-        else {
-            // This should never be called because in theory connectAsync would throw an error.
-        }
+        console.log('loadPeripheralAsync(): NEVER CALL', peripheral.state);
+        // This should never be called because in theory connectAsync would throw an error.
     }
     else if (peripheral.state === 'connected') {
         console.log('loadPeripheralAsync(): _loadChildrenRecursivelyAsync!');
         await _loadChildrenRecursivelyAsync({ id: peripheralId });
     }
+    console.log('loadPeripheralAsync(): fully loaded');
     // In case any updates occured during this function.
     return getPeripherals()[peripheralId];
 }
 export async function _loadChildrenRecursivelyAsync({ id }) {
     const components = id.split(DELIMINATOR);
-    console.log({ components });
+    console.log('_loadChildrenRecursivelyAsync(): components', components);
+    // console.log({ components });
     if (components.length === 4) {
         // Descriptor ID
         throw new Error('Descriptors have no children');
@@ -387,33 +388,25 @@ addListener(({ data, event }) => {
         return;
     }
     switch (event) {
-        case EVENTS.CENTRAL_SCAN_STARTED:
-            // noop
-            break;
+        // case EVENTS.CENTRAL_SCAN_STARTED:
+        //   // noop
+        //   break;
         case EVENTS.PERIPHERAL_CONNECTED:
             console.log('Connect peripheral: ', peripheral.id);
             break;
-        case EVENTS.CENTRAL_SCAN_STOPPED:
+        case EVENTS.CENTRAL_STATE_CHANGED:
         case EVENTS.PERIPHERAL_DISCONNECTED:
         case EVENTS.CENTRAL_DISCOVERED_PERIPHERAL:
-            fireMultiEventHandlers(event, { peripheral, error });
+            fireMultiEventHandlers(event, { peripheral, central, error });
             if (peripheral) {
                 // Send specific events for things like disconnect.
                 const uid = `${event}_${peripheral.id}`;
-                fireSingleEventHandlers(uid, { peripheral, error });
+                fireSingleEventHandlers(uid, { peripheral, central, error });
             }
             firePeripheralObservers();
             return;
-        case EVENTS.CENTRAL_STATE_CHANGED:
-            if (!central) {
-                throw new Error('EXBluetooth: Central not defined while processing: ' + event);
-            }
-            for (const callback of getHandlersForKey(event)) {
-                callback(central.state);
-            }
-            return;
         case EVENTS.SYSTEM_ENABLED_STATE_CHANGED:
-            fireMultiEventHandlers(event, { central });
+            fireMultiEventHandlers(event, { central, error });
             return;
         default:
             throw new Error('EXBluetooth: Unhandled event: ' + event);
