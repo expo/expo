@@ -33,14 +33,24 @@ import expo.modules.bluetooth.Serialize;
 import expo.modules.bluetooth.helpers.PromiseListHashMap;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 
+
+class ConnectingPromise {
+  Promise mPromise;
+  String mEvent;
+  ConnectingPromise(Promise promise, String event) {
+    mPromise = promise;
+    mEvent = event;
+  }
+}
+
 /** Wrapper for GATT because GATT can access Device */
 public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParentObjectInterface {
 
   public BluetoothGatt mGatt;
   private int mRSSI;
   private int mMTU;
-  private Promise mDidDisconnectPeripheralBlock;
-  private HashMap<String, Promise> mDidConnectPeripheralBlock = new HashMap<>();
+//  private Promise mDidDisconnectPeripheralBlock;
+  private ConnectingPromise mDidConnectStateChangePeripheralBlock;
   private PromiseListHashMap<String, ArrayList<Promise>> mWriteCharacteristicPromises = new PromiseListHashMap<>();
   private PromiseListHashMap<String, ArrayList<Promise>> mWriteDescriptorPromises = new PromiseListHashMap<>();
   private PromiseListHashMap<String, ArrayList<Promise>> mReadCharacteristicPromises = new PromiseListHashMap<>();
@@ -152,12 +162,11 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   public void connect(Promise promise, Activity activity) {
     if (!isConnected()) {
-      if (mDidConnectPeripheralBlock.containsKey(getID())) {
-        BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
+      if (guardConcurrency(promise, mDidConnectStateChangePeripheralBlock)) {
         return;
       }
+      mDidConnectStateChangePeripheralBlock = new ConnectingPromise(promise, BluetoothConstants.EVENTS.PERIPHERAL_CONNECTED);
       connectToGATT(activity);
-      mDidConnectPeripheralBlock.put(getID(), promise);
       return;
     } else if (guardGATT(promise)) {
       return;
@@ -193,31 +202,33 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     }
 
-    public void onConnectionStateChange(int status, int newState) {
-      if (newState == BluetoothProfile.STATE_CONNECTED) {
-//      getDevice().createBond();
-        // Send Connection event
-        sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_CONNECTED, status);
-        String UUIDString = getID();
-        if (mDidConnectPeripheralBlock.containsKey(UUIDString)) {
-          Promise promise = mDidConnectPeripheralBlock.get(UUIDString);
-          if (shouldResolvePromiseWithStatusAndData(promise, status)) {
-            promise.resolve(toJSON());
-            BluetoothModule.emitState();
-          }
-          mDidConnectPeripheralBlock.remove(UUIDString);
-        }
-      } else { /** BluetoothProfile.STATE_DISCONNECTED */
-        Log.d("BLE_TEST", "DISCONNECT" + getID() + ", connected: " + isConnected() + ", has callback: " + mDidDisconnectPeripheralBlock);
-        if (mDidDisconnectPeripheralBlock != null) {
-          if (shouldResolvePromiseWithStatusAndData(mDidDisconnectPeripheralBlock, status)) {
-            mDidDisconnectPeripheralBlock.resolve(toJSON());
-          }
-          mDidDisconnectPeripheralBlock = null;
-        }
+    // TODO: Bacon: This is a hack. When a connection fails, it will call onConnectionStateChange with STATE_DISCONNECTED, we need to call the onConnect promise and throw an error.
+    public boolean isPendingConnectionStateChange() {
+      return mDidConnectStateChangePeripheralBlock != null;
+    }
 
-        sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED, status);
-        BluetoothModule.emitState();
+    public void onConnectionStateChange(int status, int newState) {
+
+      if (mDidConnectStateChangePeripheralBlock != null) {
+        if (shouldResolvePromiseWithStatusAndData(mDidConnectStateChangePeripheralBlock.mPromise, status)) {
+          mDidConnectStateChangePeripheralBlock.mPromise.resolve(toJSON());
+          BluetoothModule.emitState();
+        }
+        /**
+         * If you attempt to connect and the process fails, the "newState" will be disconnected event though it was never connected.
+         * Send the pseudo event for proper resolution.
+         */
+        sendGattEvent(mDidConnectStateChangePeripheralBlock.mEvent, status);
+        mDidConnectStateChangePeripheralBlock = null;
+      } else {
+        /** newState can only be one of STATE_CONNECTED, STATE_DISCONNECTED. */
+        if (newState == BluetoothProfile.STATE_CONNECTED) {
+          //      getDevice().createBond();
+          // Send Connection event
+        } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+          Log.d("BLE_TEST", "DISCONNECT" + getID() + ", connected: " + isConnected());
+          sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED, status);
+        }
       }
     }
 
@@ -456,13 +467,13 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   public void disconnect(Promise promise) {
     if (guardGATT(promise)) {
       return;
-    } else if (mDidDisconnectPeripheralBlock != null) {
+    } else if (mDidConnectStateChangePeripheralBlock != null) {
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
     }
     Log.d("BLE_TEST", "disconnectPeripheralAsync.disconnect: " + getID() + ", connected: " + isConnected());
 
-    mDidDisconnectPeripheralBlock = promise;
+    mDidConnectStateChangePeripheralBlock = new ConnectingPromise(promise, BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED) ;
     mGatt.disconnect();
     if (!refreshGattCacheIgnoringErrors(mGatt)) {
       Log.d("BLE_TEST", "Failed to refresh cache: " + getID() + ", connected: " + isConnected());
@@ -703,7 +714,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void discoverServicesForPeripheralAsync(Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mDidDisconnectPeripheralBlock)) {
+    if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mDidConnectStateChangePeripheralBlock)) {
       return;
     } else if (mGatt.discoverServices()) {
       mDidDiscoverServicesBlock.put(getID(), promise);
@@ -800,7 +811,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     return false;
   }
 
-  private boolean guardConcurrency(Promise promise, Promise possiblyDefinedPromise) {
+  private boolean guardConcurrency(Promise promise, Object possiblyDefinedPromise) {
     if (possiblyDefinedPromise != null) {
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return true;

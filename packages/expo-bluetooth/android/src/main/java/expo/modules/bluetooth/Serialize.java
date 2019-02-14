@@ -390,12 +390,18 @@ public class Serialize {
     return output;
   }
 
-  // Else
 
   /**
-   * A lot of GATT error status codes are documented by Google, or the various vendors.
-   * The error codes used here may not align exactly with the cause, but they seem more helpful than not.
-   * If you dig through low-level BLE you could probably find the cause for your exact device.
+   * A lot of GATT status codes aren't documented by Google, or the various device vendors.
+   * The error messages used here may not align exactly with the error, but they seem more helpful than not.
+   * If you dig through low-level BLE you could probably find the codes for your exact device.
+   *
+   * https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h
+   * https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/l2cdefs.h
+   * https://android.googlesource.com/platform/external/libnfc-nci/+/lollipop-release/src/include/hcidefs.h
+   *
+   * 0xE0-0xFC are reserved: 
+   * https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h
    */
   public static String messageForGATTStatus(int input) {
     switch (input) {
@@ -419,11 +425,7 @@ public class Serialize {
         return "Remote device connection is congested";
       case BluetoothGatt.GATT_FAILURE:
         return "GATT operation failed";
-
-      /** Bacon: The following error codes are undocumented and vary based on vendor. (good luck <3)
-       * AOSP: From the Android open source project.
-       */
-
+      /** Bacon: The following error codes are undocumented and vary based on vendor. (good luck <3) */
       case 0x0087: /** Illegal parameter */
         return "An illegal parameter was provided.";
       case 0x0080: /** No Resources */
@@ -446,7 +448,13 @@ public class Serialize {
         return "Connection was terminated by a peer user.";
       case 0x08: /** AOSP: **Google** Timeout */
         return "Connection timed out.";
+      case 0x22: //GATT_CONN_LMP_TIMEOUT
+        return "Connection fail for LMP response timeout.";
+      case 0x0100: 
+        // https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h#113
+        return "L2CAP connection cancelled.";
       case 0x03E: /** AOSP: Failed to Establish a valid connection. */
+        // https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h#111
         return "Failed to establish a valid connection.";
       case 0x0085: /** AOSP: **Samsung** GATT Stack Error */
         /**
@@ -456,7 +464,7 @@ public class Serialize {
          * If this error is thrown more than once, the device's Bluetooth has become erratic,
          * and cannot be repaired until the user power cycles their phone's Bluetooth and Wi-Fi radios.
          */
-        return "I/O: The Bluetooth radio was turned off while a bonded device had an open GATT layer. If this error is thrown more than once, the device's Bluetooth has become erratic and cannot be repaired until the user power cycles their phone's Bluetooth and Wi-Fi radios... Try turning it off and back on again.";
+        return "I/O: [SAMSUNG] The Bluetooth radio was turned off while a bonded device had an open GATT layer. If this error is thrown more than once, the device's Bluetooth has become erratic and cannot be repaired until the user power cycles their phone's Bluetooth and Wi-Fi radios... Try turning it off and back on again.";
       default:
         return "An unknown GATT error occurred! DEC status code: " + input;
     }

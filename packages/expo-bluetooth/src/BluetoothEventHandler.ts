@@ -8,8 +8,6 @@ import ExpoBluetooth from './ExpoBluetooth';
 const eventEmitter = new EventEmitter(ExpoBluetooth);
 
 const multiEventHandlers: any = {
-  [EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL]: [],
-  [EVENTS.CENTRAL_DID_UPDATE_STATE]: [],
   everything: [],
   centralState: [],
 };
@@ -22,22 +20,19 @@ export function firePeripheralObservers() {
 
 export function fireSingleEventHandlers(
   event: string,
-  { central, peripheral }: { central?: Central | null; peripheral?: NativePeripheral | null }
+  { central, peripheral, error }: { central?: Central | null; peripheral?: NativePeripheral | null, error: any }
 ) {
-  ensureKey(event);
-  for (const callback of multiEventHandlers[event]) {
-    callback({ central, peripheral });
-  }
+  fireMultiEventHandlers(event, { central, peripheral, error });
   resetHandlersForKey(event);
 }
 
 export function fireMultiEventHandlers(
   event: string,
-  { central, peripheral }: { central?: Central | null; peripheral?: NativePeripheral | null }
+  { central, peripheral, error }: { central?: Central | null; peripheral?: NativePeripheral | null, error: any }
 ) {
   ensureKey(event);
   for (const callback of multiEventHandlers[event]) {
-    callback({ central, peripheral });
+    callback({ central, peripheral, error });
   }
 }
 

@@ -34,6 +34,7 @@ export declare function connectAsync(peripheralUUID: UUID, options?: {
     options?: any;
     onDisconnect?: any;
 }): Promise<NativePeripheral>;
+/** This method will also cancel pending connections */
 export declare function disconnectAsync(peripheralUUID: UUID): Promise<any>;
 export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: any): Promise<Base64 | undefined>;
 export declare function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data, }: any): Promise<any>;

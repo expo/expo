@@ -92,19 +92,22 @@ export async function connectAsync(peripheralUUID, options = {}) {
                 }));
             }, options.timeout);
         }
-        let result;
         try {
-            result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
+            const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
+            console.log("API:INTERNAL:connectPeripheralAsync.resolved", result);
+            clearTimeout(timeoutTag);
+            resolve(result);
+            return;
         }
         catch (error) {
-            reject(error);
-        }
-        finally {
+            console.log("API:INTERNAL:connectPeripheralAsync.rejected", error);
             clearTimeout(timeoutTag);
+            reject(error);
+            return;
         }
-        resolve(result);
     });
 }
+/** This method will also cancel pending connections */
 export async function disconnectAsync(peripheralUUID) {
     invariantAvailability('disconnectPeripheralAsync');
     invariantUUID(peripheralUUID);
@@ -393,14 +396,11 @@ addListener(({ data, event }) => {
         case EVENTS.CENTRAL_SCAN_STOPPED:
         case EVENTS.PERIPHERAL_DISCONNECTED:
         case EVENTS.CENTRAL_DISCOVERED_PERIPHERAL:
-            if (event === EVENTS.PERIPHERAL_DISCONNECTED) {
-                console.log('disconnect peripheral: ', peripheral.id);
-            }
-            fireMultiEventHandlers(event, { peripheral });
+            fireMultiEventHandlers(event, { peripheral, error });
             if (peripheral) {
                 // Send specific events for things like disconnect.
                 const uid = `${event}_${peripheral.id}`;
-                fireSingleEventHandlers(uid, { peripheral });
+                fireSingleEventHandlers(uid, { peripheral, error });
             }
             firePeripheralObservers();
             return;

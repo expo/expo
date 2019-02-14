@@ -1,11 +1,9 @@
 import { EventEmitter } from 'expo-core';
-import { BLUETOOTH_EVENT, EVENTS } from './BluetoothConstants';
+import { BLUETOOTH_EVENT } from './BluetoothConstants';
 import { getPeripherals } from './BluetoothLocalState';
 import ExpoBluetooth from './ExpoBluetooth';
 const eventEmitter = new EventEmitter(ExpoBluetooth);
 const multiEventHandlers = {
-    [EVENTS.CENTRAL_DID_DISCOVER_PERIPHERAL]: [],
-    [EVENTS.CENTRAL_DID_UPDATE_STATE]: [],
     everything: [],
     centralState: [],
 };
@@ -14,17 +12,14 @@ export function firePeripheralObservers() {
         subscription({ peripherals: getPeripherals() });
     }
 }
-export function fireSingleEventHandlers(event, { central, peripheral }) {
-    ensureKey(event);
-    for (const callback of multiEventHandlers[event]) {
-        callback({ central, peripheral });
-    }
+export function fireSingleEventHandlers(event, { central, peripheral, error }) {
+    fireMultiEventHandlers(event, { central, peripheral, error });
     resetHandlersForKey(event);
 }
-export function fireMultiEventHandlers(event, { central, peripheral }) {
+export function fireMultiEventHandlers(event, { central, peripheral, error }) {
     ensureKey(event);
     for (const callback of multiEventHandlers[event]) {
-        callback({ central, peripheral });
+        callback({ central, peripheral, error });
     }
 }
 function ensureKey(key) {

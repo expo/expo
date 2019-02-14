@@ -131,6 +131,9 @@ export default class BluetoothScreen extends React.Component {
           // console.log('Found: ', peripheral);
           const hasName = peripheral.name && peripheral.name !== '';
           if (hasName) {
+            if (Object.values(this.state.peripherals).length > 2) {
+              this.stopScanningAsync();
+            }
             // const name = peripheral.name.toLowerCase();
             // const isBacon = name.indexOf('baconbook') !== -1; // My computer's name
             // if (isBacon) {
@@ -252,8 +255,8 @@ class Item extends React.Component {
         const peripheralUUID = item.id;
         await Bluetooth.connectAsync(peripheralUUID, {
           // timeout: 5000,
-          onDisconnect() {
-            console.log('IMA Disconnected Peripheral!');
+          onDisconnect(props) {
+            console.log('IMA Disconnected Peripheral!', props);
           },
         });
 
@@ -277,6 +280,8 @@ class Item extends React.Component {
     } else if (item.state === 'connected') {
       await Bluetooth.disconnectAsync(item.id);
       // this.props.onPressInfo(this.props.item);
+    } else {
+      alert('unknown state: ' + item.state);
     }
   };
 
