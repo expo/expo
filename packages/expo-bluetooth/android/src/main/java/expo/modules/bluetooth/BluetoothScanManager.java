@@ -2,6 +2,7 @@ package expo.modules.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanRecord;
@@ -29,11 +30,13 @@ public class BluetoothScanManager {
     return mScanCallback != null;
   }
 
-  private BluetoothAdapter mAdapter;
+  private BluetoothLeScanner mScanner;
 
   private boolean mOnlyConnectableDevices = false;
   private PeripheralScanningDelegate mDelegate;
   private ScanCallback mScanCallback;
+
+
 
   private ScanCallback getScanCallback() {
     if (mScanCallback != null) {
@@ -67,12 +70,14 @@ public class BluetoothScanManager {
     /** Scanning seems to start when the instance is created. */
 
     if (mScanCallback != null ) {
-      mAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
+      mScanner.flushPendingScanResults(mScanCallback);
+      mScanner.stopScan(mScanCallback);
       mScanCallback = null;
     }
 
     if (mDelegate != null) {
       mDelegate.onStopScanningWithError(BluetoothError.fromScanCallbackErrorCode(errorCode));
+      mDelegate = null;
     }
   }
 
@@ -80,7 +85,7 @@ public class BluetoothScanManager {
 
   public BluetoothScanManager(PeripheralScanningDelegate delegate, BluetoothAdapter adapter) {
     mDelegate = delegate;
-    mAdapter = adapter;
+    mScanner = adapter.getBluetoothLeScanner();
   }
 
   private void sendScanResult(final ScanResult result) {
@@ -129,7 +134,7 @@ public class BluetoothScanManager {
       }
     }
 
-    mAdapter.getBluetoothLeScanner().startScan(filters, scanSettingsBuilder.build(), getScanCallback());
+    mScanner.startScan(filters, scanSettingsBuilder.build(), getScanCallback());
 
     if (mDelegate != null) {
       mDelegate.onStartScanning();

@@ -66,7 +66,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   private static BluetoothManager bluetoothManager;
   private static Map<String, Peripheral> peripherals = new LinkedHashMap<>();
   private static Map<String, BluetoothGatt> connectedDevices = new LinkedHashMap<>();
-  private BluetoothScanManager mScanManager;
+  private static BluetoothScanManager mScanManager;
   private BondingPromise createBond;
   private BondingPromise removeBond;
   private BroadcastReceiver mReceiver;
@@ -149,17 +149,23 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       mBondingReceiver = null;
     }
 
-    /** Stop scanning and deallocate the instance. This will reset any cached info. */
-    if (mScanManager != null) {
-      mScanManager.stopScan();
-      mScanManager = null;
-    }
-
     removeAllCachedPeripherals();
     bluetoothManager = null;
 
     mModuleRegistry = moduleRegistry;
     mPermissions = moduleRegistry.getModule(Permissions.class);
+
+
+    /**
+     * Stop scanning and deallocate the instance.
+     * This will reset any cached info.
+     *
+     * Call this after the module registry has been set to ensure that the DID_STOP event is sent.
+     */
+    if (mScanManager != null) {
+      mScanManager.stopScan();
+      mScanManager = null;
+    }
 
     if (moduleRegistry != null) {
       // Register to new UIManager
@@ -168,41 +174,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       }
       createBluetoothInstance();
       createBondingReceiver();
-
-      BluetoothAdapter adapter = getBluetoothAdapter();
-
-      /** Create a new scanner. */
-      mScanManager = new BluetoothScanManager(new PeripheralScanningDelegate() {
-
-        @Override
-        public void onStartScanning() {
-          /** It seems that scanning starts in sync */
-          sendEvent(BluetoothConstants.EVENTS.CENTRAL_SCAN_STARTED, centralAsJSON());
-          emitState();
-        }
-
-        @Override
-        public void onPeripheralFound(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {
-//          Peripheral peripheral = savePeripheral(device, RSSI, scanRecord);
-          Bundle output = new Bundle();
-          output.putInt(BluetoothConstants.JSON.RSSI, RSSI);
-//          output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, peripheral.advertisementData());
-//          output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheral.toJSON());
-//          Bundle central = Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter(), true);
-//          output.putBundle(BluetoothConstants.JSON.CENTRAL, central);
-          sendEvent(BluetoothConstants.EVENTS.CENTRAL_DISCOVERED_PERIPHERAL, output);
-        }
-
-        @Override
-        public void onStopScanningWithError(BluetoothError error) {
-          Bundle map = new Bundle();
-          if (error != null) {
-            map.putBundle(BluetoothConstants.JSON.ERROR, error.toJSON());
-          }
-          sendEvent(BluetoothConstants.EVENTS.CENTRAL_SCAN_STOPPED, map);
-          emitState(); // TODO: Bacon
-        }
-      }, adapter);
     }
   }
 
@@ -284,12 +255,16 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
 
   private boolean isScanning() {
-    return mScanManager.isScanning();
+    if (mScanManager != null) {
+      return mScanManager.isScanning();
+    }
+    return false;
   }
 
   private void stopScanning() {
     if (mScanManager != null) {
       mScanManager.stopScan();
+      mScanManager = null;
     }
   }
 
@@ -526,6 +501,39 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
 
     removeAllCachedPeripherals();
+
+    /** Create a new scanner. */
+    mScanManager = new BluetoothScanManager(new PeripheralScanningDelegate() {
+
+      @Override
+      public void onStartScanning() {
+        /** It seems that scanning starts in sync */
+        sendEvent(BluetoothConstants.EVENTS.CENTRAL_SCAN_STARTED, centralAsJSON());
+        emitState();
+      }
+
+      @Override
+      public void onPeripheralFound(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {
+        Peripheral peripheral = savePeripheral(device, RSSI, scanRecord);
+        Bundle output = new Bundle();
+        output.putInt(BluetoothConstants.JSON.RSSI, RSSI);
+        output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, peripheral.advertisementData());
+        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheral.toJSON());
+        Bundle central = Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter(), true);
+        output.putBundle(BluetoothConstants.JSON.CENTRAL, central);
+        sendEvent(BluetoothConstants.EVENTS.CENTRAL_DISCOVERED_PERIPHERAL, output);
+      }
+
+      @Override
+      public void onStopScanningWithError(BluetoothError error) {
+        Bundle map = new Bundle();
+        if (error != null) {
+          map.putBundle(BluetoothConstants.JSON.ERROR, error.toJSON());
+        }
+        sendEvent(BluetoothConstants.EVENTS.CENTRAL_SCAN_STOPPED, map);
+        emitState(); // TODO: Bacon
+      }
+    }, getBluetoothAdapter());
 
     mScanManager.startScan(serviceUUIDStrings, options);
 

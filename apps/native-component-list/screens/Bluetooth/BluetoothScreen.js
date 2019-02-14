@@ -105,32 +105,30 @@ export default class BluetoothScreen extends React.Component {
       this.setState({ centralState: state });
     });
 
-    return;
-
-    this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals }) => {
-      console.log('BLE Screen: observeUpdatesAsync: ', peripherals);
-      this.setState(({ peripherals: currentPeripherals }) => {
-        return {
-          peripherals: {
-            ...currentPeripherals,
-            ...peripherals,
-          },
-        };
-      });
-    });
-
-    // await Bluetooth.startScanningAsync();
-    // await Bluetooth.stopScanningAsync();
+    // this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals }) => {
+    //   console.log('BLE Screen: observeUpdatesAsync: ', peripherals);
+    //   this.setState(({ peripherals: currentPeripherals }) => {
+    //     return {
+    //       peripherals: {
+    //         ...currentPeripherals,
+    //         ...peripherals,
+    //       },
+    //     };
+    //   });
+    // });
 
     // await new Promise(res => setTimeout(res, 10));
     // const SnapChatSpectaclesServiceUUID = '3E400001-B5A3-F393-E0A9-E50E24DCCA9E';
     // const TileServiceUUID = 'FEED';
     // Load in one or more peripherals
     this.setState({ isScanning: true }, async () => {
-      this.stopScanningAsync = await Bluetooth.startScanningAsync({
+      this.stopScanningAsync = await Bluetooth.startScanningAsync(
+        {
+          androidOnlyConnectable: true,
+        },
         /* This will query peripherals with a value found in the peripheral's `advertisementData.serviceUUIDs` */
         // serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
-        callback: async ({ peripheral }) => {
+        async peripheral => {
           console.log('Found: ', peripheral);
           const hasName = peripheral.name && peripheral.name !== '';
           // if (hasName) {
@@ -147,8 +145,8 @@ export default class BluetoothScreen extends React.Component {
           //     });
           //   }
           // }
-        },
-      });
+        }
+      );
     });
 
     const central = await Bluetooth.getCentralAsync();

@@ -100,11 +100,18 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   @Override
   public Bundle toJSON() {
 
+    BluetoothDevice device = getDevice();
+
+    if (device == null) {
+      return null;
+    }
+
     Bundle output = new Bundle();
 
     ArrayList<Bundle> services = Service.listToJSON((List) getServices());
     output.putParcelableArrayList(BluetoothConstants.JSON.SERVICES, services);
-    output.putString(BluetoothConstants.JSON.NAME, getDevice().getName());
+
+    output.putString(BluetoothConstants.JSON.NAME, device.getName());
     output.putString(BluetoothConstants.JSON.ID, getID());
     output.putString(BluetoothConstants.JSON.UUID, getID());
     output.putString(BluetoothConstants.JSON.STATE, isConnected() ? "connected" : "disconnected");

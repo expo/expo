@@ -99,11 +99,8 @@ export async function startScanningAsync(
   invariant(callback, 'startScanningAsync({ ... }, null): callback is not defined');
 
   const { serviceUUIDsToQuery = [], ...scanningOptions } = scanSettings;
-
-  console.log(
-    'STARTTT:',
-    await ExpoBluetooth.startScanningAsync([...new Set(serviceUUIDsToQuery)], scanningOptions)
-  );
+  
+  await ExpoBluetooth.startScanningAsync([...new Set(serviceUUIDsToQuery)], scanningOptions);
 
   const subscription = addHandlerForKey(EVENTS.CENTRAL_DISCOVERED_PERIPHERAL, event => {
     invariant(callback, 'startScanningAsync({ ... }, null): callback is not defined');
