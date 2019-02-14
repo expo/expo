@@ -149,6 +149,12 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
   completionHandler(UIBackgroundFetchResultNoData);
 }
 
+// do not remove until SDK31 is dropped
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettingsNotification object:nil];
+}
+
 #pragma mark - deep linking hooks
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
