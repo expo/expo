@@ -85,14 +85,14 @@ public class Characteristic extends EXBluetoothChildObject {
     return this;
   }
 
-  public void discoverDescriptors(Promise promise) {
+  public Bundle discoverDescriptors(Promise promise) {
     //TODO: Bacon: Are these gotten automatically?
     Bundle output = new Bundle();
-//    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(BluetoothConstants.OPERATIONS.SCAN));
-    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, getPeripheral().toJSON());
-    output.putBundle(BluetoothConstants.JSON.SERVICE, getParent().toJSON());
-    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CHARACTERISTIC_DISCOVERED_DESCRIPTORS, output);
+//    Bundle peripheralData = getPeripheral().toJSON();
+//    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheralData);
+    output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, toJSON());
     promise.resolve(output);
+    return output;
   }
 
   @Override

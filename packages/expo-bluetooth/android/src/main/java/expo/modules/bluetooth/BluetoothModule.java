@@ -842,7 +842,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   private Characteristic getCharacteristicFromOptionsOrReject(Map<String, Object> options, Promise promise) {
     Service service = getServiceFromOptionsOrReject(options, promise);
-    if (service != null) {
+    if (service == null) {
       return null;
     }
 
@@ -860,7 +860,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   private Descriptor getDescriptorFromOptionsOrReject(Map<String, Object> options, Promise promise) {
     Characteristic characteristic = getCharacteristicFromOptionsOrReject(options, promise);
-    if (characteristic != null) {
+    if (characteristic == null) {
       return null;
     }
     String descriptorUUIDString = (String) options.get(BluetoothConstants.JSON.DESCRIPTOR_UUID);
@@ -877,10 +877,12 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     Characteristic characteristic = getCharacteristicFromOptionsOrReject(options, promise);
     if (characteristic == null) {
+      Log.d(TAG, "discoverDescriptorsForCharacteristicAsync: Failed to get characteristic " + options.get(BluetoothConstants.JSON.CHARACTERISTIC_UUID));
       return;
     }
 
-    characteristic.discoverDescriptors(promise);
+    Bundle output = characteristic.discoverDescriptors(promise);
+    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.CHARACTERISTIC_DISCOVERED_DESCRIPTORS, output);
   }
 
   @ExpoMethod
@@ -900,7 +902,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       characteristicUUIDs = Serialize.UUIDList_JSONToNative(characteristicUUIDStrings);
     }
 
-    service.discoverCharacteristics(characteristicUUIDs, promise);
+    Bundle output = service.discoverCharacteristics(characteristicUUIDs, promise);
+    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.SERVICE_DISCOVERED_CHARACTERISTICS, output);
   }
 
   @ExpoMethod
@@ -920,7 +923,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
 
     // TODO: Bacon: Add serviceUUIDs
-    service.discoverIncludedServices(includedServicesUUIDs, promise);
+    Bundle output = service.discoverIncludedServices(includedServicesUUIDs, promise);
+    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.SERVICE_DISCOVERED_INCLUDED_SERVICES, output);
   }
 
   @ExpoMethod
