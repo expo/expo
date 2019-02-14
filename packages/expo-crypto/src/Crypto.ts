@@ -15,7 +15,7 @@ function assertAlgorithm(algorithm: CryptoDigestAlgorithm): void {
 }
 
 function assertData(data: string): void {
-  if (data == null || typeof data !== 'string' || !data.length) {
+  if (typeof data !== 'string') {
     throw new TypeError(`expo-crypto: Invalid data provided. Expected a string.`);
   }
 }

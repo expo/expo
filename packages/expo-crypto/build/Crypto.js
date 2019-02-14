@@ -8,7 +8,7 @@ function assertAlgorithm(algorithm) {
     }
 }
 function assertData(data) {
-    if (data == null || typeof data !== 'string' || !data.length) {
+    if (typeof data !== 'string') {
         throw new TypeError(`expo-crypto: Invalid data provided. Expected a string.`);
     }
 }
