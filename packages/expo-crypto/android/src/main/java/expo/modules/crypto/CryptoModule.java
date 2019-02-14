@@ -13,10 +13,6 @@ import expo.core.Promise;
 
 public class CryptoModule extends ExportedModule implements ModuleRegistryConsumer {
 
-  public CryptoModule(Context context) {
-    super(context);
-  }
-
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
   }

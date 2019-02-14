@@ -16,52 +16,52 @@ EX_EXPORT_METHOD_AS(digestStringAsync,
 {
   NSString *encoding = options[@"encoding"];
 
-  int hashingAlgorithm = [self.class SHAJSONToNative:algorithm];
-  if (hashingAlgorithm == -1) {
-    reject(@"ERR_CRYPTO", [NSString stringWithFormat:@"Invalid hashing algorithm: %@", algorithm], nil);
+  int digestLength = [EXCrypto digestLengthForJSAlgorithm:algorithm];
+  if (digestLength == -1) {
+    reject(@"ERR_CRYPTO_DIGEST", [NSString stringWithFormat:@"Invalid hashing algorithm: %@", algorithm], nil);
     return;
   }
   
   NSData *_data = [data dataUsingEncoding:NSUTF8StringEncoding];
-  uint8_t digest[hashingAlgorithm];
+  uint8_t digest[digestLength];
   
-  if (hashingAlgorithm == CC_MD2_DIGEST_LENGTH) {
+  if (digestLength == CC_MD2_DIGEST_LENGTH) {
     CC_MD2(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (hashingAlgorithm == CC_MD4_DIGEST_LENGTH) {
+  } else if (digestLength == CC_MD4_DIGEST_LENGTH) {
     CC_MD4(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (hashingAlgorithm == CC_MD5_DIGEST_LENGTH) {
+  } else if (digestLength == CC_MD5_DIGEST_LENGTH) {
     CC_MD5(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (hashingAlgorithm == CC_SHA1_DIGEST_LENGTH) {
+  } else if (digestLength == CC_SHA1_DIGEST_LENGTH) {
     CC_SHA1(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (hashingAlgorithm == CC_SHA224_DIGEST_LENGTH) {
+  } else if (digestLength == CC_SHA224_DIGEST_LENGTH) {
     CC_SHA224(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (hashingAlgorithm == CC_SHA256_DIGEST_LENGTH) {
+  } else if (digestLength == CC_SHA256_DIGEST_LENGTH) {
     CC_SHA256(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (hashingAlgorithm == CC_SHA384_DIGEST_LENGTH) {
+  } else if (digestLength == CC_SHA384_DIGEST_LENGTH) {
     CC_SHA384(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (hashingAlgorithm == CC_SHA512_DIGEST_LENGTH) {
+  } else if (digestLength == CC_SHA512_DIGEST_LENGTH) {
     CC_SHA512(_data.bytes, (CC_LONG)_data.length, digest);
   }
   
   if ([encoding isEqualToString:@"hex"]) {
-    NSMutableString *output = [NSMutableString stringWithCapacity:hashingAlgorithm * 2];
-    for (int i = 0; i < hashingAlgorithm; i++) {
+    NSMutableString *output = [NSMutableString stringWithCapacity:digestLength * 2];
+    for (int i = 0; i < digestLength; i++) {
       [output appendFormat:@"%02x", digest[i]];
     }
     resolve(output);
     return;
   } else if ([encoding isEqualToString:@"base64"]) {
-    NSData *originalData = [NSData dataWithBytes:digest length:hashingAlgorithm];
+    NSData *originalData = [NSData dataWithBytes:digest length:digestLength];
     NSString *output = [originalData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
     resolve(output);
     return;
   } else {
-    reject(@"ERR_CRYPTO", @"Invalid encoding type provided.", nil);
+    reject(@"ERR_CRYPTO_DIGEST", @"Invalid encoding type provided.", nil);
     return;
   }
 }
 
-+ (int)SHAJSONToNative:(NSString *)input {
++ (int)digestLengthForJSAlgorithm:(NSString *)input {
   if ([input isEqualToString:@"MD2"]) {
     return CC_MD2_DIGEST_LENGTH;
   } else if ([input isEqualToString:@"MD4"]) {
