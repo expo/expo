@@ -803,9 +803,12 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       return mServices.get(uuid);
     }
     BluetoothGattService child = mGatt.getService(UUIDHelper.toUUID(uuid));
-    Service service = new Service(child, mGatt);
-    mServices.put(uuid, service);
-    return service;
+    if (child != null) {
+      Service service = new Service(child, mGatt);
+      mServices.put(uuid, service);
+      return service;
+    }
+    return null;
   }
 
   @Override

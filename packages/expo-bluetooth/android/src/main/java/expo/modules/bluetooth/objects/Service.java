@@ -20,10 +20,23 @@ public class Service extends EXBluetoothChildObject {
   public Service(BluetoothGattService nativeData, Object parent) {
     super(nativeData, (parent instanceof EXBluetoothObjectInterface) ? parent : new Peripheral((BluetoothGatt) parent));
   }
+
+  @Override
+  public UUID getUUID() {
+    BluetoothGattService service = getService();
+    if (service == null) {
+      return null;
+    }
+    return service.getUuid();
+  }
   
   // TODO: Bacon: Test characteristicProperties query works / is standard
   public Characteristic getCharacteristic(UUID uuid, int characteristicProperties) {
-    BluetoothGattCharacteristic characteristic = getService().getCharacteristic(uuid);
+    BluetoothGattService service = getService();
+    if (service == null) {
+      return null;
+    }
+    BluetoothGattCharacteristic characteristic = service.getCharacteristic(uuid);
     if (characteristic == null) return null;
     if ((characteristic.getProperties() & characteristicProperties) != 0) {
       return new Characteristic(characteristic, this);
@@ -39,7 +52,11 @@ public class Service extends EXBluetoothChildObject {
   }
 
   public List<Characteristic> getCharacteristics() {
-    List<BluetoothGattCharacteristic> input = getService().getCharacteristics();
+    BluetoothGattService service = getService();
+    if (service == null) {
+      return null;
+    }
+    List<BluetoothGattCharacteristic> input = service.getCharacteristics();
 
     ArrayList output = new ArrayList<>(input.size());
     for (BluetoothGattCharacteristic value : input) {
@@ -49,7 +66,11 @@ public class Service extends EXBluetoothChildObject {
   }
 
   public List<Service> getIncludedServices() {
-    List<BluetoothGattService> input = getService().getIncludedServices();
+    BluetoothGattService service = getService();
+    if (service == null) {
+      return null;
+    }
+    List<BluetoothGattService> input = service.getIncludedServices();
 
     ArrayList output = new ArrayList<>(input.size());
     for (BluetoothGattService value : input) {
@@ -64,10 +85,19 @@ public class Service extends EXBluetoothChildObject {
     if (getPeripheral() != null) {
       output.putString(BluetoothConstants.JSON.PERIPHERAL_UUID, getPeripheral().getID());
     }
-    output.putBoolean(BluetoothConstants.JSON.IS_PRIMARY, getService().getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
+
+    output.putBoolean(BluetoothConstants.JSON.IS_PRIMARY, getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
     output.putParcelableArrayList(BluetoothConstants.JSON.INCLUDED_SERVICES, EXBluetoothObject.listToJSON((List)getIncludedServices()));
     output.putParcelableArrayList(BluetoothConstants.JSON.CHARACTERISTICS, EXBluetoothObject.listToJSON((List)getCharacteristics()));
     return output;
+  }
+
+  protected int getType() {
+    BluetoothGattService service = getService();
+    if (service != null) {
+      return service.getType();
+    }
+    return BluetoothGattService.SERVICE_TYPE_SECONDARY;
   }
 
   private BluetoothGattService getService() {
@@ -101,7 +131,12 @@ public class Service extends EXBluetoothChildObject {
       return child;
     }
 
-    BluetoothGattCharacteristic nativeCharacteristic = getService().getCharacteristic(UUIDHelper.toUUID(uuid));
+    BluetoothGattService service = getService();
+    if (service == null) {
+      return null;
+    }
+
+    BluetoothGattCharacteristic nativeCharacteristic = service.getCharacteristic(UUIDHelper.toUUID(uuid));
     if (nativeCharacteristic != null) {
       Characteristic characteristic = new Characteristic(nativeCharacteristic, getPeripheral().mGatt);
       mChildren.put(uuid, characteristic);

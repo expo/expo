@@ -365,30 +365,30 @@ public class Serialize {
 
   // Service
 
-  public static ArrayList<Bundle> ServiceList_NativeToJSON(List<BluetoothGattService> input, String peripheralUUIDString) {
-    if (input == null) return null;
+//  public static ArrayList<Bundle> ServiceList_NativeToJSON(List<BluetoothGattService> input, String peripheralUUIDString) {
+//    if (input == null) return null;
+//
+//    ArrayList<Bundle> output = new ArrayList();
+//    for (BluetoothGattService value : input) {
+//      output.add(Serialize.Service_NativeToJSON(value, peripheralUUIDString));
+//    }
+//    return output;
+//  }
 
-    ArrayList<Bundle> output = new ArrayList();
-    for (BluetoothGattService value : input) {
-      output.add(Serialize.Service_NativeToJSON(value, peripheralUUIDString));
-    }
-    return output;
-  }
-
-  public static Bundle Service_NativeToJSON(BluetoothGattService input, String peripheralUUIDString) {
-    if (input == null) return null;
-
-    String serviceUUIDString = UUIDHelper.fromUUID(input.getUuid());
-
-    Bundle output = new Bundle();
-    output.putString("id", peripheralUUIDString + "|" + serviceUUIDString);
-    output.putString("uuid", serviceUUIDString);
-    output.putString("peripheralUUID", peripheralUUIDString);
-    output.putBoolean("isPrimary", input.getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
-    output.putParcelableArrayList("includedServices", Serialize.ServiceList_NativeToJSON(input.getIncludedServices(), peripheralUUIDString));
-    output.putParcelableArrayList("characteristics", Serialize.CharacteristicList_NativeToJSON(input.getCharacteristics(), peripheralUUIDString));
-    return output;
-  }
+//  public static Bundle Service_NativeToJSON(BluetoothGattService input, String peripheralUUIDString) {
+//    if (input == null) return null;
+//
+//    String serviceUUIDString = UUIDHelper.fromUUID(input.getUuid());
+//
+//    Bundle output = new Bundle();
+//    output.putString("id", peripheralUUIDString + "|" + serviceUUIDString);
+//    output.putString("uuid", serviceUUIDString);
+//    output.putString("peripheralUUID", peripheralUUIDString);
+//    output.putBoolean("isPrimary", input.getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
+//    output.putParcelableArrayList("includedServices", Serialize.ServiceList_NativeToJSON(input.getIncludedServices(), peripheralUUIDString));
+//    output.putParcelableArrayList("characteristics", Serialize.CharacteristicList_NativeToJSON(input.getCharacteristics(), peripheralUUIDString));
+//    return output;
+//  }
 
 
   /**
@@ -456,7 +456,7 @@ public class Serialize {
       case 0x03E: /** AOSP: Failed to Establish a valid connection. */
         // https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h#111
         return "Failed to establish a valid connection.";
-      case 0x0085: /** AOSP: **Samsung** GATT Stack Error */
+      case 0x0085: /** AOSP: **Samsung** GATT Stack Error */ // Possibly GATT_BUSY on pixel
         /**
          * This error code is thrown if you turn off the Bluetooth radio,
          * while a bonded device has an open GATT layer.

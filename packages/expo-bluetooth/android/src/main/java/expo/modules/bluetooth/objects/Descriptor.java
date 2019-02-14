@@ -1,5 +1,6 @@
 package expo.modules.bluetooth.objects;
 
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Bundle;
 
@@ -20,19 +21,26 @@ public class Descriptor extends EXBluetoothChildObject {
 
   @Override
   public UUID getUUID() {
-    return getDescriptor().getUuid();
+    BluetoothGattDescriptor descriptor = getDescriptor();
+    if (descriptor == null) {
+      return null;
+    }
+    return descriptor.getUuid();
   }
 
   @Override
   public Bundle toJSON() {
     Bundle output = super.toJSON();
 
-    BluetoothGattDescriptor input = getDescriptor();
+    BluetoothGattDescriptor descriptor = getDescriptor();
+    if (descriptor == null) {
+      return output;
+    }
 
-    output.putString(BluetoothConstants.JSON.CHARACTERISTIC_UUID, UUIDHelper.toString(input.getCharacteristic().getUuid()));
-    output.putString(BluetoothConstants.JSON.VALUE, Base64Helper.fromBase64(input.getValue()));
-    if (input.getPermissions() > 0) {
-      output.putStringArrayList(BluetoothConstants.JSON.PERMISSIONS, Serialize.DescriptorPermissions_NativeToJSON(input.getPermissions()));
+    output.putString(BluetoothConstants.JSON.CHARACTERISTIC_UUID, UUIDHelper.toString(descriptor.getCharacteristic().getUuid()));
+    output.putString(BluetoothConstants.JSON.VALUE, Base64Helper.fromBase64(descriptor.getValue()));
+    if (descriptor.getPermissions() > 0) {
+      output.putStringArrayList(BluetoothConstants.JSON.PERMISSIONS, Serialize.DescriptorPermissions_NativeToJSON(descriptor.getPermissions()));
     }
     // TODO: Bacon: What do we do with the permissions?
     return output;
@@ -55,7 +63,11 @@ public class Descriptor extends EXBluetoothChildObject {
   }
 
   public Descriptor setValue(byte[] data) {
-    getDescriptor().setValue(data);
+    BluetoothGattDescriptor descriptor = getDescriptor();
+    if (descriptor == null) {
+      return this;
+    }
+    descriptor.setValue(data);
     return this;
   }
 

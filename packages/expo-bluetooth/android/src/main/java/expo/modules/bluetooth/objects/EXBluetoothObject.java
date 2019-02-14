@@ -13,7 +13,7 @@ import expo.modules.bluetooth.BluetoothConstants;
 public class EXBluetoothObject implements EXBluetoothObjectInterface, EXBluetoothParentObjectInterface{
 
   protected EXBluetoothObjectInterface mParent;
-  protected Object mNativeData;
+  private Object mNativeData;
   protected HashMap<String, EXBluetoothChildObject> mChildren = new HashMap<>();
 
   public EXBluetoothObject(Object nativeData, Object parent) {

@@ -2,6 +2,7 @@ package expo.modules.bluetooth.objects;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.os.Bundle;
 
 import java.util.UUID;
@@ -39,21 +40,27 @@ public class Characteristic extends EXBluetoothChildObject {
 
   @Override
   public UUID getUUID() {
-    return getCharacteristic().getUuid();
+    BluetoothGattCharacteristic characteristic = getCharacteristic();
+    if (characteristic == null) {
+      return null;
+    }
+    return characteristic.getUuid();
   }
 
   @Override
   public Bundle toJSON() {
 
-    BluetoothGattCharacteristic characteristic = getCharacteristic();
-    String peripheralUUIDString = getPeripheral().getID();
-
     Bundle output = super.toJSON();
+    String peripheralUUIDString = getPeripheral().getID();
+    output.putString(BluetoothConstants.JSON.PERIPHERAL_UUID, peripheralUUIDString);
 
+    BluetoothGattCharacteristic characteristic = getCharacteristic();
+    if (characteristic == null) {
+      return output;
+    }
     String serviceUUIDString = UUIDHelper.toString(characteristic.getService().getUuid());
 
     output.putString(BluetoothConstants.JSON.SERVICE_UUID, serviceUUIDString);
-    output.putString(BluetoothConstants.JSON.PERIPHERAL_UUID, peripheralUUIDString);
     output.putStringArrayList(BluetoothConstants.JSON.PROPERTIES, Serialize.CharacteristicProperties_NativeToJSON(characteristic.getProperties()));
     output.putString(BluetoothConstants.JSON.VALUE, Base64Helper.fromBase64(characteristic.getValue()));
     if (characteristic.getPermissions() > 0) {
@@ -95,7 +102,12 @@ public class Characteristic extends EXBluetoothChildObject {
       return child;
     }
 
-    BluetoothGattDescriptor nativeDescriptor = getCharacteristic().getDescriptor(UUIDHelper.toUUID(uuid));
+    BluetoothGattCharacteristic characteristic = getCharacteristic();
+    if (characteristic == null) {
+      return null;
+    }
+
+    BluetoothGattDescriptor nativeDescriptor = characteristic.getDescriptor(UUIDHelper.toUUID(uuid));
     if (nativeDescriptor != null) {
       Descriptor descriptor = new Descriptor(nativeDescriptor, getPeripheral().mGatt);
       mChildren.put(uuid, descriptor);
