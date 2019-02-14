@@ -92,7 +92,6 @@ export default class BluetoothScreen extends React.Component {
   };
 
   state = {
-    central: {},
     peripherals: {},
     isScanning: false,
     centralState: 'unknown',
@@ -105,17 +104,17 @@ export default class BluetoothScreen extends React.Component {
       this.setState({ centralState: state });
     });
 
-    // this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals }) => {
-    //   console.log('BLE Screen: observeUpdatesAsync: ', peripherals);
-    //   this.setState(({ peripherals: currentPeripherals }) => {
-    //     return {
-    //       peripherals: {
-    //         ...currentPeripherals,
-    //         ...peripherals,
-    //       },
-    //     };
-    //   });
-    // });
+    this.subscription = Bluetooth.observeUpdates(({ peripherals }) => {
+      // console.log('BLE Screen: observeUpdatesAsync: ', peripherals);
+      this.setState(({ peripherals: currentPeripherals }) => {
+        return {
+          peripherals: {
+            ...currentPeripherals,
+            ...peripherals,
+          },
+        };
+      });
+    });
 
     // await new Promise(res => setTimeout(res, 10));
     // const SnapChatSpectaclesServiceUUID = '3E400001-B5A3-F393-E0A9-E50E24DCCA9E';
@@ -129,28 +128,24 @@ export default class BluetoothScreen extends React.Component {
         /* This will query peripherals with a value found in the peripheral's `advertisementData.serviceUUIDs` */
         // serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
         async peripheral => {
-          console.log('Found: ', peripheral);
+          // console.log('Found: ', peripheral);
           const hasName = peripheral.name && peripheral.name !== '';
-          // if (hasName) {
-          //   const name = peripheral.name.toLowerCase();
-          //   const isBacon = name.indexOf('baconbook') !== -1; // My computer's name
-          //   if (isBacon) {
-          //     // this.updatePeripheral(peripheral);
-          //     Bluetooth.stopScanningAsync();
-          //     this.setState({ isScanning: false });
-
-          //     const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
-          //     this.props.navigation.push('BluetoothPeripheralScreen', {
-          //       peripheral: loadedPeripheral,
-          //     });
-          //   }
-          // }
+          if (hasName) {
+            // const name = peripheral.name.toLowerCase();
+            // const isBacon = name.indexOf('baconbook') !== -1; // My computer's name
+            // if (isBacon) {
+            // this.updatePeripheral(peripheral);
+            // Bluetooth.stopScanningAsync();
+            // this.setState({ isScanning: false });
+            // const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
+            // this.props.navigation.push('BluetoothPeripheralScreen', {
+            //   peripheral: loadedPeripheral,
+            // });
+            // }
+          }
         }
       );
     });
-
-    const central = await Bluetooth.getCentralAsync();
-    this.setState({ central });
   }
 
   componentWillUnmount() {
@@ -250,20 +245,23 @@ class Item extends React.Component {
   onPress = async () => {
     const { item = {} } = this.props;
 
+    console.log('Attempt to connect to: ', item);
     if (item.state === 'disconnected') {
       this.setState({ isConnecting: true });
       try {
-        const peripheralUUID = item.uuid;
-        // await Bluetooth.connectAsync({
-        //   uuid: peripheralUUID,
-        //   // timeout: 5000
-        // });
+        const peripheralUUID = item.id;
+        await Bluetooth.connectAsync(peripheralUUID, {
+          // timeout: 5000,
+          onDisconnect() {
+            console.log('IMA Disconnected Peripheral!');
+          },
+        });
 
         // return;
 
-        const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
-          id: peripheralUUID,
-        });
+        // const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
+        //   id: peripheralUUID,
+        // });
         // console.log({ loadedPeripheral });
       } catch (error) {
         Alert.alert(

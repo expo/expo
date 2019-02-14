@@ -81,8 +81,6 @@ public class BluetoothScanManager {
     }
   }
 
-
-
   public BluetoothScanManager(PeripheralScanningDelegate delegate, BluetoothAdapter adapter) {
     mDelegate = delegate;
     mScanner = adapter.getBluetoothLeScanner();

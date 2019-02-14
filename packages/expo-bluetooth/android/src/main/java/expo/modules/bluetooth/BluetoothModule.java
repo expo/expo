@@ -514,14 +514,21 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
       @Override
       public void onPeripheralFound(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {
+        Boolean peripheralExists = peripheralExists(device.getAddress());
+
         Peripheral peripheral = savePeripheral(device, RSSI, scanRecord);
-        Bundle output = new Bundle();
-        output.putInt(BluetoothConstants.JSON.RSSI, RSSI);
-        output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, peripheral.advertisementData());
-        output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheral.toJSON());
-        Bundle central = Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter(), true);
-        output.putBundle(BluetoothConstants.JSON.CENTRAL, central);
-        sendEvent(BluetoothConstants.EVENTS.CENTRAL_DISCOVERED_PERIPHERAL, output);
+
+        if (peripheralExists) {
+          Bundle output = new Bundle();
+          output.putInt(BluetoothConstants.JSON.RSSI, RSSI);
+          output.putBundle(BluetoothConstants.JSON.ADVERTISEMENT_DATA, peripheral.advertisementData());
+          output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheral.toJSON());
+          Bundle central = Serialize.BluetoothAdapter_NativeToJSON(getBluetoothAdapter(), true);
+          output.putBundle(BluetoothConstants.JSON.CENTRAL, central);
+          sendEvent(BluetoothConstants.EVENTS.CENTRAL_DISCOVERED_PERIPHERAL, output);
+        } else {
+          emitState();
+        }
       }
 
       @Override
@@ -609,6 +616,12 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       Map<String, Peripheral> peripheralsCopy = new LinkedHashMap<>(peripherals);
       ArrayList<Peripheral> input = new ArrayList<>(peripheralsCopy.values());
       promise.resolve(Peripheral.listToJSON(input));
+    }
+  }
+
+  private boolean peripheralExists(String uuid) {
+    synchronized (peripherals) {
+      return peripherals.containsKey(uuid);
     }
   }
 

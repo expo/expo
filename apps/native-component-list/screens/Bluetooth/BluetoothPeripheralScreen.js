@@ -38,7 +38,7 @@ export default class BluetoothPeripheralScreen extends React.Component {
 
     this.setState({ peripheral });
 
-    this.subscription = await Bluetooth.observeUpdatesAsync(({ peripherals, error }) => {
+    this.subscription = Bluetooth.observeUpdates(({ peripherals, error }) => {
       if (peripheral.id in peripherals) {
         console.log('Updated peripheral', peripherals[peripheral.id]);
         this.setState({ peripheral: peripherals[peripheral.id] });

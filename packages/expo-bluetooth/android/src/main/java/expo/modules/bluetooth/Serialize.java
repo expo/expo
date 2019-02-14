@@ -392,6 +392,11 @@ public class Serialize {
 
   // Else
 
+  /**
+   * A lot of GATT error status codes are documented by Google, or the various vendors.
+   * The error codes used here may not align exactly with the cause, but they seem more helpful than not.
+   * If you dig through low-level BLE you could probably find the cause for your exact device.
+   */
   public static String messageForGATTStatus(int input) {
     switch (input) {
       case BluetoothGatt.GATT_SUCCESS:
@@ -414,8 +419,46 @@ public class Serialize {
         return "Remote device connection is congested";
       case BluetoothGatt.GATT_FAILURE:
         return "GATT operation failed";
+
+      /** Bacon: The following error codes are undocumented and vary based on vendor. (good luck <3)
+       * AOSP: From the Android open source project.
+       */
+
+      case 0x0087: /** Illegal parameter */
+        return "An illegal parameter was provided.";
+      case 0x0080: /** No Resources */
+        return "No GATT resources are available.";
+      case 0x0081: /** AOSP: Internal GATT Error */
+        return "An internal GATT error has occurred.";
+      case 0x0082: /** AOSP: Wrong State */
+        return "The wrong state was set/found.";
+      case 0x0083: /** AOSP: GATT Database Full */
+        return "The device's GATT database is full.";
+      case 0x0084: /** AOSP: GATT is Busy */
+        return "The associated GATT is busy.";
+      case 0x0089: /** AOSP: GATT Auth Failed */
+        return "GATT failed to authenticate.";
+      case 0x008b: /** AOSP: GATT Invalid Config */
+        return "An invalid config was provided.";
+      case 0x16:  /** AOSP: **Google** [Nexus] Conn Term Local Host */
+        return "Connection was terminated by the local host.";
+      case 0x13:  /** AOSP: Conn Term by Peer */
+        return "Connection was terminated by a peer user.";
+      case 0x08: /** AOSP: **Google** Timeout */
+        return "Connection timed out.";
+      case 0x03E: /** AOSP: Failed to Establish a valid connection. */
+        return "Failed to establish a valid connection.";
+      case 0x0085: /** AOSP: **Samsung** GATT Stack Error */
+        /**
+         * This error code is thrown if you turn off the Bluetooth radio,
+         * while a bonded device has an open GATT layer.
+         * Retrying your connection after receiving this error will have a ~100% success rate.
+         * If this error is thrown more than once, the device's Bluetooth has become erratic,
+         * and cannot be repaired until the user power cycles their phone's Bluetooth and Wi-Fi radios.
+         */
+        return "I/O: The Bluetooth radio was turned off while a bonded device had an open GATT layer. If this error is thrown more than once, the device's Bluetooth has become erratic and cannot be repaired until the user power cycles their phone's Bluetooth and Wi-Fi radios... Try turning it off and back on again.";
       default:
-        return "An unknown GATT error occurred " + input;
+        return "An unknown GATT error occurred! DEC status code: " + input;
     }
   }
 
