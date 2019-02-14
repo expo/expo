@@ -23,31 +23,18 @@ import expo.core.interfaces.services.UIManager;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 import expo.modules.bluetooth.objects.Peripheral;
 
-interface PeripheralScanningDelegate {
-
-  void onStartScanning();
-
-  void onPeripheralFound(BluetoothDevice device, int RSSI, ScanRecord scanRecord);
-
-  void onStopScanningWithError(BluetoothError error);
-}
-
 public class BluetoothScanManager {
 
   public boolean isScanning() {
     return mScanCallback != null;
   }
 
-  private BluetoothAdapter getAdapter() {
-    if (BluetoothModule.bluetoothManager != null) {
-      return BluetoothModule.bluetoothManager.getAdapter();
-    }
-    return null;
-  }
+  private BluetoothAdapter mAdapter;
 
   private boolean mOnlyConnectableDevices = false;
   private PeripheralScanningDelegate mDelegate;
   private ScanCallback mScanCallback;
+
   private ScanCallback getScanCallback() {
     if (mScanCallback != null) {
       return mScanCallback;
@@ -78,15 +65,22 @@ public class BluetoothScanManager {
 
   private void completelyStopScanner(int errorCode) {
     /** Scanning seems to start when the instance is created. */
-    mScanCallback = null;
+
+    if (mScanCallback != null ) {
+      mAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
+      mScanCallback = null;
+    }
 
     if (mDelegate != null) {
       mDelegate.onStopScanningWithError(BluetoothError.fromScanCallbackErrorCode(errorCode));
     }
   }
 
-  public BluetoothScanManager(PeripheralScanningDelegate delegate) {
+
+
+  public BluetoothScanManager(PeripheralScanningDelegate delegate, BluetoothAdapter adapter) {
     mDelegate = delegate;
+    mAdapter = adapter;
   }
 
   private void sendScanResult(final ScanResult result) {
@@ -99,14 +93,12 @@ public class BluetoothScanManager {
   }
 
   public void stopScan() {
-    BluetoothAdapter adapter = getAdapter();
-    if (mScanCallback != null && adapter != null) {
-      adapter.getBluetoothLeScanner().stopScan(getScanCallback());
-      completelyStopScanner(0);
-    }
+    completelyStopScanner(0);
   }
 
   public void startScan(ArrayList serviceUUIDs, Map<String, Object> options) {
+    mOnlyConnectableDevices = false;
+
     ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
     List<ScanFilter> filters = new ArrayList<>();
 
@@ -137,8 +129,7 @@ public class BluetoothScanManager {
       }
     }
 
-    BluetoothAdapter adapter = getAdapter();
-    adapter.getBluetoothLeScanner().startScan(filters, scanSettingsBuilder.build(), getScanCallback());
+    mAdapter.getBluetoothLeScanner().startScan(filters, scanSettingsBuilder.build(), getScanCallback());
 
     if (mDelegate != null) {
       mDelegate.onStartScanning();

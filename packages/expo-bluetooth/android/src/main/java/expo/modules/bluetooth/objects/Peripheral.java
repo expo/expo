@@ -89,7 +89,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       return mGatt.getDevice();
     }
     /** Alternative to caching the immutable device instance */
-    return BluetoothModule.bluetoothManager.getAdapter().getRemoteDevice(getID());
+    return BluetoothModule.getDeviceFromAddress(getID());
   }
 
   @Override
