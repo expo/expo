@@ -397,6 +397,11 @@ addListener(({ data, event }) => {
         console.log('Event: ' + event + (lastEvent ? ', last: ' + lastEvent : ''));
     }
     switch (event) {
+        case EVENTS.DESCRIPTOR_DID_READ:
+        case EVENTS.DESCRIPTOR_DID_WRITE:
+        case EVENTS.CHARACTERISTIC_DID_READ:
+        case EVENTS.CHARACTERISTIC_DID_WRITE:
+        case EVENTS.CHARACTERISTIC_DID_NOTIFY:
         case EVENTS.PERIPHERAL_DISCOVERED_SERVICES:
         case EVENTS.SERVICE_DISCOVERED_CHARACTERISTICS:
         case EVENTS.SERVICE_DISCOVERED_INCLUDED_SERVICES:

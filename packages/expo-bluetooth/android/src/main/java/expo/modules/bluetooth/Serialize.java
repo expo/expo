@@ -39,15 +39,6 @@ public class Serialize {
     return output;
   }
 
-
-  public static byte[] Base64_JSONToNative(List input) {
-    byte[] decoded = new byte[input.size()];
-    for (int i = 0; i < input.size(); i++) {
-      decoded[i] = new Integer((Integer) input.get(i)).byteValue();
-    }
-    return decoded;
-  }
-
   public static ArrayList<String> decodePermissions(BluetoothGattCharacteristic characteristic) {
     return Serialize.CharacteristicPermissions_NativeToJSON(characteristic.getPermissions());
   }
@@ -363,33 +354,26 @@ public class Serialize {
     }
   }
 
+
+
+  public static String DescriptorValue_NativeToJSON(UUID uuid, byte[] data) {
+    String uuidString = UUIDHelper.toString(uuid);
+    if (uuidString.equals(""))
+    switch (input) {
+      case BluetoothAdapter.STATE_TURNING_OFF:
+        return "poweringOff";
+      case BluetoothAdapter.STATE_OFF:
+        return "poweredOff";
+      case BluetoothAdapter.STATE_TURNING_ON:
+        return "poweringOn";
+      case BluetoothAdapter.STATE_ON:
+        return "poweredOn";
+      default:
+        return "unknown";
+    }
+  }
+
   // Service
-
-//  public static ArrayList<Bundle> ServiceList_NativeToJSON(List<BluetoothGattService> input, String peripheralUUIDString) {
-//    if (input == null) return null;
-//
-//    ArrayList<Bundle> output = new ArrayList();
-//    for (BluetoothGattService value : input) {
-//      output.add(Serialize.Service_NativeToJSON(value, peripheralUUIDString));
-//    }
-//    return output;
-//  }
-
-//  public static Bundle Service_NativeToJSON(BluetoothGattService input, String peripheralUUIDString) {
-//    if (input == null) return null;
-//
-//    String serviceUUIDString = UUIDHelper.fromUUID(input.getUuid());
-//
-//    Bundle output = new Bundle();
-//    output.putString("id", peripheralUUIDString + "|" + serviceUUIDString);
-//    output.putString("uuid", serviceUUIDString);
-//    output.putString("peripheralUUID", peripheralUUIDString);
-//    output.putBoolean("isPrimary", input.getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
-//    output.putParcelableArrayList("includedServices", Serialize.ServiceList_NativeToJSON(input.getIncludedServices(), peripheralUUIDString));
-//    output.putParcelableArrayList("characteristics", Serialize.CharacteristicList_NativeToJSON(input.getCharacteristics(), peripheralUUIDString));
-//    return output;
-//  }
-
 
   /**
    * A lot of GATT status codes aren't documented by Google, or the various device vendors.

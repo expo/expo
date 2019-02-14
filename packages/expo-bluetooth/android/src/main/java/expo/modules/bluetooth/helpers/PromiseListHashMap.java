@@ -12,15 +12,9 @@ public class PromiseListHashMap<K, V> extends HashMap<K, V> {
     super();
   }
 
-  @Override
-  public V put(K key, V value) {
-    ensureKey(key);
-    return super.put(key, value);
-  }
-
   public void ensureKey(K key) {
     if (!this.containsKey(key)) {
-      this.put(key, (V) new ArrayList<>());
+      put(key, (V) new ArrayList<>());
     }
   }
 

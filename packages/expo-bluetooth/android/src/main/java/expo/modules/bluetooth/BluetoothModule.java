@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -740,10 +741,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       return;
     }
 
-    List data = (List) options.get(BluetoothConstants.JSON.DATA);
-    byte[] decoded = Serialize.Base64_JSONToNative(data);
-
-    descriptor.getPeripheral().writeDescriptor(decoded, descriptor, promise);
+    String dataString = (String) options.get(BluetoothConstants.JSON.DATA);
+    byte[] data = dataString.getBytes(StandardCharsets.UTF_8);
+    descriptor.getPeripheral().writeDescriptor(data, descriptor, promise);
   }
 
   @ExpoMethod
@@ -769,10 +769,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       return;
     }
 
-    List data = (List) options.get(BluetoothConstants.JSON.DATA);
-    byte[] decoded = Serialize.Base64_JSONToNative(data);
-
-    characteristic.getPeripheral().writeCharacteristicAsync(decoded, characteristic, promise);
+    String dataString = (String) options.get(BluetoothConstants.JSON.DATA);
+    byte[] data = dataString.getBytes(StandardCharsets.UTF_8);
+    characteristic.getPeripheral().writeCharacteristicAsync(data, characteristic, promise);
   }
 
   @ExpoMethod
