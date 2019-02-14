@@ -10,7 +10,7 @@ export var CryptoDigestAlgorithm;
     CryptoDigestAlgorithm["SHA512"] = "SHA-512";
     /**
      * MD* is not supported on web.
-     * message-digest algorithms shouldn't be used for secure digestion.
+     * message-digest algorithms shouldn't be used for creating secure digests.
      */
     CryptoDigestAlgorithm["MD2"] = "MD2";
     CryptoDigestAlgorithm["MD4"] = "MD4";

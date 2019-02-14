@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-errors';
 import ExpoCrypto from './ExpoCrypto';
 
-import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions } from './Crypto.types';
+import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest } from './Crypto.types';
 export * from './Crypto.types';
 
 function assertAlgorithm(algorithm: CryptoDigestAlgorithm): void {
@@ -34,7 +34,7 @@ export async function digestStringAsync(
   algorithm: CryptoDigestAlgorithm,
   data: string,
   options: CryptoDigestOptions = { encoding: CryptoEncoding.HEX }
-): Promise<string> {
+): Promise<Digest> {
   if (!ExpoCrypto.digestStringAsync) {
     throw new UnavailabilityError('expo-crypto', 'digestStringAsync');
   }

@@ -9,7 +9,7 @@ export enum CryptoDigestAlgorithm {
   SHA512 = 'SHA-512',
   /**
    * MD* is not supported on web.
-   * message-digest algorithms shouldn't be used for secure digestion.
+   * message-digest algorithms shouldn't be used for creating secure digests.
    */
   MD2 = 'MD2',
   MD4 = 'MD4',
@@ -22,3 +22,5 @@ export enum CryptoEncoding {
 }
 
 export type CryptoDigestOptions = { encoding: CryptoEncoding };
+
+export type Digest = string;
