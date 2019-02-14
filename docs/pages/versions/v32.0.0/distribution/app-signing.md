@@ -35,7 +35,7 @@ Remove that keystore only when you are sure that everything works correctly.
 In case you lose your upload keystore (or it's compromised), you can ask Google Support Team to reset your upload key.
 
 - If you want Expo to handle creating the upload certificate:
-  - `expo android:build --clear-credentials` and select the option `Let Expo handle the process!`, which generates a new keystore and signs a new APK with it
+  - `expo build:android --clear-credentials` and select the option `Let Expo handle the process!`, which generates a new keystore and signs a new APK with it
   - `expo fetch:android:upload-cert` extracts public certificate from the keystore into `.pem` file
   - add the upload certificate to the Google Play console
 
