@@ -1,5 +1,5 @@
 import { Platform } from 'expo-core';
-import { Crypto } from 'expo';
+import * as Crypto from 'expo-crypto';
 
 export const name = 'Crypto';
 
@@ -13,21 +13,25 @@ function supportedAlgorithm(algorithm) {
 export async function test({ describe, it, expect }) {
   describe('Crypto', () => {
     describe('digestStringAsync()', () => {
-      for (const entry of Object.entries(Crypto.CryptoDigestAlgorithm)) {
-        const [key, algorithm] = entry;
-        it(`Crypto.Hash.${key}`, async () => {
-          if (supportedAlgorithm(algorithm)) {
-            const value = await Crypto.digestStringAsync(algorithm, 'Expo');
-            console.log({ value });
-          } else {
-            let error = null;
-            try {
-              await Crypto.digestStringAsync(algorithm, 'Expo');
-            } catch (e) {
-              error = e;
-            }
-            expect(error).not.toBeNull();
-            // expect(error instanceof DOMException).toBe(true);
+      for (const encodingEntry of Object.entries(Crypto.CryptoEncoding)) {
+        const [encodingKey, encoding] = encodingEntry;
+        describe(`Encoded with ${encoding}`, () => {
+          for (const entry of Object.entries(Crypto.CryptoDigestAlgorithm)) {
+            const [key, algorithm] = entry;
+            it(`Crypto.Hash.${key}`, async () => {
+              if (supportedAlgorithm(algorithm)) {
+                const value = await Crypto.digestStringAsync(algorithm, 'Expo', { encoding });
+                console.log('value:', value);
+              } else {
+                let error = null;
+                try {
+                  await Crypto.digestStringAsync(algorithm, 'Expo', { encoding });
+                } catch (e) {
+                  error = e;
+                }
+                expect(error).not.toBeNull();
+              }
+            });
           }
         });
       }
