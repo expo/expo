@@ -41,7 +41,7 @@ public class CryptoModule extends ExportedModule implements ModuleRegistryConsum
 
     byte[] digest = md.digest();
     if (encoding.equals("base64")) {
-      String output = Base64.encodeToString(digest, Base64.DEFAULT);
+      String output = Base64.encodeToString(digest, Base64.NO_WRAP);
       promise.resolve(output);
     } else if (encoding.equals("hex")) {
       StringBuilder stringBuilder = new StringBuilder(digest.length * 2);
