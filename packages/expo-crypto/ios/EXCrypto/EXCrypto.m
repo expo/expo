@@ -24,22 +24,21 @@ EX_EXPORT_METHOD_AS(digestStringAsync,
   
   NSData *_data = [data dataUsingEncoding:NSUTF8StringEncoding];
   uint8_t digest[digestLength];
-  
-  if (digestLength == CC_MD2_DIGEST_LENGTH) {
+  if ([algorithm isEqualToString:@"MD2"]) {
     CC_MD2(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (digestLength == CC_MD4_DIGEST_LENGTH) {
+  } else if ([algorithm isEqualToString:@"MD4"]) {
     CC_MD4(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (digestLength == CC_MD5_DIGEST_LENGTH) {
+  } else if ([algorithm isEqualToString:@"MD5"]) {
     CC_MD5(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (digestLength == CC_SHA1_DIGEST_LENGTH) {
+  } else if ([algorithm isEqualToString:@"SHA-1"]) {
     CC_SHA1(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (digestLength == CC_SHA224_DIGEST_LENGTH) {
+  } else if ([algorithm isEqualToString:@"SHA-224"]) {
     CC_SHA224(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (digestLength == CC_SHA256_DIGEST_LENGTH) {
+  } else if ([algorithm isEqualToString:@"SHA-256"]) {
     CC_SHA256(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (digestLength == CC_SHA384_DIGEST_LENGTH) {
+  } else if ([algorithm isEqualToString:@"SHA-384"]) {
     CC_SHA384(_data.bytes, (CC_LONG)_data.length, digest);
-  } else if (digestLength == CC_SHA512_DIGEST_LENGTH) {
+  } else if ([algorithm isEqualToString:@"SHA-512"]) {
     CC_SHA512(_data.bytes, (CC_LONG)_data.length, digest);
   }
   
