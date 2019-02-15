@@ -1,6 +1,6 @@
+import ExponentAV from './ExponentAV';
 import { Asset } from 'expo-asset';
 import { Platform } from 'expo-core';
-
 // TODO add:
 //  disableFocusOnAndroid
 //  audio routes (at least did become noisy on android)
@@ -9,6 +9,12 @@ import { Platform } from 'expo-core';
 //  API to explicitly request audio focus / session
 //  API to select stream type on Android
 //  subtitles API
+
+export enum PitchCorrectionQuality {
+  Low = ExponentAV.Qualities && ExponentAV.Qualities.Low,
+  Medium = ExponentAV.Qualities && ExponentAV.Qualities.Medium,
+  High = ExponentAV.Qualities && ExponentAV.Qualities.High,
+}
 
 export type PlaybackSource =
   | number
@@ -69,6 +75,7 @@ export type PlaybackStatusToSet = {
   volume?: number;
   isMuted?: boolean;
   isLooping?: boolean;
+  pitchCorrectionQuality?: PitchCorrectionQuality;
 };
 
 export const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS: number = 500;
@@ -225,7 +232,11 @@ export interface Playback extends AV {
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
   ): Promise<PlaybackStatus>;
-  setRateAsync(rate: number, shouldCorrectPitch: boolean): Promise<PlaybackStatus>;
+  setRateAsync(
+    rate: number,
+    shouldCorrectPitch: boolean,
+    pitchCorrectionQuality?: PitchCorrectionQuality
+  ): Promise<PlaybackStatus>;
   setVolumeAsync(volume: number): Promise<PlaybackStatus>;
   setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus>;
   setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus>;
@@ -272,8 +283,16 @@ export const PlaybackMixin = {
     });
   },
 
-  async setRateAsync(rate: number, shouldCorrectPitch: boolean): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ rate, shouldCorrectPitch });
+  async setRateAsync(
+    rate: number,
+    shouldCorrectPitch: boolean,
+    pitchCorrectionQuality: PitchCorrectionQuality = PitchCorrectionQuality.Low
+  ): Promise<PlaybackStatus> {
+    return ((this as any) as AV).setStatusAsync({
+      rate,
+      shouldCorrectPitch,
+      pitchCorrectionQuality,
+    });
   },
 
   async setVolumeAsync(volume: number): Promise<PlaybackStatus> {

@@ -175,15 +175,23 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     -   **millis (_number_)** -- The desired position of playback in milliseconds.
 
--   `playbackObject.setRateAsync(value, shouldCorrectPitch)`
+-   `playbackObject.setRateAsync(value, shouldCorrectPitch, pitchCorrectionQuality)`
 
-    This is equivalent to `playbackObject.setStatusAsync({ rate: value, shouldCorrectPitch: shouldCorrectPitch })`.
+    This is equivalent to `playbackObject.setStatusAsync({ rate: value, shouldCorrectPitch: shouldCorrectPitch, pitchCorrectionQuality: pitchCorrectionQuality  })`.
 
     #### Parameters
 
-    -   **value (_number_)** -- The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
+      - **value (_number_)** -- The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
 
-    -   **shouldCorrectPitch (_boolean_)** -- A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio).
+      - **shouldCorrectPitch (_boolean_)** -- A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio).
+
+      - **pitchCorrectionQuality (_Audio.PitchCorrectionQuality_)** -- iOS time pitch algorithm setting, defaults to `Audio.PitchCorrectionQuality.Low`. Available values:
+
+        `Low` - equivalent to `AVAudioTimePitchAlgorithmLowQualityZeroLatency`
+
+        `Medium` - equivalent to `AVAudioTimePitchAlgorithmTimeDomain`
+
+        `High` - equivalent to `AVAudioTimePitchAlgorithmSpectral`
 
 -   `playbackObject.setVolumeAsync(value)`
 
