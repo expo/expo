@@ -193,6 +193,12 @@ const digest = await Crypto.digestStringAsync(
 | HEX    | `'hex'`    | ✅     | ✅         | ✅     |
 | BASE64 | `'base64'` | ✅     | ✅         | ✅     |
 
+**Base64 Format**
+
+- Has trailing padding.
+- Does not wrap lines.
+- Does not have a trailing newline.
+
 ### `CryptoDigestOptions`
 
 | Name     | Type             | Description                      | 🍎 iOS | 💚 Android | 💻 Web |
