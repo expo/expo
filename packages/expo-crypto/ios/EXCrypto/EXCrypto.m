@@ -51,7 +51,7 @@ EX_EXPORT_METHOD_AS(digestStringAsync,
     return;
   } else if ([encoding isEqualToString:@"base64"]) {
     NSData *originalData = [NSData dataWithBytes:digest length:digestLength];
-    NSString *output = [originalData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
+    NSString *output = [originalData base64EncodedStringWithOptions:0];
     resolve(output);
     return;
   } else {
