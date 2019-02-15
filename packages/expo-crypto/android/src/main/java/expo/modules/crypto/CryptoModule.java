@@ -2,14 +2,16 @@ package expo.modules.crypto;
 
 import android.content.Context;
 import android.util.Base64;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
+import expo.core.Promise;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.Promise;
 
 public class CryptoModule extends ExportedModule implements ModuleRegistryConsumer {
 
@@ -28,10 +30,10 @@ public class CryptoModule extends ExportedModule implements ModuleRegistryConsum
 
   @ExpoMethod
   public void digestStringAsync(String algorithm, String data, final Map<String, Object> options, final Promise promise) {
-    String encoding = (String)options.get("encoding");
+    String encoding = (String) options.get("encoding");
 
     MessageDigest md;
-    try { 
+    try {
       md = MessageDigest.getInstance(algorithm);
       md.update(data.getBytes());
     } catch (NoSuchAlgorithmException e) {
