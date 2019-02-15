@@ -163,7 +163,7 @@ You can specify the returned string format as one of `CryptoEncoding`. By defaul
 
 ```ts
 const digest = await Crypto.digestStringAsync(
-  Crypto.CryptoDigestAlgorithm.SHA.SHA512,
+  Crypto.CryptoDigestAlgorithm.SHA512,
   '🥓 Easy to Digest! 💙'
 );
 ```
@@ -191,7 +191,7 @@ const digest = await Crypto.digestStringAsync(
 | Name   | Type       | 🍎 iOS | 💚 Android | 💻 Web |
 | ------ | ---------- | ------ | ---------- | ------ |
 | HEX    | `'hex'`    | ✅     | ✅         | ✅     |
-| Base64 | `'base64'` | ✅     | ✅         | ✅     |
+| BASE64 | `'base64'` | ✅     | ✅         | ✅     |
 
 ### `CryptoDigestOptions`
 
@@ -209,7 +209,7 @@ import * as Crypto from 'expo-crypto';
 export default class DemoView extends React.Component {
   async componentDidMount() {
     const digest = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA.SHA256,
+      Crypto.CryptoDigestAlgorithm.SHA256,
       'Github stars are neat 🌟'
     );
     console.log('Digest: ', digest);

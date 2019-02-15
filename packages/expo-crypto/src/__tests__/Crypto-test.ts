@@ -32,9 +32,6 @@ it(`asserts invalid data errors`, async () => {
     Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, null as any)
   ).rejects.toThrowError(TypeError);
   await expect(
-    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '' as any)
-  ).rejects.toThrowError(TypeError);
-  await expect(
     Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, 2 as any)
   ).rejects.toThrowError(TypeError);
   await expect(

@@ -17,7 +17,7 @@ export declare enum CryptoDigestAlgorithm {
 }
 export declare enum CryptoEncoding {
     HEX = "hex",
-    Base64 = "base64"
+    BASE64 = "base64"
 }
 export declare type CryptoDigestOptions = {
     encoding: CryptoEncoding;

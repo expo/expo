@@ -15,7 +15,7 @@ const valueMapping = {
     [CryptoDigestAlgorithm.MD4]: `2d36099794ec182cbb36d02e1188fc1e`,
     [CryptoDigestAlgorithm.MD5]: `c29f23f279126757ba18ec74d0d27cfa`,
   },
-  [CryptoEncoding.Base64]: {
+  [CryptoEncoding.BASE64]: {
     [CryptoDigestAlgorithm.SHA1]: `wnU1XcRqwXFjOTUDPRE+OHLVleU=`,
     [CryptoDigestAlgorithm.SHA256]: `9eXK5Ta0nTlOHnLUNo1ksAojKY7FrhHzqRAqVA4lMtw=`,
     [CryptoDigestAlgorithm.SHA384]: `qjVsiK/b2KelqcMTNUGvADXksE6CQ4oiOqGTkkDMtrPKKClLWsD0JwOxUYP0wBb8`,

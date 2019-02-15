@@ -18,7 +18,7 @@ export enum CryptoDigestAlgorithm {
 
 export enum CryptoEncoding {
   HEX = 'hex',
-  Base64 = 'base64',
+  BASE64 = 'base64',
 }
 
 export type CryptoDigestOptions = { encoding: CryptoEncoding };

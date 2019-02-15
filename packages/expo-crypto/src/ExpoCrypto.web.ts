@@ -15,7 +15,7 @@ export default {
     const hashedData = await crypto.subtle.digest(algorithm, buffer);
     if (options.encoding === CryptoEncoding.HEX) {
       return hexString(hashedData);
-    } else if (options.encoding === CryptoEncoding.Base64) {
+    } else if (options.encoding === CryptoEncoding.BASE64) {
       return btoa(String.fromCharCode(...new Uint8Array(hashedData)));
     }
     throw new CodedError('ERR_CRYPTO', 'Invalid encoding type provided.');

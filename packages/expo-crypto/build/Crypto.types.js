@@ -19,6 +19,6 @@ export var CryptoDigestAlgorithm;
 export var CryptoEncoding;
 (function (CryptoEncoding) {
     CryptoEncoding["HEX"] = "hex";
-    CryptoEncoding["Base64"] = "base64";
+    CryptoEncoding["BASE64"] = "base64";
 })(CryptoEncoding || (CryptoEncoding = {}));
 //# sourceMappingURL=Crypto.types.js.map
