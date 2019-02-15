@@ -15,7 +15,7 @@ EX_EXPORT_METHOD_AS(digestStringAsync,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   NSString *encoding = options[@"encoding"];
-
+  
   int digestLength = [EXCrypto digestLengthForJSAlgorithm:algorithm];
   if (digestLength == -1) {
     reject(@"ERR_CRYPTO_DIGEST", [NSString stringWithFormat:@"Invalid hashing algorithm: %@", algorithm], nil);
