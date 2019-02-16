@@ -3,7 +3,7 @@ import BluetoothError from './BluetoothError';
 export default class BluetoothPlatformError extends BluetoothError {
   invokedMethod: string;
 
-  constructor({ name, message, stack, code, invokedMethod }) {
+  constructor({ name, message, stack, code, invokedMethod }: { [key: string]: any }) {
     super({ name, code, message, stack });
     this.invokedMethod = invokedMethod;
   }

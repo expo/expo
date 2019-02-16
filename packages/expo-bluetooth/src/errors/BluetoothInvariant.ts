@@ -5,7 +5,7 @@ import BluetoothError from './BluetoothError';
 
 export function invariantUUID(uuid: string | undefined) {
   if (uuid == null || typeof uuid !== 'string' || !uuid.length) {
-    throw new Error('expo-bluetooth: Invalid UUID provided');
+    throw new BluetoothError({ message: 'Invalid UUID provided', code: 'ERR_BLE_INVALID_UUID' });
   }
 }
 

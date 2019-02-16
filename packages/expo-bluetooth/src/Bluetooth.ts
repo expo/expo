@@ -1,4 +1,5 @@
-import { AndroidGATTError } from './errors/AndroidGATTError';
+import BluetoothPlatformError from './errors/BluetoothPlatformError';
+import AndroidGATTError from './errors/AndroidGATTError';
 import { Platform, Subscription } from 'expo-core';
 
 import {
@@ -47,6 +48,11 @@ import BluetoothError from './errors/BluetoothError';
 
 export * from './Bluetooth.types';
 
+export { default as AndroidGATTError } from './errors/AndroidGATTError';
+export { default as BluetoothError } from './errors/BluetoothError';
+export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
+export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
+
 function platformModuleWithCustomErrors(platformModule: { [property: string]: any } ): { [property: string]: any } {
   const platform = {};
   for (const property of Object.keys(platformModule)) {
@@ -76,7 +82,7 @@ function methodWithTransformedError(method: (...props:any[]) => Promise<any>, me
         const gattStatusCode = code.split(':')[1];
         throw new AndroidGATTError({ gattStatusCode, stack, invokedMethod: methodName });
       } 
-      throw new BluetoothError({ message, code, ...props, invokedMethod: methodName, stack });
+      throw new BluetoothPlatformError({ message, code, ...props, invokedMethod: methodName, stack });
     }
   };
 }
@@ -92,27 +98,6 @@ export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
 
 const ExpoBluetooth = platformModuleWithCustomErrors(ExpoBluetoothModule);
 
-/*
-initializeManagerAsync
-deallocateManagerAsync
-
-getPeripheralsAsync
-getCentralAsync
-startScanningAsync
-stopScanningAsync
-connectPeripheralAsync
-readRSSIAsync
-readDescriptorAsync
-writeDescriptorAsync
-writeCharacteristicAsync
-readCharacteristicAsync
-setNotifyCharacteristicAsync
-
-discoverDescriptorsForCharacteristicAsync
-discoverCharacteristicsForServiceAsync
-discoverIncludedServicesForServiceAsync
-disconnectPeripheralAsync
-*/
 export { BLUETOOTH_EVENT, TYPES, EVENTS };
 
 type ScanOptions = {
@@ -214,7 +199,7 @@ export async function connectAsync(
             message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${
               options.timeout
             }ms`,
-            code: 'timeout',
+            code: 'ERR_BLE_TIMEOUT',
           })
         );
       }, options.timeout);
@@ -408,8 +393,7 @@ export async function getDescriptorAsync({
 }
 
 export async function isScanningAsync(): Promise<any> {
-  const { isScanning, ...props } = await getCentralAsync();
-  console.log('central', isScanning, props);
+  const { isScanning } = await getCentralAsync();
   return isScanning;
 }
 
@@ -546,7 +530,7 @@ const android = {
     invariantAvailability('requestMTUAsync');
     invariantUUID(peripheralUUID);
     if (MTU > 512) {
-      throw new Error('expo-bluetooth: Max MTU size is 512');
+      throw new BluetoothError({ message: 'Max MTU size is 512', code: 'ERR_BLE_MTU' });
     }
     return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
   },
@@ -596,7 +580,6 @@ let lastEvent;
 addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   const { peripheral, peripherals, central, advertisementData, RSSI, error } = data;
 
-  lastEvent = event;
   // console.log('GOT EVENT: ', { data, event });
   if (event === 'UPDATE') {
     clearPeripherals();
@@ -612,7 +595,8 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   if (event === EVENTS.PERIPHERAL_DISCOVERED_SERVICES) {
     console.log("SERVICES: ", peripheral);
   } else {
-    console.log('Event: ' + event + (lastEvent ? ', last: ' + lastEvent : ''));
+    console.log('Event: ' + event + ((lastEvent && lastEvent !== event) ? ', last: ' + lastEvent : ''));
+    lastEvent = event;
   }
 
   switch (event) {
@@ -644,6 +628,6 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
       firePeripheralObservers();
       return;
     default:
-      throw new Error('EXBluetooth: Unhandled event: ' + event);
+      throw new BluetoothError({ message: 'Unhandled event: ' + event, code: 'ERR_BLE_UNHANDLED_EVENT'});
   }
 });

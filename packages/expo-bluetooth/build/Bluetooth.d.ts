@@ -1,8 +1,12 @@
-import { AndroidGATTError } from './errors/AndroidGATTError';
+import AndroidGATTError from './errors/AndroidGATTError';
 import { Subscription } from 'expo-core';
 import { Base64, Priority, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, EVENTS, TYPES } from './BluetoothConstants';
 export * from './Bluetooth.types';
+export { default as AndroidGATTError } from './errors/AndroidGATTError';
+export { default as BluetoothError } from './errors/BluetoothError';
+export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
+export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
 export declare function _getGATTStatusError(code: any, invokedMethod: any, stack?: undefined): AndroidGATTError | null;
 export { BLUETOOTH_EVENT, TYPES, EVENTS };
 declare type ScanOptions = {

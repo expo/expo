@@ -1,4 +1,5 @@
-import { AndroidGATTError } from './errors/AndroidGATTError';
+import BluetoothPlatformError from './errors/BluetoothPlatformError';
+import AndroidGATTError from './errors/AndroidGATTError';
 import { CharacteristicProperty, } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
 import { addHandlerForKey, addListener, fireMultiEventHandlers, fireSingleEventHandlers, firePeripheralObservers, addHandlerForID, resetHandlersForKey, _resetAllHandlers, } from './BluetoothEventHandler';
@@ -9,6 +10,10 @@ import ExpoBluetoothModule from './ExpoBluetooth';
 import Transaction from './Transaction';
 import BluetoothError from './errors/BluetoothError';
 export * from './Bluetooth.types';
+export { default as AndroidGATTError } from './errors/AndroidGATTError';
+export { default as BluetoothError } from './errors/BluetoothError';
+export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
+export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
 function platformModuleWithCustomErrors(platformModule) {
     const platform = {};
     for (const property of Object.keys(platformModule)) {
@@ -39,7 +44,7 @@ function methodWithTransformedError(method, methodName) {
                 const gattStatusCode = code.split(':')[1];
                 throw new AndroidGATTError({ gattStatusCode, stack, invokedMethod: methodName });
             }
-            throw new BluetoothError({ message, code, ...props, invokedMethod: methodName, stack });
+            throw new BluetoothPlatformError({ message, code, ...props, invokedMethod: methodName, stack });
         }
     };
 }
@@ -52,27 +57,6 @@ export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
     return null;
 }
 const ExpoBluetooth = platformModuleWithCustomErrors(ExpoBluetoothModule);
-/*
-initializeManagerAsync
-deallocateManagerAsync
-
-getPeripheralsAsync
-getCentralAsync
-startScanningAsync
-stopScanningAsync
-connectPeripheralAsync
-readRSSIAsync
-readDescriptorAsync
-writeDescriptorAsync
-writeCharacteristicAsync
-readCharacteristicAsync
-setNotifyCharacteristicAsync
-
-discoverDescriptorsForCharacteristicAsync
-discoverCharacteristicsForServiceAsync
-discoverIncludedServicesForServiceAsync
-disconnectPeripheralAsync
-*/
 export { BLUETOOTH_EVENT, TYPES, EVENTS };
 /**
  * **iOS:**
@@ -134,7 +118,7 @@ export async function connectAsync(peripheralUUID, options = {}) {
                 disconnectAsync(peripheralUUID);
                 reject(new BluetoothError({
                     message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${options.timeout}ms`,
-                    code: 'timeout',
+                    code: 'ERR_BLE_TIMEOUT',
                 }));
             }, options.timeout);
         }
@@ -270,8 +254,7 @@ export async function getDescriptorAsync({ peripheralUUID, serviceUUID, characte
     });
 }
 export async function isScanningAsync() {
-    const { isScanning, ...props } = await getCentralAsync();
-    console.log('central', isScanning, props);
+    const { isScanning } = await getCentralAsync();
     return isScanning;
 }
 // TODO: Bacon: Add serviceUUIDs
@@ -379,7 +362,7 @@ const android = {
         invariantAvailability('requestMTUAsync');
         invariantUUID(peripheralUUID);
         if (MTU > 512) {
-            throw new Error('expo-bluetooth: Max MTU size is 512');
+            throw new BluetoothError({ message: 'Max MTU size is 512', code: 'ERR_BLE_MTU' });
         }
         return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
     },
@@ -422,7 +405,6 @@ export async function _reset() {
 let lastEvent;
 addListener(({ data, event }) => {
     const { peripheral, peripherals, central, advertisementData, RSSI, error } = data;
-    lastEvent = event;
     // console.log('GOT EVENT: ', { data, event });
     if (event === 'UPDATE') {
         clearPeripherals();
@@ -438,7 +420,8 @@ addListener(({ data, event }) => {
         console.log("SERVICES: ", peripheral);
     }
     else {
-        console.log('Event: ' + event + (lastEvent ? ', last: ' + lastEvent : ''));
+        console.log('Event: ' + event + ((lastEvent && lastEvent !== event) ? ', last: ' + lastEvent : ''));
+        lastEvent = event;
     }
     switch (event) {
         case EVENTS.DESCRIPTOR_DID_READ:
@@ -469,7 +452,7 @@ addListener(({ data, event }) => {
             firePeripheralObservers();
             return;
         default:
-            throw new Error('EXBluetooth: Unhandled event: ' + event);
+            throw new BluetoothError({ message: 'Unhandled event: ' + event, code: 'ERR_BLE_UNHANDLED_EVENT' });
     }
 });
 //# sourceMappingURL=Bluetooth.js.map
