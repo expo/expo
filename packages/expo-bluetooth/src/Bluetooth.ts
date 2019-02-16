@@ -78,11 +78,15 @@ function methodWithTransformedError(method: (...props:any[]) => Promise<any>, me
       console.log(`EXBLE: invoke: ${methodName}()`);
       return await method(...props);
     } catch ({ message, code, ...props }) {
+      let error;
       if (code.indexOf('ERR_BLE_GATT:') > -1 ) {
         const gattStatusCode = code.split(':')[1];
-        throw new AndroidGATTError({ gattStatusCode, stack, invokedMethod: methodName });
+        error = new AndroidGATTError({ gattStatusCode: parseInt(gattStatusCode), stack, invokedMethod: methodName });
       } 
-      throw new BluetoothPlatformError({ message, code, ...props, invokedMethod: methodName, stack });
+      error = new BluetoothPlatformError({ message, code, ...props, invokedMethod: methodName, stack });
+
+      error.log();
+      throw error;
     }
   };
 }

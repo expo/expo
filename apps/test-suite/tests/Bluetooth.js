@@ -80,48 +80,45 @@ async function getConnectedPeripheralAsync(onDisconnect) {
   let attemptedConnections = [];
   return new Promise(async resolve => {
     let connected;
-    const stopScanning = await Bluetooth.startScanningAsync({}, async peripheral => {
-      /* Named peripherals have a higher chance of interaction. For brevity let's use them. */
-      if (Platform.OS === 'ios' && peripheral.name === 'BaconBook') {
-        await stopScanning();
-        const _connected = await attemptQuickConnectionAsync(peripheral.id, onDisconnect, 5000);
-        resolve(peripheral);
-        return;
-      }
-      if (
-        !connected &&
-        peripheral.name &&
-        peripheral.name.length &&
-        attemptedConnections.indexOf(peripheral.id) < 0
-      ) {
-        attemptedConnections.push(peripheral.id);
-        console.log('attempt to connect to ', peripheral.id);
-        const _connected = await attemptQuickConnectionAsync(peripheral.id, onDisconnect, 3000);
-        if (!connected && _connected) {
-          connected = _connected;
-          console.log('actually connected to: ', connected.id, connected.name);
-          stopScanning();
-
+    const stopScanning = await Bluetooth.startScanningAsync(
+      {
+        androidOnlyConnectable: true,
+      },
+      async peripheral => {
+        /* Named peripherals have a higher chance of interaction. For brevity let's use them. */
+        if (Platform.OS === 'ios' && peripheral.name === 'BaconBook') {
+          await stopScanning();
+          const _connected = await attemptQuickConnectionAsync(peripheral.id, onDisconnect, 5000);
           resolve(peripheral);
+          return;
+        }
+        if (
+          !connected &&
+          peripheral.name &&
+          peripheral.name.length &&
+          attemptedConnections.indexOf(peripheral.id) < 0
+        ) {
+          attemptedConnections.push(peripheral.id);
+          console.log('attempt to connect to ', peripheral.id);
+          const _connected = await attemptQuickConnectionAsync(peripheral.id, onDisconnect, 3000);
+          if (!connected && _connected) {
+            connected = _connected;
+            console.log('actually connected to: ', connected.id, connected.name);
+            stopScanning();
 
-          for (const connection of attemptedConnections) {
-            if (connection.id !== connected.id) {
-              Bluetooth.disconnectAsync(connection.id);
+            resolve(peripheral);
+
+            for (const connection of attemptedConnections) {
+              if (connection !== connected.id) {
+                console.log("CANCEL ", connection);
+                Bluetooth.disconnectAsync(connection);
+              }
             }
           }
         }
       }
-    });
+    );
   });
-  //   const peripheral = await scanForSinglePeripheral();
-  //   try {
-  //     console.log('attempt to connect to ', peripheral);
-  //     return await Bluetooth.connectAsync(peripheral.id, { timeout: 240000, ...options });
-  //   } catch (error) {
-  //     throw new Error(
-  //       'Failed to connect to a peripheral in time, this is expected. Please try again.'
-  //     );
-  //   }
 }
 
 function scanForSinglePeripheral(options) {
@@ -289,7 +286,7 @@ export async function test({
   describe('2. Connecting', async () => {
     beforeEach(resetBLEStateAsync);
 
-    describe('disconnectAsync', () => {
+    xdescribe('disconnectAsync', () => {
       rejectsInvalidPeripheralUUID(Bluetooth.disconnectAsync);
     });
 

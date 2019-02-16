@@ -8,6 +8,7 @@ export default class BluetoothPlatformError extends BluetoothError {
         const json = super.toJSON();
         return {
             ...json,
+            stack: undefined,
             invokedMethod: this.invokedMethod,
         };
     }

@@ -37,7 +37,7 @@ export default class BluetoothError extends CodedError {
         };
     }
     constructor({ name = 'expo-bluetooth', message, stack, code }) {
-        super(code || 'ERR_BLE_UNKNOWN', `${name} : ${message}`);
+        super(code || 'ERR_BLE_UNKNOWN', message);
         this.name = name;
         if (stack) {
             // Just use the first few lines
