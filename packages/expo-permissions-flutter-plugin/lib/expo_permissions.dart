@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:expo_flutter_adapter/expo_modules_proxy.dart';
+import 'package:expo_flutter_adapter/expo_flutter_adapter.dart';
 
 /// Use this class's members to specify what permission you are interested in.
 class PermissionType {

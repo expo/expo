@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:expo_flutter_adapter/expo_modules_proxy.dart';
+import 'package:expo_flutter_adapter/expo_flutter_adapter.dart';
 
 /// The step count object returned from the events stream.
 class PedometerEvent {

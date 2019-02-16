@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:expo_flutter_adapter/expo_modules_proxy.dart';
+import 'package:expo_flutter_adapter/expo_flutter_adapter.dart';
 
 class Field {
   static const phoneNumbers = const Field._fromString('phoneNumbers');

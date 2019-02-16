@@ -4,7 +4,7 @@ version: 0.1.0
 authors:
 - Juwan Wheatley <juwan@expo.io>
 - Nikhilesh Sigatapu <nikki@expo.io>
-homepage:
+homepage: https://github.com/expo/expo/tree/master/packages/expo-flutter-adapter
 
 environment:
   sdk: ">=2.0.0-dev.58.0 <3.0.0"
@@ -12,6 +12,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+dev_dependencies:
+  expo_permissions: ^0.1.0
+  expo_sensors: ^0.1.0
 
 flutter:
   plugin:
