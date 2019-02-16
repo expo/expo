@@ -422,6 +422,9 @@ addListener(({ data, event }) => {
     if (event === EVENTS.PERIPHERAL_DISCOVERED_SERVICES) {
         console.log("SERVICES: ", peripheral);
     }
+    else if (event === EVENTS.PERIPHERAL_DISCONNECTED) {
+        console.log("PERIPHERAL_DISCONNECTED: ", peripheral.id);
+    }
     else {
         console.log('Event: ' + event + ((lastEvent && lastEvent !== event) ? ', last: ' + lastEvent : ''));
         lastEvent = event;

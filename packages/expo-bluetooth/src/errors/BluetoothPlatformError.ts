@@ -13,6 +13,7 @@ export default class BluetoothPlatformError extends BluetoothError {
 
     return {
       ...json,
+      message: `${this.invokedMethod}() ${json.message}`,
       stack: undefined, // Because we have the invoked method.
       invokedMethod: this.invokedMethod,
     };

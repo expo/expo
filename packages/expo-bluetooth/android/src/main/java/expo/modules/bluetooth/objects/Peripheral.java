@@ -221,7 +221,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
           //      getDevice().createBond();
           // Send Connection event
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-          Log.d("BLE_TEST", "DISCONNECT" + getID() + ", connected: " + isConnected());
+          Log.d("BLE_TEST", "Did disconnect: " + getID() + ", connected: " + isConnected());
           sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED, status);
         }
       }
@@ -406,40 +406,27 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       final Method refreshGatt = BluetoothGatt.class.getMethod("refresh");
       if (refreshGatt != null) {
         final boolean success = (Boolean) refreshGatt.invoke(gatt);
+        Log.d("BLE_TEST", "refreshGattCacheIgnoringErrors(): Was invoked: " + success);
         return success;
       } else {
+        Log.d("BLE_TEST", "refreshGattCacheIgnoringErrors(): Reflection doesn't exist");
         // If the method doesn't exist, we have no recourse. Just return false.
       }
-    } catch (SecurityException e) {
-      // TODO: Bacon: Do something with the security exception
-    } catch (NoSuchMethodException e) {
-
-    } catch (IllegalAccessException e) {
-
-    } catch (IllegalArgumentException e) {
-
     } catch (Exception e) {
-
+      Log.d("BLE_TEST", "refreshGattCacheIgnoringErrors(): Error " + e.getLocalizedMessage());
     }
     return false;
   }
 
-  public static void closeGatt(BluetoothGatt gatt) {
-    if (gatt != null) {
-      gatt.disconnect();
-      refreshGattCacheIgnoringErrors(gatt);
-      gatt.close();
-    }
-  }
-
   public void disconnect() {
-    disconnectGATT();
-  }
-
-  private void disconnectGATT() {
     clearChildren();
     if (mGatt != null) {
-      closeGatt(mGatt);
+      Log.d("BLE_TEST", "disconnect(): " + mGatt.getDevice().getAddress());
+      mGatt.disconnect();
+      if (!refreshGattCacheIgnoringErrors(mGatt)) {
+        Log.d("BLE_TEST", "disconnect(): Failed to refresh cache: " + getID() + ", isConnected: " + isConnected());
+      }
+      mGatt.close();
       mGatt = null;
     }
   }
@@ -484,18 +471,16 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     if (guardGATT(promise)) {
       return;
     } else if (mDidConnectStateChangePeripheralBlock != null) {
+      // TODO: Bacon: seems like this could be hard to work around given how long it takes a peripheral to disconnect.
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
       return;
     }
+
     Log.d("BLE_TEST", "disconnectPeripheralAsync.disconnect: " + getID() + ", connected: " + isConnected());
 
     mDidConnectStateChangePeripheralBlock = new ConnectingPromise(promise, BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED) ;
-    mGatt.disconnect();
-    if (!refreshGattCacheIgnoringErrors(mGatt)) {
-      Log.d("BLE_TEST", "Failed to refresh cache: " + getID() + ", connected: " + isConnected());
-    }
-    mGatt.close();
-    mGatt = null;
+
+    disconnect();
   }
 
   // TODO: Bacon: [iOS] Are solicitedServiceUUIDs overflowServiceUUIDs possible
