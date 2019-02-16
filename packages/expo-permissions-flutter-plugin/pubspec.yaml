@@ -4,7 +4,7 @@ version: 0.1.0
 authors:
 - Juwan Wheatley <juwan@expo.io>
 - Nikhilesh Sigatapu <nikki@expo.io>
-homepage:
+homepage: https://github.com/expo/expo/tree/master/packages/expo-permissions-flutter-plugin
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
