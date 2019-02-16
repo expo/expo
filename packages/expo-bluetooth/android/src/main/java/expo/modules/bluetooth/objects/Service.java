@@ -86,6 +86,8 @@ public class Service extends EXBluetoothChildObject {
       output.putString(BluetoothConstants.JSON.PERIPHERAL_UUID, getPeripheral().getID());
     }
 
+    output.putString("type", "service");
+
     output.putBoolean(BluetoothConstants.JSON.IS_PRIMARY, getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
     output.putParcelableArrayList(BluetoothConstants.JSON.INCLUDED_SERVICES, EXBluetoothObject.listToJSON((List)getIncludedServices()));
     output.putParcelableArrayList(BluetoothConstants.JSON.CHARACTERISTICS, EXBluetoothObject.listToJSON((List)getCharacteristics()));

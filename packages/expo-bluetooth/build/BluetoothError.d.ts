@@ -5,5 +5,10 @@ export default class BluetoothError extends Error implements NativeError {
     reason?: string | null;
     suggestion?: string | null;
     underlayingError?: string | null;
-    constructor({ message, code, domain, reason, suggestion, underlayingError }: NativeError);
+    _message?: string;
+    stackTrace?: string;
+    invokedMethod?: string;
+    getStackTrace(): string;
+    log(): void;
+    constructor({ message, code, stackTrace, invokedMethod, domain, reason, suggestion, underlayingError, }: NativeError);
 }

@@ -67,6 +67,7 @@ public class Characteristic extends EXBluetoothChildObject {
       output.putStringArrayList(BluetoothConstants.JSON.PERMISSIONS, Serialize.CharacteristicPermissions_NativeToJSON(characteristic.getPermissions()));
     }
     output.putParcelableArrayList(BluetoothConstants.JSON.DESCRIPTORS, Serialize.DescriptorList_NativeToJSON(characteristic.getDescriptors(), peripheralUUIDString));
+    output.putString("type", "characteristic");
 
     BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID);
     boolean isNotifying = false;

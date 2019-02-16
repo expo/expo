@@ -1,6 +1,6 @@
 import { UnavailabilityError } from 'expo-errors';
 
-import ExpoBluetooth from './ExpoBluetooth';
+import ExpoBluetooth from '../ExpoBluetooth';
 import BluetoothError from './BluetoothError';
 
 export function invariantUUID(uuid: string | undefined) {

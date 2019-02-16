@@ -122,10 +122,7 @@ export type NativeEventData = {
 export interface NativeError {
   message: string;
   code: string;
-  domain?: string | null;
-  reason?: string | null;
-  suggestion?: string | null;
-  underlayingError?: string | null;
+  stack?: string;
 }
 
 export interface NativeCharacteristic extends NativeBluetoothElement {

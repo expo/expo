@@ -5,6 +5,7 @@ import android.bluetooth.le.ScanCallback;
 import android.os.Bundle;
 
 import expo.core.Promise;
+import expo.core.interfaces.CodedThrowable;
 
 public class BluetoothError {
 
@@ -53,7 +54,7 @@ public class BluetoothError {
     if (gattStatusCode == BluetoothGatt.GATT_SUCCESS) {
       return null;
     }
-    return new BluetoothError(PREFIX + "GATT", Serialize.messageForGATTStatus(gattStatusCode));
+    return new BluetoothError(PREFIX + "GATT:" + gattStatusCode, "");
   }
 
   public static Bundle fromGattStatusCodeAsJSON(int gattStatusCode) {
@@ -68,12 +69,20 @@ public class BluetoothError {
     promise.reject(error.code, error.message);
   }
 
-  public static void rejectWithStatus(Promise promise, int status) {
-    promise.reject(Codes.UNIMPLEMENTED, Serialize.messageForGATTStatus(status));
+  public static void rejectWithStatus(Promise promise, int gattStatusCode) {
+    promise.reject(PREFIX + "GATT:" + gattStatusCode, "");
   }
 
   public static void reject(Promise promise, String message) {
     promise.reject(Codes.UNIMPLEMENTED, message);
+  }
+
+  public static final BluetoothError BLUETOOTH_UNAVAILABLE() {
+    return new BluetoothError(PREFIX + "BLUETOOTH_UNAVAILABLE", "Bluetooth is not supported on this device.");
+  }
+
+  public static final BluetoothError LOCATION_PERMISSION() {
+    return new BluetoothError(PREFIX + "LOCATION_PERMISSION", "Android BLE requires access to COARSE location data. Please enable the Location permission.");
   }
 
   public static final BluetoothError UNKOWN() {
@@ -97,7 +106,7 @@ public class BluetoothError {
   }
 
   public static final BluetoothError SCAN_REDUNDANT_INIT() {
-    return new BluetoothError(PREFIX + "REDUNDANT_INIT", "Failed to start scan because a BLE scan with the same settings is already started by the app.");
+    return new BluetoothError(PREFIX + "REDUNDANT_INIT", "Failed to start scan because a BLE scan with the same settings is already running. Stop scanning before attempting to start a new scan.");
   }
 
   public static final BluetoothError APP_REGISTRATION() {
@@ -112,6 +121,19 @@ public class BluetoothError {
     return new BluetoothError(PREFIX + "ENABLE_REQUEST_DENIED", "User denied enable request.");
   }
 
+  // Bonding
+
+  public static final BluetoothError BONDING_DENIED() {
+    return new BluetoothError(PREFIX + "BONDING_DENIED", "The peripheral you attempted to bond with has denied the request.");
+  }
+
+  public static final BluetoothError CONCURRENT_BONDING(String currentUUID, String rejectedUUID) {
+    return new BluetoothError(PREFIX + "CONCURRENT_BONDING", "Already attempting to bond with peripheral: " + currentUUID + ". Cannot bond with more than one peripheral at a time. Rejecting bond to: " + rejectedUUID);
+  }
+
+  public static final BluetoothError BONDING_FAILED(String peripheralUUID) {
+    return new BluetoothError(PREFIX + "BONDING_FAILED", "Cannot create bond to Remote Device: " + peripheralUUID);
+  }
 
   public Bundle toJSON() {
     Bundle output = new Bundle();
@@ -121,26 +143,22 @@ public class BluetoothError {
     output.putString("reason", this.reason);
     output.putString("suggestion", this.suggestion);
     output.putString("underlayingError", this.underlayingError);
+    output.putString("type", "error");
     return output;
   }
 
   public class Codes {
-
     public static final String UNKNOWN = "UNKNOWN";
-
     public static final String PLACEHOLDER = "BLUETOOTH";
-
     public static final String NO_PERIPHERAL = "NO_PERIPHERAL";
     public static final String NO_SERVICE = "NO_SERVICE";
     public static final String NO_CHARACTERISTIC = "NO_CHARACTERISTIC";
     public static final String NO_DESCRIPTOR = "NO_DESCRIPTOR";
-
     public static final String UNIMPLEMENTED = "UNIMPLEMENTED";
   }
 
   public class Messages {
     public static final String UNKNOWN = "An unknown error has occurred.";
-
     public static final String PLACEHOLDER = "An unknown error has occurred";
     public static final String NO_PERIPHERAL = "NO_PERIPHERAL";
     public static final String NO_SERVICE = "NO_SERVICE";

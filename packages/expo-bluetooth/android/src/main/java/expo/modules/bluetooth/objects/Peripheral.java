@@ -36,15 +36,6 @@ import expo.modules.bluetooth.helpers.PromiseListHashMap;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 
 
-class ConnectingPromise {
-  Promise mPromise;
-  String mEvent;
-  ConnectingPromise(Promise promise, String event) {
-    mPromise = promise;
-    mEvent = event;
-  }
-}
-
 /** Wrapper for GATT because GATT can access Device */
 public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParentObjectInterface {
 
@@ -122,6 +113,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     ArrayList<Bundle> services = Service.listToJSON((List) getServices());
     output.putParcelableArrayList(BluetoothConstants.JSON.SERVICES, services);
+    output.putString("type", "peripheral");
 
     output.putString(BluetoothConstants.JSON.NAME, device.getName());
     output.putString(BluetoothConstants.JSON.ID, getID());
@@ -178,7 +170,13 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public int getBondState() {
-    return getDevice().getBondState();
+    BluetoothDevice device = getDevice();
+
+    if (device == null) {
+      return BluetoothDevice.BOND_NONE;
+    }
+
+    return device.getBondState();
   }
 
   private void connectToGATT(Activity activity) {
@@ -208,14 +206,14 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
       if (mDidConnectStateChangePeripheralBlock != null) {
           BluetoothModule.emitState();
-        if (shouldResolvePromiseWithStatusAndData(mDidConnectStateChangePeripheralBlock.mPromise, status)) {
-          mDidConnectStateChangePeripheralBlock.mPromise.resolve(toJSON());
+        if (shouldResolvePromiseWithStatusAndData(mDidConnectStateChangePeripheralBlock.getPromise(), status)) {
+          mDidConnectStateChangePeripheralBlock.getPromise().resolve(toJSON());
         }
         /**
          * If you attempt to connect and the process fails, the "newState" will be disconnected event though it was never connected.
          * Send the pseudo event for proper resolution.
          */
-        sendGattEvent(mDidConnectStateChangePeripheralBlock.mEvent, status);
+        sendGattEvent(mDidConnectStateChangePeripheralBlock.getEvent(), status);
         mDidConnectStateChangePeripheralBlock = null;
       } else {
         /** newState can only be one of STATE_CONNECTED, STATE_DISCONNECTED. */

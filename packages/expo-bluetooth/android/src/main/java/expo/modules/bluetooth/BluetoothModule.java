@@ -316,8 +316,9 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
               break;
             case BluetoothDevice.BOND_NONE:
             case BluetoothDevice.ERROR:
-              createBond.promise.reject(BluetoothConstants.ERRORS.GENERAL, "The peripheral you attempted to bond with has denied the request.");
+              BluetoothError.reject(createBond.promise, BluetoothError.BONDING_DENIED());
               createBond = null;
+              /// TODO: Bacon: Should we return?
               break;
             default:
               break;
@@ -389,14 +390,17 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       String bondStateString = Serialize.Bonding_NativeToJSON(bondState);
       promise.resolve(bondStateString);
       return;
-    } else if (createBond != null) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "You are already attempting to Bond: " + createBond.uuid);
+    }
+
+    if (createBond != null) {
+      BluetoothError.reject(promise, BluetoothError.CONCURRENT_BONDING(createBond.uuid, peripheralUUID));
       return;
-    } else if (peripheral.getDevice().createBond()) {
-      createBond = new BondingPromise(peripheralUUID, promise);
-      return;
-    } else {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Couldn't bond to peripheral: " + peripheralUUID);
+    }
+
+    createBond = new BondingPromise(peripheralUUID, promise);
+    if (!peripheral.getDevice().createBond()) {
+      createBond = null;
+      BluetoothError.reject(promise, BluetoothError.BONDING_FAILED(peripheralUUID));
       return;
     }
   }
@@ -484,7 +488,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   private boolean guardPermission(Promise promise) {
     if (isMissingPermissions()) {
-      promise.reject(BluetoothConstants.ERRORS.GENERAL, "Missing location permission");
+      BluetoothError.reject(promise, BluetoothError.LOCATION_PERMISSION());
       return true;
     }
     return false;
@@ -564,7 +568,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   public void getCentralAsync(
       final Promise promise
   ) {
-    if (guardBluetoothAvailability(promise) || guardBluetoothEnabled(promise) || guardPermission(promise)) {
+    if (guardBluetoothEnabled(promise) || guardPermission(promise)) {
       return;
     }
     promise.resolve(centralAsJSON());
@@ -991,6 +995,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
   private boolean guardBluetoothAvailability(Promise promise) {
     if (!isBluetoothAvailable()) {
+      BluetoothError.reject(promise, BluetoothError.BLUETOOTH_UNAVAILABLE());
       promise.reject(BluetoothConstants.ERRORS.GENERAL, "Bluetooth is not supported on this device");
       return true;
     }

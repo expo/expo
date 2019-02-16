@@ -1,6 +1,5 @@
 package expo.modules.bluetooth.objects;
 
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Bundle;
 
@@ -38,11 +37,8 @@ public class Descriptor extends EXBluetoothChildObject {
     }
 
     String uuidString = (String) output.get(BluetoothConstants.JSON.UUID);
-    String parsedValue;
-
-    if (uuidString.equals(""))
-
-
+    // TODO: Bacon: Maybe add parsed value.
+    output.putString("type", "descriptor");
     output.putString(BluetoothConstants.JSON.CHARACTERISTIC_UUID, UUIDHelper.toString(descriptor.getCharacteristic().getUuid()));
     output.putString(BluetoothConstants.JSON.VALUE, Base64Helper.fromBase64(descriptor.getValue()));
     if (descriptor.getPermissions() > 0) {

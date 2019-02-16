@@ -173,7 +173,7 @@ public class Serialize {
     output.putString("characteristicUUID", characteristicUUIDString);
 
     output.putString("value", Base64Helper.fromBase64(input.getValue()));
-
+    output.putString("type", "descriptor");
 
     if (input.getPermissions() > 0) {
       output.putStringArrayList("permissions", Serialize.DescriptorPermissions_NativeToJSON(input.getPermissions()));
@@ -196,48 +196,6 @@ public class Serialize {
     return output;
   }
 
-  public static ArrayList<Bundle> CharacteristicList_NativeToJSON(List<BluetoothGattCharacteristic> input, String peripheralUUIDString) {
-    if (input == null) return null;
-
-    ArrayList<Bundle> output = new ArrayList();
-    for (BluetoothGattCharacteristic value : input) {
-      output.add(Serialize.Characteristic_NativeToJSON(value, peripheralUUIDString));
-    }
-    return output;
-  }
-
-  public static Bundle Characteristic_NativeToJSON(BluetoothGattCharacteristic characteristic, String peripheralUUIDString) {
-    if (characteristic == null) return null;
-
-    Bundle output = new Bundle();
-
-    String characteristicUUIDString = UUIDHelper.fromUUID(characteristic.getUuid());
-    String serviceUUIDString = UUIDHelper.fromUUID(characteristic.getService().getUuid());
-
-    output.putString("id", peripheralUUIDString + "|" + serviceUUIDString + "|" + characteristicUUIDString);
-    output.putString("uuid", characteristicUUIDString);
-    output.putString("serviceUUID", serviceUUIDString);
-    output.putString("peripheralUUID", peripheralUUIDString);
-    output.putStringArrayList("properties", Serialize.CharacteristicProperties_NativeToJSON(characteristic.getProperties()));
-    output.putString("value", Base64Helper.fromBase64(characteristic.getValue()));
-    if (characteristic.getPermissions() > 0) {
-      output.putStringArrayList("permissions", Serialize.CharacteristicPermissions_NativeToJSON(characteristic.getPermissions()));
-    }
-    output.putParcelableArrayList("descriptors", Serialize.DescriptorList_NativeToJSON(characteristic.getDescriptors(), peripheralUUIDString));
-
-    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID);
-    boolean isNotifying = false;
-    if (descriptor != null) {
-      byte[] descriptorValue = descriptor.getValue();
-      if (descriptorValue != null) {
-        isNotifying = (descriptorValue[0] & 0x01) != 0;
-      }
-    }
-    output.putBoolean("isNotifying", isNotifying);
-
-    return output;
-  }
-
   // Central
 
   public static Bundle BluetoothAdapter_NativeToJSON(BluetoothAdapter input, boolean isDiscovering) {
@@ -247,6 +205,7 @@ public class Serialize {
     Bundle map = new Bundle();
 
 
+    map.putString("type", "central");
     // Parity
     map.putString("state", Serialize.AdapterState_NativeToJSON(input.getState()));
     map.putBoolean("isDiscovering", input.isDiscovering());
@@ -354,105 +313,7 @@ public class Serialize {
     }
   }
 
-
-
-  public static String DescriptorValue_NativeToJSON(UUID uuid, byte[] data) {
-    String uuidString = UUIDHelper.toString(uuid);
-    if (uuidString.equals(""))
-    switch (input) {
-      case BluetoothAdapter.STATE_TURNING_OFF:
-        return "poweringOff";
-      case BluetoothAdapter.STATE_OFF:
-        return "poweredOff";
-      case BluetoothAdapter.STATE_TURNING_ON:
-        return "poweringOn";
-      case BluetoothAdapter.STATE_ON:
-        return "poweredOn";
-      default:
-        return "unknown";
-    }
-  }
-
   // Service
-
-  /**
-   * A lot of GATT status codes aren't documented by Google, or the various device vendors.
-   * The error messages used here may not align exactly with the error, but they seem more helpful than not.
-   * If you dig through low-level BLE you could probably find the codes for your exact device.
-   *
-   * https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h
-   * https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/l2cdefs.h
-   * https://android.googlesource.com/platform/external/libnfc-nci/+/lollipop-release/src/include/hcidefs.h
-   *
-   * 0xE0-0xFC are reserved: 
-   * https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h
-   */
-  public static String messageForGATTStatus(int input) {
-    switch (input) {
-      case BluetoothGatt.GATT_SUCCESS:
-        return "GATT operation completed successfully";
-      case BluetoothGatt.GATT_READ_NOT_PERMITTED:
-        return "GATT read operation is not permitted";
-      case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:
-        return "GATT write operation is not permitted";
-      case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:
-        return "Insufficient authentication for a given operation";
-      case BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED:
-        return "The given request is not supported";
-      case BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:
-        return "Insufficient encryption for a given operation";
-      case BluetoothGatt.GATT_INVALID_OFFSET:
-        return "Read or write operation was requested with an invalid offset";
-      case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:
-        return "Write operation exceeds the maximum length of the attribute";
-      case BluetoothGatt.GATT_CONNECTION_CONGESTED:
-        return "Remote device connection is congested";
-      case BluetoothGatt.GATT_FAILURE:
-        return "GATT operation failed";
-      /** Bacon: The following error codes are undocumented and vary based on vendor. (good luck <3) */
-      case 0x0087: /** Illegal parameter */
-        return "An illegal parameter was provided.";
-      case 0x0080: /** No Resources */
-        return "No GATT resources are available.";
-      case 0x0081: /** AOSP: Internal GATT Error */
-        return "An internal GATT error has occurred.";
-      case 0x0082: /** AOSP: Wrong State */
-        return "The wrong state was set/found.";
-      case 0x0083: /** AOSP: GATT Database Full */
-        return "The device's GATT database is full.";
-      case 0x0084: /** AOSP: GATT is Busy */
-        return "The associated GATT is busy.";
-      case 0x0089: /** AOSP: GATT Auth Failed */
-        return "GATT failed to authenticate.";
-      case 0x008b: /** AOSP: GATT Invalid Config */
-        return "An invalid config was provided.";
-      case 0x16:  /** AOSP: **Google** [Nexus] Conn Term Local Host */
-        return "Connection was terminated by the local host.";
-      case 0x13:  /** AOSP: Conn Term by Peer */
-        return "Connection was terminated by a peer user.";
-      case 0x08: /** AOSP: **Google** Timeout */
-        return "Connection timed out.";
-      case 0x22: //GATT_CONN_LMP_TIMEOUT
-        return "Connection fail for LMP response timeout.";
-      case 0x0100: 
-        // https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h#113
-        return "L2CAP connection cancelled.";
-      case 0x03E: /** AOSP: Failed to Establish a valid connection. */
-        // https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/lollipop-release/stack/include/gatt_api.h#111
-        return "Failed to establish a valid connection.";
-      case 0x0085: /** AOSP: **Samsung** GATT Stack Error */ // Possibly GATT_BUSY on pixel
-        /**
-         * This error code is thrown if you turn off the Bluetooth radio,
-         * while a bonded device has an open GATT layer.
-         * Retrying your connection after receiving this error will have a ~100% success rate.
-         * If this error is thrown more than once, the device's Bluetooth has become erratic,
-         * and cannot be repaired until the user power cycles their phone's Bluetooth and Wi-Fi radios.
-         */
-        return "I/O: [SAMSUNG] The Bluetooth radio was turned off while a bonded device had an open GATT layer. If this error is thrown more than once, the device's Bluetooth has become erratic and cannot be repaired until the user power cycles their phone's Bluetooth and Wi-Fi radios... Try turning it off and back on again.";
-      default:
-        return "An unknown GATT error occurred! DEC status code: " + input;
-    }
-  }
 
   public static int ScanMode_JSONToNative(String input) {
     if (input.equals("lowLatency")) {

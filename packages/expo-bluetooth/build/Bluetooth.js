@@ -1,13 +1,57 @@
+import { AndroidGATTError } from './errors/AndroidGATTError';
 import { CharacteristicProperty, } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
 import { addHandlerForKey, addListener, fireMultiEventHandlers, fireSingleEventHandlers, firePeripheralObservers, addHandlerForID, resetHandlersForKey, _resetAllHandlers, } from './BluetoothEventHandler';
-import { invariantAvailability, invariant, invariantUUID } from './BluetoothInvariant';
+import { invariantAvailability, invariant, invariantUUID } from './errors/BluetoothInvariant';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
 import { peripheralIdFromId } from './BluetoothTransactions';
-import ExpoBluetooth from './ExpoBluetooth';
+import ExpoBluetoothModule from './ExpoBluetooth';
 import Transaction from './Transaction';
-import BluetoothError from './BluetoothError';
+import BluetoothError from './errors/BluetoothError';
 export * from './Bluetooth.types';
+function platformModuleWithCustomErrors(platformModule) {
+    const platform = {};
+    for (const property of Object.keys(platformModule)) {
+        if (typeof platformModule[property] !== 'function') {
+            Object.defineProperty(platform, property, {
+                get() {
+                    return platformModule[property];
+                }
+            });
+        }
+        else {
+            platform[property] = methodWithTransformedError(platformModule[property], property);
+        }
+    }
+    Object.freeze(platform);
+    return platform;
+}
+function methodWithTransformedError(method, methodName) {
+    /** Stack trace without async layers */
+    const stack = decodeURI(new Error().stack || "");
+    return async (...props) => {
+        try {
+            console.log(`EXBLE: invoke: ${methodName}()`);
+            return await method(...props);
+        }
+        catch ({ message, code, ...props }) {
+            if (code.indexOf('ERR_BLE_GATT:') > -1) {
+                const gattStatusCode = code.split(':')[1];
+                throw new AndroidGATTError({ gattStatusCode, stack, invokedMethod: methodName });
+            }
+            throw new BluetoothError({ message, code, ...props, invokedMethod: methodName, stack });
+        }
+    };
+}
+export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
+    const nStack = stack || new Error().stack;
+    if (code.indexOf('ERR_BLE_GATT:') > -1) {
+        const gattStatusCode = code.split(':')[1];
+        return new AndroidGATTError({ gattStatusCode, stack: nStack, invokedMethod });
+    }
+    return null;
+}
+const ExpoBluetooth = platformModuleWithCustomErrors(ExpoBluetoothModule);
 /*
 initializeManagerAsync
 deallocateManagerAsync

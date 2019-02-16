@@ -1,7 +1,9 @@
+import { AndroidGATTError } from './errors/AndroidGATTError';
 import { Subscription } from 'expo-core';
 import { Base64, Priority, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, EVENTS, TYPES } from './BluetoothConstants';
 export * from './Bluetooth.types';
+export declare function _getGATTStatusError(code: any, invokedMethod: any, stack?: undefined): AndroidGATTError | null;
 export { BLUETOOTH_EVENT, TYPES, EVENTS };
 declare type ScanOptions = {
     serviceUUIDsToQuery?: string[];
