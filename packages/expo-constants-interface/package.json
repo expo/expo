@@ -1,6 +1,6 @@
 {
   "name": "expo-constants-interface",
-  "version": "2.0.0",
+  "version": "2.1.0-alpha.0",
   "description": "Expo Constants interface package",
   "main": "index.js",
   "keywords": [
