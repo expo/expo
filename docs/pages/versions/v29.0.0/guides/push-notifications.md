@@ -136,7 +136,7 @@ export default class AppContainer extends React.Component {
 
 ### Notification handling timing
 
-It's not entirely clear from the above when your app will be able to handle the notification depending on it's state at the time the notification is received. For clarification, see the following table:
+It's not entirely clear from the above when your app will be able to handle the notification depending on it's state at the time the notification is received. For clarification, see the table below. `Exponent.notification` refers to a notification that can be picked up using `Notifications.addListener`, as shown in the example above.
 
 | Push was received when...                       | Android           | iOS               |
 | ------------------------------------------------|:-----------------:| -----------------:|
