@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "32.0.5",
+  "version": "32.0.6",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "bin": {
@@ -48,7 +48,7 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.1.2",
-    "@expo/vector-icons": "github:expo/vector-icons#expo-font-fix",
+    "@expo/vector-icons": "~9.0.0",
     "@expo/websql": "^1.0.1",
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.29",
