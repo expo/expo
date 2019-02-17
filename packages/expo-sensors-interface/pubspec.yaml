@@ -1,14 +1,15 @@
-name: expo_sensors_interface
+name: EXSensorsInterface
 description: Expo Sensors Interface standalone module
 version: 1.0.0
 author: 650 Industries, Inc.
 homepage: https://docs.expo.io
 
+environment:
+  sdk: ">=2.0.0-dev.58.0 <3.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
-  expo_core:
-    path: ../expo-core
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
