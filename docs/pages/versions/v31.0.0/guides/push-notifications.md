@@ -142,8 +142,8 @@ It's not entirely clear from the above when your app will be able to handle the 
 | ------------------------------------------------|:-----------------:| -----------------:|
 | App is open and foregrounded                    | Exponent.notification: origin: "received", data: Object | Same as Android
 | App is open and backgrounded                    | Can only be handled if the notification is selected. If it is dismissed, app cannot know it was received. | Same as Android
-| App is open and backgrounded, then foregrounded by selecting the notification | Exponent.notification: origin: "selected" | Exponent.notification: origin: "received" |
-| App was not open, and then opened by selecting the push notification | Passed as props.exp.notification on app root component | props.exp.notification: origin: "selected" | props.exp.notification | props.exp.notification: origin: "received" |
+| App is open and backgrounded, then foregrounded by selecting the notification | Exponent.notification: origin: "selected" | Same as Android |
+| App was not open, and then opened by selecting the push notification | Exponent.notification: origin: "selected" | Same as Android |
 | App was not open, and then opened by tapping the home screen icon | Can only be handled if the notification is selected. If it is dismissed, the app cannot know it was received. | Same as Android
 
 ## HTTP/2 API
