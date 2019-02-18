@@ -13,6 +13,7 @@ export default class AudioPlayer extends React.Component {
     durationMillis: 0,
     rate: 1,
     shouldCorrectPitch: false,
+    pitchCorrectionQuality: Audio.PitchCorrectionQuality.Low,
   };
 
   componentDidMount() {
@@ -50,8 +51,12 @@ export default class AudioPlayer extends React.Component {
 
   _setIsMutedAsync = async isMuted => await this._sound.setIsMutedAsync(isMuted);
 
-  _setRateAsync = async (rate, shouldCorrectPitch) => {
-    await this._sound.setRateAsync(rate, shouldCorrectPitch, Audio.PitchCorrectionQuality.High);
+  _setRateAsync = async (
+    rate,
+    shouldCorrectPitch,
+    pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low
+  ) => {
+    await this._sound.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
   };
 
   render() {

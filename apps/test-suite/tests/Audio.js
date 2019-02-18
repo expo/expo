@@ -559,6 +559,7 @@ export function test(t) {
       let rate = 0;
       let shouldError = false;
       let shouldCorrectPitch = false;
+      let pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low;
 
       t.beforeEach(async () => {
         const rate = 0.9;
@@ -574,6 +575,7 @@ export function test(t) {
           const status = await soundObject.setRateAsync(rate, shouldCorrectPitch);
           t.expect(status.rate).toBeCloseTo(rate, 2);
           t.expect(status.shouldCorrectPitch).toBe(shouldCorrectPitch);
+          t.expect(status.pitchCorrectionQuality).toBe(pitchCorrectionQuality);
         } catch (error) {
           hasBeenRejected = true;
         }
@@ -593,6 +595,20 @@ export function test(t) {
       t.it('sets rate with shouldCorrectPitch = false', async () => {
         rate = 0.75;
         shouldCorrectPitch = false;
+      });
+
+      t.it('sets pitchCorrectionQuality to Low', async () => {
+        rate = 0.5;
+        shouldCorrectPitch = true;
+        pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low;
+      });
+
+      t.it('sets pitchCorrectionQuality to Medium', async () => {
+        pitchCorrectionQuality = Audio.PitchCorrectionQuality.Medium;
+      });
+
+      t.it('sets pitchCorrectionQuality to High', async () => {
+        pitchCorrectionQuality = Audio.PitchCorrectionQuality.High;
       });
 
       t.it('rejects too high rate', async () => {
