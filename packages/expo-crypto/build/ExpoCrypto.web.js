@@ -14,7 +14,7 @@ export default {
         else if (options.encoding === CryptoEncoding.BASE64) {
             return btoa(String.fromCharCode(...new Uint8Array(hashedData)));
         }
-        throw new CodedError('ERR_CRYPTO', 'Invalid encoding type provided.');
+        throw new CodedError('ERR_CRYPTO_DIGEST', 'Invalid encoding type provided.');
     },
 };
 function hexString(buffer) {

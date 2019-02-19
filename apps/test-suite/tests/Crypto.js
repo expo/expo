@@ -38,6 +38,18 @@ function supportedAlgorithm(algorithm) {
 export async function test({ describe, it, expect }) {
   describe('Crypto', () => {
     describe('digestStringAsync()', async () => {
+      describe(`Invalid CryptoEncoding throws an error`, async () => {
+        let error = null;
+        try {
+          await Crypto.digestStringAsync(CryptoDigestAlgorithm.SHA1, testValue, {
+            encoding: 'INVALID',
+          });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
+
       for (const encodingEntry of Object.entries(CryptoEncoding)) {
         const [encodingKey, encoding] = encodingEntry;
         describe(`Encoded with CryptoEncoding.${encodingKey}`, () => {
@@ -48,7 +60,6 @@ export async function test({ describe, it, expect }) {
               if (supportedAlgorithm(algorithm)) {
                 const value = await Crypto.digestStringAsync(algorithm, testValue, { encoding });
                 expect(value).toBe(targetValue);
-                console.log('value:', key, value, targetValue);
               } else {
                 let error = null;
                 try {
