@@ -20,6 +20,7 @@ import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
+import expo.modules.crypto.CryptoPackage;
 import expo.modules.documentpicker.DocumentPickerPackage;
 import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
@@ -65,6 +66,7 @@ public class ExperiencePackagePicker {
       new CameraPackage(),
       new ConstantsPackage(),
       new ContactsPackage(),
+      new CryptoPackage(),
       new DocumentPickerPackage(),
       new FacebookPackage(),
       new FaceDetectorPackage(),

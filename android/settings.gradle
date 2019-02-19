@@ -47,6 +47,7 @@ def includeUniversalModule = { name ->
     'expo-constants-interface',
     'expo-contacts',
     'expo-core',
+    'expo-crypto',
     'expo-document-picker',
     'expo-errors',
     'expo-face-detector',

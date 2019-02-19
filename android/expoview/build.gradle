@@ -149,6 +149,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-camera:2.0.0'
   compileOnly 'host.exp.exponent:expo-camera-interface:2.0.0'
   compileOnly 'host.exp.exponent:expo-contacts:2.0.0'
+  compileOnly 'host.exp.exponent:expo-crypto:1.0.0'
   compileOnly 'host.exp.exponent:expo-face-detector:2.0.0'
   compileOnly 'host.exp.exponent:expo-facebook:1.0.0'
   compileOnly 'host.exp.exponent:expo-font:2.0.0'
@@ -212,6 +213,7 @@ dependencies {
   api project(':expo-camera')
   api project(':expo-camera-interface')
   api project(':expo-contacts')
+  api project(':expo-crypto')
   api project(':expo-facebook')
   api project(':expo-face-detector')
   api project(':expo-file-system')
