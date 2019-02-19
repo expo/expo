@@ -24,7 +24,8 @@ async function getTestModulesAsync() {
   if (Platform.OS === 'web') {
     return [
       require('./tests/Import1'),
-      require('./tests/Random')
+      require('./tests/Crypto'),
+      require('./tests/Random'),
     ];
   }
 
@@ -39,6 +40,7 @@ async function getTestModulesAsync() {
     require('./tests/Calendar'),
     require('./tests/Constants'),
     require('./tests/Contacts'),
+    require('./tests/Crypto'),
     require('./tests/FileSystem'),
     require('./tests/GoogleSignIn'),
     require('./tests/Haptics'),

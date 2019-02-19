@@ -127,6 +127,7 @@ module.exports = {
           { key: 7, argumentsCount: 0, name: 'setSystemBrightnessModeAsync' },
         ],
         ExpoRandom: [{ key: 0, argumentsCount: 1, name: 'getRandomBase64StringAsync' }],
+        ExpoCrypto: [{ key: 0, argumentsCount: 3, name: 'digestStringAsync' }],
         ExpoContacts: [
           { key: 0, argumentsCount: 0, name: 'getDefaultContainerIdentifierAsync' },
           { key: 1, argumentsCount: 2, name: 'addExistingGroupToContainerAsync' },

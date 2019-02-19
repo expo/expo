@@ -68,6 +68,8 @@ export { LocalAuthentication };
 export { IntentLauncher };
 import * as Localization from 'expo-localization';
 export { Localization };
+import * as Crypto from 'expo-crypto';
+export { Crypto };
 export { Location };
 import * as MediaLibrary from 'expo-media-library';
 export { MediaLibrary };
