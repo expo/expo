@@ -38,7 +38,7 @@ function supportedAlgorithm(algorithm) {
 export async function test({ describe, it, expect }) {
   describe('Crypto', () => {
     describe('digestStringAsync()', async () => {
-      describe(`Invalid CryptoEncoding throws an error`, async () => {
+      it(`Invalid CryptoEncoding throws an error`, async () => {
         let error = null;
         try {
           await Crypto.digestStringAsync(CryptoDigestAlgorithm.SHA1, testValue, {
