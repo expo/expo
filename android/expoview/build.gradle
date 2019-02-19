@@ -117,60 +117,64 @@ dependencies {
   // Current react native
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:32.0.0'
+  api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
   api 'host.exp.exponent:expo-core:2.0.0'
   api 'host.exp.exponent:expo-constants:2.0.0'
   api 'host.exp.exponent:expo-constants-interface:2.0.0'
   api 'host.exp.exponent:expo-document-picker:1.0.0'
   api 'host.exp.exponent:expo-errors:1.0.0'
-  api 'host.exp.exponent:expo-permissions:2.0.0'
-  api 'host.exp.exponent:expo-sensors-interface:2.0.0'
-  api 'host.exp.exponent:expo-permissions-interface:2.0.0'
-  api 'host.exp.exponent:expo-react-native-adapter:2.0.0'
   api 'host.exp.exponent:expo-file-system:2.0.0'
   api 'host.exp.exponent:expo-file-system-interface:2.0.0'
+  api 'host.exp.exponent:expo-permissions:2.0.0'
+  api 'host.exp.exponent:expo-permissions-interface:2.0.0'
+  api 'host.exp.exponent:expo-react-native-adapter:2.0.0'
+  api 'host.exp.exponent:expo-secure-store:1.0.0'
+  api 'host.exp.exponent:expo-sensors-interface:2.0.0'
   api 'host.exp.exponent:expo-task-manager:1.0.0'
   api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
-  api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
-  api 'host.exp.exponent:expo-secure-store:1.0.0'
 
   // Optional universal modules
-  compileOnly 'host.exp.exponent:expo-analytics-amplitude:1.0.0'
-  compileOnly 'host.exp.exponent:expo-app-auth:2.0.0'
-  compileOnly 'host.exp.exponent:expo-av:1.0.0'
-  compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0'
-  compileOnly 'host.exp.exponent:expo-gl:2.0.0'
-  compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0'
-  compileOnly 'host.exp.exponent:expo-sms:2.0.0'
-  compileOnly 'host.exp.exponent:expo-keep-awake:1.0.0'
-  compileOnly 'host.exp.exponent:expo-linear-gradient:1.0.0'
-  compileOnly 'host.exp.exponent:expo-print:2.0.0'
-  compileOnly 'host.exp.exponent:expo-media-library:2.0.0'
-  compileOnly 'host.exp.exponent:expo-analytics-segment:2.0.0'
-  compileOnly 'host.exp.exponent:expo-font:2.0.0'
-  compileOnly 'host.exp.exponent:expo-google-sign-in:2.0.0'
-  compileOnly 'host.exp.exponent:expo-location:2.0.1'
-  compileOnly 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
-  compileOnly 'host.exp.exponent:expo-barcode-scanner:2.0.0'
-  compileOnly 'host.exp.exponent:expo-contacts:2.0.0'
   compileOnly 'host.exp.exponent:expo-ads-admob:2.0.0'
   compileOnly 'host.exp.exponent:expo-ads-facebook:1.0.0'
-  compileOnly 'host.exp.exponent:expo-local-authentication:2.0.0'
-  compileOnly 'host.exp.exponent:expo-localization:2.0.0'
-  compileOnly 'host.exp.exponent:expo-react-native-adapter:2.0.0'
+  compileOnly 'host.exp.exponent:expo-analytics-amplitude:1.0.0'
+  compileOnly 'host.exp.exponent:expo-analytics-segment:2.0.0'
+  compileOnly 'host.exp.exponent:expo-app-auth:2.0.0'
+  compileOnly 'host.exp.exponent:expo-av:1.0.0'
+  compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0'
+  compileOnly 'host.exp.exponent:expo-barcode-scanner:2.0.0'
+  compileOnly 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
+  compileOnly 'host.exp.exponent:expo-blur:1.0.0'
+  compileOnly 'host.exp.exponent:expo-brightness:1.0.0'
   compileOnly 'host.exp.exponent:expo-calendar:1.0.0'
   compileOnly 'host.exp.exponent:expo-camera:2.0.0'
   compileOnly 'host.exp.exponent:expo-camera-interface:2.0.0'
-  compileOnly 'host.exp.exponent:expo-sensors:2.0.0'
-  compileOnly 'host.exp.exponent:expo-sensors-interface:2.0.0'
-  compileOnly 'host.exp.exponent:expo-speech:1.0.0'
+  compileOnly 'host.exp.exponent:expo-contacts:2.0.0'
+  compileOnly 'host.exp.exponent:expo-crypto:1.0.0'
   compileOnly 'host.exp.exponent:expo-face-detector:2.0.0'
-  compileOnly 'host.exp.exponent:expo-payments-stripe:2.0.0'
-  compileOnly 'host.exp.exponent:expo-permissions:2.0.0'
-  compileOnly 'host.exp.exponent:expo-permissions-interface:2.0.0'
-  compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0'
-  compileOnly 'host.exp.exponent:expo-mail-composer:1.0.0'
-  compileOnly 'host.exp.exponent:expo-sqlite:1.0.0'
+  compileOnly 'host.exp.exponent:expo-facebook:1.0.0'
+  compileOnly 'host.exp.exponent:expo-font:2.0.0'
+  compileOnly 'host.exp.exponent:expo-gl:2.0.0'
+  compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0'
+  compileOnly 'host.exp.exponent:expo-google-sign-in:2.0.0'
+  compileOnly 'host.exp.exponent:expo-haptics:1.0.0'
+  compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0'
+  compileOnly 'host.exp.exponent:expo-image-manipulator:1.0.0'
   compileOnly 'host.exp.exponent:expo-image-picker:1.0.0'
+  compileOnly 'host.exp.exponent:expo-intent-launcher:1.0.0'
+  compileOnly 'host.exp.exponent:expo-keep-awake:1.0.0'
+  compileOnly 'host.exp.exponent:expo-linear-gradient:1.0.0'
+  compileOnly 'host.exp.exponent:expo-local-authentication:2.0.0'
+  compileOnly 'host.exp.exponent:expo-localization:2.0.0'
+  compileOnly 'host.exp.exponent:expo-location:2.0.1'
+  compileOnly 'host.exp.exponent:expo-mail-composer:1.0.0'
+  compileOnly 'host.exp.exponent:expo-media-library:2.0.0'
+  compileOnly 'host.exp.exponent:expo-payments-stripe:2.0.0'
+  compileOnly 'host.exp.exponent:expo-print:2.0.0'
+  compileOnly 'host.exp.exponent:expo-random:1.0.0'
+  compileOnly 'host.exp.exponent:expo-sensors:2.0.0'
+  compileOnly 'host.exp.exponent:expo-sms:2.0.0'
+  compileOnly 'host.exp.exponent:expo-speech:1.0.0'
+  compileOnly 'host.exp.exponent:expo-sqlite:1.0.0'
   compileOnly 'host.exp.exponent:expo-web-browser:1.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -178,7 +182,7 @@ dependencies {
   api project(':ReactAndroid')
 
   // Universal modules
-  api project(':expo-react-native-adapter')
+  api project(':expo-app-loader-provider')
   api project(':expo-core')
   api project(':expo-constants')
   api project(':expo-constants-interface')
@@ -190,7 +194,6 @@ dependencies {
   api project(':expo-sensors-interface')
   api project(':expo-task-manager')
   api project(':expo-task-manager-interface')
-  api project(':expo-app-loader-provider')
 
   // Optional universal modules
   // They're defined as "api" so we don't have to define them again in app/build.gradle
@@ -210,6 +213,7 @@ dependencies {
   api project(':expo-camera')
   api project(':expo-camera-interface')
   api project(':expo-contacts')
+  api project(':expo-crypto')
   api project(':expo-facebook')
   api project(':expo-face-detector')
   api project(':expo-file-system')
@@ -218,8 +222,11 @@ dependencies {
   api project(':expo-gl')
   api project(':expo-gl-cpp')
   api project(':expo-google-sign-in')
+  api project(':expo-haptics')
   api project(':expo-image-loader-interface')
+  api project(':expo-image-manipulator')
   api project(':expo-image-picker')
+  api project(':expo-intent-launcher')
   api project(':expo-keep-awake')
   api project(':expo-linear-gradient')
   api project(':expo-local-authentication')
@@ -229,6 +236,7 @@ dependencies {
   api project(':expo-media-library')
   api project(':expo-payments-stripe')
   api project(':expo-print')
+  api project(':expo-random')
   api project(':expo-secure-store')
   api project(':expo-sensors')
   api project(':expo-sms')

@@ -2,10 +2,6 @@
 title: Using GraphQL
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ## Overview
 
 [GraphQL](http://graphql.org/) is a *query language* for APIs. It enables declarative data fetching and thus ties in perfectly with React/React Native as a declarative framework for building user interfaces. GraphQL can either complement or entirely replace the usage of REST APIs.

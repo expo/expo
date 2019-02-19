@@ -20,6 +20,7 @@ import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
+import expo.modules.crypto.CryptoPackage;
 import expo.modules.documentpicker.DocumentPickerPackage;
 import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
@@ -27,7 +28,10 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.haptics.HapticsPackage;
+import expo.modules.imagemanipulator.ImageManipulatorPackage;
 import expo.modules.imagepicker.ImagePickerPackage;
+import expo.modules.intentlauncher.IntentLauncherPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
@@ -38,6 +42,7 @@ import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
+import expo.modules.random.RandomPackage;
 import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
@@ -61,14 +66,18 @@ public class ExperiencePackagePicker {
       new CameraPackage(),
       new ConstantsPackage(),
       new ContactsPackage(),
+      new CryptoPackage(),
       new DocumentPickerPackage(),
-      new FaceDetectorPackage(),
       new FacebookPackage(),
+      new FaceDetectorPackage(),
       new FileSystemPackage(),
       new FontLoaderPackage(),
       new GLPackage(),
       new GoogleSignInPackage(),
+      new HapticsPackage(),
+      new ImageManipulatorPackage(),
       new ImagePickerPackage(),
+      new IntentLauncherPackage(),
       new KeepAwakePackage(),
       new LinearGradientPackage(),
       new LocalAuthenticationPackage(),
@@ -78,6 +87,7 @@ public class ExperiencePackagePicker {
       new MediaLibraryPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
+      new RandomPackage(),
       new SMSPackage(),
       new SQLitePackage(),
       new SecureStorePackage(),

@@ -26,10 +26,10 @@ afterEvaluate {
   // Based on https://github.com/facebook/react-native/blob/master/react.gradle
 
   android.applicationVariants.each { variant ->
-    def targetName = variant.name.capitalize()
-    def targetPath = variant.dirName
+    def folderName = variant.name
+    def targetName = folderName.capitalize()
 
-    def assetsDir = file("$buildDir/intermediates/assets/${targetPath}")
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
 
     // Bundle task name for variant
     def bundleExpoAssetsTaskName = "bundle${targetName}ExpoAssets"

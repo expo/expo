@@ -2,10 +2,6 @@
 title: Using FCM for Push Notifications
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Firebase Cloud Messaging is a popular option for delivering push notifications reliably and is required for all new standalone Android apps made with Expo. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
 
 Note that FCM is not currently available for Expo iOS apps.

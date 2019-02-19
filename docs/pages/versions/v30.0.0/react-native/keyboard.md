@@ -3,10 +3,6 @@ id: keyboard
 title: Keyboard
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `Keyboard` module to control keyboard events.
 
 ### Usage
@@ -77,7 +73,7 @@ The `addListener` function connects a JavaScript function to an identified nativ
 
 This function then returns the reference to the listener.
 
-@param ${"{"}string${"}"} eventName The `nativeEvent` is the string that identifies the event you're listening for. This can be any of the following:
+@param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for. This can be any of the following:
 
 * `keyboardWillShow`
 * `keyboardDidShow`
@@ -88,7 +84,7 @@ This function then returns the reference to the listener.
 
 Note that if you set `android:windowSoftInputMode` to `adjustResize` or `adjustNothing`, only `keyboardDidShow` and `keyboardDidHide` events will be available on Android. `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android since there is no native corresponding event.
 
-@param ${"{"}function${"}"} callback function to be called when the event fires.
+@param {function} callback function to be called when the event fires.
 
 ---
 
@@ -104,7 +100,7 @@ static removeListener(eventName, callback)
 
 Removes a specific listener.
 
-@param ${"{"}string${"}"} eventName The `nativeEvent` is the string that identifies the event you're listening for. @param ${"{"}function${"}"} callback function to be called when the event fires.
+@param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for. @param {function} callback function to be called when the event fires.
 
 ---
 
@@ -120,7 +116,7 @@ static removeAllListeners(eventName)
 
 Removes all listeners for a specific event type.
 
-@param ${"{"}string${"}"} eventType The native event string listeners are watching which will be removed.
+@param {string} eventType The native event string listeners are watching which will be removed.
 
 ---
 

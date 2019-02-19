@@ -3,10 +3,6 @@ id: shadow-props
 title: Shadow Props
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [`shadowColor`](../shadow-props/#shadowcolor)
@@ -36,7 +32,7 @@ Sets the drop shadow offset
 
 | Type                                   | Required | Platform |
 | -------------------------------------- | -------- | -------- |
-| object: ${"{"}width: number,height: number${"}"} | No       | iOS      |
+| object: {width: number,height: number} | No       | iOS      |
 
 ---
 

@@ -3,10 +3,6 @@ id: webview
 title: WebView
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `WebView` renders web content in a native view.
 
 
@@ -411,11 +407,11 @@ Boolean value that determines whether the web view bounces when it reaches the e
 
 ### `contentInset`
 
-The amount by which the web view content is inset from the edges of the scroll view. Defaults to ${"{"}top: 0, left: 0, bottom: 0, right: 0${"}"}.
+The amount by which the web view content is inset from the edges of the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
 
 | Type                                                               | Required | Platform |
 | ------------------------------------------------------------------ | -------- | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       | iOS      |
+| object: {top: number, left: number, bottom: number, right: number} | No       | iOS      |
 
 ---
 

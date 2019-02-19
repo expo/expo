@@ -2,10 +2,6 @@
 title: registerRootComponent
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### `Expo.registerRootComponent(component)`
 
 Sets the main component for Expo to use for your app.

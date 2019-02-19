@@ -3,10 +3,6 @@ id: height-and-width
 title: Height and Width
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A component's height and width determine its size on the screen.
 
 ## Fixed Dimensions

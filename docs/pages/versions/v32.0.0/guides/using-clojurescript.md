@@ -5,10 +5,6 @@ previous___FILE: ./upgrading-expo.md
 next___FILE: ./using-firebase.md
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ## Quickstart
 
 If you're already convinced about ClojureScript and Expo and know what to do once you have figwheel running, you can just read this section. Otherwise, we encourage you to read the entire guide.

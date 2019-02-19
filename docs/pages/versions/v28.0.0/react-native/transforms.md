@@ -3,10 +3,6 @@ id: transforms
 title: Transforms
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [`decomposedMatrix`](../transforms/#decomposedmatrix)
@@ -72,7 +68,7 @@ The skew transformations require a string so that the transform may be expressed
 
 | Type                                                                                                                                                                                                                                                                                                                                                    | Required |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| array of object: ${"{"}perspective: number${"}"}, ,object: ${"{"}rotate: string${"}"}, ,object: ${"{"}rotateX: string${"}"}, ,object: ${"{"}rotateY: string${"}"}, ,object: ${"{"}rotateZ: string${"}"}, ,object: ${"{"}scale: number${"}"}, ,object: ${"{"}scaleX: number${"}"}, ,object: ${"{"}scaleY: number${"}"}, ,object: ${"{"}translateX: number${"}"}, ,object: ${"{"}translateY: number${"}"}, ,object: ${"{"}skewX: string${"}"}, ,object: ${"{"}skewY: string${"}"} | No       |
+| array of object: {perspective: number}, ,object: {rotate: string}, ,object: {rotateX: string}, ,object: {rotateY: string}, ,object: {rotateZ: string}, ,object: {scale: number}, ,object: {scaleX: number}, ,object: {scaleY: number}, ,object: {translateX: number}, ,object: {translateY: number}, ,object: {skewX: string}, ,object: {skewY: string} | No       |
 
 ---
 

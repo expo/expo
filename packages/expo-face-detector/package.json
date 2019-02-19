@@ -2,7 +2,16 @@
   "name": "expo-face-detector",
   "version": "2.0.0",
   "description": "Expo Face Detector standalone universal module",
-  "main": "index.js",
+  "main": "build/FaceDetector.js",
+  "types": "build/FaceDetector.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -10,16 +19,26 @@
     "face",
     "detection"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-face-detector",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-face-detector-interface": "~2.0.0",
     "expo-permissions-interface": "~2.0.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
+    "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

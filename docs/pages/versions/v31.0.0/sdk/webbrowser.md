@@ -2,10 +2,7 @@
 title: WebBrowser
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 Provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
 
@@ -24,7 +21,7 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 
 #### Arguments
 
-- **url : `string`** -- The url to open in the web browser.
+- **url (_string_)** -- The url to open in the web browser.
 
 #### Returns
 
@@ -40,8 +37,8 @@ the given url.
 
 #### Arguments
 
-- **url : `string`** -- The url to open in the web browser. This should be a login page.
-- **redirectUrl : `string`** -- **Optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](../constants/#constantslinkinguri)
+- **url (_string_)** -- The url to open in the web browser. This should be a login page.
+- **redirectUrl (_string_)** -- **Optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](../constants/#constantslinkinguri)
 
 Returns a Promise:
 

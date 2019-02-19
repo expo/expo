@@ -15,9 +15,4 @@ Pod::Spec.new do |s|
   s.source_files   = 'EXPermissionsInterface/**/*.{h,m}'
   s.preserve_paths = 'EXPermissionsInterface/**/*.{h,m}'
   s.requires_arc   = true
-
-  s.dependency 'EXCore'
-
 end
-
-  

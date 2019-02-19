@@ -2,10 +2,6 @@
 title: Brightness
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API to get and set screen brightness.
 
 ### `Expo.Brightness.setBrightness(brightnessValue)`
@@ -13,7 +9,7 @@ Sets screen brightness.
 
 #### Arguments
 
--   **brightnessValue : `number`** -- A number between 0 and 1, representing the desired screen brightness.
+-   **brightnessValue (_number_)** -- A number between 0 and 1, representing the desired screen brightness.
 
 ### `Expo.Brightness.getBrightnessAsync()`
 Gets screen brightness.
@@ -28,7 +24,7 @@ Sets global system screen brightness, requires `WRITE_SETTINGS` permissions on A
 
 #### Arguments
 
--   **brightnessValue : `number`** -- A number between 0 and 1, representing the desired screen brightness.
+-   **brightnessValue (_number_)** -- A number between 0 and 1, representing the desired screen brightness.
 
 #### Example
 

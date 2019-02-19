@@ -42,10 +42,14 @@ export default class ImageManipulatorScreen extends React.Component {
             <Button style={styles.button} onPress={() => this._rotate(-90)}>
               -90
             </Button>
-            <Button style={styles.button} onPress={() => this._flip({ horizontal: true })}>
+            <Button
+              style={styles.button}
+              onPress={() => this._flip(ImageManipulator.FlipType.Horizontal)}>
               Flip horizontal
             </Button>
-            <Button style={styles.button} onPress={() => this._flip({ vertical: true })}>
+            <Button
+              style={styles.button}
+              onPress={() => this._flip(ImageManipulator.FlipType.Vertical)}>
               Flip vertical
             </Button>
             <Button style={styles.button} onPress={() => this._resize({ width: 250 })}>
@@ -102,7 +106,7 @@ export default class ImageManipulatorScreen extends React.Component {
       return;
     }
     this.setState({ image: result });
-  }
+  };
 
   _rotate = async deg => {
     await this._manipulate([{ rotate: deg }]);
@@ -136,7 +140,7 @@ export default class ImageManipulatorScreen extends React.Component {
   _combo = async () => {
     await this._manipulate([
       { rotate: 180 },
-      { flip: { vertical: true } },
+      { flip: ImageManipulator.FlipType.Vertical },
       {
         crop: {
           originX: this.state.image.width / 4,

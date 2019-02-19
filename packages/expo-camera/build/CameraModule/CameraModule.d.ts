@@ -41,5 +41,6 @@ declare class CameraModule {
     takePicture(config: PictureOptions): CapturedPicture;
     pausePreview(): void;
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
+    unmount: () => void;
 }
 export default CameraModule;

@@ -2,18 +2,37 @@
   "name": "expo-analytics-segment",
   "version": "2.0.0",
   "description": "Expo module that provides access to Segment mobile analytics",
-  "main": "index.js",
+  "main": "build/Segment.js",
+  "types": "build/Segment.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "segment",
+    "analytics"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
-    "expo-core": "~2.0.0"
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-analytics-segment",
+  "jest": {
+    "preset": "expo-module-scripts"
   },
   "peerDependencies": {
+    "expo-core": "~2.0.0",
     "expo-constants-interface": "~2.0.0"
   },
   "devDependencies": {

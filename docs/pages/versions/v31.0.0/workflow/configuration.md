@@ -2,10 +2,6 @@
 title: Configuration with app.json
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `app.json` is your go-to place for configuring parts of your app that don't belong in code. It is located at the root of your project next to your `package.json`. It looks something like this:
 
 ```javascript
@@ -152,15 +148,15 @@ Configuration for android statusbar.
 ```javascript
 {
   "androidStatusBar": {
-    /* 
-      Configure the statusbar icons to have light or dark color. 
+    /*
+      Configure the statusbar icons to have light or dark color.
       Valid values: "light-content", "dark-content".
     */
     "barStyle": STRING,
 
-    /* 
+    /*
       Configuration for android statusbar.
-      6 character long hex color string, eg: "#000000" 
+      6 character long hex color string, eg: "#000000"
     */
     "backgroundColor": STRING
   }
@@ -174,22 +170,22 @@ Configuration for loading and splash screen for standalone apps.
 ```javascript
 {
   "splash": {
-    /* 
+    /*
       Color to fill the loading screen background
-      6 character long hex color string, eg: "#000000" 
+      6 character long hex color string, eg: "#000000"
     */
     "backgroundColor": STRING,
 
-    /* 
-      Determines how the "image" will be displayed in the splash loading screen. 
-      Must be one of "cover" or "contain", defaults to `contain`. 
-      Valid values: "cover", "contain" 
+    /*
+      Determines how the "image" will be displayed in the splash loading screen.
+      Must be one of "cover" or "contain", defaults to `contain`.
+      Valid values: "cover", "contain"
     */
     "resizeMode": STRING,
 
-    /* 
+    /*
       Local path or remote url to an image.
-      Will fill the background of the loading/splash screen. 
+      Will fill the background of the loading/splash screen.
       Image size and aspect ratio are up to you. Must be a .png.
     */
     "image": STRING
@@ -207,27 +203,27 @@ Configuration for remote (push) notifications.
 ```javascript
 {
   "notification": {
-    /* 
-      Local path or remote url to an image to use as the icon for push notifications. 
+    /*
+      Local path or remote url to an image to use as the icon for push notifications.
       96x96 png grayscale with transparency.
     */
     "icon": STRING,
 
-    /* 
+    /*
       Tint color for the push notification image when it appears in the notification tray.
-      6 character long hex color string eg: "#000000" 
+      6 character long hex color string eg: "#000000"
     */
     "color": STRING,
 
-    /* 
+    /*
       Show each push notification individually "default" or collapse into one "collapse".
       Valid values: "default", "collapse"
     */
     "androidMode": STRING,
 
-    /* 
-      If "androidMode" is set to "collapse", this title is used for the collapsed notification message. 
-      eg: "#{unread_notifications} new interactions" 
+    /*
+      If "androidMode" is set to "collapse", this title is used for the collapsed notification message.
+      eg: "#{unread_notifications} new interactions"
     */
     "androidCollapsedTitle": STRING
   }
@@ -255,28 +251,28 @@ Configuration for how and when the app should request OTA JavaScript updates
 ```javascript
 {
   "updates": {
-    /* 
+    /*
       If set to false, your standalone app will never download any code.
-      And will only use code bundled locally on the device. 
-      In that case, all updates to your app must be submitted through Apple review. 
+      And will only use code bundled locally on the device.
+      In that case, all updates to your app must be submitted through Apple review.
       Defaults to true.
 
       Note that this will not work out of the box with ExpoKit projects.
     */
     "enabled": BOOLEAN,
 
-    /* 
+    /*
       By default, Expo will check for updates every time the app is loaded.
       Set this to `'ON_ERROR_RECOVERY'` to disable automatic checking unless recovering from an error.
 
-      Must be one of `ON_LOAD` or `ON_ERROR_RECOVERY`. 
+      Must be one of `ON_LOAD` or `ON_ERROR_RECOVERY`.
     */
     "checkAutomatically": STRING,
 
-    /* 
-      How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. 
+    /*
+      How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app.
 
-      Defaults to 30000 (30 sec). Must be between 0 and 300000 (5 minutes). 
+      Defaults to 30000 (30 sec). Must be between 0 and 300000 (5 minutes).
     */
     "fallbackToCacheTimeout": NUMBER
   }
@@ -294,13 +290,13 @@ Configuration for how and when the app should request OTA JavaScript updates
 {
   "ios": {
     /*
-      The bundle identifier for your iOS standalone app. 
-      You make it up, but it needs to be unique on the App Store. 
+      The bundle identifier for your iOS standalone app.
+      You make it up, but it needs to be unique on the App Store.
 
       stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project.
 
-      iOS bundle identifier notation unique name for your app. 
-      For example, host.exp.exponent, where exp.host is our domain 
+      iOS bundle identifier notation unique name for your app.
+      For example, host.exp.exponent, where exp.host is our domain
       and Expo is our app.
 
       ExpoKit: use Xcode to set this.
@@ -308,7 +304,7 @@ Configuration for how and when the app should request OTA JavaScript updates
     "bundleIdentifier": STRING,
 
     /*
-      Build number for your iOS standalone app. Must be a string 
+      Build number for your iOS standalone app. Must be a string
       that matches Apple's format for CFBundleVersion.
 
       developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364.
@@ -318,24 +314,24 @@ Configuration for how and when the app should request OTA JavaScript updates
     "buildNumber": STRING,
 
     /*
-      Local path or remote URL to an image to use for your app's 
-      icon on iOS. If specified, this overrides the top-level "icon" key. 
+      Local path or remote URL to an image to use for your app's
+      icon on iOS. If specified, this overrides the top-level "icon" key.
 
-      Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency. 
+      Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
 
-      Expo will generate the other required sizes. 
+      Expo will generate the other required sizes.
       This icon will appear on the home screen and within the Expo app.
     */
     "icon": STRING,
 
     /*
-      URL to your app on the Apple App Store, if you have deployed it there. 
+      URL to your app on the Apple App Store, if you have deployed it there.
       This is used to link to your store page from your Expo project page if your app is public.
     */
     "appStoreUrl": STRING,
 
     /*
-      Whether your standalone iOS app supports tablet screen sizes. 
+      Whether your standalone iOS app supports tablet screen sizes.
       Defaults to `false`.
 
       ExpoKit: use Xcode to set this.
@@ -351,7 +347,7 @@ Configuration for how and when the app should request OTA JavaScript updates
     "isTabletOnly": BOOLEAN,
 
     /*
-      Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. 
+      Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration.
 
       No other validation is performed, so use this at your own risk of rejection from the App Store.
     */
@@ -365,7 +361,7 @@ Configuration for how and when the app should request OTA JavaScript updates
     "associatedDomains": ARRAY,
 
     /*
-      A boolean indicating if the app uses iCloud Storage for DocumentPicker. 
+      A boolean indicating if the app uses iCloud Storage for DocumentPicker.
       See DocumentPicker docs for details.
 
       ExpoKit: use Xcode to set this.
@@ -394,14 +390,14 @@ Configuration for how and when the app should request OTA JavaScript updates
       "usesNonExemptEncryption": BOOLEAN,
 
       /*
-        Google Maps iOS SDK key for your standalone app. 
+        Google Maps iOS SDK key for your standalone app.
 
         developers.google.com/maps/documentation/ios-sdk/start
       */
       "googleMapsApiKey": STRING,
 
       /*
-        Google Sign-In iOS SDK keys for your standalone app. 
+        Google Sign-In iOS SDK keys for your standalone app.
 
         developers.google.com/identity/sign-in/ios/start-integrating
       */
@@ -421,22 +417,22 @@ Configuration for how and when the app should request OTA JavaScript updates
       "backgroundColor": STRING,
 
       /*
-        Determines how the "image" will be displayed in the splash loading screen. 
+        Determines how the "image" will be displayed in the splash loading screen.
         Must be one of "cover" or "contain", defaults to "contain".
         Valid values: "cover", "contain"
       */
       "resizeMode": STRING,
 
       /*
-        Local path or remote url to an image to fill the background of the loading screen. 
-        Image size and aspect ratio are up to you. 
+        Local path or remote url to an image to fill the background of the loading screen.
+        Image size and aspect ratio are up to you.
         Must be a .png.
       */
       "image": STRING,
 
       /*
-        Local path or remote url to an image to fill the background of the loading screen. 
-        Image size and aspect ratio are up to you. 
+        Local path or remote url to an image to fill the background of the loading screen.
+        Image size and aspect ratio are up to you.
         Must be a .png.
       */
       "tabletImage": STRING
@@ -454,12 +450,12 @@ Configuration for how and when the app should request OTA JavaScript updates
 {
   "android": {
     /*
-      The package name for your Android standalone app. 
-      You make it up, but it needs to be unique on the Play Store. 
+      The package name for your Android standalone app.
+      You make it up, but it needs to be unique on the Play Store.
 
       stackoverflow.com/questions/6273892/android-package-name-convention
 
-      Reverse DNS notation unique name for your app. 
+      Reverse DNS notation unique name for your app.
       For example, host.exp.exponent, where exp.host is our domain and Expo is our app.
       The name may only contain lowercase and uppercase letters (a-z, A-Z),
       numbers (0-9) and underscores (_). Each component of the name should start
@@ -471,9 +467,9 @@ Configuration for how and when the app should request OTA JavaScript updates
     "package": STRING,
 
     /*
-      Version number required by Google Play. 
-      Increment by one for each release. 
-      Must be an integer. 
+      Version number required by Google Play.
+      Increment by one for each release.
+      Must be an integer.
       developer.android.com/studio/publish/versioning.html
 
       ExpoKit: this is set in `android/app/build.gradle`.
@@ -481,11 +477,11 @@ Configuration for how and when the app should request OTA JavaScript updates
     "versionCode": NUMBER,
 
     /*
-      Local path or remote url to an image to use for your app's icon on Android. 
-      If specified, this overrides the top-level "icon" key. 
+      Local path or remote url to an image to use for your app's icon on Android.
+      If specified, this overrides the top-level "icon" key.
 
       We recommend that you use a 1024x1024 png file.
-      Transparency is recommended for the Google Play Store. 
+      Transparency is recommended for the Google Play Store.
       This icon will appear on the home screen and within the Expo app.
     */
     "icon": STRING,
@@ -529,7 +525,7 @@ Configuration for how and when the app should request OTA JavaScript updates
     },
 
     /*
-      URL to your app on the Google Play Store, if you have deployed it there. 
+      URL to your app on the Google Play Store, if you have deployed it there.
       This is used to link to your store page from your Expo project page if your app is public.
     */
     "playStoreUrl": STRING,
@@ -543,7 +539,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       To use ONLY the following minimum necessary permissions and none of the extras supported
       by Expo, set "permissions" to []. The minimum necessary permissions do not require a
       Privacy Policy when uploading to Google Play Store and are:
-      
+
       •	receive data from Internet
       •	view network connections
       •	full network access
@@ -555,7 +551,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       specify those extras in "permissions", e.g.
 
       ["CAMERA", "RECORD_AUDIO"]
-      
+
       ExpoKit: to change the permissions your app requests, you'll need to edit
       AndroidManifest.xml manually. To prevent your app from requesting one of the
       permissions listed below, you'll need to explicitly add it to `AndroidManifest.xml`
@@ -649,15 +645,15 @@ Configuration for how and when the app should request OTA JavaScript updates
       */
       "googleSignIn": {
         /*
-          The Android API key. 
-          Can be found in the credentials section of the developer console 
+          The Android API key.
+          Can be found in the credentials section of the developer console
           or in "google-services.json"
         */
         "apiKey": STRING,
 
         /*
-          The SHA-1 hash of the signing certificate used to build the apk without any separator `:`. 
-          Can be found in "google-services.json". 
+          The SHA-1 hash of the signing certificate used to build the apk without any separator `:`.
+          Can be found in "google-services.json".
           developers.google.com/android/guides/client-auth
         */
         "certificateHash": STRING
@@ -675,23 +671,26 @@ Configuration for how and when the app should request OTA JavaScript updates
       "backgroundColor": STRING,
 
       /*
-        Determines how the "image" will be displayed in the splash loading screen. 
-        Must be one of "cover" or "contain", defaults to "contain". 
+        Determines how the "image" will be displayed in the splash loading screen.
+        Must be one of "cover" or "contain", defaults to "contain".
+        Read more about it here: https://docs.expo.io/versions/latest/guides/splash-screens.html#differences-between-environments-android
         Valid values: "cover", "contain"
       */
       "resizeMode": STRING,
 
       /*
-        Local path or remote url to an image to fill the background of the loading screen. 
-        Image size and aspect ratio are up to you. 
-        Must be a .png.
+        Local path or remote url to an image to fill the background of the loading screen in 'cover' mode.
+        Image size and aspect ratio are up to you.
+        Pay extra attention to the size of each image.
+        See here: https://docs.expo.io/versions/latest/guides/splash-screens.html#differences-between-environments-android
+        Must be a .png
+        For more information see https://developer.android.com/training/multiscreen/screendensities
       */
-      "ldpi": STRING,
-      "mdpi": STRING,
-      "hdpi": STRING,
-      "xhdpi": STRING,
-      "xxhdpi": STRING,
-      "xxxhdpi": STRING
+      "mdpi": STRING,   // natural sized image (baseline)
+      "hdpi": STRING,   // scale 1.5x
+      "xhdpi": STRING,  // scale 2x
+      "xxhdpi": STRING, // scale 3x
+      "xxxhdpi": STRING // scale 4x
     },
 
     /*

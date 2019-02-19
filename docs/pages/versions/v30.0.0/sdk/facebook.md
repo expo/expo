@@ -2,10 +2,6 @@
 title: Facebook
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides Facebook integration for Expo apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
 ## Registering your app with Facebook
@@ -47,8 +43,8 @@ Your Facebook application ID. [Facebook's developer documentation](https://devel
 
 A map of options:
 
--   **permissions : `array`** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email', 'user_friends']`.
--   **behavior : `string`** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
+-   **permissions (_array_)** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email', 'user_friends']`.
+-   **behavior (_string_)** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
     -   `'web'` (default) -- Attempts to log in through a modal `UIWebView` pop up.
     -   `'browser'` -- Attempts to log in through Safari or `SFSafariViewController`. This is only supported for standalone apps.
     -   `'native'` -- Attempts to log in through the native Facebook app, but the Facebook SDK may use Safari or Chrome instead. This is only supported for standalone apps.

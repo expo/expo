@@ -2,10 +2,7 @@
 title: AR
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 > ARCore is not yet supported. This lib is iOS only right now.
 > Augmented Reality with ARKit for iOS

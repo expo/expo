@@ -44,77 +44,77 @@ public class AVModule extends ExportedModule implements ModuleRegistryConsumer {
   }
 
   @ExpoMethod
-  void unloadForSound(final Integer key, final Promise promise) {
+  public void unloadForSound(final Integer key, final Promise promise) {
     mAVManager.unloadForSound(key, promise);
   }
 
   @ExpoMethod
-  void setStatusForSound(final Integer key, final ReadableArguments status, final Promise promise) {
+  public void setStatusForSound(final Integer key, final ReadableArguments status, final Promise promise) {
     mAVManager.setStatusForSound(key, status, promise);
   }
 
   @ExpoMethod
-  void replaySound(final Integer key, final ReadableArguments status, final Promise promise) {
+  public void replaySound(final Integer key, final ReadableArguments status, final Promise promise) {
     mAVManager.replaySound(key, status, promise);
   }
 
   @ExpoMethod
-  void getStatusForSound(final Integer key, final Promise promise) {
+  public void getStatusForSound(final Integer key, final Promise promise) {
     mAVManager.getStatusForSound(key, promise);
   }
 
   @ExpoMethod
-  void loadForVideo(final Integer tag, final ReadableArguments source, final ReadableArguments status, final Promise promise) {
+  public void loadForVideo(final Integer tag, final ReadableArguments source, final ReadableArguments status, final Promise promise) {
     mAVManager.loadForVideo(tag, source, status, promise);
   }
 
   @ExpoMethod
-  void unloadForVideo(final Integer tag, final Promise promise) {
+  public void unloadForVideo(final Integer tag, final Promise promise) {
     mAVManager.unloadForVideo(tag, promise);
   }
 
   @ExpoMethod
-  void setStatusForVideo(final Integer tag, final ReadableArguments status, final Promise promise) {
+  public void setStatusForVideo(final Integer tag, final ReadableArguments status, final Promise promise) {
     mAVManager.setStatusForVideo(tag, status, promise);
   }
 
   @ExpoMethod
-  void replayVideo(final Integer tag, final ReadableArguments status, final Promise promise) {
+  public void replayVideo(final Integer tag, final ReadableArguments status, final Promise promise) {
     mAVManager.replayVideo(tag, status, promise);
   }
 
   @ExpoMethod
-  void getStatusForVideo(final Integer tag, final Promise promise) {
+  public void getStatusForVideo(final Integer tag, final Promise promise) {
     mAVManager.getStatusForVideo(tag, promise);
   }
 
   @ExpoMethod
-  void prepareAudioRecorder(final ReadableArguments options, final Promise promise) {
+  public void prepareAudioRecorder(final ReadableArguments options, final Promise promise) {
     mAVManager.prepareAudioRecorder(options, promise);
   }
 
   @ExpoMethod
-  void startAudioRecording(final Promise promise) {
+  public void startAudioRecording(final Promise promise) {
     mAVManager.startAudioRecording(promise);
   }
 
   @ExpoMethod
-  void pauseAudioRecording(final Promise promise) {
+  public void pauseAudioRecording(final Promise promise) {
     mAVManager.pauseAudioRecording(promise);
   }
 
   @ExpoMethod
-  void stopAudioRecording(final Promise promise) {
+  public void stopAudioRecording(final Promise promise) {
     mAVManager.stopAudioRecording(promise);
   }
 
   @ExpoMethod
-  void getAudioRecordingStatus(final Promise promise) {
+  public void getAudioRecordingStatus(final Promise promise) {
     mAVManager.getAudioRecordingStatus(promise);
   }
 
   @ExpoMethod
-  void unloadAudioRecorder(final Promise promise) {
+  public void unloadAudioRecorder(final Promise promise) {
     mAVManager.unloadAudioRecorder(promise);
   }
 }

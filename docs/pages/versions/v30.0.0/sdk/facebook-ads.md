@@ -2,10 +2,6 @@
 title: FacebookAds
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 **Facebook Audience SDK** integration for Expo apps.
 
 ## Creating the placement ID

@@ -3,10 +3,6 @@ id: systrace
 title: Systrace
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Methods
 
 * [`installReactHook`](../systrace/#installreacthook)
@@ -186,5 +182,5 @@ static measure(objName, fnName, func)
 
 Returns a profiled version of the input function. For example, you can: JSON.parse = Systrace.measure('JSON', 'parse', JSON.parse);
 
-@param objName @param fnName @param ${"{"}function${"}"} func @return ${"{"}function${"}"} replacement function
+@param objName @param fnName @param {function} func @return {function} replacement function
 

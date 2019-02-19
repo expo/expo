@@ -3,10 +3,6 @@ id: button
 title: Button
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A basic button component that should render nicely on any platform. Supports a minimal level of customization.
 
 <center><img src="https://facebook.github.io/react-native/docs/assets/buttonExample.png"></img></center>

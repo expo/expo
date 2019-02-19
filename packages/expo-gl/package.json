@@ -20,9 +20,16 @@
     "glview",
     "webgl"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-gl",
   "peerDependencies": {
     "expo-camera-interface": "~2.0.0",
     "expo-core": "~2.0.0",

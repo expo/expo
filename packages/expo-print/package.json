@@ -14,15 +14,23 @@
   },
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "print"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-print",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "homepage": "https://docs.expo.io/",
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-errors": "~1.0.0",
     "babel-preset-expo": "^5.0.0"

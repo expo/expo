@@ -140,21 +140,8 @@ let mainAsync = async () => {
           if (c === '`') {
             inInlineCodeBlock = !inInlineCodeBlock;
           }
-          if (!inInlineCodeBlock) {
-            switch (c) {
-              case '<':
-                if (l.indexOf('|') < 0) {
-                  break;
-                }
-              case '{':
-              case '}':
-                // case '>':
-                nc = '${"' + c + '"}';
-                break;
-              default:
-                nc = c;
-                break;
-            }
+          if (!inInlineCodeBlock && ['<', '>'].includes(c)) {
+            nc = '\\' + c;
           }
           nl += nc;
         }

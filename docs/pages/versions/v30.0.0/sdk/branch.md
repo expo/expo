@@ -2,10 +2,6 @@
 title: Branch
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo includes alpha support for [Branch](https://branch.io/) attribution services.
 
 > **Note:** This API only works with standalone builds created with [expo build](../../distribution/building-standalone-apps/).

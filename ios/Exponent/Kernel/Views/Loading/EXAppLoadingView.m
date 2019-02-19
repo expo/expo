@@ -47,7 +47,10 @@
   _loadingView.frame = self.bounds;
   _vBackgroundImage.frame = self.bounds;
   
-  CGFloat progressHeight = ([self _isIPhoneX]) ? 48.0f : 36.0f;
+  CGFloat progressHeight = 36.0f;
+  if (@available(iOS 11.0, *)) {
+    progressHeight += self.safeAreaInsets.bottom;
+  }
   _vProgress.frame = CGRectMake(0, self.bounds.size.height - progressHeight, self.bounds.size.width, progressHeight);
   if (!_usesSplashFromNSBundle && !_manifest && _vCancel) {
     CGFloat vCancelY = CGRectGetMidY(self.bounds) - 64.0f;
@@ -198,14 +201,6 @@
       self->_vCancel.hidden = YES;
     }
   });
-}
-
-- (BOOL)_isIPhoneX
-{
-  return (
-    [[EXConstantsService deviceModel] isEqualToString:@"iPhone X"] // doesn't work on sim
-    || [UIScreen mainScreen].nativeBounds.size.height == 2436.0f
-  );
 }
 
 #pragma mark - delegate

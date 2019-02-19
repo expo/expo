@@ -2,10 +2,6 @@
 title: TaskManager
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API that allows to manage tasks, especially these running while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of modules using TaskManager:
 
@@ -47,8 +43,8 @@ This limitation is due to the fact that when the application is launched in the 
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task.
--   **task : `function`** -- A function that will be invoked when the task with given **taskName** is executed.
+-   **taskName (_string_)** -- Name of the task.
+-   **task (_function_)** -- A function that will be invoked when the task with given **taskName** is executed.
 
 ### `TaskManager.isTaskRegisteredAsync(taskName)`
 
@@ -56,7 +52,7 @@ Determine whether the task is registered. Registered tasks are stored in a persi
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task.
+-   **taskName (_string_)** -- Name of the task.
 
 #### Returns
 
@@ -68,7 +64,7 @@ Retrieves options associated with the task, that were passed to the function reg
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task.
+-   **taskName (_string_)** -- Name of the task.
 
 #### Returns
 
@@ -110,7 +106,7 @@ Unregisters task from the app, so the app will not be receiving updates for that
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task to unregister.
+-   **taskName (_string_)** -- Name of the task to unregister.
 
 #### Returns
 

@@ -2,10 +2,6 @@
 title: Constants
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 System information that remains constant throughout the lifetime of your app.
 
 ### `Expo.Constants.appOwnership`

@@ -76,6 +76,10 @@ export default class VersionSelector extends React.Component {
         <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
           {this.props.version} <ChevronDownIcon style={{ marginLeft: 8 }} />
         </label>
+        {// hidden links to help test-links spidering
+        VERSIONS.map(v => (
+          <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
+        ))}
         <select
           className={STYLES_SELECT_ELEMENT}
           id="version-menu"

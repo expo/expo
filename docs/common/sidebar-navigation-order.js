@@ -70,6 +70,7 @@ const WORKING_WITH_EXPO = [
 
 const DISTRIBUTION = [
   'Building Standalone Apps',
+  'App signing',
   'Deploying to App Stores',
   'Release Channels',
   'Advanced Release Channels',

@@ -3,10 +3,6 @@ id: dimensions
 title: Dimensions
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Methods
 
 * [`set`](../dimensions/#set)
@@ -32,7 +28,7 @@ static set(dims)
 
 This should only be called from native code by sending the didUpdateDimensions event.
 
-@param ${"{"}object${"}"} dims Simple string-keyed object of dimensions to set
+@param {object} dims Simple string-keyed object of dimensions to set
 
 ---
 
@@ -52,7 +48,7 @@ Note: Although dimensions are available immediately, they may change (e.g due to
 
 Example: `var {height, width} = Dimensions.get('window');`
 
-@param ${"{"}string${"}"} dim Name of dimension as defined when calling `set`. @returns ${"{"}Object?${"}"} Value for the dimension.
+@param {string} dim Name of dimension as defined when calling `set`. @returns {Object?} Value for the dimension.
 
 ---
 

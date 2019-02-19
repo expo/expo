@@ -2,10 +2,6 @@
 title: Haptic
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides haptic feedback for iOS 10+ devices using the Taptic Engine.
 
 > If this is used in Android the device will use `ReactNative.Vibrate` instead, it's best to just avoid this. 

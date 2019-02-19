@@ -2,10 +2,6 @@
 title: Project Lifecycle
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo makes it easy to get started writing apps, but Expo can also take your project all the way to production. Here's an overview of the tools and services you might use along the way.
 
 This guide is meant to give a high-level explanation of what Expo offers. For the curious, the technical implementation of these topics is covered in way more detail [here](../../workflow/how-expo-works/).

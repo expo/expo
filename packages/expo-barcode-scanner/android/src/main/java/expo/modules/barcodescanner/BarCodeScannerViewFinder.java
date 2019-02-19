@@ -20,9 +20,9 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
   private final ModuleRegistry mModuleRegistry;
   private int mCameraType;
   private SurfaceTexture mSurfaceTexture;
-  private boolean mIsStarting;
-  private boolean mIsStopping;
-  private boolean mIsChanging;
+  private volatile boolean mIsStarting;
+  private volatile boolean mIsStopping;
+  private volatile boolean mIsChanging;
   private BarCodeScannerView mBarCodeScannerView;
   private Camera mCamera;
 
@@ -122,6 +122,7 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
         mCamera.startPreview();
         // send previews to `onPreviewFrame`
         mCamera.setPreviewCallback(this);
+        mBarCodeScannerView.layoutViewFinder();
       } catch (NullPointerException e) {
         e.printStackTrace();
       } catch (Exception e) {
@@ -199,9 +200,10 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
         int width = size.width;
         int height = size.height;
 
+        int properRotation = ExpoBarCodeScanner.getInstance().getRotation();
 
         final BarCodeScannerResult result = mBarCodeScanner.scan(mImageData, width,
-            height, ExpoBarCodeScanner.getInstance().getActualDeviceOrientation());
+            height, properRotation);
 
         if (result != null) {
           new Handler(Looper.getMainLooper()).post(new Runnable() {

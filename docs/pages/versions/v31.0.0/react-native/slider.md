@@ -3,10 +3,6 @@ id: slider
 title: Slider
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A component used to select a single value from a range of values.
 
 ### Props

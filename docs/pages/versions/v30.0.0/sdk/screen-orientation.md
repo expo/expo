@@ -2,10 +2,6 @@
 title: ScreenOrientation
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Allows changing supported screen orientations at runtime. This will take priority over the `orientation` key in `app.json`.
 
 ### `Expo.ScreenOrientation.allow(orientation)`
@@ -14,7 +10,7 @@ Allow a screen orientation. You can call this function multiple times with multi
 
 #### Arguments
 
--   **orientation : `string`** -- The allowed orientation. See the Orientation enum for possible values.
+-   **orientation (_string_)** -- The allowed orientation. See the Orientation enum for possible values.
 
 #### Example
 

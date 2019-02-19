@@ -2,10 +2,6 @@
 title: LocalAuthentication
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
 ### `Expo.LocalAuthentication.hasHardwareAsync()`
@@ -34,7 +30,7 @@ Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
 
 #### Arguments
 
-- (**iOS only**) **promptMessage : `string`** A message that is shown alongside the TouchID or FaceID prompt.
+- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID or FaceID prompt.
 
 #### Returns
 

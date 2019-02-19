@@ -3,10 +3,6 @@ id: vibration
 title: Vibration
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 The Vibration API is exposed at `Vibration.vibrate()`. The vibration is asynchronous so this method will return immediately.
 
 There will be no effect on devices that do not support Vibration, eg. the simulator.
@@ -73,7 +69,7 @@ Trigger a vibration with specified `pattern`.
 
 | Name    | Type                    | Required | Description                                                                  |
 | ------- | ----------------------- | -------- | ---------------------------------------------------------------------------- |
-| pattern | number or Array${"<"}number> | Yes      | Vibration pattern, accept a number or an array of numbers. Default to 400ms. |
+| pattern | number or Array\<number\> | Yes      | Vibration pattern, accept a number or an array of numbers. Default to 400ms. |
 | repeat  | boolean                 | No       | Repeat vibration pattern until cancel(), default to false.                   |
 
 ---
