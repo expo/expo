@@ -3,10 +3,10 @@ package abi31_0_0.host.exp.exponent.modules.api.av.player;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.HttpDataSource;
-import com.google.android.exoplayer2.upstream.TransferListener;
+import expolib_v1.com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource;
+import expolib_v1.com.google.android.exoplayer2.upstream.DataSource;
+import expolib_v1.com.google.android.exoplayer2.upstream.HttpDataSource;
+import expolib_v1.com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.util.Map;
 
