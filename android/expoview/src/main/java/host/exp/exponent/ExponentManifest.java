@@ -12,7 +12,7 @@ import android.os.Debug;
 import android.util.Log;
 import android.util.LruCache;
 
-import expolib_v1.okhttp3.CacheControl;
+import okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ManifestException;
@@ -27,7 +27,7 @@ import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.expoview.R;
-import expolib_v1.okhttp3.Request;
+import okhttp3.Request;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;

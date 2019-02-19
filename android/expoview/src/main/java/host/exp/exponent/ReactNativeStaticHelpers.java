@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-import expolib_v1.okhttp3.CookieJar;
-import expolib_v1.okhttp3.OkHttpClient;
+import okhttp3.CookieJar;
+import okhttp3.OkHttpClient;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.expoview.Exponent;

@@ -17,15 +17,15 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import expolib_v1.okhttp3.Cache;
-import expolib_v1.okhttp3.Interceptor;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Protocol;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
-import expolib_v1.okhttp3.ResponseBody;
-import expolib_v1.okio.BufferedSource;
-import expolib_v1.okio.Okio;
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.BufferedSource;
+import okio.Okio;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.ExpoViewBuildConfig;
 

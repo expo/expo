@@ -15,7 +15,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.NativeModuleRegistryBuilder;
 import com.facebook.react.R;
 import com.facebook.react.ReactInstanceManager;

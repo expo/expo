@@ -10,8 +10,8 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.util.Map;
 
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Call;
+import okhttp3.CacheControl;
+import okhttp3.Call;
 
 // Mainly a copy of com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory,
 // because it's declared as final :(

@@ -13,7 +13,7 @@ import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 
 /**
  * Helper class for Modals.

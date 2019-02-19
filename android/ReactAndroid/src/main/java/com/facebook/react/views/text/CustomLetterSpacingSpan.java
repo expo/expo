@@ -12,7 +12,7 @@ import android.os.Build;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 
 /**
  * A {@link MetricAffectingSpan} that allows to set the letter spacing
