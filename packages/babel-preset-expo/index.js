@@ -21,7 +21,7 @@ module.exports = function(api) {
   }
 
   return {
-    presets: ['module:metro-react-native-babel-preset', { disableImportExportTransform }],
+    presets: [['module:metro-react-native-babel-preset', { disableImportExportTransform }]],
     plugins,
   };
 };
