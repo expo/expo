@@ -17,7 +17,7 @@ module.exports = merge(common, {
   // entry: locations.appMain,
   entry: {
     vendor: ['react', 'react-native-web'],
-    app: ['babel-polyfill', locations.appMain],
+    app: [locations.appMain],
   },
   output: {
     filename: 'static/[name].[chunkhash].js',
