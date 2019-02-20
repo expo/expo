@@ -7,17 +7,21 @@ const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-// const safePostCssParser = require('postcss-safe-parser');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+const appEntry = [locations.appMain];
+
+const usePolyfills = false;
+
+if (usePolyfills) {
+  appEntry.unshift('babel-polyfill');
+}
 
 module.exports = merge(common, {
   mode: 'production',
-  // entry: locations.appMain,
   entry: {
     vendor: ['react', 'react-native-web'],
-    app: [locations.appMain],
+    app: appEntry,
   },
   output: {
     filename: 'static/[name].[chunkhash].js',
@@ -55,11 +59,6 @@ module.exports = merge(common, {
       filename: '[path].gz[query]',
       algorithm: 'gzip',
     }),
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      openAnalyzer: false,
-    }),
-
   ],
   module: {
     rules: [
@@ -109,16 +108,6 @@ module.exports = merge(common, {
           // keep_fnames: false,
         },
       }),
-      // new OptimizeCSSAssetsPlugin({
-      //   cssProcessorOptions: {
-      //     parser: safePostCssParser,
-      //     map: 
-      //       {
-      //         inline: false,
-      //         annotation: true,
-      //       }
-      //   },
-      // }),
     ],
     splitChunks: {
       chunks: 'async',

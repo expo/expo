@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const locations = require('./webpackLocations');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const nativeAppManifest = require(locations.absolute('./app.json'));
 
@@ -330,6 +331,10 @@ module.exports = {
         },
       ],
     }),
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      openAnalyzer: false,
+    })
   ],
   resolve: {
     symlinks: false,

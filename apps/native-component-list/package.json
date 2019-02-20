@@ -81,7 +81,6 @@
     "webpack-dashboard": "^1.0.2",
     "webpack-dev-server": "3.1.11",
     "webpack-hot-middleware": "^2.21.0",
-    "webpack-jarvis": "^0.3.2",
     "webpack-merge": "^4.2.1",
     "workbox-webpack-plugin": "^3.6.3"
   },
