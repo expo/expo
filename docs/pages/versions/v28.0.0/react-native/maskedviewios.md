@@ -3,10 +3,6 @@ id: maskedviewios
 title: MaskedViewIOS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Renders the child view with a mask specified in the `maskElement` prop.
 
 ## Example

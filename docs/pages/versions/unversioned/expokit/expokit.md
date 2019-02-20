@@ -2,10 +2,6 @@
 title: Developing With ExpoKit
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
 native iOS/Android project.
 

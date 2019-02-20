@@ -2,10 +2,6 @@
 title: Localization
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 You can use this module to Localize your app, and access the locale data on the native device.
 Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
 
@@ -93,3 +89,5 @@ type NativeEvent = {
 
 const { locale } = await Localization.getLocalizationAsync();
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/Localization)

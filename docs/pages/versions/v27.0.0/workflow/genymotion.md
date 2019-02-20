@@ -2,10 +2,6 @@
 title: Genymotion
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 We recommend the Genymotion emulator over the Android Studio emulator. If you run into any problems using Genymotion, follow the steps in this guide.
 
 ## Step 1: Use the same version of the Android tools everywhere

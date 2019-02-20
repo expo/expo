@@ -25,8 +25,8 @@ android {
     targetSdkVersion 26
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 104
-    versionName '2.10.5'
+    versionCode 106
+    versionName '2.10.7'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
@@ -96,9 +96,9 @@ configurations.all {
 }
 
 // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-/* UNCOMMENT WHEN DISTRIBUTING
+
 apply from: 'expo.gradle'
-END UNCOMMENT WHEN DISTRIBUTING */
+
 // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
 dependencies {

@@ -2,10 +2,6 @@
 title: SMS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to the system's UI/app for sending SMS messages.
 
 ### `SMS.isAvailableAsync()`
@@ -33,9 +29,9 @@ Opens the default UI/app for sending SMS messages with prefilled addresses and m
 
 #### Arguments
 
--  **addresses: `Array<string>|string`** -- An array of addresses : `phone numbers` or single address passed as strings. Those would appear as recipients of the prepared message.
+-  **addresses (_Array\<string\>|string_)** -- An array of addresses (_phone numbers_) or single address passed as strings. Those would appear as recipients of the prepared message.
 
--  **message: `string`** -- Message to be sent
+-  **message (_string_)** -- Message to be sent
 
 #### Returns
 
@@ -55,3 +51,5 @@ Android does not provide information about the status of the SMS message, so on 
 ```javascript
 const { result } = await SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/SMS)

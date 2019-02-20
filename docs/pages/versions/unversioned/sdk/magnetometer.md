@@ -2,10 +2,6 @@
 title: Magnetometer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Access the device magnetometer sensor(s) to respond to measure the changes
 in the magnetic field. You can access the calibrated values with `Magnetometer.`
 and uncalibrated raw values with `MagnetometerUncalibrated`.
@@ -24,7 +20,7 @@ Subscribe for updates to the Magnetometer.
 
 #### Arguments
 
-- **listener : `function`** -- A callback that is invoked when an
+- **listener (_function_)** -- A callback that is invoked when an
   Magnetometer update is available. When invoked, the listener is
   provided a single argumument that is an object containing keys x, y,
   z.
@@ -44,7 +40,7 @@ Subscribe for updates to the Magnetometer.
 
 #### Arguments
 
-- **intervalMs : `number`** Desired interval in milliseconds between
+- **intervalMs (_number_)** Desired interval in milliseconds between
   Magnetometer updates.
 
 ## Example: basic subscription
@@ -155,3 +151,5 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/Magnetometer)

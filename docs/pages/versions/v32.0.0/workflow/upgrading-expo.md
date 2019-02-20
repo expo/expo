@@ -2,10 +2,6 @@
 title: Upgrading Expo
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 It isn't strictly necessary to update your app when a new version of Expo is released. New versions of the Expo client are backwards compatible with apps published for previous versions. This means that you can download a new version of the Expo client and open apps that were published for previous versions and they will work perfectly.
 
 That said, each version is better than the last, so you might want to stay up to date to take advantage of new features and performance improvements.

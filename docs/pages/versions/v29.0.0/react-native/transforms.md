@@ -3,10 +3,6 @@ id: transforms
 title: Transforms
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [`decomposedMatrix`](../transforms/#decomposedmatrix)

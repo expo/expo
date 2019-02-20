@@ -26,9 +26,10 @@ afterEvaluate {
   // Based on https://github.com/facebook/react-native/blob/master/react.gradle
 
   android.applicationVariants.each { variant ->
-    def targetName = variant.name.capitalize()
+    def folderName = variant.name
+    def targetName = folderName.capitalize()
 
-    def assetsDir = file("$buildDir/intermediates/merged_assets/${targetName}/merge${targetName}Assets/out")
+    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
 
     // Bundle task name for variant
     def bundleExpoAssetsTaskName = "bundle${targetName}ExpoAssets"
@@ -40,9 +41,7 @@ afterEvaluate {
 
       // Create dirs if they are not there (e.g. the "clean" task just ran)
       doFirst {
-        if (!assetsDir.exists()) {
-          assetsDir.mkdirs()
-        }
+        assetsDir.mkdirs()
       }
 
       // Set up inputs and outputs so gradle can cache the result

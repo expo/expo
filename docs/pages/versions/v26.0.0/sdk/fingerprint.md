@@ -2,10 +2,6 @@
 title: Fingerprint
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Use TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a fingerprint scan.
 
 ### `Expo.Fingerprint.hasHardwareAsync()`
@@ -31,7 +27,7 @@ Attempts to authenticate via Fingerprint.
 
 #### Arguments
 
-- (**iOS only**) **promptMessage : `string`** A message that is shown alongside the TouchID prompt.
+- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID prompt.
 
 #### Returns
 
@@ -41,3 +37,4 @@ Attempts to authenticate via Fingerprint.
 
 Cancels the fingerprint authentication flow.
 
+#### [Github Issues](https://github.com/expo/expo/labels/LocalAuthentication)

@@ -2,10 +2,7 @@
 title: MapView
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
 
@@ -55,3 +52,5 @@ If you want to add MapView with Google Maps to an [ExpoKit](../../expokit) (ejec
 ```
 
 Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist` and ExpoKit will pick it up automatically. If you ejected after already configuring Google Maps, the eject step may have already provided this for you.
+
+#### [Github Issues](https://github.com/expo/expo/labels/MapView)

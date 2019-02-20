@@ -209,6 +209,9 @@ jobs:
           command: build
           working_directory: ~/expo/packages/expo-contacts
       - yarn:
+          command: build
+          working_directory: ~/expo/packages/expo-crypto
+      - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-analytics-amplitude
       - yarn:
@@ -235,6 +238,9 @@ jobs:
       - yarn:
           command: build
           working_directory: ~/expo/packages/expo-permissions
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/expo-random
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-react-native-adapter

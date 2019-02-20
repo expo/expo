@@ -2,10 +2,6 @@
 title: FacebookAds
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 **Facebook Audience SDK** integration for Expo apps.
 
 ## Creating the placement ID
@@ -303,3 +299,5 @@ FacebookAds.AdSettings.setUrlPrefix('...');
 ```
 
 **Note:** This method should never be used in production
+
+#### [Github Issues](https://github.com/expo/expo/labels/FacebookAds)

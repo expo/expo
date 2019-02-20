@@ -2,10 +2,7 @@
 title: LinearGradient
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 A React component that renders a gradient view.
 
@@ -30,3 +27,5 @@ Same as start but for the end of the gradient.
 
  `locations`  
 An array of the same length as `colors`, where each element is a float with the same meaning as the `start` and `end` values, but instead they indicate where the color at that index should be.
+
+#### [Github Issues](https://github.com/expo/expo/labels/LinearGradient)

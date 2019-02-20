@@ -2,10 +2,6 @@
 title: Audio
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides basic sample playback and recording.
 
 Note that Expo does not yet support backgrounding, so audio is not available to play in the background of your experience. Audio also automatically stops if headphones / bluetooth audio devices are disconnected.
@@ -20,7 +16,7 @@ Audio is enabled by default, but if you want to write your own Audio API in a de
 
 #### Arguments
 
--   **value : `boolean`** -- `true` enables Expo Audio, and `false` disables it.
+-   **value (_boolean_)** -- `true` enables Expo Audio, and `false` disables it.
 
 #### Returns
 
@@ -32,7 +28,7 @@ We provide this API to customize the audio experience on iOS and Android.
 
 #### Arguments
 
--   **mode : `object`** --
+-   **mode (_object_)** --
 
     A dictionary with the following key-value pairs:
 
@@ -104,11 +100,11 @@ A static convenience method to construct and load a sound is also provided:
         -   `require('path/to/file')` for an audio file asset in the source code directory.
         -   An [`Expo.Asset`](../asset/) object for an audio file asset.
 
-    -   **initialStatus : `PlaybackStatusToSet`** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
+    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-    -   **onPlaybackStatusUpdate : `function`** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
+    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
 
-    -   **downloadFirst : `boolean`** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
+    -   **downloadFirst (_boolean_)** -- If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`. Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
 
     #### Returns
 
@@ -221,7 +217,7 @@ try {
 
     #### Parameters
 
-    -   **onRecordingStatusUpdate : `function`** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
+    -   **onRecordingStatusUpdate (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
 
 -   `recordingInstance.setProgressUpdateInterval(millis)`
 
@@ -229,7 +225,7 @@ try {
 
     #### Parameters
 
-    -   **millis : `number`** -- The new interval between calls of `onRecordingStatusUpdate`.
+    -   **millis (_number_)** -- The new interval between calls of `onRecordingStatusUpdate`.
 
 -   `recordingInstance.prepareToRecordAsync(options)`
 
@@ -237,7 +233,7 @@ try {
 
     #### Parameters
 
-    -   **options : `RecordingOptions`** -- Options for the recording, including sample rate, bitrate, channels, format, encoder, and extension. If no options are passed to `prepareToRecordAsync()`, the recorder will be created with options `Expo.Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`. See below for details on `RecordingOptions`.
+    -   **options (_RecordingOptions_)** -- Options for the recording, including sample rate, bitrate, channels, format, encoder, and extension. If no options are passed to `prepareToRecordAsync()`, the recorder will be created with options `Expo.Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`. See below for details on `RecordingOptions`.
 
     #### Returns
 
@@ -289,9 +285,9 @@ try {
 
     #### Parameters
 
-    -   **initialStatus : `PlaybackStatusToSet`** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
+    -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
 
-    -   **onPlaybackStatusUpdate : `function`** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
+    -   **onPlaybackStatusUpdate (_function_)** -- A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed. See the [AV documentation](../av/) for details on the functionality provided by `onPlaybackStatusUpdate`
 
     #### Returns
 
@@ -543,3 +539,5 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
   },
 };
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/Audio)

@@ -3,10 +3,6 @@ id: dimensions
 title: Dimensions
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Methods
 
 * [`set`](../dimensions/#set)

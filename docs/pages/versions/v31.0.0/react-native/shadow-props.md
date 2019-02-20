@@ -3,10 +3,6 @@ id: shadow-props
 title: Shadow Props
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [`shadowColor`](../shadow-props/#shadowcolor)

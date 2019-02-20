@@ -18,6 +18,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
 
@@ -102,7 +103,11 @@ public class UIManagerModuleWrapper implements
           @Override
           public View get(Object key) {
             if (key instanceof Number) {
-              return nativeViewHierarchyManager.mTagsToViews.get(((Number) key).intValue());
+              try {
+                return nativeViewHierarchyManager.resolveView(((Number) key).intValue());
+              } catch (IllegalViewOperationException e) {
+                return null;
+              }
             } else {
               Log.w("E_INVALID_TAG", "Provided tag is of class " + key.getClass() + " whereas React expects tags to be integers. Are you sure you're providing proper argument to addUIBlock?");
             }

@@ -3,10 +3,6 @@ id: text
 title: Text
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A React component for displaying text.
 
 `Text` supports nesting, styling, and touch handling.

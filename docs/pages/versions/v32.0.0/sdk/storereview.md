@@ -2,10 +2,6 @@
 title: StoreReview
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to the `SKStoreReviewController` API in iOS 10.3+ devices.
 
 > If this is used in Android the device will attempt to link to the Play Store using `ReactNative.Linking` and the `android.playStoreUrl` from the `app.json` instead. 
@@ -66,3 +62,4 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 * Don't spam the user
 * Don't request a review when the user is doing something time sensitive like navigating.
 
+#### [Github Issues](https://github.com/expo/expo/labels/StoreReview)

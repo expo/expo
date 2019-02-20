@@ -3,10 +3,6 @@ id: touchablewithoutfeedback
 title: TouchableWithoutFeedback
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Do not use unless you have a very good reason. All elements that respond to press should have a visual feedback when touched.
 
 TouchableWithoutFeedback supports only one child. If you wish to have several child components, wrap them in a View.

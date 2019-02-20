@@ -2,10 +2,6 @@
 title: Android Studio Emulator
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 If you don't have an Android device available to test with, we recommend using the default emulator that comes with Android Studio. If you run into any problems setting it up, follow the steps in this guide.
 
 ## Step 1: Set up Android Studio's tools

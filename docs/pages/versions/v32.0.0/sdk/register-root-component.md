@@ -2,10 +2,6 @@
 title: registerRootComponent
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### `registerRootComponent(component)`
 
 Sets the main component for Expo to use for your app.
@@ -66,3 +62,5 @@ class App extends React.Component {
 
 registerRootComponent(App);
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/registerRootComponent)

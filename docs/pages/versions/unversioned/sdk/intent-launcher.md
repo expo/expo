@@ -2,10 +2,6 @@
 title: IntentLauncher
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides a way to launch android intents. e.g. - opening a specific settings screen.
 
 ## Usage
@@ -63,3 +59,5 @@ import { IntentLauncher } from 'expo';
 // Open location settings
 IntentLauncher.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/IntentLauncher)

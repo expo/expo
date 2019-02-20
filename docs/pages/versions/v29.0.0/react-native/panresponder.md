@@ -3,10 +3,6 @@ id: panresponder
 title: PanResponder
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `PanResponder` reconciles several touches into a single gesture. It makes single-touch gestures resilient to extra touches, and can be used to recognize simple multi-touch gestures.
 
 By default, `PanResponder` holds an `InteractionManager` handle to block long-running JS events from interrupting active gestures.

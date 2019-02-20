@@ -2,10 +2,6 @@
 title: MailComposer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API to compose mails using OS specific UI.
 
 ### `MailComposer.composeAsync(options)`
@@ -26,3 +22,5 @@ Opens a mail modal for iOS and a mail app intent for Android and fills the field
 #### Returns
 
 Resolves to a promise with object containing `status` field that could be either `sent`, `saved` or `cancelled`. Android does not provide such info so it always resolves to `sent`.
+
+#### [Github Issues](https://github.com/expo/expo/labels/MailComposer)

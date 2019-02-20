@@ -2,10 +2,6 @@
 title: Splash Screens
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../../sdk/app-loading/) component.
 
 ## Customize the splash screen for your app

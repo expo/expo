@@ -3,10 +3,6 @@ id: interactionmanager
 title: InteractionManager
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 InteractionManager allows long-running work to be scheduled after any interactions/animations have completed. In particular, this allows JavaScript animations to run smoothly.
 
 Applications can schedule tasks to run after interactions with the following:
