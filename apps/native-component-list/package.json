@@ -7,8 +7,8 @@
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "web:dev": "webpack-dev-server -d --config webpack.dev.js --https",
-    "web:build": "webpack -p --config webpack.prod.js",
+    "web:dev": "webpack-dev-server -d --config webpack/webpack.dev.js --https",
+    "web:build": "webpack -p --config webpack/webpack.prod.js",
     "web:publish": "netlify deploy",
     "web:serve": "serve ./web-build"
   },

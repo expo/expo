@@ -4,17 +4,16 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
-const locations = require('./webpackLocations');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const nativeAppManifest = require(locations.absolute('./app.json'));
+const locations = require('./webpackLocations');
+const nativeAppManifest = require(locations.appJson);
 
-const { productionPath = 'web-build' } = nativeAppManifest.expo.web;
 
 function getAppManifest() {
   if (nativeAppManifest && nativeAppManifest.expo) {
     const { expo } = nativeAppManifest;
-    const PWAManifest = require(locations.absolute('./web/manifest.json'));
+    const PWAManifest = require(locations.template.manifest);
     const web = PWAManifest || {};
 
     return {
@@ -78,9 +77,6 @@ function getClientEnvironment() {
 
 function generateHTMLFromAppJSON() {
   const { expo: expoManifest = {} } = nativeAppManifest;
-  const { web: expoManifestWebManifest = {} } = expoManifest;
-
-  const favicon = expoManifestWebManifest.favicon;
 
   const metaTags = {
     viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
@@ -101,10 +97,9 @@ function generateHTMLFromAppJSON() {
   return new HtmlWebpackPlugin({
     /**
      * The file to write the HTML to.
-     * You can specify a subdirectory here too (eg: `assets/admin.html`).
      * Default: `'index.html'`.
      */
-    filename: locations.absolute(`${productionPath}/index.html`),
+    filename: locations.production.indexHtml,
     /**
      * The title to use for the generated HTML document.
      * Default: `'Webpack App'`.
@@ -132,7 +127,7 @@ function generateHTMLFromAppJSON() {
      * Adds the given favicon path to the output html.
      * Default: `false`.
      */
-    favicon,
+    favicon: locations.template.favicon,
     /**
      * Allows to inject meta-tags, e.g. meta: `{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}`.
      * Default: `{}`.
@@ -142,7 +137,7 @@ function generateHTMLFromAppJSON() {
      * The `webpack` require path to the template.
      * @see https://github.com/jantimon/html-webpack-plugin/blob/master/docs/template-option.md
      */
-    template: locations.rootHtml
+    template: locations.template.indexHtml
   });
 }
 
@@ -221,7 +216,7 @@ const ttfLoaderConfiguration = {
 const htmlLoaderConfiguration = {
   test: /\.html$/,
   use: ['html-loader'],
-  include: [locations.absolute('./assets')],
+  include: [locations.absolute('assets')],
 };
 
 const mediaLoaderConfiguration = {
@@ -260,12 +255,13 @@ module.exports = {
   context: __dirname,
   // configures where the build ends up
   output: {
-    path: locations.absolute(productionPath),
-    filename: 'bundle.js',
+    path: locations.production.folder,
+    filename: 'static/[name].[chunkhash].js',
+    sourceMapFilename: '[name].[chunkhash].map',
     // There are also additional JS chunk files if you use code splitting.
-    chunkFilename: '[name].chunk.js',
+    chunkFilename: 'static/[id].[chunkhash].js',
     // This is the URL that app is served from. We use "/" in development.
-    publicPath,
+    publicPath: publicPath,
   },
   optimization: {
     splitChunks: {
@@ -302,7 +298,7 @@ module.exports = {
     // having to parse `index.html`.
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
-      publicPath,
+      publicPath: publicPath,
     }),
 
     new webpack.DefinePlugin(env),

@@ -13,15 +13,6 @@ const locations = require('./webpackLocations');
 module.exports = merge(common, {
   mode: 'development',
   entry: [require.resolve('react-dev-utils/webpackHotDevClient'), locations.appMain],
-  output: {
-    path: locations.absolute('web-build'),
-    filename: 'static/bundle.js',
-    // There are also additional JS chunk files if you use code splitting.
-    chunkFilename: 'static/[name].chunk.js',
-    // This is the URL that app is served from. We use "/" in development.
-    publicPath: '/',
-    crossOriginLoading: 'anonymous',
-  },
   devtool: 'cheap-module-source-map',
   devServer: {
     stats: {
@@ -33,7 +24,7 @@ module.exports = merge(common, {
     },
     compress: true,
     disableHostCheck: true,
-    contentBase: locations.contentBase,
+    contentBase: locations.template.folder,
     inline: true,
     clientLogLevel: 'none',
     overlay: false,
@@ -64,7 +55,7 @@ module.exports = merge(common, {
       // To fix this, we prevent you from importing files out of the root folder -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(locations.contentBase, [locations.packageJson]),
+      new ModuleScopePlugin(locations.template.folder, [locations.packageJson]),
     ],
   },
   resolveLoader: {

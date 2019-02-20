@@ -1,13 +1,14 @@
 const merge = require('webpack-merge');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const common = require('./webpack.common.js');
-const locations = require('./webpackLocations');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+const common = require('./webpack.common.js');
+const locations = require('./webpackLocations');
 
 const appEntry = [locations.appMain];
 
@@ -23,24 +24,19 @@ module.exports = merge(common, {
     vendor: ['react', 'react-native-web'],
     app: appEntry,
   },
-  output: {
-    filename: 'static/[name].[chunkhash].js',
-    sourceMapFilename: '[name].[chunkhash].map',
-    chunkFilename: 'static/[id].[chunkhash].js'  
-  },
   devtool: 'hidden-source-map',
   plugins: [
-    new CleanWebpackPlugin([locations.production]),
+    new CleanWebpackPlugin([locations.production.folder]),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
     new CopyWebpackPlugin([
       {
-        from: locations.absolute('./web/manifest.json'),
-        to:  locations.absolute('./web-build/manifest.json'),
+        from: locations.template.manifest,
+        to: locations.production.manifest,
       },
       {
-        from: locations.absolute('./web/serve.json'),
-        to:  locations.absolute('./web-build/serve.json'),
+        from: locations.template.serveJson,
+        to: locations.production.serveJson,
       },
     ]),
     new MiniCssExtractPlugin({
