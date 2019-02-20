@@ -12,6 +12,7 @@ import { globalTables } from '~/global-styles/tables';
 import { globalFonts } from '~/global-styles/fonts';
 import { globalPrism } from '~/global-styles/prism';
 import { globalTippy } from '~/global-styles/tippy';
+import { globalExtras } from '~/global-styles/extras';
 
 import { LATEST_VERSION } from '~/common/versions';
 
@@ -50,6 +51,7 @@ export default class MyDocument extends Document {
           <style dangerouslySetInnerHTML={{ __html: globalTables }} />
           <style dangerouslySetInnerHTML={{ __html: globalPrism }} />
           <style dangerouslySetInnerHTML={{ __html: globalTippy }} />
+          <style dangerouslySetInnerHTML={{ __html: globalExtras }} />
           <link href="/static/libs/algolia/algolia.min.css" rel="stylesheet" />
         </Head>
         <body>
