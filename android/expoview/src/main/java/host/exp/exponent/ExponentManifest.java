@@ -474,14 +474,12 @@ public class ExponentManifest {
                   fetchManifestStep3(manifestUrl, finalManifest, true, listener);
                 } else {
                   Log.w(TAG, errorMessage);
-                  EXL.d("erictest", errorMessage);
                   fetchManifestStep3(manifestUrl, finalManifest, false, listener);
                 }
               }
 
               @Override
               public void onCompleted(boolean isValid) {
-                EXL.d("erictest", "isValid " + String.valueOf(isValid));
                 fetchManifestStep3(manifestUrl, finalManifest, isValid, listener);
               }
             });
