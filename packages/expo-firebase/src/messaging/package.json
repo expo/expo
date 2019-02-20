@@ -1,7 +1,0 @@
-{
-  "name": "expo-firebase/messaging",
-  "main": "./FirebaseMessaging.js",
-  "browser": "./FirebaseMessaging.js",
-  "module": "./FirebaseMessaging.js",
-  "typings": "./FirebaseMessaging.d.ts"
-}

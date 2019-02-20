@@ -1,7 +1,0 @@
-{
-  "name": "expo-firebase/analytics",
-  "main": "./FirebaseAnalytics.js",
-  "browser": "./FirebaseAnalytics.js",
-  "module": "./FirebaseAnalytics.js",
-  "typings": "./FirebaseAnalytics.d.ts"
-}

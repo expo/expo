@@ -1,7 +1,0 @@
-{
-  "name": "expo-firebase/crashlytics",
-  "main": "./FirebaseCrashlytics.js",
-  "browser": "./FirebaseCrashlytics.js",
-  "module": "./FirebaseCrashlytics.js",
-  "typings": "./FirebaseCrashlytics.d.ts"
-}

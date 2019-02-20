@@ -1,7 +1,0 @@
-{
-  "name": "expo-firebase/auth",
-  "main": "./FirebaseAuth.js",
-  "browser": "./FirebaseAuth.js",
-  "module": "./FirebaseAuth.js",
-  "typings": "./FirebaseAuth.d.ts"
-}

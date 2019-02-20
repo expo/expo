@@ -1,7 +1,0 @@
-{
-  "name": "expo-firebase/firestore",
-  "main": "./FirebaseFirestore.js",
-  "browser": "./FirebaseFirestore.js",
-  "module": "./FirebaseFirestore.js",
-  "typings": "./FirebaseFirestore.d.ts"
-}

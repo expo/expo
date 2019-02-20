@@ -1,7 +1,0 @@
-{
-  "name": "expo-firebase/config",
-  "main": "./FirebaseConfig.js",
-  "browser": "./FirebaseConfig.js",
-  "module": "./FirebaseConfig.js",
-  "typings": "./FirebaseConfig.d.ts"
-}

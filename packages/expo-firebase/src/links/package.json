@@ -1,7 +1,0 @@
-{
-  "name": "expo-firebase/links",
-  "main": "./FirebaseLinks.js",
-  "browser": "./FirebaseLinks.js",
-  "module": "./FirebaseLinks.js",
-  "typings": "./FirebaseLinks.d.ts"
-}

@@ -1,7 +1,0 @@
-{
-  "name": "expo-firebase/app",
-  "main": "./FirebaseApp.js",
-  "browser": "./FirebaseApp.js",
-  "module": "./FirebaseApp.js",
-  "typings": "./FirebaseApp.d.ts"
-}
