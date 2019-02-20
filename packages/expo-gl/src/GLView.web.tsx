@@ -2,8 +2,13 @@ import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { UnavailabilityError } from 'expo-errors';
-import { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions } from './GLView.types';
+import { UnavailabilityError, CodedError } from 'expo-errors';
+import {
+  BaseGLViewProps,
+  GLSnapshot,
+  ExpoWebGLRenderingContext,
+  SnapshotOptions,
+} from './GLView.types';
 export { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
 
 declare const window: Window;
@@ -51,7 +56,10 @@ function ensureContext(
   contextAttributes?: WebGLContextAttributes
 ): WebGLRenderingContext {
   if (!canvas) {
-    throw new Error('GLView: canvas is not defined.');
+    throw new CodedError(
+      'ERR_GL_INVALID',
+      'Attempting to use the GL context before it has been created.'
+    );
   }
   const context =
     canvas.getContext('webgl2', contextAttributes) ||
@@ -90,7 +98,7 @@ type State = {
   height: number;
 };
 
-export default class GLView extends React.Component<GLViewProps, State> {
+export class GLView extends React.Component<GLViewProps, State> {
   state = {
     width: 0,
     height: 0,
@@ -122,13 +130,13 @@ export default class GLView extends React.Component<GLViewProps, State> {
   static async takeSnapshotAsync(
     exgl: WebGLRenderingContext,
     options: SnapshotOptions = {}
-  ): Promise<Blob | null> {
+  ): Promise<GLSnapshot> {
     invariant(exgl, 'GLView.takeSnapshotAsync(): canvas is not defined');
     const canvas: HTMLCanvasElement = exgl.canvas;
     return await new Promise(resolve => {
       canvas.toBlob(
         (blob: Blob | null) => {
-          resolve(blob);
+          resolve({ uri: blob, width: canvas.width, height: canvas.height, localUri: '' });
         },
         options.format,
         options.compress
@@ -193,7 +201,7 @@ export default class GLView extends React.Component<GLViewProps, State> {
     );
   }
 
-  componentDidUpdate(prev, prevState) {
+  componentDidUpdate() {
     if (this.canvas && !this._hasContextBeenCreated) {
       this._hasContextBeenCreated = true;
       this._contextCreated();
@@ -205,6 +213,16 @@ export default class GLView extends React.Component<GLViewProps, State> {
     const gl = ensureContext(this.canvas, webglContextAttributes);
     this._webglContextAttributes = webglContextAttributes || {};
     return gl;
+  }
+
+  _getGlOrReject(): WebGLRenderingContext {
+    if (!this.gl) {
+      throw new CodedError(
+        'ERR_GL_INVALID',
+        'Attempting to use the GL context before it has been created.'
+      );
+    }
+    return this.gl;
   }
 
   _contextLost = (event: Event) => {
@@ -234,6 +252,16 @@ export default class GLView extends React.Component<GLViewProps, State> {
     }
     this._updateLayout();
   };
+
+  async takeSnapshotAsync(options: SnapshotOptions = {}): Promise<GLSnapshot> {
+    if (!GLView.takeSnapshotAsync) {
+      throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync');
+    }
+
+    const gl = this._getGlOrReject();
+
+    return await GLView.takeSnapshotAsync(gl, options);
+  }
 
   async startARSessionAsync(): Promise<void> {
     throw new UnavailabilityError('GLView', 'startARSessionAsync');

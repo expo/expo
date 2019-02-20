@@ -1,13 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
-export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
-declare type Asset = {
-    uri: string;
-    localUri: string;
-    width: number;
-    height: number;
-};
+import { SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
 declare type GLViewProps = {
     /**
     * Called when the OpenGL context is created, with the context object as a parameter. The context
@@ -27,7 +20,7 @@ declare type ComponentOrHandle = null | number | React.Component<any, any> | Rea
 /**
  * A component that acts as an OpenGL render target
  */
-export default class GLView extends React.Component<GLViewProps> {
+export declare class GLView extends React.Component<GLViewProps> {
     static NativeView: any;
     static propTypes: {
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
@@ -83,7 +76,7 @@ export default class GLView extends React.Component<GLViewProps> {
     };
     static createContextAsync(): Promise<any>;
     static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<any>;
-    static takeSnapshotAsync(exgl?: WebGLRenderingContext | number, options?: SnapshotOptions): Promise<any>;
+    static takeSnapshotAsync(exgl?: WebGLRenderingContext | number, options?: SnapshotOptions): Promise<GLSnapshot>;
     nativeRef: ComponentOrHandle;
     exglCtxId?: number;
     render(): JSX.Element;
@@ -92,7 +85,7 @@ export default class GLView extends React.Component<GLViewProps> {
     startARSessionAsync(): Promise<any>;
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;
-    takeSnapshotAsync(options?: SnapshotOptions): Promise<Asset>;
+    takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
 }
 declare class WebGLRenderingContext {
     __exglCtxId?: number;
@@ -105,3 +98,4 @@ declare class WebGLObject {
 }
 declare class WebGLTexture extends WebGLObject {
 }
+export {};

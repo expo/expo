@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions } from './GLView.types';
+import { BaseGLViewProps, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions } from './GLView.types';
 export { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
 interface GLViewProps extends BaseGLViewProps {
     onContextCreate: (gl: WebGLRenderingContext) => void;
@@ -12,7 +12,7 @@ declare type State = {
     width: number;
     height: number;
 };
-export default class GLView extends React.Component<GLViewProps, State> {
+export declare class GLView extends React.Component<GLViewProps, State> {
     state: {
         width: number;
         height: number;
@@ -30,18 +30,20 @@ export default class GLView extends React.Component<GLViewProps, State> {
     gl?: WebGLRenderingContext;
     static createContextAsync(): Promise<WebGLRenderingContext>;
     static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<void>;
-    static takeSnapshotAsync(exgl: WebGLRenderingContext, options?: SnapshotOptions): Promise<Blob | null>;
+    static takeSnapshotAsync(exgl: WebGLRenderingContext, options?: SnapshotOptions): Promise<GLSnapshot>;
     componentDidMount(): void;
     _contextCreated: () => void;
     componentWillUnmount(): void;
     _updateLayout: () => void;
     render(): JSX.Element;
-    componentDidUpdate(prev: any, prevState: any): void;
+    componentDidUpdate(): void;
     _createContext(): WebGLRenderingContext;
+    _getGlOrReject(): WebGLRenderingContext;
     _contextLost: (event: Event) => void;
     _contextRestored: () => void;
     _assignCanvasRef: (canvas: HTMLCanvasElement) => void;
     _assignContainerRef: (element: HTMLElement | null) => void;
+    takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
     startARSessionAsync(): Promise<void>;
     createCameraTextureAsync(): Promise<void>;
     destroyObjectAsync(glObject: WebGLObject): Promise<void>;

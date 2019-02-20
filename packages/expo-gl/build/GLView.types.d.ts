@@ -16,6 +16,12 @@ export declare type SnapshotOptions = {
     format?: 'jpeg' | 'png';
     compress?: number;
 };
+export declare type GLSnapshot = {
+    uri: string | Blob | null;
+    localUri: string;
+    width: number;
+    height: number;
+};
 export interface ExpoWebGLRenderingContext extends WebGLRenderingContext {
     endFrameEXP(): void;
 }

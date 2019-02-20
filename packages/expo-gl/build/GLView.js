@@ -9,7 +9,7 @@ const NativeView = requireNativeViewManager('ExponentGLView');
 /**
  * A component that acts as an OpenGL render target
  */
-export default class GLView extends React.Component {
+export class GLView extends React.Component {
     constructor() {
         super(...arguments);
         this.nativeRef = null;

@@ -19,6 +19,13 @@ export type SnapshotOptions = {
   compress?: number;
 };
 
+export type GLSnapshot = {
+  uri: string | Blob | null;
+  localUri: string;
+  width: number;
+  height: number;
+};
+
 export interface ExpoWebGLRenderingContext extends WebGLRenderingContext {
   endFrameEXP(): void;
 }

@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError, CodedError } from 'expo-errors';
 function getImageForAsset(asset) {
     if (asset == null) {
         return null;
@@ -37,7 +37,7 @@ function asExpoContext(gl) {
 }
 function ensureContext(canvas, contextAttributes) {
     if (!canvas) {
-        throw new Error('GLView: canvas is not defined.');
+        throw new CodedError('ERR_GL_INVALID', 'Attempting to use the GL context before it has been created.');
     }
     const context = canvas.getContext('webgl2', contextAttributes) ||
         canvas.getContext('webgl', contextAttributes) ||
@@ -60,7 +60,7 @@ const propTypes = {
     onContextLost: PropTypes.func,
     webglContextAttributes: PropTypes.object,
 };
-export default class GLView extends React.Component {
+export class GLView extends React.Component {
     constructor() {
         super(...arguments);
         this.state = {
@@ -122,7 +122,7 @@ export default class GLView extends React.Component {
         const canvas = exgl.canvas;
         return await new Promise(resolve => {
             canvas.toBlob((blob) => {
-                resolve(blob);
+                resolve({ uri: blob, width: canvas.width, height: canvas.height, localUri: '' });
             }, options.format, options.compress);
         });
         //TODO:Bacon: Should we add data URI
@@ -156,7 +156,7 @@ export default class GLView extends React.Component {
         <canvas ref={this._assignCanvasRef} style={{ flex: 1, width, height }} width={width * devicePixelRatio} height={height * devicePixelRatio} {...domProps}/>
       </div>);
     }
-    componentDidUpdate(prev, prevState) {
+    componentDidUpdate() {
         if (this.canvas && !this._hasContextBeenCreated) {
             this._hasContextBeenCreated = true;
             this._contextCreated();
@@ -167,6 +167,19 @@ export default class GLView extends React.Component {
         const gl = ensureContext(this.canvas, webglContextAttributes);
         this._webglContextAttributes = webglContextAttributes || {};
         return gl;
+    }
+    _getGlOrReject() {
+        if (!this.gl) {
+            throw new CodedError('ERR_GL_INVALID', 'Attempting to use the GL context before it has been created.');
+        }
+        return this.gl;
+    }
+    async takeSnapshotAsync(options = {}) {
+        if (!GLView.takeSnapshotAsync) {
+            throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync');
+        }
+        const gl = this._getGlOrReject();
+        return await GLView.takeSnapshotAsync(gl, options);
     }
     async startARSessionAsync() {
         throw new UnavailabilityError('GLView', 'startARSessionAsync');

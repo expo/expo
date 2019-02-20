@@ -3,8 +3,8 @@ import 'react-native';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import GLView from '../index';
-import GLViewWeb from '../GLView.web';
+import { GLView } from '../index';
+import { GLView as GLViewWeb } from '../GLView.web';
 
 // Note: test renderer must be required after react-native.
 

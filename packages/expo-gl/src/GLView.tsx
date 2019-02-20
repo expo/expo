@@ -5,20 +5,15 @@ import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 
 const packageJSON = require('../package.json');
 
-import { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
+import { SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
 import { UnavailabilityError } from 'expo-errors';
-export { SurfaceCreateEvent, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
+
+
 
 declare let global: any;
 
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 
-type Asset = {
-  uri: string;
-  localUri: string;
-  width: number;
-  height: number;
-}
 
 type GLViewProps = {
 
@@ -45,7 +40,7 @@ const NativeView = requireNativeViewManager('ExponentGLView');
 /**
  * A component that acts as an OpenGL render target
  */
-export default class GLView extends React.Component<GLViewProps> {
+export class GLView extends React.Component<GLViewProps> {
   static NativeView: any;
   static propTypes = {
     onContextCreate: PropTypes.func,
@@ -71,7 +66,7 @@ export default class GLView extends React.Component<GLViewProps> {
   static async takeSnapshotAsync(
     exgl?: WebGLRenderingContext | number,
     options: SnapshotOptions = {}
-  ) {
+  ): Promise<GLSnapshot> {
     const exglCtxId = getContextId(exgl);
     return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
   }
@@ -156,7 +151,7 @@ export default class GLView extends React.Component<GLViewProps> {
     return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
   }
 
-  async takeSnapshotAsync(options: SnapshotOptions = {}): Promise<Asset> {
+  async takeSnapshotAsync(options: SnapshotOptions = {}): Promise<GLSnapshot> {
     if (!GLView.takeSnapshotAsync) {
       throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync')
     }
