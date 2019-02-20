@@ -20,9 +20,9 @@ module.exports = merge(common, {
     app: ['babel-polyfill', locations.appMain],
   },
   output: {
-    filename: '[name].[chunkhash].js',
+    filename: 'static/[name].[chunkhash].js',
     sourceMapFilename: '[name].[chunkhash].map',
-    chunkFilename: '[id].[chunkhash].js'  
+    chunkFilename: 'static/[id].[chunkhash].js'  
   },
   devtool: 'hidden-source-map',
   plugins: [
@@ -33,6 +33,10 @@ module.exports = merge(common, {
       {
         from: locations.absolute('./web/manifest.json'),
         to:  locations.absolute('./web-build/manifest.json'),
+      },
+      {
+        from: locations.absolute('./web/serve.json'),
+        to:  locations.absolute('./web-build/serve.json'),
       },
     ]),
     new MiniCssExtractPlugin({
