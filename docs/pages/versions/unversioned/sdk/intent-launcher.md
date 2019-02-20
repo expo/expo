@@ -59,3 +59,5 @@ import { IntentLauncher } from 'expo';
 // Open location settings
 IntentLauncher.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/IntentLauncher)

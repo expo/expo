@@ -31,3 +31,5 @@ iOS only. Choose a printer that can be later use in `printAsync`.
 #### Returns
 
 -   Resolvses to an object containing `name` and `url` of the selected printer.
+
+#### [Github Issues](https://github.com/expo/expo/labels/Print)

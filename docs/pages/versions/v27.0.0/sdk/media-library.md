@@ -210,3 +210,5 @@ Supported keys that can be used to sort `getAssetsAsync` results:
 - `SortBy.width`
 - `SortBy.height`
 - `SortBy.duration`
+
+#### [Github Issues](https://github.com/expo/expo/labels/MediaLibrary)

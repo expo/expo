@@ -11,3 +11,5 @@ A set of drawing primitives such as `Circle`, `Rect`, `Path`,
 The implementation is provided by [react-native-svg](https://github.com/react-native-community/react-native-svg), and documentation is provided in that repository.
 
 <SnackEmbed snackId="HJ1m5ICJb" />
+
+#### [Github Issues](https://github.com/expo/expo/labels/SVG)

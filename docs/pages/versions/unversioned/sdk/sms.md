@@ -51,3 +51,5 @@ Android does not provide information about the status of the SMS message, so on 
 ```javascript
 const { result } = await SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/SMS)

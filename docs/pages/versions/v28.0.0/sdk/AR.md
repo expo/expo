@@ -508,3 +508,5 @@ The set of video capture formats available on the current device. The video form
     framesPerSecond: 60 
 }
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/AR)

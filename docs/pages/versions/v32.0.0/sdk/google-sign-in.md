@@ -420,3 +420,5 @@ export default class AuthScreen extends React.Component {
   }
 }
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/Google)

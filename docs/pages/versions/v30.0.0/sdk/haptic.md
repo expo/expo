@@ -121,3 +121,5 @@ $Enum<{
   heavy: string,
 }>
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/Haptic)

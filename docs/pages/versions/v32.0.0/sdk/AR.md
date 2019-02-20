@@ -661,3 +661,5 @@ The internal ID used to render the camera texture.
     framesPerSecond: 60
 }
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/AR)

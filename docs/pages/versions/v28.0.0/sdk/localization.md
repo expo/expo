@@ -139,3 +139,5 @@ const styles = StyleSheet.create({
   centeredText: { textAlign: 'center' },
 });
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/Localization)

@@ -188,3 +188,5 @@ export default class App extends React.Component {
   }
 }
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/SplashScreen)

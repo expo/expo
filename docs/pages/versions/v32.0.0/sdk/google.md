@@ -174,3 +174,5 @@ let result = await Expo.AuthSession.startAsync({
     `&scope=profile`,
 });
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/Google)

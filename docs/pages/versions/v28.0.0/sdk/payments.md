@@ -387,3 +387,5 @@ Note: Apple Pay can be used only for real world items (ex. appeal, car sharing, 
 ## Why ExpoKit on iOS?
 
 Expo previously included support for a native Payments API without ExpoKit. We learned that apple sometimes rejects apps which contain the Stripe SDK but don’t offer anything for sale. To help your App Review process go more smoothly, we’ve decided to remove the Stripe SDK and experimental Payments API from apps built with the Expo standalone builder. We’re still excited to give developers a way to let users pay for goods when they need to and we’ll announce ways to do so shortly.
+
+#### [Github Issues](https://github.com/expo/expo/labels/Payments)

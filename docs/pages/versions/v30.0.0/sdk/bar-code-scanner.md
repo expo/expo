@@ -102,3 +102,5 @@ Scan bar codes from the image given by the URL.
 #### Returns
 
 A possibly empty array of objects of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code.
+
+#### [Github Issues](https://github.com/expo/expo/labels/BarCodeScanner)

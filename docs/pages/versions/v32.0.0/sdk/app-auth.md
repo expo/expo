@@ -409,3 +409,5 @@ async function signOutAsync({ accessToken }) {
   }
 }
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/AppAuth)

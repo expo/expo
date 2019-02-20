@@ -370,3 +370,5 @@ Object of type `Region` includes following fields:
 | ------------------------------- | ----- | ----------------------------------------------- |
 | `GeofencingRegionState.Inside`  |   1   | Indicates that the device is inside the region. |
 | `GeofencingRegionState.Outside` |   2   | Inverse of inside state.                        |
+
+#### [Github Issues](https://github.com/expo/expo/labels/Location)

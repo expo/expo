@@ -74,3 +74,5 @@ An object that is passed into each event listener when a new version is availabl
 -   **`Updates.EventType.DOWNLOAD_FINISHED`** -- A new update has finished downloading and is now stored in the device's cache.
 -   **`Updates.EventType.NO_UPDATE_AVAILABLE`** -- No updates are available, and the most up-to-date bundle of this experience is already running.
 -   **`Updates.EventType.ERROR`** -- An error occurred trying to fetch the latest update.
+
+#### [Github Issues](https://github.com/expo/expo/labels/Updates)

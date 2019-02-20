@@ -71,3 +71,5 @@ A detected face is an object containing at most following fields:
 `smilingProbability`, `leftEyeOpenProbability` and `rightEyeOpenProbability` are returned only if `runClassifications` option is set to `.all`.
 
 Positions of face landmarks are returned only if `detectLandmarks` option is set to `.all`.
+
+#### [Github Issues](https://github.com/expo/expo/labels/FaceDetector)

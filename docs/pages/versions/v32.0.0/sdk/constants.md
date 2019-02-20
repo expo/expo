@@ -80,3 +80,5 @@ A list of the system font names available on the current device.
 ### `Constants.manifest`
 
 The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
+
+#### [Github Issues](https://github.com/expo/expo/labels/Constants)

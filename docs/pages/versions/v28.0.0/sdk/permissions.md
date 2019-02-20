@@ -105,3 +105,5 @@ The permission type for reading or writing to the calendar.
 ### `Expo.Permissions.REMINDERS`
 
 The permission type for reading or writing reminders (iOS only).
+
+#### [Github Issues](https://github.com/expo/expo/labels/Permissions)

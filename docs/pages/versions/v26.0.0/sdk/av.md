@@ -352,3 +352,5 @@ playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 playbackObject.setIsLooping(true);
 ...
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/AV)

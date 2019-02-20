@@ -50,3 +50,5 @@ Returns a `Promise` that resolves when SMS action is invoked by the user with co
 ```javascript
 const { result } = await Expo.SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/SMS)

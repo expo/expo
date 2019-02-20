@@ -49,3 +49,5 @@ An object containing the values that can be passed to the allow function.
 ## Detecting when the orientation changes
 
 The best way to do this is to listen for changes to [Dimensions](https://facebook.github.io/react-native/docs/dimensions.html).
+
+#### [Github Issues](https://github.com/expo/expo/labels/ScreenOrientation)

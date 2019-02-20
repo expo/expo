@@ -299,3 +299,5 @@ FacebookAds.AdSettings.setUrlPrefix('...');
 ```
 
 **Note:** This method should never be used in production
+
+#### [Github Issues](https://github.com/expo/expo/labels/FacebookAds)

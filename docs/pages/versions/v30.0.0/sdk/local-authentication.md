@@ -39,3 +39,5 @@ Returns a promise resolving to an object containing `success`, a boolean indicat
 ### `Expo.LocalAuthentication.cancelAuthenticate() - (Android Only)`
 
 Cancels the fingerprint authentication flow.
+
+#### [Github Issues](https://github.com/expo/expo/labels/LocalAuthentication)
