@@ -53,12 +53,12 @@ export class GLView extends React.Component<GLViewProps> {
     msaaSamples: 4,
   };
 
-  static async createContextAsync() {
+  static async createContextAsync(): Promise<ExpoWebGLRenderingContext> {
     const { exglCtxId } = await ExponentGLObjectManager.createContextAsync();
     return getGl(exglCtxId);
   }
 
-  static async destroyContextAsync(exgl?: WebGLRenderingContext | number) {
+  static async destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean> {
     const exglCtxId = getContextId(exgl);
     return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
   }
@@ -493,7 +493,7 @@ const wrapMethods = gl => {
 };
 
 // Get the GL interface from an EXGLContextID and do JS-side setup
-const getGl = exglCtxId => {
+const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
   const gl = global.__EXGLContexts[exglCtxId];
   gl.__exglCtxId = exglCtxId;
   delete global.__EXGLContexts[exglCtxId];
@@ -564,7 +564,7 @@ const getGl = exglCtxId => {
   return gl;
 };
 
-const getContextId = (exgl?: WebGLRenderingContext | number) => {
+const getContextId = (exgl?: WebGLRenderingContext | number): number => {
   const exglCtxId = exgl && typeof exgl === 'object' ? exgl.__exglCtxId : exgl;
 
   if (!exglCtxId || typeof exglCtxId !== 'number') {

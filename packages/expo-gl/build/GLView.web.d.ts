@@ -29,7 +29,7 @@ export declare class GLView extends React.Component<GLViewProps, State> {
     container?: HTMLElement;
     gl?: WebGLRenderingContext;
     static createContextAsync(): Promise<WebGLRenderingContext>;
-    static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<void>;
+    static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean>;
     static takeSnapshotAsync(exgl: WebGLRenderingContext, options?: SnapshotOptions): Promise<GLSnapshot>;
     componentDidMount(): void;
     _contextCreated: () => void;

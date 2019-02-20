@@ -329,7 +329,7 @@ const wrapMethods = gl => {
     wrap('isVertexArray', orig => vertexArray => vertexArray instanceof WebGLVertexArrayObject && orig.call(gl, vertexArray.id));
 };
 // Get the GL interface from an EXGLContextID and do JS-side setup
-const getGl = exglCtxId => {
+const getGl = (exglCtxId) => {
     const gl = global.__EXGLContexts[exglCtxId];
     gl.__exglCtxId = exglCtxId;
     delete global.__EXGLContexts[exglCtxId];

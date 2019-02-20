@@ -13,13 +13,13 @@ export { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProp
 
 declare const window: Window;
 
-function getImageForAsset(asset: any | null): any {
-  if (asset == null) {
-    return null;
-  }
-
-  if (typeof asset === 'object' && asset !== null && asset.downloadAsync) {
-    const dataURI = asset.localUri || asset.uri;
+function getImageForAsset(asset: {
+  downloadAsync: () => Promise<any>;
+  uri?: string;
+  localUri?: string;
+}): HTMLImageElement | any {
+  if (asset != null && typeof asset === 'object' && asset !== null && asset.downloadAsync) {
+    const dataURI = asset.localUri || asset.uri || '';
     const image = new Image();
     image.src = dataURI;
     return image;
@@ -32,7 +32,7 @@ function asExpoContext(gl: ExpoWebGLRenderingContext): WebGLRenderingContext {
 
   if (!gl['_expo_texImage2D']) {
     gl['_expo_texImage2D'] = gl.texImage2D;
-    gl.texImage2D = (...props) => {
+    gl.texImage2D = (...props: any[]): any => {
       let nextProps = [...props];
       nextProps.push(getImageForAsset(nextProps.pop()));
       return gl['_expo_texImage2D'](...nextProps);
@@ -41,7 +41,7 @@ function asExpoContext(gl: ExpoWebGLRenderingContext): WebGLRenderingContext {
 
   if (!gl['_expo_texSubImage2D']) {
     gl['_expo_texSubImage2D'] = gl.texSubImage2D;
-    gl.texSubImage2D = (...props) => {
+    gl.texSubImage2D = (...props: any[]): any => {
       let nextProps = [...props];
       nextProps.push(getImageForAsset(nextProps.pop()));
       return gl['_expo_texSubImage2D'](...nextProps);
@@ -70,7 +70,7 @@ function ensureContext(
   return asExpoContext(context as ExpoWebGLRenderingContext);
 }
 
-function stripNonDOMProps(props): any {
+function stripNonDOMProps(props: { [key: string]: any }): { [key: string]: any } {
   for (let k in propTypes) {
     if (k in props) {
       delete props[k];
@@ -123,8 +123,9 @@ export class GLView extends React.Component<GLViewProps, State> {
     return ensureContext(canvas);
   }
 
-  static async destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<void> {
+  static async destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean> {
     // Do nothing
+    return true;
   }
 
   static async takeSnapshotAsync(
@@ -136,21 +137,27 @@ export class GLView extends React.Component<GLViewProps, State> {
     return await new Promise(resolve => {
       canvas.toBlob(
         (blob: Blob | null) => {
-          resolve({ uri: blob, width: canvas.width, height: canvas.height, localUri: '' });
+          // TODO: Bacon: Should we add data URI?
+          resolve({
+            uri: blob,
+            localUri: '',
+            width: canvas.width,
+            height: canvas.height,
+          });
         },
         options.format,
         options.compress
       );
     });
-    //TODO:Bacon: Should we add data URI
-    // return canvas.toDataURL(options.format, options.compress);
   }
 
   componentDidMount() {
-    if (window.addEventListener) window.addEventListener('resize', this._updateLayout);
+    if (window.addEventListener) {
+      window.addEventListener('resize', this._updateLayout);
+    }
   }
 
-  _contextCreated = () => {
+  _contextCreated = (): void => {
     this.gl = this._createContext();
     this.props.onContextCreate(this.gl);
     if (this.canvas) {
@@ -174,7 +181,7 @@ export class GLView extends React.Component<GLViewProps, State> {
     window.removeEventListener('resize', this._updateLayout);
   }
 
-  _updateLayout = () => {
+  _updateLayout = (): void => {
     if (this.container) {
       const { clientWidth: width = 0, clientHeight: height = 0 } = this.container;
       this.setState({ width, height });
@@ -225,7 +232,7 @@ export class GLView extends React.Component<GLViewProps, State> {
     return this.gl;
   }
 
-  _contextLost = (event: Event) => {
+  _contextLost = (event: Event): void => {
     event.preventDefault();
     this.gl = undefined;
     if (this.props.onContextLost) {
@@ -233,18 +240,18 @@ export class GLView extends React.Component<GLViewProps, State> {
     }
   };
 
-  _contextRestored = () => {
+  _contextRestored = (): void => {
     if (this.props.onContextRestored) {
       this.gl = this._createContext();
       this.props.onContextRestored(this.gl);
     }
   };
 
-  _assignCanvasRef = (canvas: HTMLCanvasElement) => {
+  _assignCanvasRef = (canvas: HTMLCanvasElement): void => {
     this.canvas = canvas;
   };
 
-  _assignContainerRef = (element: HTMLElement | null) => {
+  _assignContainerRef = (element: HTMLElement | null): void => {
     if (element) {
       this.container = element;
     } else {

@@ -4,11 +4,8 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { UnavailabilityError, CodedError } from 'expo-errors';
 function getImageForAsset(asset) {
-    if (asset == null) {
-        return null;
-    }
-    if (typeof asset === 'object' && asset !== null && asset.downloadAsync) {
-        const dataURI = asset.localUri || asset.uri;
+    if (asset != null && typeof asset === 'object' && asset !== null && asset.downloadAsync) {
+        const dataURI = asset.localUri || asset.uri || '';
         const image = new Image();
         image.src = dataURI;
         return image;
@@ -116,21 +113,27 @@ export class GLView extends React.Component {
     }
     static async destroyContextAsync(exgl) {
         // Do nothing
+        return true;
     }
     static async takeSnapshotAsync(exgl, options = {}) {
         invariant(exgl, 'GLView.takeSnapshotAsync(): canvas is not defined');
         const canvas = exgl.canvas;
         return await new Promise(resolve => {
             canvas.toBlob((blob) => {
-                resolve({ uri: blob, width: canvas.width, height: canvas.height, localUri: '' });
+                // TODO: Bacon: Should we add data URI?
+                resolve({
+                    uri: blob,
+                    localUri: '',
+                    width: canvas.width,
+                    height: canvas.height,
+                });
             }, options.format, options.compress);
         });
-        //TODO:Bacon: Should we add data URI
-        // return canvas.toDataURL(options.format, options.compress);
     }
     componentDidMount() {
-        if (window.addEventListener)
+        if (window.addEventListener) {
             window.addEventListener('resize', this._updateLayout);
+        }
     }
     componentWillUnmount() {
         if (this.gl) {

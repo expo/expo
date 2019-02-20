@@ -74,8 +74,8 @@ export declare class GLView extends React.Component<GLViewProps> {
     static defaultProps: {
         msaaSamples: number;
     };
-    static createContextAsync(): Promise<any>;
-    static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<any>;
+    static createContextAsync(): Promise<ExpoWebGLRenderingContext>;
+    static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean>;
     static takeSnapshotAsync(exgl?: WebGLRenderingContext | number, options?: SnapshotOptions): Promise<GLSnapshot>;
     nativeRef: ComponentOrHandle;
     exglCtxId?: number;
