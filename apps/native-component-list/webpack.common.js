@@ -175,7 +175,11 @@ const babelLoaderConfiguration = {
 const imageLoaderConfiguration = {
   test: /\.(gif|jpe?g|png|svg)$/,
   use: {
-    loader: 'file-loader',
+    // loader: 'file-loader',
+    loader: 'url-loader',
+    options: {
+      name: '[name].[ext]',
+    },
   },
 };
 
@@ -189,9 +193,10 @@ const ttfLoaderConfiguration = {
   test: /\.ttf$/,
   use: [
     {
-      loader: 'file-loader',
+      loader: 'url-loader',
+      // loader: 'file-loader',
       options: {
-        name: './fonts/[hash].[ext]',
+        name: './fonts/[name].[ext]',
       },
     },
   ],
@@ -242,7 +247,6 @@ const publicPath = '/';
 module.exports = {
   mode: environment,
   context: __dirname,
-  devtool: 'cheap-module-source-map',
   // configures where the build ends up
   output: {
     path: locations.absolute(productionPath),
@@ -290,8 +294,16 @@ module.exports = {
     useWebModule('Performance/Systrace', 'Performance/Systrace'),
     useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
     useWebModule('RCTNetworking', 'Network/RCTNetworking'),
-
-    new WorkboxPlugin.GenerateSW(),
+    
+    new WorkboxPlugin.GenerateSW({
+      skipWaiting: true,
+      runtimeCaching: [
+        {
+          urlPattern: /(.*?)/,
+          handler: 'staleWhileRevalidate',
+        },
+      ],
+    }),
   ],
   resolve: {
     symlinks: false,
