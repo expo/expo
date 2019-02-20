@@ -43,13 +43,13 @@ function getAppManifest() {
 const environment = process.env.NODE_ENV || 'development';
 const __DEV__ = environment !== 'production';
 
-const REACT_APP = /^REACT_APP_/i;
+const ENV_VAR_REGEX = /^(EXPO_|REACT_NATIVE_)/i;
 
 const publicUrl = '';
 
 function getClientEnvironment() {
   let processEnv = Object.keys(process.env)
-    .filter(key => REACT_APP.test(key))
+    .filter(key => ENV_VAR_REGEX.test(key))
     .reduce(
       (env, key) => {
         env[key] = JSON.stringify(process.env[key]);
