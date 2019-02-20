@@ -132,6 +132,18 @@ function generateHTMLFromAppJSON() {
      * @see https://github.com/jantimon/html-webpack-plugin/blob/master/docs/template-option.md
      */
     template: locations.rootHtml,
+
+    /* Prod */
+    removeComments: true,
+    collapseWhitespace: true,
+    removeRedundantAttributes: true,
+    useShortDoctype: true,
+    removeEmptyAttributes: true,
+    removeStyleLinkTypeAttributes: true,
+    keepClosingSlash: true,
+    minifyJS: true,
+    minifyCSS: true,
+    minifyURLs: true,
   });
 }
 
@@ -257,9 +269,15 @@ module.exports = {
     publicPath,
   },
   optimization: {
+    splitChunks: {
+      chunks: 'all',
+      name: false,
+    },
     runtimeChunk: true,
   },
   module: {
+    strictExportPresence: true,
+
     rules: [
       { parser: { requireEnsure: false } },
 
@@ -297,6 +315,14 @@ module.exports = {
     
     new WorkboxPlugin.GenerateSW({
       skipWaiting: true,
+      clientsClaim: true,
+      exclude: [/\.map$/, /asset-manifest\.json$/],
+      importWorkboxFrom: 'cdn',
+      navigateFallback: `${publicUrl}/index.html`,
+      navigateFallbackBlacklist: [
+        new RegExp('^/_'),
+        new RegExp('/[^/]+\\.[^/]+$'),
+      ],
       runtimeCaching: [
         {
           urlPattern: /(.*?)/,
@@ -313,8 +339,6 @@ module.exports = {
       {
         /* Alias direct react-native imports to react-native-web */
         'react-native$': 'react-native-web',
-      },
-      {
         /* Add polyfills for modules that react-native-web doesn't support */
         'react-native/Libraries/Image/AssetSourceResolver$':
           'expo/build/web/Image/AssetSourceResolver',
@@ -365,4 +389,5 @@ module.exports = {
     tls: 'empty',
     child_process: 'empty',
   },
+  performance: false,
 };

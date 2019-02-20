@@ -7,6 +7,9 @@ const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+// const safePostCssParser = require('postcss-safe-parser');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -31,50 +34,88 @@ module.exports = merge(common, {
         to:  locations.absolute('./web-build/manifest.json'),
       },
     ]),
+    new MiniCssExtractPlugin({
+      chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+    }),
+
     // Moment.js is an extremely popular library that bundles large locale files
     // by default due to how Webpack interprets its code. This is a practical
     // solution that requires the user to opt into importing specific locales.
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new CompressionPlugin(),
+    new CompressionPlugin({
+      test: /\.(js|css)$/,
+      filename: '[path].gz[query]',
+      algorithm: 'gzip',
+    }),
     // new BundleAnalyzerPlugin(),
 
   ],
+  module: {
+    rules: [
+      {
+        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+        loader: require.resolve('url-loader'),
+        options: {
+          limit: 10000,
+          name: 'static/media/[name].[hash:8].[ext]',
+        },
+      },
+    ]
+  },
   optimization: {
     minimize: true,
     minimizer: [
       // we specify a custom TerserPlugin here to get source maps in production
       new TerserPlugin({
         cache: true,
-        // sourceMap: true,
+        sourceMap: true,
         parallel: true,
         extractComments: 'all',
         terserOptions: {
-          output: {
-            comments: false,
-          },
-          ecma: 6,
-          // ecma: undefined,
           warnings: false,
-          parse: {},
-          compress: {},
-          mangle: true, // Note `mangle.properties` is `false` by default.
-          module: false,
-          toplevel: false,
-          nameCache: null,
-          ie8: false,
-          keep_classnames: undefined,
-          keep_fnames: false,
-          safari10: false,
+          parse: {
+            ecma: 8,
+          },
+          compress: {
+            ecma: 5,
+            warnings: false,
+            comparisons: false,
+            inline: 2,
+          },
+          mangle: {
+            safari10: true,
+          },
+          output: {
+            ecma: 5,
+            comments: false,
+            ascii_only: true,
+          },
+          // module: false,
+          // toplevel: false,
+          // nameCache: null,
+          // ie8: false,
+          // keep_classnames: undefined,
+          // keep_fnames: false,
         },
       }),
+      // new OptimizeCSSAssetsPlugin({
+      //   cssProcessorOptions: {
+      //     parser: safePostCssParser,
+      //     map: 
+      //       {
+      //         inline: false,
+      //         annotation: true,
+      //       }
+      //   },
+      // }),
     ],
     splitChunks: {
       chunks: 'async',
       minSize: 30000,
       maxSize: 0,
-      minChunks: 1, //Infinity
+      minChunks: Infinity,
       maxAsyncRequests: 5,
       maxInitialRequests: 3,
       automaticNameDelimiter: '~',
@@ -88,6 +129,12 @@ module.exports = merge(common, {
           minChunks: 2,
           priority: -20,
           reuseExistingChunk: true
+        },
+        commons: {
+          minChunks: 2,
+          minSize: 0, //30000,
+          chunks: 'initial',
+          name: 'commons',
         }
       }
     }
