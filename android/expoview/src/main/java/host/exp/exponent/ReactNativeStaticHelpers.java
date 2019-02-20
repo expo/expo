@@ -105,7 +105,7 @@ public class ReactNativeStaticHelpers {
   }
 
   @DoNotStrip
-  public static OkHttpClient getOkHttpClient(Class callingClass) {
+  public static OkHttpClient getOkHttpUnprefixedClient(Class callingClass) {
     String version = RNObject.versionForClassname(callingClass.getName());
     Object cookieJar = new RNObject("com.facebook.react.modules.network.ReactCookieJarContainer").loadVersion(version).construct().get();
 
@@ -133,6 +133,38 @@ public class ReactNativeStaticHelpers {
       // just fall back to previous client
       EXL.e(TAG, "Falling back to default OkHttpClient builder: " + e.getMessage());
     }
-    return OkHttpClientProvider.enableTls12OnPreLollipop(client).build();
+    return client.build();
+  }
+
+  @DoNotStrip // can be removed when sdk 32 is dropped
+  public static expolib_v1.okhttp3.OkHttpClient getOkHttpClient(Class callingClass) {
+    String version = RNObject.versionForClassname(callingClass.getName());
+    Object cookieJar = new RNObject("com.facebook.react.modules.network.ReactCookieJarContainer").loadVersion(version).construct().get();
+
+    expolib_v1.okhttp3.OkHttpClient.Builder client = new expolib_v1.okhttp3.OkHttpClient.Builder()
+        .connectTimeout(0, TimeUnit.MILLISECONDS)
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(0, TimeUnit.MILLISECONDS)
+        .cookieJar((expolib_v1.okhttp3.CookieJar) cookieJar)
+        .cache(sExponentNetwork.getCacheForPrefixedClient());
+
+    sExponentNetwork.addInterceptorsToPrefixedClient(client);
+
+    // pass the builder through MainApplication so that detached apps can customize it
+    try {
+      Method m = Class.forName("host.exp.exponent.MainApplication").getMethod("okHttpPrefixedClientBuilder", OkHttpClient.Builder.class);
+      Object returnVal = m.invoke(null, client);
+      if (returnVal instanceof expolib_v1.okhttp3.OkHttpClient.Builder) {
+        client = (expolib_v1.okhttp3.OkHttpClient.Builder) returnVal;
+      } else {
+        throw new Exception("MainApplication.okHttpPrefixedClientBuilder returned an object of type " + returnVal.getClass().getName());
+      }
+    } catch (NoSuchMethodException ex) {
+      // ignore this and fall back to previous client
+    } catch (Exception e) {
+      // just fall back to previous client
+      EXL.e(TAG, "Falling back to default OkHttpClient builder: " + e.getMessage());
+    }
+    return client.build();
   }
 }

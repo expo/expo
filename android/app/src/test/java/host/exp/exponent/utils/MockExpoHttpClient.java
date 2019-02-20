@@ -7,8 +7,8 @@ import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
+import okhttp3.Request;
+import okhttp3.Response;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
