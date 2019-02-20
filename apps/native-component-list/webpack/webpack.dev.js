@@ -14,6 +14,12 @@ module.exports = merge(common, {
   mode: 'development',
   entry: [require.resolve('react-dev-utils/webpackHotDevClient'), locations.appMain],
   devtool: 'cheap-module-source-map',
+  output: {
+    filename: 'static/[name].[hash].js',
+    sourceMapFilename: '[name].[hash].map',
+    // There are also additional JS chunk files if you use code splitting.
+    chunkFilename: 'static/[id].[hash].js',
+  },
   devServer: {
     stats: {
       colors: true,
