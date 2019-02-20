@@ -11597,7 +11597,7 @@ react-apollo@~1.0.1:
   optionalDependencies:
     react-dom "0.14.x || 15.* || ^15.0.0"
 
-react-art@^16.6.1, react-art@^16.7.0:
+react-art@^16.7.0:
   version "16.7.0"
   resolved "https://registry.yarnpkg.com/react-art/-/react-art-16.7.0.tgz#e06943f4e939c1ebf14632ff45adb8e1a8b77ff5"
   integrity sha512-T6iyUFmqJegwgE1Kg4JQa7S/qf79RFxEXvbHeukiC1QgaETwKY7L2HO4D5gT9khowJmiNh0xN2b61ak7N4D6yQ==

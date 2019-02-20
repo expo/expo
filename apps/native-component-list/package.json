@@ -8,7 +8,7 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "web:dev": "webpack-dev-server -d --config webpack.dev.js --https",
-    "web:build": "webpack --config webpack.prod.js",
+    "web:build": "webpack -p --config webpack.prod.js",
     "web:publish": "netlify deploy",
     "web:serve": "serve ./web-build"
   },
@@ -34,7 +34,6 @@
     "processing-js": "^1.6.6",
     "prop-types": "^15.6.0",
     "react": "16.5.0",
-    "react-art": "^16.6.1",
     "react-dom": "16.6.1",
     "react-native": "0.57.1",
     "react-native-is-iphonex": "^1.0.1",

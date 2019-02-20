@@ -257,7 +257,7 @@ function useWebModule(modulePathToHiJack, redirectPath, initialRoot = 'expo/buil
 const publicPath = '/';
 
 module.exports = {
-  mode: environment,
+  // mode: environment,
   context: __dirname,
   // configures where the build ends up
   output: {

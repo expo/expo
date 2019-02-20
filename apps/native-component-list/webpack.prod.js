@@ -20,9 +20,9 @@ module.exports = merge(common, {
     app: ['babel-polyfill', locations.appMain],
   },
   output: {
-    filename: '[name].[hash:8].js',
-    sourceMapFilename: '[name].[hash:8].map',
-    chunkFilename: '[id].[hash:8].js'  
+    filename: '[name].[chunkhash].js',
+    sourceMapFilename: '[name].[chunkhash].map',
+    chunkFilename: '[id].[chunkhash].js'  
   },
   devtool: 'hidden-source-map',
   plugins: [
@@ -36,8 +36,8 @@ module.exports = merge(common, {
       },
     ]),
     new MiniCssExtractPlugin({
-      filename: 'static/css/[name].[contenthash:8].css',
-      chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+      filename: 'static/css/[name].[contenthash].css',
+      chunkFilename: 'static/css/[name].[contenthash].chunk.css',
     }),
 
     // Moment.js is an extremely popular library that bundles large locale files
@@ -64,7 +64,7 @@ module.exports = merge(common, {
         loader: require.resolve('url-loader'),
         options: {
           limit: 10000,
-          name: 'static/media/[name].[hash:8].[ext]',
+          name: 'static/media/[name].[hash].[ext]',
         },
       },
     ]
