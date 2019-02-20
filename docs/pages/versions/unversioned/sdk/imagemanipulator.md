@@ -89,3 +89,5 @@ export default class ImageManipulatorSample extends React.Component {
   };
 }
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/ImageManipulator)

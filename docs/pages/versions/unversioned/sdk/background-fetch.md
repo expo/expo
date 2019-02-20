@@ -82,3 +82,5 @@ Sets the minimum number of seconds that must elapse before another background fe
 #### Returns
 
 A promise resolving once the minimum interval is set.
+
+#### [Github Issues](https://github.com/expo/expo/labels/BackgroundFetch)

@@ -78,3 +78,5 @@ To use this in web, add the following script to your `web/index.html`. This scri
   <!-- <body /> -->
 </html>
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/MapView)

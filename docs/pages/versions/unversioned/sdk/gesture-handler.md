@@ -16,3 +16,5 @@ import { GestureHandler } from 'expo';
 // version of the package for the version of Expo that you are using
 // import GestureHandler from 'react-native-gesture-handler';
 ```
+
+#### [Github Issues](https://github.com/expo/expo/labels/GestureHandler)

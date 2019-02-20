@@ -62,3 +62,5 @@ List of `Voice` objects.
 
 ##### enum `Expo.Speech.VoiceQuality`
   possible values: `Default` or `Enhanced`.
+
+#### [Github Issues](https://github.com/expo/expo/labels/Speech)

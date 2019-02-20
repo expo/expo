@@ -51,3 +51,4 @@ const result = await takeSnapshotAsync(this.imageContainer, {
 });
 ```
 
+#### [Github Issues](https://github.com/expo/expo/labels/takeSnapshotAsync)
