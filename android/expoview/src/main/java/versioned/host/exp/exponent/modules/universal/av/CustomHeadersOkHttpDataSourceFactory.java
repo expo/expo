@@ -21,7 +21,7 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   @Nullable
   private final String mUserAgent;
   @Nullable
-  private final TransferListener<? super DataSource> mListener;
+  private final TransferListener mListener;
   @Nullable
   private final CacheControl mCacheControl;
 
@@ -45,6 +45,6 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   }
 
   protected OkHttpDataSource createDataSourceInternal(HttpDataSource.RequestProperties defaultRequestProperties) {
-    return new OkHttpDataSource(mCallFactory, mUserAgent, null, mListener, mCacheControl, defaultRequestProperties);
+    return new OkHttpDataSource(mCallFactory, mUserAgent, null, mCacheControl, defaultRequestProperties);
   }
 }

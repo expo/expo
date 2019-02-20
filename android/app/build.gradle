@@ -19,6 +19,11 @@ repositories {
 android {
   compileSdkVersion 27
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion 21

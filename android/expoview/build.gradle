@@ -337,7 +337,7 @@ dependencies {
 
   // expo-av
   // See explanation in expo-av/build.gradle
-  api 'com.google.android.exoplayer:extension-okhttp:2.6.1'
+  api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
 
   // This can be removed when sdk 32 is dropped
   api 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
