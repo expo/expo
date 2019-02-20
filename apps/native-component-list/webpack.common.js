@@ -117,6 +117,16 @@ function generateHTMLFromAppJSON() {
      */
     minify: {
       removeComments: true,
+      /* Prod */
+      collapseWhitespace: true,
+      removeRedundantAttributes: true,
+      useShortDoctype: true,
+      removeEmptyAttributes: true,
+      removeStyleLinkTypeAttributes: true,
+      keepClosingSlash: true,
+      minifyJS: true,
+      minifyCSS: true,
+      minifyURLs: true,
     },
     /**
      * Adds the given favicon path to the output html.
@@ -132,19 +142,7 @@ function generateHTMLFromAppJSON() {
      * The `webpack` require path to the template.
      * @see https://github.com/jantimon/html-webpack-plugin/blob/master/docs/template-option.md
      */
-    template: locations.rootHtml,
-
-    /* Prod */
-    removeComments: true,
-    collapseWhitespace: true,
-    removeRedundantAttributes: true,
-    useShortDoctype: true,
-    removeEmptyAttributes: true,
-    removeStyleLinkTypeAttributes: true,
-    keepClosingSlash: true,
-    minifyJS: true,
-    minifyCSS: true,
-    minifyURLs: true,
+    template: locations.rootHtml
   });
 }
 
