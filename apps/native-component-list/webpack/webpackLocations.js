@@ -1,4 +1,3 @@
-
 const path = require('path');
 const findWorkspaceRoot = require('find-yarn-workspace-root');
 const absolute = (...locations) => path.resolve(__dirname, '../', ...locations);
@@ -23,7 +22,9 @@ const nativeAppManifest = require(appJsonPath);
 const { expo: expoManifest = {} } = nativeAppManifest;
 const { web: expoManifestWebManifest = {} } = expoManifest;
 
-const favicon = expoManifestWebManifest.favicon ? absolute(expoManifestWebManifest.favicon) : undefined;
+const favicon = expoManifestWebManifest.favicon
+  ? absolute(expoManifestWebManifest.favicon)
+  : undefined;
 
 const { productionPath: productionPathFolderName = 'web-build' } = expoManifestWebManifest;
 
@@ -47,8 +48,8 @@ module.exports = {
   },
   production: {
     folder: productionPath,
-    indexHtml: path.resolve(productionPath,'index.html'),
-    manifest: path.resolve(productionPath,'manifest.json'),
-    serveJson: path.resolve(productionPath,'serve.json'),
+    indexHtml: path.resolve(productionPath, 'index.html'),
+    manifest: path.resolve(productionPath, 'manifest.json'),
+    serveJson: path.resolve(productionPath, 'serve.json'),
   },
 };

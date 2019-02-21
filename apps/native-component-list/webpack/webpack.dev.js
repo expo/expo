@@ -71,8 +71,5 @@ module.exports = merge(common, {
       PnpWebpackPlugin.moduleLoader(module),
     ],
   },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new CaseSensitivePathsPlugin(),
-  ]
+  plugins: [new webpack.HotModuleReplacementPlugin(), new CaseSensitivePathsPlugin()],
 });

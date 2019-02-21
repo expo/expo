@@ -1,10 +1,9 @@
 const merge = require('webpack-merge');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 
@@ -49,14 +48,14 @@ module.exports = merge(common, {
       filename: '[path].gz[query]',
       algorithm: 'gzip',
       threshold: 1024,
-      minRatio: 0.8
+      minRatio: 0.8,
     }),
     new BrotliPlugin({
-			asset: '[path].br[query]',
-			test: /\.(js|css)$/,
-			threshold: 1024,
-			minRatio: 0.8
-		})
+      asset: '[path].br[query]',
+      test: /\.(js|css)$/,
+      threshold: 1024,
+      minRatio: 0.8,
+    }),
   ],
   module: {
     rules: [
@@ -75,7 +74,7 @@ module.exports = merge(common, {
           name: 'static/media/[hash].[ext]',
         },
       },
-    ]
+    ],
   },
   optimization: {
     minimize: true,
@@ -123,7 +122,7 @@ module.exports = merge(common, {
       minChunks: Infinity,
       automaticNameDelimiter: '~',
       name: true,
-      cacheGroups: { 
+      cacheGroups: {
         vendor: {
           chunks: 'all',
           priority: -10,
@@ -141,7 +140,7 @@ module.exports = merge(common, {
         default: {
           minChunks: 2,
           priority: -20,
-          reuseExistingChunk: true
+          reuseExistingChunk: true,
         },
         commons: {
           name: 'commons',
@@ -149,9 +148,9 @@ module.exports = merge(common, {
           minChunks: 2,
           priority: 10,
           reuseExistingChunk: true,
-          enforce: true
+          enforce: true,
         },
       },
-    }
+    },
   },
 });
