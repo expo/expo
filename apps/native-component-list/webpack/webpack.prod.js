@@ -117,7 +117,7 @@ module.exports = merge(common, {
       cacheGroups: { 
         vendor: {
           chunks: 'all',
-          priority: 20,
+          priority: -10,
           test: /[\\/]node_modules[\\/]/,
           // name of the chunk
           name(module) {
@@ -129,10 +129,15 @@ module.exports = merge(common, {
             return `npm.${packageName.replace('@', '')}`;
           },
         },
-        common: {
-          name: 'common',
+        default: {
           minChunks: 2,
-          chunks: 'async',
+          priority: -20,
+          reuseExistingChunk: true
+        },
+        commons: {
+          name: 'commons',
+          chunks: 'initial',
+          minChunks: 2,
           priority: 10,
           reuseExistingChunk: true,
           enforce: true
