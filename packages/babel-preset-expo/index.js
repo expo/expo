@@ -17,7 +17,7 @@ module.exports = function(api) {
   // On web add the `react-native-web` plugin.
   if (isWeb) {
     plugins.push('babel-plugin-react-native-web');
-    disableImportExportTransform = true;
+    // disableImportExportTransform = true;
   }
 
   return {
