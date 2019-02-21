@@ -40,7 +40,7 @@ Browse through our [Native Component List][examples-url] running in a web contex
 | Tab Navigator             | 🔬     | Experimental | [`react-navigation`][react-navigation]                                |
 | [PIXI.js][pixi]           | 🔬     | Experimental | [`expo-pixi`][expo-pixi]                                              |
 | [THREE.js][three]         | 🔬     | Experimental | [`expo-three`][expo-three]                                            |
-| Action Sheet              | ⏳     | Incomplete   | [`@expo/react-native-action-sheet`][`expo-react-native-action-sheet`] |
+| Action Sheet              | ✅     |              | [`@expo/react-native-action-sheet`][`expo-react-native-action-sheet`] |
 | UI Alert                  | ⏳     | Incomplete   | [`@expo/react-native-action-sheet`][`expo-react-native-action-sheet`] |
 | Drawer Navigator          | ⏳     | Incomplete   | [`react-navigation`][react-navigation]                                |
 | Stack Navigator           | ⏳     | Incomplete   | [`react-navigation`][react-navigation]                                |
@@ -52,7 +52,7 @@ Browse through our [Native Component List][examples-url] running in a web contex
 | Screens                   | ⏳     | Incomplete   | [`react-native-screens`][react-native-screens]                        |
 | Facebook                  | ⏳     | Incomplete   | [`expo-facebook`][expo-facebook]                                      |
 | ImageManipulator          | ⏳     | Incomplete   | [`expo-image-manipulator`][expo-image-manipulator]                    |
-| ScreenOrientation         | ⏳     | Incomplete   | [`expo-screen-orientation`][expo-screen-orientation]                  |
+| ScreenOrientation         | ✅     |              | [`expo-screen-orientation`][expo-screen-orientation]                  |
 | WebBrowser                | ⏳     | Incomplete   | [`expo-web-browser`][expo-web-browser]                                |
 | BackgroundFetch           | ⏳     | Incomplete   | [`expo-background-fetch`][expo-background-fetch]                      |
 | BarCodeScanner            | ⏳     | Incomplete   | [`expo-barcode-scanner`][expo-barcode-scanner]                        |
@@ -64,7 +64,7 @@ Browse through our [Native Component List][examples-url] running in a web contex
 | Google                    | ⏳     | Incomplete   | [`expo`][expo]                                                        |
 | Notifications             | ⏳     | Incomplete   | [`expo`][expo]                                                        |
 | apisAreAvailable          | ⏳     | Incomplete   | [`expo`][expo]                                                        |
-| takeSnapshotAsync         | ⏳     | Incomplete   | [`expo`][expo]                                                        |
+| takeSnapshotAsync         | 🔬     | Experimental | [`expo`][expo]                                                        |
 | AppLoading                | ⏳     | Incomplete   | [`expo`][expo]                                                        |
 | Logs                      | ⏳     | Incomplete   | [`expo`][expo]                                                        |
 | ErrorRecovery             | ⏳     | Incomplete   | [`expo`][expo]                                                        |
@@ -90,7 +90,6 @@ Browse through our [Native Component List][examples-url] running in a web contex
 | MagnetometerUncalibrated  | 📱     | Native Only  | [`expo-sensors`][expo-sensors]                                        |
 | TaskManager               | 📱     | Native Only  | [`expo-task-manager`][expo-task-manager]                              |
 | Amplitude                 | 📱     | Native Only  | [`expo`][expo]                                                        |
-| DangerZone                | 📱     | Native Only  | [`expo`][expo]                                                        |
 | IntentLauncherAndroid     | 📱     | Native Only  | [`expo`][expo]                                                        |
 
 [react-native-url]: https://facebook.github.io/react-native
