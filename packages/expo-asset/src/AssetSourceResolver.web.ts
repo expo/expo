@@ -3,7 +3,14 @@ import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 import { Dimensions } from 'react-native';
 
-import { getBasePath, PackagerAsset } from './assetPathUtils.web';
+type PackagerAsset = any;
+
+function getBasePath({ httpServerLocation }: PackagerAsset): string {
+  if (httpServerLocation[0] === '/') {
+    return httpServerLocation.substr(1);
+  }
+  return httpServerLocation;
+}
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean;

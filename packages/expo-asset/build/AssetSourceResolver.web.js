@@ -2,7 +2,12 @@ import { Platform } from 'expo-core';
 import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 import { Dimensions } from 'react-native';
-import { getBasePath } from './assetPathUtils.web';
+function getBasePath({ httpServerLocation }) {
+    if (httpServerLocation[0] === '/') {
+        return httpServerLocation.substr(1);
+    }
+    return httpServerLocation;
+}
 function getScale() {
     return Dimensions.get('window').scale;
 }

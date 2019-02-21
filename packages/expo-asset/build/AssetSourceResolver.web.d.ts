@@ -1,4 +1,4 @@
-import { PackagerAsset } from './assetPathUtils.web';
+declare type PackagerAsset = any;
 export declare type ResolvedAssetSource = {
     __packager_asset: boolean;
     width?: number;
@@ -22,3 +22,4 @@ export default class AssetSourceResolver {
     fromSource(source: string): ResolvedAssetSource;
     static pickScale(scales: number[], deviceScale: number): number;
 }
+export {};
