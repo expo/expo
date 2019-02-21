@@ -268,7 +268,7 @@ module.exports = {
       chunks: 'all',
       name: false,
     },
-    runtimeChunk: true,
+    runtimeChunk: 'single',
   },
   module: {
     strictExportPresence: true,

@@ -106,31 +106,38 @@ module.exports = merge(common, {
       }),
     ],
     splitChunks: {
-      chunks: 'async',
-      minSize: 30000,
+      chunks: 'all',
+      maxInitialRequests: Infinity,
+      maxAsyncRequests: 5,
+      minSize: 0,
       maxSize: 0,
       minChunks: Infinity,
-      maxAsyncRequests: 5,
-      maxInitialRequests: 3,
       automaticNameDelimiter: '~',
       name: true,
-      cacheGroups: {
-        vendors: {
+      cacheGroups: { 
+        vendor: {
+          chunks: 'all',
+          priority: 20,
           test: /[\\/]node_modules[\\/]/,
-          priority: -10
+          // name of the chunk
+          name(module) {
+            // get the name. E.g. node_modules/packageName/not/this/part.js
+            // or node_modules/packageName
+            const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+
+            // npm package names are URL-safe, but some servers don't like @ symbols
+            return `npm.${packageName.replace('@', '')}`;
+          },
         },
-        default: {
+        common: {
+          name: 'common',
           minChunks: 2,
-          priority: -20,
-          reuseExistingChunk: true
+          chunks: 'async',
+          priority: 10,
+          reuseExistingChunk: true,
+          enforce: true
         },
-        commons: {
-          minChunks: 2,
-          minSize: 0, //30000,
-          chunks: 'initial',
-          name: 'commons',
-        }
-      }
+      },
     }
   },
 });
