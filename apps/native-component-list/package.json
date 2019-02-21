@@ -16,6 +16,7 @@
     "group": "client"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.2.5",
     "@expo/react-native-action-sheet": "^2.0.1",
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
