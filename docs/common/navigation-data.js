@@ -10,7 +10,7 @@ const DIR_MAPPING = {
   'managed-workflow': 'Managed Workflow',
   'bare-workflow': 'Bare Workflow',
   tutorials: 'Tutorials',
-  sdk: 'SDK API Reference',
+  sdk: 'Expo SDK',
   'react-native': 'React Native',
   // "react-native-apis": 'React Native APIs',
   // 'react-native-components': 'React Native Components',
@@ -42,10 +42,6 @@ const generateNavLinks = (path_, arr) => {
       if (name === 'introduction') {
         // TODO: find what's eating the final slash
         initArr.push({ name: 'Quick Start', href: path.parse(href).dir + '//' });
-      }
-      // 'SDK' section has a 'Introduction' page that's the same as the index page
-      if (name === 'sdk') {
-        initArr.push({ name: 'Introduction', href });
       }
 
       arr.push({

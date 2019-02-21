@@ -3,6 +3,8 @@ const GROUPS = {
   Guides: 'Managed Workflow',
   'Distributing Your App': 'Managed Workflow',
   ExpoKit: 'Managed Workflow',
+  'Expo SDK': 'API Reference',
+  'React Native': 'API Reference',
 };
 
 const ROOT = [
@@ -12,7 +14,7 @@ const ROOT = [
   'Distributing Your App',
   // 'Tutorials',
   'ExpoKit',
-  'SDK API Reference',
+  'Expo SDK',
   'React Native Basics',
   'React Native Guides',
   'React Native Components',
