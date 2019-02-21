@@ -42,7 +42,7 @@ Run the following in your root dir:
 
 ```sh
 git init
-git remote add origin https://github.com/evanbacon/expo-gh-pages.git
+git remote add origin <YOUR_GITHUB_PAGES_URL>
 yarn add -D gh-pages
 ```
 
