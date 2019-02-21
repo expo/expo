@@ -7,11 +7,23 @@ import * as Constants from '~/common/constants';
 const STYLES_TITLE = css`
   display: block;
   position: relative;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   line-height: 1.3rem;
   text-decoration: none;
   text-transform: uppercase;
   font-family: ${Constants.fontFamilies.demi};
+  user-select: none;
+  :hover {
+    cursor: pointer;
+  }
+`;
+
+const STYLES_SIDEBAR_INDENT = css`
+  display: block;
+  border-left-width: 1px;
+  border-left-color: #ccc;
+  border-left-style: dashed;
+  padding-left: 15px;
 `;
 
 const STYLES_ACTIVE = css`
@@ -44,49 +56,43 @@ class Arrow extends React.Component {
     return (
       <i
         className={`fas fa-chevron-${this.props.isOpen ? 'up' : 'down'}`}
-        style={{ position: 'absolute', right: 0, top: 0 }}
+        style={{ position: 'absolute', right: 0 }}
       />
     );
   }
 }
 
-export default class DocumentationSidebarTitle extends React.Component {
+export default class DocumentationSidebarGroup extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      isOpen: this.isSelected(), // || this.isChildRouteActive(),
+      isOpen: this.isChildRouteActive(),
     };
-  }
-
-  isSelected() {
-    if (!this.props.url) {
-      return false;
-    }
-
-    const linkUrl = this.props.info.as || this.props.info.href;
-
-    if (linkUrl === this.props.url.pathname || linkUrl === this.props.asPath) {
-      return true;
-    }
-
-    return false;
   }
 
   isChildRouteActive() {
     let result = false;
-    let posts = this.props.posts;
 
-    this.props.info.posts.forEach(post => {
-      const linkUrl = post.as || post.href;
+    let sections = this.props.info.children;
+    let posts = [];
+
+    const isSectionActive = section => {
+      const linkUrl = section.as || section.href;
       const pathname = this.props.url.pathname;
       const asPath = this.props.asPath;
 
       if (linkUrl === pathname || linkUrl === asPath) {
         result = true;
       }
+    };
+
+    sections.forEach(section => {
+      posts = [...posts, ...section.posts];
     });
 
+    sections.forEach(isSectionActive);
+    posts.forEach(isSectionActive);
     return result;
   }
 
@@ -94,25 +100,18 @@ export default class DocumentationSidebarTitle extends React.Component {
     this.setState(({ isOpen }) => ({ isOpen: !isOpen }));
   };
 
-  //
-  // TODO: move rendering of child links here so we can make sections collapsable
-  //
   render() {
-    if (!this.props.info.href) {
-      return (
-        <div className={STYLES_TITLE}>
-          {this.props.children}
-        </div>
-      );
-    }
-
     return (
-      <div className={`${STYLES_TITLE} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
-        <NextLink href={this.props.info.href} as={this.props.info.as || this.props.info.href}>
-          <div>
-            {this.props.children}
-          </div>
-        </NextLink>
+      <div>
+        <a
+          className={`${STYLES_TITLE} ${this.state.isOpen ? STYLES_ACTIVE : STYLES_DEFAULT}`}
+          onClick={this._toggleIsOpen}>
+          {this.props.info.name}
+          <Arrow isOpen={this.state.isOpen} />
+        </a>
+        {this.state.isOpen ? (
+          <div className={STYLES_SIDEBAR_INDENT}>{this.props.children}</div>
+        ) : null}
       </div>
     );
   }

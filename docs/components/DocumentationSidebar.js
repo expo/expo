@@ -6,9 +6,11 @@ import * as Constants from '~/common/constants';
 
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
+import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 
 const STYLES_SIDEBAR = css`
   width: 100%;
+  width: 277px;
   padding: 32px 24px 24px 24px;
 `;
 
@@ -34,6 +36,18 @@ export default class DocumentationSidebar extends React.Component {
   };
 
   _renderCategoryElements = info => {
+    if (info.children) {
+      return (
+        <DocumentationSidebarGroup
+          key={`group-${info.name}`}
+          url={this.props.url}
+          info={info}
+          asPath={this.props.asPath}>
+          {info.children.map(categoryInfo => this._renderCategoryElements(categoryInfo))}
+        </DocumentationSidebarGroup>
+      );
+    }
+
     const titleElement = (
       <DocumentationSidebarTitle
         key={info.name}

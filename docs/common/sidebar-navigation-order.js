@@ -1,12 +1,17 @@
+const GROUPS = {
+  Fundamentals: 'Managed Workflow',
+  Guides: 'Managed Workflow',
+  'Distributing Your App': 'Managed Workflow',
+  ExpoKit: 'Managed Workflow',
+};
+
 const ROOT = [
   'Introduction',
-  'Managed Workflow',
   'Fundamentals',
   'Guides',
   'Distributing Your App',
   // 'Tutorials',
   'ExpoKit',
-  'Bare Workflow',
   'SDK API Reference',
   'React Native Basics',
   'React Native Guides',
@@ -198,6 +203,7 @@ const REACT_NATIVE = [
 
 module.exports = {
   ROOT,
+  GROUPS,
   INTRODUCTION,
   FUNDAMENTALS,
   GUIDES,

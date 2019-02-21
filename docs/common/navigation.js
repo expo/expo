@@ -1,5 +1,6 @@
 const {
   ROOT,
+  GROUPS,
   INTRODUCTION,
   FUNDAMENTALS,
   GUIDES,
@@ -51,9 +52,34 @@ const sortNav = nav => {
   return nav;
 };
 
+// Yikes, this groups together multiple sections under one heading
+const groupNav = nav => {
+  let sections = [];
+  let groupIndex = {};
+  nav.forEach(section => {
+    let group = GROUPS[section.name];
+    if (group) {
+      let existingGroupIndex = groupIndex[group];
+      if (existingGroupIndex) {
+        sections[existingGroupIndex].children.push(section);
+      } else {
+        groupIndex[group] = sections.length;
+        sections.push({
+          name: group,
+          children: [section],
+        });
+      }
+    } else {
+      sections.push(section);
+    }
+  });
+
+  return sections;
+};
+
 const sortedNavigation = Object.assign(
   ...Object.entries(navigation).map(([version, versionNavigation]) => ({
-    [version]: sortNav(versionNavigation),
+    [version]: groupNav(sortNav(versionNavigation)),
   }))
 );
 
