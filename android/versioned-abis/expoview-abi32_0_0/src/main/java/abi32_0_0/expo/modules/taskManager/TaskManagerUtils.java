@@ -29,6 +29,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   // Set of job IDs that are scheduled but not started yet.
   private static final List<Integer> sPendingJobIds = new ArrayList<>();
 
+  @Override
   public PendingIntent createTaskIntent(Context context, TaskInterface task) {
     Integer intentId = sCurrentIntentId++;
     String appId = task.getAppId();
@@ -46,10 +47,12 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     return PendingIntent.getBroadcast(context, intentId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
+  @Override
   public void cancelTaskIntent(Context context, String appId, String taskName) {
     // stub just to satisfy TaskManagerUtilsInterface requirements introduced in SDK33.
   }
 
+  @Override
   public void scheduleJob(Context context, JobInfo jobInfo) {
     JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
@@ -67,12 +70,30 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     }
   }
 
+  @Override
   public void scheduleJob(Context context, TaskInterface task, PersistableBundle data) {
     Integer jobId = sCurrentJobId++;
     PersistableBundle extras = createExtrasForTask(task, data);
     JobInfo jobInfo = createJobInfo(context, jobId, extras);
 
     scheduleJob(context, jobInfo);
+  }
+
+  @Override
+  public JobInfo.Builder createJobInfoBuilder(Context context, TaskInterface task, PersistableBundle data) {
+    return new JobInfo.Builder(sCurrentJobId++, new ComponentName(context, TaskJobService.class))
+        .setExtras(createExtrasForTask(task, data));
+  }
+
+  @Override
+  public void cancelScheduledJob(Context context, int jobId) {
+    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+    if (jobScheduler != null) {
+      jobScheduler.cancel(jobId);
+    } else {
+      Log.e(this.getClass().getName(), "Job scheduler not found!");
+    }
   }
 
   @SuppressWarnings("unchecked")
