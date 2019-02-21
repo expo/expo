@@ -1,5 +1,14 @@
 # Deploying Expo Web Apps
 
+## Table of contents
+
+- [Now](#now)
+- [Surge](#surge)
+- [Netlify](#netlify)
+  - [Manual deployment with the Netlify CDN](#manual-deployment-with-the-netlify-cdn)
+  - [Continuous delivery](#continuous-delivery)
+- [GitHub Pages](#github-pages)
+
 ## [Now](https://zeit.co/now)
 
 Now has a single-command zero-config deployment flow. You can use `now` to deploy your app for free! 💯
@@ -29,6 +38,25 @@ project path: /path/to/expo-project/web
 ```
 
 > To support routers that use the HTML 5 `pushState` API, you'll need to rename the `web/index.html` to `web/200.html` before deploying.
+
+## [Netlify](https://www.netlify.com/)
+
+### Manual deployment with the Netlify CDN
+
+```sh
+npm install netlify-cli -g
+netlify deploy
+```
+
+Choose `web` as the path to deploy.
+
+### Continuous delivery
+
+With this setup Netlify will build and deploy when you push to git or open a new pull request:
+
+1. [Start a new Netlify project](https://app.netlify.com/signup)
+2. Pick your Git hosting service and select your repository
+3. Click `Build your site`
 
 ## [GitHub Pages](https://pages.github.com/)
 
@@ -123,22 +151,3 @@ Here are the formal instructions for deploying to GitHub Pages:
    - !! Your app is now available at the URL you set as `homepage` in your `package.json` (call your parents and show them! 😜)
 
    > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
-
-## [Netlify](https://www.netlify.com/)
-
-### Manual deployment with the Netlify CDN
-
-```sh
-npm install netlify-cli -g
-netlify deploy
-```
-
-Choose `web` as the path to deploy.
-
-### Continuous delivery
-
-With this setup Netlify will build and deploy when you push to git or open a new pull request:
-
-1. [Start a new Netlify project](https://app.netlify.com/signup)
-2. Pick your Git hosting service and select your repository
-3. Click `Build your site`
