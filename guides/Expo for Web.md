@@ -7,7 +7,7 @@ Expo for web brings all of the high quality modules you've come to expect from R
 The high level goals of this project:
 
 - Be highly universal with little-to-no lock in.
-- Actually maximize code reuse.
+- Maximize code reuse.
 - Dig deep to make sure our modules emulate native features as best they can.
 - Reuse native configurations to create high fidelity progressive web apps (PWAs).
 - Enable community members to contribute to Universal Modules.
@@ -38,7 +38,7 @@ We are currently making all changes in the [Expo/Expo monorepo with the **[web]*
 
 ### Contributing
 
-Initially you should clone [expo](https://github.com/expo/expo) and work in `apps/` and `packages/`. The following process will outline how to add web support to existing Unimodules.
+Initially you should clone [expo](https://github.com/expo/expo) and work in `apps/` and `packages/`.
 
 #### New Features
 
