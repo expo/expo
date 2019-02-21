@@ -8,7 +8,6 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "test": "expo-module test",
-    "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -22,11 +21,11 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-asset",
   "jest": {
     "preset": "expo-module-scripts"
@@ -42,7 +41,6 @@
   },
   "devDependencies": {
     "@types/url-parse": "^1.4.1",
-    "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"

@@ -73,4 +73,12 @@ public class PermissionsService implements InternalModule, ModuleRegistryConsume
       }
     });
   }
+
+  @Override
+  public boolean hasPermissions(String[] permissions) {
+    int[] results = getPermissions(permissions);
+    int[] granted = new int[permissions.length];
+    Arrays.fill(granted, PackageManager.PERMISSION_GRANTED);
+    return Arrays.equals(results, granted);
+  }
 }

@@ -1,5 +1,5 @@
 import { Platform } from 'expo-core';
-import { FileSystem } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system';
 import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 import { setCustomSourceTransformer } from 'react-native/Libraries/Image/resolveAssetSource';
 import * as AssetSources from './AssetSources';
@@ -113,12 +113,10 @@ export class Asset {
             else {
                 const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
                 let { exists, md5 } = await FileSystem.getInfoAsync(localUri, {
-                    cache: true,
                     md5: true,
                 });
                 if (!exists || md5 !== this.hash) {
                     ({ md5 } = await FileSystem.downloadAsync(this.uri, localUri, {
-                        cache: true,
                         md5: true,
                     }));
                     if (md5 !== this.hash) {

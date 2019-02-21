@@ -45,13 +45,13 @@ export async function requestReview() {
  * Android: https://docs.expo.io/versions/latest/workflow/configuration#playstoreurlurl-to-your-app-on-the-google-play-store-if-you-have-deployed-it-there-this-is-used-to-link-to-your-store-page-from-your-expo-project-page-if-your-app-is-public
  */
 export function storeUrl() {
-  const { OS } = Platform;
-  if (OS === 'ios') {
-    return Constants.manifest.ios.appStoreUrl;
-  } else if (OS === 'android') {
-    return Constants.manifest.android.playStoreUrl;
+  const { manifest } = Constants;
+  if (Platform.OS === 'ios' && manifest.ios) {
+    return manifest.ios.appStoreUrl;
+  } else if (Platform.OS === 'android' && manifest.android) {
+    return manifest.android.playStoreUrl;
   }
-  throw new Error(`StoreReview.storeUrl() is not supported on ${OS}`);
+  throw new Error(`StoreReview.storeUrl() is not supported on ${Platform.OS}`);
 }
 
 /*

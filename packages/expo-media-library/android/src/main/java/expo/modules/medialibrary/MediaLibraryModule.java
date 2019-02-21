@@ -157,7 +157,7 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
 
 
   @ExpoMethod
-  public void getAlbumsAsync(Promise promise) {
+  public void getAlbumsAsync(Map<String, Object> options /* unused on android atm */, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;

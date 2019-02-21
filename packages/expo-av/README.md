@@ -1,7 +1,5 @@
-# `expo-av`
+# expo-av
 
-## Setup
+`expo-av` provides access to audio and video playback.
 
-### Android
-
-- Add `api 'com.google.android.exoplayer:extension-okhttp:2.6.1'` to your `app/build.gradle`.
+See [AV docs](https://docs.expo.io/versions/latest/sdk/av) for documentation of this universal module's API.

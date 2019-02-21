@@ -2,7 +2,16 @@
   "name": "expo-google-sign-in",
   "version": "2.0.0",
   "description": "Expo Unimodule for interfacing with the native GoogleSignIn library.",
-  "main": "index.js",
+  "main": "build/GoogleSignIn.js",
+  "types": "build/GoogleSignIn.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -12,25 +21,33 @@
     "sign-in",
     "oauth"
   ],
-  "homepage": "https://docs.expo.io/",
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "contributors": [
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
-  "readmeFilename": "README.md",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-google-sign-in",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "peerDependencies": {
     "react-native": "^0.55.4",
     "expo-constants": "~2.0.0",
-    "expo-core": "~2.0.0"
-  },
-  "dependencies": {
-    "invariant": "^2.2.4",
+    "expo-core": "~2.0.0",
     "expo-errors": "~1.0.0"
   },
+  "dependencies": {
+    "invariant": "^2.2.4"
+  },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
-    "flow-bin": "^0.77.0"
+    "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

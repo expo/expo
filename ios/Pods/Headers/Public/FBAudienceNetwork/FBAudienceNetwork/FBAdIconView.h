@@ -1,1 +1,1 @@
-../../../../FBAudienceNetwork/FBAudienceNetwork.framework/Headers/FBAdIconView.h
+../../../../FBAudienceNetwork/Static/FBAudienceNetwork.framework/Headers/FBAdIconView.h

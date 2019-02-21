@@ -15,10 +15,4 @@ Pod::Spec.new do |s|
   s.source_files   = 'EXFileSystemInterface/**/*.{h,m}'
   s.preserve_paths = 'EXFileSystemInterface/**/*.{h,m}'
   s.requires_arc   = true
-
-  # s.dependency 'React'
-  s.dependency 'EXCore'
-
 end
-
-  

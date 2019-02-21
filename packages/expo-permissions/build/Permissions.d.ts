@@ -1,0 +1,13 @@
+import { PermissionResponse, PermissionType } from './Permissions.types';
+export declare const CAMERA = "camera";
+export declare const CAMERA_ROLL = "cameraRoll";
+export declare const AUDIO_RECORDING = "audioRecording";
+export declare const LOCATION = "location";
+export declare const USER_FACING_NOTIFICATIONS = "userFacingNotifications";
+export declare const NOTIFICATIONS = "notifications";
+export declare const CONTACTS = "contacts";
+export declare const CALENDAR = "calendar";
+export declare const REMINDERS = "reminders";
+export declare const SYSTEM_BRIGHTNESS = "systemBrightness";
+export declare function getAsync(...types: PermissionType[]): Promise<PermissionResponse>;
+export declare function askAsync(...types: PermissionType[]): Promise<PermissionResponse>;

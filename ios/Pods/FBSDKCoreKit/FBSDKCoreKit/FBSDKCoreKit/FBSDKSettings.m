@@ -35,6 +35,9 @@ static TYPE *g_##PLIST_KEY = nil; \
   g_##PLIST_KEY = [value copy]; \
 }
 
+#define FBSDKSETTINGS_AUTOLOG_APPEVENTS_ENABLED_USER_DEFAULTS_KEY @"com.facebook.sdk:autoLogAppEventsEnabled%@"
+#define FBSDKSETTINGS_ADVERTISERID_COLLECTION_ENABLED_USER_DEFAULTS_KEY @"com.facebook.sdk:advertiserIDCollectionEnabled%@"
+
 NSString *const FBSDKLoggingBehaviorAccessTokens = @"include_access_tokens";
 NSString *const FBSDKLoggingBehaviorPerformanceCharacteristics = @"perf_characteristics";
 NSString *const FBSDKLoggingBehaviorAppEvents = @"app_events";
@@ -54,14 +57,26 @@ static BOOL g_disableErrorRecovery;
 static NSString *g_userAgentSuffix;
 static NSString *g_defaultGraphAPIVersion;
 static FBSDKAccessTokenExpirer *g_accessTokenExpirer;
+static NSString *const FBSDKSettingsAutoLogAppEventsEnabled = @"FacebookAutoLogAppEventsEnabled";
+static NSString *const FBSDKSettingsAdvertiserIDCollectionEnabled = @"FacebookAdvertiserIDCollectionEnabled";
+static NSNumber *g_autoLogAppEventsEnabled;
+static NSNumber *g_advertiserIDCollectionEnabled;
 
 @implementation FBSDKSettings
 
 + (void)initialize
 {
   if (self == [FBSDKSettings class]) {
+    NSString *appID = [self appID];
     g_tokenCache = [[FBSDKAccessTokenCache alloc] init];
     g_accessTokenExpirer = [[FBSDKAccessTokenExpirer alloc] init];
+    // Fetch meta data from plist and overwrite the value with NSUserDefaults if possible
+    g_autoLogAppEventsEnabled = [self appEventSettingsForPlistKey:FBSDKSettingsAutoLogAppEventsEnabled defaultValue:@YES];
+    g_autoLogAppEventsEnabled = [self appEventSettingsForUserDefaultsKey:[NSString stringWithFormat:FBSDKSETTINGS_AUTOLOG_APPEVENTS_ENABLED_USER_DEFAULTS_KEY, appID] defaultValue:g_autoLogAppEventsEnabled];
+    [[NSUserDefaults standardUserDefaults] setObject:g_autoLogAppEventsEnabled forKey:[NSString stringWithFormat:FBSDKSETTINGS_AUTOLOG_APPEVENTS_ENABLED_USER_DEFAULTS_KEY, appID]];
+    g_advertiserIDCollectionEnabled = [self appEventSettingsForPlistKey:FBSDKSettingsAdvertiserIDCollectionEnabled defaultValue:@YES];
+    g_advertiserIDCollectionEnabled = [self appEventSettingsForUserDefaultsKey:[NSString stringWithFormat:FBSDKSETTINGS_ADVERTISERID_COLLECTION_ENABLED_USER_DEFAULTS_KEY, appID] defaultValue:g_advertiserIDCollectionEnabled];
+    [[NSUserDefaults standardUserDefaults] setObject:g_advertiserIDCollectionEnabled forKey:[NSString stringWithFormat:FBSDKSETTINGS_ADVERTISERID_COLLECTION_ENABLED_USER_DEFAULTS_KEY, appID]];
   }
 }
 
@@ -73,12 +88,8 @@ FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSString, FacebookClientToken, cl
 FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSString, FacebookDisplayName, displayName, setDisplayName, nil);
 FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSString, FacebookDomainPart, facebookDomainPart, setFacebookDomainPart, nil);
 FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSNumber, FacebookJpegCompressionQuality, _JPEGCompressionQualityNumber, _setJPEGCompressionQualityNumber, @0.9);
-FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSNumber, FacebookAutoLogAppEventsEnabled, autoLogAppEventsEnabled,
-  setAutoLogAppEventsEnabled, @1);
 FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSNumber, FacebookCodelessDebugLogEnabled, codelessDebugLogEnabled,
   setCodelessDebugLogEnabled, @0);
-FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSNumber, FacebookAdvertiserIDCollectionEnabled, advertiserIDCollectionEnabled,
-  setAdvertiserIDCollectionEnabled, @1);
 
 + (void)setGraphErrorRecoveryDisabled:(BOOL)disableGraphErrorRecovery {
   g_disableErrorRecovery = disableGraphErrorRecovery;
@@ -222,6 +233,52 @@ FBSDKSETTINGS_PLIST_CONFIGURATION_SETTING_IMPL(NSNumber, FacebookAdvertiserIDCol
 + (NSString *)graphAPIVersion
 {
   return g_defaultGraphAPIVersion ?: FBSDK_TARGET_PLATFORM_VERSION;
+}
+
++ (NSNumber *)appEventSettingsForPlistKey:(NSString *)plistKey
+                             defaultValue:(NSNumber *)defaultValue
+{
+  return [[[NSBundle mainBundle] objectForInfoDictionaryKey:plistKey] copy] ?: defaultValue;
+}
+
++ (NSNumber *)appEventSettingsForUserDefaultsKey:(NSString *)userDefaultsKey
+                                    defaultValue:(NSNumber *)defaultValue
+{
+  NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:userDefaultsKey];
+  if ([data isKindOfClass:[NSNumber class]]) {
+    return (NSNumber *)data;
+  }
+  return defaultValue;
+}
+
++ (NSNumber *)autoLogAppEventsEnabled
+{
+  return g_autoLogAppEventsEnabled;
+}
+
++ (void)setAutoLogAppEventsEnabled:(NSNumber *)autoLogAppEventsEnabled
+{
+  if (autoLogAppEventsEnabled == nil || [g_autoLogAppEventsEnabled isEqual:autoLogAppEventsEnabled]) {
+    return;
+  }
+
+  g_autoLogAppEventsEnabled = [autoLogAppEventsEnabled copy];
+  [[NSUserDefaults standardUserDefaults] setObject:g_autoLogAppEventsEnabled forKey:[NSString stringWithFormat:FBSDKSETTINGS_AUTOLOG_APPEVENTS_ENABLED_USER_DEFAULTS_KEY, [self appID]]];
+}
+
++ (NSNumber *)advertiserIDCollectionEnabled
+{
+  return g_advertiserIDCollectionEnabled;
+}
+
++ (void)setAdvertiserIDCollectionEnabled:(NSNumber *)advertiserIDCollectionEnabled
+{
+  if (advertiserIDCollectionEnabled == nil || [g_advertiserIDCollectionEnabled isEqual:advertiserIDCollectionEnabled]) {
+    return;
+  }
+
+  g_advertiserIDCollectionEnabled = [advertiserIDCollectionEnabled copy];
+  [[NSUserDefaults standardUserDefaults] setObject:g_advertiserIDCollectionEnabled forKey:[NSString stringWithFormat:FBSDKSETTINGS_ADVERTISERID_COLLECTION_ENABLED_USER_DEFAULTS_KEY, [self appID]]];
 }
 
 #pragma mark - Internal - Graph API Debug

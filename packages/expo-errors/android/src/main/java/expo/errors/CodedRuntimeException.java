@@ -1,5 +1,7 @@
 package expo.errors;
 
+import expo.core.interfaces.CodedThrowable;
+
 /**
  * Base class that can be extended to create coded runtime errors that
  * promise.reject can handle.

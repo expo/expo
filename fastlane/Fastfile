@@ -62,7 +62,8 @@ platform :ios do
       sdk: "iphonesimulator",
       configuration: "Release",
       derivedDataPath: directory,
-      xcargs: "ARCHS=\"i386 x86_64\" ONLY_ACTIVE_ARCH=NO"
+      xcargs: "ARCHS=\"i386 x86_64\" ONLY_ACTIVE_ARCH=NO",
+      raw_buildlog: is_ci?
     )
   end
 
@@ -131,7 +132,6 @@ platform :android do
     gradle(
       project_dir: "android",
       task: "install",
-      flavor: "DevKernel",
       build_type: "Debug",
     )
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
@@ -165,7 +165,6 @@ platform :android do
     upload_result = gradle(
       project_dir: "android",
       task: "app:devicefarmUpload",
-      flavor: "DevKernel",
       build_type: "Debug"
     )
     result_info = upload_result.match(/View the INSTRUMENTATION run.*\/projects\/(?<project_id>.*)\/runs\/(?<run_id>.*)$/)
@@ -177,7 +176,6 @@ platform :android do
     gradle(
       project_dir: "android",
       task: "app:assemble",
-      flavor: "ProdKernel",
       build_type: build_type,
     )
   end
@@ -191,7 +189,7 @@ platform :android do
     supply(
       package_name: "host.exp.exponent",
       metadata_path: "./fastlane/android/metadata",
-      apk: "./android/app/build/outputs/apk/prodKernel/release/app-prodKernel-release.apk",
+      apk: "./android/app/build/outputs/apk/release/app-release.apk",
       track: "production",
       skip_upload_images: true,
       skip_upload_screenshots: true

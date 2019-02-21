@@ -46,6 +46,10 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     return PendingIntent.getBroadcast(context, intentId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
+  public void cancelTaskIntent(Context context, String appId, String taskName) {
+    // stub just to satisfy TaskManagerUtilsInterface requirements introduced in SDK33.
+  }
+
   public void scheduleJob(Context context, JobInfo jobInfo) {
     JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 

@@ -185,9 +185,7 @@ repositories {
   mavenCentral()
 }
 
-if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
-  apply from: project(":expo_core").file("../expo-core.gradle")
-} else if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
+if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":expo-core").file("../expo-core.gradle")
 } else {
   throw new GradleException(
@@ -196,8 +194,6 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 }
 
 dependencies {
-  expendency 'expo-core'
-
   compileOnly 'com.facebook.soloader:soloader:0.5.1'
 
   // it must be `compile` instead of `implementation` or `api`

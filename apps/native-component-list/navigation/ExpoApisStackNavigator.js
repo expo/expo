@@ -1,3 +1,4 @@
+import ActionSheet from '../screens/ActionSheetScreen';
 import AppAuth from '../screens/AppAuthScreen';
 import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
@@ -16,7 +17,7 @@ import Font from '../screens/FontScreen';
 import Geocoding from '../screens/GeocodingScreen';
 import Google from '../screens/GoogleScreen';
 import GoogleSignIn from '../screens/GoogleSignInScreen';
-import Haptic from '../screens/HapticScreen';
+import Haptics from '../screens/HapticsScreen';
 import ImageManipulator from '../screens/ImageManipulatorScreen';
 import ImagePicker from '../screens/ImagePickerScreen';
 import IntentLauncher from '../screens/IntentLauncherScreen';
@@ -49,6 +50,7 @@ import StackConfig from './StackConfig';
 const ExpoApisStackNavigator = createStackNavigator(
   {
     ExpoApis,
+    ActionSheet,
     AppAuth,
     Audio,
     AuthSession,
@@ -61,7 +63,7 @@ const ExpoApisStackNavigator = createStackNavigator(
     Font,
     Google,
     GoogleSignIn,
-    Haptic,
+    Haptics,
     Calendars,
     Constants,
     Contacts,

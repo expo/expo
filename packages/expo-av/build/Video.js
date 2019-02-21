@@ -2,15 +2,12 @@ import omit from 'lodash.omit';
 import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { Image, StyleSheet, View, ViewPropTypes, findNodeHandle, } from 'react-native';
-import { requireNativeViewManager, NativeModulesProxy } from 'expo-core';
+import { findNodeHandle, Image, StyleSheet, View, ViewPropTypes } from 'react-native';
 import { assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getNativeSourceFromSource, getUnloadedStatus, PlaybackMixin, } from './AV';
-var ResizeMode;
-(function (ResizeMode) {
-    ResizeMode["CONTAIN"] = "contain";
-    ResizeMode["COVER"] = "cover";
-    ResizeMode["STRETCH"] = "stretch";
-})(ResizeMode || (ResizeMode = {}));
+import ExponentAV from './ExponentAV';
+import ExponentVideo from './ExponentVideo';
+import ExpoVideoManager from './ExpoVideoManager';
+import { ResizeMode, } from './Video.types';
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -41,8 +38,8 @@ const _STYLES = StyleSheet.create({
 });
 // On a real device UIManager should be present, however when running offline tests with jest-expo
 // we have to use the provided native module mock to access constants
-const ExpoVideoManagerConstants = NativeModulesProxy.ExpoVideoManager;
-const ExpoVideoViewManager = NativeModulesProxy.ExpoVideoManager;
+const ExpoVideoManagerConstants = ExpoVideoManager;
+const ExpoVideoViewManager = ExpoVideoManager;
 export default class Video extends React.Component {
     // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
     constructor(props) {
@@ -80,7 +77,9 @@ export default class Video extends React.Component {
             console.warn("You're using `presentIOSFullscreenPlayer`. Please migrate your code to use `presentFullscreenPlayer` instead.");
             return this.presentFullscreenPlayer();
         };
-        this.presentFullscreenPlayerAsync = () => this._performOperationAndHandleStatusAsync((tag) => NativeModulesProxy.ExponentAV.presentFullscreenPlayer(tag));
+        this.presentFullscreenPlayerAsync = async () => {
+            return await this.presentFullscreenPlayer();
+        };
         this.dismissFullscreenPlayer = async () => {
             return this._setFullscreen(false);
         };
@@ -92,27 +91,27 @@ export default class Video extends React.Component {
         // All calls automatically call onPlaybackStatusUpdate as a side effect.
         // Get status API
         this.getStatusAsync = async () => {
-            return this._performOperationAndHandleStatusAsync((tag) => NativeModulesProxy.ExponentAV.getStatusForVideo(tag));
+            return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.getStatusForVideo(tag));
         };
         // Loading / unloading API
         this.loadAsync = async (source, initialStatus = {}, downloadFirst = true) => {
             const { nativeSource, fullInitialStatus, } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
-            return this._performOperationAndHandleStatusAsync((tag) => NativeModulesProxy.ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus));
+            return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus));
         };
         // Equivalent to setting URI to null.
         this.unloadAsync = async () => {
-            return this._performOperationAndHandleStatusAsync((tag) => NativeModulesProxy.ExponentAV.unloadForVideo(tag));
+            return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.unloadForVideo(tag));
         };
         // Set status API (only available while isLoaded = true)
         this.setStatusAsync = async (status) => {
             assertStatusValuesInBounds(status);
-            return this._performOperationAndHandleStatusAsync((tag) => NativeModulesProxy.ExponentAV.setStatusForVideo(tag, status));
+            return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.setStatusForVideo(tag, status));
         };
         this.replayAsync = async (status = {}) => {
             if (status.positionMillis && status.positionMillis !== 0) {
                 throw new Error('Requested position after replay has to be 0.');
             }
-            return this._performOperationAndHandleStatusAsync((tag) => NativeModulesProxy.ExponentAV.replayVideo(tag, {
+            return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.replayVideo(tag, {
                 ...status,
                 positionMillis: 0,
                 shouldPlay: true,
@@ -205,8 +204,8 @@ export default class Video extends React.Component {
         // Replace selected native props
         // @ts-ignore: TypeScript thinks "children" is not in the list of props
         const nativeProps = {
-            style: _STYLES.base,
             ...omit(this.props, 'source', ...Object.keys(status)),
+            style: StyleSheet.flatten([_STYLES.base, this.props.style]),
             source,
             resizeMode: nativeResizeMode,
             status,
@@ -289,5 +288,4 @@ Video.propTypes = {
     ...ViewPropTypes,
 };
 Object.assign(Video.prototype, PlaybackMixin);
-const ExponentVideo = requireNativeViewManager('ExpoVideoView');
 //# sourceMappingURL=Video.js.map

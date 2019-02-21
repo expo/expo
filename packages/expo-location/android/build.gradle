@@ -54,9 +54,7 @@ android {
   }
 }
 
-if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
-  apply from: project(":expo_core").file("../expo-core.gradle")
-} else if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
+if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":expo-core").file("../expo-core.gradle")
 } else {
   throw new GradleException(
@@ -66,10 +64,11 @@ if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
 
 dependencies {
   expendency "expo-core"
+  expendency "expo-errors"
   expendency "expo-permissions-interface"
   expendency "expo-task-manager-interface"
 
-  api 'com.google.android.gms:play-services-location:15.0.1'
+  api 'com.google.android.gms:play-services-location:16.0.0'
 
   api('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false

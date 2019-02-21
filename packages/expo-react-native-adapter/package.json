@@ -1,6 +1,6 @@
 {
   "name": "expo-react-native-adapter",
-  "version": "2.0.0",
+  "version": "2.1.0-alpha.1",
   "description": "The adapter to use Expo universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -20,6 +20,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",

@@ -34,6 +34,8 @@ mkShell rec {
   shellHook = ''
     ${./install-ndk-17c.sh} ${ndk} ${ndk_root}
     yes | ${androidenv.androidsdk_9_0}/bin/sdkmanager --licenses --sdk_root="$ANDROID_SDK_ROOT"
+    yes | ${androidenv.androidsdk_9_0}/bin/sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platforms;android-28"
+    yes | ${androidenv.androidsdk_9_0}/bin/sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "build-tools;28.0.3"
     ${lib.optionalString stdenv.isLinux ''
       for dep in lib lib64; do
         if [ -L /$dep ] || [ ! -e /$dep ]; then

@@ -160,11 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
   [[self _getHomeAppManager] addHistoryItemWithUrl:manifestUrl manifest:manifest];
 }
 
-- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl completion:(void (^)(BOOL isValid))completion
-{
-  [[self _getHomeAppManager] getIsValidHomeManifestToOpen:manifest manifestUrl:(NSURL *) manifestUrl completion:completion];
-}
-
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
 {
   return [[self _getHomeAppManager] getHistoryUrlForExperienceId:experienceId completion:completion];
@@ -222,11 +217,10 @@ NS_ASSUME_NONNULL_BEGIN
         if (viewControllerToHide) {
           // backgrounds and then dismisses all modals that are presented by the app
           [viewControllerToHide backgroundControllers];
-          [viewControllerToHide dismissViewControllerAnimated:NO completion:^{
-            [viewControllerToHide willMoveToParentViewController:nil];
-            [viewControllerToHide.view removeFromSuperview];
-            [viewControllerToHide didMoveToParentViewController:nil];
-          }];
+          [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
+          [viewControllerToHide willMoveToParentViewController:nil];
+          [viewControllerToHide.view removeFromSuperview];
+          [viewControllerToHide didMoveToParentViewController:nil];
         }
         if (viewControllerToShow) {
           [viewControllerToShow didMoveToParentViewController:strongSelf];

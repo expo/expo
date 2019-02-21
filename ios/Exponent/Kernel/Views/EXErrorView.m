@@ -91,8 +91,6 @@
       _lblError.text = [NSString stringWithFormat:@"There was a problem loading %@.", appOwnerName];
       if (_error.code == kCFURLErrorNotConnectedToInternet) {
         _lblError.text = [NSString stringWithFormat:@"%@ Make sure you're connected to the internet.", _lblError.text];
-      } else if (_error.code == kEXErrorCodeAppForbidden) {
-        _lblError.text = [NSString stringWithFormat:@"Sorry, you are not allowed to load %@.", appOwnerName];
       } else if (_appRecord.appLoader.manifestUrl) {
         NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
         if ([self _urlLooksLikeLAN:url]) {

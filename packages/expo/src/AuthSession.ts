@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import qs from 'qs';
 
 import Linking from './Linking/Linking';
-import WebBrowser from './WebBrowser/WebBrowser';
+import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
 
 type AuthSessionOptions = {
   authUrl: string;
@@ -14,7 +14,7 @@ type AuthSessionResult =
   | {
       type: 'error' | 'success';
       errorCode: string | null;
-      params: Object;
+      params: { [key: string]: string };
       url: string;
     };
 
@@ -79,12 +79,12 @@ async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResul
 }
 
 function dismiss() {
-  WebBrowser.dismissAuthSession();
+  dismissAuthSession();
 }
 
 async function _openWebBrowserAsync(startUrl, returnUrl) {
   // $FlowIssue: Flow thinks the awaited result can be a promise
-  let result = await WebBrowser.openAuthSessionAsync(startUrl, returnUrl);
+  let result = await openAuthSessionAsync(startUrl, returnUrl);
   if (result.type === 'cancel' || result.type === 'dismiss') {
     return { type: result.type };
   }
@@ -113,7 +113,7 @@ function getDefaultReturnUrl(): string {
   return Linking.makeUrl('expo-auth-session');
 }
 
-function parseUrl(url: string): { errorCode: string | null; params: Object } {
+function parseUrl(url: string): { errorCode: string | null; params: { [key: string]: string } } {
   let parts = url.split('#');
   let hash = parts[1];
   let partsWithoutHash = parts[0].split('?');

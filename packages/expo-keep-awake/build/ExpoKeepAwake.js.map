@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoKeepAwake.js","sourceRoot":"","sources":["../src/ExpoKeepAwake.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAC/C,eAAe,kBAAkB,CAAC,aAAa,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-core';\nexport default NativeModulesProxy.ExpoKeepAwake;\n"]}

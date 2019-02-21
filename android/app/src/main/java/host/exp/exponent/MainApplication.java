@@ -1,6 +1,5 @@
 package host.exp.exponent;
 
-
 import com.facebook.react.ReactPackage;
 
 import java.util.Arrays;
@@ -9,19 +8,32 @@ import java.util.List;
 import expo.core.interfaces.Package;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.modules.ads.admob.AdMobPackage;
+import expo.modules.ads.facebook.AdsFacebookPackage;
+import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.blurview.BlurViewPackage;
+import expo.modules.brightness.BrightnessPackage;
+import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
+import expo.modules.documentpicker.DocumentPickerPackage;
+import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.gl.GLPackage;
 import expo.modules.google.signin.GoogleSignInPackage;
+import expo.modules.haptics.HapticsPackage;
+import expo.modules.imagemanipulator.ImageManipulatorPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
+import expo.modules.intentlauncher.IntentLauncherPackage;
+import expo.modules.keepawake.KeepAwakePackage;
+import expo.modules.lineargradient.LinearGradientPackage;
 import expo.modules.localauthentication.LocalAuthenticationPackage;
 import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
@@ -29,10 +41,13 @@ import expo.modules.mailcomposer.MailComposerPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
+import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
+import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.webbrowser.WebBrowserPackage;
 import expolib_v1.okhttp3.OkHttpClient;
 
 // Needed for `react-native link`
@@ -58,43 +73,53 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
 
   public List<Package> getExpoPackages() {
     return Arrays.<Package>asList(
+        new AVPackage(),
+        new AdMobPackage(),
+        new AdsFacebookPackage(),
+        new AppAuthPackage(),
+        new AmplitudePackage(),
+        new BackgroundFetchPackage(),
+        new BarCodeScannerPackage(),
+        new BlurViewPackage(),
+        new BrightnessPackage(),
+        new CalendarPackage(),
         new CameraPackage(),
         new ConstantsPackage(),
-        new SensorsPackage(),
-        new FileSystemPackage(),
+        new ContactsPackage(),
+        new DocumentPickerPackage(),
         new FaceDetectorPackage(),
+        new FacebookPackage(),
+        new FileSystemPackage(),
+        new FontLoaderPackage(),
         new GLPackage(),
         new GoogleSignInPackage(),
-        new PermissionsPackage(),
-        new SMSPackage(),
-        new PrintPackage(),
-        new ConstantsPackage(),
-        new MediaLibraryPackage(),
-        new SegmentPackage(),
-        new FontLoaderPackage(),
-        new LocationPackage(),
-        new ContactsPackage(),
-        new BarCodeScannerPackage(),
-        new AdMobPackage(),
+        new HapticsPackage(),
+        new ImageManipulatorPackage(),
+        new ImagePickerPackage(),
+        new IntentLauncherPackage(),
+        new KeepAwakePackage(),
+        new LinearGradientPackage(),
         new LocalAuthenticationPackage(),
         new LocalizationPackage(),
-        new AppAuthPackage(),
-        new TaskManagerPackage(),
-        new BackgroundFetchPackage(),
+        new LocationPackage(),
         new MailComposerPackage(),
-        new AVPackage(),
-        new SQLitePackage()
+        new MediaLibraryPackage(),
+        new PermissionsPackage(),
+        new PrintPackage(),
+        new SMSPackage(),
+        new SQLitePackage(),
+        new SecureStorePackage(),
+        new SegmentPackage(),
+        new SensorsPackage(),
+        new SpeechPackage(),
+        new TaskManagerPackage(),
+        new WebBrowserPackage()
     );
   }
 
   @Override
   public String gcmSenderId() {
     return getString(R.string.gcm_defaultSenderId);
-  }
-
-  @Override
-  public boolean shouldUseInternetKernel() {
-    return BuildVariantConstants.USE_INTERNET_KERNEL;
   }
 
   public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {

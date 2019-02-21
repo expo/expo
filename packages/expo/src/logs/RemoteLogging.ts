@@ -83,7 +83,9 @@ async function _sendRemoteLogsAsync(): Promise<void> {
   let batch = _logQueue.splice(0);
 
   let { logUrl } = Constants.manifest;
-  invariant(typeof logUrl === 'string', 'The Expo project manifest must specify `logUrl`');
+  if (typeof logUrl !== 'string') {
+    throw new Error('The Expo project manifest must specify `logUrl`');
+  }
 
   _isSendingLogs = true;
   try {
@@ -101,18 +103,22 @@ async function _sendRemoteLogsAsync(): Promise<void> {
 
 async function _sendNextLogBatchAsync(batch: LogEntry[], logUrl: string): Promise<void> {
   let response;
+
+  let headers = {
+    'Content-Type': 'application/json',
+    Connection: 'keep-alive',
+    'Proxy-Connection': 'keep-alive',
+    Accept: 'application/json',
+    'Device-Id': Constants.installationId,
+    'Session-Id': _sessionId,
+  };
+  if (Constants.deviceName) {
+    headers['Device-Name'] = Constants.deviceName;
+  }
   try {
     response = await fetch(logUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Connection: 'keep-alive',
-        'Proxy-Connection': 'keep-alive',
-        Accept: 'application/json',
-        'Device-Id': Constants.installationId,
-        'Device-Name': Constants.deviceName,
-        'Session-Id': _sessionId,
-      },
+      headers,
       body: JSON.stringify(batch),
     });
   } catch (error) {

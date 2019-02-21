@@ -1,2 +1,2 @@
-import { EventEmitter } from 'expo-core';
-export default new EventEmitter({ addListener() {}, removeListeners() {} });
+import { SyntheticPlatformEmitter } from 'expo-core';
+export default SyntheticPlatformEmitter;

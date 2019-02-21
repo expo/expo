@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="32.0.0" status="integration" publication="20190118104913"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="32.0.0" status="integration" publication="20190219110626"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -115,7 +115,7 @@
     <dependency org="com.android.support" name="multidex" rev="1.0.3" conf="api-&gt;default"/>
     <dependency org="com.facebook.react" name="react-native" rev="32.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-core" rev="2.0.0" conf="api-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-constants" rev="2.0.0" conf="api-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants" rev="2.0.1" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-constants-interface" rev="2.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-errors" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-permissions" rev="2.0.0" conf="api-&gt;default"/>

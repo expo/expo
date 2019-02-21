@@ -208,7 +208,7 @@ public class ExponentSharedPreferences {
     }
   }
 
-  public JSONObject getSafeManifest(String manifestUrl) {
+  public String getSafeManifestString(String manifestUrl) {
     String jsonString = mSharedPreferences.getString(manifestUrl, null);
     if (jsonString == null) {
       return null;
@@ -216,7 +216,7 @@ public class ExponentSharedPreferences {
 
     try {
       JSONObject json = new JSONObject(jsonString);
-      return json.getJSONObject(SAFE_MANIFEST_KEY);
+      return json.getString(SAFE_MANIFEST_KEY);
     } catch (JSONException e) {
       EXL.e(TAG, e);
       return null;

@@ -21,16 +21,16 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sms",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
+  "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-permissions-interface": "~2.0.0"
   },

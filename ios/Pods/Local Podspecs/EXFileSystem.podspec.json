@@ -5,7 +5,7 @@
   "description": "Expo File System standalone universal module",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-file-system",
   "platforms": {
     "ios": "10.0"
   },

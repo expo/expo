@@ -21,17 +21,17 @@ const createTabNavigator = Platform.select({
   android: createMaterialBottomTabNavigator,
 });
 
-ExpoApisStackNavigator.path = '';
+ExpoApisStackNavigator.path = 'API';
 ExpoApisStackNavigator.navigationOptions = {
   title: 'Expo API',
 };
 
-ExpoComponentsStackNavigator.path = '';
+ExpoComponentsStackNavigator.path = 'Components';
 ExpoComponentsStackNavigator.navigationOptions = {
   title: 'Expo Components',
 };
 
-ReactNativeCoreStackNavigator.path = '';
+ReactNativeCoreStackNavigator.path = 'ReactNative';
 ReactNativeCoreStackNavigator.navigationOptions = {
   title: 'React Native Core',
 };

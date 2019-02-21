@@ -12,6 +12,7 @@ interface LocationOptions {
     timeInterval?: number;
     distanceInterval?: number;
     timeout?: number;
+    mayShowUserSettingsDialog?: boolean;
 }
 interface LocationData {
     coords: {
@@ -77,6 +78,7 @@ export declare enum GeofencingRegionState {
 }
 declare function _getCurrentWatchId(): number;
 export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
+export declare function enableNetworkProviderAsync(): Promise<void>;
 export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
 export declare function getHeadingAsync(): Promise<HeadingData>;
 export declare function watchHeadingAsync(callback: HeadingCallback): Promise<object>;

@@ -27,7 +27,6 @@
 - (instancetype)init
 {
   if (self = [super init]) {
-    _internalModulesSet = [NSMutableSet set];
     _internalModulesPreResolution = [NSMapTable weakToStrongObjectsMapTable];
     _exportedModulesByClass = [NSMutableDictionary dictionary];
     _exportedModules = [NSMutableDictionary dictionary];
@@ -68,19 +67,32 @@
   _delegate = delegate;
 }
 
+// Fills in _internalModules and _internalModulesSet
 - (void)resolveInternalModulesConflicts
 {
+  if (_internalModules) {
+    // Conflict resolution has already been completed.
+    return;
+  }
+
   _internalModules = [NSMapTable weakToStrongObjectsMapTable];
+  _internalModulesSet = [NSMutableSet new];
   for (Protocol *protocol in _internalModulesPreResolution) {
     NSArray<id<EXInternalModule>> *conflictingModules = [_internalModulesPreResolution objectForKey:protocol];
 
+    id<EXInternalModule> resolvedModule;
     if ([conflictingModules count] > 1 && _delegate) {
-      id<EXInternalModule> resolvedModule = [_delegate pickInternalModuleImplementingInterface:protocol fromAmongModules:conflictingModules];
-      [_internalModules setObject:resolvedModule forKey:protocol];
+      resolvedModule = [_delegate pickInternalModuleImplementingInterface:protocol fromAmongModules:conflictingModules];
     } else {
-      [_internalModules setObject:[conflictingModules lastObject] forKey:protocol];
+      resolvedModule = [conflictingModules lastObject];
     }
+
+    [_internalModules setObject:resolvedModule forKey:protocol];
+    [self maybeAddRegistryConsumer:resolvedModule];
+    [_internalModulesSet addObject:resolvedModule];
   }
+
+  _internalModulesPreResolution = nil; // Remove references to discarded modules
 }
 
 - (void)initialize
@@ -96,23 +108,22 @@
 - (void)registerInternalModule:(id<EXInternalModule>)internalModule
 {
   for (Protocol *exportedInterface in [[internalModule class] exportedInterfaces]) {
-    if (![_internalModulesPreResolution objectForKey:exportedInterface]) {
-      [_internalModulesPreResolution setObject:[NSMutableArray array] forKey:exportedInterface];
+    if (_internalModules) {
+      id<EXInternalModule> resolvedModule = internalModule;
+      if (_delegate && [_internalModules objectForKey:exportedInterface]) {
+        id<EXInternalModule> oldModule = [_internalModules objectForKey:exportedInterface];
+        resolvedModule = [_delegate pickInternalModuleImplementingInterface:exportedInterface fromAmongModules:@[oldModule, internalModule]];
+      }
+      [_internalModules setObject:resolvedModule forKey:exportedInterface];
+      [_internalModulesSet addObject:resolvedModule];
+    } else {
+      if (![_internalModulesPreResolution objectForKey:exportedInterface]) {
+        [_internalModulesPreResolution setObject:[NSMutableArray array] forKey:exportedInterface];
+      }
+
+      [[_internalModulesPreResolution objectForKey:exportedInterface] addObject:internalModule];
     }
-
-    [[_internalModulesPreResolution objectForKey:exportedInterface] addObject:internalModule];
   }
-
-  [_internalModulesSet addObject:internalModule];
-  [self maybeAddRegistryConsumer:internalModule];
-}
-
-- (id<EXInternalModule>)unregisterInternalModuleForProtocol:(Protocol *)protocol
-{
-  id<EXInternalModule> module = [_internalModules objectForKey:protocol];
-  [_internalModulesSet removeObject:module];
-  [_internalModules removeObjectForKey:protocol];
-  return module;
 }
 
 - (void)registerExportedModule:(EXExportedModule *)exportedModule
@@ -166,6 +177,7 @@
 
 - (id)getModuleImplementingProtocol:(Protocol *)protocol
 {
+  [self resolveInternalModulesConflicts];
   return [_internalModules objectForKey:protocol];
 }
 
@@ -186,6 +198,7 @@
 
 - (NSArray<id<EXInternalModule>> *)getAllInternalModules
 {
+  [self resolveInternalModulesConflicts];
   return [_internalModulesSet allObjects];
 }
 
