@@ -13,7 +13,7 @@ const { web: expoManifestWebManifest = {} } = expoManifest;
 
 const favicon = expoManifestWebManifest.favicon ? absolute(expoManifestWebManifest.favicon) : undefined;
 
-const { productionPath: productionPathFolderName = 'web-build' } = nativeAppManifest.expo.web;
+const { productionPath: productionPathFolderName = 'web-build' } = expoManifestWebManifest;
 
 const productionPath = absolute(productionPathFolderName);
 

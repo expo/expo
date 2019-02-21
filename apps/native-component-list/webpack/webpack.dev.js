@@ -74,8 +74,5 @@ module.exports = merge(common, {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CaseSensitivePathsPlugin(),
-  ],
-  // Turn off performance processing because we utilize
-  // our own hints via the FileSizeReporter
-  performance: false,
+  ]
 });

@@ -181,8 +181,8 @@ const babelLoaderConfiguration = {
 const imageLoaderConfiguration = {
   test: /\.(gif|jpe?g|png|svg)$/,
   use: {
-    // loader: 'file-loader',
     loader: 'url-loader',
+    // loader: 'file-loader',
     options: {
       name: '[name].[ext]',
     },
@@ -271,7 +271,7 @@ module.exports = {
     runtimeChunk: 'single',
   },
   module: {
-    strictExportPresence: true,
+    // strictExportPresence: true,
 
     rules: [
       { parser: { requireEnsure: false } },
@@ -388,5 +388,7 @@ module.exports = {
     tls: 'empty',
     child_process: 'empty',
   },
+  // Turn off performance processing because we utilize
+  // our own hints via the FileSizeReporter
   performance: false,
 };
