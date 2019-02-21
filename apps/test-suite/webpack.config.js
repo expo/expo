@@ -281,11 +281,6 @@ module.exports = {
     alias: {
       /* Alias direct react-native imports to react-native-web */
       'react-native$': 'react-native-web',
-      /* Add polyfills for modules that react-native-web doesn't support */
-      'react-native/Libraries/Image/AssetSourceResolver$':
-        'expo/build/web/Image/AssetSourceResolver',
-      'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
-      'react-native/Libraries/Image/resolveAssetSource$': 'expo/build/web/Image/resolveAssetSource',
     },
     plugins: [
       // Adds support for installing with Plug'n'Play, leading to faster installs and adding
