@@ -7,10 +7,10 @@ import * as Constants from '~/common/constants';
 const STYLES_TITLE = css`
   display: block;
   position: relative;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   line-height: 1.3rem;
   text-decoration: none;
-  text-transform: uppercase;
+  border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};
 `;
 

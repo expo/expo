@@ -7,10 +7,9 @@ import * as Constants from '~/common/constants';
 const STYLES_TITLE = css`
   display: block;
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   line-height: 1.3rem;
   text-decoration: none;
-  text-transform: uppercase;
   font-family: ${Constants.fontFamilies.demi};
   user-select: none;
   :hover {
