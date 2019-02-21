@@ -1,33 +1,19 @@
 const path = require('path');
 const webpack = require('webpack');
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
-const pckg = require('./package.json');
+const WorkboxPlugin = require('workbox-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const absolutePath = location => path.resolve(__dirname, location);
+const locations = require('./webpackLocations');
+const nativeAppManifest = require(locations.appJson);
 
-const locations = {
-  // Shouldn't change
-  root: absolutePath('.'),
-  output: absolutePath('web'),
-  rootHtml: absolutePath('web/index.html'),
-  packageJson: absolutePath('package.json'),
-  appMain: absolutePath(pckg.main),
-
-  // TODO: Bacon: Only use this in expo/apps/
-  modules: absolutePath('../../node_modules'),
-};
 
 function getAppManifest() {
-  const nativeAppManifest = require(absolutePath('./app.json'));
-
   if (nativeAppManifest && nativeAppManifest.expo) {
     const { expo } = nativeAppManifest;
-    const PWAManifest = require(absolutePath('./web/manifest.json'));
+    const PWAManifest = require(locations.template.manifest);
     const web = PWAManifest || {};
 
     return {
@@ -56,13 +42,13 @@ function getAppManifest() {
 const environment = process.env.NODE_ENV || 'development';
 const __DEV__ = environment !== 'production';
 
-const REACT_APP = /^REACT_APP_/i;
+const ENV_VAR_REGEX = /^(EXPO_|REACT_NATIVE_)/i;
 
 const publicUrl = '';
 
-function getClientEnvironment(publicUrl) {
+function getClientEnvironment() {
   let processEnv = Object.keys(process.env)
-    .filter(key => REACT_APP.test(key))
+    .filter(key => ENV_VAR_REGEX.test(key))
     .reduce(
       (env, key) => {
         env[key] = JSON.stringify(process.env[key]);
@@ -71,7 +57,7 @@ function getClientEnvironment(publicUrl) {
       {
         // Useful for determining whether we’re running in production mode.
         // Most importantly, it switches React into the correct mode.
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+        NODE_ENV: JSON.stringify(environment),
 
         // Useful for resolving the correct path to static assets in `public`.
         // For example, <img src={process.env.PUBLIC_URL + '/img/logo.png'} />.
@@ -89,7 +75,73 @@ function getClientEnvironment(publicUrl) {
   };
 }
 
-const env = getClientEnvironment(publicUrl);
+function generateHTMLFromAppJSON() {
+  const { expo: expoManifest = {} } = nativeAppManifest;
+
+  const metaTags = {
+    viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
+    description: expoManifest.description || 'A Neat Expo App',
+    'theme-color': expoManifest.primaryColor || '#000000',
+    'apple-mobile-web-app-capable': 'yes',
+    // default, black, black-translucent
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': expoManifest.name,
+    'application-name': expoManifest.name,
+    // Windows
+    'msapplication-navbutton-color': '',
+    'msapplication-TileColor': '',
+    'msapplication-TileImage': '',
+  };
+
+  // Generates an `index.html` file with the <script> injected.
+  return new HtmlWebpackPlugin({
+    /**
+     * The file to write the HTML to.
+     * Default: `'index.html'`.
+     */
+    filename: locations.production.indexHtml,
+    /**
+     * The title to use for the generated HTML document.
+     * Default: `'Webpack App'`.
+     */
+    title: expoManifest.name,
+    /**
+     * Pass a html-minifier options object to minify the output.
+     * https://github.com/kangax/html-minifier#options-quick-reference
+     * Default: `false`.
+     */
+    minify: {
+      removeComments: true,
+      /* Prod */
+      collapseWhitespace: true,
+      removeRedundantAttributes: true,
+      useShortDoctype: true,
+      removeEmptyAttributes: true,
+      removeStyleLinkTypeAttributes: true,
+      keepClosingSlash: true,
+      minifyJS: true,
+      minifyCSS: true,
+      minifyURLs: true,
+    },
+    /**
+     * Adds the given favicon path to the output html.
+     * Default: `false`.
+     */
+    favicon: locations.template.favicon,
+    /**
+     * Allows to inject meta-tags, e.g. meta: `{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}`.
+     * Default: `{}`.
+     */
+    meta: metaTags,
+    /**
+     * The `webpack` require path to the template.
+     * @see https://github.com/jantimon/html-webpack-plugin/blob/master/docs/template-option.md
+     */
+    template: locations.template.indexHtml
+  });
+}
+
+const env = getClientEnvironment();
 
 const includeModule = module => {
   return path.resolve(locations.modules, module);
@@ -101,9 +153,7 @@ const includeModulesThatContainPaths = [
   'node_modules/react-navigation',
   'node_modules/expo',
   'node_modules/@react',
-  'node_modules/@expo/',
-  // Special case for this app
-  'apps/native-component-list',
+  'node_modules/@expo'
 ];
 
 const babelLoaderConfiguration = {
@@ -114,11 +164,16 @@ const babelLoaderConfiguration = {
         return inputPath;
       }
     }
+    // Is inside the project and is not one of designated modules
+    if (!inputPath.includes('node_modules') && inputPath.includes(locations.root)) {
+      return inputPath;
+    }
     return null;
   },
   use: {
     loader: 'babel-loader',
     options: {
+      cacheDirectory: false,
       babelrc: false,
     },
   },
@@ -129,8 +184,8 @@ const imageLoaderConfiguration = {
   test: /\.(gif|jpe?g|png|svg)$/,
   use: {
     loader: 'url-loader',
+    // loader: 'file-loader',
     options: {
-      limit: 10000,
       name: '[name].[ext]',
     },
   },
@@ -146,9 +201,10 @@ const ttfLoaderConfiguration = {
   test: /\.ttf$/,
   use: [
     {
-      loader: 'file-loader',
+      loader: 'url-loader',
+      // loader: 'file-loader',
       options: {
-        name: './fonts/[hash].[ext]',
+        name: './fonts/[name].[ext]',
       },
     },
   ],
@@ -162,7 +218,7 @@ const ttfLoaderConfiguration = {
 const htmlLoaderConfiguration = {
   test: /\.html$/,
   use: ['html-loader'],
-  include: [absolutePath('./assets')],
+  include: [locations.absolute('assets')],
 };
 
 const mediaLoaderConfiguration = {
@@ -197,35 +253,28 @@ function useWebModule(modulePathToHiJack, redirectPath, initialRoot = 'expo/buil
 const publicPath = '/';
 
 module.exports = {
-  mode: 'development',
-  devtool: 'cheap-module-source-map',
-
-  entry: [require.resolve('react-dev-utils/webpackHotDevClient'), locations.appMain],
+  // mode: environment,
+  context: __dirname,
   // configures where the build ends up
   output: {
-    path: locations.output,
-    pathinfo: true,
-    filename: 'bundle.js',
+    path: locations.production.folder,
+    filename: 'static/[chunkhash].js',
+    sourceMapFilename: '[chunkhash].map',
     // There are also additional JS chunk files if you use code splitting.
-    chunkFilename: '[name].chunk.js',
+    chunkFilename: 'static/[id].[chunkhash].js',
     // This is the URL that app is served from. We use "/" in development.
     publicPath,
-    // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
-      path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
   },
   optimization: {
-    runtimeChunk: true,
-  },
-  devServer: {
-    progress: true,
-    historyApiFallback: true,
-    compress: true,
-    disableHostCheck: true,
-    contentBase: locations.output,
-    inline: true,
+    splitChunks: {
+      chunks: 'all',
+      name: false,
+    },
+    runtimeChunk: 'single',
   },
   module: {
+    // strictExportPresence: true,
+
     rules: [
       { parser: { requireEnsure: false } },
 
@@ -239,27 +288,13 @@ module.exports = {
   },
   plugins: [
     // Generates an `index.html` file with the <script> injected.
-    new HtmlWebpackPlugin({
-      inject: true,
-      template: locations.rootHtml,
-      filename: locations.rootHtml,
-      title: pckg.name,
-    }),
+    generateHTMLFromAppJSON(),
+
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
       PUBLIC_URL: publicUrl,
+      WEB_TITLE: nativeAppManifest.expo.name,
     }),
 
-    new webpack.HotModuleReplacementPlugin(),
-
-    new CaseSensitivePathsPlugin(),
-
-    // Moment.js is an extremely popular library that bundles large locale files
-    // by default due to how Webpack interprets its code. This is a practical
-    // solution that requires the user to opt into importing specific locales.
-    // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-    // You can remove this if you don't use Moment.js:
-    /* expo-localization uses `moment/timezone` */
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
     // having to parse `index.html`.
@@ -274,37 +309,76 @@ module.exports = {
     useWebModule('Performance/Systrace', 'Performance/Systrace'),
     useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
     useWebModule('RCTNetworking', 'Network/RCTNetworking'),
+    
+    new WorkboxPlugin.GenerateSW({
+      skipWaiting: true,
+      clientsClaim: true,
+      exclude: [/\.LICENSE$/, /\.map$/, /asset-manifest\.json$/],
+      importWorkboxFrom: 'cdn',
+      navigateFallback: `${publicUrl}/index.html`,
+      navigateFallbackBlacklist: [
+        new RegExp('^/_'),
+        new RegExp('/[^/]+\\.[^/]+$'),
+      ],
+      runtimeCaching: [
+        {
+          urlPattern: /(.*?)/,
+          handler: 'staleWhileRevalidate',
+        },
+      ],
+    }),
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      openAnalyzer: false,
+    }),
   ],
   resolve: {
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx', '.json'],
-    alias: {
-      /* Alias direct react-native imports to react-native-web */
-      'react-native$': 'react-native-web',
-      /* Add polyfills for modules that react-native-web doesn't support */
-      'react-native/Libraries/Image/AssetSourceResolver$':
-        'expo/build/web/Image/AssetSourceResolver',
-      'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
-      'react-native/Libraries/Image/resolveAssetSource$': 'expo/build/web/Image/resolveAssetSource',
-    },
-    plugins: [
-      // Adds support for installing with Plug'n'Play, leading to faster installs and adding
-      // guards against forgotten dependencies and such.
-      PnpWebpackPlugin,
-      // Prevents users from importing files from outside of node_modules/.
-      // This often causes confusion because we only process files within the root folder with babel.
-      // To fix this, we prevent you from importing files out of the root folder -- if you'd like to,
-      // please link the files into your node_modules/ and let module-resolution kick in.
-      // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(locations.output, [locations.packageJson]),
-    ],
-  },
-  resolveLoader: {
-    plugins: [
-      // Also related to Plug'n'Play, but this time it tells Webpack to load its loaders
-      // from the current package.
-      PnpWebpackPlugin.moduleLoader(module),
-    ],
+    alias: Object.assign(
+      {
+        /* Alias direct react-native imports to react-native-web */
+        'react-native$': 'react-native-web',
+        /* Add polyfills for modules that react-native-web doesn't support */
+        'react-native/Libraries/Image/AssetSourceResolver$':
+          'expo/build/web/Image/AssetSourceResolver',
+        'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
+        'react-native/Libraries/Image/resolveAssetSource$':
+          'expo/build/web/Image/resolveAssetSource',
+      },
+      [
+        'ActivityIndicator',
+        'Alert',
+        'AsyncStorage',
+        'Button',
+        'DeviceInfo',
+        'Modal',
+        'NativeModules',
+        'Network',
+        'Platform',
+        'SafeAreaView',
+        'SectionList',
+        'StyleSheet',
+        'Switch',
+        'Text',
+        'TextInput',
+        'TouchableHighlight',
+        'TouchableWithoutFeedback',
+        'View',
+        'ViewPropTypes',
+      ].reduce(
+        (acc, curr) => {
+          acc[curr] = `react-native-web/dist/cjs/exports/${curr}`;
+          return acc;
+        },
+        {
+          JSEventLoopWatchdog: 'react-native-web/dist/cjs/vendor/react-native/JSEventLoopWatchdog',
+          React$: 'react',
+          ReactNative$: 'react-native-web/dist/cjs',
+          infoLog$: 'react-native-web/dist/cjs/vendor/react-native/infoLog',
+        }
+      )
+    ),
   },
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

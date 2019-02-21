@@ -1,3 +1,3 @@
-export Alerts from './Alerts';
-export Colors from './Colors';
-export Layout from './Layout';
+export { default as Alerts } from './Alerts';
+export { default as Colors } from './Colors';
+export { default as Layout } from './Layout';
