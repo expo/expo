@@ -1,7 +1,7 @@
 const {
   ROOT,
   INTRODUCTION,
-  WORKING_WITH_EXPO,
+  FUNDAMENTALS,
   GUIDES,
   DISTRIBUTION,
   EXPOKIT,
@@ -28,7 +28,7 @@ const sections = [
   { name: 'Guides', reference: GUIDES },
   { name: 'Distributing Your App', reference: DISTRIBUTION },
   { name: 'ExpoKit', reference: EXPOKIT },
-  { name: 'Working with Expo', reference: WORKING_WITH_EXPO },
+  { name: 'Fundamentals', reference: FUNDAMENTALS },
   { name: 'React Native', reference: REACT_NATIVE },
   // { name: 'React Native Basics', reference: REACT_NATIVE_BASICS, },
   // { name: 'React Native Guides', reference: REACT_NATIVE_GUIDES, },

@@ -1,10 +1,12 @@
 const ROOT = [
   'Introduction',
-  'Working with Expo',
+  'Managed Workflow',
+  'Fundamentals',
   'Guides',
   'Distributing Your App',
-  'Tutorials',
+  // 'Tutorials',
   'ExpoKit',
+  'Bare Workflow',
   'SDK API Reference',
   'React Native Basics',
   'React Native Guides',
@@ -15,6 +17,7 @@ const ROOT = [
 const INTRODUCTION = [
   'Quick Start',
   'Installation',
+  'Managed and Bare Workflows',
   'XDE Tour',
   'Project Lifecycle',
   'Community',
@@ -22,7 +25,6 @@ const INTRODUCTION = [
   'Troubleshooting Proxies',
   'Frequently Asked Questions',
   'Already used React Native?',
-  'Why not Expo?',
 ];
 
 const GUIDES = [
@@ -48,7 +50,7 @@ const GUIDES = [
   'Using Sentry',
 ];
 
-const WORKING_WITH_EXPO = [
+const FUNDAMENTALS = [
   'Up and Running',
   'Upgrading Expo',
   'Upgrading Expo SDK Walkthrough',
@@ -64,8 +66,8 @@ const WORKING_WITH_EXPO = [
   'Building Standalone Apps',
   'Publishing',
   'Linking',
-  'Expo & "Create React Native App"',
   'How Expo Works',
+  'Anti-Pitch',
 ];
 
 const DISTRIBUTION = [
@@ -197,7 +199,7 @@ const REACT_NATIVE = [
 module.exports = {
   ROOT,
   INTRODUCTION,
-  WORKING_WITH_EXPO,
+  FUNDAMENTALS,
   GUIDES,
   DISTRIBUTION,
   EXPOKIT,

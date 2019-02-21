@@ -5,6 +5,10 @@ title: Localization
 You can use this module to Localize your app, and access the locale data on the native device.
 Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
 
+## Installation
+
+This API is pre-installed in [managed apps](). To use it in a bare React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
+
 ## Usage
 
 ```javascript

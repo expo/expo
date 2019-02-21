@@ -7,6 +7,8 @@ const fs = require('fs-extra');
 const DIR_MAPPING = {
   introduction: 'Introduction',
   guides: 'Guides',
+  'managed-workflow': 'Managed Workflow',
+  'bare-workflow': 'Bare Workflow',
   tutorials: 'Tutorials',
   sdk: 'SDK API Reference',
   'react-native': 'React Native',
@@ -14,7 +16,7 @@ const DIR_MAPPING = {
   // 'react-native-components': 'React Native Components',
   // 'react-native-guides': 'React Native Guides',
   // 'react-native-basics': 'React Native Basics',
-  workflow: 'Working with Expo',
+  workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
 };
