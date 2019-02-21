@@ -79,6 +79,14 @@ to build a native binary with Expo's build service. You can use Apple TestFlight
 share the app with your testers, and you can submit it to the iTunes Store to share
 more widely.
 
+### `expo publish` isn't aware if you ejected to Expokit or not
+
+If your app is ejected to Expokit, after upgrading to a newer version the `expo publish` command might output the following error message: 
+
+`We noticed you did not build a standalone app with this SDK version and release channel before. Remember that OTA updates will not work with the app built with different SDK version and/or release channel.`
+
+There is no logic to check if the app was ejected, but OTA updates should keep working anyway.
+
 ## Privacy
 
 You can set the privacy of your project in your `app.json` configuration
