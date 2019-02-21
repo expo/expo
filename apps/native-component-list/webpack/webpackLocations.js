@@ -1,9 +1,21 @@
-const path = require('path');
 
+const path = require('path');
+const findWorkspaceRoot = require('find-yarn-workspace-root');
 const absolute = (...locations) => path.resolve(__dirname, '../', ...locations);
 
 const packageJsonPath = absolute('./package.json');
 const appJsonPath = absolute('./app.json');
+
+const projectRoot = absolute();
+const workspaceRoot = findWorkspaceRoot(projectRoot); // Absolute path or null
+
+let modulesPath;
+
+if (workspaceRoot) {
+  modulesPath = path.resolve(workspaceRoot, 'node_modules');
+} else {
+  modulesPath = absolute('node_modules');
+}
 
 const pckg = require(packageJsonPath);
 const nativeAppManifest = require(appJsonPath);
@@ -23,10 +35,9 @@ module.exports = {
   absolute,
   packageJson: packageJsonPath,
   appJson: appJsonPath,
-  // Shouldn't change
-  root: absolute(),
+  root: projectRoot,
   appMain: absolute(pckg.main),
-
+  modules: modulesPath,
   template: {
     folder: templatePath,
     indexHtml: path.resolve(templatePath, 'index.html'),
@@ -40,7 +51,4 @@ module.exports = {
     manifest: path.resolve(productionPath,'manifest.json'),
     serveJson: path.resolve(productionPath,'serve.json'),
   },
-  
-  // TODO: Bacon: Only use this in expo/apps/
-  modules: absolute('../../node_modules'),
 };

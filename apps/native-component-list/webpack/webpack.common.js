@@ -153,9 +153,7 @@ const includeModulesThatContainPaths = [
   'node_modules/react-navigation',
   'node_modules/expo',
   'node_modules/@react',
-  'node_modules/@expo/',
-  // Special case for this app
-  'apps/native-component-list',
+  'node_modules/@expo'
 ];
 
 const babelLoaderConfiguration = {
@@ -165,6 +163,10 @@ const babelLoaderConfiguration = {
       if (inputPath.includes(option)) {
         return inputPath;
       }
+    }
+    // Is inside the project and is not one of designated modules
+    if (!inputPath.includes('node_modules') && inputPath.includes(locations.root)) {
+      return inputPath;
     }
     return null;
   },

@@ -24,7 +24,7 @@ module.exports = merge(common, {
     stats: {
       colors: true,
     },
-    progress: true,
+    progress: false,
     historyApiFallback: {
       disableDotRule: true,
     },
