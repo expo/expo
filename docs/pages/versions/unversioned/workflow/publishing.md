@@ -54,6 +54,8 @@ is built into Expo so you don't need to install anything.
 
 To configure the way your app handles JS updates, see [Offline Support](../../guides/offline-support/).
 
+
+
 ## Limitations
 
 ### Some native configuration can't be updated by publishing
@@ -78,6 +80,14 @@ Due to restrictions imposed by Apple, the best way to share your published app i
 to build a native binary with Expo's build service. You can use Apple TestFlight to
 share the app with your testers, and you can submit it to the iTunes Store to share
 more widely.
+
+### `expo publish` isn't aware if you ejected to Expokit or not
+
+If your app is ejected to Expokit, after upgrading to a newer version the `expo publish` command might output the following error message: 
+
+`We noticed you did not build a standalone app with this SDK version and release channel before. Remember that OTA updates will not work with the app built with different SDK version and/or release channel.`
+
+There is no logic to check if the app was ejected, but OTA updates should keep working anyway.
 
 ## Privacy
 
