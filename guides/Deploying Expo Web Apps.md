@@ -17,11 +17,9 @@ Now has a single-command zero-config deployment flow. You can use `now` to deplo
 
 1. Install the now CLI with `npm install -g now`.
 
-2. Build your Expo web app with `yarn build` or `npm run build`.
+2. Build your Expo web app with `yarn web:build` or `npm run web:build`.
 
-3. Move into the web directory by running `cd web`.
-
-4. Run `now --name your-project-name` from within the `web/` directory. You should see a **`now.sh`** URL in your output like:
+3. Run `now --name your-project-name`. You should see a **`now.sh`** URL in your output like:
    `> Ready! https://expo-web-is-cool-nocabnave.now.sh (copied!)`
 
 Paste that URL into your browser when the build is complete, and you will see your deployed app!
@@ -31,13 +29,13 @@ Paste that URL into your browser when the build is complete, and you will see yo
 Install the Surge CLI if you haven’t already by running `npm install -g surge`.
 Run the `surge` command, then promptly log in or create a new account.
 
-When asked about the project path, make sure to specify the `web` folder, for example:
+When asked about the project path, make sure to specify the `web-build` folder, for example:
 
 ```sh
-project path: /path/to/expo-project/web
+project path: /path/to/expo-project/web-build
 ```
 
-> To support routers that use the HTML 5 `pushState` API, you'll need to rename the `web/index.html` to `web/200.html` before deploying.
+> To support routers that use the HTML 5 `pushState` API, you'll need to rename the `web-build/index.html` to `web/200.html` before deploying.
 
 ## [Netlify](https://www.netlify.com/)
 
@@ -48,7 +46,7 @@ npm install netlify-cli -g
 netlify deploy
 ```
 
-Choose `web` as the path to deploy.
+Choose `web-build` as the path to deploy.
 
 ### Continuous delivery
 
