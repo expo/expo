@@ -49,6 +49,7 @@
   "devDependencies": {
     "babel-loader": "^8.0.5",
     "babel-preset-expo": "^5.0.0",
+    "brotli-webpack-plugin": "^1.1.0",
     "case-sensitive-paths-webpack-plugin": "^2.2.0",
     "clean-webpack-plugin": "^1.0.1",
     "compression-webpack-plugin": "^2.0.0",

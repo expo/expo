@@ -6,6 +6,7 @@ const CompressionPlugin = require('compression-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const BrotliPlugin = require('brotli-webpack-plugin');
 
 const common = require('./webpack.common.js');
 const locations = require('./webpackLocations');
@@ -47,7 +48,15 @@ module.exports = merge(common, {
       test: /\.(js|css)$/,
       filename: '[path].gz[query]',
       algorithm: 'gzip',
+      threshold: 10240,
+      minRatio: 0.8
     }),
+    new BrotliPlugin({
+			asset: '[path].br[query]',
+			test: /\.(js|css|html|svg)$/,
+			threshold: 10240,
+			minRatio: 0.8
+		})
   ],
   module: {
     rules: [
