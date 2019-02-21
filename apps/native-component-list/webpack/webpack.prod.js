@@ -48,13 +48,13 @@ module.exports = merge(common, {
       test: /\.(js|css)$/,
       filename: '[path].gz[query]',
       algorithm: 'gzip',
-      threshold: 10240,
+      threshold: 1024,
       minRatio: 0.8
     }),
     new BrotliPlugin({
 			asset: '[path].br[query]',
-			test: /\.(js|css|html|svg)$/,
-			threshold: 10240,
+			test: /\.(js|css)$/,
+			threshold: 1024,
 			minRatio: 0.8
 		})
   ],
