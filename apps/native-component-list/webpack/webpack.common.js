@@ -256,12 +256,12 @@ module.exports = {
   // configures where the build ends up
   output: {
     path: locations.production.folder,
-    filename: 'static/[name].[chunkhash].js',
-    sourceMapFilename: '[name].[chunkhash].map',
+    filename: 'static/[chunkhash].js',
+    sourceMapFilename: '[chunkhash].map',
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: 'static/[id].[chunkhash].js',
     // This is the URL that app is served from. We use "/" in development.
-    publicPath: publicPath,
+    publicPath,
   },
   optimization: {
     splitChunks: {
@@ -298,7 +298,7 @@ module.exports = {
     // having to parse `index.html`.
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
-      publicPath: publicPath,
+      publicPath,
     }),
 
     new webpack.DefinePlugin(env),
@@ -311,7 +311,7 @@ module.exports = {
     new WorkboxPlugin.GenerateSW({
       skipWaiting: true,
       clientsClaim: true,
-      exclude: [/\.map$/, /asset-manifest\.json$/],
+      exclude: [/\.LICENSE$/, /\.map$/, /asset-manifest\.json$/],
       importWorkboxFrom: 'cdn',
       navigateFallback: `${publicUrl}/index.html`,
       navigateFallbackBlacklist: [
@@ -340,7 +340,6 @@ module.exports = {
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx', '.json'],
     alias: Object.assign(
-      {},
       {
         /* Alias direct react-native imports to react-native-web */
         'react-native$': 'react-native-web',
