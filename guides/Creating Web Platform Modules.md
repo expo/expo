@@ -8,30 +8,27 @@ Below we've outlined the specification for creating high-quality, performant pla
 
 The first step is to make sure the web implementation of a native module can be imported in a web project. We do this by moving the import of the native module to a separate file and overriding it with a web implementation with the same name and a `.web.ts` extension.
 
-```js
-// Print.ts
-import { NativeModulesProxy } from 'expo-core';
-const { ExpoPrint } = NativeModulesProxy;
+**`src/Print.ts`**
+
+```diff
+- import { NativeModulesProxy } from 'expo-core';
+- const { ExpoPrint } = NativeModulesProxy;
+
++ import ExpoPrint from './ExpoPrint';
 ```
 
-Becomes:
+**`src/ExpoPrint.ts`**
 
-```js
-// Print.ts
-import ExpoPrint from './ExpoPrint';
-```
-
-```js
-// ExpoPrint.ts
+```ts
 import { NativeModulesProxy } from 'expo-core';
 export default NativeModulesProxy.ExpoPrint;
 ```
 
 Now create a web module (`.web.ts`):
 
-```js
-// ExpoPrint.web.ts
+**`src/ExpoPrint.web.ts`**
 
+```ts
 export default {
   get name(): string {
     return 'ExpoPrint';
@@ -43,22 +40,21 @@ export default {
 
 More often than not, the API layer will need to guard against unimplemented methods of the native layer. To this you should start methods that contain Platform Modules with an availability check.
 
-```js
-// src/Print.ts
+**src/Print.ts**
 
+```ts
 import { UnavailabilityError } from 'expo-errors';
 
 async function selectPrinter(): Promise<SelectResult> {
-  /*
+  /**
    * Check if a Universal Module method exists before using it.
    * If it doesn't then throw an error.
    */
-
   if (!ExpoPrint.selectPrinter) {
     throw new UnavailabilityError('Print', 'selectPrinter');
   }
 
-  /*
+  /**
    * We explicitly await promises before returning, rather than relying on implicit promises
    */
   return await ExpoPrint.selectPrinter();
@@ -71,18 +67,20 @@ async function selectPrinter(): Promise<SelectResult> {
 
 We use default exports instead of named exports in order to better match the native synatx.
 
-```js
-// ✅
-export default {
+**`src/ExpoPrint.web.ts`**
 
-};
+```diff
+✅
++ export default {
++
++ };
 
-// ❌
-class ExpoPrint {
-
-}
-
-export default new ExpoPrint();
+❌
+- class ExpoPrint {
+-
+- }
+-
+- export default new ExpoPrint();
 ```
 
 #### Name
@@ -91,7 +89,9 @@ Each module has a `name` property. The name should be consistent across all plat
 
 ##### Web
 
-```js
+**`src/ExpoPrint.web.ts`**
+
+```ts
 export default {
   get name(): string {
     return 'ExpoPrint';
@@ -120,7 +120,9 @@ Constants are defined as `get`ters after the `name` property.
 
 ##### Web
 
-```js
+**`src/ExpoPrint.web.ts`**
+
+```ts
 export default {
   get name(): string {
     return 'ExpoPrint';
@@ -158,7 +160,9 @@ Methods are all defined after the `name` property and any constants.
 
 ##### Web
 
-```js
+**`src/ExpoPrint.web.ts`**
+
+```ts
 export default {
   get name(): string {
     return 'ExpoPrint';
@@ -178,7 +182,6 @@ export default {
 ##### iOS
 
 ```objc
-
 EX_EXPORT_MODULE(ExpoPrint);
 
 - (NSDictionary *)constantsToExport
@@ -197,7 +200,6 @@ EX_EXPORT_METHOD_AS(printAsync,
 {
     resolve(nil);
 }
-
 ```
 
 ##### Android
@@ -232,35 +234,32 @@ EX_EXPORT_METHOD_AS(printAsync,
 
 Currently all methods are `async` and return a promise. This is until Turbo Modules are released, at which time we will add synchronous methods.
 
-```js
-// ✅
+**`src/ExpoPrint.web.ts`**
 
-export default {
-  //...
-  async getStringAsync(): Promise<string> {
-    return 'String';
-  },
-};
+```diff
+✅
++ export default {
++   //...
++   async getStringAsync(): Promise<string> {
++     return 'String';
++   },
++ };
 
-// ❌
+❌
+- export default {
+-   //...
+-   getStringAsync(): string {
+-     return 'String';
+-   },
+- };
 
-export default {
-  //...
-  getStringAsync(): string {
-    return 'String';
-  },
-};
-
-
-// ❌
-
-export default {
-  //...
-  getStringAsync(): Promise<string> {
-    return Promise.resolve('String');
-  },
-};
-
+❌
+- export default {
+-   //...
+-   getStringAsync(): Promise<string> {
+-     return Promise.resolve('String');
+-   },
+- };
 ```
 
 ### Views
