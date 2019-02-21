@@ -15,7 +15,7 @@ const appEntry = [locations.appMain];
 const usePolyfills = false;
 
 if (usePolyfills) {
-  appEntry.unshift('babel-polyfill');
+  appEntry.unshift('@babel/polyfill');
 }
 
 module.exports = merge(common, {
@@ -40,8 +40,8 @@ module.exports = merge(common, {
       },
     ]),
     new MiniCssExtractPlugin({
-      filename: 'static/css/[name].[contenthash].css',
-      chunkFilename: 'static/css/[name].[contenthash].chunk.css',
+      filename: 'static/css/[contenthash].css',
+      chunkFilename: 'static/css/[contenthash].chunk.css',
     }),
     new CompressionPlugin({
       test: /\.(js|css)$/,
@@ -56,7 +56,7 @@ module.exports = merge(common, {
         loader: require.resolve('url-loader'),
         options: {
           limit: 10000,
-          name: 'static/media/[name].[hash].[ext]',
+          name: 'static/media/[hash].[ext]',
         },
       },
     ]
