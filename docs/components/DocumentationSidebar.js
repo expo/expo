@@ -9,8 +9,8 @@ import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 
 const STYLES_SIDEBAR = css`
-  padding: 32px 24px 24px 24px;
-  width: 277px;
+  padding: 20px 24px 24px 24px;
+  width: 280px;
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     width: 100%;
