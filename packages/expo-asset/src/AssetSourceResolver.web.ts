@@ -3,7 +3,7 @@ import { UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 import { Dimensions } from 'react-native';
 
-import { getBasePath, PackagerAsset } from './assetPathUtils';
+import { getBasePath, PackagerAsset } from './assetPathUtils.web';
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean;

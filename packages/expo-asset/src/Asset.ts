@@ -1,7 +1,7 @@
 import { Platform } from 'expo-core';
 import * as FileSystem from 'expo-file-system';
 import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
-import { setCustomSourceTransformer } from 'react-native/Libraries/Image/resolveAssetSource';
+import { setCustomSourceTransformer } from './resolveAssetSource';
 
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';

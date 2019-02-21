@@ -9,7 +9,6 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const locations = require('./webpackLocations');
 const nativeAppManifest = require(locations.appJson);
 
-
 function getAppManifest() {
   if (nativeAppManifest && nativeAppManifest.expo) {
     const { expo } = nativeAppManifest;
@@ -137,7 +136,7 @@ function generateHTMLFromAppJSON() {
      * The `webpack` require path to the template.
      * @see https://github.com/jantimon/html-webpack-plugin/blob/master/docs/template-option.md
      */
-    template: locations.template.indexHtml
+    template: locations.template.indexHtml,
   });
 }
 
@@ -153,7 +152,7 @@ const includeModulesThatContainPaths = [
   'node_modules/react-navigation',
   'node_modules/expo',
   'node_modules/@react',
-  'node_modules/@expo'
+  'node_modules/@expo',
 ];
 
 const babelLoaderConfiguration = {
@@ -309,17 +308,14 @@ module.exports = {
     useWebModule('Performance/Systrace', 'Performance/Systrace'),
     useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
     useWebModule('RCTNetworking', 'Network/RCTNetworking'),
-    
+
     new WorkboxPlugin.GenerateSW({
       skipWaiting: true,
       clientsClaim: true,
       exclude: [/\.LICENSE$/, /\.map$/, /asset-manifest\.json$/],
       importWorkboxFrom: 'cdn',
       navigateFallback: `${publicUrl}/index.html`,
-      navigateFallbackBlacklist: [
-        new RegExp('^/_'),
-        new RegExp('/[^/]+\\.[^/]+$'),
-      ],
+      navigateFallbackBlacklist: [new RegExp('^/_'), new RegExp('/[^/]+\\.[^/]+$')],
       runtimeCaching: [
         {
           urlPattern: /(.*?)/,
@@ -339,12 +335,6 @@ module.exports = {
       {
         /* Alias direct react-native imports to react-native-web */
         'react-native$': 'react-native-web',
-        /* Add polyfills for modules that react-native-web doesn't support */
-        'react-native/Libraries/Image/AssetSourceResolver$':
-          'expo/build/web/Image/AssetSourceResolver',
-        'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
-        'react-native/Libraries/Image/resolveAssetSource$':
-          'expo/build/web/Image/resolveAssetSource',
       },
       [
         'ActivityIndicator',
