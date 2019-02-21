@@ -218,6 +218,12 @@ Registers for receiving location updates that can also come when the app is in t
     -   **deferredUpdatesInterval (_number_)** -- Minimum time interval in miliseconds that must pass since last reported location before all later locations are reported in a batched update. Defaults to `0`.
     -   **deferredUpdatesDistance (_number_)** -- The distance in meters that must occur between last reported location and the current location before deferred locations are reported. Defaults to `0`.
     -   **showsBackgroundLocationIndicator (_boolean_)** -- A boolean indicating whether the status bar changes its appearance when location services are used in the background. Defaults to `false`. (**Takes effect only on iOS 11.0 and later**)
+    -   **foregroundService (_object_)** -- Use this option to put the location service into a foreground state, which will make location updates in the background as frequent as in the foreground state. As a downside, it requires a sticky notification, so the user will be aware that your app is running and consumes more resources even if backgrounded. (**Available since Android 8.0**)
+        -   **notificationTitle (_string_)** -- Title of the foreground service notification. *required*
+        -   **notificationBody (_string_)** -- Subtitle of the foreground service notification. *required*
+        -   **notificationColor (_string_)** -- Color of the foreground service notification. Accepts `#RRGGBB` and `#AARRGGBB` hex formats. *optional*
+
+> Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
 
 > Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
 

@@ -3,10 +3,14 @@ package expo.modules.location.taskConsumers;
 import android.app.PendingIntent;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -24,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.unimodules.core.MapHelper;
+import org.unimodules.core.arguments.MapArguments;
+import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.Arguments;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
@@ -33,13 +39,16 @@ import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskInterface;
 
 import expo.modules.location.LocationHelpers;
+import expo.modules.location.services.LocationTaskService;
 
 public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private static final String TAG = "LocationTaskConsumer";
+  private static final String FOREGROUND_SERVICE_KEY = "foregroundService";
   private static long sLastTimestamp = 0;
 
   private TaskInterface mTask;
   private PendingIntent mPendingIntent;
+  private LocationTaskService mService;
   private LocationRequest mLocationRequest;
   private FusedLocationProviderClient mLocationClient;
   private Location mLastReportedLocation;
@@ -61,11 +70,13 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
   public void didRegister(TaskInterface task) {
     mTask = task;
     startLocationUpdates();
+    maybeStartForegroundService();
   }
 
   @Override
   public void didUnregister() {
     stopLocationUpdates();
+    stopForegroundService();
     mTask = null;
     mPendingIntent = null;
     mLocationRequest = null;
@@ -79,6 +90,9 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
     // Restart location updates
     stopLocationUpdates();
     startLocationUpdates();
+
+    // Restart foreground service if its option has changed.
+    maybeStartForegroundService();
   }
 
   @Override
@@ -95,7 +109,6 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       deferLocations(locations);
       maybeReportDeferredLocations();
     } else {
-      // If there is no result in the intent, let's try to obtain last location from location client.
       try {
         mLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
           @Override
@@ -176,6 +189,70 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
     if (mLocationClient != null && mPendingIntent != null) {
       mLocationClient.removeLocationUpdates(mPendingIntent);
       mPendingIntent.cancel();
+    }
+  }
+
+  private void maybeStartForegroundService() {
+    // Foreground service is available as of Android Oreo.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return;
+    }
+
+    ReadableArguments options = new MapArguments(mTask.getOptions());
+    final Context context = getContext();
+    boolean useForegroundService = options.containsKey(FOREGROUND_SERVICE_KEY);
+
+    if (context == null) {
+      Log.w(TAG, "Context not found when trying to start foreground service.");
+      return;
+    }
+
+    // Service is already running, but the task has been registered again without `foregroundService` option.
+    if (mService != null && !useForegroundService) {
+      stopForegroundService();
+      return;
+    }
+
+    // Service is not running and the user don't want to start foreground service.
+    if (!useForegroundService) {
+      return;
+    }
+
+    // Foreground service is requested but not running.
+    if (mService == null) {
+      Intent serviceIntent = new Intent(context, LocationTaskService.class);
+      Bundle extras = new Bundle();
+      final Bundle serviceOptions = options.getArguments(FOREGROUND_SERVICE_KEY).toBundle();
+
+      extras.putString("appId", mTask.getAppId());
+      extras.putString("taskName", mTask.getName());
+      serviceIntent.putExtras(extras);
+
+      context.startForegroundService(serviceIntent);
+
+      context.bindService(serviceIntent, new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+          mService = ((LocationTaskService.ServiceBinder) service).getService();
+          mService.setParentContext(context);
+          mService.startForeground(serviceOptions);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+          mService.stop();
+          mService = null;
+        }
+      }, Context.BIND_AUTO_CREATE);
+    } else {
+      // Restart the service with new service options.
+      mService.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle());
+    }
+  }
+
+  private void stopForegroundService() {
+    if (mService != null) {
+      mService.stop();
     }
   }
 
