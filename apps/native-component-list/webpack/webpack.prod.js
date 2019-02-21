@@ -13,7 +13,7 @@ const locations = require('./webpackLocations');
 
 const appEntry = [locations.appMain];
 
-const usePolyfills = false;
+const usePolyfills = true;
 
 if (usePolyfills) {
   appEntry.unshift('@babel/polyfill');
