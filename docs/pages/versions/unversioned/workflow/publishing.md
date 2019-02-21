@@ -54,8 +54,6 @@ is built into Expo so you don't need to install anything.
 
 To configure the way your app handles JS updates, see [Offline Support](../../guides/offline-support/).
 
-
-
 ## Limitations
 
 ### Some native configuration can't be updated by publishing
