@@ -190,12 +190,6 @@ const imageLoaderConfiguration = {
   },
 };
 
-// This is needed for loading css
-const cssLoaderConfiguration = {
-  test: /\.css$/,
-  use: ['style-loader', 'css-loader'],
-};
-
 const ttfLoaderConfiguration = {
   test: /\.ttf$/,
   use: [
@@ -279,7 +273,6 @@ module.exports = {
 
       htmlLoaderConfiguration,
       babelLoaderConfiguration,
-      cssLoaderConfiguration,
       imageLoaderConfiguration,
       ttfLoaderConfiguration,
       mediaLoaderConfiguration,
@@ -304,10 +297,12 @@ module.exports = {
 
     new webpack.DefinePlugin(env),
 
-    useWebModule('Platform', 'Utilities/Platform'),
     useWebModule('Performance/Systrace', 'Performance/Systrace'),
-    useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
     useWebModule('RCTNetworking', 'Network/RCTNetworking'),
+    /** Upstreamed */
+    useWebModule('Platform', 'Utilities/Platform'),
+    /** Upstreamed */
+    useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
 
     new WorkboxPlugin.GenerateSW({
       skipWaiting: true,
@@ -335,6 +330,8 @@ module.exports = {
       {
         /* Alias direct react-native imports to react-native-web */
         'react-native$': 'react-native-web',
+        'react-dom$': require.resolve('react-dom'),
+        'react-art$': require.resolve('react-art'),
       },
       [
         'ActivityIndicator',
