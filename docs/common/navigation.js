@@ -57,6 +57,18 @@ const groupNav = nav => {
   let sections = [];
   let groupIndex = {};
   nav.forEach(section => {
+    if (section.name === 'Expo SDK') {
+      let overview;
+      section.posts.forEach(post => {
+        if (post.name === 'Overview') {
+          overview = post;
+        }
+      });
+      if (overview) {
+        section.posts.splice(section.posts.indexOf(overview), 1);
+        section.posts.unshift(overview);
+      }
+    }
     let group = GROUPS[section.name];
     if (group) {
       let existingGroupIndex = groupIndex[group];

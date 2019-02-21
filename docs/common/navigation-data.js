@@ -38,10 +38,10 @@ const generateNavLinks = (path_, arr) => {
       // Make sure to add '/' at the end of index pages so that relative links in the markdown work correctly
       let href = fs.existsSync(path.join(filePath, 'index.md')) ? processUrl(filePath) + '/' : '';
 
-      // 'Introduction' section has a 'Quick Start' page that's actually at the root i.e. `/versions/v25.0/`, etc.
+      // 'Introduction' section has a 'Getting to know Expo' page that's actually at the root i.e. `/versions/v25.0/`, etc.
       if (name === 'introduction') {
         // TODO: find what's eating the final slash
-        initArr.push({ name: 'Quick Start', href: path.parse(href).dir + '//' });
+        initArr.push({ name: 'Getting to know Expo', href: path.parse(href).dir + '//' });
       }
 
       arr.push({

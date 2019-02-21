@@ -1,5 +1,5 @@
 ---
-title: ExpoKit
+title: Overview
 ---
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform and your existing Expo project as part of a larger standard native project -- one that you would normally create using Xcode, Android Studio, or `react-native init`.

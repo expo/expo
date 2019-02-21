@@ -5,6 +5,7 @@ const GROUPS = {
   ExpoKit: 'Managed Workflow',
   'Expo SDK': 'API Reference',
   'React Native': 'API Reference',
+  'Introduction': 'Get Started',
 };
 
 const ROOT = [
@@ -22,7 +23,7 @@ const ROOT = [
 ];
 
 const INTRODUCTION = [
-  'Quick Start',
+  'Getting to know Expo',
   'Installation',
   'Managed and Bare Workflows',
   'XDE Tour',
@@ -78,6 +79,7 @@ const FUNDAMENTALS = [
 ];
 
 const DISTRIBUTION = [
+  'Overview',
   'Building Standalone Apps',
   'App signing',
   'Deploying to App Stores',
@@ -90,6 +92,7 @@ const DISTRIBUTION = [
 ];
 
 const EXPOKIT = [
+  'Overview',
   'Detaching to ExpoKit',
   'Ejecting to ExpoKit',
   'Developing With ExpoKit',

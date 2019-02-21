@@ -72,6 +72,15 @@ export default class DocumentationSidebarGroup extends React.Component {
   }
 
   isChildRouteActive() {
+    // Special case for "Get Started"
+    if (this.props.info.name === 'Get Started') {
+      const pathname = this.props.url.pathname;
+      const asPath = this.props.asPath;
+      if (this.props.asPath.match(/\/versions\/[\w\.]+\/$/)) {
+        return true;
+      }
+    }
+
     let result = false;
 
     let sections = this.props.info.children;
