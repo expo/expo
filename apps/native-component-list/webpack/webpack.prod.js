@@ -6,6 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
+const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 
 const common = require('./webpack.common.js');
 const locations = require('./webpackLocations');
@@ -26,9 +27,36 @@ module.exports = merge(common, {
   },
   devtool: 'hidden-source-map',
   plugins: [
+    /** Delete the build folder  */
     new CleanWebpackPlugin([locations.production.folder]),
+    /** Remove unused import/exports  */
+    new WebpackDeepScopeAnalysisPlugin(),
+
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
+
+    new MiniCssExtractPlugin({
+      filename: 'static/css/[contenthash].css',
+      chunkFilename: 'static/css/[contenthash].chunk.css',
+    }),
+
+    /** GZIP files */
+    new CompressionPlugin({
+      test: /\.(js|css)$/,
+      filename: '[path].gz[query]',
+      algorithm: 'gzip',
+      threshold: 1024,
+      minRatio: 0.8,
+    }),
+    /** secondary compression for platforms that load .br  */
+    new BrotliPlugin({
+      asset: '[path].br[query]',
+      test: /\.(js|css)$/,
+      threshold: 1024,
+      minRatio: 0.8,
+    }),
+
+    /** Copy the PWA manifest.json and the caching policy serve.json from the template folder to the build folder  */
     new CopyWebpackPlugin([
       {
         from: locations.template.manifest,
@@ -39,23 +67,6 @@ module.exports = merge(common, {
         to: locations.production.serveJson,
       },
     ]),
-    new MiniCssExtractPlugin({
-      filename: 'static/css/[contenthash].css',
-      chunkFilename: 'static/css/[contenthash].chunk.css',
-    }),
-    new CompressionPlugin({
-      test: /\.(js|css)$/,
-      filename: '[path].gz[query]',
-      algorithm: 'gzip',
-      threshold: 1024,
-      minRatio: 0.8,
-    }),
-    new BrotliPlugin({
-      asset: '[path].br[query]',
-      test: /\.(js|css)$/,
-      threshold: 1024,
-      minRatio: 0.8,
-    }),
   ],
   module: {
     rules: [
@@ -152,5 +163,7 @@ module.exports = merge(common, {
         },
       },
     },
+
+    concatenateModules: true,
   },
 });
