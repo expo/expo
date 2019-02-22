@@ -2,12 +2,17 @@ import React from 'react';
 import { Alert, Platform } from 'react-native';
 import { DangerZone, Notifications } from 'expo';
 import ComponentListScreen from './ComponentListScreen';
+import { Screens } from '../navigation/ExpoApis';
 
-DangerZone.Branch.subscribe(bundle => {
-  if (bundle && bundle.params && !bundle.error) {
-    Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
-  }
-});
+try {
+  DangerZone.Branch.subscribe(bundle => {
+    if (bundle && bundle.params && !bundle.error) {
+      Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
+    }
+  });
+} catch (e) {
+  // Branch is not available, do nothing
+}
 
 export default class ExpoApisScreen extends React.Component {
   static path = '';
@@ -66,7 +71,7 @@ export default class ExpoApisScreen extends React.Component {
   }
 
   _getApis = () => {
-    return Platform.select({
+    const screens = Platform.select({
       web: [
         'ActionSheet',
         'Audio',
@@ -139,5 +144,6 @@ export default class ExpoApisScreen extends React.Component {
         'ViewShot',
       ],
     });
+    return screens.map(name => ({ name, isAvailable: !!Screens[name] }));
   };
 }

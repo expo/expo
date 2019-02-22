@@ -1,6 +1,6 @@
 {
   "name": "EXPermissions",
-  "version": "2.0.0",
+  "version": "2.1.0-alpha.0",
   "summary": "An Expo universal module to prompt for permission to access device sensors and personal data",
   "description": "An Expo universal module to prompt for permission to access device sensors and personal data",
   "license": "MIT",

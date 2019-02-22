@@ -1,0 +1,81 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '10.0'
+
+def universal_module(library_name)
+  pod(library_name.split('-').collect(&:capitalize).join.gsub('Expo', 'EX'), path: "../../../packages/#{library_name}/ios")
+end
+
+react_native_path = "../../../react-native-lab/react-native"
+
+target 'NativeComponentList' do
+
+  universal_module 'expo-core'
+  universal_module 'expo-react-native-adapter'
+  
+  # required by expo-react-native-adapter
+  universal_module 'expo-font-interface'
+  universal_module 'expo-image-loader-interface'
+
+  pod 'RNGestureHandler', path: '../../../node_modules/react-native-gesture-handler', inhibit_warnings: true
+  pod 'RNReanimated', path: '../../../node_modules/react-native-reanimated', inhibit_warnings: true
+
+  pod 'React',
+    :path => react_native_path,
+    :inhibit_warnings => true,
+    :subspecs => [
+      "Core",
+      "ART",
+      "RCTActionSheet",
+      "RCTAnimation",
+      "RCTCameraRoll",
+      "RCTGeolocation",
+      "RCTImage",
+      "RCTLinkingIOS",
+      "RCTNetwork",
+      "RCTText",
+      "RCTVibration",
+      "RCTWebSocket",
+      "DevSupport",
+      "CxxBridge"
+    ]
+  pod 'yoga',
+    :path => "#{react_native_path}/ReactCommon/yoga",
+    :inhibit_warnings => true
+  pod 'DoubleConversion',
+    :podspec => "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec",
+    :inhibit_warnings => true
+  pod 'Folly',
+    :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec",
+    :inhibit_warnings => true
+  pod 'glog',
+    :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec",
+    :inhibit_warnings => true
+
+  # Build React Native with RCT_DEV enabled and ENABLE_PACKAGER_CONNECTION disabled
+  post_install do |installer|
+    installer.pods_project.main_group.tab_width = '2';
+    installer.pods_project.main_group.indent_width = '2';
+
+    installer.pod_targets.each do |target|
+
+    # Can't specify this in the React podspec because we need
+    # to use those podspecs for detached projects which don't reference ExponentCPP.
+    if target.pod_name.start_with?('React')
+      target.native_target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+      end
+    end
+    # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
+    # RCT_ENABLE_PACKAGER_CONNECTION disabled
+    next unless target.pod_name == 'React'
+    target.native_target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
+    end
+
+    end
+  end
+end

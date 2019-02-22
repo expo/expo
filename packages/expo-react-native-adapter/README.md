@@ -149,7 +149,7 @@ and run `pod install`.
        // more packages, like
        // new CameraPackage(), if you use expo-camera
        // etc.
-   ));
+   ), /* singletonModules */ null);
    ```
 4. Add `new ModuleRegistryAdapter(mModuleRegistryProvider)` to the list returned by `protected List<ReactPackage> getPackages()`.
 5. You're good to go!

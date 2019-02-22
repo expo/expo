@@ -2,7 +2,13 @@ import React from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import { Constants, DangerZone } from 'expo';
 
-const { Branch } = DangerZone;
+let Branch = null;
+
+try {
+  Branch = DangerZone.Branch;
+} catch (e) {
+  // do nothing
+}
 
 export default class BranchScreen extends React.Component {
   static navigationOptions = {
@@ -12,6 +18,12 @@ export default class BranchScreen extends React.Component {
   async _getOrCreateBranchObjectAsync() {
     if (this._branchUniversalObject) {
       return this._branchUniversalObject;
+    }
+
+    if (!Branch) {
+      throw new Error(
+        'Branch native module is not available, are you sure all the native dependencies are linked properly?'
+      );
     }
 
     const branchUniversalObject = await Branch.createBranchUniversalObject(`expo_and_branch`, {
