@@ -55,6 +55,15 @@ const imageLoaderConfiguration = {
     // loader: 'file-loader',
     options: {
       name: '[name].[ext]',
+      // Inline resources as Base64 when there is less reason to parallelize their download. The
+      // heuristic we use is whether the resource would fit within a TCP/IP packet that we would
+      // send to request the resource.
+      //
+      // An Ethernet MTU is usually 1500. IP headers are 20 (v4) or 40 (v6) bytes and TCP
+      // headers are 40 bytes. HTTP response headers vary and are around 400 bytes. This leaves
+      // about 1000 bytes for content to fit in a packet.
+      limit: 1000,
+      name: 'static/media/[hash].[ext]',
     },
   },
 };
