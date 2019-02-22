@@ -1,18 +1,3 @@
-export default {
-    get name() {
-        return 'ExponentFileSystem';
-    },
-    get documentDirectory() {
-        return null;
-    },
-    get cacheDirectory() {
-        return null;
-    },
-    get bundledAssets() {
-        return null;
-    },
-    get bundleDirectory() {
-        return null;
-    },
-};
+import ExponentFileSystemShim from './ExponentFileSystemShim';
+export default ExponentFileSystemShim;
 //# sourceMappingURL=ExponentFileSystem.web.js.map
