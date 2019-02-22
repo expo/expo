@@ -9,6 +9,7 @@ const env = require('./getClientEnvironment');
 const locations = require('./webpackLocations');
 const nativeAppManifest = require(locations.appJson);
 const indexHTML = require('./getIndexHTMLFromAppJSON');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 const includeModule = module => {
   return path.resolve(locations.modules, module);
@@ -172,12 +173,13 @@ module.exports = {
     }),
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
-      // openAnalyzer: false,
+      openAnalyzer: false,
     }),
+    new ProgressBarPlugin(),
   ],
 
   module: {
-    // strictExportPresence: true,
+    strictExportPresence: false,
 
     rules: [
       { parser: { requireEnsure: false } },
@@ -192,10 +194,6 @@ module.exports = {
   resolve: {
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx', '.json'],
-    alias: {
-      /* Alias direct react-native imports to react-native-web */
-      'react-native$': 'react-native-web',
-    },
   },
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

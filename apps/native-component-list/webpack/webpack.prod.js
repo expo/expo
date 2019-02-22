@@ -25,7 +25,7 @@ module.exports = merge(common, {
     vendor: ['react', 'react-native-web'],
     app: appEntry,
   },
-  devtool: 'hidden-source-map',
+  devtool: 'source-map',
   plugins: [
     /** Delete the build folder  */
     new CleanWebpackPlugin([locations.production.folder], {
@@ -35,9 +35,6 @@ module.exports = merge(common, {
     }),
     /** Remove unused import/exports  */
     new WebpackDeepScopeAnalysisPlugin(),
-
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.ModuleConcatenationPlugin(),
 
     new MiniCssExtractPlugin({
       filename: 'static/css/[contenthash].css',
@@ -92,10 +89,11 @@ module.exports = merge(common, {
     ],
   },
   optimization: {
+    usedExports: true,
     concatenateModules: true,
+    occurrenceOrder: true,
     minimize: true,
     minimizer: [
-      // we specify a custom TerserPlugin here to get source maps in production
       new TerserPlugin({
         cache: true,
         sourceMap: true,
@@ -120,12 +118,12 @@ module.exports = merge(common, {
             comments: false,
             ascii_only: true,
           },
-          // module: false,
-          // toplevel: false,
-          // nameCache: null,
-          // ie8: false,
-          // keep_classnames: undefined,
-          // keep_fnames: false,
+          module: false,
+          toplevel: false,
+          nameCache: null,
+          ie8: false,
+          keep_classnames: undefined,
+          keep_fnames: false,
         },
       }),
     ],
