@@ -7,7 +7,7 @@ import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as EmbeddedAssets from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
-const IS_MANAGED_ENV = !!Constants.appOwnership;
+const MANAGED_ENV = !!Constants.manifest;
 export class Asset {
     constructor({ name, type, hash = null, uri, width, height }) {
         this.hash = null;
@@ -28,7 +28,7 @@ export class Asset {
             this.height = height;
         }
         // This only applies to assets that are bundled in Expo standalone apps
-        if (IS_MANAGED_ENV && hash) {
+        if (MANAGED_ENV && hash) {
             this.localUri = EmbeddedAssets.getEmbeddedAssetUri(hash, type);
             if (this.localUri) {
                 this.downloaded = true;
@@ -49,7 +49,7 @@ export class Asset {
         }
         // Outside of the managed env we need the moduleId to initialize the asset
         // because resolveAssetSource depends on it
-        if (!IS_MANAGED_ENV) {
+        if (!MANAGED_ENV) {
             const { uri } = resolveAssetSource(virtualAssetModule);
             const asset = new Asset({
                 name: meta.name,
@@ -59,10 +59,9 @@ export class Asset {
                 width: meta.width,
                 height: meta.height,
             });
-            // TODO: FileSystem should probably support 'downloading' from drawable
-            // resources But for now it doesn't (it only supports raw resources) and
-            // React Native's Image works fine with drawable resource names for
-            // images.
+            // TODO: FileSystem should probably support 'downloading' from drawable resources
+            // But for now it doesn't and React Native's Image works fine with drawable resource
+            // names for images.
             if (Platform.OS === 'android' && !uri.includes(':') && (meta.width || meta.height)) {
                 asset.localUri = asset.uri;
                 asset.downloaded = true;
@@ -79,7 +78,7 @@ export class Asset {
         if (Asset.byHash[metaHash]) {
             return Asset.byHash[metaHash];
         }
-        else if (!IS_MANAGED_ENV && !Asset.byHash[metaHash]) {
+        else if (!MANAGED_ENV && !Asset.byHash[metaHash]) {
             throw new Error('Assets must be initialized with Asset.fromModule');
         }
         const { uri, hash } = AssetSources.selectAssetSource(meta);
@@ -171,7 +170,7 @@ export class Asset {
             if (Platform.OS === 'web') {
                 await this._downloadAsyncWeb();
             }
-            else if (IS_MANAGED_ENV) {
+            else if (MANAGED_ENV) {
                 await this._downloadAsyncManagedEnv();
             }
             else {
