@@ -43,22 +43,59 @@ and run `pod install` under the parent directory of your `Podfile`.
 ```javascript
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
-import * as Permissions from 'expo-permissions';
+import * as FileSystem from 'expo-filesystem';
 import * as ExpoSharing from 'expo-sharing';
+
+const REMOTE_IMAGE_PATH = '<PATH_TO_REMOTE_IMAGE>';
+// TIP: one can use expo-asset module to get local file path
+const LOCAL_IMAGE_PATH = '<PATH_TO_LOCAL_IMAGE>';
 
 export default class App extends Component {
   componentDidMount() {
     doGreatJob();
   }
 
-  doGreatJob = async () => {
-    await ExpoSharing.someGreatMethod();
+  _shareRemoteImage = async () => {
+    const response = await FileSystem.downloadAsync(
+      REMOTE_IMAGE_PATH,
+      FileSystem.documentDirectory + 'target_file_path',
+    );
+
+    const { uri: imageUri } = response;
+
+    try {
+      await Sharing.shareAsync(imageUri, {
+        mimeType: 'image/jpg',
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  _shareLocalImage = async () => {
+    try {
+      await Sharing.shareAsync(LOCAL_IMAGE_PATH, {
+        mimeType: 'image/jpg', // Android only
+        UTI: 'public.jpeg', // iOS only
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.paragraph}>'expo-sharing' example</Text>
+        <Button
+          onPress={this._shareRemoteImage}
+          title="Share remote image"
+          loading={this.state.loading}
+        />
+        <Button
+          onPress={this._shareLocalImage}
+          title="Share local image"
+          loading={this.state.loading}
+        />
       </View>
     );
   }
@@ -69,40 +106,27 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 40,
+    padding: 40,
     backgroundColor: '#ecf0f1',
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    textAlign: 'center',
   },
 });
 ```
 
 ## Methods
 
-<!-- Provide methods description -->
+### `ExpoSharing.shareAsync(url, params)`
 
-### `ExpoSharing.someGreatMethod(options)`
-
-Do some great work! :D
+Opens action sheet to share file to different applications which can handle this type of file.
 
 #### Arguments
+-   **url (_string_)** --
+    Local file url to share 
+-   **params (_object_)** --
 
--   **options (_object_)** --
+      A map of params:
 
-      A map of options:
+    -   **mimeType (_string_)** -- Android only - sets mimeType for Intent.
+    -   **UTI _(string_)** -- iOS only - The type of the target file - used to describe type of file.
+    
+        based on that properties different applications will show in share sheet.
 
-    -   **greatFlag (_boolean_)** -- Enable something great! Like even greater greatness! :D
-    -   **greatNumber (_number_)** -- Remeber to provider great number! :D
-    -   **greatString (_string_)** -- Do not forget about great string! :D
-
-#### Returns
-
-Returns something great! :D
-
--   **great (_object_)** -- The GREAT object! :D
-    -   **great (_number_)** -- Great number!
-    -   **greater (_string_)** -- Greater string!
-    -   **greatest (_boolean_)** -- Thre greatest boolean! :D
