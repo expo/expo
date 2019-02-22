@@ -1,4 +1,4 @@
-module.exports = function(api, options) {
+module.exports = function(api) {
   const isWeb = api.caller(isTargetWeb);
 
   if (isWeb) {
@@ -113,19 +113,18 @@ module.exports = function(api, options) {
     };
   }
 
-  const moduleResolver = [
-    'babel-plugin-module-resolver',
-    {
-      alias: {
-        'react-native-vector-icons': '@expo/vector-icons',
-      },
-    },
-  ];
   /** Native config  */
   return {
     presets: ['module:metro-react-native-babel-preset'],
     plugins: [
-      moduleResolver,
+      [
+        'babel-plugin-module-resolver',
+        {
+          alias: {
+            'react-native-vector-icons': '@expo/vector-icons',
+          },
+        },
+      ],
       ['@babel/plugin-proposal-decorators', { legacy: true }],
       'babel-plugin-react-native-web',
     ],
