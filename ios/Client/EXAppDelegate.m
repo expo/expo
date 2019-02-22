@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
   [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
 }
 
-// do not remove until SDK31 is dropped
+// TODO: Remove once SDK31 is phased out
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
 {
   [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];

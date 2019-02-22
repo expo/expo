@@ -149,7 +149,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
   completionHandler(UIBackgroundFetchResultNoData);
 }
 
-// do not remove until SDK31 is dropped
+// TODO: Remove once SDK31 is phased out
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettingsNotification object:nil];
