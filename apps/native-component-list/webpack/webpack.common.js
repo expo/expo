@@ -1,147 +1,15 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const webpack = require('webpack');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
+const env = require('./getClientEnvironment');
 const locations = require('./webpackLocations');
 const nativeAppManifest = require(locations.appJson);
-
-
-function getAppManifest() {
-  if (nativeAppManifest && nativeAppManifest.expo) {
-    const { expo } = nativeAppManifest;
-    const PWAManifest = require(locations.template.manifest);
-    const web = PWAManifest || {};
-
-    return {
-      // facebookScheme
-      // facebookAppId
-      // facebookDisplayName
-      name: expo.name,
-      description: expo.description,
-      slug: expo.slug,
-      sdkVersion: expo.sdkVersion,
-      version: expo.version,
-      githubUrl: expo.githubUrl,
-      orientation: expo.orientation,
-      primaryColor: expo.primaryColor,
-      privacy: expo.privacy,
-      icon: expo.icon,
-      scheme: expo.scheme,
-      notification: expo.notification,
-      splash: expo.splash,
-      androidShowExponentNotificationInShellApp: expo.androidShowExponentNotificationInShellApp,
-      web,
-    };
-  }
-  return {};
-}
-const environment = process.env.NODE_ENV || 'development';
-const __DEV__ = environment !== 'production';
-
-const ENV_VAR_REGEX = /^(EXPO_|REACT_NATIVE_)/i;
-
-const publicUrl = '';
-
-function getClientEnvironment() {
-  let processEnv = Object.keys(process.env)
-    .filter(key => ENV_VAR_REGEX.test(key))
-    .reduce(
-      (env, key) => {
-        env[key] = JSON.stringify(process.env[key]);
-        return env;
-      },
-      {
-        // Useful for determining whether we’re running in production mode.
-        // Most importantly, it switches React into the correct mode.
-        NODE_ENV: JSON.stringify(environment),
-
-        // Useful for resolving the correct path to static assets in `public`.
-        // For example, <img src={process.env.PUBLIC_URL + '/img/logo.png'} />.
-        // This should only be used as an escape hatch. Normally you would put
-        // images into the root folder and `import` them in code to get their paths.
-        PUBLIC_URL: JSON.stringify(publicUrl),
-
-        // Surface the manifest for use in expo-constants
-        APP_MANIFEST: JSON.stringify(getAppManifest()),
-      }
-    );
-  return {
-    'process.env': processEnv,
-    __DEV__,
-  };
-}
-
-function generateHTMLFromAppJSON() {
-  const { expo: expoManifest = {} } = nativeAppManifest;
-
-  const metaTags = {
-    viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
-    description: expoManifest.description || 'A Neat Expo App',
-    'theme-color': expoManifest.primaryColor || '#000000',
-    'apple-mobile-web-app-capable': 'yes',
-    // default, black, black-translucent
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'apple-mobile-web-app-title': expoManifest.name,
-    'application-name': expoManifest.name,
-    // Windows
-    'msapplication-navbutton-color': '',
-    'msapplication-TileColor': '',
-    'msapplication-TileImage': '',
-  };
-
-  // Generates an `index.html` file with the <script> injected.
-  return new HtmlWebpackPlugin({
-    /**
-     * The file to write the HTML to.
-     * Default: `'index.html'`.
-     */
-    filename: locations.production.indexHtml,
-    /**
-     * The title to use for the generated HTML document.
-     * Default: `'Webpack App'`.
-     */
-    title: expoManifest.name,
-    /**
-     * Pass a html-minifier options object to minify the output.
-     * https://github.com/kangax/html-minifier#options-quick-reference
-     * Default: `false`.
-     */
-    minify: {
-      removeComments: true,
-      /* Prod */
-      collapseWhitespace: true,
-      removeRedundantAttributes: true,
-      useShortDoctype: true,
-      removeEmptyAttributes: true,
-      removeStyleLinkTypeAttributes: true,
-      keepClosingSlash: true,
-      minifyJS: true,
-      minifyCSS: true,
-      minifyURLs: true,
-    },
-    /**
-     * Adds the given favicon path to the output html.
-     * Default: `false`.
-     */
-    favicon: locations.template.favicon,
-    /**
-     * Allows to inject meta-tags, e.g. meta: `{viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'}`.
-     * Default: `{}`.
-     */
-    meta: metaTags,
-    /**
-     * The `webpack` require path to the template.
-     * @see https://github.com/jantimon/html-webpack-plugin/blob/master/docs/template-option.md
-     */
-    template: locations.template.indexHtml
-  });
-}
-
-const env = getClientEnvironment();
+const indexHTML = require('./getIndexHTMLFromAppJSON');
 
 const includeModule = module => {
   return path.resolve(locations.modules, module);
@@ -153,7 +21,7 @@ const includeModulesThatContainPaths = [
   'node_modules/react-navigation',
   'node_modules/expo',
   'node_modules/@react',
-  'node_modules/@expo'
+  'node_modules/@expo',
 ];
 
 const babelLoaderConfiguration = {
@@ -187,14 +55,17 @@ const imageLoaderConfiguration = {
     // loader: 'file-loader',
     options: {
       name: '[name].[ext]',
+      // Inline resources as Base64 when there is less reason to parallelize their download. The
+      // heuristic we use is whether the resource would fit within a TCP/IP packet that we would
+      // send to request the resource.
+      //
+      // An Ethernet MTU is usually 1500. IP headers are 20 (v4) or 40 (v6) bytes and TCP
+      // headers are 40 bytes. HTTP response headers vary and are around 400 bytes. This leaves
+      // about 1000 bytes for content to fit in a packet.
+      limit: 1000,
+      name: 'static/media/[hash].[ext]',
     },
   },
-};
-
-// This is needed for loading css
-const cssLoaderConfiguration = {
-  test: /\.css$/,
-  use: ['style-loader', 'css-loader'],
 };
 
 const ttfLoaderConfiguration = {
@@ -253,7 +124,6 @@ function useWebModule(modulePathToHiJack, redirectPath, initialRoot = 'expo/buil
 const publicPath = '/';
 
 module.exports = {
-  // mode: environment,
   context: __dirname,
   // configures where the build ends up
   output: {
@@ -272,26 +142,12 @@ module.exports = {
     },
     runtimeChunk: 'single',
   },
-  module: {
-    // strictExportPresence: true,
-
-    rules: [
-      { parser: { requireEnsure: false } },
-
-      htmlLoaderConfiguration,
-      babelLoaderConfiguration,
-      cssLoaderConfiguration,
-      imageLoaderConfiguration,
-      ttfLoaderConfiguration,
-      mediaLoaderConfiguration,
-    ],
-  },
   plugins: [
     // Generates an `index.html` file with the <script> injected.
-    generateHTMLFromAppJSON(),
+    indexHTML,
 
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
-      PUBLIC_URL: publicUrl,
+      PUBLIC_URL: publicPath,
       WEB_TITLE: nativeAppManifest.expo.name,
     }),
 
@@ -305,21 +161,18 @@ module.exports = {
 
     new webpack.DefinePlugin(env),
 
-    useWebModule('Platform', 'Utilities/Platform'),
     useWebModule('Performance/Systrace', 'Performance/Systrace'),
-    useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
     useWebModule('RCTNetworking', 'Network/RCTNetworking'),
-    
+    useWebModule('Platform', 'Utilities/Platform'),
+    useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
+
     new WorkboxPlugin.GenerateSW({
       skipWaiting: true,
       clientsClaim: true,
       exclude: [/\.LICENSE$/, /\.map$/, /asset-manifest\.json$/],
       importWorkboxFrom: 'cdn',
-      navigateFallback: `${publicUrl}/index.html`,
-      navigateFallbackBlacklist: [
-        new RegExp('^/_'),
-        new RegExp('/[^/]+\\.[^/]+$'),
-      ],
+      navigateFallback: `${publicPath}index.html`,
+      navigateFallbackBlacklist: [new RegExp('^/_'), new RegExp('/[^/]+\\.[^/]+$')],
       runtimeCaching: [
         {
           urlPattern: /(.*?)/,
@@ -331,54 +184,25 @@ module.exports = {
       analyzerMode: 'static',
       openAnalyzer: false,
     }),
+    new ProgressBarPlugin(),
   ],
+
+  module: {
+    strictExportPresence: false,
+
+    rules: [
+      { parser: { requireEnsure: false } },
+
+      htmlLoaderConfiguration,
+      babelLoaderConfiguration,
+      imageLoaderConfiguration,
+      ttfLoaderConfiguration,
+      mediaLoaderConfiguration,
+    ],
+  },
   resolve: {
     symlinks: false,
     extensions: ['.web.js', '.js', '.jsx', '.json'],
-    alias: Object.assign(
-      {
-        /* Alias direct react-native imports to react-native-web */
-        'react-native$': 'react-native-web',
-        /* Add polyfills for modules that react-native-web doesn't support */
-        'react-native/Libraries/Image/AssetSourceResolver$':
-          'expo/build/web/Image/AssetSourceResolver',
-        'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
-        'react-native/Libraries/Image/resolveAssetSource$':
-          'expo/build/web/Image/resolveAssetSource',
-      },
-      [
-        'ActivityIndicator',
-        'Alert',
-        'AsyncStorage',
-        'Button',
-        'DeviceInfo',
-        'Modal',
-        'NativeModules',
-        'Network',
-        'Platform',
-        'SafeAreaView',
-        'SectionList',
-        'StyleSheet',
-        'Switch',
-        'Text',
-        'TextInput',
-        'TouchableHighlight',
-        'TouchableWithoutFeedback',
-        'View',
-        'ViewPropTypes',
-      ].reduce(
-        (acc, curr) => {
-          acc[curr] = `react-native-web/dist/cjs/exports/${curr}`;
-          return acc;
-        },
-        {
-          JSEventLoopWatchdog: 'react-native-web/dist/cjs/vendor/react-native/JSEventLoopWatchdog',
-          React$: 'react',
-          ReactNative$: 'react-native-web/dist/cjs',
-          infoLog$: 'react-native-web/dist/cjs/vendor/react-native/infoLog',
-        }
-      )
-    ),
   },
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

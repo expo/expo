@@ -1,12 +1,12 @@
 const merge = require('webpack-merge');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
+const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 
 const common = require('./webpack.common.js');
 const locations = require('./webpackLocations');
@@ -25,11 +25,39 @@ module.exports = merge(common, {
     vendor: ['react', 'react-native-web'],
     app: appEntry,
   },
-  devtool: 'hidden-source-map',
+  devtool: 'source-map',
   plugins: [
-    new CleanWebpackPlugin([locations.production.folder]),
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.ModuleConcatenationPlugin(),
+    /** Delete the build folder  */
+    new CleanWebpackPlugin([locations.production.folder], {
+      root: locations.root,
+      verbose: true,
+      dry: false,
+    }),
+    /** Remove unused import/exports  */
+    new WebpackDeepScopeAnalysisPlugin(),
+
+    new MiniCssExtractPlugin({
+      filename: 'static/css/[contenthash].css',
+      chunkFilename: 'static/css/[contenthash].chunk.css',
+    }),
+
+    /** GZIP files */
+    new CompressionPlugin({
+      test: /\.(js|css)$/,
+      filename: '[path].gz[query]',
+      algorithm: 'gzip',
+      threshold: 1024,
+      minRatio: 0.8,
+    }),
+    /** secondary compression for platforms that load .br  */
+    new BrotliPlugin({
+      asset: '[path].br[query]',
+      test: /\.(js|css)$/,
+      threshold: 1024,
+      minRatio: 0.8,
+    }),
+
+    /** Copy the PWA manifest.json and the caching policy serve.json from the template folder to the build folder  */
     new CopyWebpackPlugin([
       {
         from: locations.template.manifest,
@@ -40,23 +68,6 @@ module.exports = merge(common, {
         to: locations.production.serveJson,
       },
     ]),
-    new MiniCssExtractPlugin({
-      filename: 'static/css/[contenthash].css',
-      chunkFilename: 'static/css/[contenthash].chunk.css',
-    }),
-    new CompressionPlugin({
-      test: /\.(js|css)$/,
-      filename: '[path].gz[query]',
-      algorithm: 'gzip',
-      threshold: 1024,
-      minRatio: 0.8
-    }),
-    new BrotliPlugin({
-			asset: '[path].br[query]',
-			test: /\.(js|css)$/,
-			threshold: 1024,
-			minRatio: 0.8
-		})
   ],
   module: {
     rules: [
@@ -75,12 +86,14 @@ module.exports = merge(common, {
           name: 'static/media/[hash].[ext]',
         },
       },
-    ]
+    ],
   },
   optimization: {
+    usedExports: true,
+    concatenateModules: true,
+    occurrenceOrder: true,
     minimize: true,
     minimizer: [
-      // we specify a custom TerserPlugin here to get source maps in production
       new TerserPlugin({
         cache: true,
         sourceMap: true,
@@ -105,12 +118,12 @@ module.exports = merge(common, {
             comments: false,
             ascii_only: true,
           },
-          // module: false,
-          // toplevel: false,
-          // nameCache: null,
-          // ie8: false,
-          // keep_classnames: undefined,
-          // keep_fnames: false,
+          module: false,
+          toplevel: false,
+          nameCache: null,
+          ie8: false,
+          keep_classnames: undefined,
+          keep_fnames: false,
         },
       }),
     ],
@@ -123,7 +136,7 @@ module.exports = merge(common, {
       minChunks: Infinity,
       automaticNameDelimiter: '~',
       name: true,
-      cacheGroups: { 
+      cacheGroups: {
         vendor: {
           chunks: 'all',
           priority: -10,
@@ -141,7 +154,7 @@ module.exports = merge(common, {
         default: {
           minChunks: 2,
           priority: -20,
-          reuseExistingChunk: true
+          reuseExistingChunk: true,
         },
         commons: {
           name: 'commons',
@@ -149,9 +162,9 @@ module.exports = merge(common, {
           minChunks: 2,
           priority: 10,
           reuseExistingChunk: true,
-          enforce: true
+          enforce: true,
         },
       },
-    }
+    },
   },
 });
