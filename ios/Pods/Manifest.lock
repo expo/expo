@@ -443,7 +443,7 @@ PODS:
   - EXMediaLibrary (2.1.1):
     - EXCore
     - EXPermissionsInterface
-  - EXPermissions (2.0.0):
+  - EXPermissions (2.1.0-alpha.0):
     - EXCore
     - EXPermissionsInterface
   - EXPermissionsInterface (2.0.0)
@@ -451,7 +451,7 @@ PODS:
     - EXCore
   - EXRandom (1.0.0):
     - EXCore
-  - EXReactNativeAdapter (2.0.0):
+  - EXReactNativeAdapter (2.1.0-alpha.1):
     - EXCore
     - EXFontInterface
     - React
