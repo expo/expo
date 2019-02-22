@@ -8,7 +8,7 @@ const DIR_MAPPING = {
   introduction: 'Introduction',
   guides: 'Guides',
   'managed-workflow': 'Managed Workflow',
-  'bare-workflow': 'Bare Workflow',
+  'bare': 'Essentials',
   tutorials: 'Tutorials',
   sdk: 'Expo SDK',
   'react-native': 'React Native',

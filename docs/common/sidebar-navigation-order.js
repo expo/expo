@@ -6,6 +6,7 @@ const GROUPS = {
   'Expo SDK': 'API Reference',
   'React Native': 'API Reference',
   'Introduction': 'Get Started',
+  'Essentials': 'Bare Workflow',
 };
 
 const ROOT = [
@@ -15,6 +16,7 @@ const ROOT = [
   'Distributing Your App',
   // 'Tutorials',
   'ExpoKit',
+  'Essentials',
   'Expo SDK',
   'React Native Basics',
   'React Native Guides',
@@ -98,6 +100,10 @@ const EXPOKIT = [
   'Developing With ExpoKit',
   'Advanced ExpoKit Topics',
   'Universal Modules and ExpoKit',
+];
+
+const ESSENTIALS = [
+  'Hello World'
 ];
 
 const REACT_NATIVE = [
@@ -211,6 +217,7 @@ module.exports = {
   GROUPS,
   INTRODUCTION,
   FUNDAMENTALS,
+  ESSENTIALS,
   GUIDES,
   DISTRIBUTION,
   EXPOKIT,
