@@ -1,7 +1,10 @@
 import { EventEmitter, Subscription } from 'expo-core';
 import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent } from './FileSystem.types';
 export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, };
-export declare const documentDirectory: any, cacheDirectory: any, bundledAssets: any, bundleDirectory: any;
+declare const documentDirectory: string | null;
+declare const cacheDirectory: string | null;
+export { documentDirectory, cacheDirectory };
+export declare const bundledAssets: any, bundleDirectory: any;
 export declare function getInfoAsync(fileUri: string, options?: {
     md5?: boolean;
     cache?: boolean;

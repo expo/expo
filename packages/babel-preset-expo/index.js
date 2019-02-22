@@ -1,32 +1,22 @@
-function isTypeScriptSource(fileName) {
-  return !!fileName && fileName.endsWith('.ts');
-}
-
-function isTSXSource(fileName) {
-  return !!fileName && fileName.endsWith('.tsx');
-}
-
 module.exports = function(api, options) {
   const isWeb = api.caller(isTargetWeb);
+
   if (isWeb) {
-    const expoPlugins = [
-      'babel-plugin-react-native-web',
+    const defaultPlugins = [
       [
         'babel-plugin-module-resolver',
         {
           alias: {
-            'react-native-vector-icons$': '@expo/vector-icons',
+            'react-native-vector-icons': '@expo/vector-icons',
             /** Alias direct react-native imports to react-native-web */
             'react-native$': 'react-native-web',
           },
         },
       ],
-    ];
-
-    const defaultPlugins = [
       ['@babel/plugin-syntax-flow'],
       ['@babel/plugin-proposal-optional-catch-binding'],
       ['@babel/plugin-transform-block-scoping'],
+      ['@babel/plugin-proposal-decorators', { legacy: true }],
       [
         '@babel/plugin-proposal-class-properties',
         // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
@@ -44,7 +34,7 @@ module.exports = function(api, options) {
       ['@babel/plugin-transform-regenerator'],
       ['@babel/plugin-transform-sticky-regex'],
       ['@babel/plugin-transform-unicode-regex'],
-      ['@babel/plugin-proposal-decorators', { legacy: true }],
+      'babel-plugin-react-native-web',
     ];
 
     const otherPlugins = [
@@ -106,9 +96,6 @@ module.exports = function(api, options) {
           plugins: ['@babel/plugin-transform-flow-strip-types'],
         },
         {
-          plugins: expoPlugins,
-        },
-        {
           plugins: defaultPlugins,
         },
         {
@@ -126,24 +113,33 @@ module.exports = function(api, options) {
     };
   }
 
+  const moduleResolver = [
+    'babel-plugin-module-resolver',
+    {
+      alias: {
+        'react-native-vector-icons': '@expo/vector-icons',
+      },
+    },
+  ];
   /** Native config  */
   return {
     presets: ['module:metro-react-native-babel-preset'],
     plugins: [
-      [
-        'babel-plugin-module-resolver',
-        {
-          alias: {
-            'react-native-vector-icons$': '@expo/vector-icons',
-          },
-        },
-      ],
+      moduleResolver,
       ['@babel/plugin-proposal-decorators', { legacy: true }],
-      '@babel/plugin-transform-runtime',
+      'babel-plugin-react-native-web',
     ],
   };
 };
 
 function isTargetWeb(caller) {
   return caller && caller.name === 'babel-loader';
+}
+
+function isTypeScriptSource(fileName) {
+  return !!fileName && fileName.endsWith('.ts');
+}
+
+function isTSXSource(fileName) {
+  return !!fileName && fileName.endsWith('.tsx');
 }

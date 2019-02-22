@@ -1,7 +1,8 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const webpack = require('webpack');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -9,7 +10,6 @@ const env = require('./getClientEnvironment');
 const locations = require('./webpackLocations');
 const nativeAppManifest = require(locations.appJson);
 const indexHTML = require('./getIndexHTMLFromAppJSON');
-const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 const includeModule = module => {
   return path.resolve(locations.modules, module);
