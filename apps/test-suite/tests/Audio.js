@@ -572,7 +572,7 @@ export function test(t) {
         let hasBeenRejected = false;
 
         try {
-          const status = await soundObject.setRateAsync(rate, shouldCorrectPitch);
+          const status = await soundObject.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
           t.expect(status.rate).toBeCloseTo(rate, 2);
           t.expect(status.shouldCorrectPitch).toBe(shouldCorrectPitch);
           t.expect(status.pitchCorrectionQuality).toBe(pitchCorrectionQuality);

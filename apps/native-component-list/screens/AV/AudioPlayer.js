@@ -13,7 +13,6 @@ export default class AudioPlayer extends React.Component {
     durationMillis: 0,
     rate: 1,
     shouldCorrectPitch: false,
-    pitchCorrectionQuality: Audio.PitchCorrectionQuality.Low,
   };
 
   componentDidMount() {

@@ -193,6 +193,8 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
         `High` - equivalent to `AVAudioTimePitchAlgorithmSpectral`
 
+        Check official apple docs for more info https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithmlowqualityzerolatency
+
 -   `playbackObject.setVolumeAsync(value)`
 
     This is equivalent to `playbackObject.setStatusAsync({ volume: value })`.

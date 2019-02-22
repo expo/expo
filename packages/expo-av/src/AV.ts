@@ -11,18 +11,18 @@ import { Platform } from 'expo-core';
 //  subtitles API
 
 export enum PitchCorrectionQuality {
-  Low = ExponentAV.Qualities && ExponentAV.Qualities.Low,
-  Medium = ExponentAV.Qualities && ExponentAV.Qualities.Medium,
-  High = ExponentAV.Qualities && ExponentAV.Qualities.High,
+  Low = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.Low,
+  Medium = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.Medium,
+  High = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.High,
 }
 
 export type PlaybackSource =
   | number
   | {
-      uri: string;
-      overrideFileExtensionAndroid?: string;
-      headers?: { [fieldName: string]: string };
-    }
+    uri: string;
+    overrideFileExtensionAndroid?: string;
+    headers?: { [fieldName: string]: string };
+  }
   | Asset;
 
 export type PlaybackNativeSource = {
@@ -285,7 +285,7 @@ export const PlaybackMixin = {
 
   async setRateAsync(
     rate: number,
-    shouldCorrectPitch: boolean,
+    shouldCorrectPitch: boolean = false,
     pitchCorrectionQuality: PitchCorrectionQuality = PitchCorrectionQuality.Low
   ): Promise<PlaybackStatus> {
     return ((this as any) as AV).setStatusAsync({

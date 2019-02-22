@@ -96,7 +96,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _timeControlStatus = 0;
     _shouldPlay = NO;
     _rate = @(1.0);
-    _pitchCorrectionQuality = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
+    _pitchCorrectionQuality = AVAudioTimePitchAlgorithmVarispeed;
     _observedRate = @(1.0);
     _shouldCorrectPitch = NO;
     _volume = @(1.0);
@@ -158,11 +158,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
         if (strongSelfInner) {
           strongSelfInner.currentPosition = strongSelfInner.player.currentTime;
 
-          if (strongSelfInner.shouldCorrectPitch) {
-            strongSelfInner.player.currentItem.audioTimePitchAlgorithm = strongSelfInner.pitchCorrectionQuality;
-          } else {
-            strongSelfInner.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
-          }
+      
+          strongSelfInner.player.currentItem.audioTimePitchAlgorithm = strongSelfInner.pitchCorrectionQuality;
           strongSelfInner.player.volume = strongSelfInner.volume.floatValue;
           strongSelfInner.player.muted = strongSelfInner.isMuted;
           [strongSelfInner _updateLooping:strongSelfInner.isLooping];
@@ -265,9 +262,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _rate = rate;
   }
   
-  if ([parameters objectForKey:EXAVPlayerDataStatusPitchCorrectionQualityKeyPath] != nil) {
-    NSString *pitchCorrectionQuality = parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath];
-    _pitchCorrectionQuality = pitchCorrectionQuality;
+  if (parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath] != nil) {
+    _pitchCorrectionQuality = parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath];
   }
   
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldCorrectPitchKeyPath] != nil) {
