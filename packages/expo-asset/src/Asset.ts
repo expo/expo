@@ -27,7 +27,7 @@ type DownloadPromiseCallbacks = {
 
 export type AssetMetadata = AssetSources.AssetMetadata;
 
-const MANAGED_ENV = !!Constants.manifest;
+const IS_MANAGED_ENV = !!Constants.appOwnership;
 
 export class Asset {
   static byHash = {};
@@ -58,7 +58,7 @@ export class Asset {
     }
 
     // This only applies to assets that are bundled in Expo standalone apps
-    if (MANAGED_ENV && hash) {
+    if (IS_MANAGED_ENV && hash) {
       this.localUri = EmbeddedAssets.getEmbeddedAssetUri(hash, type);
       if (this.localUri) {
         this.downloaded = true;
@@ -83,7 +83,7 @@ export class Asset {
 
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
-    if (!MANAGED_ENV) {
+    if (!IS_MANAGED_ENV) {
       const { uri } = resolveAssetSource(virtualAssetModule);
       const asset = new Asset({
         name: meta.name,
@@ -94,9 +94,10 @@ export class Asset {
         height: meta.height,
       });
 
-      // TODO: FileSystem should probably support 'downloading' from drawable resources
-      // But for now it doesn't and React Native's Image works fine with drawable resource
-      // names for images.
+      // TODO: FileSystem should probably support 'downloading' from drawable
+      // resources But for now it doesn't (it only supports raw resources) and
+      // React Native's Image works fine with drawable resource names for
+      // images.
       if (Platform.OS === 'android' && !uri.includes(':') && (meta.width || meta.height)) {
         asset.localUri = asset.uri;
         asset.downloaded = true;
@@ -115,7 +116,7 @@ export class Asset {
     const metaHash = meta.hash;
     if (Asset.byHash[metaHash]) {
       return Asset.byHash[metaHash];
-    } else if (!MANAGED_ENV && !Asset.byHash[metaHash]) {
+    } else if (!IS_MANAGED_ENV && !Asset.byHash[metaHash]) {
       throw new Error('Assets must be initialized with Asset.fromModule');
     }
 
@@ -219,7 +220,7 @@ export class Asset {
     try {
       if (Platform.OS === 'web') {
         await this._downloadAsyncWeb();
-      } else if (MANAGED_ENV) {
+      } else if (IS_MANAGED_ENV) {
         await this._downloadAsyncManagedEnv();
       } else {
         await this._downloadAsyncUnmanagedEnv();
