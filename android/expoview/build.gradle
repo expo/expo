@@ -340,7 +340,7 @@ dependencies {
   api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
 
   // This can be removed when sdk 32 is dropped
-  api 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
-  api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-  api 'expolib_v1.com.squareup.okio:okio:1.13.0'
+  compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
+  compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+  compileOnly 'expolib_v1.com.squareup.okio:okio:1.13.0'
 }

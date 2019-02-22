@@ -100,6 +100,15 @@ public class RNObject {
     }
   }
 
+  public static int getVersionFromClassname(final String className) {
+    String version = versionForClassname(className);
+    if (version.equals(UNVERSIONED)) {
+      return Integer.MAX_VALUE;
+    }
+    version = version.split("_")[0];
+    return Integer.parseInt(version);
+  }
+
   public RNObject construct(Object... args) {
     try {
       mInstance = getConstructorWithTypes(mClazz, objectsToClasses(args)).newInstance(args);

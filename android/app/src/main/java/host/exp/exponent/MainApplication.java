@@ -122,15 +122,9 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
     return getString(R.string.gcm_defaultSenderId);
   }
 
-  // sdk > 32 or UNVERSIONED
   public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {
     // Customize/override OkHttp client here
     return builder;
   }
 
-  // sdk <= 32
-  public static expolib_v1.okhttp3.OkHttpClient.Builder okHttpPrefixedClientBuilder(expolib_v1.okhttp3.OkHttpClient.Builder builder) {
-    // Customize/override OkHttp client here
-    return builder;
-  }
 }

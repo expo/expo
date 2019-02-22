@@ -6,6 +6,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- From now on, we use regular OkHttp3, so please update your MainApplication.getOkHttpBuilder method. [@Szymon20000](https://github.com/Szymon20000) ([#3539](https://github.com/expo/expo/pull/3539))
 - corrected behavior of splash screen image based on `resizeMode` in Android standalone apps (`contain` and `cover` were handled contrary to what docs state) by [@bbarthec](https://github.com/bbarthec) ([#3029](https://github.com/expo/expo/pull/3029))
 - `Speech.speak` changed option name from `voiceIOS` to `voice`. [@Szymon20000](https://github.com/Szymon20000) ([#3423](https://github.com/expo/expo/pull/3423))
 - renamed `Haptic` to `Haptics` and deprecated `Haptics.{notification, impact, selection}` in favour of `Haptics.{notificationAsync, impactAsync, selectionAsync}` [@bbarthec](https://github.com/bbarthec) ([#3330](https://github.com/expo/expo/pull/3330))

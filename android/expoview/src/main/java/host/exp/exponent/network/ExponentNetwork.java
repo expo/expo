@@ -108,7 +108,7 @@ public class ExponentNetwork {
     return new Cache(directory, cacheSize);
   }
 
-  public expolib_v1.okhttp3.Cache getCacheForPrefixedClient() {
+  public expolib_v1.okhttp3.Cache getExpolibOkhttpCacheForClient() {
     int cacheSize = 40 * 1024 * 1024; // 40 MiB
 
     // Use getFilesDir() because it gives us much more space than getCacheDir()
