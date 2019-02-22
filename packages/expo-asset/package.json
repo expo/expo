@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "2.0.0",
+  "version": "2.1.0-alpha.6",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/Asset.js",
   "types": "build/Asset.d.ts",

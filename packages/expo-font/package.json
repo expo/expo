@@ -1,6 +1,6 @@
 {
   "name": "expo-font",
-  "version": "2.0.0",
+  "version": "2.1.0-alpha.2",
   "description": "An Expo universal module to load custom fonts",
   "main": "build/Font.js",
   "types": "build/Font.d.ts",
