@@ -28,7 +28,11 @@ module.exports = merge(common, {
   devtool: 'hidden-source-map',
   plugins: [
     /** Delete the build folder  */
-    new CleanWebpackPlugin([locations.production.folder]),
+    new CleanWebpackPlugin([locations.production.folder], {
+      root: locations.root,
+      verbose: true,
+      dry: false,
+    }),
     /** Remove unused import/exports  */
     new WebpackDeepScopeAnalysisPlugin(),
 
@@ -88,6 +92,7 @@ module.exports = merge(common, {
     ],
   },
   optimization: {
+    concatenateModules: true,
     minimize: true,
     minimizer: [
       // we specify a custom TerserPlugin here to get source maps in production
@@ -163,7 +168,5 @@ module.exports = merge(common, {
         },
       },
     },
-
-    concatenateModules: true,
   },
 });
