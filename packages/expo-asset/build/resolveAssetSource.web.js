@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import AssetRegistry from 'react-native/Libraries/Image/AssetRegistry';
+import { getAssetByID } from './AssetRegistry';
 import AssetSourceResolver from './AssetSourceResolver';
 let _customSourceTransformer;
 let _serverURL;
@@ -63,7 +63,7 @@ export default function resolveAssetSource(source) {
     if (typeof source === 'object') {
         return source;
     }
-    const asset = AssetRegistry.getAssetByID(source);
+    const asset = getAssetByID(source);
     if (!asset) {
         return undefined;
     }
