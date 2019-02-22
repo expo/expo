@@ -239,6 +239,7 @@ dependencies {
   api project(':expo-random')
   api project(':expo-secure-store')
   api project(':expo-sensors')
+  api project(':expo-sharing')
   api project(':expo-sms')
   api project(':expo-speech')
   api project(':expo-sqlite')

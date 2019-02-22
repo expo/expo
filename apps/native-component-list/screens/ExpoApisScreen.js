@@ -134,6 +134,7 @@ export default class ExpoApisScreen extends React.Component {
         'ScreenOrientation',
         'Sensor',
         'SecureStore',
+        'Sharing',
         'SMS',
         'StoreReview',
         'TaskManager',

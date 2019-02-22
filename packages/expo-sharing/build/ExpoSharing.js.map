@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoSharing.js","sourceRoot":"","sources":["../src/ExpoSharing.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAE/C,eAAe,kBAAkB,CAAC,WAAW,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-core';\n\nexport default NativeModulesProxy.ExpoSharing || {};\n"]}

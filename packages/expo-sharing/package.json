@@ -1,0 +1,37 @@
+{
+  "name": "expo-sharing",
+  "version": "1.0.0",
+  "description": "ExpoSharing standalone module",
+  "main": "build/Sharing.js",
+  "types": "build/Sharing.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-sharing"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sharing",
+  "dependencies": {},
+  "peerDependencies": {
+    "expo-core": "~2.0.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^5.0.0",
+    "expo-module-scripts": "^1.0.0"
+  },
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+}
