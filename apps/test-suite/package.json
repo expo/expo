@@ -27,6 +27,7 @@
     "lodash": "^4.17.4",
     "pnp-webpack-plugin": "^1.2.1",
     "react": "16.5.0",
+    "react-art": "^16.7.0",
     "react-dev-utils": "^7.0.1",
     "react-dom": "^16.7.0",
     "react-native": "0.57.1",
