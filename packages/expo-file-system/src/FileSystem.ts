@@ -42,12 +42,10 @@ function normalizeEndingSlash(p: string | null): string | null {
   return null;
 }
 
-const documentDirectory = normalizeEndingSlash(FS.documentDirectory);
-const cacheDirectory = normalizeEndingSlash(FS.cacheDirectory);
+FS.documentDirectory = normalizeEndingSlash(FS.documentDirectory);
+FS.cacheDirectory = normalizeEndingSlash(FS.cacheDirectory);
 
-export { documentDirectory, cacheDirectory };
-
-export const { bundledAssets, bundleDirectory } = FS;
+export const { documentDirectory, cacheDirectory, bundledAssets, bundleDirectory } = FS;
 
 export async function getInfoAsync(
   fileUri: string,
