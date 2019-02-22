@@ -60,22 +60,22 @@ const GUIDES = [
 
 const FUNDAMENTALS = [
   'Up and Running',
-  'Upgrading Expo',
-  'Upgrading Expo SDK Walkthrough',
-  'Glossary of terms',
-  'Configuration with app.json',
-  'Development Mode',
-  'exp Command-Line Interface',
+  'Expo CLI',
   'Viewing Logs',
   'Debugging',
-  'Genymotion',
+  'Development Mode',
   'Android Studio Emulator',
+  'Genymotion',
+  'Configuration with app.json',
+  'Publishing',
   'Release Channels',
   'Building Standalone Apps',
-  'Publishing',
+  'Upgrading Expo',
+  'Upgrading Expo SDK Walkthrough',
   'Linking',
   'How Expo Works',
-  'Anti-Pitch',
+  'Glossary of terms',
+  'exp Command-Line Interface',
 ];
 
 const DISTRIBUTION = [
