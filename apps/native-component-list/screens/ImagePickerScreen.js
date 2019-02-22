@@ -62,7 +62,7 @@ export default class ImagePickerScreen extends React.Component {
           title="Take video"
         />
         <ListButton
-          onPress={() => this.showCamera(ImagePicker.MediaTypesOptions.All, true)}
+          onPress={() => this.showCamera(ImagePicker.MediaTypeOptions.All, true)}
           title="Open camera and edit"
         />
         <ListButton
@@ -78,7 +78,7 @@ export default class ImagePickerScreen extends React.Component {
           title="Pick video"
         />
         <ListButton
-          onPress={() => this.showPicker(ImagePicker.MediaTypesOptions.All, true)}
+          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.All, true)}
           title="Pick photo and edit"
         />
 
