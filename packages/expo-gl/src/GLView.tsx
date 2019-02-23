@@ -8,8 +8,6 @@ const packageJSON = require('../package.json');
 import { SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
 import { UnavailabilityError } from 'expo-errors';
 
-
-
 declare let global: any;
 
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
@@ -100,7 +98,6 @@ export class GLView extends React.Component<GLViewProps> {
     );
   }
 
-  // React.ElementRef<typeof GLView.NativeView>
   _setNativeRef = (nativeRef: ComponentOrHandle): void => {
     if (this.props.nativeRef_EXPERIMENTAL) {
       this.props.nativeRef_EXPERIMENTAL(nativeRef);

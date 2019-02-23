@@ -13,7 +13,7 @@ it(`renders correctly on iOS & Android`, () => {
   expect(tree).toMatchSnapshot();
 });
 
-it(`renders correctly on Web`, () => {
+it(`renders correctly on web`, () => {
   const tree = renderer.create(<GLViewWeb onContextCreate={() => {}} />);
   expect(tree).toMatchSnapshot();
 });

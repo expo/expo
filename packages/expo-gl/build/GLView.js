@@ -13,7 +13,6 @@ export class GLView extends React.Component {
     constructor() {
         super(...arguments);
         this.nativeRef = null;
-        // React.ElementRef<typeof GLView.NativeView>
         this._setNativeRef = (nativeRef) => {
             if (this.props.nativeRef_EXPERIMENTAL) {
                 this.props.nativeRef_EXPERIMENTAL(nativeRef);
