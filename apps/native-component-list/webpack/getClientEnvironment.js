@@ -1,43 +1,42 @@
-const locations = require('./webpackLocations');
-const nativeAppManifest = require(locations.appJson);
+function getClientEnvironment(locations) {
+  const nativeAppManifest = require(locations.appJson);
 
-function getAppManifest() {
-  if (nativeAppManifest && nativeAppManifest.expo) {
-    const { expo } = nativeAppManifest;
-    const PWAManifest = require(locations.template.manifest);
-    const web = PWAManifest || {};
+  function getAppManifest() {
+    if (nativeAppManifest && nativeAppManifest.expo) {
+      const { expo } = nativeAppManifest;
+      const PWAManifest = require(locations.template.manifest);
+      const web = PWAManifest || {};
 
-    return {
-      // facebookScheme
-      // facebookAppId
-      // facebookDisplayName
-      name: expo.name,
-      description: expo.description,
-      slug: expo.slug,
-      sdkVersion: expo.sdkVersion,
-      version: expo.version,
-      githubUrl: expo.githubUrl,
-      orientation: expo.orientation,
-      primaryColor: expo.primaryColor,
-      privacy: expo.privacy,
-      icon: expo.icon,
-      scheme: expo.scheme,
-      notification: expo.notification,
-      splash: expo.splash,
-      androidShowExponentNotificationInShellApp: expo.androidShowExponentNotificationInShellApp,
-      web,
-    };
+      return {
+        // facebookScheme
+        // facebookAppId
+        // facebookDisplayName
+        name: expo.name,
+        description: expo.description,
+        slug: expo.slug,
+        sdkVersion: expo.sdkVersion,
+        version: expo.version,
+        githubUrl: expo.githubUrl,
+        orientation: expo.orientation,
+        primaryColor: expo.primaryColor,
+        privacy: expo.privacy,
+        icon: expo.icon,
+        scheme: expo.scheme,
+        notification: expo.notification,
+        splash: expo.splash,
+        androidShowExponentNotificationInShellApp: expo.androidShowExponentNotificationInShellApp,
+        web,
+      };
+    }
+    return {};
   }
-  return {};
-}
-const environment = process.env.NODE_ENV || 'development';
-const __DEV__ = environment !== 'production';
+  const environment = process.env.NODE_ENV || 'development';
+  const __DEV__ = environment !== 'production';
 
-const ENV_VAR_REGEX = /^(EXPO_|REACT_NATIVE_)/i;
+  const ENV_VAR_REGEX = /^(EXPO_|REACT_NATIVE_)/i;
 
-const publicUrl = '';
+  const publicUrl = '';
 
-function getClientEnvironment() {
   let processEnv = Object.keys(process.env)
     .filter(key => ENV_VAR_REGEX.test(key))
     .reduce(
@@ -66,4 +65,4 @@ function getClientEnvironment() {
   };
 }
 
-module.exports = getClientEnvironment();
+module.exports = getClientEnvironment;

@@ -1,10 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const locations = require('./webpackLocations');
-const nativeAppManifest = require(locations.appJson);
 
-const publicUrl = '';
+function getIndexHTMLFromAppJSON(locations) {
+  const nativeAppManifest = require(locations.appJson);
 
-function getIndexHTMLFromAppJSON() {
   const { expo: expoManifest = {} } = nativeAppManifest;
 
   const metaTags = {
@@ -70,4 +68,4 @@ function getIndexHTMLFromAppJSON() {
   });
 }
 
-module.exports = getIndexHTMLFromAppJSON();
+module.exports = getIndexHTMLFromAppJSON;
