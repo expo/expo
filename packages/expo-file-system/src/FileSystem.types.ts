@@ -65,3 +65,29 @@ export type ProgressEvent = {
     totalBytesExpectedToWrite: number;
   };
 };
+
+type PlatformMethod = (...args: any[]) => Promise<any>;
+
+export interface ExponentFileSystemModule {
+  readonly name: 'ExponentFileSystem';
+  readonly documentDirectory: string | null;
+  readonly cacheDirectory: string | null;
+  readonly bundledAssets: string | null;
+  readonly bundleDirectory: string | null;
+  readonly getInfoAsync?: PlatformMethod;
+  readonly readAsStringAsync?: PlatformMethod;
+  readonly writeAsStringAsync?: PlatformMethod;
+  readonly deleteAsync?: PlatformMethod;
+  readonly moveAsync?: PlatformMethod;
+  readonly copyAsync?: PlatformMethod;
+  readonly makeDirectoryAsync?: PlatformMethod;
+  readonly readDirectoryAsync?: PlatformMethod;
+  readonly downloadAsync?: PlatformMethod;
+  readonly downloadResumableStartAsync?: PlatformMethod;
+  readonly downloadResumablePauseAsync?: PlatformMethod;
+
+  startObserving?: () => void;
+  stopObserving?: () => void;
+  addListener: (eventName: string) => void;
+  removeListeners: (count: number) => void;
+}

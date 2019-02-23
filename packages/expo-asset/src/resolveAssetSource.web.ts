@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import AssetRegistry from 'react-native/Libraries/Image/AssetRegistry';
+import { getAssetByID } from './AssetRegistry';
 
 import AssetSourceResolver, { ResolvedAssetSource } from './AssetSourceResolver';
 
@@ -23,7 +23,7 @@ function getSourceCodeScriptURL(): string | undefined | null {
   return _sourceCodeScriptURL;
 }
 
-function getDevServerURL(): string | undefined | null {
+function getDevServerURL(): string | null {
   if (_serverURL === undefined) {
     const sourceCodeScriptURL = getSourceCodeScriptURL();
     const match = sourceCodeScriptURL && sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
@@ -38,7 +38,7 @@ function getDevServerURL(): string | undefined | null {
   return _serverURL;
 }
 
-function _coerceLocalScriptURL(scriptURL: string | undefined | null): string | undefined | null {
+function _coerceLocalScriptURL(scriptURL: string | undefined | null): string | null {
   if (scriptURL) {
     if (scriptURL.startsWith('assets://')) {
       // android: running from within assets, no offline path to use
@@ -51,10 +51,10 @@ function _coerceLocalScriptURL(scriptURL: string | undefined | null): string | u
       scriptURL = 'file://' + scriptURL;
     }
   }
-  return scriptURL;
+  return null;
 }
 
-function getScriptURL(): string | undefined | null {
+function getScriptURL(): string | null {
   if (_scriptURL === undefined) {
     _scriptURL = _coerceLocalScriptURL(getSourceCodeScriptURL());
   }
@@ -76,7 +76,7 @@ export default function resolveAssetSource(source: any): ResolvedAssetSource | u
     return source;
   }
 
-  const asset = AssetRegistry.getAssetByID(source);
+  const asset = getAssetByID(source);
   if (!asset) {
     return undefined;
   }
