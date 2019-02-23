@@ -132,7 +132,7 @@ export default class AppContainer extends React.Component {
 
 ### Determining `origin` of the notification
 
-Event listeners added using `Notifications.addListener` will receive an object when a notification is received ((docs)[https://docs.expo.io/versions/latest/sdk/notifications/#eventsubscription]). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
+Event listeners added using `Notifications.addListener` will receive an object when a notification is received ([docs](../../sdk/notifications/#eventsubscription)). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
 
 | Push was received when...                       | `origin` will be...               |
 | ------------------------------------------------|:-----------------:|
