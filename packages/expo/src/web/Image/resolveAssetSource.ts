@@ -88,4 +88,6 @@ export default function resolveAssetSource(source: any): ResolvedAssetSource | u
   return resolver.defaultAsset();
 }
 
+resolveAssetSource.setCustomSourceTransformer = setCustomSourceTransformer;
+
 export const { pickScale } = AssetSourceResolver;

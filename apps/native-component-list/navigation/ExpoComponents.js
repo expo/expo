@@ -7,7 +7,6 @@ import GestureHandlerSwipeable from '../screens/GestureHandlerSwipeableScreen';
 import Gif from '../screens/GifScreen';
 import LinearGradient from '../screens/LinearGradientScreen';
 import Maps from '../screens/MapsScreen';
-import ScreensScreens from '../screens/Screens';
 import Video from '../screens/AV/VideoScreen';
 
 function optionalRequire(requirer) {
@@ -18,6 +17,7 @@ function optionalRequire(requirer) {
   }
 }
 
+const ScreensScreens = optionalRequire(() => require('../screens/Screens'));
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
 const FacebookAds = optionalRequire(() => require('../screens/FacebookAdsScreen'));

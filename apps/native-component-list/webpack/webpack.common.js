@@ -54,7 +54,6 @@ const imageLoaderConfiguration = {
     loader: 'url-loader',
     // loader: 'file-loader',
     options: {
-      name: '[name].[ext]',
       // Inline resources as Base64 when there is less reason to parallelize their download. The
       // heuristic we use is whether the resource would fit within a TCP/IP packet that we would
       // send to request the resource.
