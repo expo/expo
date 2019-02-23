@@ -1,6 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-function getIndexHTMLFromAppJSON(locations) {
+function createIndexHTMLFromAppJSON(locations) {
   const nativeAppManifest = require(locations.appJson);
 
   const { expo: expoManifest = {} } = nativeAppManifest;
@@ -68,4 +68,4 @@ function getIndexHTMLFromAppJSON(locations) {
   });
 }
 
-module.exports = getIndexHTMLFromAppJSON;
+module.exports = createIndexHTMLFromAppJSON;

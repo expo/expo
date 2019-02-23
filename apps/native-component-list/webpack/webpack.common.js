@@ -6,8 +6,8 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const getLocations = require('./webpackLocations');
-const getIndexHTMLFromAppJSON = require('./getIndexHTMLFromAppJSON');
-const getClientEnvironment = require('./getClientEnvironment');
+const createIndexHTMLFromAppJSON = require('./createIndexHTMLFromAppJSON');
+const createClientEnvironment = require('./createClientEnvironment');
 
 // Only compile files from react-native, and expo libraries.
 const includeModulesThatContainPaths = [
@@ -76,8 +76,8 @@ module.exports = function(env) {
     },
   };
 
-  const indexHTML = getIndexHTMLFromAppJSON(locations);
-  const clientEnv = getClientEnvironment(locations);
+  const indexHTML = createIndexHTMLFromAppJSON(locations);
+  const clientEnv = createClientEnvironment(locations);
 
   const nativeAppManifest = require(locations.appJson);
 

@@ -1,4 +1,4 @@
-function getClientEnvironment(locations) {
+function createClientEnvironment(locations) {
   const nativeAppManifest = require(locations.appJson);
 
   function getAppManifest() {
@@ -65,4 +65,4 @@ function getClientEnvironment(locations) {
   };
 }
 
-module.exports = getClientEnvironment;
+module.exports = createClientEnvironment;
