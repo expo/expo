@@ -18,5 +18,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'EXCore'
   s.dependency 'Stripe', '~> 13.2.0'
+  s.dependency 'React'
 
 end
