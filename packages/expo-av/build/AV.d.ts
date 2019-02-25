@@ -1,4 +1,9 @@
 import { Asset } from 'expo-asset';
+export declare enum PitchCorrectionQuality {
+    Low,
+    Medium,
+    High
+}
 export declare type PlaybackSource = number | {
     uri: string;
     overrideFileExtensionAndroid?: string;
@@ -49,6 +54,7 @@ export declare type PlaybackStatusToSet = {
     volume?: number;
     isMuted?: boolean;
     isLooping?: boolean;
+    pitchCorrectionQuality?: PitchCorrectionQuality;
 };
 export declare const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS: number;
 export declare const _DEFAULT_INITIAL_PLAYBACK_STATUS: PlaybackStatusToSet;
@@ -74,7 +80,7 @@ export interface Playback extends AV {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;
     }): Promise<PlaybackStatus>;
-    setRateAsync(rate: number, shouldCorrectPitch: boolean): Promise<PlaybackStatus>;
+    setRateAsync(rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<PlaybackStatus>;
     setVolumeAsync(volume: number): Promise<PlaybackStatus>;
     setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus>;
     setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus>;
@@ -96,7 +102,7 @@ export declare const PlaybackMixin: {
         toleranceMillisBefore?: number | undefined;
         toleranceMillisAfter?: number | undefined;
     }): Promise<PlaybackStatus>;
-    setRateAsync(rate: number, shouldCorrectPitch: boolean): Promise<PlaybackStatus>;
+    setRateAsync(rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<PlaybackStatus>;
     setVolumeAsync(volume: number): Promise<PlaybackStatus>;
     setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus>;
     setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus>;

@@ -2,6 +2,7 @@ import ExponentAV from './ExponentAV';
 export * from './Audio/Recording';
 export * from './Audio/Sound';
 export { setIsEnabledAsync } from './Audio/AudioAvailability';
+export { PitchCorrectionQuality } from './AV';
 export const INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS = 0;
 export const INTERRUPTION_MODE_IOS_DO_NOT_MIX = 1;
 export const INTERRUPTION_MODE_IOS_DUCK_OTHERS = 2;
