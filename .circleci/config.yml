@@ -270,7 +270,7 @@ jobs:
           name: Approve expo_client_approve_build if you wish to build Expo Client shell app
           command: |
             echo "Go, find and approve expo_client_approve_build job to trigger building an Expo Client shell app"
-            aws --version
+            ~/project/bin/aws -version
 
   expo_client_build:
     executor: mac
