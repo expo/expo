@@ -73,5 +73,10 @@ export default function resolveAssetSource(source) {
     }
     return resolver.defaultAsset();
 }
+Object.defineProperty(resolveAssetSource, 'setCustomSourceTransformer', {
+    get() {
+        return setCustomSourceTransformer;
+    },
+});
 export const { pickScale } = AssetSourceResolver;
 //# sourceMappingURL=resolveAssetSource.web.js.map
