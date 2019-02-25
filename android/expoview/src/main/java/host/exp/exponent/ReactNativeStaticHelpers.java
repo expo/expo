@@ -20,6 +20,7 @@ import okhttp3.OkHttpClient;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.expoview.Exponent;
+import host.exp.exponent.ABIVersion;
 
 @DoNotStrip
 public class ReactNativeStaticHelpers {
@@ -107,10 +108,9 @@ public class ReactNativeStaticHelpers {
   @DoNotStrip
   public static Object getOkHttpClient(Class callingClass) {
     String version = RNObject.versionForClassname(callingClass.getName());
-    int versionNumber = RNObject.getVersionFromClassname(callingClass.getName());
     Object cookieJar = new RNObject("com.facebook.react.modules.network.ReactCookieJarContainer").loadVersion(version).construct().get();
 
-    if (versionNumber > 32) {
+    if (ABIVersion.toNumber(version) >= ABIVersion.toNumber("33.0.0")) {
       OkHttpClient.Builder client = new OkHttpClient.Builder()
           .connectTimeout(0, TimeUnit.MILLISECONDS)
           .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -136,7 +136,7 @@ public class ReactNativeStaticHelpers {
         EXL.e(TAG, "Falling back to default OkHttpClient builder: " + e.getMessage());
       }
       return client.build();
-    } else { // TODO: Remove this method once SDK32 is phased out
+    } else { // TODO: Remove this case once SDK32 is phased out
       expolib_v1.okhttp3.OkHttpClient.Builder client = new expolib_v1.okhttp3.OkHttpClient.Builder()
           .connectTimeout(0, TimeUnit.MILLISECONDS)
           .readTimeout(0, TimeUnit.MILLISECONDS)
