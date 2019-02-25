@@ -161,6 +161,17 @@ workflows:
   #           - test_suite_publish
   #     - shell_app_base_android_new # tarball built and uploaded from universe/server/turtle
 
+  client_shell_app:
+    jobs:
+      - expo_client_before_approval
+      - expo_client_approve_build:
+          type: approval
+          requires:
+            - expo_client_before_approval
+      - expo_client_build:
+          requires:
+            - expo_client_approve_build
+
 jobs:
   expo_sdk:
     executor: js
@@ -251,6 +262,39 @@ jobs:
       - run: fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
+
+  expo_client_before_approval:
+    executor: js
+    steps:
+      - run:
+          name: Approve expo_client_approve_build if you wish to build Expo Client shell app
+          command: |
+            echo "Go, find and approve expo_client_approve_build job to trigger building an Expo Client shell app"
+
+  expo_client_build:
+    executor: mac
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - run: git lfs pull
+      - fetch_cocoapods_specs
+      - yarn_install:
+          working_directory: ~/project/tools-public
+      - run:
+          name: Build Expo Client and upload tarball
+          command: |
+            export TARBALL=ios-expo-client-$CIRCLE_SHA1.tar.gz
+            fastlane ios create_expo_client_build
+            tar \
+              -C ~/project \
+              -zcf "/tmp/$TARBALL" \
+              expo-client-build/Exponent.xcarchive \
+              ios
+            ~/project/bin/aws --version s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+      - run:
+          name: Expo Client shell app url
+          command: echo "Expo Client shell app tarball uploaded to s3://exp-artifacts/ios-expo-client-$CIRCLE_SHA1.tar.gz"
 
   shell_app_sim_base_ios:
     executor: mac

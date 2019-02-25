@@ -66,6 +66,25 @@ platform :ios do
     )
   end
 
+  lane :create_expo_client_build do
+    directory = "./ios" + prompt(
+      ci_input: "/../expo-client-build",
+      text: "Please enter the path where we should output the build, relative to ./ios (i.e. ../my-build):",
+    )
+    puts "Build will be written to: " + File.expand_path(directory)
+    xcbuild(
+      workspace: "ios/Exponent.xcworkspace",
+      scheme: "Exponent",
+      configuration: "Release",
+      derivedDataPath: directory,
+      sdk: "iphoneos",
+      destination: "generic/platform=iOS",
+      archive: true,
+      archive_path: directory + "/Exponent.xcarchive",
+      xcargs: "-UseModernBuildSystem=NO CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO"
+    )
+  end
+
   lane :release do
     cert(
       team_id: "C8D8QTF339",

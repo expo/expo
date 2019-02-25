@@ -19,6 +19,7 @@ newCommit=$(nix-prefetch-git --url $repo --rev $rev)
 echo "$newCommit" > nix/nixpkgs.json
 
 bin/nix-binstubs \
+  awscli \
   cocoapods \
   expo-cli \
   fastlane \
