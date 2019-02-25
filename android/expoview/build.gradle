@@ -339,8 +339,10 @@ dependencies {
   // See explanation in expo-av/build.gradle
   api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
 
-  // This can be removed when sdk 32 is dropped
+  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+  // TODO: Remove this method once SDK32 is phased out
   compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
   compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   compileOnly 'expolib_v1.com.squareup.okio:okio:1.13.0'
+  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 }

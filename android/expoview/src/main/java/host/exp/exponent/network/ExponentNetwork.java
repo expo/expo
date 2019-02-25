@@ -218,7 +218,7 @@ public class ExponentNetwork {
     clientBuilder.addNetworkInterceptor(offlineInterceptor);
   }
 
-  // This method should be removed when sdk 32 is dropped
+  // TODO: Remove this method once SDK32 is phased out
   public void addInterceptorsToPrefixedClient(expolib_v1.okhttp3.OkHttpClient.Builder clientBuilder) {
     // TODO(janic): Either backport bundled assets from sdk25 or remove
     // when sdk24 is no longer supported.
