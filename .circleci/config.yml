@@ -266,6 +266,8 @@ jobs:
   expo_client_before_approval:
     executor: js
     steps:
+      - install_nix
+      - setup
       - run:
           name: Approve expo_client_approve_build if you wish to build Expo Client shell app
           command: |
