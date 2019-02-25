@@ -1,0 +1,4 @@
+{
+  "name": "expo-image-picker",
+  "platforms": ["ios", "android"]
+}

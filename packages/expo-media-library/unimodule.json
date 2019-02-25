@@ -1,0 +1,4 @@
+{
+  "name": "expo-media-library",
+  "platforms": ["ios", "android"]
+}

@@ -4,8 +4,30 @@ platform :ios, '10.0'
 target '${TARGET_NAME}' do
 ${EXPONENT_CLIENT_DEPS}
 
-  # Local CocoaPods
-${PODFILE_UNVERSIONED_EXPO_MODULES_DEPENDENCIES}
+  # Universal modules
+  require_relative '../node_modules/@unimodules/core/cocoapods.rb'
+  use_unimodules!({
+    modules_paths: ['../packages'],
+    exclude: [
+      'expo-firebase-analytics',
+      'expo-firebase-app',
+      'expo-firebase-auth',
+      'expo-firebase-crashlytics',
+      'expo-firebase-database',
+      'expo-firebase-firestore',
+      'expo-firebase-functions',
+      'expo-firebase-instance-id',
+      'expo-firebase-invites',
+      'expo-firebase-links',
+      'expo-firebase-messaging',
+      'expo-firebase-notifications',
+      'expo-firebase-performance',
+      'expo-firebase-remote-config',
+      'expo-firebase-storage',
+      'expo-payments-stripe',
+    ]
+  })
+
 ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 ${PODFILE_VERSIONED_RN_DEPENDENCIES}
 

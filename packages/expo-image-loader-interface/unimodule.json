@@ -1,0 +1,4 @@
+{
+  "name": "expo-image-loader-interface",
+  "platforms": ["ios", "android"]
+}

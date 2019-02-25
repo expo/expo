@@ -1,0 +1,4 @@
+{
+  "name": "expo-firebase-auth",
+  "platforms": ["ios", "android"]
+}

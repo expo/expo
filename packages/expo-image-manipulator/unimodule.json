@@ -1,0 +1,4 @@
+{
+  "name": "expo-image-manipulator",
+  "platforms": ["ios", "android"]
+}

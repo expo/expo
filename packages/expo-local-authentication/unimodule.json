@@ -1,0 +1,4 @@
+{
+  "name": "expo-local-authentication",
+  "platforms": ["ios", "android"]
+}
