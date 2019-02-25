@@ -11,6 +11,10 @@
     },
     "ios": {
       "bundleIdentifier": "io.expo.testsuite"
+    },
+    "web": {
+      "favicon": "web/favicon.ico",
+      "productionPath": "web-build"
     }
   }
 }
