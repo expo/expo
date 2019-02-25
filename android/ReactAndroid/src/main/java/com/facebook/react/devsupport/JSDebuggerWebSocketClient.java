@@ -12,7 +12,7 @@ import android.util.JsonToken;
 import android.util.JsonWriter;
 
 import com.facebook.common.logging.FLog;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.JavascriptException;
 
 import java.io.IOException;
@@ -25,11 +25,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
 
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
-import expolib_v1.okhttp3.WebSocket;
-import expolib_v1.okhttp3.WebSocketListener;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 
 /**
  * A wrapper around WebSocketClient that recognizes RN debugging message format.

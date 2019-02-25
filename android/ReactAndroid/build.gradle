@@ -297,7 +297,7 @@ android {
 }
 
 dependencies {
-    api 'expolib_v1.com.facebook.infer.annotation:infer-annotation:0.11.2'
+    api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
     api 'javax.inject:javax.inject:1'
     api 'com.android.support:appcompat-v7:27.1.1'
     api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
@@ -308,10 +308,10 @@ dependencies {
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
     api 'com.squareup.okio:okio:1.14.0'
     compile 'org.webkit:android-jsc:r174650'
-    implementation 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
-    implementation 'expolib_v1.com.squareup.okio:okio:1.13.0'
-    implementation 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-    implementation 'expolib_v1.com.facebook.fresco:expolib_v1-imagepipeline-okhttp3:1.0.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.6.0'
+    implementation 'com.squareup.okio:okio:1.13.0'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+    implementation 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

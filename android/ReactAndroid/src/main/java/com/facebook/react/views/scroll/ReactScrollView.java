@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
