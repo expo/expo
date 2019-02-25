@@ -16,8 +16,9 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
-@interface EXTPSStripeManager : EXExportedModule <PKPaymentAuthorizationViewControllerDelegate, STPAddCardViewControllerDelegate, EXModuleRegistryConsumer>
 
+@interface EXTPSStripeManager : EXExportedModule <PKPaymentAuthorizationViewControllerDelegate, STPAddCardViewControllerDelegate, EXModuleRegistryConsumer>
+@property (nonatomic) STPRedirectContext *redirectContext;
 @end
 
 /**
@@ -26,3 +27,4 @@
 @interface ApplePayEventsManager : RCTEventEmitter <RCTBridgeModule>
 
 @end
+
