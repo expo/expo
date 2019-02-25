@@ -264,14 +264,12 @@ jobs:
           path: ~/Library/Logs/fastlane/
 
   expo_client_before_approval:
-    executor: android
+    executor: js
     steps:
-      - setup
       - run:
           name: Approve expo_client_approve_build if you wish to build Expo Client shell app
           command: |
             echo "Go, find and approve expo_client_approve_build job to trigger building an Expo Client shell app"
-            ~/expo/bin/aws --version
 
   expo_client_build:
     executor: mac
@@ -293,7 +291,7 @@ jobs:
               -zcf "/tmp/$TARBALL" \
               expo-client-build/Exponent.xcarchive \
               ios
-            aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+            ~/project/bin/aws --version s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
       - run:
           name: Expo Client shell app url
           command: echo "Expo Client shell app tarball uploaded to s3://exp-artifacts/ios-expo-client-$CIRCLE_SHA1.tar.gz"
