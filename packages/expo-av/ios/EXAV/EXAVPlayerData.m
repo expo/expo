@@ -15,6 +15,7 @@ NSString *const EXAVPlayerDataStatusShouldPlayKeyPath = @"shouldPlay";
 NSString *const EXAVPlayerDataStatusIsPlayingKeyPath = @"isPlaying";
 NSString *const EXAVPlayerDataStatusIsBufferingKeyPath = @"isBuffering";
 NSString *const EXAVPlayerDataStatusRateKeyPath = @"rate";
+NSString *const EXAVPlayerDataStatusPitchCorrectionQualityKeyPath = @"pitchCorrectionQuality";
 NSString *const EXAVPlayerDataStatusShouldCorrectPitchKeyPath = @"shouldCorrectPitch";
 NSString *const EXAVPlayerDataStatusVolumeKeyPath = @"volume";
 NSString *const EXAVPlayerDataStatusIsMutedKeyPath = @"isMuted";
@@ -44,6 +45,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, assign) CMTime currentPosition;
 @property (nonatomic, assign) BOOL shouldPlay;
 @property (nonatomic, strong) NSNumber *rate;
+@property (nonatomic, strong) NSString *pitchCorrectionQuality;
 @property (nonatomic, strong) NSNumber *observedRate;
 @property (nonatomic, assign) AVPlayerTimeControlStatus timeControlStatus;
 @property (nonatomic, assign) BOOL shouldCorrectPitch;
@@ -94,6 +96,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _timeControlStatus = 0;
     _shouldPlay = NO;
     _rate = @(1.0);
+    _pitchCorrectionQuality = AVAudioTimePitchAlgorithmVarispeed;
     _observedRate = @(1.0);
     _shouldCorrectPitch = NO;
     _volume = @(1.0);
@@ -155,11 +158,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
         if (strongSelfInner) {
           strongSelfInner.currentPosition = strongSelfInner.player.currentTime;
 
-          if (strongSelfInner.shouldCorrectPitch) {
-            strongSelfInner.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
-          } else {
-            strongSelfInner.player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
-          }
+      
+          strongSelfInner.player.currentItem.audioTimePitchAlgorithm = strongSelfInner.pitchCorrectionQuality;
           strongSelfInner.player.volume = strongSelfInner.volume.floatValue;
           strongSelfInner.player.muted = strongSelfInner.isMuted;
           [strongSelfInner _updateLooping:strongSelfInner.isLooping];
@@ -261,6 +261,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     NSNumber *rate = parameters[EXAVPlayerDataStatusRateKeyPath];
     _rate = rate;
   }
+  
+  if (parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath] != nil) {
+    _pitchCorrectionQuality = parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath];
+  }
+  
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldCorrectPitchKeyPath] != nil) {
     NSNumber *shouldCorrectPitch = parameters[EXAVPlayerDataStatusShouldCorrectPitchKeyPath];
     _shouldCorrectPitch = shouldCorrectPitch.boolValue;
@@ -290,7 +295,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
     // Apply idempotent parameters.
     if (_shouldCorrectPitch) {
-      _player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmLowQualityZeroLatency;
+      _player.currentItem.audioTimePitchAlgorithm = _pitchCorrectionQuality;
     } else {
       _player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
     }

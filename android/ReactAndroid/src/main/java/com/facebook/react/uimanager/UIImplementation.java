@@ -13,7 +13,7 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
 import android.os.SystemClock;
 import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;

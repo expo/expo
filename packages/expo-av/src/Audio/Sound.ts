@@ -10,6 +10,7 @@ import {
   getNativeSourceAndFullInitialStatusForLoadAsync,
   getUnloadedStatus,
 } from '../AV';
+import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
 
 type AudioInstance = number | HTMLMediaElement | null;
@@ -241,7 +242,11 @@ export class Sound implements Playback {
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
   ) => Promise<PlaybackStatus>;
-  setRateAsync!: (rate: number, shouldCorrectPitch: boolean) => Promise<PlaybackStatus>;
+  setRateAsync!: (
+    rate: number,
+    shouldCorrectPitch: boolean,
+    pitchCorrectionQuality?: PitchCorrectionQuality
+  ) => Promise<PlaybackStatus>;
   setVolumeAsync!: (volume: number) => Promise<PlaybackStatus>;
   setIsMutedAsync!: (isMuted: boolean) => Promise<PlaybackStatus>;
   setIsLoopingAsync!: (isLooping: boolean) => Promise<PlaybackStatus>;

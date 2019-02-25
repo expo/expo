@@ -1,5 +1,20 @@
+import ExponentAV from './ExponentAV';
 import { Asset } from 'expo-asset';
 import { Platform } from 'expo-core';
+// TODO add:
+//  disableFocusOnAndroid
+//  audio routes (at least did become noisy on android)
+//  pan
+//  pitch
+//  API to explicitly request audio focus / session
+//  API to select stream type on Android
+//  subtitles API
+export var PitchCorrectionQuality;
+(function (PitchCorrectionQuality) {
+    PitchCorrectionQuality[PitchCorrectionQuality["Low"] = ExponentAV.Qualities && ExponentAV.Qualities.Low] = "Low";
+    PitchCorrectionQuality[PitchCorrectionQuality["Medium"] = ExponentAV.Qualities && ExponentAV.Qualities.Medium] = "Medium";
+    PitchCorrectionQuality[PitchCorrectionQuality["High"] = ExponentAV.Qualities && ExponentAV.Qualities.High] = "High";
+})(PitchCorrectionQuality || (PitchCorrectionQuality = {}));
 export const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS = 500;
 export const _DEFAULT_INITIAL_PLAYBACK_STATUS = {
     positionMillis: 0,
@@ -136,8 +151,12 @@ export const PlaybackMixin = {
             seekMillisToleranceBefore: tolerances.toleranceMillisBefore,
         });
     },
-    async setRateAsync(rate, shouldCorrectPitch) {
-        return this.setStatusAsync({ rate, shouldCorrectPitch });
+    async setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality = PitchCorrectionQuality.Low) {
+        return this.setStatusAsync({
+            rate,
+            shouldCorrectPitch,
+            pitchCorrectionQuality,
+        });
     },
     async setVolumeAsync(volume) {
         return this.setStatusAsync({ volume });

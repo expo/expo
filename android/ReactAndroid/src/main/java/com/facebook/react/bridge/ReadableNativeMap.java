@@ -13,7 +13,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import javax.annotation.Nullable;
 
 /**

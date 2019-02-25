@@ -9,7 +9,7 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 
 import android.app.Activity;
 import android.app.Application;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.JSIModulePackage;
