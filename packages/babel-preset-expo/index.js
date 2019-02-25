@@ -27,6 +27,7 @@ function getNativeConfig() {
 
 function getWebConfig() {
   const defaultPlugins = [
+    ['@babel/plugin-transform-flow-strip-types'],
     [
       'babel-plugin-module-resolver',
       {
@@ -42,32 +43,19 @@ function getWebConfig() {
         },
       },
     ],
-    '@babel/plugin-syntax-flow',
-    '@babel/plugin-proposal-optional-catch-binding',
-    '@babel/plugin-transform-block-scoping',
     ['@babel/plugin-proposal-decorators', { legacy: true }],
     [
       '@babel/plugin-proposal-class-properties',
       // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
       { loose: true },
     ],
-    '@babel/plugin-syntax-dynamic-import',
-    '@babel/plugin-syntax-export-default-from',
-    '@babel/plugin-transform-computed-properties',
-    '@babel/plugin-transform-destructuring',
-    '@babel/plugin-transform-function-name',
-    '@babel/plugin-transform-literals',
-    '@babel/plugin-transform-parameters',
-    '@babel/plugin-transform-shorthand-properties',
-    '@babel/plugin-transform-react-jsx',
-    '@babel/plugin-transform-regenerator',
-    '@babel/plugin-transform-sticky-regex',
-    '@babel/plugin-transform-unicode-regex',
-    'babel-plugin-react-native-web',
+    ['@babel/plugin-syntax-dynamic-import'],
+    ['@babel/plugin-transform-react-jsx'],
+    ['babel-plugin-react-native-web'],
   ];
 
   const otherPlugins = [
-    '@babel/plugin-proposal-export-default-from',
+    ['@babel/plugin-proposal-export-default-from'],
     [
       '@babel/plugin-transform-modules-commonjs',
       {
@@ -77,22 +65,11 @@ function getWebConfig() {
         allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
       },
     ],
-
-    '@babel/plugin-transform-arrow-functions',
-    '@babel/plugin-transform-classes',
-    ['@babel/plugin-transform-for-of', { loose: true }],
-    '@babel/plugin-transform-spread',
-    [
-      '@babel/plugin-transform-template-literals',
-      { loose: true }, // dont 'a'.concat('b'), just use 'a'+'b'
-    ],
-    '@babel/plugin-transform-exponentiation-operator',
-    '@babel/plugin-transform-object-assign',
-    '@babel/plugin-proposal-object-rest-spread',
+    ['@babel/plugin-transform-object-assign'],
     ['@babel/plugin-proposal-nullish-coalescing-operator', { loose: true }],
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
-    '@babel/plugin-transform-react-display-name',
-    '@babel/plugin-transform-react-jsx-source',
+    ['@babel/plugin-transform-react-display-name'],
+    ['@babel/plugin-transform-react-jsx-source'],
     [
       '@babel/plugin-transform-runtime',
       {
@@ -112,7 +89,7 @@ function getWebConfig() {
       [
         '@babel/preset-env',
         {
-          modules: false, //'commonjs',
+          modules: false,
           useBuiltIns: false,
           targets: {
             esmodules: true,
@@ -121,9 +98,6 @@ function getWebConfig() {
       ],
     ],
     overrides: [
-      {
-        plugins: '@babel/plugin-transform-flow-strip-types',
-      },
       {
         plugins: defaultPlugins,
       },
