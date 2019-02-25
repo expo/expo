@@ -9,7 +9,6 @@ commands:
     steps:
       - run:
           name: Install common packages
-          # awscli: used to upload Expo Client shell app to S3
           # direnv: configures environment with .envrc files
           # findutils (where, find, etc): expo-module test
           # git: circleci checkout steps
@@ -21,7 +20,6 @@ commands:
           # xz: circleci checkout steps
           command: |
             nix-env -iA \
-              nixpkgs.awscli \
               nixpkgs.direnv \
               nixpkgs.findutils \
               nixpkgs.git \
@@ -140,6 +138,8 @@ workflows:
       - expotools
       - client_android
       - client_ios
+      - expo_client_approve_build:
+          type: approval
       - expo_client_build:
           requires:
             - expo_client_approve_build
@@ -149,8 +149,6 @@ workflows:
       #   requires:
       #     - test_suite_publish
       - shell_app_sim_base_ios
-      - expo_client_approve_build:
-          type: approval
       - client_android_approve_google_play:
           type: approval
           requires:
