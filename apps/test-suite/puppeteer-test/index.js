@@ -3,7 +3,9 @@ const puppeteer = require('puppeteer');
 
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const config = require('../webpack/webpack.dev');
+const getConfig = require('../webpack/webpack.dev');
+
+const config = getConfig();
 
 const options = {
   ...config.devServer,
@@ -102,8 +104,8 @@ function listenToServerAsync(server) {
 
 async function main(args) {
   if (manuallyRunWebpack) {
-    server = new WebpackDevServer(webpack(config), options);
     try {
+      server = new WebpackDevServer(webpack(config), options);
       await listenToServerAsync(server);
       console.log('WebpackDevServer listening at localhost:', port);
     } catch (error) {
