@@ -138,8 +138,11 @@ workflows:
       - expotools
       - client_android
       - client_ios
+      - expo_client_before_approval
       - expo_client_approve_build:
           type: approval
+          requires:
+            - expo_client_before_approval
       - expo_client_build:
           requires:
             - expo_client_approve_build
@@ -256,6 +259,14 @@ jobs:
       - run: fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
+
+  expo_client_before_approval:
+    executor: js
+    steps:
+      - run:
+          name: Approve expo_client_approve_build if you wish to build Expo Client shell app
+          command: |
+            echo "Go, find and approve expo_client_approve_build job to trigger building an Expo Client shell app"
 
   expo_client_build:
     executor: mac
