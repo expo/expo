@@ -3,8 +3,7 @@ const puppeteer = require('puppeteer');
 
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const path = require('path');
-const config = require('../webpack.config');
+const config = require('../webpack/webpack.dev');
 
 const options = {
   ...config.devServer,
