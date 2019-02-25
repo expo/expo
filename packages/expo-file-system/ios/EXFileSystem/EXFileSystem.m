@@ -49,6 +49,7 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 @property (nonatomic, strong) NSMutableDictionary<NSString *, EXDownloadResumable*> *downloadObjects;
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<EXFileSystemManager> fileSystemManager;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
@@ -68,8 +69,6 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 @end
 
 @implementation EXFileSystem
-
-@synthesize moduleRegistry = _moduleRegistry;
 
 EX_REGISTER_MODULE();
 

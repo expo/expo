@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 
 public class ScopedContext extends Context {
@@ -61,20 +62,9 @@ public class ScopedContext extends Context {
     mFilesDir = new File(mContext.getFilesDir() + "/ExperienceData/" + scope);
     mCacheDir = new File(mContext.getCacheDir() + "/ExperienceData/" + scope);
 
-    try {
-      ApplicationInfo app = context.getPackageManager().getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
-      Bundle bundle = app.metaData;
-
-      Boolean inExpoClient = bundle.getBoolean("host.exp.exponent.InExpoClient");
-      if (inExpoClient.equals(false)) {
-        mFilesDir = mContext.getFilesDir();
-        mCacheDir = mContext.getCacheDir();
-      }
-
-    } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
-    } catch (NullPointerException e) {
-      e.printStackTrace();
+    if (Constants.isStandaloneApp()) {
+      mFilesDir = mContext.getFilesDir();
+      mCacheDir = mContext.getCacheDir();
     }
   }
 
