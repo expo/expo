@@ -12,10 +12,10 @@ module.exports = function(api) {
             'react-native$': 'react-native-web',
             /** Add polyfills for modules that react-native-web doesn't support */
             'react-native/Libraries/Image/AssetSourceResolver$':
-              'expo/build/web/Image/AssetSourceResolver',
-            'react-native/Libraries/Image/assetPathUtils$': 'expo/build/web/Image/assetPathUtils',
+              'expo-asset/build/AssetSourceResolver',
+            'react-native/Libraries/Image/assetPathUtils$': 'expo-asset/build/Image/assetPathUtils',
             'react-native/Libraries/Image/resolveAssetSource$':
-              'expo/build/web/Image/resolveAssetSource',
+              'expo-asset/build/resolveAssetSource',
           },
         },
       ],
