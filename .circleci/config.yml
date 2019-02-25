@@ -264,7 +264,7 @@ jobs:
           path: ~/Library/Logs/fastlane/
 
   expo_client_before_approval:
-    executor: js
+    executor: android
     steps:
       - install_nix
       - setup
