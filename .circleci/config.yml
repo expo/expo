@@ -138,14 +138,6 @@ workflows:
       - expotools
       - client_android
       - client_ios
-      - expo_client_before_approval
-      - expo_client_approve_build:
-          type: approval
-          requires:
-            - expo_client_before_approval
-      - expo_client_build:
-          requires:
-            - expo_client_approve_build
       - test_suite_publish
       # TODO: fix devicefarm running tests
       #- android_test_suite:
@@ -168,6 +160,17 @@ workflows:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
   #     - shell_app_base_android_new # tarball built and uploaded from universe/server/turtle
+
+  client_shell_app:
+    jobs:
+      - expo_client_before_approval
+      - expo_client_approve_build:
+          type: approval
+          requires:
+            - expo_client_before_approval
+      - expo_client_build:
+          requires:
+            - expo_client_approve_build
 
 jobs:
   expo_sdk:
