@@ -367,6 +367,8 @@
     <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
 
+    <meta-data android:name="host.exp.exponent.InExpoClient" android:value="true"/>
+
     <!-- ADD HERE STRIPE SCHEME META DATA -->
   </application>
 
