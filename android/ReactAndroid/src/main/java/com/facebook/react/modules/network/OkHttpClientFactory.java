@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.network;
 
-import expolib_v1.okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 public interface OkHttpClientFactory {
     OkHttpClient createNewNetworkModuleClient();

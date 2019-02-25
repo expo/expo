@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
 import com.facebook.react.R;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationListener;
 import com.facebook.react.animation.AnimationRegistry;

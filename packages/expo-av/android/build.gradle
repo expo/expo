@@ -67,17 +67,9 @@ dependencies {
   expendency "expo-permissions-interface"
   // Newer version introduces dependency versions conflict
   // on 'com.android.support:support-annotations'
-  api 'com.google.android.exoplayer:exoplayer:2.6.1'
+  api 'com.google.android.exoplayer:exoplayer:2.9.2'
 
-  // This dependency allows us to implement CustomHeadersOkHttpDataSourceFactory
-  // We depend on it as `provided`, because in Expo apps we use an `expolib_v1`-prefixed
-  // version of `okhttp`, so we head to prefix this extension too (available in `expokit`
-  // as `expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1`.
-  // In plain apps developer will need to add an explicit dependency on this package
-  // to `app/build.gradle`, in Expo apps `expoview` depends on `expolib_v1` dependency
-  // overridding CustomHeadersOkHttpDataSourceFactory, so the code that uses unprefixed
-  // extension won't ever be executed.
-  provided 'com.google.android.exoplayer:extension-okhttp:2.6.1'
+  api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
 
   api 'com.yqritc:android-scalablevideoview:1.0.1'
 

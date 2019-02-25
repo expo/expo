@@ -1,6 +1,6 @@
 package com.facebook.react.bridge;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

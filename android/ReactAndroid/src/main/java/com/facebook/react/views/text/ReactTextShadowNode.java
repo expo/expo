@@ -16,7 +16,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.view.Gravity;
 import android.widget.TextView;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;

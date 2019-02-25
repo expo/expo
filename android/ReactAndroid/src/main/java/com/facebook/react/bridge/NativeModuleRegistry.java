@@ -7,7 +7,7 @@
 
 package com.facebook.react.bridge;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;

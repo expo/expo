@@ -11,7 +11,7 @@ import static java.lang.System.arraycopy;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.systrace.Systrace;

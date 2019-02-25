@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import expolib_v1.com.facebook.infer.annotation.SuppressFieldNotInitialized;
+import com.facebook.infer.annotation.SuppressFieldNotInitialized;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfo;
