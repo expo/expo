@@ -1,15 +1,19 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXCore/EXExportedModule.h>
+#import <EXCore/EXInternalModule.h>
 #import <EXCore/EXModuleRegistryConsumer.h>
 #import <EXCore/EXEventEmitter.h>
+#import <EXCore/EXExportedModule.h>
 #import <EXFileSystemInterface/EXFileSystemInterface.h>
 
-@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXFileSystemInterface>
+@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXFileSystemInterface> {
+  EXModuleRegistry *_moduleRegistry;
+}
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
+@property (nonatomic, retain) EXModuleRegistry *moduleRegistry;
 
 - (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 

@@ -47,7 +47,6 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 @interface EXFileSystem ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, EXDownloadResumable*> *downloadObjects;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<EXFileSystemManager> fileSystemManager;
 
@@ -69,6 +68,8 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 @end
 
 @implementation EXFileSystem
+
+@synthesize moduleRegistry = _moduleRegistry;
 
 EX_REGISTER_MODULE();
 
@@ -768,28 +769,16 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 - (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
 {
-  return [EXFileSystem documentDirectoryForExperienceId:experienceId];
-}
-
-+ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
-{
-  NSString *subdir = [self escapedResourceName:experienceId];
-  return [[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
-            stringByAppendingPathComponent:@"ExponentExperienceData"]
-           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *documentDirectory = [paths objectAtIndex:0];
+  return documentDirectory;
 }
 
 - (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
 {
-  return [EXFileSystem cachesDirectoryForExperienceId:experienceId];
-}
-
-+ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
-{
-  NSString *subdir = [self escapedResourceName:experienceId];
-  return [[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
-            stringByAppendingPathComponent:@"ExponentExperienceData"]
-           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  NSString *cacheDirectory = [paths objectAtIndex:0];
+  return cacheDirectory;
 }
 
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension
@@ -812,5 +801,20 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
++ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
+{
+  NSString *subdir = [self escapedResourceName:experienceId];
+  return [[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
+            stringByAppendingPathComponent:@"ExponentExperienceData"]
+           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+}
+
++ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
+{
+  NSString *subdir = [self escapedResourceName:experienceId];
+  return [[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
+            stringByAppendingPathComponent:@"ExponentExperienceData"]
+           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+}
 
 @end

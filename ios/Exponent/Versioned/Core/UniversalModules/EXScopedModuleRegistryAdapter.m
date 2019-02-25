@@ -6,6 +6,7 @@
 #import "EXFileSystemBinding.h"
 #import "EXSensorsManagerBinding.h"
 #import "EXConstantsBinding.h"
+#import "EXScopedFileSystemModule.h"
 #import "EXUnversioned.h"
 #import "EXScopedFilePermissionModule.h"
 
@@ -19,14 +20,17 @@
 {
   EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistryForExperienceId:experienceId];
 
+  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
+  [moduleRegistry registerInternalModule:constantsBinding];
+
+  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId          constantsModule:constantsBinding];
+  [moduleRegistry registerExportedModule:fileSystemModule];
+
   EXFileSystemBinding *fileSystemBinding = [[EXFileSystemBinding alloc] init];
   [moduleRegistry registerInternalModule:fileSystemBinding];
 
   EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];
   [moduleRegistry registerInternalModule:sensorsManagerBinding];
-  
-  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
-  [moduleRegistry registerInternalModule:constantsBinding];
 
   EXScopedReactNativeAdapter *reactNativeAdapter = [[EXScopedReactNativeAdapter alloc] init];
   [moduleRegistry registerInternalModule:reactNativeAdapter];
