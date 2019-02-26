@@ -88,4 +88,10 @@ export default function resolveAssetSource(source: any): ResolvedAssetSource | u
   return resolver.defaultAsset();
 }
 
+Object.defineProperty(resolveAssetSource, 'setCustomSourceTransformer', {
+  get() {
+    return setCustomSourceTransformer;
+  },
+});
+
 export const { pickScale } = AssetSourceResolver;
