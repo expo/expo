@@ -6,6 +6,7 @@ Expo includes support for payments through [Stripe](https://stripe.com/) and [Ap
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
+We encourage you to look at our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples) of ExpoKit apps.
 ## Setup
 
 If you haven't done payments with Stripe before, create an account with [Stripe](https://dashboard.stripe.com/register). After getting the account set up, navigate to the [Stripe API dashboard](https://dashboard.stripe.com/account/apikeys). Here, you'll need to make a note of the Publishable key and Secret key listed.
