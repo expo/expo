@@ -1,7 +1,7 @@
 {
   "name": "expo-localization",
   "version": "2.0.0",
-  "description": "Expo Unimodule for interfacing with the native localization APIs",
+  "description": "Provides an interface for native user localization information.",
   "main": "build/Localization.js",
   "types": "build/Localization.d.ts",
   "scripts": {

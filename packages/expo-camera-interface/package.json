@@ -3,6 +3,9 @@
   "version": "2.1.0-alpha.0",
   "description": "Expo Camera interface package",
   "main": "index.js",
+  "scripts": {
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -11,6 +14,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"

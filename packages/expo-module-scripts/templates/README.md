@@ -1,12 +1,14 @@
-# expo-localization
+# ${packageName}
 
-Provides an interface for native user localization information.
+${description}
+<!--- remove for interfaces --->
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/expo-localization.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/expo-localization/)
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/${docName}.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/${docName}/)
 
+<!--- end remove for interfaces --->
 # Installation
 
 This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
@@ -16,7 +18,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-localization
+npm install ${packageName}
 ```
 
 ### Configure for iOS
@@ -24,7 +26,7 @@ npm install expo-localization
 Add the dependency to your `Podfile` and then run `pod install`.
 
 ```ruby
-pod 'EXLocalization', path: '../node_modules/expo-localization/ios'
+pod '${podName}', path: '../node_modules/${packageName}/ios'
 ```
 
 ### Configure for Android
@@ -32,26 +34,28 @@ pod 'EXLocalization', path: '../node_modules/expo-localization/ios'
 1. Append the following lines to `android/settings.gradle`:
 
 ```gradle
-include ':expo-localization'
-project(':expo-localization').projectDir = new File(rootProject.projectDir, '../node_modules/expo-localization/android')
+include ':${packageName}'
+project(':${packageName}').projectDir = new File(rootProject.projectDir, '../node_modules/${packageName}/android')
 ```
 
 2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
 ```gradle
-api project(':expo-localization')
+api project(':${packageName}')
 ```
+<!--- remove for interfaces --->
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.localization.LocalizationPackage;
+import expo.modules.${androidPackagePath};
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
   // Your other packages will be here
-  new LocalizationPackage()
+  new ${androidPackageName}()
 ), Arrays.<SingletonModule>asList());
 ```
 
+<!--- end remove for interfaces --->
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

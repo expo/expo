@@ -5378,7 +5378,7 @@ expo-constants-interface@~2.0.0:
   dependencies:
     expo-core "~2.0.0"
 
-expo-errors@^1.0.0, expo-errors@^1.0.0-rc.2, expo-errors@~1.0.0:
+expo-errors@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/expo-errors/-/expo-errors-1.0.0.tgz#0e212e6e10eb7e8c01eb59d79560ed2cdaaadd95"
   integrity sha512-4CL/75aigg+pYwgR+7SUJwYgX2oa7ZGAwK1aYKnyUnwQOa9jmjJJoT9KPHO8SbDHz+mEwjD5TE8ZXfOWlMl+kw==

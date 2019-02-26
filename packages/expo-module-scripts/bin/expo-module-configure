@@ -12,3 +12,5 @@ for template_file in "$script_dir"/../templates/*; do
     rsync --checksum "$template_file" "$output_file"
   fi
 done
+
+"$script_dir/expo-module-readme"
