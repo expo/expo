@@ -323,7 +323,7 @@ type PushMessage = {
   /**
    * ID of the Notification Category through which to display this notification.
    * 
-   * To send a notification-with-category to the Expo Client, prefix the string
+   * To send a notification with category to the Expo Client, prefix the string
    * with the experience ID (`${Constants.manifest.id}:string`). This is not
    * required on a standalone / ejected application.
    */
