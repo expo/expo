@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude",
   "dependencies": {
-    "expo-errors": "^1.0.0"
+    "expo-errors": "~1.0.0"
   },
   "peerDependencies": {
     "expo-core": "~2.0.0"
