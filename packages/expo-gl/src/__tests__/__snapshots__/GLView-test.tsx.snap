@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly on Web 1`] = `
+exports[`renders correctly on web 1`] = `
 <div
   style={
     Object {
