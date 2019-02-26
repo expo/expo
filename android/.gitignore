@@ -7,7 +7,7 @@ expoview/bin/
 expoview/.idea/
 tools/bin/
 app/mockFsDirectory/
-app/src/main/java/host/exp/exponent/generated/DetachBuildConstants.java
+
 expoview/gradlew*
 
 # Created by https://www.gitignore.io/api/java,android,eclipse,intellij,androidstudio
