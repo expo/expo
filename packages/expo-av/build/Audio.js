@@ -21,7 +21,7 @@ export async function setAudioModeAsync(mode) {
         'allowsRecordingIOS',
         'interruptionModeIOS',
         'playsInSilentModeIOS',
-        'staysActiveInBackgroundIOS',
+        'staysActiveInBackground',
         'interruptionModeAndroid',
         'shouldDuckAndroid',
         'playThroughEarpieceAndroid',
@@ -44,10 +44,10 @@ export async function setAudioModeAsync(mode) {
     }
     if (typeof mode.allowsRecordingIOS !== 'boolean' ||
         typeof mode.playsInSilentModeIOS !== 'boolean' ||
-        typeof mode.staysActiveInBackgroundIOS !== 'boolean' ||
+        typeof mode.staysActiveInBackground !== 'boolean' ||
         typeof mode.shouldDuckAndroid !== 'boolean' ||
         typeof mode.playThroughEarpieceAndroid !== 'boolean') {
-        throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", and "shouldDuckAndroid" must be booleans.');
+        throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.');
     }
     return await ExponentAV.setAudioMode(mode);
 }

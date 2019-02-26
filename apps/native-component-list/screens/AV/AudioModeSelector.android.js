@@ -11,11 +11,13 @@ export default class AudioModeSelector extends React.Component {
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
       shouldDuckAndroid: true,
       playThroughEarpieceAndroid: false,
+      staysActiveInBackground: false,
     },
     setMode: {
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
       shouldDuckAndroid: true,
       playThroughEarpieceAndroid: false,
+      staysActiveInBackground: false,
     },
   };
 
@@ -27,7 +29,6 @@ export default class AudioModeSelector extends React.Component {
         allowsRecordingIOS: false,
         playsInSilentModeIOS: false,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-        staysActiveInBackgroundIOS: false,
       });
       this.setState({ setMode: this.state.modeToSet });
     } catch (error) {
@@ -38,7 +39,8 @@ export default class AudioModeSelector extends React.Component {
   _modesEqual = (modeA, modeB) =>
     modeA.interruptionModeAndroid === modeB.interruptionModeAndroid &&
     modeA.playThroughEarpieceAndroid === modeB.playThroughEarpieceAndroid &&
-    modeA.shouldDuckAndroid === modeB.shouldDuckAndroid;
+    modeA.shouldDuckAndroid === modeB.shouldDuckAndroid &&
+    modeA.staysActiveInBackground === modeB.staysActiveInBackground;
 
   _setMode = interruptionModeAndroid => () =>
     this.setState({ modeToSet: { ...this.state.modeToSet, interruptionModeAndroid } });
@@ -84,6 +86,10 @@ export default class AudioModeSelector extends React.Component {
         {this._renderToggle({
           title: 'Play through earpiece',
           valueName: 'playThroughEarpieceAndroid',
+        })}
+        {this._renderToggle({
+          title: 'Stay active in background',
+          valueName: 'staysActiveInBackground',
         })}
         {this._renderModeSelector({
           title: 'Do not mix',

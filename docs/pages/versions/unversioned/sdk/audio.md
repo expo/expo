@@ -48,7 +48,7 @@ We provide this API to customize the audio experience on iOS and Android.
 
     -   `playsInSilentModeIOS` : a boolean selecting if your experience's audio should play in silent mode on iOS. This value defaults to `false`.
     -   `allowsRecordingIOS` : a boolean selecting if recording is enabled on iOS. This value defaults to `false`. NOTE: when this flag is set to `true`, playback may be routed to the phone receiver instead of to the speaker.
-    -   `staysActiveInBackgroundIOS` : a boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background (on iOS). This value defaults to `false`. NOTE: For this option to work properly in standalone apps you'll need to add a `UIBackgroundMode` to your app configuration (see [information below](#playing-or-recording-audio-in-background-ios)).
+    -   `staysActiveInBackground` : a boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background. This value defaults to `false`. NOTE: For this option to work properly in standalone iOS apps you'll need to add a `UIBackgroundMode` to your app configuration (see [information below](#playing-or-recording-audio-in-background-ios)).
     -   `interruptionModeIOS` : an enum selecting how your experience's audio should interact with the audio from other apps on iOS:
         -   `INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS` : This is the default option. If this option is set, your experience's audio is mixed with audio playing in background apps.
         -   `INTERRUPTION_MODE_IOS_DO_NOT_MIX` : If this option is set, your experience's audio interrupts audio from other apps.
@@ -61,7 +61,7 @@ We provide this API to customize the audio experience on iOS and Android.
 
 #### Returns
 
-A `Promise` that will reject if the audio mode could not be enabled for the device. Note that these are the only legal AudioMode combinations of (`playsInSilentModeIOS`, `allowsRecordingIOS`, `staysActiveInBackgroundIOS`, `interruptionModeIOS`), and any other will result in promise rejection:
+A `Promise` that will reject if the audio mode could not be enabled for the device. Note that these are the only legal AudioMode combinations of (`playsInSilentModeIOS`, `allowsRecordingIOS`, `staysActiveInBackground`, `interruptionModeIOS`), and any other will result in promise rejection:
 
 -   `false, false, false, INTERRUPTION_MODE_IOS_DO_NOT_MIX`
 -   `false, false, false, INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS`
@@ -584,5 +584,3 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
     },
 };
 ```
-
-#
