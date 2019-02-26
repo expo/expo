@@ -3,3 +3,4 @@ node_modules/**/*
 jsconfig.json
 
 /web-build/
+/web-stats.json
