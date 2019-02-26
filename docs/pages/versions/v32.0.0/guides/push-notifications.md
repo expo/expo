@@ -325,7 +325,7 @@ type PushMessage = {
    * 
    * To send a notification with category to the Expo Client, prefix the string
    * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
-   * required on a standalone / ejected application.
+   * applications, use plain `yourCategoryId`.
    */
   _category?: string
 
