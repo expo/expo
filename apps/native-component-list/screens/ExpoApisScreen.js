@@ -96,7 +96,6 @@ export default class ExpoApisScreen extends React.Component {
         'Sensor',
         'SMS',
         'TextToSpeech',
-        'Util',
         'ViewShot',
       ],
       default: [
@@ -139,7 +138,6 @@ export default class ExpoApisScreen extends React.Component {
         'StoreReview',
         'TaskManager',
         'TextToSpeech',
-        'Util',
         'WebBrowser',
         'ViewShot',
       ],
