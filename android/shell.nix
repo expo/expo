@@ -12,6 +12,7 @@ in
 
 mkShell rec {
 
+  EXPO_DEBUG="true";
   LANG="en_US.UTF-8";
   JAVA_HOME=openjdk8;
 
