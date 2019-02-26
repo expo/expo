@@ -2,7 +2,17 @@
   "name": "expo-gl",
   "version": "2.0.0",
   "description": "Expo GL standalone universal module",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "test:snapshots": "jest --updateSnapshot",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -21,16 +31,21 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-gl",
   "peerDependencies": {
-    "expo-core": "~2.0.0",
     "expo-camera-interface": "~2.0.0",
+    "expo-core": "~2.0.0",
     "expo-file-system-interface": "~2.0.0",
     "expo-gl-cpp": "~2.0.0"
   },
   "dependencies": {
-    "prop-types": "^15.6.2"
+    "prop-types": "^15.6.2",
+    "expo-errors": "~1.0.0"
   },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58",
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
-  },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+    "react-test-renderer": "^16.7.0",
+    "expo-module-scripts": "^1.0.0"
+  }
 }
