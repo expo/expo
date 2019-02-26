@@ -8,21 +8,35 @@ Note that Expo does not yet support backgrounding, so audio is not available to 
 
 Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](http://expo.io/@community/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+
+## API
+
+```js
+// in managed apps:
+import { Audio } from 'expo';
+
+// in bare apps:
+import { Audio } from 'expo-av';
+```
+
 ## Enabling Audio and customizing Audio Mode
 
-### `Expo.Audio.setIsEnabledAsync(value)`
+### `Audio.setIsEnabledAsync(value)`
 
-Audio is enabled by default, but if you want to write your own Audio API in an ExpoKit app, you might want to disable the Expo Audio API.
+Audio is enabled by default, but if you want to write your own Audio API in an ExpoKit app, you might want to disable the Audio API.
 
 #### Arguments
 
--   **value (_boolean_)** -- `true` enables Expo Audio, and `false` disables it.
+-   **value (_boolean_)** -- `true` enables Audio, and `false` disables it.
 
 #### Returns
 
 A `Promise` that will reject if audio playback could not be enabled for the device.
 
-### `Expo.Audio.setAudioModeAsync(mode)`
+### `Audio.setAudioModeAsync(mode)`
 
 We provide this API to customize the audio experience on iOS and Android.
 
@@ -59,18 +73,18 @@ A `Promise` that will reject if the audio mode could not be enabled for the devi
 
 ## Playing sounds
 
-### `Expo.Audio.Sound`
+### `Audio.Sound`
 
 This class represents a sound corresponding to an Asset or URL.
 
 #### Returns
 
-A newly constructed instance of `Expo.Audio.Sound`.
+A newly constructed instance of `Audio.Sound`.
 
 #### Example
 
 ```javascript
-const soundObject = new Expo.Audio.Sound();
+const soundObject = new Audio.Sound();
 try {
   await soundObject.loadAsync(require('./assets/sounds/hello.mp3'));
   await soundObject.playAsync();
@@ -82,14 +96,14 @@ try {
 
 A static convenience method to construct and load a sound is also provided:
 
--   `Expo.Audio.Sound.createAsync(source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true)`
+-   `Audio.Sound.createAsync(source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true)`
 
     Creates and loads a sound from source, with optional `initialStatus`, `onPlaybackStatusUpdate`, and `downloadFirst`.
 
     This is equivalent to the following:
 
     ```javascript
-    const soundObject = new Expo.Audio.Sound();
+    const soundObject = new Audio.Sound();
     soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
     await soundObject.loadAsync(source, initialStatus, downloadFirst);
     ```
@@ -120,7 +134,7 @@ A static convenience method to construct and load a sound is also provided:
 
     ```javascript
     try {
-      const { sound: soundObject, status } = await Expo.Audio.Sound.createAsync(
+      const { sound: soundObject, status } = await Audio.Sound.createAsync(
         require('./assets/sounds/hello.mp3'),
         { shouldPlay: true }
       );
@@ -130,7 +144,7 @@ A static convenience method to construct and load a sound is also provided:
     }
     ```
 
-The rest of the API for `Expo.Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](../av/) for further information:
+The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](../av/) for further information:
 
 -   `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -164,7 +178,7 @@ The rest of the API for `Expo.Audio.Sound` is the same as the imperative playbac
 
 ## Recording sounds
 
-### `Expo.Audio.Recording`
+### `Audio.Recording`
 
 This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync` must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync` at any given time.
 
@@ -172,14 +186,14 @@ Note that your experience must request audio recording permissions in order for 
 
 #### Returns
 
-A newly constructed instance of `Expo.Audio.Recording`.
+A newly constructed instance of `Audio.Recording`.
 
 #### Example
 
 ```javascript
-const recording = new Expo.Audio.Recording();
+const recording = new Audio.Recording();
 try {
-  await recording.prepareToRecordAsync(Expo.Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+  await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
   await recording.startAsync();
   // You are now recording!
 } catch (error) {
@@ -236,7 +250,7 @@ try {
 
     #### Parameters
 
-    -   **options (_RecordingOptions_)** -- Options for the recording, including sample rate, bitrate, channels, format, encoder, and extension. If no options are passed to `prepareToRecordAsync()`, the recorder will be created with options `Expo.Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`. See below for details on `RecordingOptions`.
+    -   **options (_RecordingOptions_)** -- Options for the recording, including sample rate, bitrate, channels, format, encoder, and extension. If no options are passed to `prepareToRecordAsync()`, the recorder will be created with options `Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`. See below for details on `RecordingOptions`.
 
     #### Returns
 
@@ -305,9 +319,9 @@ The recording extension, sample rate, bitrate, channels, format, encoder, etc ca
 
 We provide the following preset options for convenience, as used in the example above. See below for the definitions of these presets.
 
--   `Expo.Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY`
+-   `Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY`
 
--   `Expo.Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`
+-   `Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`
 
 We also provide the ability to define your own custom recording options, but **we recommend you use the presets, as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.** You will have to test your custom options on iOS and Android to make sure it's working. In the future, we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets) and the advanced use-case possible (by exposing all the functionality available in native). As always, feel free to ping us on the forums or Slack with any questions.
 
@@ -367,133 +381,133 @@ Following is an enumeration of all of the valid values for certain `RecordingOpt
 
     -   `outputFormat` :
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_NB`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_NB`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_WB`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_WB`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADIF`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADIF`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADTS`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADTS`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_RTP_AVP`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_RTP_AVP`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG2TS`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG2TS`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_WEBM`
+        -   `Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_WEBM`
 
     -   `audioEncoder` :
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT`
+        -   `Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB`
+        -   `Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_WB`
+        -   `Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_WB`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC`
+        -   `Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_HE_AAC`
+        -   `Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_HE_AAC`
 
-        -   `Expo.Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC_ELD`
+        -   `Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC_ELD`
 
 -   `ios` :
 
     -   `outputFormat` :
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AC3`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AC3`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_60958AC3`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_60958AC3`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLEIMA4`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLEIMA4`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4CELP`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4CELP`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4HVXC`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4HVXC`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4TWINVQ`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4TWINVQ`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE3`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE3`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE6`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE6`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ULAW`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ULAW`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ALAW`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ALAW`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN2`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN2`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QUALCOMM`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_QUALCOMM`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER1`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER1`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER2`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER2`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER3`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER3`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLELOSSLESS`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLELOSSLESS`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_LD`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_LD`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_SBR`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_SBR`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_V2`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_V2`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE_V2`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE_V2`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_SPATIAL`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_SPATIAL`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR_WB`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR_WB`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AUDIBLE`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AUDIBLE`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ILBC`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ILBC`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_DVIINTELIMA`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_DVIINTELIMA`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MICROSOFTGSM`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MICROSOFTGSM`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AES3`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_AES3`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ENHANCEDAC3`
+        -   `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_ENHANCEDAC3`
 
     -   `audioQuality` :
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN`
+        -   `Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW`
+        -   `Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM`
+        -   `Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH`
+        -   `Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX`
+        -   `Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX`
 
     -   `bitRateStrategy` :
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_CONSTANT`
+        -   `Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_CONSTANT`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_LONG_TERM_AVERAGE`
+        -   `Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_LONG_TERM_AVERAGE`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED`
+        -   `Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED`
 
-        -   `Expo.Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE`
+        -   `Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE`
 
 For reference, following are the definitions of the two preset examples of `RecordingOptions`, as implemented in the Audio SDK:
 

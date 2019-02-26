@@ -2,9 +2,21 @@
 title: Magnetometer
 ---
 
-Access the device magnetometer sensor(s) to respond to measure the changes
-in the magnetic field. You can access the calibrated values with `Magnetometer.`
-and uncalibrated raw values with `MagnetometerUncalibrated`.
+Access the device magnetometer sensor(s) to respond to measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+// in managed apps:
+import { Magnetometer } from 'expo';
+
+// in bare apps:
+import { Magnetometer } from 'expo-sensors';
+```
 
 ### `Magnetometer.isAvailableAsync()`
 

@@ -8,7 +8,22 @@ iOS: Values are stored using the [keychain services](https://developer.apple.com
 
 Android: Values are stored in [`SharedPreferences`](https://developer.android.com/training/basics/data-storage/shared-preferences.html), encrypted with [Android's Keystore system](https://developer.android.com/training/articles/keystore.html).
 
-### `Expo.SecureStore.setItemAsync(key, value, options)`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
+
+
+## API
+
+```js
+// in managed apps:
+import { SecureStore } from 'expo';
+
+// in bare apps:
+import * as SecureStore from 'expo-secure-store';
+```
+
+### `SecureStore.setItemAsync(key, value, options)`
 
 Store a key–value pair.
 
@@ -29,19 +44,19 @@ Store a key–value pair.
 
     -   **keychainAccessible (_enum_)** --
         - iOS only: Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible` property. See Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html#//apple_ref/doc/uid/TP30000897-CH204-SW18). The available options are:
-            - `Expo.SecureStore.WHEN_UNLOCKED`: The data in the keychain item can be accessed only while the device is unlocked by the user.
-            - `Expo.SecureStore.AFTER_FIRST_UNLOCK`: The data in the keychain item cannot be accessed after a restart until the device has been unlocked once by the user. This may be useful if you need to access the item when the phone is locked.
-            - `Expo.SecureStore.ALWAYS`: The data in the keychain item can always be accessed regardless of whether the device is locked. This is the least secure option.
-            - `Expo.SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY`: Similar to `WHEN_UNLOCKED`, except the entry is not migrated to a new device when restoring from a backup.
-            - `Expo.SecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY`: Similar to `WHEN_UNLOCKED_THIS_DEVICE_ONLY`, except the user must have set a passcode in order to store an entry. If the user removes their passcode, the entry will be deleted.
-            - `Expo.SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY`: Similar to `AFTER_FIRST_UNLOCK`, except the entry is not migrated to a new device when restoring from a backup.
-            - `Expo.SecureStore.ALWAYS_THIS_DEVICE_ONLY`: Similar to `ALWAYS`, except the entry is not migrated to a new device when restoring from a backup.
+            - `SecureStore.WHEN_UNLOCKED`: The data in the keychain item can be accessed only while the device is unlocked by the user.
+            - `SecureStore.AFTER_FIRST_UNLOCK`: The data in the keychain item cannot be accessed after a restart until the device has been unlocked once by the user. This may be useful if you need to access the item when the phone is locked.
+            - `SecureStore.ALWAYS`: The data in the keychain item can always be accessed regardless of whether the device is locked. This is the least secure option.
+            - `SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY`: Similar to `WHEN_UNLOCKED`, except the entry is not migrated to a new device when restoring from a backup.
+            - `SecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY`: Similar to `WHEN_UNLOCKED_THIS_DEVICE_ONLY`, except the user must have set a passcode in order to store an entry. If the user removes their passcode, the entry will be deleted.
+            - `SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY`: Similar to `AFTER_FIRST_UNLOCK`, except the entry is not migrated to a new device when restoring from a backup.
+            - `SecureStore.ALWAYS_THIS_DEVICE_ONLY`: Similar to `ALWAYS`, except the entry is not migrated to a new device when restoring from a backup.
 
 #### Returns
 
 A promise that will reject if value cannot be stored on the device.
 
-### `Expo.SecureStore.getItemAsync(key, options)`
+### `SecureStore.getItemAsync(key, options)`
 
 Fetch the stored value associated with the provided key.
 
@@ -61,7 +76,7 @@ Fetch the stored value associated with the provided key.
 
 A promise that resolves to the previously stored value, or null if there is no entry for the given key. The promise will reject if an error occurred while retrieving the value.
 
-### `Expo.SecureStore.deleteItemAsync(key, options)`
+### `SecureStore.deleteItemAsync(key, options)`
 
 Delete the value associated with the provided key.
 

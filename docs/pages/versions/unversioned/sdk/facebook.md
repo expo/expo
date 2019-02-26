@@ -4,7 +4,13 @@ title: Facebook
 
 Provides Facebook integration for Expo apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
-## Registering your app with Facebook
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-facebook).
+
+## Configuration
+
+### Registering your app with Facebook
 
 Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call. Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/):
 
@@ -22,13 +28,21 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
 - **Android standalone app**
 
-    -   [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
-    -   Run `expo fetch:android:hashes`.
-    -   Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
+  -   [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
+  -   Run `expo fetch:android:hashes`.
+  -   Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
 
 You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in.
 
-## Usage
+## API
+
+```js
+// in managed apps:
+import { Facebook } from 'expo';
+
+// in bare apps:
+import * as Facebook from 'expo-facebook';
+```
 
 ### `Facebook.logInWithReadPermissionsAsync(appId, options)`
 

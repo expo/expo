@@ -4,35 +4,49 @@ title: Constants
 
 System information that remains constant throughout the lifetime of your app.
 
-### `Expo.Constants.appOwnership`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-constants).
+
+## API
+
+```js
+// in managed apps:
+import { Constants } from 'expo';
+
+// in bare apps:
+import Constants from 'expo-constants';
+```
+
+### `Constants.appOwnership`
 
 Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../distribution/building-standalone-apps/#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
 
-### `Expo.Constants.expoVersion`
+### `Constants.expoVersion`
 
 The version string of the Expo client currently running.
 
-### `Expo.Constants.installationId`
+### `Constants.installationId`
 
 An identifier that is unique to this particular device and installation of the Expo client.
 
-### `Expo.Constants.deviceName`
+### `Constants.deviceName`
 
 A human-readable name for the device type.
 
-### `Expo.Constants.deviceYearClass`
+### `Constants.deviceYearClass`
 
 The [device year class](https://github.com/facebook/device-year-class) of this device.
 
-### `Expo.Constants.getWebViewUserAgentAsync()`
+### `Constants.getWebViewUserAgentAsync()`
 
 Gets the user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS `fetch` requests.
 
-### `Expo.Constants.isDevice`
+### `Constants.isDevice`
 
 `true` if the app is running on a device, `false` if running in a simulator or emulator.
 
-### `Expo.Constants.platform`
+### `Constants.platform`
 
 - `ios`
 
@@ -40,7 +54,7 @@ Gets the user agent string which would be included in requests sent by a web vie
 
     The build number specified in the embedded `Info.plist` value for `CFBundleVersion` in this app.
     In a standalone app, you can set this with the `ios.buildNumber` value in `app.json`. This
-    may differ from the value in `Expo.Constants.manifest.ios.buildNumber` because the manifest
+    may differ from the value in `Constants.manifest.ios.buildNumber` because the manifest
     can be updated over the air, whereas this value will never change for a given native binary.
 
   - `platform`
@@ -65,19 +79,19 @@ Gets the user agent string which would be included in requests sent by a web vie
 
     The version code set by `android.versionCode` in app.json.
 
-### `Expo.Constants.sessionId`
+### `Constants.sessionId`
 
 A string that is unique to the current session of your app. It is different across apps and across multiple launches of the same app.
 
-### `Expo.Constants.statusBarHeight`
+### `Constants.statusBarHeight`
 
 The default status bar height for the device. Does not factor in changes when location tracking is in use or a phone call is active.
 
-### `Expo.Constants.systemFonts`
+### `Constants.systemFonts`
 
 A list of the system font names available on the current device.
 
-### `Expo.Constants.manifest`
+### `Constants.manifest`
 
 The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
 

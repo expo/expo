@@ -6,7 +6,17 @@ Given a view, `takeSnapshotAsync` will essentially screenshot that view and retu
 
 If you're interested in taking snapshots from the GLView, we recommend you use [GLView's takeSnapshotAsync](../gl-view/#takesnapshotasync) instead.
 
-### `Expo.takeSnapshotAsync(view, options)`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. For [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, use the [react-native-view-shot](https://github.com/gre/react-native-view-shot) library instead.
+
+## API
+
+```js
+import { takeSnapshotAsync } from 'expo';
+```
+
+### `takeSnapshotAsync(view, options)`
 
 Snapshots the given view.
 

@@ -2,7 +2,19 @@
 title: registerRootComponent
 ---
 
-### `Expo.registerRootComponent(component)`
+This function tells Expo what component to use as the root component for your app.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
+## API
+
+```js
+import { registerRootComponent } from 'expo';
+```
+
+### `registerRootComponent(component)`
 
 Sets the main component for Expo to use for your app.
 
@@ -16,16 +28,16 @@ Sets the main component for Expo to use for your app.
 
 No return value.
 
-> **Note:** `Expo.registerRootComponent` is roughly equivalent to React Native's [AppRegistry.registerComponent](https://facebook.github.io/react-native/docs/appregistry.html), with some additional hooks to provide Expo specific functionality.
+> **Note:** `registerRootComponent` is roughly equivalent to React Native's [AppRegistry.registerComponent](https://facebook.github.io/react-native/docs/appregistry.html), with some additional hooks to provide Expo specific functionality.
 
 ## Common questions
 
-### I created my project before SDK 18 and I want to remove `Expo.registerRootComponent`, how do I do this?
+### I created my project before SDK 18 and I want to remove `registerRootComponent`, how do I do this?
 
 - Before continuing, make sure your project is running on SDK 18 or later.
 - Open up `main.js` (or if you changed it, whatever your `"main"` is in `package.json`).
 - Set `"main"` to `"node_modules/expo/AppEntry.js"`.
-- Delete the `Expo.registerRootComponent` call from `main.js` and put `export default` before your root component's class declaration.
+- Delete the `registerRootComponent` call from `main.js` and put `export default` before your root component's class declaration.
 - Rename `main.js` to `App.js`.
 
 ### What if I want to name my main app file something other than App.js?
@@ -50,7 +62,7 @@ Then in `"src/main.js"`, make sure you call `registerRootComponent` and
 pass in the component you want to render at the root of the app.
 
 ```javascript
-import Expo from 'expo';
+import { registerRootComponent } from 'expo';
 import React from 'react';
 import { View } from 'react-native';
 
@@ -60,7 +72,7 @@ class App extends React.Component {
   }
 }
 
-Expo.registerRootComponent(App);
+registerRootComponent(App);
 ```
 
 #### [Github Issues](https://github.com/expo/expo/labels/registerRootComponent)

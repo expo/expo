@@ -2,13 +2,29 @@
 title: Location
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
-
 This module allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-location).
+
+## Usage
+
+import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 <SnackEmbed snackId="H14SNiW3g" />
+
+## API
+
+```js
+// in managed apps:
+import { Location } from 'expo';
+
+// in bare apps:
+import * as Location from 'expo-location';
+```
 
 ### `Location.hasServicesEnabledAsync()`
 

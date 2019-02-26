@@ -2,11 +2,15 @@
 title: AppLoading
 ---
 
-A React component that tells Expo to keep the app loading screen open if it is the first and only component rendered in your app. Unless `autoHideSplash` prop is set to `false` the loading screen will disappear and your app will be visible when the component is removed,.
+A React component that tells Expo to keep the app loading screen open if it is the first and only component rendered in your app. Unless `autoHideSplash` prop is set to `false` the loading screen will disappear and your app will be visible when the component is removed.
 
 This is incredibly useful to let you download and cache fonts, logo and icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering they start using the app.
 
-## Example
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
+## Usage
 
 ```javascript
 import React from 'react';
@@ -54,6 +58,12 @@ export default class App extends React.Component {
 
   }
 }
+```
+
+## API
+
+```js
+import { AppLoading } from 'expo';
 ```
 
 ### props

@@ -4,7 +4,21 @@ title: LocalAuthentication
 
 Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
-### `Expo.LocalAuthentication.hasHardwareAsync()`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-local-authentication).
+
+## API
+
+```js
+// in managed apps:
+import { LocalAuthentication } from 'expo';
+
+// in bare apps:
+import * as LocalAuthentication from 'expo-local-authentication';
+```
+
+### `LocalAuthentication.hasHardwareAsync()`
 
 Determine whether a face or fingerprint scanner is available on the device.
 
@@ -12,15 +26,15 @@ Determine whether a face or fingerprint scanner is available on the device.
 
 Returns a promise resolving to boolean value indicating whether a face or fingerprint scanner is available on this device.
 
-### `Expo.LocalAuthentication.supportedAuthenticationTypesAsync()`
+### `LocalAuthentication.supportedAuthenticationTypesAsync()`
 
 Determine what kinds of authentications are available on the device.
 
 #### Returns
 
-Returns a promise resolving to an array containing `Expo.LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported.
+Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported.
 
-### `Expo.LocalAuthentication.isEnrolledAsync()`
+### `LocalAuthentication.isEnrolledAsync()`
 
 Determine whether the device has saved fingerprints or facial data to use for authentication.
 
@@ -28,7 +42,7 @@ Determine whether the device has saved fingerprints or facial data to use for au
 
 Returns a promise resolving to boolean value indicating whether the device has saved fingerprints or facial data for authentication.
 
-### `Expo.LocalAuthentication.authenticateAsync()`
+### `LocalAuthentication.authenticateAsync()`
 
 Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
 
@@ -44,7 +58,7 @@ Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
 
 Returns a promise resolving to an object containing `success`, a boolean indicating whether or not the authentication was successful, and `error` containing the error code in the case where authentication fails.
 
-### `Expo.LocalAuthentication.cancelAuthenticate() - (Android Only)`
+### `LocalAuthentication.cancelAuthenticate() - (Android Only)`
 
 Cancels the fingerprint authentication flow.
 

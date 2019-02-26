@@ -11,13 +11,19 @@ Access the device barometer sensor to respond to changes in air pressure. `press
 | Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
 |         |
 
-## Usage
+## Installation
 
-> This module was introduced in Expo v33
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
-Barometer can be used outside of the Expo client with the `expo-sensors` & `expo-sensors-interface` libraries.
+## API
 
-## Methods
+```js
+// in managed apps:
+import { Barometer } from 'expo';
+
+// in bare apps:
+import { Barometer } from 'expo-sensors';
+```
 
 ### `Barometer.isAvailableAsync()`
 

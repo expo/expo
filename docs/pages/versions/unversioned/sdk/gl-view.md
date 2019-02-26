@@ -4,7 +4,21 @@ title: GLView
 
 A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
-## Props
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-gl).
+
+## API
+
+```js
+// in managed apps:
+import { GLView } from 'expo';
+
+// in bare apps:
+import { GLView } from 'expo-gl';
+```
+
+### props
 
 Other than the regular `View` props for layout and touch handling, the following props are available:
 

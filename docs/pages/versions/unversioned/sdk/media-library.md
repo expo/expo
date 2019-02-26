@@ -6,13 +6,25 @@ Provides access to user's media library.
 
 Requires `Permissions.CAMERA_ROLL` permissions.
 
-## Methods
+## Installation
 
-### `Expo.MediaLibrary.createAssetAsync(localUri)`
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
+
+## API
+
+```js
+// in managed apps:
+import { MediaLibrary } from 'expo';
+
+// in bare apps:
+import * as MediaLibrary from 'expo-media-library';
+```
+
+### `MediaLibrary.createAssetAsync(localUri)`
 
 Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
 
-```
+```js
 const { uri } = await camera.takePictureAsync();
 const asset = await MediaLibrary.createAssetAsync(uri);
 ```
@@ -25,7 +37,7 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 
 An object representing an [asset](#asset).
 
-### `Expo.MediaLibrary.getAssetsAsync(options)`
+### `MediaLibrary.getAssetsAsync(options)`
 
 Fetches a page of assets matching the provided criteria.
 
@@ -50,7 +62,7 @@ A promise that resolves to an object that contains following keys:
 -   **hasNextPage (_boolean_)** -- Whether there are more assets to fetch.
 -   **totalCount (_number_)** -- Estimated total number of assets that match the query.
 
-### `Expo.MediaLibrary.getAssetInfoAsync(asset)`
+### `MediaLibrary.getAssetInfoAsync(asset)`
 
 Provides more informations about an asset, including GPS location, local URI and EXIF metadata.
 
@@ -62,7 +74,7 @@ Provides more informations about an asset, including GPS location, local URI and
 
 Asset object extended by additional fields listed [in the table](#asset).
 
-### `Expo.MediaLibrary.deleteAssetsAsync(assets)`
+### `MediaLibrary.deleteAssetsAsync(assets)`
 
 Deletes assets from the library.
 On iOS it deletes assets from all albums they belong to, while on Android it keeps all copies of them (album is strictly connected to the asset).
@@ -76,7 +88,7 @@ Also, there is additional dialog on iOS that requires user to confirm this actio
 
 Returns `true` if the assets were successfully deleted.
 
-### `Expo.MediaLibrary.getAlbumsAsync()`
+### `MediaLibrary.getAlbumsAsync()`
 
 Queries for user-created albums in media gallery.
 
@@ -84,7 +96,7 @@ Queries for user-created albums in media gallery.
 
 An array of [albums](#album).
 
-### `Expo.MediaLibrary.getAlbumAsync(albumName)`
+### `MediaLibrary.getAlbumAsync(albumName)`
 
 Queries for an album with a specific name.
 
@@ -96,7 +108,7 @@ Queries for an album with a specific name.
 
 An object representing an [album](#album) if album with given name exists, otherwise returns `null`.
 
-### `Expo.MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)`
+### `MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)`
 
 Creates an album with given name and initial asset.
 The asset parameter is required on Android, since it's not possible to create empty album on this platform. 
@@ -113,7 +125,7 @@ In case it's copied you should keep in mind that `getAssetsAsync` will return du
 
 Newly created [album](#album).
 
-### `Expo.MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)`
+### `MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)`
 
 Deletes given albums from the library.
 
@@ -128,7 +140,7 @@ On Android by default it deletes assets belonging to given albums from the libra
 
 Returns a promise resolving to `true` if the albums were successfully deleted from the library.
 
-### `Expo.MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)`
+### `MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)`
 
 Adds array of assets to the album.
 
@@ -145,7 +157,7 @@ In case they're copied you should keep in mind that `getAssetsAsync` will return
 
 Resolves to `true` if the assets were successfully added to the album.
 
-### `Expo.MediaLibrary.removeAssetsFromAlbumAsync(assets, album)`
+### `MediaLibrary.removeAssetsFromAlbumAsync(assets, album)`
 
 Removes given assets from album.
 
@@ -160,7 +172,7 @@ On Android, album will be automatically deleted if there are no more assets insi
 
 Returns `true` if the assets were successfully removed from the album.
 
-### `Expo.MediaLibrary.getMomentsAsync()`
+### `MediaLibrary.getMomentsAsync()`
 
 **Available on iOS only.** Fetches a list of moments, which is a group of assets taken around the same place and time.
 
@@ -169,7 +181,7 @@ Returns `true` if the assets were successfully removed from the album.
 An array of [albums](#album) whose type is `moment`.
 
 
-### `Expo.MediaLibrary.addListener(listener)`
+### `MediaLibrary.addListener(listener)`
 
 Subscribes for updates in user's media library.
 
@@ -183,7 +195,7 @@ Subscribes for updates in user's media library.
 
 An EventSubscription object that you can call `remove()` on when you would like to unsubscribe the listener.
 
-### `Expo.MediaLibrary.removeAllListeners()`
+### `MediaLibrary.removeAllListeners()`
 
 Removes all listeners.
 
@@ -229,7 +241,7 @@ Removes all listeners.
 
 ## Constants
 
-### `Expo.MediaLibrary.MediaType`
+### `MediaLibrary.MediaType`
 
 Possible media types:
 - `MediaType.photo`
@@ -237,7 +249,7 @@ Possible media types:
 - `MediaType.audio`
 - `MediaType.unknown`
 
-### `Expo.MediaLibrary.SortBy`
+### `MediaLibrary.SortBy`
 
 Supported keys that can be used to sort `getAssetsAsync` results:
 - `SortBy.default`

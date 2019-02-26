@@ -2,11 +2,27 @@
 title: ImagePicker
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
-
 Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
-### `Expo.ImagePicker.launchImageLibraryAsync(options)`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-picker).
+
+## Usage
+
+import SnackEmbed from '~/components/plugins/SnackEmbed';
+
+## API
+
+```js
+// in managed apps:
+import { ImagePicker } from 'expo';
+
+// in bare apps:
+import * as ImagePicker from 'expo-image-picker';
+```
+
+### `ImagePicker.launchImageLibraryAsync(options)`
 
 Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS only.
 
@@ -32,7 +48,7 @@ If the user cancelled the picking, returns `{ cancelled: true }`.
 
 Otherwise, returns `{ cancelled: false, uri, width, height, type }` where `uri` is a URI to the local media file (useable as the source for an `Image`/`Video` element), `width, height` specify the dimensions of the media and `type` is one of `image` or `video` telling what kind of media has been chosen. Images can contain also `base64` and `exif` keys. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpeg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags. If a video has been picked the return object contains an additional key `duration` specifying the video's duration in miliseconds.
 
-### `Expo.ImagePicker.launchCameraAsync(options)`
+### `ImagePicker.launchCameraAsync(options)`
 
 Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA` along with `Permissions.CAMERA_ROLL`.
 

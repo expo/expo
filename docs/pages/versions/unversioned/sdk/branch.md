@@ -6,6 +6,12 @@ Expo includes alpha support for [Branch](https://branch.io/) attribution service
 
 > **Note:** This API only works with standalone builds created with [expo build](../../distribution/building-standalone-apps/).
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. In a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you should use [react-native-branch-deep-linking](https://github.com/BranchMetrics/react-native-branch-deep-linking) instead.
+
+## Usage
+
 ## Importing Branch
 
 The Branch SDK currently lives under Expo's **DangerZone** namespace because it's in a place where it might change significantly. You can import it like this:

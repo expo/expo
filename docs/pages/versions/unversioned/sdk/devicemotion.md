@@ -4,7 +4,22 @@ title: DeviceMotion
 
 Access the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.
 
-### `DangerZone.DeviceMotion.isAvailableAsync()`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+// in managed apps:
+import { DangerZone } from 'expo';
+const { DeviceMotion } = DangerZone;
+
+// in bare apps:
+import { DeviceMotion } from 'expo-sensors';
+```
+
+### `DeviceMotion.isAvailableAsync()`
 
 Returns whether device motion is enabled on the device.
 
@@ -12,7 +27,7 @@ Returns whether device motion is enabled on the device.
 
 - A promise that resolves to a `boolean` denoting the availability of the sensor.
 
-### `DangerZone.DeviceMotion.addListener(listener)`
+### `DeviceMotion.addListener(listener)`
 
 Subscribe for updates to DeviceMotion.
 
@@ -37,11 +52,11 @@ Subscribe for updates to DeviceMotion.
 - A subscription that you can call `remove()` on when you
   would like to unsubscribe the listener.
 
-### `DangerZone.DeviceMotion.removeAllListeners()`
+### `DeviceMotion.removeAllListeners()`
 
 Remove all listeners.
 
-### `DangerZone.DeviceMotion.setUpdateInterval(intervalMs)`
+### `DeviceMotion.setUpdateInterval(intervalMs)`
 
 Subscribe for updates to DeviceMotion.
 

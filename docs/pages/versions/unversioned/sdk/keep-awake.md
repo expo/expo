@@ -4,7 +4,21 @@ title: KeepAwake
 
 A React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.
 
-## Example: component
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-keep-awake).
+
+## Usage
+
+```js
+// in managed apps:
+import { KeepAwake } from 'expo';
+
+// in bare apps:
+import KeepAwake from 'expo-keep-awake';
+```
+
+### Example: component
 
 ```javascript
 import React from 'react';

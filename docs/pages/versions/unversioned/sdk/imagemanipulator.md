@@ -2,7 +2,21 @@
 title: ImageManipulator
 ---
 
-An API to modify images stored in app scope.
+An API to modify images stored on the local file system.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
+
+## API
+
+```js
+// in managed apps:
+import { ImageManipulator } from 'expo';
+
+// in bare apps:
+import * as ImageManipulator from 'expo-image-manipulator';
+```
 
 ### `ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
 
@@ -10,7 +24,7 @@ Manipulate the image provided via `uri`. Available modifications are rotating, f
 
 #### Arguments
 
--   **uri (_string_)** -- URI of the file to manipulate. Should be in the app's scope.
+-   **uri (_string_)** -- URI of the file to manipulate. Should be on the local file system.
 -   **actions (_array_)** --
 
        An array of objects representing manipulation options. Each object should have *only one* of the following keys that corresponds to specific transformation:

@@ -8,7 +8,23 @@ Note that for `Video`, all of these operations are also available via props on t
 
 Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
 
-## Construction and obtaining a reference
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+
+## API
+
+```js
+// in managed apps:
+import { Audio, Video } from 'expo';
+
+// in bare apps:
+import { Audio, Video } from 'expo-av';
+```
+
+## Usage
+
+### Construction and obtaining a reference
 
 In this page, we reference operations on `playbackObject`s. Here is an example of obtaining access to the reference for both sound and video:
 

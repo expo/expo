@@ -4,19 +4,35 @@ title: FaceDetector
 
 `FaceDetector` lets you use the power of [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
-## Known issues
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-face-detector).
+
+## Usage
+
+### Known issues
 
 - Android does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
 
-## Comprehensive Example
+### Comprehensive Example
 
 Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@community/camerja](https://expo.io/@community/camerja).
 
 `FaceDetector` is used in Gallery screen — it should detect faces on saved photos and show the probability that the face is smiling.
 
-## Intermodule interface
+### Intermodule interface
 
 Other modules, like eg. [Camera](../camera/) are able to use this `FaceDetector`.
+
+## API
+
+```js
+// in managed apps:
+import { FaceDetector } from 'expo';
+
+// in bare apps:
+import * as FaceDetector from 'expo-face-detector';
+```
 
 ### Settings
 

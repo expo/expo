@@ -4,7 +4,9 @@ title: Linking
 
 This module allows your app to interact with other apps via deep links. It provides helper methods for constructing and parsing deep links into your app.
 
-This module is an extension of the React Native [Linking module](https://facebook.github.io/react-native/docs/linking.html), meaning that all methods in the RN module can be accessed via `Linking`, on top of the extra methods provided by Expo (detailed here).
+This module is an extension of the React Native [Linking module](https://facebook.github.io/react-native/docs/linking.html), meaning that all methods in the RN module can be accessed via `Linking`, on top of the extra methods provided by Expo (detailed here). **These methods only apply to the managed workflow, you cannot use them in a bare React Native app**.
+
+## API
 
 ### `Linking.makeUrl(path, queryParams)`
 

@@ -8,13 +8,19 @@ A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on An
 
 Expo includes version 0.22.0 of react-native-maps (the latest as of the time of this writing).
 
-<SnackEmbed snackId="@adamjnav/mapview-example" />
+## Installation
 
-## `MapView`
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow the [react-native-maps installation instructions](https://github.com/react-native-community/react-native-maps).
+
+## Usage
 
 See full documentation at [react-community/react-native-maps](https://github.com/react-community/react-native-maps).
 
-## Deploying to a standalone app on Android
+<SnackEmbed snackId="@adamjnav/mapview-example" />
+
+## Configuration
+
+### Deploying to a standalone app on Android
 
 If you have already integrated Google Sign In into your standalone app, this is very easy. Otherwise, there are some additional steps.
 
@@ -39,11 +45,11 @@ If you have already integrated Google Sign In into your standalone app, this is 
 
 Note that if you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
 
-## Deploying Google Maps to a standalone app on iOS
+### Deploying Google Maps to a standalone app on iOS
 
 Apple Maps should just work with no extra configuration. For Google Maps, you can specify your own Google Maps API key using the `ios.config.googleMapsApiKey` [configuration](../../workflow/configuration#ios) in your project's app.json.
 
-## Deploying Google Maps to ExpoKit for iOS
+### Deploying Google Maps to ExpoKit for iOS
 
 If you want to add MapView with Google Maps to an [ExpoKit](../../expokit) (ejected) project on iOS, you may need to manually provide a key by calling:
 
@@ -53,7 +59,7 @@ If you want to add MapView with Google Maps to an [ExpoKit](../../expokit) (ejec
 
 Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist` and ExpoKit will pick it up automatically. If you ejected after already configuring Google Maps, the eject step may have already provided this for you.
 
-## Web Setup
+### Web Setup
 
 > Web is experimental! You may need to add the web target to your Expo app.
 

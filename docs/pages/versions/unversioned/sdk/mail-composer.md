@@ -4,6 +4,20 @@ title: MailComposer
 
 An API to compose mails using OS specific UI.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-mail-composer).
+
+## API
+
+```js
+// in managed apps:
+import { MailComposer } from 'expo';
+
+// in bare apps:
+import * as MailComposer from 'expo-mail-composer';
+```
+
 ### `MailComposer.composeAsync(options)`
 
 Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided data. 
