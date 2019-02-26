@@ -16,9 +16,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-app-loader-provider",
-  "dependencies": {
-    "expo-core": "~2.0.0"
-  },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0"
   },
