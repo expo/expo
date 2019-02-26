@@ -40,6 +40,7 @@ function getWebConfig() {
             'expo-asset/build/AssetSourceResolver',
           'react-native/Libraries/Image/assetPathUtils$': 'expo-asset/build/Image/assetPathUtils',
           'react-native/Libraries/Image/resolveAssetSource$': 'expo-asset/build/resolveAssetSource',
+          'react-native/Libraries/Components/View/ViewStylePropTypes$': 'react-native-web/dist/exports/View/ViewStylePropTypes',
         },
       },
     ],
