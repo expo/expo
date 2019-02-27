@@ -54,7 +54,9 @@ describe('warnDeprecated', () => {
   });
 
   it('throws a replacement without expiration', async () => {
-    expect(() => Errors.warnDeprecated('expo-errors', 'foo', { replacement: 'bar' })).toThrow();
+    expect(() => Errors.warnDeprecated('expo-errors', 'foo', { replacement: 'bar' })).toThrowError(
+      Errors.CodedError
+    );
   });
 
   it('throws a replacement after expiration', async () => {

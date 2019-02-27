@@ -1,14 +1,5 @@
-/**
- * A general error class that should be used for all errors in Expo modules.
- * Guarantees a `code` field that can be used to differentiate between different
- * types of errors without further subclassing Error.
- */
-export class CodedError extends Error {
-    constructor(code, message) {
-        super(message);
-        this.code = code;
-    }
-}
+import CodedError from './CodedError';
+export { CodedError };
 /**
  * A class for errors to be thrown when a property is accessed which is
  * unavailable, unsupported, or not currently implemented on the running
