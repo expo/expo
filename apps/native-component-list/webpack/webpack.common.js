@@ -5,6 +5,7 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 const getLocations = require('./webpackLocations');
 const createIndexHTMLFromAppJSON = require('./createIndexHTMLFromAppJSON');
 const createClientEnvironment = require('./createClientEnvironment');
@@ -167,6 +168,9 @@ module.exports = function(env) {
       useWebModule('Platform', 'Utilities/Platform'),
       useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
 
+      /** Remove unused import/exports  */
+      new WebpackDeepScopeAnalysisPlugin(),
+
       new WorkboxPlugin.GenerateSW({
         skipWaiting: true,
         clientsClaim: true,
@@ -189,7 +193,7 @@ module.exports = function(env) {
     ],
 
     module: {
-      strictExportPresence: false,
+      strictExportPresence: true,
 
       rules: [
         { parser: { requireEnsure: false } },
