@@ -30,6 +30,9 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
+  "dependencies": {
+    "semver": "^5.6.0"
+  },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
