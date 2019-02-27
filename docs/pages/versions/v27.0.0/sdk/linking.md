@@ -45,4 +45,3 @@ An object with the following keys:
 -   **path (_string_)** -- The path specified by the url used to open the app.
 -   **queryParams (_object_)** -- The set of query parameters specified by the query string of the url used to open the app.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Linking)

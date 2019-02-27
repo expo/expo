@@ -60,4 +60,3 @@ A `Promise` resolving once native size haptics functionality is triggered.
 
 A `Promise` resolving once native size haptics functionality is triggered.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Haptic)

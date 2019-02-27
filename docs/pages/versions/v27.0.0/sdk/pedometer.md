@@ -41,4 +41,4 @@ Subscribe to pedometer updates.
 
 - An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Pedometer)
+#

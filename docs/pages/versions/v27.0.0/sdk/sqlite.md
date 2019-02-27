@@ -75,4 +75,4 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
 
 -   **rows._array (_number_)** -- The actual array of rows returned by the query. Can be used directly instead of getting rows through `rows.item()`.
 
-#### [Github Issues](https://github.com/expo/expo/labels/SQLite)
+#

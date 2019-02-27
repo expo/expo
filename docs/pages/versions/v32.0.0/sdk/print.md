@@ -65,4 +65,3 @@ They are set by `@page` style block and you can override them in your HTML code:
 
 See [@page docs on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@page) for more details.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Print)

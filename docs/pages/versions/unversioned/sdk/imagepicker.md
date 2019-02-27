@@ -83,4 +83,3 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/ImagePicker)

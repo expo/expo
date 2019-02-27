@@ -65,4 +65,3 @@ Subscribe for updates to DeviceMotion.
 - **intervalMs (_number_)** Desired interval in milliseconds between
   DeviceMotion updates.
 
-#### [Github Issues](https://github.com/expo/expo/labels/DeviceMotion)

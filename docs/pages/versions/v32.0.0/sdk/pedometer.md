@@ -44,4 +44,3 @@ Subscribe to pedometer updates.
 ## Standalone Applications
 You'll need to configure an Android OAuth client for your app on the Google Play console for it to work as a standalone application on the Android platform. See https://developers.google.com/fit/android/get-api-key
 
-#### [Github Issues](https://github.com/expo/expo/labels/Pedometer)

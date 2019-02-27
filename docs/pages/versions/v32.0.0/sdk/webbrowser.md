@@ -54,4 +54,3 @@ Dismisses the system's presented web browser.
 
 The promise resolves with `{ type: 'dismiss' }`.
 
-#### [Github Issues](https://github.com/expo/expo/labels/WebBrowser)

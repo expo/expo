@@ -157,4 +157,3 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
 });
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/TaskManager)

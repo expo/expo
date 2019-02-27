@@ -45,4 +45,4 @@ Gets global system screen brightness.
 #### Returns
 A `Promise` that is resolved with a number between 0 and 1, representing the current system screen brightness.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Brightness)
+#

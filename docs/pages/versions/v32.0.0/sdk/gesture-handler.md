@@ -17,4 +17,3 @@ import { GestureHandler } from 'expo';
 // import GestureHandler from 'react-native-gesture-handler';
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/GestureHandler)

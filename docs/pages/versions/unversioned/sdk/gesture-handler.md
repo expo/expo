@@ -18,4 +18,3 @@ import GestureHandler from 'react-native-gesture-handler';
 
 Read the [react-native-gesture-handler docs](https://kmagiera.github.io/react-native-gesture-handler) for more information on the API and usage.
 
-#### [Github Issues](https://github.com/expo/expo/labels/GestureHandler)

@@ -60,4 +60,4 @@ Add the current user to a group. For more  information, see here for [iOS](https
 -   **groupType (_string_)** -- The group name, e.g. "sports".
 -   **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Amplitude)
+#

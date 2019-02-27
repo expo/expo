@@ -670,4 +670,3 @@ The internal ID used to render the camera texture.
 }
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/AR)

@@ -68,4 +68,4 @@ Dismisses the system's presented web browser. On Android calling this method doe
 
 The promise resolves with `{ type: 'dismiss' }`.
 
-#### [Github Issues](https://github.com/expo/expo/labels/WebBrowser)
+#

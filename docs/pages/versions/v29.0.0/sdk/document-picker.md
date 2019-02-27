@@ -37,4 +37,3 @@ And finally, to apply those changes, you'll need to revoke your existing provisi
 
 For ExpoKit apps, you need to open the project in Xcode and follow the [Using DocumentPicker instructions](../../expokit/advanced-expokit-topics/#using-documentpicker) in the Advanced ExpoKit Topics guide.
 
-#### [Github Issues](https://github.com/expo/expo/labels/DocumentPicker)

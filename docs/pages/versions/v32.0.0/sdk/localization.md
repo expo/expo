@@ -90,4 +90,3 @@ type NativeEvent = {
 const { locale } = await Localization.getLocalizationAsync();
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Localization)

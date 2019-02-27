@@ -67,4 +67,3 @@ export default class KeepAwakeExample extends React.Component {
 }
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/KeepAwake)

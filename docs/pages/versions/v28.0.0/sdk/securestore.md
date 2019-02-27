@@ -77,4 +77,4 @@ Delete the value associated with the provided key.
 
 A promise that will reject if the value couldn't be deleted.
 
-#### [Github Issues](https://github.com/expo/expo/labels/SecureStore)
+#

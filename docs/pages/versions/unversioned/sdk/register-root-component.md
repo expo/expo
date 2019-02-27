@@ -75,4 +75,3 @@ class App extends React.Component {
 registerRootComponent(App);
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/registerRootComponent)

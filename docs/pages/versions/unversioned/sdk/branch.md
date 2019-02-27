@@ -89,4 +89,4 @@ class ArticleScreen extends Component {
 }
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Branch)
+#

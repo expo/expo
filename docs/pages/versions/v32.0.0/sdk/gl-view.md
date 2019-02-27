@@ -105,4 +105,3 @@ The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/do
 
 For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
 
-#### [Github Issues](https://github.com/expo/expo/labels/GLView)

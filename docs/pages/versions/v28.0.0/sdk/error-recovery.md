@@ -10,4 +10,4 @@ Set arbitrary error recovery props. If your project crashes in production as a r
 
 -   **props (_object_)** -- An object which will be passed to your reloaded project's initial props if the project was reloaded as a result of a fatal JS error.
 
-#### [Github Issues](https://github.com/expo/expo/labels/ErrorRecovery)
+#

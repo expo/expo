@@ -37,4 +37,4 @@ Attempts to authenticate via Fingerprint.
 
 Cancels the fingerprint authentication flow.
 
-#### [Github Issues](https://github.com/expo/expo/labels/LocalAuthentication)
+#

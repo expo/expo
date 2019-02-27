@@ -130,4 +130,4 @@ Opens a rewarded AdMob ad.
 | `rewardBasedVideoAdDidClose`                 | `rewardedVideoDidClose`             | `onRewardedVideoAdClosed`          |
 | `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
 
-#### [Github Issues](https://github.com/expo/expo/labels/Admob)
+#
