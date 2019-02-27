@@ -1,7 +1,17 @@
 import React from 'react';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
 import CameraModule from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
+let findNodeHandle = function (node) { };
+let flatten = data => data;
+let View = props => <div {...props}/>;
+// Without react-native-web
+try {
+    const ReactNative = require('react-native');
+    findNodeHandle = ReactNative.findNodeHandle;
+    flatten = ReactNative.StyleSheet.flatten;
+    View = ReactNative.View;
+}
+catch (error) { }
 export default class ExponentCamera extends React.Component {
     constructor() {
         super(...arguments);
@@ -89,7 +99,7 @@ export default class ExponentCamera extends React.Component {
     }
     render() {
         const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
-        const reactStyle = StyleSheet.flatten(this.props.style);
+        const reactStyle = flatten(this.props.style);
         const style = {
             position: 'absolute',
             top: 0,
