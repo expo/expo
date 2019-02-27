@@ -2,7 +2,6 @@ const merge = require('webpack-merge');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
@@ -70,87 +69,5 @@ module.exports = function(env = {}) {
         },
       ]),
     ],
-    // output: {
-    //   pathinfo: true,
-    // },
-    // optimization: {
-    // usedExports: true,
-    // concatenateModules: true,
-    // occurrenceOrder: true,
-    // minimize: true,
-    // sideEffects: false,
-    // minimizer: [
-    //   new TerserPlugin({
-    //     cache: true,
-    //     sourceMap: true,
-    //     parallel: true,
-    //     extractComments: 'all',
-    //     terserOptions: {
-    //       warnings: false,
-    //       parse: {
-    //         ecma: 8,
-    //       },
-    //       compress: {
-    //         ecma: 5,
-    //         warnings: false,
-    //         comparisons: false,
-    //         inline: 2,
-    //       },
-    //       mangle: {
-    //         safari10: true,
-    //       },
-    //       output: {
-    //         ecma: 5,
-    //         comments: false,
-    //         ascii_only: true,
-    //       },
-    //       module: false,
-    //       toplevel: false,
-    //       nameCache: null,
-    //       ie8: false,
-    //       keep_classnames: undefined,
-    //       keep_fnames: false,
-    //     },
-    //   }),
-    // ],
-    // splitChunks: {
-    //   chunks: 'all',
-    //   maxInitialRequests: Infinity,
-    //   maxAsyncRequests: 5,
-    //   minSize: 0,
-    //   maxSize: 0,
-    //   minChunks: Infinity,
-    //   automaticNameDelimiter: '~',
-    //   name: true,
-    //   cacheGroups: {
-    //     vendor: {
-    //       chunks: 'all',
-    //       priority: -10,
-    //       test: /[\\/]node_modules[\\/]/,
-    //       // name of the chunk
-    //       name(module) {
-    //         // get the name. E.g. node_modules/packageName/not/this/part.js
-    //         // or node_modules/packageName
-    //         const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-    //         // npm package names are URL-safe, but some servers don't like @ symbols
-    //         return `npm.${packageName.replace('@', '')}`;
-    //       },
-    //     },
-    //     default: {
-    //       minChunks: 2,
-    //       priority: -20,
-    //       reuseExistingChunk: true,
-    //     },
-    //     commons: {
-    //       name: 'commons',
-    //       chunks: 'initial',
-    //       minChunks: 2,
-    //       priority: 10,
-    //       reuseExistingChunk: true,
-    //       enforce: true,
-    //     },
-    //   },
-    // },
-    // },
   });
 };
