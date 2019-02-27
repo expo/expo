@@ -141,7 +141,7 @@ function generateREADME() {
 let readme = generateREADME();
 let readmePath = path.join(process.cwd(), 'README.md');
 if (fs.existsSync(readmePath)) {
-  // TODO: use inquirer to prompt..
-  console.warn("Overwriting README.md, be sure to compare diff to ensure it's correct");
+  console.log("expo-module-scripts: README.md exists, not updating");
+} else {
+  fs.writeFileSync(readmePath, readme, { encoding: 'utf8' });
 }
-fs.writeFileSync(readmePath, readme, { encoding: 'utf8' });

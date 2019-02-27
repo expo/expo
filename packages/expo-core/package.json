@@ -1,6 +1,6 @@
 {
   "name": "expo-core",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "The core Expo universal module between application code and the underlying platform",
   "main": "build/index.js",
   "types": "build/index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "expo-react-native-adapter",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "The adapter to use Expo universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "EXAppAuth",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "summary": "Provides an interface with the OpenID library AppAuth",
   "description": "Provides an interface with the OpenID library AppAuth",
   "license": "MIT",

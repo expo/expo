@@ -102,7 +102,7 @@ export declare const PlaybackMixin: {
         toleranceMillisBefore?: number | undefined;
         toleranceMillisAfter?: number | undefined;
     }): Promise<PlaybackStatus>;
-    setRateAsync(rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<PlaybackStatus>;
+    setRateAsync(rate: number, shouldCorrectPitch?: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<PlaybackStatus>;
     setVolumeAsync(volume: number): Promise<PlaybackStatus>;
     setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus>;
     setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus>;

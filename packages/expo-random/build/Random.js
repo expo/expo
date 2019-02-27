@@ -2,8 +2,7 @@ import { UnavailabilityError } from 'expo-errors';
 import { toByteArray } from 'base64-js';
 import ExpoRandom from './ExpoRandom';
 function assertByteCount(value) {
-    if (value == null ||
-        typeof value !== 'number' ||
+    if (typeof value !== 'number' ||
         isNaN(value) ||
         Math.floor(value) < 0 ||
         Math.floor(value) > 1024) {
