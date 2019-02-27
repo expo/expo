@@ -1,12 +1,13 @@
 import Sharing from './ExpoSharing';
 
-interface ShareParams {
+type ShareOptions = {
   mimeType?: string
   UTI?: string
 }
+
 export async function shareAsync(
   url: string,
-  params: ShareParams = {}
-): Promise<any> {
-  return Sharing.shareAsync(url, params)
+  options: ShareOptions = {}
+): Promise<boolean> {
+  return await Sharing.shareAsync(url, options)
 }

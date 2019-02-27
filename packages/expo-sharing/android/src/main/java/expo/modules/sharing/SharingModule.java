@@ -58,14 +58,14 @@ public class SharingModule extends ExportedModule implements ModuleRegistryConsu
     boolean localFile = "file".equals(uri.getScheme());
 
     if (!localFile) {
-      promise.reject(new Error(("Only local files are supported")));
+      promise.reject("ERR_SHARING_INVALID_URI", "Only local files are supported");
       return;
     }
 
     try {
       uri = FileProvider.getUriForFile(mContext, mContext.getApplicationInfo().packageName + ".provider", file);
     } catch (Exception e) {
-      promise.reject(e);
+      promise.reject("ERR_SHARING", "Failed to get the content URI for the file to share", e);
       return;
     }
 
@@ -84,5 +84,6 @@ public class SharingModule extends ExportedModule implements ModuleRegistryConsu
     intent.setType(mimeType);
     intent.putExtra(Intent.EXTRA_STREAM, uri);
     mContext.startActivity(Intent.createChooser(intent, "Share to"));
+    promise.resolve(true)
   }
 }

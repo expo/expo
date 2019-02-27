@@ -40,9 +40,8 @@ EX_EXPORT_METHOD_AS(shareAsync,
     if(canOpen) resolve(result);
     else {
       NSError *error = [[NSError alloc] init];
-      reject(@"cannot_handle_file", @"Can not handle file", error);
+      reject(@"ERR_SHARING_UNSUPPORTED_TYPE", @"Could not share file since there were no apps registered for its type", error);
     }
-    
   });
 }
 

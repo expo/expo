@@ -1,3 +1,3 @@
 import { NativeModulesProxy } from 'expo-core';
 
-export default NativeModulesProxy.ExpoSharing || {};
+export default NativeModulesProxy.ExpoSharing;
