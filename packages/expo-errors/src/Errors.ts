@@ -20,6 +20,11 @@ export class CodedError extends Error {
  */
 export class UnavailabilityError extends CodedError {
   constructor(moduleName: string, propertyName: string) {
-    super('ERR_UNAVAILABLE', `The method or property ${moduleName}.${propertyName} is not available on this platform, are you sure you've linked all the native dependencies properly?`);
+    super(
+      'ERR_UNAVAILABLE',
+      `The method or property ${moduleName}.${propertyName} is not available on this platform, are you sure you've linked all the native dependencies properly?`
+    );
   }
 }
+
+export { default as warnDeprecated } from './warnDeprecated';
