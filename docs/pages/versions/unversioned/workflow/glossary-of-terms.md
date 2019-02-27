@@ -31,7 +31,7 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 ### Expo CLI
 
-The command-line tool for working with Expo. [Read more](../exp-cli/).
+The command-line tool for working with Expo. [Read more](../expo-cli/).
 
 ### Expo Client
 

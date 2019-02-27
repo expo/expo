@@ -2,9 +2,9 @@
 title: Why not Expo?
 ---
 
-The [bare](../introduction/managed-vs-bare/) workflow has limited upsides (we can't handle as much of the complexity for you), but otherwise you're just building a React Native app and there is no need to discuss Expo-specific tradeoffs in this context.
+The [bare](../../introduction/managed-vs-bare/) workflow has limited upsides (we can't handle as much of the complexity for you), but otherwise you're just building a React Native app and there is no need to discuss Expo-specific tradeoffs in this context.
 
-So, this question could be better phrased as: why not the [managed](../introduction/managed-vs-bare/) workflow?
+So, this question could be better phrased as: why not the [managed](../../introduction/managed-vs-bare/) workflow?
 
 The managed workflow isn't ready to be used for *all apps* yet. There are plenty of cases where its current constraints may not be appropriate for your project. The intention of this document is to outline some of those cases, so that you don't end up building an app with Expo and getting frustrated when you encounter an obstacle that you can't overcome without switching to the bare workflow. We are either planning on or actively working on building solutions to all of the features listed below, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests).
 

@@ -8,6 +8,6 @@ Because Expo already provides the ability to [render native binaries for the App
 
 This documentation will discuss:
 
-- [Ejecting](eject/) your normal (JS) Expo project into a JS-and-native ExpoKit project
-- [Changing your workflow](expokit/) to use custom native code with ExpoKit
-- Other [advanced ExpoKit topics](advanced-expokit-topics/)
+- [Ejecting](../eject/) your normal (JS) Expo project into a JS-and-native ExpoKit project
+- [Changing your workflow](../expokit/) to use custom native code with ExpoKit
+- Other [advanced ExpoKit topics](../advanced-expokit-topics/)

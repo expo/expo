@@ -42,7 +42,7 @@ Apps are served from Expo CLI through a tunnel service by default (we currently 
 
 ## What Expo can't do
 
-- See [Why not Expo?](../introduction/why-not-expo/) for more information.
+- See [Why not Expo?](../../introduction/why-not-expo/) for more information.
 
 ## Deploying to the App / Play Store
 
