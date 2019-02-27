@@ -136,6 +136,17 @@ workflows:
   docs:
     jobs:
       - docs
+      - docs_approve_deploy:
+          type: approval
+          requires:
+            - docs
+      - docs_deploy:
+          requires:
+            - docs_approve_deploy
+          filters:
+            branches:
+              only:
+                - master
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
@@ -419,11 +430,21 @@ jobs:
       - run:
           working_directory: docs
           command: yarn run test-links http://localhost:8000
+      - save_cache:
+          key: docs-site-{{ .Revision }}
+          paths:
+            - docs/out
+
+  docs_deploy:
+    executor: nix
+    steps:
+      - setup
+      - restore_cache:
+          keys:
+            - docs-site-{{ .Revision }}
       - deploy:
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              aws s3 sync docs/out s3://docs.expo.io --delete
-            fi
+            aws s3 sync docs/out s3://docs.expo.io --delete
 
   test_suite_publish:
     executor: nix
