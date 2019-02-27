@@ -4,6 +4,14 @@ Expo is a set of tools, libraries, and services that let you build native iOS an
 
 [Click here to view our documentation](https://docs.expo.io) for developing on Expo. If you're new to the Expo community, [click here to view the Expo Community Guidelines](https://expo.io/guidelines). Thank you for helping keep the Expo community open and welcoming!
 
+## Contributing to the Foundation Unimodules
+
+The Foundation Unimodules by Expo are under `packages`, along with other JS packages. Each Unimodule has its own tests in its package (`yarn test`) and under `apps/test-suite` (run a development build of the Expo client, run `expo start` in `test-suite`, and load it on a device). We recommend reading the source for several Unimodules to get a sense of the code conventions and taste.
+
+- [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
+- [Contributing to Expo in General](.github/CONTRIBUTING.md)
+- [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
+
 ## Introduction
 
 This is the source code for the Expo client app used to view experiences published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
