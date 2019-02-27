@@ -16,3 +16,4 @@ export declare class CodedError extends Error {
 export declare class UnavailabilityError extends CodedError {
     constructor(moduleName: string, propertyName: string);
 }
+export { default as warnDeprecated } from './warnDeprecated';

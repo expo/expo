@@ -9,6 +9,26 @@ import {
   findNodeHandle,
 } from 'react-native';
 
+import { warnDeprecated } from 'expo-errors';
+
+function warnDeprecatedConstant(deprecated: string, replacement: string) {
+  warnDeprecated('Expo.AR', deprecated, { replacement, versionToRemove: '34.0.0' });
+}
+
+function deprecatedEnum(lastEnumName, nextEnumName, nextEnum) {
+  let deprecated = {};
+  for (const key of Object.keys(nextEnum)) {
+    Object.defineProperty(deprecated, key, {
+      enumerable: true,
+      get(): string {
+        warnDeprecatedConstant(`${lastEnumName}.${key}`, `${nextEnumName}.${key}`);
+        return nextEnum[key];
+      },
+    });
+  }
+  return deprecated;
+}
+
 const ExponentAR = NativeModules.ExponentAR || {};
 
 const emitter = new NativeEventEmitter(ExponentAR);
@@ -370,6 +390,37 @@ export enum TrackingStateReason {
   /** Tracking is limited due to a relocalization in progress. */
   Relocalizing = 'ARTrackingStateReasonRelocalizing',
 }
+
+export const FrameAttributes = deprecatedEnum('FrameAttributes', 'FrameAttribute', FrameAttribute);
+export const TrackingConfigurations = deprecatedEnum(
+  'TrackingConfigurations',
+  'TrackingConfiguration',
+  TrackingConfiguration
+);
+export const AnchorEventTypes = deprecatedEnum(
+  'AnchorEventTypes',
+  'AnchorEventType',
+  AnchorEventType
+);
+export const EventTypes = deprecatedEnum('EventTypes', 'EventType', EventType);
+export const BlendShapes = deprecatedEnum('BlendShapes', 'BlendShape', BlendShape);
+export const AnchorTypes = deprecatedEnum('AnchorTypes', 'AnchorType', AnchorType);
+export const WorldAlignmentTypes = deprecatedEnum(
+  'WorldAlignmentTypes',
+  'WorldAlignment',
+  WorldAlignment
+);
+export const PlaneDetectionTypes = deprecatedEnum(
+  'PlaneDetectionTypes',
+  'PlaneDetection',
+  PlaneDetection
+);
+export const TrackingStateReasons = deprecatedEnum(
+  'TrackingStateReasons',
+  'TrackingStateReason',
+  TrackingStateReason
+);
+export const TrackingStates = deprecatedEnum('TrackingStates', 'TrackingState', TrackingState);
 
 type FrameDidUpdateEvent = {};
 
