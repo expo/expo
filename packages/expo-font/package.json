@@ -1,7 +1,7 @@
 {
   "name": "expo-font",
-  "version": "2.1.0-alpha.2",
-  "description": "An Expo universal module to load custom fonts",
+  "version": "3.0.1",
+  "description": "Load fonts at runtime and use them in React Native components.",
   "main": "build/Font.js",
   "types": "build/Font.d.ts",
   "scripts": {
@@ -26,18 +26,18 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-font",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/font/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-asset": "~2.0.0",
-    "expo-constants": "~2.0.0",
-    "expo-core": "~2.0.0",
-    "expo-font-interface": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-asset": "*",
+    "expo-constants": "*",
+    "expo-core": "*",
+    "expo-font-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

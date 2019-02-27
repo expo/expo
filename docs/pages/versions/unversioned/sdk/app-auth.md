@@ -1,21 +1,21 @@
 ---
-title: App Auth
+title: AppAuth
 ---
-
-> Introduced in Expo v32
 
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
-# Usage
+## Installation
 
-Import the module like so:
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-app-auth).
+
+## Usage
 
 ```js
-import { AppAuth } from 'expo-app-auth';
-
-// or (Expo only)
-
+// in managed apps:
 import { AppAuth } from 'expo';
+
+// in bare apps:
+import { AppAuth } from 'expo-app-auth';
 ```
 
 ## Methods
@@ -410,4 +410,3 @@ async function signOutAsync({ accessToken }) {
 }
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/AppAuth)

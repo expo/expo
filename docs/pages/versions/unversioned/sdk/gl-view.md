@@ -4,7 +4,21 @@ title: GLView
 
 A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
-## Props
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-gl).
+
+## API
+
+```js
+// in managed apps:
+import { GLView } from 'expo';
+
+// in bare apps:
+import { GLView } from 'expo-gl';
+```
+
+### props
 
 Other than the regular `View` props for layout and touch handling, the following props are available:
 
@@ -24,7 +38,7 @@ Same as [GLView.takeSnapshotAsync](#expoglviewtakesnapshotasyncgl-options) but u
 
 ## Static methods
 
-### `Expo.GLView.createContextAsync()`
+### `GLView.createContextAsync()`
 
 Imperative API that creates headless context which is devoid of underlying view. It's useful for headless rendering or in case you want to keep just one context per application and share it between multiple components.
 It is slightly faster than usual context as it doesn't swap framebuffers and doesn't present them on the canvas, however it may require you to take a snapshot in order to present its results.
@@ -34,7 +48,7 @@ Also, keep in mind that you need to set up a viewport and create your own frameb
 
 A promise that resolves to WebGL context object. See [WebGL API](#webgl-api) for more details.
 
-### `Expo.GLView.destroyContextAsync(gl)`
+### `GLView.destroyContextAsync(gl)`
 
 Destroys given context.
 
@@ -46,7 +60,7 @@ Destroys given context.
 
 A promise that resolves to boolean value that is `true` if given context existed and has been destroyed successfully.
 
-### `Expo.GLView.takeSnapshotAsync(gl, options)`
+### `GLView.takeSnapshotAsync(gl, options)`
 
 Takes a snapshot of the framebuffer and saves it as a file to app's cache directory.
 
@@ -75,7 +89,7 @@ Any WebGL-supporting library that expects a [WebGLRenderingContext](https://www.
 
 ## WebGL API
 
-Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the [`onContextCreate`](#expoglviewoncontextcreate "Expo.GLView.onContextCreate") prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec. However, some older Android devices may not support WebGL2 features. To check whether the device supports WebGL2 it's recommended to use `gl instanceof WebGL2RenderingContext`.
+Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the `onContextCreate` prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec. However, some older Android devices may not support WebGL2 features. To check whether the device supports WebGL2 it's recommended to use `gl instanceof WebGL2RenderingContext`.
 An additional method `gl.endFrameEXP()` is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
 
 The following WebGL2RenderingContext methods are currently unimplemented:
@@ -101,8 +115,7 @@ The following WebGL2RenderingContext methods are currently unimplemented:
 - `getSyncParameter()`
 - `getActiveUniformBlockParameter()`
 
-The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) must be `null`, an `ArrayBuffer` with pixel data, or an object of the form `{ localUri }` where `localUri` is the `file://` URI of an image in the device's file system. Thus an `Expo.Asset` object could be used once `.downloadAsync()` has been called on it (and completed) to fetch the resource.
+The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) must be `null`, an `ArrayBuffer` with pixel data, or an object of the form `{ localUri }` where `localUri` is the `file://` URI of an image in the device's file system. Thus an `Asset` object could be used once `.downloadAsync()` has been called on it (and completed) to fetch the resource.
 
 For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
 
-#### [Github Issues](https://github.com/expo/expo/labels/GLView)

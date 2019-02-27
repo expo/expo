@@ -1,5 +1,5 @@
 ---
-title: SDK API Reference
+title: Overview
 ---
 
 The Expo SDK provides access to system functionality such as contacts, camera, and social login. It is provided by the npm package [expo](https://www.npmjs.com/package/expo). Install it by running `npm install --save expo` in the root directory of the project. Then you can import modules from it in your JavaScript code as follows:
@@ -14,7 +14,7 @@ You can also import all Expo SDK modules:
 import * as Expo from 'expo';
 ```
 
-This allows you to write [`Expo.Contacts.getContactsAsync()`](contacts/#getcontactsasync), for example.
+This allows you to write [`Expo.Contacts.getContactsAsync()`](../sdk/contacts/#getcontactsasync), for example.
 
 ## SDK Version
 

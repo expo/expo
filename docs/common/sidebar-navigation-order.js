@@ -1,11 +1,23 @@
+const GROUPS = {
+  Fundamentals: 'Managed Workflow',
+  Guides: 'Managed Workflow',
+  'Distributing Your App': 'Managed Workflow',
+  ExpoKit: 'Managed Workflow',
+  'Expo SDK': 'API Reference',
+  'React Native': 'API Reference',
+  'Introduction': 'Get Started',
+  'Essentials': 'Bare Workflow',
+};
+
 const ROOT = [
   'Introduction',
-  'Working with Expo',
+  'Fundamentals',
   'Guides',
   'Distributing Your App',
-  'Tutorials',
+  // 'Tutorials',
   'ExpoKit',
-  'SDK API Reference',
+  'Essentials',
+  'Expo SDK',
   'React Native Basics',
   'React Native Guides',
   'React Native Components',
@@ -13,8 +25,9 @@ const ROOT = [
 ];
 
 const INTRODUCTION = [
-  'Quick Start',
+  'Getting to know Expo',
   'Installation',
+  'Managed and Bare Workflows',
   'XDE Tour',
   'Project Lifecycle',
   'Community',
@@ -22,7 +35,6 @@ const INTRODUCTION = [
   'Troubleshooting Proxies',
   'Frequently Asked Questions',
   'Already used React Native?',
-  'Why not Expo?',
 ];
 
 const GUIDES = [
@@ -48,27 +60,28 @@ const GUIDES = [
   'Using Sentry',
 ];
 
-const WORKING_WITH_EXPO = [
+const FUNDAMENTALS = [
   'Up and Running',
-  'Upgrading Expo',
-  'Upgrading Expo SDK Walkthrough',
-  'Glossary of terms',
-  'Configuration with app.json',
-  'Development Mode',
-  'exp Command-Line Interface',
+  'Expo CLI',
   'Viewing Logs',
   'Debugging',
-  'Genymotion',
+  'Development Mode',
   'Android Studio Emulator',
+  'Genymotion',
+  'Configuration with app.json',
+  'Publishing',
   'Release Channels',
   'Building Standalone Apps',
-  'Publishing',
+  'Upgrading Expo',
+  'Upgrading Expo SDK Walkthrough',
   'Linking',
-  'Expo & "Create React Native App"',
   'How Expo Works',
+  'Glossary of terms',
+  'exp Command-Line Interface',
 ];
 
 const DISTRIBUTION = [
+  'Overview',
   'Building Standalone Apps',
   'App signing',
   'Deploying to App Stores',
@@ -81,11 +94,16 @@ const DISTRIBUTION = [
 ];
 
 const EXPOKIT = [
+  'Overview',
   'Detaching to ExpoKit',
   'Ejecting to ExpoKit',
   'Developing With ExpoKit',
   'Advanced ExpoKit Topics',
   'Universal Modules and ExpoKit',
+];
+
+const ESSENTIALS = [
+  'Hello World'
 ];
 
 const REACT_NATIVE = [
@@ -196,8 +214,10 @@ const REACT_NATIVE = [
 
 module.exports = {
   ROOT,
+  GROUPS,
   INTRODUCTION,
-  WORKING_WITH_EXPO,
+  FUNDAMENTALS,
+  ESSENTIALS,
   GUIDES,
   DISTRIBUTION,
   EXPOKIT,

@@ -6,10 +6,11 @@ import * as Constants from '~/common/constants';
 
 const STYLES_TITLE = css`
   display: block;
-  margin-bottom: 16px;
+  position: relative;
+  margin-bottom: 14px;
   line-height: 1.3rem;
   text-decoration: none;
-  text-transform: uppercase;
+  border-bottom-color: #ccc;
   font-family: ${Constants.fontFamilies.demi};
 `;
 
@@ -38,7 +39,26 @@ const STYLES_DEFAULT = css`
   }
 `;
 
-export default class DocumentationSidebarLink extends React.Component {
+class Arrow extends React.Component {
+  render() {
+    return (
+      <i
+        className={`fas fa-chevron-${this.props.isOpen ? 'up' : 'down'}`}
+        style={{ position: 'absolute', right: 0, top: 0 }}
+      />
+    );
+  }
+}
+
+export default class DocumentationSidebarTitle extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isOpen: this.isSelected(), // || this.isChildRouteActive(),
+    };
+  }
+
   isSelected() {
     if (!this.props.url) {
       return false;
@@ -53,19 +73,47 @@ export default class DocumentationSidebarLink extends React.Component {
     return false;
   }
 
+  isChildRouteActive() {
+    let result = false;
+    let posts = this.props.posts;
+
+    this.props.info.posts.forEach(post => {
+      const linkUrl = post.as || post.href;
+      const pathname = this.props.url.pathname;
+      const asPath = this.props.asPath;
+
+      if (linkUrl === pathname || linkUrl === asPath) {
+        result = true;
+      }
+    });
+
+    return result;
+  }
+
+  _toggleIsOpen = () => {
+    this.setState(({ isOpen }) => ({ isOpen: !isOpen }));
+  };
+
+  //
+  // TODO: move rendering of child links here so we can make sections collapsable
+  //
   render() {
     if (!this.props.info.href) {
-      return <div className={STYLES_TITLE}>{this.props.children}</div>;
+      return (
+        <div className={STYLES_TITLE}>
+          {this.props.children}
+        </div>
+      );
     }
 
     return (
-      <NextLink
-        href={this.props.info.href}
-        as={this.props.info.as || this.props.info.href}>
-        <a className={`${STYLES_TITLE} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
-          {this.props.children}
-        </a>
-      </NextLink>
+      <div className={`${STYLES_TITLE} ${this.isSelected() ? STYLES_ACTIVE : STYLES_DEFAULT}`}>
+        <NextLink href={this.props.info.href} as={this.props.info.as || this.props.info.href}>
+          <div>
+            {this.props.children}
+          </div>
+        </NextLink>
+      </div>
     );
   }
 }
