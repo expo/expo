@@ -28,9 +28,9 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-av",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/av/",
   "peerDependencies": {
-    "expo-core": "~1.2.0"
+    "expo-core": "^2.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",

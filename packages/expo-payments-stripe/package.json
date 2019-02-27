@@ -25,7 +25,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-payments-stripe",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/payments/",
   "peerDependencies": {
     "expo-core": "~2.0.0"
   },

@@ -26,7 +26,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-contacts",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/contacts/",
   "jest": {
     "preset": "expo-module-scripts"
   },

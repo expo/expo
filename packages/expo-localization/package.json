@@ -31,7 +31,7 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-localization",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/localization/",
   "jest": {
     "preset": "expo-module-scripts"
   },

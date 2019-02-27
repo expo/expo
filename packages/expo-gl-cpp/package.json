@@ -20,6 +20,6 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-gl-cpp",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/gl-view/",
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

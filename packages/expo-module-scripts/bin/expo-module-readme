@@ -63,8 +63,9 @@ function generateREADME() {
   if (isInterface) {
     readme = removeUnapplicableSections('interfaces', readme);
   } else {
-    let docName = packageName;
+    let docName = packageName.replace('expo-', '');
     readme = replaceAll('docName', docName, readme);
+    // TODO: get it from the website in package.json
 
     let androidPackages = glob.sync('android/**/*Package.java');
     let androidPackage;

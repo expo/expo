@@ -29,7 +29,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-background-fetch",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/background-fetch/",
   "peerDependencies": {
     "expo-core": "~2.0.0",
     "expo-task-manager-interface": "~1.0.0"

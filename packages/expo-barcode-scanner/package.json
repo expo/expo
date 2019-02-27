@@ -27,7 +27,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/bar-code-scanner/",
   "jest": {
     "preset": "expo-module-scripts"
   },

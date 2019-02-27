@@ -28,7 +28,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-document-picker",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/document-picker/",
   "jest": {
     "preset": "expo-module-scripts"
   },
