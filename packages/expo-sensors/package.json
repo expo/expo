@@ -1,7 +1,7 @@
 {
   "name": "expo-sensors",
   "version": "2.0.0",
-  "description": "Expo Sensors universal module",
+  "description": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {

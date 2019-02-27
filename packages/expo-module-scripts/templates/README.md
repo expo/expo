@@ -21,6 +21,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 npm install ${packageName}
 ```
 
+<!--- remove for no-ios --->
 ### Configure for iOS
 
 Add the dependency to your `Podfile` and then run `pod install`.
@@ -28,7 +29,9 @@ Add the dependency to your `Podfile` and then run `pod install`.
 ```ruby
 pod '${podName}', path: '../node_modules/${packageName}/ios'
 ```
+<!--- end remove for no-ios --->
 
+<!--- remove for no-android --->
 ### Configure for Android
 
 1. Append the following lines to `android/settings.gradle`:
@@ -44,6 +47,7 @@ api project(':${packageName}')
 ```
 <!--- remove for interfaces --->
 
+<!--- remove for no-package --->
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
 import expo.modules.${androidPackagePath};
@@ -55,7 +59,9 @@ private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactMod
 ), Arrays.<SingletonModule>asList());
 ```
 
+<!--- end remove for no-package --->
 <!--- end remove for interfaces --->
+<!--- end remove for no-android --->
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

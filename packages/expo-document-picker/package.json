@@ -1,7 +1,7 @@
 {
   "name": "expo-document-picker",
   "version": "1.0.0",
-  "description": "Expo Document Picker standalone module",
+  "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {

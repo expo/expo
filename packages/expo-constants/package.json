@@ -1,7 +1,7 @@
 {
   "name": "expo-constants",
   "version": "2.0.0",
-  "description": "Expo Constants standalone universal module",
+  "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
   "scripts": {

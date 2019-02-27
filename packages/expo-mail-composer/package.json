@@ -1,7 +1,7 @@
 {
   "name": "expo-mail-composer",
   "version": "1.0.0",
-  "description": "Expo universal module for composing e-mails",
+  "description": "Provides an API to compose mails using OS specific UI",
   "main": "build/MailComposer.js",
   "types": "build/MailComposer.d.ts",
   "scripts": {

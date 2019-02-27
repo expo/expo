@@ -1,7 +1,7 @@
 {
   "name": "expo-font",
   "version": "2.1.0-alpha.2",
-  "description": "An Expo universal module to load custom fonts",
+  "description": "Load fonts at runtime and use them in React Native components.",
   "main": "build/Font.js",
   "types": "build/Font.d.ts",
   "scripts": {

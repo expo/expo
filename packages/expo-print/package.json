@@ -1,7 +1,7 @@
 {
   "name": "expo-print",
   "version": "2.0.0",
-  "description": "Expo universal module for printing",
+  "description": "Provides an API for iOS (AirPrint) and Android printing functionality.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {

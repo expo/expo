@@ -1,7 +1,7 @@
 {
   "name": "expo-speech",
   "version": "1.0.0",
-  "description": "Expo speech module",
+  "description": "Provides text-to-speech functionality.",
   "main": "build/Speech.js",
   "types": "build/Speech.d.ts",
   "scripts": {

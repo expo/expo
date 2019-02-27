@@ -1,6 +1,6 @@
 # expo-camera-interface
 
-Expo Camera interface package
+expo-camera interface package.
 
 # Installation
 

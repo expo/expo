@@ -1,11 +1,11 @@
 # expo-analytics-amplitude
 
-Provides access to Amplitude (https://amplitude.com/) mobile analytics. This module wraps Amplitude-iOS (https://github.com/amplitude/Amplitude-iOS) and Android (https://github.com/amplitude/Amplitude-Android) SDKs. For an example of usage, see the Expo app source code - https://github.com/expo/expo/blob/master/home/api/Analytics.js
+Provides access to Amplitude (https://amplitude.com/) mobile analytics. This module wraps Amplitude-iOS (https://github.com/amplitude/Amplitude-iOS) and Android (https://github.com/amplitude/Amplitude-Android) SDKs.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/analytics-amplitude.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/analytics-amplitude/)
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/amplitude.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/amplitude/)
 
 # Installation
 

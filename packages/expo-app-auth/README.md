@@ -4,8 +4,8 @@ Provides an interface with the OpenID library AppAuth
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/expo-app-auth.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/expo-app-auth/)
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/app-auth.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/app-auth/)
 
 # Installation
 

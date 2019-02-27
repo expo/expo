@@ -1,7 +1,7 @@
 {
   "name": "expo-media-library",
   "version": "2.1.1",
-  "description": "Expo MediaLibrary module",
+  "description": "Provides access to user's media library.",
   "main": "build/MediaLibrary.js",
   "types": "build/MediaLibrary.d.ts",
   "scripts": {

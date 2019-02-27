@@ -1,7 +1,7 @@
 {
   "name": "expo-local-authentication",
   "version": "2.0.0",
-  "description": "Expo module to authenticate device owner",
+  "description": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "main": "build/LocalAuthentication.js",
   "types": "build/LocalAuthentication.d.ts",
   "scripts": {

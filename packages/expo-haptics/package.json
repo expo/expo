@@ -1,7 +1,7 @@
 {
   "name": "expo-haptics",
   "version": "1.0.0",
-  "description": "Expo Haptics standalone module",
+  "description": "Provides access to the system's haptics engine on iOS and vibration effects on Android.",
   "main": "build/Haptics.js",
   "types": "build/Haptics.d.ts",
   "scripts": {

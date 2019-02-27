@@ -1,7 +1,7 @@
 {
   "name": "expo-secure-store",
   "version": "1.0.0",
-  "description": "Expo SecureStore universal module",
+  "description": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "main": "build/SecureStore.js",
   "types": "build/SecureStore.d.ts",
   "scripts": {

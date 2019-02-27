@@ -1,7 +1,7 @@
 {
   "name": "expo-calendar",
   "version": "1.0.0",
-  "description": "Expo universal module for Calendar",
+  "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "main": "build/Calendar.js",
   "types": "build/Calendar.d.ts",
   "scripts": {

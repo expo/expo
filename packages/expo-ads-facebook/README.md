@@ -4,8 +4,8 @@ Facebook Audience SDK integration
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/expo-ads-facebook.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/expo-ads-facebook/)
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/facebook-ads.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/facebook-ads/)
 
 # Installation
 
