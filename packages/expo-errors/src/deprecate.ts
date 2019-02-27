@@ -35,7 +35,7 @@ export default function deprecate(
       message = `${message} please migrate to: \`${replacement}\``;
     }
 
-    throw new CodedError(`ERR_DEPRECATED_API_${code}`, prependLibrary(library, message));
+    throw new CodedError(`ERR_DEPRECATED_API`, prependLibrary(library, message));
   }
 
   let message = `\`${deprecatedAPI}\` has been deprecated`;
@@ -58,9 +58,6 @@ function prependLibrary(library: string, message: string): string {
  * expo-ar -> EXPO_AR
  */
 function codeFromLibrary(library: string): string {
-  const code = library
-    .replace(/-/g, '_')
-    .replace(/\./g, '_')
-    .toUpperCase();
+  const code = library.replace(/[-\.]/g, '_').toUpperCase();
   return code;
 }

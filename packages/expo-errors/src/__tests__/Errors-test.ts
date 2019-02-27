@@ -80,7 +80,7 @@ describe('deprecate', () => {
           Errors.deprecate(library, 'foo');
         });
         expect(error).toBeDefined();
-        expect(error!.code).toBe('ERR_DEPRECATED_API_EXPO_CAMERA');
+        expect(error!.code).toBe('ERR_DEPRECATED_API');
       }
     });
   });
