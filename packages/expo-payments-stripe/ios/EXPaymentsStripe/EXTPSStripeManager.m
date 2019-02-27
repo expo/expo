@@ -659,10 +659,8 @@ EX_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(EXPromiseResolveBlock)
     
     void(^completion)() = ^{
         if (!requestIsCompleted) {
+            [self resetPromiseCallbacks];
             requestIsCompleted = YES;
-            
-            NSDictionary *error = [errorCodes valueForKey:kErrorKeyCancelled];
-            [self rejectPromiseWithCode:error[kErrorKeyCode] message:error[kErrorKeyDescription]];
         } else {
             if (applePayStripeError) {
                 NSDictionary *error = [errorCodes valueForKey:kErrorKeyApi];
