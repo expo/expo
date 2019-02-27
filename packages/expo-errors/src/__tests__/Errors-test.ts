@@ -12,10 +12,8 @@ describe('UnavailabilityError', () => {
 describe('deprecate', () => {
   describe('warnings', () => {
     const originalWarning = console.warn;
-    beforeEach(() => {
-      console.warn = originalWarning;
-    });
-    afterAll(() => {
+
+    afterEach(() => {
       console.warn = originalWarning;
     });
 
