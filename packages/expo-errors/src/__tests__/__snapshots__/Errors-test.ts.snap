@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`deprecate throws a deprecation after expiration 1`] = `"expo-errors: \`foo\` has been removed as of version \\"1.0.0\\""`;
+
+exports[`deprecate throws a deprecation error without expiration 1`] = `"expo-errors: \`foo\` has been removed"`;
+
+exports[`deprecate throws an error with the replacement 1`] = `"expo-errors: \`foo\` has been removed please migrate to: \`bar\`"`;
+
+exports[`deprecate throws an error with the replacement after the expiration 1`] = `"expo-errors: \`foo\` has been removed as of version \\"1.0.0\\" please migrate to: \`bar\`"`;

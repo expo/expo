@@ -1,3 +1,5 @@
+import { Platform } from 'expo-core';
+
 import CodedError from './CodedError';
 
 export { CodedError };
@@ -11,9 +13,11 @@ export class UnavailabilityError extends CodedError {
   constructor(moduleName: string, propertyName: string) {
     super(
       'ERR_UNAVAILABLE',
-      `The method or property ${moduleName}.${propertyName} is not available on this platform, are you sure you've linked all the native dependencies properly?`
+      `The method or property ${moduleName}.${propertyName} is not available on ${
+        Platform.OS
+      }, are you sure you've linked all the native dependencies properly?`
     );
   }
 }
 
-export { default as warnDeprecated } from './warnDeprecated';
+export { default as deprecate } from './deprecate';

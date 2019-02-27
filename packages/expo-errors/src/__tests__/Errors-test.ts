@@ -1,7 +1,7 @@
 import * as Errors from '../Errors';
 
 describe('UnavailabilityError', () => {
-  it('has a constructor which takes a module and property name as parameters', () => {
+  it(`has a constructor which takes a module and property name as parameters`, () => {
     let err = new Errors.UnavailabilityError('TestModule', 'someProperty');
     expect(err.code).toBe('ERR_UNAVAILABLE');
     expect(err.message).toContain('TestModule');
@@ -9,13 +9,12 @@ describe('UnavailabilityError', () => {
   });
 });
 
-describe('warnDeprecated', () => {
+describe('deprecate', () => {
   const originalWarning = console.warn;
   function isWarnedAsync() {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       console.warn = (...args: any[]) => {
         resolve(args);
-        // return originalWarning(...args);
       };
     });
   }
@@ -26,9 +25,9 @@ describe('warnDeprecated', () => {
     console.warn = originalWarning;
   });
 
-  it('warns of a future replacement', async () => {
+  it(`warns of a future replacement`, async () => {
     setTimeout(() => {
-      Errors.warnDeprecated('expo-errors', 'foo', {
+      Errors.deprecate('expo-errors', 'foo', {
         replacement: 'bar',
         currentVersion: '1.0.0',
         versionToRemove: '2.0.0',
@@ -38,9 +37,9 @@ describe('warnDeprecated', () => {
     expect(warning).toBeDefined();
   });
 
-  it('warns of a future deprecation', async () => {
+  it(`warns of a future deprecation`, async () => {
     setTimeout(() => {
-      Errors.warnDeprecated('expo-errors', 'foo', {
+      Errors.deprecate('expo-errors', 'foo', {
         currentVersion: '1.0.0',
         versionToRemove: '2.0.0',
       });
@@ -49,32 +48,54 @@ describe('warnDeprecated', () => {
     expect(warning).toBeDefined();
   });
 
-  it('throws a deprecation without expiration', async () => {
-    expect(() => Errors.warnDeprecated('expo-errors', 'foo')).toThrow();
+  it(`throws a deprecation error without expiration`, async () => {
+    expect(() => Errors.deprecate('expo-errors', 'foo')).toThrowErrorMatchingSnapshot();
   });
 
-  it('throws a replacement without expiration', async () => {
-    expect(() => Errors.warnDeprecated('expo-errors', 'foo', { replacement: 'bar' })).toThrowError(
-      Errors.CodedError
-    );
-  });
-
-  it('throws a replacement after expiration', async () => {
+  it(`throws an error with the replacement`, async () => {
     expect(() =>
-      Errors.warnDeprecated('expo-errors', 'foo', {
+      Errors.deprecate('expo-errors', 'foo', { replacement: 'bar' })
+    ).toThrowErrorMatchingSnapshot();
+  });
+
+  it(`throws an error with the replacement after the expiration`, async () => {
+    expect(() =>
+      Errors.deprecate('expo-errors', 'foo', {
         replacement: 'bar',
         currentVersion: '2.0.0',
         versionToRemove: '1.0.0',
       })
-    ).toThrow();
+    ).toThrowErrorMatchingSnapshot();
   });
 
-  it('throws a deprecation after expiration', async () => {
+  it(`throws a deprecation after expiration`, async () => {
     expect(() =>
-      Errors.warnDeprecated('expo-errors', 'foo', {
+      Errors.deprecate('expo-errors', 'foo', {
         currentVersion: '2.0.0',
         versionToRemove: '1.0.0',
       })
-    ).toThrow();
+    ).toThrowErrorMatchingSnapshot();
+  });
+
+  it(`throws a CodedError with expected code`, async () => {
+    const libraries = ['expo-camera', 'Expo.Camera'];
+    for (const library of libraries) {
+      const error = await getErrorAsync(() => {
+        Errors.deprecate(library, 'foo');
+      });
+      expect(error).toBeDefined();
+      expect(error!.code).toBe('ERR_DEPRECATED_API_EXPO_CAMERA');
+    }
   });
 });
+
+function getErrorAsync(runnable): Promise<Errors.CodedError | null> {
+  return new Promise(async resolve => {
+    try {
+      await runnable();
+      resolve(null);
+    } catch (error) {
+      resolve(error);
+    }
+  });
+}

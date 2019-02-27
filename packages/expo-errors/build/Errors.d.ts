@@ -8,4 +8,4 @@ export { CodedError };
 export declare class UnavailabilityError extends CodedError {
     constructor(moduleName: string, propertyName: string);
 }
-export { default as warnDeprecated } from './warnDeprecated';
+export { default as deprecate } from './deprecate';

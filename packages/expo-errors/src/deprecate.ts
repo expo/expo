@@ -1,4 +1,4 @@
-import semver from 'semver';
+import compareVersions from 'compare-versions';
 import CodedError from './CodedError';
 
 const postedWarnings: { [key: string]: boolean } = {};
@@ -6,7 +6,7 @@ const postedWarnings: { [key: string]: boolean } = {};
 /**
  * Used for deprecating values and throwing an error if a given version of Expo has passed.
  */
-export default function warnDeprecated(
+export default function deprecate(
   library: string,
   deprecatedAPI: string,
   options: {
@@ -22,7 +22,11 @@ export default function warnDeprecated(
     postedWarnings[key] = true;
   }
 
-  if (!currentVersion || !versionToRemove || !semver.gte(versionToRemove, currentVersion)) {
+  if (
+    !currentVersion ||
+    !versionToRemove ||
+    compareVersions(currentVersion, versionToRemove) >= 0
+  ) {
     let message = `\`${deprecatedAPI}\` has been removed`;
     if (versionToRemove) {
       message = `${message} as of version "${versionToRemove}"`;
