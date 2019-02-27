@@ -3,5 +3,6 @@
  */
 export default function warnDeprecated(library: string, deprecated: string, options?: {
     replacement?: string;
+    currentVersion?: string;
     versionToRemove?: string;
 }): void;

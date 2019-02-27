@@ -1,18 +1,19 @@
 import semver from 'semver';
-import Constants from 'expo-constants';
 const postedWarnings = {};
 /**
  * Used for deprecating values and throwing an error if a given version of Expo has passed.
  */
 export default function warnDeprecated(library, deprecated, options = {}) {
-    const { versionToRemove, replacement } = options;
-    const key = `${library}:${versionToRemove}:${deprecated}:${replacement}`;
+    const { currentVersion, versionToRemove, replacement } = options;
+    const key = `${library}:${deprecated}:${replacement}`;
     if (!postedWarnings[key]) {
         postedWarnings[key] = true;
     }
-    if (!versionToRemove ||
+    if (!currentVersion ||
+        !currentVersion.length ||
+        !versionToRemove ||
         !versionToRemove.length ||
-        !semver.gte(versionToRemove, Constants.expoVersion)) {
+        !semver.gte(versionToRemove, currentVersion)) {
         let message = `\`${deprecated}\` has been removed`;
         if (versionToRemove) {
             message = `${message} as of version "${versionToRemove}"`;

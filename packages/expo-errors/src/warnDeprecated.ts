@@ -1,5 +1,4 @@
 import semver from 'semver';
-import Constants from 'expo-constants';
 
 const postedWarnings: { [key: string]: boolean } = {};
 
@@ -11,19 +10,22 @@ export default function warnDeprecated(
   deprecated: string,
   options: {
     replacement?: string;
+    currentVersion?: string;
     versionToRemove?: string;
   } = {}
 ) {
-  const { versionToRemove, replacement } = options;
-  const key = `${library}:${versionToRemove}:${deprecated}:${replacement}`;
+  const { currentVersion, versionToRemove, replacement } = options;
+  const key = `${library}:${deprecated}:${replacement}`;
   if (!postedWarnings[key]) {
     postedWarnings[key] = true;
   }
 
   if (
+    !currentVersion ||
+    !currentVersion.length ||
     !versionToRemove ||
     !versionToRemove.length ||
-    !semver.gte(versionToRemove, Constants.expoVersion)
+    !semver.gte(versionToRemove, currentVersion)
   ) {
     let message = `\`${deprecated}\` has been removed`;
     if (versionToRemove) {
