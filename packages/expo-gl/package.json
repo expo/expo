@@ -33,15 +33,15 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-camera-interface": "~2.0.0",
-    "expo-core": "~2.0.0",
-    "expo-file-system-interface": "~2.0.0",
-    "expo-gl-cpp": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-camera-interface": "*",
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-file-system-interface": "*",
+    "expo-gl-cpp": "*"
   },
   "dependencies": {
-    "prop-types": "^15.6.2",
-    "expo-errors": "~1.0.0"
+    "prop-types": "^15.6.2"
   },
   "devDependencies": {
     "react-test-renderer": "^16.7.0",

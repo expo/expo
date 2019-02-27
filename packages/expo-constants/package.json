@@ -30,10 +30,9 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo": "~32.0.0",
-    "expo-constants-interface": "~2.0.0",
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-constants-interface": "*"
   },
   "dependencies": {
     "ua-parser-js": "^0.7.19"

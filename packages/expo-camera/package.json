@@ -30,16 +30,16 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-camera-interface": "~2.0.0",
-    "expo-barcode-scanner-interface": "~2.0.0",
-    "expo-file-system-interface": "~2.0.0",
-    "expo-face-detector-interface": "~2.0.0",
-    "expo-permissions-interface": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-camera-interface": "*",
+    "expo-barcode-scanner-interface": "*",
+    "expo-file-system-interface": "*",
+    "expo-face-detector-interface": "*",
+    "expo-permissions-interface": "*"
   },
   "dependencies": {
-    "expo-errors": "~1.0.0",
     "lodash.mapvalues": "^4.6.0",
     "prop-types": "^15.6.0"
   },

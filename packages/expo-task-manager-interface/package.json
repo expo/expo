@@ -19,8 +19,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-task-manager-interface",
-  "peerDependencies": {
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
 }

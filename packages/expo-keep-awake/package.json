@@ -28,8 +28,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/keep-awake/",
-  "peerDependencies": {
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

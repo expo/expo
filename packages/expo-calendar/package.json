@@ -31,10 +31,10 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-errors": "~1.0.0",
-    "expo-permissions-interface": "^2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-permissions-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

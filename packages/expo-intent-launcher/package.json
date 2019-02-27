@@ -29,9 +29,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/intent-launcher/",
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-errors": "^1.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

@@ -30,10 +30,10 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-constants": "~2.0.0",
-    "expo-core": "~2.0.0",
-    "expo-file-system": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-constants": "*",
+    "expo-core": "*",
+    "expo-file-system": "*"
   },
   "dependencies": {
     "path-browserify": "^1.0.0",

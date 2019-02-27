@@ -34,9 +34,9 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-constants-interface": "~2.0.0",
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-constants-interface": "*"
   },
   "dependencies": {
     "invariant": "^2.2.4"

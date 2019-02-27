@@ -32,8 +32,8 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*"
   },
   "dependencies": {
     "@expo/websql": "^1.0.1",

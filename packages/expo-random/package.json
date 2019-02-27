@@ -35,13 +35,13 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "babel-preset-expo": "^5.0.0",
-    "expo-core": "~2.0.0",
-    "expo-errors": "~1.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
+    "expo-module-scripts": "^1.0.0",
+    "babel-preset-expo": "^5.0.0"
   },
   "dependencies": {
     "base64-js": "^1.3.0"

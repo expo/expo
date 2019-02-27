@@ -28,10 +28,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/app-auth/",
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-constants-interface": "~2.0.0",
-    "invariant": "^2.2.2"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-constants-interface": "*"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",

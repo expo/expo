@@ -31,8 +31,8 @@
     "fbemitter": "^2.1.1",
     "nullthrows": "^1.1.0"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
     "expo-errors": "^1.0.0"
   },
   "devDependencies": {

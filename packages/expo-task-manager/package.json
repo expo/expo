@@ -30,10 +30,10 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/task-manager/",
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-errors": "~1.0.0",
-    "expo-task-manager-interface": "~1.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-task-manager-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

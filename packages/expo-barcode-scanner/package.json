@@ -31,12 +31,12 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-errors": "^1.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-barcode-scanner-interface": "*"
   },
   "dependencies": {
-    "expo-barcode-scanner-interface": "~2.0.0",
     "lodash.mapvalues": "^4.6.0",
     "prop-types": "^15.6.0"
   },

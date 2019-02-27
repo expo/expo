@@ -30,8 +30,8 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*"
   },
   "dependencies": {
     "uuid-js": "^0.7.5"

@@ -31,12 +31,15 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo-font-interface": "~2.0.0",
-    "react-native": "^0.57.1"
+    "react-native": "*"
+  },
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-font-interface": "*",
+    "expo-image-loader-interface": "*",
+    "expo-permissions-interface": "*"
   },
   "dependencies": {
-    "expo-image-loader-interface": "~2.0.0",
-    "expo-permissions-interface": "~2.0.0",
     "invariant": "^2.2.4",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
@@ -46,7 +49,7 @@
     "@types/lodash.omit": "^4.5.4",
     "@types/lodash.pick": "^4.4.4",
     "babel-preset-expo": "^5.0.0",
-    "expo-core": "~2.0.0",
+    "expo-core": "*",
     "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
