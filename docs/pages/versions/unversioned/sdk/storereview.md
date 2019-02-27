@@ -38,7 +38,7 @@ StoreReview.isSupported()
 
 ### `StoreReview.storeUrl()`
 
-This uses the `Expo.Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the `Constants.manifest.android.playStoreUrl` on Android.
+This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the `Constants.manifest.android.playStoreUrl` on Android.
 
 #### Example
 

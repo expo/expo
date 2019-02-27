@@ -8,7 +8,9 @@ Some features of this module are used by other modules under the hood. Here is a
 - [Location](../location)
 - [BackgroundFetch](../background-fetch)
 
-*Even though this module is a universal module, it is **not compatible** with vanilla React Native applications yet.*
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
 
 ## Configuration for standalone apps
 
@@ -33,7 +35,11 @@ Example of `app.json` that enables background location and background fetch:
 }
 ```
 
-## Methods
+## API
+
+```js
+import { TaskManager } from 'expo';
+```
 
 ### `TaskManager.defineTask(taskName, task)`
 

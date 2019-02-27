@@ -6,12 +6,18 @@ Provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS
 
 > **Note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
-### Accessing Segment module
+## Installation
 
-To access the Segment module just import it from `Expo`:
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-segment).
+
+## API
 
 ```js
+// in managed apps:
 import { Segment } from 'expo';
+
+// in bare apps:
+import * as Segment from 'expo-analytics-segment';
 ```
 
 ### `Segment.initialize({ androidWriteKey, iosWriteKey })`

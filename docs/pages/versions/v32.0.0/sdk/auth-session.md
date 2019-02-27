@@ -4,6 +4,10 @@ title: AuthSession
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
 ## How web browser based authentication flows work
 
 The typical flow for browser-based authentication in mobile apps is as follows:
@@ -93,6 +97,10 @@ const styles = StyleSheet.create({
 
 ## API
 
+```js
+import { AuthSession } from 'expo';
+```
+
 ### `AuthSession.startAsync(options)`
 
 Initiate an authentication session with the given options. Only one `AuthSession` can be active at any given time in your application; if you attempt to open a second session while one is still in progress, the second session will return a value to indicate that `AuthSession` is locked.
@@ -105,7 +113,7 @@ Initiate an authentication session with the given options. Only one `AuthSession
 
     -   **authUrl (_string_)** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
 
-    -   **returnUrl (_string_)** -- The URL to return to the application. Defaults to `${Expo.Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
+    -   **returnUrl (_string_)** -- The URL to return to the application. Defaults to `${Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
 
 
 #### Returns

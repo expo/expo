@@ -36,8 +36,7 @@ Subscribe for updates to the gyroscope.
 
 #### Returns
 
-- A subscription that you can call `remove()` on when you
-  would like to unsubscribe the listener.
+- An EventSubscription object that you can call `remove()` on when you would like to unsubscribe the listener.
   
 ### `Gyroscope.removeAllListeners()`
 

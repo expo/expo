@@ -4,7 +4,21 @@ title: DocumentPicker
 
 Provides access to the system's UI for selecting documents from the available providers on the user's device.
 
-### `Expo.DocumentPicker.getDocumentAsync(options)`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-document-picker).
+
+## API
+
+```js
+// in managed apps:
+import { DocumentPicker } from 'expo';
+
+// in bare apps:
+import * as DocumentPicker from 'expo-document-picker';
+```
+
+### `DocumentPicker.getDocumentAsync(options)`
 
 Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](../filesystem/#expofilesystemcachedirectory).
 
@@ -15,7 +29,7 @@ Display the system UI for choosing a document. By default, the chosen file is co
       A map of options:
 
     -   **type (_string_)** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
-    -   **copyToCacheDirectory (_boolean_)** -- If `true`, the picked file is copied to [`Expo.FileSystem.CacheDirectory`](../filesystem/#expofilesystemcachedirectory), which allows other Expo APIs to read the file immediately. Defaults to `true`. This may impact performance for large files, so you should consider setting this to `false` if you expect users to pick particularly large files and your app does not need immediate read access.
+    -   **copyToCacheDirectory (_boolean_)** -- If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](../filesystem/#expofilesystemcachedirectory), which allows other Expo APIs to read the file immediately. Defaults to `true`. This may impact performance for large files, so you should consider setting this to `false` if you expect users to pick particularly large files and your app does not need immediate read access.
 
 #### Returns
 

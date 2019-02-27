@@ -8,7 +8,13 @@ Provides Google authentication integration for Expo apps using a system web brow
 
 You'll get an access token after a successful login. Once you have the token, if you would like to make further calls to the Google API, you can use Google's [REST APIs](https://developers.google.com/apis-explorer/) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
-Native Google Sign-In functionality can be used in Standalone builds via the `expo-google-sign-in` package.
+In the [managed workflow](../../introduction/managed-vs-bare/#managed-workflow), native Google Sign-In functionality can be used only in standalone builds, not the Expo client. If you would like to use the native authentication flow, see [GoogleSignIn](../google-sign-in).
+
+## Installation
+
+The web browser-based authentication flow is provided by the `expo-app-auth` package, which is pre-installed installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow the [expo-app-auth installation instructions](https://github.com/expo/expo/tree/master/packages/expo-app-auth) and API reference.
+
+## Usage
 
 ```javascript
 // Example of using the Google REST API
@@ -19,6 +25,12 @@ async function getUserInfo(accessToken) {
 
   return await userInfoResponse.json();
 }
+```
+
+## API
+
+```js
+import { Google } from 'expo';
 ```
 
 ## Methods

@@ -2,7 +2,23 @@
 title: FileSystem
 ---
 
-Provides access to a file system stored locally on the device. Each Expo app has a separate file systems and has no access to the file system of other Expo apps. The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:
+Provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file systems and has no access to the file system of other Expo apps.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
+
+## API
+
+```js
+// in managed apps:
+import { FileSystem } from 'expo';
+
+// in bare apps:
+import * as FileSystem from 'expo-file-system';
+```
+
+The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:
 
 -   **`FileSystem.documentDirectory`**
 

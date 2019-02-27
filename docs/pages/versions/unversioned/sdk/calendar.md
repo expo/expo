@@ -36,6 +36,14 @@ Gets an array of calendar objects with details about the different calendars sto
 
 An array of [calendar objects](#calendar "Calendar") matching the provided entity type (if provided).
 
+### `Calendar.requestRemindersPermissionsAsync()`
+
+**iOS only**. Requests the user for reminders permissions, same as `Permissions.askAsync(Permissions.REMINDERS)`.
+
+#### Returns
+
+Returns a promise resolving to an object with a key `granted` which value indicates whether the permission is granted or not.
+
 ### `Calendar.createCalendarAsync(details)`
 
 Creates a new calendar on the device, allowing events to be added later and displayed in the OS Calendar app.

@@ -2,13 +2,29 @@
 title: Location
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
-
 This module allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-location).
+
+## Usage
+
+import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 <SnackEmbed snackId="H14SNiW3g" />
+
+## API
+
+```js
+// in managed apps:
+import { Location } from 'expo';
+
+// in bare apps:
+import * as Location from 'expo-location';
+```
 
 ### `Location.hasServicesEnabledAsync()`
 
@@ -47,9 +63,10 @@ Subscribe to location updates from the device. Please note that updates will onl
 #### Arguments
 
 -   **options (_object_)** -- A map of options:
-    -   **accuracy (_[Location.Accuracy](#locationaccuracy)_)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
+    -   **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
     -   **timeInterval (_number_)** -- Minimum time to wait between each update in milliseconds.
     -   **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters.
+    -   **mayShowUserSettingsDialog (_boolean_)** -- Specifies whether to ask the user to turn on improved accuracy location mode which uses Wi-Fi, cell networks and GPS sensor. The dialog can be shown only when the location mode is set to **Device only**. Defaults to `true`. (**Android only**)
 
 -   **callback (_function_)** --
 

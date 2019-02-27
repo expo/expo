@@ -52,7 +52,7 @@ the given url.
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser. This should be a login page.
-- **redirectUrl (_string_)** -- **Optional**: the url to deep link back into your app. By default, this will be [Expo.Constants.linkingUrl](../constants/#expoconstantslinkinguri)
+- **redirectUrl (_string_)** -- **Optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](../constants/#expoconstantslinkinguri)
 
 Returns a Promise:
 

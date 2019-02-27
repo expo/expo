@@ -4,6 +4,16 @@ title: Updates
 
 API for controlling and responding to over-the-air updates to your app.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
+## API
+
+```js
+import { Updates } from 'expo';
+```
+
 ### `Updates.reload()`
 
 Immediately reloads the current experience. This will use your app.json `updates` configuration to fetch and load the newest available JS supported by the device's Expo environment. This is useful for triggering an update of your experience if you have published a new version.
