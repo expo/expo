@@ -4,14 +4,6 @@ Expo is a set of tools, libraries, and services that let you build native iOS an
 
 [Click here to view our documentation](https://docs.expo.io) for developing on Expo. If you're new to the Expo community, [click here to view the Expo Community Guidelines](https://expo.io/guidelines). Thank you for helping keep the Expo community open and welcoming!
 
-## Contributing to the Foundation Unimodules
-
-The Foundation Unimodules by Expo are under `packages`, along with other JS packages. Each Unimodule has its own tests in its package (`yarn test`) and under `apps/test-suite` (run a development build of the Expo client, run `expo start` in `test-suite`, and load it on a device). We recommend reading the source for several Unimodules to get a sense of the code conventions and taste.
-
-- [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
-- [Contributing to Expo in General](.github/CONTRIBUTING.md)
-- [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
-
 ## Introduction
 
 This is the source code for the Expo client app used to view experiences published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
@@ -122,7 +114,18 @@ For native XCTest unit tests:
 For JS integration tests, test the `ExponentIntegrationTests` target (not included in the default test scheme). This target requires you to configure `EXTestEnvironment.plist` with a key `testSuiteUrl` whose value is the URL to load some version of Expo's [test-suite](apps/test-suite) app. This will run a bunch of Jasmine tests against the Expo SDK.
 
 ## Contributing
-Please check with us before putting work into a Pull Request! It is often harder to maintain code than it is to write it. The best place to talk to us is on Slack at https://slack.expo.io.
+
+### Foundation Unimodules
+
+The Foundation Unimodules by Expo are under `packages`, along with other JS packages. Each Unimodule has its own tests in its package (`yarn test`) and under `apps/test-suite` (run a development build of the Expo client, run `expo start` in `test-suite`, and load it on a device). We recommend reading the source for several Unimodules to get a sense of the code conventions and taste.
+
+- [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
+- [Contributing to Expo in General](.github/CONTRIBUTING.md)
+- [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
+
+### Expo client
+
+Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with the Expo client so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
 
 ## License
 The Expo source code is made available under the [MIT license](LICENSE). Some of the dependencies are licensed differently, with the BSD license, for example.
