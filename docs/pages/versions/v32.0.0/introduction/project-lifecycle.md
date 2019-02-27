@@ -40,6 +40,6 @@ When you're ready to list your app officially on the Apple App Store and Google 
 
 ## Changing native code
 
-You can take your app all the way to the App Store and Play Store while writing only JS using the managed workflow. However, if you run into needs which aren't met by the Expo SDK ([see "Why not Expo?" to help anticipate whether you will encounter this](../introduction/why-not-expo/)), we provide the ability to eject, which gives you the native Xcode and Android Studio representation of your project so you can change anything that you need to.
+You can take your app all the way to the App Store and Play Store while writing only JS using the managed workflow. However, if you run into needs which aren't met by the Expo SDK ([see "Why not Expo?" to help anticipate whether you will encounter this](../why-not-expo/)), we provide the ability to eject, which gives you the native Xcode and Android Studio representation of your project so you can change anything that you need to.
 
 **Note:** If you choose to eject, some Expo services are no longer available. For example, `expo-cli` won't work, we can't generate standalone builds for you anymore, and you won't be able to publish updates using `expo publish`. Your project becomes a normal React Native project with most of the Expo SDK APIs included.
