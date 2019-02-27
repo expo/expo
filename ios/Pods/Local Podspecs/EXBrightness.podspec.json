@@ -1,11 +1,11 @@
 {
   "name": "EXBrightness",
   "version": "1.0.0",
-  "summary": "Brightness universal module",
-  "description": "Brightness universal module",
+  "summary": "Provides an API to get and set screen brightness.",
+  "description": "Provides an API to get and set screen brightness.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-brightness",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/brightness/",
   "platforms": {
     "ios": "10.0"
   },

@@ -1,8 +1,8 @@
 {
   "name": "EXPermissionsInterface",
-  "version": "2.0.0",
-  "summary": "Expo Permissions interface package",
-  "description": "Expo Permissions interface package",
+  "version": "3.0.0",
+  "summary": "An interface for expo-permissions",
+  "description": "An interface for expo-permissions",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-permissions-interface",

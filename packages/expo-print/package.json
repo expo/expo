@@ -1,6 +1,6 @@
 {
   "name": "expo-print",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Provides an API for iOS (AirPrint) and Android printing functionality.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,5 +38,5 @@
     "expo-module-scripts": "^1.0.0",
     "babel-preset-expo": "^5.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

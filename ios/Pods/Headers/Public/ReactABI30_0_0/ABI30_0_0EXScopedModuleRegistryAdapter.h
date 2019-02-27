@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/Expo/Core/UniversalModules/ABI30_0_0EXScopedModuleRegistryAdapter.h

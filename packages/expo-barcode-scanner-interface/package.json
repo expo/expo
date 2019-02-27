@@ -1,6 +1,6 @@
 {
   "name": "expo-barcode-scanner-interface",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "An interface for expo-barcode-scanner.",
   "main": "index.js",
   "keywords": [
@@ -22,5 +22,5 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner-interface",
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

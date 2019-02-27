@@ -1,11 +1,11 @@
 {
   "name": "EXContacts",
   "version": "2.0.0",
-  "summary": "Expo Contacts universal module",
-  "description": "Expo Contacts universal module",
+  "summary": "Provides access to the phone's system contacts.",
+  "description": "Provides access to the phone's system contacts.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-contacts",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/contacts/",
   "platforms": {
     "ios": "10.0"
   },

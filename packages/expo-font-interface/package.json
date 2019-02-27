@@ -1,6 +1,6 @@
 {
   "name": "expo-font-interface",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Interface for managing fonts.",
   "keywords": [
     "expo",
@@ -19,5 +19,5 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-font-interface",
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

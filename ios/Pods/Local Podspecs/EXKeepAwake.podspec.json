@@ -1,11 +1,11 @@
 {
   "name": "EXKeepAwake",
   "version": "1.0.0",
-  "summary": "KeepAwake universal module",
-  "description": "KeepAwake universal module",
+  "summary": "Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.",
+  "description": "Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-keep-awake",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/keep-awake/",
   "platforms": {
     "ios": "10.0"
   },

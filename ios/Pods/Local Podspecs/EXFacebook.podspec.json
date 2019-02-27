@@ -5,7 +5,7 @@
   "description": "Expo universal module for Facebook SDK",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-facebook",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/facebook/",
   "platforms": {
     "ios": "10.0"
   },

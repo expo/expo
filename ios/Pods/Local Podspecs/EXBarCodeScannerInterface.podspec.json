@@ -1,8 +1,8 @@
 {
   "name": "EXBarCodeScannerInterface",
-  "version": "2.0.0",
-  "summary": "Expo BarCode Scanner interface for standalone module",
-  "description": "Expo BarCode Scanner interface for standalone module",
+  "version": "3.0.0",
+  "summary": "An interface for expo-barcode-scanner.",
+  "description": "An interface for expo-barcode-scanner.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner-interface",

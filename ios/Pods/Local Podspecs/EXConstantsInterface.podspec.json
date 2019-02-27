@@ -1,8 +1,8 @@
 {
   "name": "EXConstantsInterface",
-  "version": "2.0.0",
-  "summary": "Expo Constants interface package",
-  "description": "Expo Constants interface package",
+  "version": "3.0.0",
+  "summary": "An interface for expo-constants.",
+  "description": "An interface for expo-constants.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-constants-interface",

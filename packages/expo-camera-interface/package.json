@@ -1,6 +1,6 @@
 {
   "name": "expo-camera-interface",
-  "version": "2.1.0-alpha.0",
+  "version": "3.0.0",
   "description": "expo-camera interface package.",
   "main": "index.js",
   "scripts": {
@@ -24,5 +24,5 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-camera-interface",
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }
