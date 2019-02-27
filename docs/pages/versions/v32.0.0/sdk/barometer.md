@@ -13,7 +13,9 @@ Access the device barometer sensor to respond to changes in air pressure. `press
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+*Warning*: This API is not yet available in the [managed](../../introduction/managed-vs-bare/#managed-workflow) apps.
+
+To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
 ## API
 

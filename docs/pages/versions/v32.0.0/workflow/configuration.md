@@ -194,7 +194,7 @@ Configuration for loading and splash screen for standalone apps.
 
 ```
 
-> **ExpoKit**: To change your iOS app's splash screen, use Xcode to edit `LaunchScreen.xib`. For Android, edit or replace the files in `android/app/src/main/res/drawable-<RESOLUTION>`; to change the background color, edit `android/app/src/main/res/values/colors.xml`; and to change the resizeMode, set `SHOW_LOADING_VIEW_IN_SHELL_APP` in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` (`true` for `"cover"`, `false` for `"contain"`).
+> **ExpoKit**: To change your iOS app's splash screen, use Xcode to edit `LaunchScreen.xib`. For Android, edit or replace the files in `android/app/src/main/res/drawable-<RESOLUTION>`; to change the background color, edit `android/app/src/main/res/values/colors.xml`; and to change the resizeMode, set `SHOW_LOADING_VIEW_IN_SHELL_APP` in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` (`true` for `"contain"`, `false` for `"cover"`).
 
 ### `"notification"`
 
