@@ -20,22 +20,44 @@
 
 - (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
 {
-  if (![self isItExpoClient]) {
-    return [super documentDirectoryForExperienceId:experienceId];
-  }
-  return [EXFileSystem documentDirectoryForExperienceId:experienceId];
+  return [EXScopedFileSystemModule documentDirectoryForExperienceId:experienceId isDetached:![self isItExpoClient]];
 }
 
 - (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
 {
-  if (![self isItExpoClient]) {
-    return [super cachesDirectoryForExperienceId:experienceId];
-  }
-  return [EXFileSystem cachesDirectoryForExperienceId:experienceId];
+  return [EXScopedFileSystemModule cachesDirectoryForExperienceId:experienceId isDetached:![self isItExpoClient]];
 }
 
 - (bool)isItExpoClient
 {
   return [_appOwnership isEqualToString:@"expo"];
 }
+
++ (NSString *)escapedResourceName:(NSString *)name
+{
+  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
+  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
+  return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+}
+
++ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId isDetached:(BOOL)isDetached {
+  if (isDetached) {
+    return [EXFileSystem documentDirectoryForExperienceId:experienceId];
+  }
+  NSString *subdir = [self escapedResourceName:experienceId];
+  return [[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
+            stringByAppendingPathComponent:@"ExponentExperienceData"]
+           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+}
+
++ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId isDetached:(BOOL)isDetached {
+  if (isDetached) {
+    return [EXFileSystem cachesDirectoryForExperienceId:experienceId];
+  }
+  NSString *subdir = [self escapedResourceName:experienceId];
+  return [[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
+            stringByAppendingPathComponent:@"ExponentExperienceData"]
+           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+}
+
 @end

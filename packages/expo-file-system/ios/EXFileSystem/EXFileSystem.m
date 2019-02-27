@@ -768,16 +768,12 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 - (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
 {
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *documentDirectory = [paths objectAtIndex:0];
-  return documentDirectory;
+  return [EXFileSystem documentDirectoryForExperienceId:experienceId];
 }
 
 - (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
 {
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-  NSString *cacheDirectory = [paths objectAtIndex:0];
-  return cacheDirectory;
+  return [EXFileSystem cachesDirectoryForExperienceId:experienceId];
 }
 
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension
@@ -793,27 +789,18 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-+ (NSString *)escapedResourceName:(NSString *)name
-{
-  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
-  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
-}
-
 + (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
 {
-  NSString *subdir = [self escapedResourceName:experienceId];
-  return [[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
-            stringByAppendingPathComponent:@"ExponentExperienceData"]
-           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+  NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *documentDirectory = [paths objectAtIndex:0];
+  return documentDirectory;
 }
 
 + (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
 {
-  NSString *subdir = [self escapedResourceName:experienceId];
-  return [[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
-            stringByAppendingPathComponent:@"ExponentExperienceData"]
-           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+  NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  NSString *cacheDirectory = [paths objectAtIndex:0];
+  return cacheDirectory;
 }
 
 @end
