@@ -1,11 +1,11 @@
 {
   "name": "EXCamera",
-  "version": "2.0.0",
-  "summary": "Expo Camera standalone universal module",
-  "description": "Expo Camera standalone universal module",
+  "version": "3.0.0",
+  "summary": "A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.",
+  "description": "A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-camera",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/camera/",
   "platforms": {
     "ios": "10.0"
   },

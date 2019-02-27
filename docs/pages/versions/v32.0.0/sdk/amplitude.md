@@ -6,6 +6,20 @@ Provides access to [Amplitude](https://amplitude.com/) mobile analytics which ba
 
 Note: Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude).
+
+## API
+
+```js
+// in managed apps:
+import { Amplitude } from 'expo';
+
+// in bare apps:
+import * as Amplitude from 'expo-analytics-amplitude';
+```
+
 ### `Amplitude.initialize(apiKey)`
 
 Initializes Amplitude with your Amplitude API key. If you're having trouble finding your API key, see [step 4 of these instructions](https://amplitude.zendesk.com/hc/en-us/articles/207108137-Introduction-Getting-Started#getting-started).
@@ -32,7 +46,7 @@ Set properties for the current user. See [here for details](https://amplitude.ze
 
 ### `Amplitude.clearUserProperties()`
 
-Clear properties set by [`Amplitude.setUserProperties()`](#amplitudesetuserproperties).
+Clear properties set by [`Amplitude.setUserProperties()`](#expoamplitudesetuserproperties "Amplitude.setUserProperties").
 
 ### `Amplitude.logEvent(eventName)`
 
@@ -59,5 +73,3 @@ Add the current user to a group. For more  information, see here for [iOS](https
 
 -   **groupType (_string_)** -- The group name, e.g. "sports".
 -   **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
-
-#### [Github Issues](https://github.com/expo/expo/labels/Amplitude)

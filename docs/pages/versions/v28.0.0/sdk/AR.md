@@ -509,4 +509,3 @@ The set of video capture formats available on the current device. The video form
 }
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/AR)

@@ -1,6 +1,6 @@
 {
   "name": "EXReactNativeAdapter",
-  "version": "2.1.0-alpha.1",
+  "version": "3.0.1",
   "summary": "The adapter to use Expo universal modules with the React Native bridge",
   "description": "The adapter to use Expo universal modules with the React Native bridge",
   "license": "MIT",

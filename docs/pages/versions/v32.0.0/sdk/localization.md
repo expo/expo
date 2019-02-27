@@ -5,6 +5,10 @@ title: Localization
 You can use this module to Localize your app, and access the locale data on the native device.
 Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
+
 ## Usage
 
 ```javascript
@@ -37,6 +41,14 @@ export default class LitView extends React.Component {
 
 ## API
 
+```js
+// in managed apps:
+import { Localization } from 'expo';
+
+// in bare apps:
+import * as Localization from 'expo-local-authentication';
+```
+
 ### Constants
 
 This API is mostly synchronous and driven by constants. On iOS the constants will always be correct, on Android you should check if the locale has updated using `AppState` and `Localization.getLocalizationAsync()`. Initally the constants will be correct on both platforms, but on Android a user can change the language and return, more on this later.
@@ -60,6 +72,8 @@ A list of all the supported ISO codes.
 #### `Localization.timezone: string`
 
 The current time zone in display format. ex: `America/Los_Angeles`
+
+On Web `timezone` is calculated with `Intl.DateTimeFormat().resolvedOptions().timeZone`. For a better guess you could use the `moment-timezone` library but is a very large library and will add significant bloat to your bundle.
 
 #### `Localization.isRTL: boolean`
 
@@ -90,4 +104,3 @@ type NativeEvent = {
 const { locale } = await Localization.getLocalizationAsync();
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Localization)

@@ -1,7 +1,7 @@
 {
   "name": "expo-haptics",
-  "version": "1.0.0",
-  "description": "Expo Haptics standalone module",
+  "version": "3.0.0",
+  "description": "Provides access to the system's haptics engine on iOS and vibration effects on Android.",
   "main": "build/Haptics.js",
   "types": "build/Haptics.d.ts",
   "scripts": {
@@ -28,10 +28,10 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-haptics",
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-errors": "~1.0.0"
+  "homepage": "https://docs.expo.io/versions/latest/sdk/haptics/",
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

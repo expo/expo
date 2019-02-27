@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/Libraries/ART/Brushes/ABI30_0_0ARTBrush.h

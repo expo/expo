@@ -62,6 +62,5 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 * Don't spam the user
 * Don't request a review when the user is doing something time sensitive like navigating.
 
-#### [Github Issues](https://github.com/expo/expo/labels/StoreReview)
 
 

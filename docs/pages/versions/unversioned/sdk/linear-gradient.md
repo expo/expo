@@ -2,9 +2,15 @@
 title: LinearGradient
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
-
 A React component that renders a gradient view.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-linear-gradient).
+
+## Usage
+
+import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 <SnackEmbed snackId="BJbef43HW" />
 
@@ -12,7 +18,15 @@ A React component that renders a gradient view.
 
 <SnackEmbed snackId="r1pvMV3HW" />
 
-## `Expo.LinearGradient`
+## API
+
+```js
+// in managed apps:
+import { LinearGradient } from 'expo';
+
+// in bare apps:
+import { LinearGradient } from 'expo-linear-gradient';
+```
 
 ### props
 
@@ -28,4 +42,3 @@ Same as start but for the end of the gradient.
  `locations`  
 An array of the same length as `colors`, where each element is a float with the same meaning as the `start` and `end` values, but instead they indicate where the color at that index should be.
 
-#### [Github Issues](https://github.com/expo/expo/labels/LinearGradient)

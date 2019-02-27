@@ -49,4 +49,3 @@ If you want to add MapView with Google Maps to an [ExpoKit](../../expokit) (deta
 
 Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist` and ExpoKit will pick it up automatically. If you detached after already configuring Google Maps, the detach step may have already provided this for you.
 
-#### [Github Issues](https://github.com/expo/expo/labels/MapView)

@@ -20,4 +20,4 @@ A string: `light`, `default`, or `dark`.
  `intensity`
 A number from 1 to 100 to control the intensity of the blur effect.
 
-#### [Github Issues](https://github.com/expo/expo/labels/BlurView)
+#

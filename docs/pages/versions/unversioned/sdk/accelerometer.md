@@ -2,8 +2,21 @@
 title: Accelerometer
 ---
 
-Access the device accelerometer sensor(s) to respond to changes in
-acceleration in 3d space.
+Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+// in managed apps:
+import { Accelerometer } from 'expo';
+
+// in bare apps:
+import { Accelerometer } from 'expo-sensors';
+```
 
 ### `Accelerometer.isAvailableAsync()`
 
@@ -72,12 +85,14 @@ export default class AccelerometerSensor extends React.Component {
 
   _slow = () => {
     /* @info Request updates every 1000ms */ Accelerometer.setUpdateInterval(1000); /* @end */
+
   };
 
   _fast = () => {
     /* @info Request updates every 16ms, which is approximately equal to every frame at 60 frames per second */ Accelerometer.setUpdateInterval(
       16
     ); /* @end */
+
   };
 
   _subscribe = () => {
@@ -86,11 +101,11 @@ export default class AccelerometerSensor extends React.Component {
         this.setState({ accelerometerData });
       }
     ); /* @end */
+
   };
 
   _unsubscribe = () => {
-    /* @info Be sure to unsubscribe from events when the component is unmounted */ this
-      ._subscription && this._subscription.remove(); /* @end */
+    /* @info Be sure to unsubscribe from events when the component is unmounted */ this._subscription && this._subscription.remove(); /* @end */
 
     this._subscription = null;
   };
@@ -101,6 +116,7 @@ export default class AccelerometerSensor extends React.Component {
       y,
       z,
     } = this.state.accelerometerData; /* @end */
+
 
     return (
       <View style={styles.sensor}>
@@ -161,4 +177,4 @@ const styles = StyleSheet.create({
 });
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Accelerometer)
+#

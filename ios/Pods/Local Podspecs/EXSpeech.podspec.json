@@ -1,11 +1,11 @@
 {
   "name": "EXSpeech",
-  "version": "1.0.0",
-  "summary": "Expo speech module",
-  "description": "Expo speech module",
+  "version": "3.0.0",
+  "summary": "Provides text-to-speech functionality.",
+  "description": "Provides text-to-speech functionality.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-speech",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/speech/",
   "platforms": {
     "ios": "10.0"
   },

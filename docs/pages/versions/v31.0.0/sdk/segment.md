@@ -130,4 +130,3 @@ This method is only supported in standalone and detached apps. In Expo Client th
 
 The setting value will be persisted across restarts, so once you call `setEnabledAsync(false)`, Segment won't track the users even when the app restarts. To check whether tracking is enabled, use `Segment.getEnabledAsync()` which returns a promise which should resolve to a boolean.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Segment)

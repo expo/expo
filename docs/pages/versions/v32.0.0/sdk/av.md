@@ -2,31 +2,47 @@
 title: AV
 ---
 
-The [`Expo.Audio.Sound`](../audio/) objects and [`Expo.Video`](../video/) components share a unified imperative API for media playback.
+The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share a unified imperative API for media playback.
 
-Note that for `Expo.Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
+Note that for `Video`, all of these operations are also available via props on the component, but we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
-Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Expo.Audio.Sound` and `Expo.Video`.
+Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
 
-## Construction and obtaining a reference
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+
+## API
+
+```js
+// in managed apps:
+import { Audio, Video } from 'expo';
+
+// in bare apps:
+import { Audio, Video } from 'expo-av';
+```
+
+## Usage
+
+### Construction and obtaining a reference
 
 In this page, we reference operations on `playbackObject`s. Here is an example of obtaining access to the reference for both sound and video:
 
-#### Example: `Expo.Audio.Sound`
+#### Example: `Audio.Sound`
 
 ```javascript
-const playbackObject = new Expo.Audio.Sound();
+const playbackObject = new Audio.Sound();
 // OR
-const playbackObject = await Expo.Audio.Sound.createAsync(
+const playbackObject = await Audio.Sound.createAsync(
   { uri: 'http://foo/bar.mp3' },
   { shouldPlay: true }
 );
 ...
 ```
 
-See the [audio documentation](../audio/) for further information on `Expo.Audio.Sound.createAsync()`.
+See the [audio documentation](../audio/) for further information on `Audio.Sound.createAsync()`.
 
-#### Example: `Expo.Video`
+#### Example: `Video`
 
 ```javascript
 ...
@@ -40,7 +56,7 @@ _handleVideoRef = component => {
 render() {
   return (
     ...
-      <Expo.Video
+      <Video
         ref={this._handleVideoRef}
         ...
       />
@@ -67,7 +83,7 @@ On the `playbackObject` reference, the following API is provided:
             The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
 
         -   `require('path/to/file')` for a media file asset in the source code directory.
-        -   An [`Expo.Asset`](../asset/) object for a media file asset.
+        -   An [`Asset`](../asset/) object for a media file asset.
 
         The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the audio and video formats supported on iOS.
 
@@ -175,15 +191,13 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     -   **millis (_number_)** -- The desired position of playback in milliseconds.
 
--   `playbackObject.setRateAsync(value, shouldCorrectPitch)`
+-   `playbackObject.setRateAsync(value, shouldCorrectPitch, pitchCorrectionQuality)`
 
-    This is equivalent to `playbackObject.setStatusAsync({ rate: value, shouldCorrectPitch: shouldCorrectPitch })`.
+    This is equivalent to `playbackObject.setStatusAsync({ rate: value, shouldCorrectPitch: shouldCorrectPitch, pitchCorrectionQuality: pitchCorrectionQuality  })`.
 
     #### Parameters
 
-    -   **value (_number_)** -- The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
-
-    -   **shouldCorrectPitch (_boolean_)** -- A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio).
+      - **value (_number_)** -- The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
 
 -   `playbackObject.setVolumeAsync(value)`
 
@@ -270,7 +284,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
 
 ### Default initial `PlaybackStatusToSet`
 
-The default initial `PlaybackStatusToSet` of all `Expo.Audio.Sound` objects and `Expo.Video` components is as follows:
+The default initial `PlaybackStatusToSet` of all `Audio.Sound` objects and `Video` components is as follows:
 
 ```javascript
 {
@@ -285,7 +299,7 @@ The default initial `PlaybackStatusToSet` of all `Expo.Audio.Sound` objects and 
 }
 ```
 
-This default initial status can be overwritten by setting the optional `initialStatus` in `loadAsync()` or `Expo.Audio.Sound.createAsync()`.
+This default initial status can be overwritten by setting the optional `initialStatus` in `loadAsync()` or `Audio.Sound.createAsync()`.
 
 ### What is seek tolerance and why would I want to use it [iOS only]
 
@@ -354,4 +368,4 @@ playbackObject.setIsLooping(true);
 ...
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/AV)
+#

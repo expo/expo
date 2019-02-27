@@ -251,4 +251,4 @@ Resumes the camera preview.
 
 * sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Camera)
+#

@@ -1,4 +1,3 @@
-
 # expo-task-manager
 
 See [TaskManager documentation](https://docs.expo.io/versions/latest/sdk/task-manager) for more details.

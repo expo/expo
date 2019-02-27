@@ -243,4 +243,3 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 
 Resumes the camera preview.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Camera)

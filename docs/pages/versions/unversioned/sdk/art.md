@@ -8,4 +8,4 @@ But sometimes you'll find some code that uses ART such as [react-native-progress
 
 **Again, you almost definitely want to use [Svg](../svg/) instead of this unless you are really sure you want to use ART for some reason.**
 
-#### [Github Issues](https://github.com/expo/expo/labels/ART)
+#

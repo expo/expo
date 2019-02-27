@@ -8,15 +8,29 @@ Note that Expo does not yet support backgrounding, so audio is not available to 
 
 Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](http://expo.io/@community/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+
+## API
+
+```js
+// in managed apps:
+import { Audio } from 'expo';
+
+// in bare apps:
+import { Audio } from 'expo-av';
+```
+
 ## Enabling Audio and customizing Audio Mode
 
 ### `Audio.setIsEnabledAsync(value)`
 
-Audio is enabled by default, but if you want to write your own Audio API in an ExpoKit app, you might want to disable the Expo Audio API.
+Audio is enabled by default, but if you want to write your own Audio API in an ExpoKit app, you might want to disable the Audio API.
 
 #### Arguments
 
--   **value (_boolean_)** -- `true` enables Expo Audio, and `false` disables it.
+-   **value (_boolean_)** -- `true` enables Audio, and `false` disables it.
 
 #### Returns
 
@@ -101,7 +115,7 @@ A static convenience method to construct and load a sound is also provided:
         -   A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a media file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
             The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
         -   `require('path/to/file')` for an audio file asset in the source code directory.
-        -   An [`Asset`](../asset/) object for an audio file asset.
+        -   An [`Expo.Asset`](../asset/) object for an audio file asset.
 
     -   **initialStatus (_PlaybackStatusToSet_)** -- The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status. This value defaults to `{}` if no parameter is passed. See the [AV documentation](../av/) for details on `PlaybackStatusToSet` and the default initial playback status.
 
@@ -130,7 +144,7 @@ A static convenience method to construct and load a sound is also provided:
     }
     ```
 
-The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](../av/) for further information:
+The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](../av/) for further information:
 
 -   `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -541,4 +555,4 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
 };
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Audio)
+#

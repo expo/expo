@@ -140,4 +140,4 @@ const styles = StyleSheet.create({
 });
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Localization)
+#

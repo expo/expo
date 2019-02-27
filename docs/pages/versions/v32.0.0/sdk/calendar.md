@@ -4,17 +4,25 @@ title: Calendar
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
-Requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
+## Installation
 
-See the bottom of this page for a complete list of all possible fields for the objects used in this API.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-calendar).
 
-### `Calendar.requestPermissionsAsync()`
+## Configuration
 
-Requests the user for calendar permissions, same as `Permissions.askAsync(Permissions.CALENDAR)`.
+In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
 
-#### Returns
+## API
 
-Returns a promise resolving to an object with a key `granted` which value indicates whether the permission is granted or not.
+```js
+// in managed apps:
+import { Calendar } from 'expo';
+
+// in bare apps:
+import * as Calendar from 'expo-calendar';
+```
+
+> See the bottom of this page for a complete list of all possible fields for the objects used in this API.
 
 ### `Calendar.getCalendarsAsync(entityType)`
 
@@ -27,6 +35,14 @@ Gets an array of calendar objects with details about the different calendars sto
 #### Returns
 
 An array of [calendar objects](#calendar "Calendar") matching the provided entity type (if provided).
+
+### `Calendar.requestRemindersPermissionsAsync()`
+
+**iOS only**. Requests the user for reminders permissions, same as `Permissions.askAsync(Permissions.REMINDERS)`.
+
+#### Returns
+
+Returns a promise resolving to an object with a key `granted` which value indicates whether the permission is granted or not.
 
 ### `Calendar.createCalendarAsync(details)`
 
@@ -267,14 +283,6 @@ A string representing the ID of the newly created attendee record.
 #### Arguments
 
 -   **id (_string_)** -- ID of the attendee to delete.
-
-### `Calendar.requestRemindersPermissionsAsync()`
-
-**iOS only**. Requests the user for reminders permissions, same as `Permissions.askAsync(Permissions.REMINDERS)`.
-
-#### Returns
-
-Returns a promise resolving to an object with a key `granted` which value indicates whether the permission is granted or not.
 
 ### `Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)`
 
@@ -517,4 +525,4 @@ A source account that owns a particular calendar. Expo apps will typically not n
 | type | _string_ | both | Type of account that owns this calendar | on iOS, one of `Calendar.SourceType.LOCAL`, `Calendar.SourceType.EXCHANGE`, `Calendar.SourceType.CALDAV`, `Calendar.SourceType.MOBILEME`, `Calendar.SourceType.SUBSCRIBED`, or `Calendar.SourceType.BIRTHDAYS` |
 | isLocalAccount | _boolean_ | Android | Whether this source is the local phone account | |
 
-#### [Github Issues](https://github.com/expo/expo/labels/Calendar)
+#

@@ -39,4 +39,4 @@ If you have already integrated Google Sign In into your standalone app, this is 
 
 No special configuration required.
 
-#### [Github Issues](https://github.com/expo/expo/labels/MapView)
+#

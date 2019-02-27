@@ -39,4 +39,4 @@ Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
 
 Cancels the fingerprint authentication flow.
 
-#### [Github Issues](https://github.com/expo/expo/labels/LocalAuthentication)
+#

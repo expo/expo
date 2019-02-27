@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI32_0_0/Libraries/Text/TextInput/Singleline/ABI32_0_0RCTUITextField.h

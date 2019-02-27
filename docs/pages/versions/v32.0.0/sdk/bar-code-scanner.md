@@ -31,6 +31,10 @@ A React component that renders a viewfinder for the device's either front or bac
 
 * sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+
 ## Usage
 
 You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
@@ -79,6 +83,16 @@ export default class BarcodeScannerExample extends React.Component {
 
 [Try this example on Snack](https://snack.expo.io/Skxzn6-5b).
 
+## API
+
+```js
+// in managed apps:
+import { BarCodeScanner } from 'expo';
+
+// in bare apps:
+import { BarCodeScanner } from 'expo-barcode-scanner';
+```
+
 ## Props
 
 - **type (_string_)** -- Camera facing. Use one of `BarCodeScanner.Constants.Type`. Use either `Type.front` or `Type.back`. Same as `Camera.Constants.Type`. Default: `Type.back`.
@@ -103,4 +117,3 @@ Scan bar codes from the image given by the URL.
 
 A possibly empty array of objects of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code.
 
-#### [Github Issues](https://github.com/expo/expo/labels/BarCodeScanner)

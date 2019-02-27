@@ -7,6 +7,7 @@ const process = require('process');
 commander
   // Common scripts
   .command('configure', `Generate common configuration files`)
+  .command('readme', `Generate README`)
   .command(
     'typecheck',
     `Type check the source TypeScript without emitting JS and watch for file changes`
