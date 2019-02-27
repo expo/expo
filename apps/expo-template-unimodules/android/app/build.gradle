@@ -76,6 +76,7 @@ project.ext.react = [
     entryFile: "index.js"
 ]
 
+apply from: '../../node_modules/@unimodules/core/build.gradle'
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
