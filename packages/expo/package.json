@@ -67,7 +67,7 @@
     "expo-background-fetch": "~3.0.0",
     "expo-barcode-scanner": "~3.0.0",
     "expo-barcode-scanner-interface": "~3.0.0",
-    "expo-blur": "~1.0.0",
+    "expo-blur": "~3.0.0",
     "expo-brightness": "~3.0.0",
     "expo-calendar": "~3.0.0",
     "expo-camera": "~3.0.0",
