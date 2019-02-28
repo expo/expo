@@ -1,0 +1,1 @@
+../../../../GoogleSignIn/Frameworks/GoogleSignIn.framework/Headers/GoogleSignIn.h

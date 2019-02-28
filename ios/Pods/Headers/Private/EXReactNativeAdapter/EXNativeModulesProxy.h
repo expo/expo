@@ -1,0 +1,1 @@
+../../../../../packages/expo-react-native-adapter/ios/EXReactNativeAdapter/EXNativeModulesProxy/EXNativeModulesProxy.h

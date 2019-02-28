@@ -1,0 +1,1 @@
+../../../../../packages/expo-camera/ios/EXCamera/EXCameraManager.h
