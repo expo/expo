@@ -61,13 +61,41 @@ class Arrow extends React.Component {
   }
 }
 
+if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
+  window.sidebarState = {};
+}
+
 export default class DocumentationSidebarGroup extends React.Component {
   constructor(props) {
     super(props);
 
+    let isOpen = this.isChildRouteActive();
+    if (typeof window !== 'undefined') {
+      isOpen = isOpen || window.sidebarState[props.info.name];
+    }
+
     this.state = {
-      isOpen: this.isChildRouteActive(),
+      isOpen,
     };
+  }
+
+  persistGlobalSidebarState() {
+    window.sidebarState[this.props.info.name] = this.state.isOpen;
+  }
+
+  hydrateGlobalSidebarState() {
+    this.setState({ isOpen: window.sidebarState[this.props.info.name] });
+  }
+
+  componentDidMount() {
+    if (typeof window !== 'undefined') {
+      let persistedState = window.sidebarState[this.props.info.name];
+      if (typeof persistedState === 'boolean' && this.state.isOpen !== persistedState) {
+        this.setState({ isOpen: persistedState });
+      } else {
+        this.persistGlobalSidebarState();
+      }
+    }
   }
 
   isChildRouteActive() {
@@ -105,7 +133,9 @@ export default class DocumentationSidebarGroup extends React.Component {
   }
 
   _toggleIsOpen = () => {
-    this.setState(({ isOpen }) => ({ isOpen: !isOpen }));
+    let isOpen = this.state.isOpen;
+    this.setState({isOpen: !isOpen});
+    window.sidebarState[this.props.info.name] = !isOpen;
   };
 
   render() {
