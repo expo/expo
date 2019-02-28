@@ -301,13 +301,13 @@ dependencies {
   provided 'com.amplitude:android-sdk:2.9.2'
 
   api 'com.squareup.picasso:picasso:2.5.2'
-  api 'com.google.android.gms:play-services-gcm:15.0.1'
-  api 'com.google.android.gms:play-services-analytics:16.0.1'
-  api 'com.google.android.gms:play-services-maps:15.0.1'
-  api 'com.google.android.gms:play-services-auth:15.0.1'
-  api 'com.google.android.gms:play-services-location:15.0.1'
-  api 'com.google.android.gms:play-services-fitness:15.0.1'
-  api 'com.google.android.gms:play-services-wallet:15.0.1' //may need 10.+
+  api 'com.google.android.gms:play-services-gcm:16.1.0'
+  api 'com.google.android.gms:play-services-analytics:16.0.7'
+  api 'com.google.android.gms:play-services-maps:16.1.0'
+  api 'com.google.android.gms:play-services-auth:16.0.1'
+  api 'com.google.android.gms:play-services-location:16.0.0'
+  api 'com.google.android.gms:play-services-fitness:16.0.1'
+  api 'com.google.android.gms:play-services-wallet:16.0.1' //may need 10.+
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   api "com.raizlabs.android:DBFlow-Core:2.2.1"
   api "com.raizlabs.android:DBFlow:2.2.1"
@@ -326,8 +326,8 @@ dependencies {
   }
   api 'io.branch.sdk.android:library:2.17.1'
   api 'com.android.support:exifinterface:27.1.1'
-  api 'com.google.firebase:firebase-core:16.0.1'
-  api 'com.google.firebase:firebase-messaging:17.1.0'
+  api 'com.google.firebase:firebase-core:16.0.7'
+  api 'com.google.firebase:firebase-messaging:17.4.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   api 'com.jakewharton:butterknife:8.4.0'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
