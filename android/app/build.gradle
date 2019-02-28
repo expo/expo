@@ -273,6 +273,7 @@ dependencies {
   api 'host.exp.exponent:expo-google-sign-in:3.0.0'
   api 'host.exp.exponent:expo-haptics:3.0.0'
   api 'host.exp.exponent:expo-image-manipulator:3.0.0'
+  api 'host.exp.exponent:expo-image-picker:3.0.0'
   api 'host.exp.exponent:expo-intent-launcher:3.0.0'
   api 'host.exp.exponent:expo-local-authentication:3.0.0'
   api 'host.exp.exponent:expo-localization:3.0.0'
