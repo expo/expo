@@ -21,7 +21,6 @@
   return [EXScopedFileSystemModule cachesDirectoryForExperienceId:experienceId];
 }
 
-
 + (NSString *)escapedResourceName:(NSString *)name
 {
   NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
