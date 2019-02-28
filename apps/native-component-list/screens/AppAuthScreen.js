@@ -6,6 +6,7 @@ const GUID = '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9';
 const config = {
   issuer: 'https://accounts.google.com',
   clientId: `${GUID}.apps.googleusercontent.com`,
+  redirectUrl: `com.googleusercontent.apps.${GUID}:/oauth2redirect/google`,
   scopes: ['openid', 'profile'],
 };
 
@@ -38,8 +39,8 @@ async function getCachedAuthAsync() {
   }
 }
 
-function cacheAuthAsync(authState) {
-  return AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
+async function cacheAuthAsync(authState) {
+  return await AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
 }
 
 function checkIfTokenExpired({ accessTokenExpirationDate }) {
