@@ -140,13 +140,14 @@ workflows:
           type: approval
           requires:
             - docs
-      - docs_deploy:
-          requires:
-            - docs_approve_deploy
           filters:
             branches:
               only:
                 - master
+      - docs_deploy:
+          requires:
+            - docs_approve_deploy
+
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
