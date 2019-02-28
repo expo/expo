@@ -1,6 +1,6 @@
 {
   "name": "expo-facebook",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "Expo universal module for Facebook SDK",
   "main": "build/Facebook.js",
   "types": "build/Facebook.d.ts",
@@ -26,7 +26,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-facebook",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/facebook/",
   "jest": {
     "preset": "expo-module-scripts"
   },

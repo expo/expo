@@ -17,7 +17,7 @@ title: Configuration with app.json
 
 `app.json` was previous referred to as `exp.json`, but for consistency with [Create React Native App](https://github.com/react-community/create-react-native-app) it has been consolidated under one file. If you are converting your app from using `exp.json` to `app.json`, all you need to do is add an `"expo"` key at the root of `app.json`, as the parent of all other keys.
 
-Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Expo.Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
+Most configuration from `app.json` is accessible at runtime from your JavaScript code via [`Constants.manifest`](../../sdk/constants/#expoconstantsmanifest). Sensitive information such as secret keys are removed. See the `"extra"` key below for information about how to pass arbitrary configuration data to your app.
 
 ## ExpoKit
 
@@ -103,7 +103,7 @@ The relative path to your main JavaScript file.
 
 ### `"extra"`
 
-Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([read more](../../sdk/constants/#expoconstantsmanifest))
+Any extra fields you want to pass to your experience. Values are accessible via `Constants.manifest.extra` ([read more](../../sdk/constants/#expoconstantsmanifest))
 
 ### `"rnCliPath"`
 
@@ -194,7 +194,7 @@ Configuration for loading and splash screen for standalone apps.
 
 ```
 
-> **ExpoKit**: To change your iOS app's splash screen, use Xcode to edit `LaunchScreen.xib`. For Android, edit or replace the files in `android/app/src/main/res/drawable-<RESOLUTION>`; to change the background color, edit `android/app/src/main/res/values/colors.xml`; and to change the resizeMode, set `SHOW_LOADING_VIEW_IN_SHELL_APP` in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` (`true` for `"cover"`, `false` for `"contain"`).
+> **ExpoKit**: To change your iOS app's splash screen, use Xcode to edit `LaunchScreen.xib`. For Android, edit or replace the files in `android/app/src/main/res/drawable-<RESOLUTION>`; to change the background color, edit `android/app/src/main/res/values/colors.xml`; and to change the resizeMode, set `SHOW_LOADING_VIEW_IN_SHELL_APP` in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` (`true` for `"contain"`, `false` for `"cover"`).
 
 ### `"notification"`
 

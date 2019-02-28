@@ -92,4 +92,4 @@ export default class BarcodeScannerExample extends React.Component {
 
 - **barCodeTypes (_Array\<string\>_)** -- An array of bar code types. Usage: `BarCodeScanner.Constants.BarCodeType.<codeType>` where `codeType` is one of the listed above. Default: all supported bar code types. For example: `barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}`
 
-#### [Github Issues](https://github.com/expo/expo/labels/BarcodeScanner)
+#

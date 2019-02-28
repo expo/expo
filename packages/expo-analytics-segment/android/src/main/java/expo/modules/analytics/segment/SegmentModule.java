@@ -4,18 +4,14 @@ package expo.modules.analytics.segment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.segment.analytics.Analytics;
 import com.segment.analytics.Options;
 import com.segment.analytics.Properties;
 import com.segment.analytics.Traits;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.segment.analytics.android.integrations.firebase.FirebaseIntegration;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import expo.core.ExportedModule;
@@ -120,6 +116,7 @@ public class SegmentModule extends ExportedModule implements ModuleRegistryConsu
   public void initializeAndroid(final String writeKey, Promise promise) {
     Analytics.Builder builder = new Analytics.Builder(mContext, writeKey);
     builder.tag(Integer.toString(sCurrentTag++));
+    builder.use(FirebaseIntegration.FACTORY);
     mClient = builder.build();
     mClient.optOut(!getEnabledPreferenceValue());
     promise.resolve(null);

@@ -32,7 +32,7 @@ Now the documentation is running at http://localhost:3000
 
 ```sh
 yarn run export
-yarn run expoer-server
+yarn run export-server
 ```
 
 ### Editing Docs Content

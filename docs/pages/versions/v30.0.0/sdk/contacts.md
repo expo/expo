@@ -814,4 +814,3 @@ This table illustrates what fields will be added on demand to every contact.
 * Empty contact fields will no longer be returned as empty strings on iOS.
 * Passing no fields will now return all contact information.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Contacts)

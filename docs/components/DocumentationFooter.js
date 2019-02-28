@@ -17,21 +17,45 @@ const STYLES_FOOTER_LINK = css`
   margin-bottom: 12px;
 `;
 
+function githubUrl(path) {
+  // Remove trailing slash and append .md
+  let pathAsMarkdown = path.substring(0, path.length - 1) + '.md';
+  if (pathAsMarkdown.startsWith('/versions/latest')) {
+    pathAsMarkdown = pathAsMarkdown.replace('/versions/unversioned');
+  }
+  return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
+}
+
+// Add any page in the /sdk/ section that should not have an issues link to this
+const ISSUES_BLACKLIST = ['Overview'];
+
 export default class DocumentationFooter extends React.PureComponent {
   render() {
     return (
       <footer className={STYLES_FOOTER}>
-        <P>Want to contribute? Still need help?</P>
         <a className={STYLES_FOOTER_LINK} target="_blank" href="https://forums.expo.io/">
-          Ask on our forums
+          Ask a question on the forums
         </a>
-        <a
-          className={STYLES_FOOTER_LINK}
-          target="_blank"
-          href="https://github.com/expo/expo/tree/master/docs">
-          Send us a pull request
+        {this.maybeRenderIssuesLink()}
+        <a className={STYLES_FOOTER_LINK} target="_blank" href={githubUrl(this.props.asPath)}>
+          Edit this page
         </a>
       </footer>
     );
   }
+
+  maybeRenderIssuesLink = () => {
+    if (!this.props.asPath.includes('/sdk/') || ISSUES_BLACKLIST.includes(this.props.title)) {
+      return;
+    }
+
+    return (
+      <a
+        className={STYLES_FOOTER_LINK}
+        target="_blank"
+        href={`https://github.com/expo/expo/labels/${this.props.title}`}>
+        View open issues for {this.props.title}
+      </a>
+    );
+  };
 }

@@ -6,9 +6,23 @@ This module gives access to a database that can be queried through a [WebSQL](ht
 
 An [example to do list app](https://github.com/expo/sqlite-example) is available that uses this module for storage.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sqlite).
+
+## API
+
+```js
+// in managed apps:
+import { SQLite } from 'expo';
+
+// in bare apps:
+import { SQLite } from 'expo-sqlite';
+```
+
 ### `SQLite.openDatabase(name, version, description, size)`
 
-Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](../filesystem), i.e. `${FileSystem.documentDirectory}/SQLite/${name}`.
+Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](../filesystem), i.e. `${Expo.FileSystem.documentDirectory}/SQLite/${name}`.
 
 #### Arguments
 
@@ -75,4 +89,3 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
 
 -   **rows._array (_number_)** -- The actual array of rows returned by the query. Can be used directly instead of getting rows through `rows.item()`.
 
-#### [Github Issues](https://github.com/expo/expo/labels/SQLite)

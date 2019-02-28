@@ -40,4 +40,3 @@ Returns a promise resolving to an object containing `success`, a boolean indicat
 
 Cancels the fingerprint authentication flow.
 
-#### [Github Issues](https://github.com/expo/expo/labels/LocalAuthentication)

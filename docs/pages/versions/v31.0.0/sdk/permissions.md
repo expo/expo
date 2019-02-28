@@ -180,4 +180,3 @@ For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no
 
 > **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require all of the permissions listed above.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Permissions)

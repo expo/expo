@@ -123,4 +123,3 @@ If you specified `android.permissions` inside your `app.json` ([read more about 
 | CAMERA_ROLL     | READ\_EXTERNAL\_STORAGE, WRITE\_EXTERNAL\_STORAGE |
 | CALENDAR        | READ\_CALENDAR, WRITE\_CALENDAR                 |
 
-#### [Github Issues](https://github.com/expo/expo/labels/Permissions)

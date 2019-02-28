@@ -4,6 +4,20 @@ title: LocalAuthentication
 
 Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-local-authentication).
+
+## API
+
+```js
+// in managed apps:
+import { LocalAuthentication } from 'expo';
+
+// in bare apps:
+import * as LocalAuthentication from 'expo-local-authentication';
+```
+
 ### `LocalAuthentication.hasHardwareAsync()`
 
 Determine whether a face or fingerprint scanner is available on the device.
@@ -48,4 +62,3 @@ Returns a promise resolving to an object containing `success`, a boolean indicat
 
 Cancels the fingerprint authentication flow.
 
-#### [Github Issues](https://github.com/expo/expo/labels/LocalAuthentication)

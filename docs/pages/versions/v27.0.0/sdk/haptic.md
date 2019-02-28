@@ -122,4 +122,4 @@ $Enum<{
 }>
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Haptic)
+#

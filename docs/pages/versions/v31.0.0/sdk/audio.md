@@ -541,4 +541,4 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
 };
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Audio)
+#

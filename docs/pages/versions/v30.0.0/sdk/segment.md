@@ -74,4 +74,3 @@ Record that a user has seen a screen to Segment with custom properties. See <htt
 
 Manually flush the event queue. You shouldn't need to call this in most cases.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Segment)

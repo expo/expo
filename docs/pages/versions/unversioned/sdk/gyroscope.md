@@ -4,6 +4,20 @@ title: Gyroscope
 
 Access the device gyroscope sensor to respond to changes in rotation in 3d space.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+// in managed apps:
+import { Gyroscope } from 'expo';
+
+// in bare apps:
+import { Gyroscope } from 'expo-sensors';
+```
+
 ### `Gyroscope.isAvailableAsync()`
 
 Returns whether the gyroscope is enabled on the device.
@@ -22,8 +36,7 @@ Subscribe for updates to the gyroscope.
 
 #### Returns
 
-- A subscription that you can call `remove()` on when you
-  would like to unsubscribe the listener.
+- An EventSubscription object that you can call `remove()` on when you would like to unsubscribe the listener.
   
 ### `Gyroscope.removeAllListeners()`
 
@@ -146,4 +159,3 @@ const styles = StyleSheet.create({
 });
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Gyroscope)

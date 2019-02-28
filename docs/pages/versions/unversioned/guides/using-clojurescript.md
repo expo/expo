@@ -5,6 +5,8 @@ previous___FILE: ./upgrading-expo.md
 next___FILE: ./using-firebase.md
 ---
 
+> **Note:** ClojureScript is not officially supported by the Expo team, this guide was written by [@tiensonqin](https://github.com/tiensonqin), feel free to reach out to him on the [Expo Slack](http://slack.expo.io/) if you have questions!
+
 ## Quickstart
 
 If you're already convinced about ClojureScript and Expo and know what to do once you have figwheel running, you can just read this section. Otherwise, we encourage you to read the entire guide.
@@ -20,9 +22,7 @@ lein figwheel
 expo start --ios
 ```
 
-> **Note:** This guide was written by [@tiensonqin](https://github.com/tiensonqin), feel free to reach out to him on the [Expo Slack](http://slack.expo.io/) if you have questions!
-
-## Why Clojurescript?
+## Why ClojureScript?
 
 -   First-class immutable data structures
 -   Minimizing state and side-effects

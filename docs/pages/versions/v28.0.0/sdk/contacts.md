@@ -144,4 +144,4 @@ Fields: ` { day, month, year }`
 
 Fields: `{ uri } ` -- use this `uri` as `<Image>` component's `source` prop to display the picture. Mind that fetching these is time and resource-consuming on iOS and should not be used when fetching all contacts.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Contacts)
+#

@@ -261,4 +261,4 @@ Returns a Promise that resolves to an array of strings representing ratios, eg. 
 
 * sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Camera)
+#

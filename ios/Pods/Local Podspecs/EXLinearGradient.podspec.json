@@ -1,11 +1,11 @@
 {
   "name": "EXLinearGradient",
-  "version": "1.0.0",
-  "summary": "LinearGradient universal module",
-  "description": "LinearGradient universal module",
+  "version": "3.0.0",
+  "summary": "Provides a React component that renders a gradient view.",
+  "description": "Provides a React component that renders a gradient view.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-linear-gradient",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/linear-gradient/",
   "platforms": {
     "ios": "10.0"
   },

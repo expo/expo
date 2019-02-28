@@ -4,7 +4,15 @@ title: ScreenOrientation
 
 Allows changing supported screen orientations at runtime. This will take priority over the `orientation` key in `app.json`.
 
-## Methods
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
+## API
+
+```js
+import { ScreenOrientation } from 'expo';
+```
 
 ### `ScreenOrientation.allow(orientation)`
 
@@ -50,4 +58,3 @@ An object containing the values that can be passed to the allow function.
 
 The best way to do this is to listen for changes to [Dimensions](https://facebook.github.io/react-native/docs/dimensions.html).
 
-#### [Github Issues](https://github.com/expo/expo/labels/ScreenOrientation)

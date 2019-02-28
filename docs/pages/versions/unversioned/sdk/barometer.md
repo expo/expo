@@ -4,20 +4,26 @@ title: Barometer
 
 Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+// in managed apps:
+import { Barometer } from 'expo';
+
+// in bare apps:
+import { Barometer } from 'expo-sensors';
+```
+
 | OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | iOS     | _`hPa`_ | [`CMAltimeter`](https://developer.apple.com/documentation/coremotion/cmaltimeter)                       | Altitude events reflect the change in the current altitude, not the absolute altitude.                                              |
 | Android | _`hPa`_ | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
 | Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
 |         |
-
-## Usage
-
-> This module was introduced in Expo v33
-
-Barometer can be used outside of the Expo client with the `expo-sensors` & `expo-sensors-interface` libraries.
-
-## Methods
 
 ### `Barometer.isAvailableAsync()`
 
@@ -154,4 +160,3 @@ const styles = StyleSheet.create({
 });
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Barometer)

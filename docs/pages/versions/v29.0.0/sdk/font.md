@@ -27,4 +27,3 @@ Font.loadAsync({
 
 Returns a promise. The promise will be resolved when the fonts have finished loading.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Font)

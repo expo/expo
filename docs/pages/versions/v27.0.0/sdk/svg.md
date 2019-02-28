@@ -12,4 +12,4 @@ The implementation is provided by [react-native-svg](https://github.com/react-na
 
 <SnackEmbed snackId="HJ1m5ICJb" />
 
-#### [Github Issues](https://github.com/expo/expo/labels/SVG)
+#

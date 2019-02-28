@@ -2,12 +2,19 @@
 title: Lottie
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
-
 Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
 
-<SnackEmbed snackId="Byu2WM2af" />
+## Installation
 
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow the [lottie-react-native installation instructions](
+https://github.com/react-native-community/lottie-react-native).
+
+## Usage
+
+import SnackEmbed from '~/components/plugins/SnackEmbed';
+
+
+<SnackEmbed snackId="Byu2WM2af" />
 
 ## Importing Lottie
 
@@ -22,4 +29,3 @@ let { Lottie } = DangerZone;
 
 We pull in the API from [lottie-react-native](https://github.com/airbnb/lottie-react-native#basic-usage), so the documentation there is the best resource to follow.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Lottie)

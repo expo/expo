@@ -1,8 +1,8 @@
 {
   "name": "EXErrors",
-  "version": "1.0.0",
-  "summary": "Error classes and helpers for Expo modules",
-  "description": "Error classes and helpers for Expo modules",
+  "version": "3.0.0",
+  "summary": "An internal module in Expo that helps us standardize error handling across all of our modules and provide a place for all error-related code to live.",
+  "description": "An internal module in Expo that helps us standardize error handling across all of our modules and provide a place for all error-related code to live.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-errors",

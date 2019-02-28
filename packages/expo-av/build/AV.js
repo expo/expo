@@ -11,9 +11,9 @@ import { Platform } from 'expo-core';
 //  subtitles API
 export var PitchCorrectionQuality;
 (function (PitchCorrectionQuality) {
-    PitchCorrectionQuality[PitchCorrectionQuality["Low"] = ExponentAV.Qualities && ExponentAV.Qualities.Low] = "Low";
-    PitchCorrectionQuality[PitchCorrectionQuality["Medium"] = ExponentAV.Qualities && ExponentAV.Qualities.Medium] = "Medium";
-    PitchCorrectionQuality[PitchCorrectionQuality["High"] = ExponentAV.Qualities && ExponentAV.Qualities.High] = "High";
+    PitchCorrectionQuality[PitchCorrectionQuality["Low"] = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.Low] = "Low";
+    PitchCorrectionQuality[PitchCorrectionQuality["Medium"] = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.Medium] = "Medium";
+    PitchCorrectionQuality[PitchCorrectionQuality["High"] = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.High] = "High";
 })(PitchCorrectionQuality || (PitchCorrectionQuality = {}));
 export const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS = 500;
 export const _DEFAULT_INITIAL_PLAYBACK_STATUS = {
@@ -151,7 +151,7 @@ export const PlaybackMixin = {
             seekMillisToleranceBefore: tolerances.toleranceMillisBefore,
         });
     },
-    async setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality = PitchCorrectionQuality.Low) {
+    async setRateAsync(rate, shouldCorrectPitch = false, pitchCorrectionQuality = PitchCorrectionQuality.Low) {
         return this.setStatusAsync({
             rate,
             shouldCorrectPitch,

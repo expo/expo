@@ -22,4 +22,3 @@ let { Lottie } = DangerZone;
 
 We pull in the API from [lottie-react-native](https://github.com/airbnb/lottie-react-native#basic-usage), so the documentation there is the best resource to follow.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Lottie)
