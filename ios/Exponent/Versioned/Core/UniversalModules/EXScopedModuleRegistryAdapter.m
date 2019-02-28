@@ -23,7 +23,7 @@
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];
 
-  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId          constantsModule:constantsBinding];
+  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:fileSystemModule];
 
   EXFileSystemBinding *fileSystemBinding = [[EXFileSystemBinding alloc] init];

@@ -1,20 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import "EXScopedFileSystemModule.h"
 #import <EXFileSystem/EXFileSystem.h>
-#import <EXConstantsInterface/EXConstantsInterface.h>
 #import "EXEnvironment.h"
-
-@interface EXScopedFileSystemModule ()
-
-@property (nonatomic, weak) NSString *appOwnership;
-
-@end
 
 @implementation EXScopedFileSystemModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId constantsModule:(id<EXConstantsInterface>)constantsModule
+- (instancetype)initWithExperienceId:(NSString *)experienceId
 {
-  self.appOwnership = constantsModule.appOwnership;
   self = [super initWithExperienceId:experienceId];
   return self;
 }

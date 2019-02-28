@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedFileSystemModule : EXFileSystem
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId constantsModule:(id<EXConstantsInterface>)constantsModule;
+- (instancetype)initWithExperienceId:(NSString *)experienceId;;
 + (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;
 + (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId;
 
