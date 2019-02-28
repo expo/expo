@@ -10,7 +10,6 @@
 #import "EXScopedBridgeModule.h"
 #import "EXStatusBarManager.h"
 #import "EXUnversioned.h"
-#import "EXEnvironment.h"
 #import "EXScopedFileSystemModule.h"
 #import "EXTest.h"
 
@@ -284,8 +283,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
-  BOOL isDetached = [EXEnvironment sharedEnvironment].isDetached;
-  NSString *localStorageDirectory = [[EXScopedFileSystemModule documentDirectoryForExperienceId:experienceId isDetached:isDetached] stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
+  NSString *localStorageDirectory = [[EXScopedFileSystemModule documentDirectoryForExperienceId:experienceId] stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
   BOOL isOpeningHomeInProductionMode = params[@"browserModuleClass"] && !manifest[@"developer"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:

@@ -2,6 +2,7 @@
 #import "EXScopedFileSystemModule.h"
 #import <EXFileSystem/EXFileSystem.h>
 #import <EXConstantsInterface/EXConstantsInterface.h>
+#import "EXEnvironment.h"
 
 @interface EXScopedFileSystemModule ()
 
@@ -20,18 +21,14 @@
 
 - (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
 {
-  return [EXScopedFileSystemModule documentDirectoryForExperienceId:experienceId isDetached:![self isItExpoClient]];
+  return [EXScopedFileSystemModule documentDirectoryForExperienceId:experienceId];
 }
 
 - (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
 {
-  return [EXScopedFileSystemModule cachesDirectoryForExperienceId:experienceId isDetached:![self isItExpoClient]];
+  return [EXScopedFileSystemModule cachesDirectoryForExperienceId:experienceId];
 }
 
-- (bool)isItExpoClient
-{
-  return [_appOwnership isEqualToString:@"expo"];
-}
 
 + (NSString *)escapedResourceName:(NSString *)name
 {
@@ -40,8 +37,9 @@
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
-+ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId isDetached:(BOOL)isDetached {
-  if (isDetached) {
++ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
     return [EXFileSystem documentDirectoryForExperienceId:experienceId];
   }
   NSString *subdir = [self escapedResourceName:experienceId];
@@ -50,8 +48,9 @@
            stringByAppendingPathComponent:subdir] stringByStandardizingPath];
 }
 
-+ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId isDetached:(BOOL)isDetached {
-  if (isDetached) {
++ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
     return [EXFileSystem cachesDirectoryForExperienceId:experienceId];
   }
   NSString *subdir = [self escapedResourceName:experienceId];
