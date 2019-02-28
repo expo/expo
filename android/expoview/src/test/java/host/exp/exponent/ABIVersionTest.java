@@ -29,7 +29,7 @@ public class ABIVersionTest {
   }
 
   @Test
-  public void minorIsBiggerThanPatch() {
+  public void minorUpdateIsBiggerThanPatchUpdate() {
     assert (ABIVersion.toNumber("32.1.0") > ABIVersion.toNumber("32.0.1"));
   }
 }
