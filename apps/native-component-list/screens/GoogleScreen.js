@@ -5,10 +5,10 @@ import { Alert, View } from 'react-native';
 import Button from '../components/Button';
 
 // bundle ID: host.exp.exponent
-const IOS_KEY = '29635966244-td9jmh1m5trn8uuqa0je1mansia76cln.apps.googleusercontent.com';
+const IOS_KEY = '29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e.apps.googleusercontent.com';
 // bundle ID: app.json: expo.ios.bundleIdentifier
 const IOS_STANDALONE_KEY =
-  '29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e.apps.googleusercontent.com';
+  '29635966244-td9jmh1m5trn8uuqa0je1mansia76cln.apps.googleusercontent.com';
 // package: host.exp.exponent
 const ANDROID_CLIENT_KEY =
   '29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2.apps.googleusercontent.com';
