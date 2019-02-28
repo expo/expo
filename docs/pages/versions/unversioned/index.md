@@ -1,93 +1,28 @@
 ---
-title: Hello World
+title: Getting to know Expo
 ---
 
-To get started with a bare React Native project, run `expo init` and choose one of the bare templates. We'll use the minimum template here. This guide assumes that you have Xcode and/or Android Studio installed and working.
+## Introduction
 
-```bash
-# If you don't have expo-cli yet, get it
-npm i -g expo-cli
-# If you don't have react-native-cli yet, get it
-npm i -g react-native-cli
-# This is a shortcut to skip the UI for picking the template
-expo init --template bare-minimum
-```
+This is the documentation for [Expo](http://expo.io). Expo is a set of tools, libraries and services you can use to build native iOS and Android apps faster than ever before.
 
-Next, let's get the project running. Go into your project directory and run `react-native run-ios` or `react-native run-android` &mdash; hurray! Your project is working.
+There are two ways to build a project with Expo, we call these workflows: you can use the "managed" workflow or the "bare" workflow. With the "managed" workflow, you only write JavaScript and lean on the [Expo SDK](sdk/) to give you access to your device capabilities and the Expo services to handle the heavy lifting of building your app binary and uploading it to the store, all without you touching Xcode or Android Studio. With the "bare" workflow, we also speed up your development with the [Expo SDK](sdk/) and React Native, and you have full control over your iOS and Android projects.
 
-## Using @unimodules/core
+## More about the Expo SDK
 
-Bare template projects come with `@unimodules/core` installed and configured. This package gives you access to some commonly useful APIs, like `Asset`, `Constants`, `FileSystem`, and `Permissions`. You can import these from `@unimodules/core` like so:
+The Expo SDK is a set of libraries written natively for each platform which provides access to the device's system functionality (things like the camera, push notifications, contacts, local storage, and other hardware and operating system APIs) from JavaScript. The SDK is designed to smooth out differences in platforms as much as possible, which makes your project very portable because it can run in any native environment containing the Expo SDK.
 
-```js
-import { Asset, Constants, FileSystem, Permissions } from '@unimodules/core';
-```
+Expo also provides UI components to handle a variety of use-cases that almost all apps will cover but are not built into React Native core, e.g. icons, blur views, and more.
 
-## Install a Unimodule
+## Considering using Expo?
 
-We're going to install [`expo-web-browser`](https://github.com/expo/expo/tree/master/packages/expo-web-browser), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
+- If you'd like an overview of what Expo offers, you might want to familiarize yourself with the [lifecycle of an Expo project](introduction/project-lifecycle/), which describes how you go from square one to a production iOS and Android app.
+- For further explanation, it's also good to check out the [Frequently Asked Questions](introduction/faq/).
 
-```bash
-npm install expo-web-browser
-```
+## Ready to get started?
 
-Open up `App.js` and add a button that, when pressed, opens up a web browser. Here's some code for you.
-
-```js
-import * as React from 'react';
-import { Button, View } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button
-          title="Open a web browser"
-          onPress={() => {
-            WebBrowser.openBrowserAsync('https://expo.io');
-          }}
-        />
-      </View>
-    );
-  }
-}
-```
-
-This will not yet work because we haven't linked the native code that powers it. To do this, we need to follow the instructions in the [`expo-web-browser` README](https://github.com/expo/expo/tree/master/packages/expo-web-browser) to configure it for iOS and Android. Let's do it.
-
-### iOS configuration
-
-The iOS side is easiest, so let's do it first. Bare projects are initialized using [Cocoapods](https://cocoapods.org/), a dependency manager for iOS projects. If you don't have Cocoapods installed already, [install it](https://guides.cocoapods.org/using/getting-started.html). Now let's go into `ios/Podfile` and add `pod 'EXWebBrowser', path: '../node_modules/expo-web-browser/ios'` on a new line after `use_unimodules!`. Close the file and run `pod install` in the `ios` directory. Now you can run `react-native run-ios` again from the root of the project and it should work as expected!
-
-### Android configuration
-
-There's not much context needed beyond what the README says here, just follow the steps below:
-
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':expo-web-browser'
-project(':expo-web-browser').projectDir = new File(rootProject.projectDir, '../node_modules/expo-web-browser/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':expo-web-browser')
-```
-
-3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.expo.modules.webbrowser.WebBrowserPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new WebBrowserPackage()
-), Arrays.<SingletonModule>asList());
-```
-Now go ahead and run `react-native run-android`. Press the button, watch the browser open. Success! Happy times.
-
-## What now?
-
-Most of the Expo APIs are available in bare React Native projects and can be installed using a process very similar to the above. Go ahead and browser the `API Reference` section and follow the installation instructions linked to there, then read the API documentation and ejoy. Good luck building your app!
+- Head over to [Installation](introduction/installation/) to grab our tools and have a look around.
+- Make your first project by following the [Up and Running](workflow/up-and-running/) guide.
+- If you're not already familiar with React and React Native, you can bootstrap your knowledge with [React Native Express](http://www.reactnativeexpress.com/).
+- For hands-on React Native projects from beginner to advanced, check out [Fullstack React Native](https://www.fullstackreact.com/react-native/), a (paid) book by the author of React Native Express.
+- Join our [Community](introduction/community/) and let us know what you're working on!
