@@ -2,10 +2,6 @@
 title: Asset
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 This module provides an interface to Expo's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts and sounds. Expo's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://facebook.github.io/react-native/docs/images.html#static-image-resources) for more information. This method of referring to static image resources works out of the box with Expo.
 
 ### `Expo.Asset()`
@@ -50,7 +46,7 @@ A helper that wraps `Expo.Asset.fromModule(module).downloadAsync` for convenienc
 
 #### Arguments
 
--   **modules : `Array<number>|number`** -- An array of `require('path/to/file')`. Can also be just one module without an Array.
+-   **modules (_Array\<number\>|number_)** -- An array of `require('path/to/file')`. Can also be just one module without an Array.
 
 #### Returns
 
@@ -62,7 +58,7 @@ Returns the [`Expo.Asset`](#expoasset "Expo.Asset") instance representing an ass
 
 #### Arguments
 
--   **module : `number`** -- The value of `require('path/to/file')` for the asset
+-   **module (_number_)** -- The value of `require('path/to/file')` for the asset
 
 #### Returns
 
@@ -75,3 +71,5 @@ const imageURI = Expo.Asset.fromModule(require('./images/hello.jpg')).uri;
 ```
 
 On running this piece of code, `imageURI` gives the remote URI that the contents of `images/hello.jpg` can be read from. The path is resolved relative to the source file that this code is evaluated in.
+
+#

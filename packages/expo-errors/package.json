@@ -1,7 +1,7 @@
 {
   "name": "expo-errors",
-  "version": "1.0.0",
-  "description": "Error classes and helpers for Expo modules",
+  "version": "3.0.0",
+  "description": "An internal module in Expo that helps us standardize error handling across all of our modules and provide a place for all error-related code to live.",
   "main": "build/Errors.js",
   "types": "build/Errors.d.ts",
   "scripts": {
@@ -14,19 +14,21 @@
   },
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "errors"
   ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-errors",
   "jest": {
     "preset": "expo-module-scripts"
-  },
-  "dependencies": {
-    "expo-core": "~2.0.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

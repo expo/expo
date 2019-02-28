@@ -2,10 +2,6 @@
 title: Advanced Release Channels
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 > **WARNING:** Channel features are in beta, run `npm install -g exp` to get the most up to date features.
 
 ## Introduction

@@ -2,10 +2,6 @@
 title: Setting up Continuous Integration
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Continuous Integration (CI) and Continuous Delivery (CD) are concepts which can help you to build and deploy with confidence.
 It's the idea of automating as much as you can, like running tests or creating new releases.
 
@@ -254,6 +250,12 @@ To perform the authentication, we will add this script to our configuration:
 
 ```bash
 $ npx expo login -u <EXPO USERNAME> -p <EXPO PASSWORD>
+```
+
+If you don't want to expose the password in the login script, set the `EXPO_CLI_PASSWORD` environment variable to the password and run the following script instead:
+
+```bash
+$ npx expo login --non-interactive -u <EXPO USERNAME>
 ```
 
 ### Publish new builds

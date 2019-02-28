@@ -3,10 +3,6 @@ id: picker
 title: Picker
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Renders the native picker component on iOS and Android. Example:
 
 

@@ -1,11 +1,11 @@
 {
   "name": "EXFaceDetectorInterface",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "summary": "Expo interface package for Face Detector",
   "description": "Expo interface package for Face Detector",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-face-detector-interface",
   "platforms": {
     "ios": "10.0"
   },
@@ -14,10 +14,5 @@
   },
   "source_files": "EXFaceDetectorInterface/**/*.{h,m}",
   "preserve_paths": "EXFaceDetectorInterface/**/*.{h,m}",
-  "requires_arc": true,
-  "dependencies": {
-    "EXCore": [
-
-    ]
-  }
+  "requires_arc": true
 }

@@ -3,6 +3,7 @@ import ExponentAV from './ExponentAV';
 export * from './Audio/Recording';
 export * from './Audio/Sound';
 export { setIsEnabledAsync } from './Audio/AudioAvailability';
+export { PitchCorrectionQuality } from './AV';
 
 export type AudioMode = {
   allowsRecordingIOS: boolean;

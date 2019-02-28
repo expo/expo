@@ -16,7 +16,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 
 /**
  * Listens for the user shaking their phone. Allocation-less once it starts listening.

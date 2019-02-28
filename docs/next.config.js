@@ -17,7 +17,7 @@ module.exports = {
       use: [
         options.defaultLoaders.babel,
         '@mdx-js/loader',
-        join(__dirname, './common/fm-loader'), // turn frontmatter into `meta`
+        join(__dirname, './common/md-loader'),
       ],
     });
     return config;

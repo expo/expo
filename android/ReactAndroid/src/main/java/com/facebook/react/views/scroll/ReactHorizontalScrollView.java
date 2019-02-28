@@ -25,7 +25,7 @@ import android.view.ViewConfiguration;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;

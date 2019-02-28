@@ -1,0 +1,24 @@
+rootProject.name = 'NativeComponentList'
+
+include ':app'
+
+include ':react-native-gesture-handler'
+project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-gesture-handler/android')
+
+include ':react-native-reanimated'
+project(':react-native-reanimated').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-reanimated/android')
+
+include ':react-native-screens'
+project(':react-native-screens').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-screens/android')
+
+[
+        'expo-core',
+        'expo-react-native-adapter',
+        // required by the adapter
+        'expo-font-interface',
+        'expo-image-loader-interface',
+        'expo-permissions-interface'
+].forEach({ name ->
+    include ":$name"
+    project(":$name").projectDir = new File(rootDir, "../../../packages/$name/android")
+})

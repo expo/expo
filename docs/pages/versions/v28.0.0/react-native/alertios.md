@@ -3,10 +3,6 @@ id: alertios
 title: AlertIOS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `AlertIOS` provides functionality to create an iOS alert dialog with a message or create a prompt for user input.
 
 Creating an iOS alert:

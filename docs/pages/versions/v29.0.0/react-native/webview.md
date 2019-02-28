@@ -3,10 +3,6 @@ id: webview
 title: WebView
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `WebView` renders web content in a native view.
 
 

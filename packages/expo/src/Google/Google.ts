@@ -1,33 +1,34 @@
 import * as AppAuth from 'expo-app-auth';
-import Constants from 'expo-constants';
 import { UnavailabilityError } from 'expo-errors';
 import { Platform } from 'react-native';
 
-type LogInConfig = {
+export type LogInConfig = {
   androidClientId?: string;
   iosClientId?: string;
-  clientId?: string;
+  clientId: string;
   behavior?: 'system' | 'web';
   scopes?: string[];
 };
 
-type LogInResult =
+export type GoogleUser = {
+  id?: string;
+  name?: string;
+  givenName?: string;
+  familyName?: string;
+  photoUrl?: string;
+  email?: string;
+};
+
+export type LogInResult =
   | {
       type: 'cancel';
     }
   | {
       type: 'success';
-      accessToken?: string | null;
-      idToken?: string | null;
-      refreshToken?: string | null;
-      user: {
-        id?: string;
-        name?: string;
-        givenName?: string;
-        familyName?: string;
-        photoUrl?: string;
-        email?: string;
-      };
+      accessToken?: string;
+      idToken: string | null;
+      refreshToken: string | null;
+      user: GoogleUser;
     };
 
 export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
@@ -35,18 +36,10 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
     throw new UnavailabilityError('AppAuth', 'logInAsync');
   }
 
-  const { behavior = 'web' } = config;
-
-  if (behavior !== 'web') {
-    if (Constants.appOwnership === 'expo') {
-      console.warn(
-        'Native Google Sign-In is only available in ExpoKit projects. Falling back to `web` behavior'
-      );
-    } else {
-      console.warn(
-        "Deprecated: Native Google Sign-In has been moved to Expo.GoogleSignIn ('expo-google-sign-in') Falling back to `web` behavior"
-      );
-    }
+  if (config.behavior !== undefined) {
+    console.warn(
+      "Deprecated: Native Google Sign-In has been moved to Expo.GoogleSignIn ('expo-google-sign-in') Falling back to `web` behavior. `behavior` deprecated in SDK 34"
+    );
   }
 
   const userDefinedScopes = config.scopes || [];
@@ -60,9 +53,20 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
     config.clientId ||
     Platform.select({
       ios: config.iosClientId,
-      android: config.androidClientId,
-      web: config.clientId,
+      android: config.androidClientId || config['androidStandaloneAppClientId'],
+      web: config.clientId || config['iosStandaloneAppClientId'],
     });
+
+  if (
+    config.iosClientId ||
+    config.androidClientId ||
+    config['androidStandaloneAppClientId'] ||
+    config['iosStandaloneAppClientId']
+  ) {
+    console.warn(
+      'Expo.Google.logInAsync(): `iosClientId`, `androidClientId`, `iosStandaloneAppClientId`, and `androidStandaloneAppClientId` have been deprecated and will be removed in SDK 34 in favor of `clientId`'
+    );
+  }
 
   try {
     const logInResult = await AppAuth.authAsync({

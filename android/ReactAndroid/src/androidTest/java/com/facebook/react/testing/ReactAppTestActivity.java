@@ -16,7 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;

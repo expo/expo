@@ -94,6 +94,17 @@ EX_EXPORT_MODULE(ExponentAV);
   return @[@protocol(EXAVInterface)];
 }
 
+- (NSDictionary *)constantsToExport
+{
+  return @{
+           @"Qualities": @{
+               @"Low": AVAudioTimePitchAlgorithmLowQualityZeroLatency,
+               @"Medium": AVAudioTimePitchAlgorithmTimeDomain,
+               @"High": AVAudioTimePitchAlgorithmSpectral
+               }
+           };
+}
+
 - (NSString *)experienceId
 {
   return _experienceId;

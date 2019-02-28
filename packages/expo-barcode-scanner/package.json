@@ -1,27 +1,47 @@
 {
   "name": "expo-barcode-scanner",
-  "version": "2.0.0",
-  "description": "Expo BarCode Scanner standalone universal module",
-  "main": "index.js",
+  "version": "3.0.0",
+  "description": "Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.",
+  "main": "build/BarCodeScanner.js",
+  "types": "build/BarCodeScanner.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "barcode",
     "barcode-scanner",
     "react-native",
     "expo"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "peerDependencies": {
-    "expo-core": "~2.0.0"
+  "homepage": "https://docs.expo.io/versions/latest/sdk/bar-code-scanner/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-barcode-scanner-interface": "*"
   },
   "dependencies": {
-    "expo-barcode-scanner-interface": "~2.0.0",
     "lodash.mapvalues": "^4.6.0",
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
-    "flow-bin": "0.79.1"
+    "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

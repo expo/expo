@@ -2,13 +2,15 @@
 title: Branch
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo includes alpha support for [Branch](https://branch.io/) attribution services.
 
 > **Note:** This API only works with standalone builds created with [expo build](../../distribution/building-standalone-apps/).
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. In a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you should use [react-native-branch-deep-linking](https://github.com/BranchMetrics/react-native-branch-deep-linking) instead.
+
+## Usage
 
 ## Importing Branch
 
@@ -86,3 +88,5 @@ class ArticleScreen extends Component {
   };
 }
 ```
+
+#

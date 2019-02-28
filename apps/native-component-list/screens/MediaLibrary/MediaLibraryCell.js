@@ -4,6 +4,7 @@ import { MediaLibrary } from 'expo';
 import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
+const { MediaType = {} } = MediaLibrary;
 export default class MediaLibraryCell extends React.Component {
   static propTypes = {
     asset: PropTypes.object.isRequired,
@@ -17,19 +18,19 @@ export default class MediaLibraryCell extends React.Component {
 
   getAssetData(asset) {
     switch (asset.mediaType) {
-      case MediaLibrary.MediaType.photo:
+      case MediaType.photo:
         return {
           icon: 'photo',
           description: `${asset.width}x${asset.height}`,
           preview: <Image style={styles.preview} source={{ uri: asset.uri }} resizeMode="cover" />,
         };
-      case MediaLibrary.MediaType.video:
+      case MediaType.video:
         return {
           icon: 'video-camera',
           description: `${Math.round(asset.duration)}s`,
           preview: <Image style={styles.preview} source={{ uri: asset.uri }} resizeMode="cover" />,
         };
-      case MediaLibrary.MediaType.audio:
+      case MediaType.audio:
         return {
           icon: 'music',
           description: `${Math.round(asset.duration)}s`,

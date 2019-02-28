@@ -231,6 +231,7 @@
 
 # Package Files #
 */.jar
+!maven/**/*.jar
 */.zip
 */.tar.gz
 */.rar

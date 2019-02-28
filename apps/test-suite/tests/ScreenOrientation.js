@@ -332,7 +332,7 @@ export function test(t) {
         t.expect(supported).toBe(false);
 
         // Expect non-lock values to throw an error
-        const notLocks = ['FOO', ScreenOrientation.Orientation.UNKNOWN, 3];
+        const notLocks = ['FOO', 3];
         for (const notLock of notLocks) {
           let hasError = false;
           try {

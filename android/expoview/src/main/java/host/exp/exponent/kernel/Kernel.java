@@ -73,7 +73,7 @@ import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.JSONBundleConverter;
-import expolib_v1.okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;

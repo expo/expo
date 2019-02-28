@@ -1,6 +1,6 @@
 {
   "name": "expo-react-native-adapter",
-  "version": "2.0.0",
+  "version": "3.0.1",
   "description": "The adapter to use Expo universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -21,6 +21,9 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-react-native-adapter",
@@ -28,12 +31,15 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo-font-interface": "~2.0.0",
-    "react-native": "^0.57.1"
+    "react-native": "*"
+  },
+  "unimodulePeerDependencies": {
+    "expo-core": "~3.0.0",
+    "expo-font-interface": "*",
+    "expo-image-loader-interface": "*",
+    "expo-permissions-interface": "*"
   },
   "dependencies": {
-    "expo-image-loader-interface": "~2.0.0",
-    "expo-permissions-interface": "~2.0.0",
     "invariant": "^2.2.4",
     "lodash.omit": "^4.5.0",
     "lodash.pick": "^4.4.0",
@@ -43,8 +49,8 @@
     "@types/lodash.omit": "^4.5.4",
     "@types/lodash.pick": "^4.4.4",
     "babel-preset-expo": "^5.0.0",
-    "expo-core": "~2.0.0",
+    "expo-core": "~3.0.0",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

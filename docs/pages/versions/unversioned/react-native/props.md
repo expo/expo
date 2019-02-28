@@ -3,10 +3,6 @@ id: props
 title: Props
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Most components can be customized when they are created, with different parameters. These creation parameters are called `props`.
 
 For example, one basic React Native component is the `Image`. When you create an image, you can use a prop named `source` to control what image it shows.

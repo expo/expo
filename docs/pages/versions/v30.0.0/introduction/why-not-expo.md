@@ -2,10 +2,6 @@
 title: Why not Expo?
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo isn't ready to be used for all apps yet. There are plenty of cases where its current constraints may not be appropriate for your project. The intention of this document is to outline some of those cases, so that you don't end up building an app with Expo and getting frustrated when you encounter an obstacle that you can't overcome without ejecting to ExpoKit or ejecting to using React Native without Expo at all. We are either planning on or actively working on building solutions to all of the features listed below, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests).
 
 - **Expo apps don't support background code execution** (running code when the app is not foregrounded or the device is sleeping). This means you cannot use background geolocation, play audio in the background, handle push notifications in the background, and more. This is a work in progress.

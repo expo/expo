@@ -8,7 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.util.SparseBooleanArray;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import javax.annotation.Nullable;

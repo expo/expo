@@ -6,6 +6,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- deprecated `Expo.Util` by [@EvanBacon](https://github.com/EvanBacon) ([#3539](https://github.com/expo/expo/pull/3577)). You should use `Expo.Updates` & `Expo.Localization` instead.
+- removed use of `expolib_v1.okhttp` in favor of regular `okhttp` dependency by [@Szymon20000](https://github.com/Szymon20000) ([#3539](https://github.com/expo/expo/pull/3539)) (an update to `MainApplication.getOkHttpBuilder` may be required when upgrading)
 - corrected behavior of splash screen image based on `resizeMode` in Android standalone apps (`contain` and `cover` were handled contrary to what docs state) by [@bbarthec](https://github.com/bbarthec) ([#3029](https://github.com/expo/expo/pull/3029))
 - `Speech.speak` changed option name from `voiceIOS` to `voice`. [@Szymon20000](https://github.com/Szymon20000) ([#3423](https://github.com/expo/expo/pull/3423))
 - renamed `Haptic` to `Haptics` and deprecated `Haptics.{notification, impact, selection}` in favour of `Haptics.{notificationAsync, impactAsync, selectionAsync}` [@bbarthec](https://github.com/bbarthec) ([#3330](https://github.com/expo/expo/pull/3330))
@@ -26,6 +28,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🐛 Bug fixes
 
+- fixed several issues related to `expo-av` by [@Szymon20000](https://github.com/Szymon20000) ([#3539](https://github.com/expo/expo/pull/3539)) 
 - `Location.getCurrentPositionAsync` and `Location.watchPositionAsync` are now automatically asking for high accuracy location services by [@tsapeta](https://github.com/tsapeta) ([#3273](https://github.com/expo/expo/pull/3273))
 - fix `Location.getCurrentPositionAsync` hanging on simultaneous calls by [@tsapeta](https://github.com/tsapeta) ([#3273](https://github.com/expo/expo/pull/3273))
 - fix `ImagePicker.launchImageLibraryAsync` and `ImageManipulator.manipulateAsync` in SDKs lower than 32 [@bbarthec](https://github.com/bbarthec) ([#3159](https://github.com/expo/expo/pull/3159))

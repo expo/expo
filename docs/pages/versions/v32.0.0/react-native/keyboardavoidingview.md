@@ -3,10 +3,6 @@ id: keyboardavoidingview
 title: KeyboardAvoidingView
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 It is a component to solve the common problem of views that need to move out of the way of the virtual keyboard. It can automatically adjust either its position or bottom padding based on the position of the keyboard.
 
 Example usage:

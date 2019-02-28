@@ -1,1 +1,0 @@
-../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/Internal/AppEvents/FBSDKHybridAppEventsScriptMessageHandler.h

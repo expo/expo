@@ -114,9 +114,15 @@ dependencies {
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'com.facebook.device.yearclass:yearclass:2.1.0'
   api 'commons-io:commons-io:1.4'
-  // Newer version introduces dependency versions conflict
-  // on 'com.android.support:support-annotations'
-  api 'com.google.android.exoplayer:exoplayer:2.6.1'
+  // expolib_v1-extension-okhttp is an exoplayer:extension-okhttp using expolib_v1.okhttp,
+  // created with tools/android-versioning and distributed in expokit-npm-package.
+  api 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
+  api 'expolib_v1.com.google.android.exoplayer:exoplayer:2.6.1@aar'
+  api 'expolib_v1.com.google.android.exoplayer:exoplayer-core:2.6.1@aar'
+  api 'expolib_v1.com.google.android.exoplayer:exoplayer-ui:2.6.1@aar'
+  api 'expolib_v1.com.google.android.exoplayer:exoplayer-hls:2.6.1@aar'
+  api 'expolib_v1.com.google.android.exoplayer:exoplayer-smoothstreaming:2.6.1@aar'
+  api 'expolib_v1.com.google.android.exoplayer:exoplayer-dash:2.6.1@aar'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
   api 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
   api 'com.theartofdev.edmodo:android-image-cropper:2.4.7'

@@ -1,15 +1,20 @@
 {
-  "short_name": "Expo App",
-  "name": "Expo Sample",
+  "short_name": "Expo PWA",
+  "name": "Expo Web App",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "192x192 64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "start_url": "./index.html",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#3367D6",
+  "display": "minimal-ui",
+  "theme_color": "#3367D6"
 }

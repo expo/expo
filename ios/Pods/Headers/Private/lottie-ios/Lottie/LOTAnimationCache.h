@@ -1,1 +1,0 @@
-../../../../lottie-ios/lottie-ios/Classes/PublicHeaders/LOTAnimationCache.h

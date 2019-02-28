@@ -3,10 +3,6 @@ id: vibrationios
 title: VibrationIOS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 NOTE: `VibrationIOS` is being deprecated. Use `Vibration` instead.
 
 The Vibration API is exposed at `VibrationIOS.vibrate()`. On iOS, calling this function will trigger a one second vibration. The vibration is asynchronous so this method will return immediately.

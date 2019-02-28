@@ -2,10 +2,6 @@
 title: Universal Modules and ExpoKit
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Universal Modules are pieces of the Expo SDK with some special properties:
 
 - They are optional; you can remove them from your ExpoKit build if you don't need their native code.

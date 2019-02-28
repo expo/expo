@@ -3,10 +3,6 @@ id: touchableopacity
 title: TouchableOpacity
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A wrapper for making views respond properly to touches. On press down, the opacity of the wrapped view is decreased, dimming it.
 
 Opacity is controlled by wrapping the children in an Animated.View, which is added to the view hierarchy. Be aware that this can affect layout.

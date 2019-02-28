@@ -2,10 +2,6 @@
 title: Font
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](../../guides/using-custom-fonts/#using-custom-fonts) guide.
 
 ## Usage
@@ -16,7 +12,7 @@ Convenience form of [`Font.loadAsync()`](#expofontloadasync "Font.loadAsync") th
 
 #### Arguments
 
--   **map : `object`** -- A map of names to `require` statements as in [`Font.loadAsync()`](#fontloadasync).
+-   **map (_object_)** -- A map of names to `require` statements as in [`Font.loadAsync()`](#fontloadasync).
 
 #### Example
 
@@ -30,3 +26,4 @@ Font.loadAsync({
 #### Returns
 
 Returns a promise. The promise will be resolved when the fonts have finished loading.
+

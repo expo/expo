@@ -2,15 +2,15 @@
 title: Video
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.
 
 Much of Video and Audio have common APIs that are documented in [AV documentation](../av/). This page covers video-specific props and APIs. We encourage you to skim through this document to get basic video working, and then move on to [AV documentation](../av/) for more advanced functionality. The audio experience of video (such as whether to interrupt music already playing in another app, or whether to play sound while the phone is on silent mode) can be customized using the [Audio API](../audio/).
 
-## Example
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+
+## Usage
 
 Here's a simple example of a video that autoplays and loops.
 
@@ -29,7 +29,15 @@ Here's a simple example of a video that autoplays and loops.
 
 For more advanced examples, check out the [Playlist example](https://github.com/expo/playlist-example/blob/master/App.js), and the [custom videoplayer controls component](https://github.com/ihmpavel/expo-video-player/blob/master/lib/index.tsx) that wraps `<Video>`, adds custom controls and use the `<Video>` API extensively. The videoplayer controls is used in [this app](https://github.com/expo/harvard-cs50-app).
 
-## `Video`
+## API
+
+```js
+// in managed apps:
+import { Video } from 'expo';
+
+// in bare apps:
+import { Video } from 'expo-av';
+```
 
 ### props
 
@@ -207,3 +215,4 @@ The rest of the API on the `Video` component ref is the same as the API for `Aud
 -   `videoRef.setIsLoopingAsync(value)`
 
 -   `videoRef.setProgressUpdateIntervalAsync(millis)`
+

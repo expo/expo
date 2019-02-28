@@ -10,6 +10,18 @@ import * as TestUtils from './TestUtils';
 
 let { ExponentTest } = NativeModules;
 
+function browserSupportsWebGL() {
+  try {
+    const canvas = document.createElement('canvas');
+    return (
+      !!window.WebGLRenderingContext &&
+      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 async function getTestModulesAsync() {
@@ -22,7 +34,16 @@ async function getTestModulesAsync() {
   }
 
   if (Platform.OS === 'web') {
-    return [require('./tests/Import1')];
+    let modules = [
+      require('./tests/Import1'),
+      require('./tests/Crypto'),
+      require('./tests/Random'),
+    ];
+
+    if (browserSupportsWebGL()) {
+      modules.push(require('./tests/GLView'));
+    }
+    return modules;
   }
 
   let modules = [
@@ -36,17 +57,21 @@ async function getTestModulesAsync() {
     require('./tests/Calendar'),
     require('./tests/Constants'),
     require('./tests/Contacts'),
+    require('./tests/Crypto'),
     require('./tests/FileSystem'),
+    require('./tests/GLView'),
     require('./tests/GoogleSignIn'),
     require('./tests/Haptics'),
     require('./tests/Localization'),
     require('./tests/Location'),
     require('./tests/Linking'),
     require('./tests/Recording'),
+    require('./tests/ScreenOrientation'),
     require('./tests/SecureStore'),
     require('./tests/Segment'),
     require('./tests/Speech'),
     require('./tests/SQLite'),
+    require('./tests/Random'),
     require('./tests/Payments'),
     require('./tests/AdMobInterstitial'),
     require('./tests/AdMobBanner'),

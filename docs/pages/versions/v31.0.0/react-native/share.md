@@ -3,10 +3,6 @@ id: share
 title: Share
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Methods
 
 * [`share`](../share/#share)

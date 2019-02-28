@@ -3,10 +3,6 @@ id: platform-specific-code
 title: Platform Specific Code
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 When building a cross-platform app, you'll want to re-use as much code as possible. Scenarios may arise where it makes sense for the code to be different, for example you may want to implement separate visual components for iOS and Android.
 
 React Native provides two ways to easily organize your code and separate it by platform:

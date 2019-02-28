@@ -2,10 +2,6 @@
 title: GLView
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### `Expo.GLView()`
 
 A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
@@ -29,10 +25,10 @@ Takes a snapshot of the framebuffer and saves it as JPEG file to app's cache dir
 
 #### Arguments
 
--   **options : `object`** -- A map of options:
-    -   **framebuffer : `WebGLFramebuffer`** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view.
+-   **options (_object_)** -- A map of options:
+    -   **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view.
     -   **rect (`{ x: number, y: number, width: number, height: number }`)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
-    -   **flip : `boolean`** -- Whether to flip the snapshot vertically. Defaults to `false`.
+    -   **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
 
 #### Returns
 
@@ -78,3 +74,5 @@ The following WebGL2RenderingContext methods are currently unimplemented:
 The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) must be `null`, an `ArrayBuffer` with pixel data, or an object of the form `{ localUri }` where `localUri` is the `file://` URI of an image in the device's file system. Thus an `Expo.Asset` object could be used once `.downloadAsync()` has been called on it (and completed) to fetch the resource.
 
 For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
+
+#

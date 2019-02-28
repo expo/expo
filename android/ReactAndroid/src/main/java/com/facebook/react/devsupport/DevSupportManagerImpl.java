@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
@@ -64,10 +64,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.annotation.Nullable;
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * Interface for accessing and interacting with development features. Following features

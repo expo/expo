@@ -2,15 +2,19 @@
 title: StoreReview
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to the `SKStoreReviewController` API in iOS 10.3+ devices.
 
 > If this is used in Android the device will attempt to link to the Play Store using `ReactNative.Linking` and the `android.playStoreUrl` from the `app.json` instead. 
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
 ## API
+
+```js
+import { StoreReview } from 'expo';
+```
 
 ### `StoreReview.requestReview()`
 In the ideal circumstance this will open a native modal and allow the user to select a star rating that will then be applied to the App Store without leaving the app. 
@@ -34,7 +38,7 @@ StoreReview.isSupported()
 
 ### `StoreReview.storeUrl()`
 
-This uses the `Expo.Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the `Constants.manifest.android.playStoreUrl` on Android.
+This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the `Constants.manifest.android.playStoreUrl` on Android.
 
 #### Example
 

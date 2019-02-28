@@ -2,10 +2,6 @@
 title: Up and Running
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 The aim of this first guide is to get an Expo application up and running as quickly as possible.
 
 At this point we should have XDE installed on our development machine and the Expo client on an iOS or Android physical device or emulator. If not, go back to the [Installation](../../introduction/installation/) guide before proceeding.

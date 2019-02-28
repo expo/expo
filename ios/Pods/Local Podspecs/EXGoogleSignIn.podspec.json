@@ -1,11 +1,11 @@
 {
   "name": "EXGoogleSignIn",
-  "version": "2.0.0",
-  "summary": "Expo Unimodule for interfacing with the native GoogleSignIn library.",
-  "description": "Expo Unimodule for interfacing with the native GoogleSignIn library.",
+  "version": "3.0.0",
+  "summary": "Enables native Google authentication features in your app! This module can only be used in ExpoKit, or a Standalone Expo app. For in-depth setup, check out this guide: https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce",
+  "description": "Enables native Google authentication features in your app! This module can only be used in ExpoKit, or a Standalone Expo app. For in-depth setup, check out this guide: https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/google-sign-in/",
   "platforms": {
     "ios": "10.0"
   },

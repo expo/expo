@@ -2,10 +2,6 @@
 title: Constants
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 System information that remains constant throughout the lifetime of your app.
 
 ### `Expo.Constants.appOwnership`
@@ -88,3 +84,5 @@ The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
 ### `Expo.Constants.linkingUri`
 
 When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Expo.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Expo client.
+
+#

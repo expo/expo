@@ -17,11 +17,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.RequestBody;
-import expolib_v1.okhttp3.Response;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.kernel.ExponentUrls;
 
