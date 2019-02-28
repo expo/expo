@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError, CodedError } from 'expo-errors';
 import invariant from 'invariant';
 
 import {
@@ -22,7 +22,7 @@ function isValidServiceConfiguration(config?: OAuthServiceConfiguration): boolea
 
 function assertValidClientId(clientId?: string): void {
   if (typeof clientId !== 'string' || !clientId.length) {
-    throw new Error('Config error: clientId must be a string');
+    throw new CodedError('ERR_APP_AUTH_INVALID_CONFIG', '`clientId` must be a string with more than 0 characters');
   }
 }
 
@@ -33,20 +33,24 @@ function assertValidProps({
   serviceConfiguration,
 }: OAuthProps): void {
   if (typeof issuer !== 'string' && !isValidServiceConfiguration(serviceConfiguration)) {
-    throw new Error('Invalid you must provide either an issuer or a service endpoints');
+    throw new CodedError('ERR_APP_AUTH_INVALID_CONFIG', 'You must provide either an `issuer` or both `authorizationEndpoint` and `tokenEndpoint`');
   }
   if (typeof redirectUrl !== 'string') {
-    throw new Error('Config error: redirectUrl must be a string');
+    throw new CodedError('ERR_APP_AUTH_INVALID_CONFIG', '`redirectUrl` must be a string');
   }
   assertValidClientId(clientId);
 }
 
 async function _executeAsync(props: OAuthProps): Promise<TokenResponse> {
   if (!props.redirectUrl) {
-    props.redirectUrl = `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
+    props.redirectUrl = getDefaultOAuthRedirect();
   }
   assertValidProps(props);
   return await ExpoAppAuth.executeAsync(props);
+}
+
+export function getDefaultOAuthRedirect(): string {
+  return `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
 }
 
 export async function authAsync(props: OAuthProps): Promise<TokenResponse> {
@@ -64,7 +68,7 @@ export async function refreshAsync(
     throw new UnavailabilityError('expo-app-auth', 'refreshAsync');
   }
   if (!refreshToken) {
-    throw new Error('Please include the refreshToken');
+    throw new CodedError('ERR_APP_AUTH_TOKEN', 'Cannot refresh with null `refreshToken`');
   }
   return await _executeAsync({
     isRefresh: true,
@@ -79,7 +83,7 @@ export async function revokeAsync(
   { token, isClientIdProvided = false }: OAuthRevokeOptions
 ): Promise<any> {
   if (!token) {
-    throw new Error('Please include the token to revoke');
+    throw new CodedError('ERR_APP_AUTH_TOKEN', 'Cannot revoke a null `token`');
   }
 
   assertValidClientId(clientId);
@@ -88,6 +92,7 @@ export async function revokeAsync(
   if (serviceConfiguration && serviceConfiguration.revocationEndpoint) {
     revocationEndpoint = serviceConfiguration.revocationEndpoint;
   } else {
+    // For Open IDC providers only.
     const response = await fetch(`${issuer}/.well-known/openid-configuration`);
     const openidConfig = await response.json();
 
@@ -111,7 +116,7 @@ export async function revokeAsync(
     });
     return results;
   } catch (error) {
-    throw new Error(`Failed to revoke token ${error.message}`);
+    throw new CodedError('ERR_APP_AUTH_REVOKE_FAILED', error.message);
   }
 }
 

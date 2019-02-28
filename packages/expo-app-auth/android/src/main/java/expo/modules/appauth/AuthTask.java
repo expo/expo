@@ -14,7 +14,7 @@ public class AuthTask {
       mTag = tag;
       return true;
     } else {
-      promise.reject("ERR_APP_AUTH", "cannot set promise - some async operation is still in progress");
+      promise.reject("ERR_APP_AUTH_CONCURRENT_TASK", "Cannot start a new task while another task is currently in progress: " + mTag);
       return false;
     }
   }

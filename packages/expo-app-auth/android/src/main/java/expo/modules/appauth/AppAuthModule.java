@@ -455,11 +455,11 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
 
   private AuthorizationServiceConfiguration createAuthorizationServiceConfiguration(Map<String, String> serviceConfiguration) throws Exception {
     if (!serviceConfiguration.containsKey("authorizationEndpoint")) {
-      throw new Exception("serviceConfiguration passed without an authorizationEndpoint");
+      throw new Exception("serviceConfiguration provided without an authorizationEndpoint");
     }
 
     if (!serviceConfiguration.containsKey("tokenEndpoint")) {
-      throw new Exception("serviceConfiguration passed without a tokenEndpoint");
+      throw new Exception("serviceConfiguration provided without a tokenEndpoint");
     }
 
     Uri authorizationEndpoint = Uri.parse(serviceConfiguration.get("authorizationEndpoint"));
