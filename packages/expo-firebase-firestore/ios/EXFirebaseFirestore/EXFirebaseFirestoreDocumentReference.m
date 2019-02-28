@@ -419,7 +419,7 @@ static NSString *const typeFieldValue = @"fieldvalue";
   }
   
   if ([type isEqualToString:typeFieldValue]) {
-    NSString *string = (NSString *) value;
+    NSString *string = (NSString *) value[typeKey];
     
     if ([string isEqualToString:typeDelete]) {
       return [FIRFieldValue fieldValueForDelete];
