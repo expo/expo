@@ -1,13 +1,7 @@
-import { UnavailabilityError, CodedError } from 'expo-errors';
+import { CodedError, UnavailabilityError } from 'expo-errors';
 import invariant from 'invariant';
 
-import {
-  OAuthBaseProps,
-  OAuthProps,
-  OAuthRevokeOptions,
-  OAuthServiceConfiguration,
-  TokenResponse,
-} from './AppAuth.types';
+import { OAuthBaseProps, OAuthProps, OAuthRevokeOptions, OAuthServiceConfiguration, TokenResponse } from './AppAuth.types';
 import ExpoAppAuth from './ExpoAppAuth';
 
 export * from './AppAuth.types';

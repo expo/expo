@@ -154,12 +154,17 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
       final String clientId,
       Map<String, String> serviceConfiguration
   ) {
+    if (EventBus.getDefault().isRegistered(this)) {
+      authTask.reject(ERROR_TAG, "CONCURRENT_TASK");
+      return;
+    }
 
     final ConnectionBuilder builder = createConnectionBuilder();
     final AppAuthConfiguration appAuthConfiguration = createAppAuthConfiguration(builder);
     mClientSecret = clientSecret;
 
     if (serviceConfiguration != null) {
+
       try {
         authorizeWithConfiguration(
             createAuthorizationServiceConfiguration(serviceConfiguration),
@@ -189,6 +194,10 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
               if (ex != null) {
                 // config fetch failed
                 authTask.reject(ex);
+                return;
+              }
+              if (EventBus.getDefault().isRegistered(this)) {
+                authTask.reject(ERROR_TAG, "CONCURRENT_TASK");
                 return;
               }
 
@@ -288,6 +297,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
       final Map<String, String> parameters
   ) {
 
+
     AuthorizationRequest.Builder authRequestBuilder = new AuthorizationRequest.Builder(serviceConfiguration, clientId, ResponseTypeValues.CODE, Uri.parse(redirectUrl));
 
     if (scopes != null) {
@@ -312,6 +322,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
       }
       authRequestBuilder.setAdditionalParameters(parameters);
     }
+
 
     EventBus.getDefault().register(this);
 
