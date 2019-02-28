@@ -58,6 +58,7 @@ EX_EXPORT_MODULE(ExponentSQLite);
     if (sqlite3_open([path UTF8String], &db) != SQLITE_OK) {
       return nil;
     };
+    sqlite3_exec(db, [@"PRAGMA foreign_keys = ON;" UTF8String], nil, nil, nil);
     cachedDB = [NSValue valueWithPointer:db];
     [cachedDatabases setObject:cachedDB forKey:dbName];
   }
@@ -162,7 +163,7 @@ EX_EXPORT_METHOD_AS(close,
   NSObject *columnValue;
   BOOL hasMore = YES;
   while (hasMore) {
-    result = sqlite3_step (statement);
+    result = sqlite3_step(statement);
     switch (result) {
       case SQLITE_ROW:
         if (!fetchedColumns) {
