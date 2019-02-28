@@ -28,15 +28,48 @@
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
-+ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
++ (NSString *)generateDocumentDirectoryPath:(NSString *)experienceId
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return [EXFileSystem documentDirectoryForExperienceId:experienceId];
-  }
   NSString *subdir = [self escapedResourceName:experienceId];
   return [[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
             stringByAppendingPathComponent:@"ExponentExperienceData"]
            stringByAppendingPathComponent:subdir] stringByStandardizingPath];
+}
+
++ (BOOL)firstStartAfterUpdate:(NSString *)experienceId
+{
+  NSString *dir = [EXScopedFileSystemModule generateDocumentDirectoryPath:experienceId];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:dir]) {
+    return true;
+  }
+  return false;
+}
+
++ (void)moveOldFiles:(NSString *)experienceId
+{
+  NSString *sourceDir = [EXScopedFileSystemModule generateDocumentDirectoryPath:experienceId];
+  NSString *destinationDir = [EXFileSystem documentDirectoryForExperienceId:experienceId];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSArray<NSString *> *files = [fileManager contentsOfDirectoryAtPath:sourceDir error:nil];
+
+  for (NSString *file in files) {
+    [fileManager moveItemAtPath:[sourceDir stringByAppendingPathComponent:file]
+                toPath:[destinationDir stringByAppendingPathComponent:file]
+                 error:nil];
+  }
+  [fileManager removeItemAtPath:sourceDir error:nil];
+}
+
++ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    if ([EXScopedFileSystemModule firstStartAfterUpdate:experienceId]) {
+      [EXScopedFileSystemModule moveOldFiles:experienceId];
+    }
+    return [EXFileSystem documentDirectoryForExperienceId:experienceId];
+  }
+  return [EXScopedFileSystemModule generateDocumentDirectoryPath:experienceId];
 }
 
 + (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
