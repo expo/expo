@@ -145,7 +145,6 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   /* Remove duplicates */
   const scopes = [...new Set(requiredScopes)];
 
-  /* This is the CLIENT_ID generated from a Firebase project */
   const guid = getPlatformGUID(config);
 
   const clientId = `${guid}.apps.googleusercontent.com`;
@@ -195,7 +194,6 @@ export async function logOutAsync({
   accessToken,
   ...inputConfig
 }: LogInConfig & { accessToken: string }): Promise<any> {
-  /* This is the CLIENT_ID generated from a Firebase project */
   const guid = getPlatformGUID(inputConfig);
 
   const clientId = `${guid}.apps.googleusercontent.com`;
