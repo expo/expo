@@ -59,13 +59,24 @@ public class ScopedContext extends Context {
     mContext = context;
     mScope = scope + '-';
 
+    mFilesDir = new File(mContext.getFilesDir() + "/ExperienceData/" + scope);
+    mCacheDir = new File(mContext.getCacheDir() + "/ExperienceData/" + scope);
+
     if (Constants.isStandaloneApp()) {
+      if (firstStartAfterUpdate()) {
+        moveOldFiles();
+      }
       mFilesDir = mContext.getFilesDir();
       mCacheDir = mContext.getCacheDir();
-    } else {
-      mFilesDir = new File(mContext.getFilesDir() + "/ExperienceData/" + scope);
-      mCacheDir = new File(mContext.getCacheDir() + "/ExperienceData/" + scope);
     }
+  }
+
+  boolean firstStartAfterUpdate() {
+    return mFilesDir.exists();
+  }
+
+  void moveOldFiles() {
+    mFilesDir.renameTo(mContext.getFilesDir());
   }
 
   @Deprecated
