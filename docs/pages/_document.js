@@ -3,7 +3,6 @@ import { extractCritical } from 'emotion-server';
 import { hydrate } from 'react-emotion';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
 import * as Analytics from '~/common/analytics';
 
 import { globalReset } from '~/global-styles/reset';
@@ -13,8 +12,6 @@ import { globalFonts } from '~/global-styles/fonts';
 import { globalPrism } from '~/global-styles/prism';
 import { globalTippy } from '~/global-styles/tippy';
 import { globalExtras } from '~/global-styles/extras';
-
-import { LATEST_VERSION } from '~/common/versions';
 
 if (typeof window !== 'undefined') {
   hydrate(window.__NEXT_DATA__.ids);
@@ -37,7 +34,7 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <html>
+      <html lang="en">
         <Head>
           <Analytics.GoogleScript id="UA-107832480-3" />
           <script src="/static/libs/prism/prism.js" />
