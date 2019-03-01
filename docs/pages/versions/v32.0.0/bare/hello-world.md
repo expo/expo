@@ -90,4 +90,4 @@ Now go ahead and run `react-native run-android`. Press the button, watch the bro
 
 ## What now?
 
-Most of the Expo APIs are available in bare React Native projects and can be installed using a process very similar to the above. Go ahead and browser the `API Reference` section and follow the installation instructions linked to there, then read the API documentation and ejoy. Good luck building your app!
+Most of the Expo APIs are available in bare React Native projects and can be installed using a process very similar to the above. Go ahead and browse the `API Reference` section and follow the installation instructions linked there, then read the API documentation and enjoy. Good luck building your app!
