@@ -21,8 +21,9 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Haptics } from 'expo';
+// in managed apps (note: Haptic will be renamed to Haptics in SDK33, this
+// import makes it a bit easier to change in the future):
+import { Haptic as Haptics } from 'expo';
 
 // in bare apps:
 import * as Haptics from 'expo-haptics';
