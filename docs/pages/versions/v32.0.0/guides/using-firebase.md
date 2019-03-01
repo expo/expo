@@ -181,9 +181,7 @@ function storeHighScore(user, score) {
 
 [Firestore](https://firebase.google.com/docs/firestore/) is the successor to Firebase Realtime Database.
 
-Here's one way of implementing a data update using Firestore.
-
-This sample was borrowed from [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
+Here's one way to implement a data update using Firestore:
 
 ```javascript
 import firebase from 'firebase'
@@ -201,4 +199,7 @@ dbh.collection("characters").doc("mario").set({
   specialAttack: "fireball"
 })
 ```
+
+This sample was borrowed from [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
+
 See also [the official package documentation](https://github.com/expo/expo/tree/master/packages/expo-firebase-firestore).
