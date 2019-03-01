@@ -1,8 +1,4 @@
-import './environment/validate';
-import './environment/logging';
-
-// load expo-asset immediately to set a custom `source` transformer in React Native
-import 'expo-asset';
+import './sideEffects';
 
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
@@ -134,14 +130,14 @@ Object.defineProperties(exports, {
     enumerable: false,
     get() {
       console.log('Module name `Haptic` is deprecated. Use `Haptics` instead.');
-      return Haptics;
+      return require('expo-haptics');
     },
   },
   IntentLauncherAndroid: {
     enumerable: true,
     get() {
       console.warn(`Module name 'IntentLauncherAndroid' is deprecated, use 'IntentLauncher' instead`);
-      return IntentLauncher;
+      return require('expo-intent-launcher');
     },
   },
 });
