@@ -8,7 +8,9 @@ Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full 
 
 See [firebase.google.com/docs/database](https://firebase.google.com/docs/database) for more general information and the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html)
 
-> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well), but not the other services under the larger Google Firebase umbrella. Firebase Cloud Storage is currently not supported, but we are [working on upstreaming a Blob implementation](https://github.com/facebook/react-native/issues/11103) to React Native that would make this possible. For more background on why other Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration)
+See also [the full list of available Expo Firebase packages](https://github.com/expo/expo/tree/master/packages).  Scroll down to the packages prefixed with `expo-firebase-*`.
+
+> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well), and will eventually cover all of the available Expo Firebase packages.  For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
 
 ## 1. Firebase SDK Setup
 
@@ -169,9 +171,9 @@ function storeHighScore(user, score) {
 
 ### Authenticated Data Updates with Firestore
 
-Here's how to implement a data update using [Firestore](https://firebase.google.com/docs/firestore/).
+Here's one way of implementing a data update using [Firestore](https://firebase.google.com/docs/firestore/).
 
-For more information, check out [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
+This sample was borrowed from [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
 
 ```javascript
 import firebase from 'firebase'
@@ -189,3 +191,4 @@ dbh.collection("characters").doc("mario").set({
   specialAttack: "fireball"
 })
 ```
+See also [the official package documentation](https://github.com/expo/expo/tree/master/packages/expo-firebase-firestore).
