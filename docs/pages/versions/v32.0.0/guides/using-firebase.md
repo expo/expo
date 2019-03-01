@@ -14,7 +14,11 @@ See also [the full list of available Expo Firebase packages](https://github.com/
 
 > **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well), and will eventually cover all of the available Expo Firebase packages.  For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
 
-## 1. Firebase SDK Setup
+##### Table of Contents
+- [Firebase SDK Setup](#firebase-sdk-setup)
+- [Using Expo with Firestore](#using-expo-with-firestore)
+
+## Firebase SDK Setup
 
 First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
 
@@ -55,7 +59,7 @@ Go into the Firebase console for Database, and under the Rules tab you should se
 
 > **Note** It is important to note that this is temporary for development, and these rules should be thoroughly assessed before releasing an application.
 
-## 2. Storing Data and Receiving Updates
+## Storing Data and Receiving Updates
 
 Storing data through Firebase can be pretty simple. Imagine we're creating a game where highscores are stored in Firebase for everyone to see. We could create a users bucket in our data that is referenced by each user. Setting their highscore would be straightforward.
 
@@ -78,7 +82,7 @@ setupHighscoreListener(userId) {
 }
 ```
 
-## 3. User Authentication
+## User Authentication
 
 This was all pretty simple and works fairly out of the box for what Firebase JavaScript SDK provides. There is one caveat however. We skipped the authentication rules for simplicity at the beginning. Firebase SDKs provide authentication methods for developers, so they don't have to reimplement common login systems such as Google or Facebook login.
 
