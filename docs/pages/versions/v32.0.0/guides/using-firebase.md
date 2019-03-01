@@ -169,9 +169,11 @@ function storeHighScore(user, score) {
 }
 ```
 
-### Authenticated Data Updates with Firestore
+## Using Expo with Firestore
 
-Here's one way of implementing a data update using [Firestore](https://firebase.google.com/docs/firestore/).
+[Firestore](https://firebase.google.com/docs/firestore/) is the successor to Firebase Realtime Database.
+
+Here's one way of implementing a data update using Firestore.
 
 This sample was borrowed from [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
 
