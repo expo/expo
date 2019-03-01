@@ -493,6 +493,13 @@ jobs:
       - deploy:
           command: |
             aws s3 sync docs/out s3://docs.expo.io --delete
+      - run: |
+          aws s3 cp \
+            --recursive \
+            --metadata-directive REPLACE \
+            --cache-control "public,max-age=31536000,immutable" \
+            s3://docs.expo.io/_next/static/ \
+            s3://docs.expo.io/_next/static/
 
   test_suite_publish:
     executor: nix
