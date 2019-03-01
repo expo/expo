@@ -113,7 +113,6 @@ export { default as AppLoading } from './launch/AppLoading';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
-// TODO: Unify the Pedometer module across platforms so we can export it normally
 export { default as Pedometer } from './Pedometer';
 // polyfill navigator.geolocation
 Location.installWebGeolocationPolyfill();
