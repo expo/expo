@@ -120,12 +120,6 @@ export default class DocumentationSidebarGroup extends React.Component {
 
       if (linkUrl === pathname || linkUrl === asPath) {
         result = true;
-        if (result) {
-          console.log(section);
-          console.log(linkUrl);
-          console.log(pathname);
-          console.log(asPath);
-        }
       }
     };
 
