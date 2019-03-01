@@ -18,11 +18,11 @@
   ],
   "scripts": {
     "generate-lazy": "expo-module babel --config-file ./babel.config.build.js --source-maps --out-file build/ExpoLazy.js build/Expo.js",
-    "build": "EXPO_NONINTERACTIVE=1 expo-module build; npm run generate-lazy",
+    "build": "EXPO_NONINTERACTIVE=1 expo-module build && npm run generate-lazy",
     "clean": "expo-module clean",
     "lint": "eslint tools",
     "test": "expo-module test",
-    "prepare": "expo-module prepare; npm run generate-lazy",
+    "prepare": "expo-module prepare && npm run generate-lazy",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
