@@ -177,7 +177,9 @@ For more information, check out [this forum post](https://forums.expo.io/t/open-
 import firebase from 'firebase'
 import '@firebase/firestore';
 
-firebase.initializeApp(config);  // apiKey, authDomain, etc.
+const firebaseConfig = { ... }  // apiKey, authDomain, etc. (see above)
+
+firebase.initializeApp(firebaseConfig);
 
 const dbh = firebase.firestore();
 
