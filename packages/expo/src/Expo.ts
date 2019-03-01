@@ -113,23 +113,13 @@ export { default as AppLoading } from './launch/AppLoading';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
-
+// TODO: Unify the Pedometer module across platforms so we can export it normally
+export { default as Pedometer } from './Pedometer';
 // polyfill navigator.geolocation
 Location.installWebGeolocationPolyfill();
 
 // @ts-ignore
 Object.defineProperties(exports, {
-  // TODO: Unify the Pedometer module across platforms so we can export it normally
-  Pedometer: {
-    enumerable: true,
-    get() {
-      if (Platform.OS === 'android') {
-        return require('./Pedometer');
-      } else {
-        return require('expo-sensors').Pedometer;
-      }
-    },
-  },
   Haptic: {
     enumerable: false,
     get() {
