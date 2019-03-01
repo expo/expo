@@ -112,7 +112,6 @@ export default class DocumentationSidebarGroup extends React.Component {
     let result = false;
 
     let sections = this.props.info.children;
-    let posts = [];
 
     const isSectionActive = section => {
       const linkUrl = stripVersionFromPath(section.as || section.href);
@@ -121,14 +120,21 @@ export default class DocumentationSidebarGroup extends React.Component {
 
       if (linkUrl === pathname || linkUrl === asPath) {
         result = true;
+        if (result) {
+          console.log(section);
+          console.log(linkUrl);
+          console.log(pathname);
+          console.log(asPath);
+        }
       }
     };
 
+
+    let posts = [];
     sections.forEach(section => {
       posts = [...posts, ...section.posts];
     });
 
-    sections.forEach(isSectionActive);
     posts.forEach(isSectionActive);
     return result;
   }
