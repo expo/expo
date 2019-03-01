@@ -2,6 +2,8 @@
 title: Haptics
 ---
 
+> The following API docs apply to the Haptics Unimodule available to the bare workflow. Use [Haptic](../haptic/) for the managed workflow.
+
 Provides haptic feedback for
 - iOS 10+ devices using the Taptic Engine
 - Android devices using Vibrator system service.
@@ -16,14 +18,11 @@ On iOS, *the Taptic engine will do nothing if any of the following conditions ar
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-haptics).
+This API is currently called [Haptic](../haptic/) in the managed workflow, refer to that page instead. To use Haptics in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-haptics).
 
 ## API
 
 ```js
-// in managed apps:
-import { Haptics } from 'expo';
-
 // in bare apps:
 import * as Haptics from 'expo-haptics';
 ```
