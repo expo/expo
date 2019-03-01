@@ -241,7 +241,6 @@ export default {
         }
         else {
             let output;
-            // console.dir(imageSource, canvas, ctx);
             for (let i = 0; i < actions.length; i++) {
                 const action = actions[i];
                 let _options;

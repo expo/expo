@@ -24,7 +24,7 @@ function resampleSingle(
   width: number,
   height: number,
   resizeCanvas: boolean = false
-) {
+): void {
   const widthSource = canvas.width;
   const heightSource = canvas.height;
   width = Math.round(width);
@@ -102,7 +102,11 @@ function resampleSingle(
   ctx.putImageData(img2, 0, 0);
 }
 
-function sizeFromAngle(width: number, height: number, angle: number) {
+function sizeFromAngle(
+  width: number,
+  height: number,
+  angle: number
+): { width: number; height: number } {
   const radians = (angle * Math.PI) / 180;
   let c = Math.cos(radians);
   let s = Math.sin(radians);
@@ -213,7 +217,11 @@ function loadImageAsync(uri: string): Promise<HTMLImageElement> {
   });
 }
 
-async function manipulateWithActionAsync(uri: string, action: Action, options: SaveOptions) {
+async function manipulateWithActionAsync(
+  uri: string,
+  action: Action,
+  options: SaveOptions
+): Promise<ImageResult> {
   let canvas = document.createElement('canvas');
   const imageSource = await loadImageAsync(uri);
   canvas.width = imageSource.naturalWidth;
@@ -312,7 +320,6 @@ export default {
       return getResults(canvas, options);
     } else {
       let output: ImageResult;
-      // console.dir(imageSource, canvas, ctx);
       for (let i = 0; i < actions.length; i++) {
         const action = actions[i];
         let _options;
