@@ -16,6 +16,8 @@ See also [the full list of available Expo Firebase packages](https://github.com/
 
 ##### Table of Contents
 - [Firebase SDK Setup](#firebase-sdk-setup)
+- [Storing Data and Receiving Updates](#storing-data-and-receiving-updates)
+- [User Authentication](#user-authentication)
 - [Using Expo with Firestore](#using-expo-with-firestore)
 
 ## Firebase SDK Setup
