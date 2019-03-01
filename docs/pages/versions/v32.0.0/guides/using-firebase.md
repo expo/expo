@@ -166,3 +166,24 @@ function storeHighScore(user, score) {
   }
 }
 ```
+
+### Authenticated Data Updates with Firestore
+
+Here's how to implement a data update using [Firestore](https://firebase.google.com/docs/firestore/).
+
+For more information, check out [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29)
+
+```javascript
+import firebase from 'firebase'
+import '@firebase/firestore';
+
+firebase.initializeApp(config);  // apiKey, authDomain, etc.
+
+const dbh = firebase.firestore();
+
+dbh.collection("characters").doc("mario").set({
+  employment: "plumber",
+  outfitColor: "red",
+  specialAttack: "fireball"
+})
+```
