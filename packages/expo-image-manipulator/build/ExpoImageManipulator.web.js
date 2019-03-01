@@ -7,101 +7,99 @@ import { FlipType, } from './ImageManipulator.types';
  * @param {HtmlElement} canvas
  * @param {int} width
  * @param {int} height
- * @param {boolean} resize_canvas if true, canvas will be resized. Optional.
+ * @param {boolean} resizeCanvas if true, canvas will be resized. Optional.
  */
-function resampleSingle(canvas, width, height, resize_canvas = false) {
-    var width_source = canvas.width;
-    var height_source = canvas.height;
+function resampleSingle(canvas, width, height, resizeCanvas = false) {
+    const widthSource = canvas.width;
+    const heightSource = canvas.height;
     width = Math.round(width);
     height = Math.round(height);
-    var ratio_w = width_source / width;
-    var ratio_h = height_source / height;
-    var ratio_w_half = Math.ceil(ratio_w / 2);
-    var ratio_h_half = Math.ceil(ratio_h / 2);
+    const wRatio = widthSource / width;
+    const hRatio = heightSource / height;
+    const wRatioHalf = Math.ceil(wRatio / 2);
+    const hRatioHalf = Math.ceil(hRatio / 2);
     let ctx = getContext(canvas);
-    var img = ctx.getImageData(0, 0, width_source, height_source);
-    var img2 = ctx.createImageData(width, height);
-    var data = img.data;
-    var data2 = img2.data;
-    for (var j = 0; j < height; j++) {
-        for (var i = 0; i < width; i++) {
-            var x2 = (i + j * width) * 4;
-            var weight = 0;
-            var weights = 0;
-            var weights_alpha = 0;
-            var gx_r = 0;
-            var gx_g = 0;
-            var gx_b = 0;
-            var gx_a = 0;
-            var center_y = (j + 0.5) * ratio_h;
-            var yy_start = Math.floor(j * ratio_h);
-            var yy_stop = Math.ceil((j + 1) * ratio_h);
-            for (var yy = yy_start; yy < yy_stop; yy++) {
-                var dy = Math.abs(center_y - (yy + 0.5)) / ratio_h_half;
-                var center_x = (i + 0.5) * ratio_w;
-                var w0 = dy * dy; //pre-calc part of w
-                var xx_start = Math.floor(i * ratio_w);
-                var xx_stop = Math.ceil((i + 1) * ratio_w);
-                for (var xx = xx_start; xx < xx_stop; xx++) {
-                    var dx = Math.abs(center_x - (xx + 0.5)) / ratio_w_half;
-                    var w = Math.sqrt(w0 + dx * dx);
+    let img = ctx.getImageData(0, 0, widthSource, heightSource);
+    let img2 = ctx.createImageData(width, height);
+    let data = img.data;
+    let data2 = img2.data;
+    for (let j = 0; j < height; j++) {
+        for (let i = 0; i < width; i++) {
+            let x2 = (i + j * width) * 4;
+            let weight = 0;
+            let weights = 0;
+            let weightsAlpha = 0;
+            let gx_r = 0;
+            let gx_g = 0;
+            let gx_b = 0;
+            let gx_a = 0;
+            let yCenter = (j + 0.5) * hRatio;
+            let yy_start = Math.floor(j * hRatio);
+            let yy_stop = Math.ceil((j + 1) * hRatio);
+            for (let yy = yy_start; yy < yy_stop; yy++) {
+                let dy = Math.abs(yCenter - (yy + 0.5)) / hRatioHalf;
+                let center_x = (i + 0.5) * wRatio;
+                let w0 = dy * dy; //pre-calc part of w
+                let xx_start = Math.floor(i * wRatio);
+                let xx_stop = Math.ceil((i + 1) * wRatio);
+                for (let xx = xx_start; xx < xx_stop; xx++) {
+                    let dx = Math.abs(center_x - (xx + 0.5)) / wRatioHalf;
+                    let w = Math.sqrt(w0 + dx * dx);
                     if (w >= 1) {
                         //pixel too far
                         continue;
                     }
                     //hermite filter
                     weight = 2 * w * w * w - 3 * w * w + 1;
-                    var pos_x = 4 * (xx + yy * width_source);
+                    let xPosition = 4 * (xx + yy * widthSource);
                     //alpha
-                    gx_a += weight * data[pos_x + 3];
-                    weights_alpha += weight;
+                    gx_a += weight * data[xPosition + 3];
+                    weightsAlpha += weight;
                     //colors
-                    if (data[pos_x + 3] < 255)
-                        weight = (weight * data[pos_x + 3]) / 250;
-                    gx_r += weight * data[pos_x];
-                    gx_g += weight * data[pos_x + 1];
-                    gx_b += weight * data[pos_x + 2];
+                    if (data[xPosition + 3] < 255) {
+                        weight = (weight * data[xPosition + 3]) / 250;
+                    }
+                    gx_r += weight * data[xPosition];
+                    gx_g += weight * data[xPosition + 1];
+                    gx_b += weight * data[xPosition + 2];
                     weights += weight;
                 }
             }
             data2[x2] = gx_r / weights;
             data2[x2 + 1] = gx_g / weights;
             data2[x2 + 2] = gx_b / weights;
-            data2[x2 + 3] = gx_a / weights_alpha;
+            data2[x2 + 3] = gx_a / weightsAlpha;
         }
     }
     //clear and resize canvas
-    if (resize_canvas) {
+    if (resizeCanvas) {
         canvas.width = width;
         canvas.height = height;
     }
     else {
-        ctx.clearRect(0, 0, width_source, height_source);
+        ctx.clearRect(0, 0, widthSource, heightSource);
     }
     //draw
     ctx.putImageData(img2, 0, 0);
 }
-function sizeFromAngle(w, h, a) {
-    const rads = (a * Math.PI) / 180;
-    let c = Math.cos(rads);
-    let s = Math.sin(rads);
+function sizeFromAngle(width, height, angle) {
+    const radians = (angle * Math.PI) / 180;
+    let c = Math.cos(radians);
+    let s = Math.sin(radians);
     if (s < 0) {
         s = -s;
     }
     if (c < 0) {
         c = -c;
     }
-    return { width: h * s + w * c, height: h * c + w * s };
+    return { width: height * s + width * c, height: height * c + width * s };
 }
-function cropImage(canvas, img, x = 0, y = 0, w = 0, h = 0) {
+function cropImage(canvas, image, x = 0, y = 0, width = 0, height = 0) {
     const context = getContext(canvas);
     context.save();
-    context.drawImage(img, x, y, // Start at 70/20 pixels from the left and the top of the image (crop),
-    w, h, // "Get" a `50 * 50` (w * h) area from the source image (crop),
-    0, 0, // Place the result at 0, 0 in the canvas,
-    w, h); // With as width / height: 100 * 100 (scale)
+    context.drawImage(image, x, y, width, height, 0, 0, width, height);
 }
-function drawImage(canvas, img, x = 0, y = 0, deg = 0, xFlip = false, yFlip = false, center = false, width, height) {
+function drawImage(canvas, img, x = 0, y = 0, angle = 0, xFlip = false, yFlip = false, width, height) {
     const context = getContext(canvas);
     context.save();
     if (width == null) {
@@ -110,19 +108,14 @@ function drawImage(canvas, img, x = 0, y = 0, deg = 0, xFlip = false, yFlip = fa
     if (height == null) {
         height = img.naturalHeight;
     }
-    // Set rotation point to center of image, instead of top/left
-    // if (center) {
-    //   x -= width / 2;
-    //   y -= height / 2;
-    // }
     // Set the origin to the center of the image
     context.translate(x + canvas.width / 2, y + canvas.height / 2);
     // Rotate the canvas around the origin
-    var rad = 2 * Math.PI - (deg * Math.PI) / 180;
-    context.rotate(rad);
+    const radians = 2 * Math.PI - (angle * Math.PI) / 180;
+    context.rotate(radians);
     // Flip/flop the canvas
-    let xScale = xFlip ? -1 : 1;
-    let yScale = yFlip ? -1 : 1;
+    const xScale = xFlip ? -1 : 1;
+    const yScale = yFlip ? -1 : 1;
     context.scale(xScale, yScale);
     // Draw the image
     context.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2, img.naturalWidth, img.naturalHeight);
@@ -210,7 +203,7 @@ async function manipulateWithActionAsync(uri, action, options) {
         const context = getContext(canvas);
         context.save();
         context.drawImage(imageSource, 0, 0, imageSource.naturalWidth, imageSource.naturalHeight);
-        resampleSingle(canvas, requestedWidth, requestedHeight);
+        resampleSingle(canvas, requestedWidth, requestedHeight, true);
     }
     else if (action.flip !== undefined) {
         const { flip } = action;
@@ -223,7 +216,7 @@ async function manipulateWithActionAsync(uri, action, options) {
         const { width, height } = sizeFromAngle(imageSource.naturalWidth, imageSource.naturalHeight, rotate);
         canvas.width = width;
         canvas.height = height;
-        drawImage(canvas, imageSource, 0, 0, rotate, false, false, false, width, height);
+        drawImage(canvas, imageSource, 0, 0, rotate, false, false, width, height);
     }
     else {
         const context = getContext(canvas);
