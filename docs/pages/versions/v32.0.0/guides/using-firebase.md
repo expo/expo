@@ -2,13 +2,15 @@
 title: Using Firebase
 ---
 
-Firebase Database is a popular NoSQL cloud database that allows developers realtime synchronization of live data. With multi-platform support, synchronizing data between users and clients is pretty seamless, but it can also be used more generally as a generic persistent NoSQL data backing if you don't care about realtime updates. It has a very flexible rules syntax to allow minute control over data access as well.
+[Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users.  Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
+
+[Firebase Realtime Database](https://firebase.google.com/docs/database) is a popular NoSQL cloud database that allows developers realtime synchronization of live data. With multi-platform support, synchronizing data between users and clients is pretty seamless, but it can also be used more generally as a generic persistent NoSQL data backing if you don't care about realtime updates. It has a very flexible rules syntax to allow minute control over data access as well.
 
 Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
 
-See [firebase.google.com/docs/database](https://firebase.google.com/docs/database) for more general information and the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html)
+See the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html).
 
-See also [the full list of available Expo Firebase packages](https://github.com/expo/expo/tree/master/packages).  Scroll down to the packages prefixed with `expo-firebase-*`.
+See also [the full list of available Expo Firebase packages](https://github.com/expo/expo/tree/master/packages) (scroll down to the packages prefixed with `expo-firebase-*`).
 
 > **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well), and will eventually cover all of the available Expo Firebase packages.  For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
 
