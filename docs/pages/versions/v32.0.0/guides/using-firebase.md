@@ -171,7 +171,7 @@ function storeHighScore(user, score) {
 
 Here's how to implement a data update using [Firestore](https://firebase.google.com/docs/firestore/).
 
-For more information, check out [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29)
+For more information, check out [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
 
 ```javascript
 import firebase from 'firebase'
