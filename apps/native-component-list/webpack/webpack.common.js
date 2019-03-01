@@ -193,7 +193,7 @@ module.exports = function(env) {
     ],
 
     module: {
-      strictExportPresence: true,
+      strictExportPresence: false,
 
       rules: [
         { parser: { requireEnsure: false } },
