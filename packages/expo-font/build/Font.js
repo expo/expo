@@ -98,4 +98,20 @@ function _getNativeFontName(name) {
     }
     return `${Constants.sessionId}-${name}`;
 }
+let wasImportWarningShown = false;
+// @ts-ignore: Temporarily define an export named "Font" for legacy compatibility
+Object.defineProperty(exports, 'Font', {
+    get() {
+        if (!wasImportWarningShown) {
+            console.warn(`The syntax "import { Font } from 'expo-font'" is deprecated. Use "import * as Font from 'expo-font'" or import named exports instead. Support for the old syntax will be removed in SDK 33.`);
+            wasImportWarningShown = true;
+        }
+        return {
+            processFontFamily,
+            isLoaded,
+            isLoading,
+            loadAsync,
+        };
+    }
+});
 //# sourceMappingURL=Font.js.map
