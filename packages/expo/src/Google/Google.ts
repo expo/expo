@@ -92,16 +92,14 @@ function isValidGUID(guid: string) {
   const projectNumber = components[0];
   const projectId = components[1];
   if (isNaN(+projectNumber)) {
-    const hashedProjectId = Array(PROJECT_ID_LENGTH).map((l, i) => (i % 2 === 0 ? 'X' : 'x'));
+    const hashedProjectId = Array(PROJECT_ID_LENGTH).fill('x');
     return {
       isValid: false,
       reason: `\`${projectNumber}-${hashedProjectId}\` project number must be a string of numbers.`,
     };
   }
   if (!projectId.match('^[a-zA-Z0-9]+$')) {
-    const hashedProjectNumber = Array(projectNumber.length).map((l, i) =>
-      i % 2 === 0 ? 'X' : 'x'
-    );
+    const hashedProjectNumber = Array(projectNumber.length).fill('x');
     return {
       isValid: false,
       reason: `\`${hashedProjectNumber}-${projectId}\` project ID must be an alphanumeric string ${PROJECT_ID_LENGTH} characters long.`,
@@ -115,11 +113,11 @@ function guidFromClientId(clientId: string): string {
   const clientIdComponents = clientId.split('.').filter(component => component.includes('-'));
 
   const guid = clientIdComponents[0];
-  const isValid = isValidGUID(guid);
-  if (!isValid.isValid) {
+  const { isValid, reason } = isValidGUID(guid);
+  if (!isValid) {
     throw new CodedError(
       'ERR_GOOGLE_GUID',
-      isValid.reason + ' Please ensure you copied the client ID correctly.'
+      reason + ' Please ensure you copied the client ID correctly.'
     );
   }
 
