@@ -1,17 +1,8 @@
-/**
- * A general error class that should be used for all errors in Expo modules.
- * Guarantees a `code` field that can be used to differentiate between different
- * types of errors without further subclassing Error.
- */
-export class CodedError extends Error {
-  code: string;
-  info?: any;
+import { Platform } from 'expo-core';
 
-  constructor(code: string, message: string) {
-    super(message);
-    this.code = code;
-  }
-}
+import CodedError from './CodedError';
+
+export { CodedError };
 
 /**
  * A class for errors to be thrown when a property is accessed which is
@@ -20,6 +11,13 @@ export class CodedError extends Error {
  */
 export class UnavailabilityError extends CodedError {
   constructor(moduleName: string, propertyName: string) {
-    super('ERR_UNAVAILABLE', `The method or property ${moduleName}.${propertyName} is not available on this platform, are you sure you've linked all the native dependencies properly?`);
+    super(
+      'ERR_UNAVAILABLE',
+      `The method or property ${moduleName}.${propertyName} is not available on ${
+        Platform.OS
+      }, are you sure you've linked all the native dependencies properly?`
+    );
   }
 }
+
+export { default as deprecate } from './deprecate';
