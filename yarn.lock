@@ -1416,11 +1416,6 @@
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.2.tgz#e13182e1b69871a422d7863e11a4a6f5b814a4bd"
   integrity sha512-42zEJkBpNfMEAvWR5WlwtTH22oDzcMjFsL9gDGExwF8X8WvAiw7Vwop7hPw03QT8TKfec83LwbHj6SvpqM4ELQ==
 
-"@types/three@^0.93.22":
-  version "0.93.22"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.93.22.tgz#3601929f36d4b3a5b7d3dd9851fec53feda8228c"
-  integrity sha512-z3gtO8D7icKFDd+T5M6mALazvxV2ScIeiWZNQE/sAxSCYCuZvTeBrIvCo7i4HKG1fPm2aRPMp0OYF4f0MHddsA==
-
 "@types/url-parse@^1.4.1":
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@types/url-parse/-/url-parse-1.4.2.tgz#e18928ac9a11b693266d0f37720c2a9611d8c85b"
@@ -3709,11 +3704,6 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
-compare-versions@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.4.0.tgz#e0747df5c9cb7f054d6d3dc3e1dbc444f9e92b26"
-  integrity sha512-tK69D7oNXXqUW3ZNo/z7NXTEz22TCF0pTE+YF9cxvaAM9XnkLo1fV621xCLrRR6aevJlKxExkss0vWqUCUpqdg==
-
 component-emitter@^1.2.0, component-emitter@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.2.1.tgz#137918d6d78283f7df7a6b7c5a63e140e69425e6"
@@ -5315,10 +5305,10 @@ expect@^23.6.0:
     jest-message-util "^23.4.0"
     jest-regex-util "^23.3.0"
 
-expo-asset-utils@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-1.0.0.tgz#f116667886e1e56d39430e3754321dcb48718379"
-  integrity sha512-nvG0HlZMLDx9BEin7CQpBuON/m/wxaX0fKllSbD62kpphKBoDe/hQj+xi5Yffld73uzNWgqE9+6wRK2WJchaxQ==
+expo-asset-utils@^0.0.4-alpha.2:
+  version "0.0.4-alpha.3"
+  resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-0.0.4-alpha.3.tgz#557aa99e394d6e4e6a369914b7e040a414588e78"
+  integrity sha512-COMyBrFN2719uTR6c+OnpZmjG8ox2Ipa+t4VHOmrA2ErYxtIYAZs4OcYXe+1Zjn8TlUoQ3B2VC8AofB/P9h7yw==
 
 expo-cli@^2.7.1:
   version "2.7.1"
@@ -5395,6 +5385,16 @@ expo-react-native-adapter@~2.0.0:
     lodash.omit "^4.5.0"
     lodash.pick "^4.4.0"
     prop-types "^15.6.1"
+
+expo-three@^3.0.0-alpha.6:
+  version "3.0.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-3.0.0-alpha.8.tgz#42e3143f3b188a7bae1cd4043810aecdacf8f91a"
+  integrity sha512-JOOzFeMy6x6IkUzKR1LVIsSoMOaZ+ZCEnA4xgr82zfU2WmGgwglStLo1RVwTdo64AKyPmm2VfiuCF8qa7mPbDw==
+  dependencies:
+    "@expo/browser-polyfill" "^0.0.1-alpha.3"
+    color-temperature "0.2.7"
+    expo-asset-utils "^0.0.4-alpha.2"
+    three "0.88.0"
 
 express@4.16.4, express@^4.16.2, express@^4.16.3:
   version "4.16.4"
@@ -12941,12 +12941,7 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
-three@^0.101.1:
-  version "0.101.1"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.101.1.tgz#e7681ef52f4e572cb84f307f16f540c457030ec6"
-  integrity sha512-8ufimUVmRLtH+BTpEIbDjdGEKQOVWLMLgGynaKin1KbYTE136ZNOepJ8EgByi0tN43dQ7B1YrKLCJgXGy4bLmw==
-
-three@^0.88.0:
+three@0.88.0, three@^0.88.0:
   version "0.88.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.88.0.tgz#4256c2fc38e4fb23a0d23eba2b6cce4df8e466d5"
   integrity sha1-QlbC/Djk+yOg0j66K2zOTfjkZtU=
