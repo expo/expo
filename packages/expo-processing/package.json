@@ -23,8 +23,11 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-processing",
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-gl": "*"
+  },
   "peerDependencies": {
-    "processing-js": "^1.6.6",
-    "expo-gl": "^1.0.0"
+    "processing-js": "^1.6.6"
   }
 }

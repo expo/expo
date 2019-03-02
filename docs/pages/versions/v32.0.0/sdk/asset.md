@@ -4,7 +4,19 @@ title: Asset
 
 This module provides an interface to Expo's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts and sounds. Expo's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://facebook.github.io/react-native/docs/images.html#static-image-resources) for more information. This method of referring to static image resources works out of the box with Expo.
 
-### `Asset()`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-asset).
+
+## API
+
+```js
+// in managed apps:
+import { Asset } from 'expo';
+
+// in bare apps:
+import { Asset } from 'expo-asset';
+```
 
 This class represents an asset in your app. It gives metadata about the asset (such as its name and type) and provides facilities to load the asset data.
 
@@ -26,7 +38,7 @@ A URI that points to the asset's data on the remote server. When running the pub
 
 - `localUri`
 
-If the asset has been downloaded (by calling [`downloadAsync()`](#expoassetdownloadasync "Asset.downloadAsync")), the `file://` URI pointing to the local file on the device that contains the asset data.
+If the asset has been downloaded (by calling [`downloadAsync()`](#downloadasync)), the `file://` URI pointing to the local file on the device that contains the asset data.
 
 - `width`
 
@@ -54,7 +66,7 @@ Returns a Promise that resolves when the asset has been saved to disk.
 
 ### `Asset.fromModule(module)`
 
-Returns the [`Asset`](#expoasset "Asset") instance representing an asset given its module
+Returns the [`Asset`](#asset) instance representing an asset given its module
 
 #### Arguments
 
@@ -62,7 +74,7 @@ Returns the [`Asset`](#expoasset "Asset") instance representing an asset given i
 
 #### Returns
 
-The [`Asset`](#expoasset "Asset") instance for the asset
+The [`Asset`](#asset) instance for the asset
 
 #### Example
 
@@ -72,4 +84,4 @@ const imageURI = Asset.fromModule(require('./images/hello.jpg')).uri;
 
 On running this piece of code, `imageURI` gives the remote URI that the contents of `images/hello.jpg` can be read from. The path is resolved relative to the source file that this code is evaluated in.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Asset)
+#

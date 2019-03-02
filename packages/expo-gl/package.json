@@ -1,7 +1,7 @@
 {
   "name": "expo-gl",
-  "version": "2.0.0",
-  "description": "Expo GL standalone universal module",
+  "version": "3.0.1",
+  "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -27,25 +27,26 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
+  "homepage": "https://docs.expo.io/versions/latest/sdk/gl-view/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-gl",
-  "peerDependencies": {
-    "expo-camera-interface": "~2.0.0",
-    "expo-core": "~2.0.0",
-    "expo-file-system-interface": "~2.0.0",
-    "expo-gl-cpp": "~2.0.0"
-  },
-  "dependencies": {
-    "prop-types": "^15.6.2",
-    "expo-errors": "~1.0.0"
-  },
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58",
+  "unimodulePeerDependencies": {
+    "expo-camera-interface": "*",
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-file-system-interface": "*",
+    "expo-gl-cpp": "*"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.2"
+  },
   "devDependencies": {
     "react-test-renderer": "^16.7.0",
+    "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
-  }
+  },
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

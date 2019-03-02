@@ -2,7 +2,21 @@
 title: ImageManipulator
 ---
 
-An API to modify images stored in app scope.
+An API to modify images stored on the local file system.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
+
+## API
+
+```js
+// in managed apps:
+import { ImageManipulator } from 'expo';
+
+// in bare apps:
+import * as ImageManipulator from 'expo-image-manipulator';
+```
 
 ### `ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
 
@@ -90,4 +104,3 @@ export default class ImageManipulatorSample extends React.Component {
 }
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/ImageManipulator)

@@ -2,9 +2,29 @@
 title: Magnetometer
 ---
 
-Access the device magnetometer sensor(s) to respond to measure the changes
-in the magnetic field. You can access the calibrated values with `Magnetometer.`
-and uncalibrated raw values with `MagnetometerUncalibrated`.
+Access the device magnetometer sensor(s) to respond to measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+// in managed apps:
+import { Magnetometer } from 'expo';
+
+// in bare apps:
+import { Magnetometer } from 'expo-sensors';
+```
+
+### `Magnetometer.isAvailableAsync()`
+
+Returns whether the magnetometer is enabled on the device.
+
+#### Returns
+
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
 
 ### `Magnetometer.addListener(listener)`
 
@@ -12,15 +32,15 @@ Subscribe for updates to the Magnetometer.
 
 #### Arguments
 
--   **listener (_function_)** -- A callback that is invoked when an
-    Magnetometer update is available. When invoked, the listener is
-    provided a single argumument that is an object    containing keys x, y,
-    z.
+- **listener (_function_)** -- A callback that is invoked when an
+  Magnetometer update is available. When invoked, the listener is
+  provided a single argumument that is an object containing keys x, y,
+  z.
 
 #### Returns
 
--   An EventSubscription object that you can call remove() on when you
-    would like to unsubscribe the listener.
+- A subscription that you can call `remove()` on when you
+  would like to unsubscribe the listener.
 
 ### `Magnetometer.removeAllListeners()`
 
@@ -32,27 +52,20 @@ Subscribe for updates to the Magnetometer.
 
 #### Arguments
 
--   **intervalMs (_number_)** Desired interval in milliseconds between
-    Magnetometer updates.
+- **intervalMs (_number_)** Desired interval in milliseconds between
+  Magnetometer updates.
 
 ## Example: basic subscription
 
 ```javascript
 import React from 'react';
-import {
-  Magnetometer,
-} from 'expo';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Magnetometer } from 'expo';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default class MagnetometerSensor extends React.Component {
   state = {
     MagnetometerData: {},
-  }
+  };
 
   componentDidMount() {
     this._toggle();
@@ -68,26 +81,26 @@ export default class MagnetometerSensor extends React.Component {
     } else {
       this._subscribe();
     }
-  }
+  };
 
   _slow = () => {
     Magnetometer.setUpdateInterval(1000);
-  }
+  };
 
   _fast = () => {
     Magnetometer.setUpdateInterval(16);
-  }
+  };
 
   _subscribe = () => {
-    this._subscription = Magnetometer.addListener((result) => {
-      this.setState({MagnetometerData: result});
+    this._subscription = Magnetometer.addListener(result => {
+      this.setState({ MagnetometerData: result });
     });
-  }
+  };
 
   _unsubscribe = () => {
     this._subscription && this._subscription.remove();
     this._subscription = null;
-  }
+  };
 
   render() {
     let { x, y, z } = this.state.MagnetometerData;
@@ -95,7 +108,9 @@ export default class MagnetometerSensor extends React.Component {
     return (
       <View style={styles.sensor}>
         <Text>Magnetometer:</Text>
-        <Text>x: {round(x)} y: {round(y)} z: {round(z)}</Text>
+        <Text>
+          x: {round(x)} y: {round(y)} z: {round(z)}
+        </Text>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={this._toggle} style={styles.button}>
@@ -123,7 +138,7 @@ function round(n) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -149,4 +164,3 @@ const styles = StyleSheet.create({
 });
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Magnetometer)

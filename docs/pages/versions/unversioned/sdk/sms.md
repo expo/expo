@@ -4,6 +4,20 @@ title: SMS
 
 Provides access to the system's UI/app for sending SMS messages.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sms).
+
+## API
+
+```js
+// in managed apps:
+import { SMS } from 'expo';
+
+// in bare apps:
+import * as SMS from 'expo-sms';
+```
+
 ### `SMS.isAvailableAsync()`
 
 Determines whether SMS is available.
@@ -52,4 +66,3 @@ Android does not provide information about the status of the SMS message, so on 
 const { result } = await SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/SMS)

@@ -181,4 +181,4 @@ Sets a Google API Key for using Geocoding API. This method can be useful for And
 
 -   **apiKey (_string_)** -- API key collected from Google Developer site.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Location)
+#

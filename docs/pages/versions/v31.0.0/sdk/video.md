@@ -204,4 +204,3 @@ The rest of the API on the `Video` component ref is the same as the API for `Exp
 
 -   `videoRef.setProgressUpdateIntervalAsync(millis)`
 
-#### [Github Issues](https://github.com/expo/expo/labels/Video)

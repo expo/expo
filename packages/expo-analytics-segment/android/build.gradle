@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '2.0.0'
+version = '3.0.0'
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -46,8 +46,8 @@ android {
   defaultConfig {
     minSdkVersion 21
     targetSdkVersion 26
-    versionCode 10
-    versionName "2.0.0"
+    versionCode 12
+    versionName "3.0.0"
   }
   lintOptions {
     abortOnError false
@@ -66,4 +66,5 @@ dependencies {
   expendency "expo-core"
   expendency "expo-constants-interface"
   implementation 'com.segment.analytics.android:analytics:4.3.0'
+  implementation 'com.segment.analytics.android.integrations:firebase:1.2.0'
 }

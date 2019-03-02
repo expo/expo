@@ -4,7 +4,19 @@ title: Contacts
 
 Provides access to the phone's system contacts.
 
-## Methods
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-contacts).
+
+## API
+
+```js
+// in managed apps:
+import { Contacts } from 'expo';
+
+// in bare apps:
+import * as Contacts from 'expo-contacts';
+```
 
 ### getContactsAsync
 
@@ -814,4 +826,3 @@ This table illustrates what fields will be added on demand to every contact.
 * Empty contact fields will no longer be returned as empty strings on iOS.
 * Passing no fields will now return all contact information.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Contacts)

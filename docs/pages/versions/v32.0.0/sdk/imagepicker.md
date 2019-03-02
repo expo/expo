@@ -2,9 +2,25 @@
 title: ImagePicker
 ---
 
+Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-picker).
+
+## Usage
+
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
+## API
+
+```js
+// in managed apps:
+import { ImagePicker } from 'expo';
+
+// in bare apps:
+import * as ImagePicker from 'expo-image-picker';
+```
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
@@ -67,4 +83,3 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/ImagePicker)

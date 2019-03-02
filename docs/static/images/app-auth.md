@@ -1,8 +1,6 @@
 ---
-title: App Auth
+title: AppAuth
 ---
-
-> Introduced in Expo v32
 
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
@@ -13,7 +11,7 @@ Import the module like so:
 ```js
 import { AppAuth } from 'expo-app-auth';
 
-// or (Expo only)
+// or (managed workflow only)
 
 import { AppAuth } from 'expo';
 ```

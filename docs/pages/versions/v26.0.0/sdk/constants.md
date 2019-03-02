@@ -85,4 +85,4 @@ The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
 
 When an app is opened due to a deep link, the prefix of the URI without the deep link part. This value depends on `Expo.Constants.appOwnership`: it may be different if your app is running standalone vs. in the Expo client.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Constants)
+#

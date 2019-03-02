@@ -1,7 +1,7 @@
 {
   "name": "expo-location",
-  "version": "2.0.1",
-  "description": "Expo Location standalone universal module",
+  "version": "3.0.0",
+  "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "main": "build/Location.js",
   "types": "build/Location.d.ts",
   "scripts": {
@@ -32,14 +32,14 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-location",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/location/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-permissions-interface": "~2.0.0",
-    "expo-task-manager-interface": "~1.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-permissions-interface": "*",
+    "expo-task-manager-interface": "*"
   },
   "dependencies": {
     "invariant": "^2.2.4"
@@ -47,5 +47,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "354cdc348a81b23f4fe9ad036cc06e1afddd0e01"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

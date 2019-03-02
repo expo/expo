@@ -501,4 +501,4 @@ A source account that owns a particular calendar. Expo apps will typically not n
 | type | _string_ | both | Type of account that owns this calendar | on iOS, one of `Calendar.SourceType.LOCAL`, `Calendar.SourceType.EXCHANGE`, `Calendar.SourceType.CALDAV`, `Calendar.SourceType.MOBILEME`, `Calendar.SourceType.SUBSCRIBED`, or `Calendar.SourceType.BIRTHDAYS` |
 | isLocalAccount | _boolean_ | Android | Whether this source is the local phone account | |
 
-#### [Github Issues](https://github.com/expo/expo/labels/Calendar)
+#

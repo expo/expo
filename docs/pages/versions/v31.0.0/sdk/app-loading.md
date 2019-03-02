@@ -65,4 +65,3 @@ The following props are recommended, but optional for the sake of backwards comp
 - **onFinish (_function_)** -- **(Required if you provide `startAsync`)**. Called when `startAsync` resolves or rejects. This should be used to set state and unmount the `AppLoading` component.
 - **autoHideSplash (_boolean_)** -- Whether to hide the native splash screen as soon as you unmount the AppLoading component. See [SplashScreen module](../splash-screen/) for an example.
 
-#### [Github Issues](https://github.com/expo/expo/labels/AppLoading)

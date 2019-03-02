@@ -43,4 +43,3 @@ Determine whether the Text-to-speech utility is currently speaking. Will return 
 
 Returns a Promise that resolves to a boolean, `true` if speaking, `false` if not.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Speech)

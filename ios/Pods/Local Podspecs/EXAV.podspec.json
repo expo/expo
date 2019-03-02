@@ -1,11 +1,11 @@
 {
   "name": "EXAV",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "summary": "Expo universal module for Audio and Video playback",
   "description": "Expo universal module for Audio and Video playback",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-av",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/av/",
   "platforms": {
     "ios": "10.0"
   },

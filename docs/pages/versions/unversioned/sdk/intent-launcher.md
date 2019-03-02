@@ -4,7 +4,19 @@ title: IntentLauncher
 
 Provides a way to launch android intents. e.g. - opening a specific settings screen.
 
-## Usage
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-intent-launcher).
+
+## API
+
+```js
+// in managed apps:
+import { IntentLauncherAndroid } from 'expo';
+
+// in bare apps:
+import * as IntentLauncher from 'expo-intent-launcher';
+```
 
 ### `IntentLauncher.startActivityAsync(activityAction, intentParams)`
 
@@ -60,4 +72,3 @@ import { IntentLauncher } from 'expo';
 IntentLauncher.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/IntentLauncher)

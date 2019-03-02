@@ -72,4 +72,4 @@ const imageURI = Asset.fromModule(require('./images/hello.jpg')).uri;
 
 On running this piece of code, `imageURI` gives the remote URI that the contents of `images/hello.jpg` can be read from. The path is resolved relative to the source file that this code is evaluated in.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Asset)
+#

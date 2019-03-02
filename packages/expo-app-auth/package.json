@@ -1,7 +1,7 @@
 {
   "name": "expo-app-auth",
-  "version": "2.0.0",
-  "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
+  "version": "3.0.0",
+  "description": "Provides an interface with the OpenID library AppAuth",
   "main": "index.js",
   "keywords": [
     "react-native",
@@ -27,14 +27,17 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-app-auth",
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-constants-interface": "~2.0.0",
-    "invariant": "^2.2.2"
+  "homepage": "https://docs.expo.io/versions/latest/sdk/app-auth/",
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-constants-interface": "*"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
+    "babel-preset-expo": "^5.0.0",
+    "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "9132f99f2ceb431006060c7f89d0928cc2053897"
 }

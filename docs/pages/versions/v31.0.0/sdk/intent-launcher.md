@@ -23,4 +23,3 @@ IntentLauncherAndroid.startActivityAsync(
 );
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/IntentLauncher)

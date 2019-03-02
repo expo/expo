@@ -171,4 +171,3 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 | `ERR_BRIGHTNESS_PERMISSIONS_DENIED` | An attempt to set the system brightness was made without the proper permissions from the user. |
 | `ERR_BRIGHTNESS_SYSTEM` | An error occurred when getting or setting the system brightness. |
 
-#### [Github Issues](https://github.com/expo/expo/labels/Brightness)

@@ -2,6 +2,18 @@
 title: registerRootComponent
 ---
 
+This function tells Expo what component to use as the root component for your app.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
+## API
+
+```js
+import { registerRootComponent } from 'expo';
+```
+
 ### `registerRootComponent(component)`
 
 Sets the main component for Expo to use for your app.
@@ -50,7 +62,7 @@ Then in `"src/main.js"`, make sure you call `registerRootComponent` and
 pass in the component you want to render at the root of the app.
 
 ```javascript
-import {registerRootComponent} from 'expo';
+import { registerRootComponent } from 'expo';
 import React from 'react';
 import { View } from 'react-native';
 
@@ -63,4 +75,3 @@ class App extends React.Component {
 registerRootComponent(App);
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/registerRootComponent)

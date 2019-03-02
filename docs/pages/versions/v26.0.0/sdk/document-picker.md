@@ -26,4 +26,4 @@ If the user cancelled the document picking, returns `{ type: 'cancel' }`.
 
 Otherwise, returns `{ type: 'success', uri, name, size }` where `uri` is a URI to the local document file, `name` is its name and `size` is its size in bytes.
 
-#### [Github Issues](https://github.com/expo/expo/labels/DocumentPicker)
+#

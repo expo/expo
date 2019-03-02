@@ -8,6 +8,21 @@ iOS: Values are stored using the [keychain services](https://developer.apple.com
 
 Android: Values are stored in [`SharedPreferences`](https://developer.android.com/training/basics/data-storage/shared-preferences.html), encrypted with [Android's Keystore system](https://developer.android.com/training/articles/keystore.html).
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
+
+
+## API
+
+```js
+// in managed apps:
+import { SecureStore } from 'expo';
+
+// in bare apps:
+import * as SecureStore from 'expo-secure-store';
+```
+
 ### `SecureStore.setItemAsync(key, value, options)`
 
 Store a key–value pair.
@@ -77,4 +92,3 @@ Delete the value associated with the provided key.
 
 A promise that will reject if the value couldn't be deleted.
 
-#### [Github Issues](https://github.com/expo/expo/labels/SecureStore)

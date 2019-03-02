@@ -7,14 +7,16 @@ const fs = require('fs-extra');
 const DIR_MAPPING = {
   introduction: 'Introduction',
   guides: 'Guides',
+  'managed-workflow': 'Managed Workflow',
+  'bare': 'Essentials',
   tutorials: 'Tutorials',
-  sdk: 'SDK API Reference',
+  sdk: 'Expo SDK',
   'react-native': 'React Native',
   // "react-native-apis": 'React Native APIs',
   // 'react-native-components': 'React Native Components',
   // 'react-native-guides': 'React Native Guides',
   // 'react-native-basics': 'React Native Basics',
-  workflow: 'Working with Expo',
+  workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
 };
@@ -36,14 +38,11 @@ const generateNavLinks = (path_, arr) => {
       // Make sure to add '/' at the end of index pages so that relative links in the markdown work correctly
       let href = fs.existsSync(path.join(filePath, 'index.md')) ? processUrl(filePath) + '/' : '';
 
-      // 'Introduction' section has a 'Quick Start' page that's actually at the root i.e. `/versions/v25.0/`, etc.
+      // 'Introduction' section has a 'Getting to know Expo' page that's actually at the root i.e. `/versions/v25.0/`, etc.
       if (name === 'introduction') {
+        let rootPath = path_.replace('./pages', '');
         // TODO: find what's eating the final slash
-        initArr.push({ name: 'Quick Start', href: path.parse(href).dir + '//' });
-      }
-      // 'SDK' section has a 'Introduction' page that's the same as the index page
-      if (name === 'sdk') {
-        initArr.push({ name: 'Introduction', href });
+        initArr.push({ name: 'Getting to know Expo', href: rootPath });
       }
 
       arr.push({

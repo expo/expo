@@ -2,9 +2,9 @@
 title: Haptic
 ---
 
-Provides haptic feedback for iOS 10+ devices using the Taptic Engine.
+> This API will be renamed to Haptics in SDK 33. If you are using the bare workflow, use that API now instead: [Haptics](../haptics/).
 
-> If this is used in Android the device will use `ReactNative.Vibrate` instead, it's best to just avoid this.
+Provides haptic feedback for iOS 10+ devices using the Taptic Engine. If this is used in Android, the device will use `ReactNative.Vibrate` instead.
 
 **The Taptic engine will do nothing given the following circumstances:**
 * Low Power Mode is enabled
@@ -16,7 +16,17 @@ Provides haptic feedback for iOS 10+ devices using the Taptic Engine.
 * iOS version is less than 10 (iPhone 7 is the first phone to support this)
   * This could be found through: `Constants.platform.ios.systemVersion` or `Constants.platform.ios.platform`
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. Use [Haptics](../haptics/) in a bare React Native app instead of Haptic.
+
 ## API
+
+```js
+// in managed apps:
+import { Haptic } from 'expo';
+```
+
 
 ### `Haptic.selection()`
 Used to let a user know when a selection change has been registered
@@ -122,4 +132,3 @@ $Enum<{
 }>
 ```
 
-#### [Github Issues](https://github.com/expo/expo/labels/Haptic)

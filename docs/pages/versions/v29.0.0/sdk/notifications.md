@@ -180,4 +180,4 @@ A Promise that resolves to an object with the following fields:
 -   **type (_string_)** -- Either "apns", "fcm", or "gcm".
 -   **data (_string_)** -- The push token as a string.
 
-#### [Github Issues](https://github.com/expo/expo/labels/Notifications)
+#

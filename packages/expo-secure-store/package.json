@@ -1,7 +1,7 @@
 {
   "name": "expo-secure-store",
-  "version": "1.0.0",
-  "description": "Expo SecureStore universal module",
+  "version": "3.0.0",
+  "description": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "main": "build/SecureStore.js",
   "types": "build/SecureStore.d.ts",
   "scripts": {
@@ -28,16 +28,16 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-secure-store",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/securestore/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-errors": "~1.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "9132f99f2ceb431006060c7f89d0928cc2053897"
 }
