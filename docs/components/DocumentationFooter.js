@@ -19,7 +19,7 @@ const STYLES_FOOTER_LINK = css`
 
 function githubUrl(path) {
   // Remove trailing slash and append .md
-  let pathAsMarkdown = path.substring(0, path.length - 1) + '.md';
+  let pathAsMarkdown = path.replace(/\/$/, '') + '.md';
   if (pathAsMarkdown.startsWith('/versions/latest')) {
     pathAsMarkdown = pathAsMarkdown.replace('/versions/unversioned');
   }
@@ -33,11 +33,19 @@ export default class DocumentationFooter extends React.PureComponent {
   render() {
     return (
       <footer className={STYLES_FOOTER}>
-        <a className={STYLES_FOOTER_LINK} target="_blank" href="https://forums.expo.io/">
+        <a
+          className={STYLES_FOOTER_LINK}
+          target="_blank"
+          rel="noopener"
+          href="https://forums.expo.io/">
           Ask a question on the forums
         </a>
         {this.maybeRenderIssuesLink()}
-        <a className={STYLES_FOOTER_LINK} target="_blank" href={githubUrl(this.props.asPath)}>
+        <a
+          className={STYLES_FOOTER_LINK}
+          target="_blank"
+          rel="noopener"
+          href={githubUrl(this.props.asPath)}>
           Edit this page
         </a>
       </footer>
