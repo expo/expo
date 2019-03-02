@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from 'react-emotion';
+import { css } from 'react-emotion';
 import Link from 'next/link';
 
 import * as React from 'react';
