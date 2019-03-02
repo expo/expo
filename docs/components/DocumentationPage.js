@@ -99,7 +99,7 @@ export default class DocumentationPage extends React.Component {
 
     // TODO: Find what's stripping trailing slashes from these
     if (version.startsWith('v')) {
-      newPath += '/'
+      newPath += '/';
     }
 
     Router.push(newPath + '/');
@@ -164,13 +164,14 @@ export default class DocumentationPage extends React.Component {
           <div className={STYLES_DOCUMENT}>
             <div className={STYLES_ALERT}>
               <span style={{ fontSize: 17 }}>
-                <strong className={STYLES_ALERT_BOLD}>Hi friend!</strong>{' '}
-                Meet us at App.js Conf in Krakow, Poland on April 4th and 5th with workshops and talks.{' '}
+                <strong className={STYLES_ALERT_BOLD}>Hi friend!</strong> Meet us at App.js Conf in
+                Krakow, Poland on April 4th and 5th with workshops and talks.{' '}
                 <a
                   className={STYLES_ALERT_BOLD}
                   style={{ color: Constants.colors.lila }}
                   href="https://appjs.co/"
-                  target="blank">
+                  target="_blank"
+                  rel="noopener">
                   Learn more
                 </a>
               </span>
