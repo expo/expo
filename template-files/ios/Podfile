@@ -24,6 +24,7 @@ ${EXPONENT_CLIENT_DEPS}
       'expo-firebase-performance',
       'expo-firebase-remote-config',
       'expo-firebase-storage',
+      'expo-module-template',
       'expo-payments-stripe',
     ]
   })

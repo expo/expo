@@ -211,6 +211,7 @@ dependencies {
       'expo-firebase-performance',
       'expo-firebase-remote-config',
       'expo-firebase-storage',
+      'expo-module-template',
     ]
   ])
 
