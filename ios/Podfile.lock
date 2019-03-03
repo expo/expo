@@ -354,7 +354,7 @@ PODS:
   - EXBarCodeScanner (3.0.0):
     - EXCore
   - EXBarCodeScannerInterface (3.0.0)
-  - EXBlur (1.0.0):
+  - EXBlur (3.0.0):
     - EXCore
   - EXBrightness (3.0.0):
     - EXCore
