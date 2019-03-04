@@ -1,0 +1,59 @@
+{
+  "name": "expo-firebase",
+  "sideEffects": true,
+  "version": "1.0.0-rc.1",
+  "description": "Expo Unimodule for interfacing with Firebase Core",
+  "main": "src/firebase/Firebase.js",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "flutter",
+    "expo",
+    "firebase",
+    "Firebase",
+    "database"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+  ],
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git"
+  },
+  "bugs": "https://github.com/expo/expo/issues",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "dependencies": {
+    "expo-firebase-analytics": "^2.0.0",
+    "expo-firebase-app": "^2.0.0",
+    "expo-firebase-auth": "^2.0.0",
+    "expo-firebase-crashlytics": "^2.0.0",
+    "expo-firebase-database": "^2.0.0",
+    "expo-firebase-firestore": "^2.0.0",
+    "expo-firebase-functions": "^2.0.0",
+    "expo-firebase-instance-id": "^2.0.0",
+    "expo-firebase-invites": "^2.0.0",
+    "expo-firebase-links": "^2.0.0",
+    "expo-firebase-messaging": "^2.0.0",
+    "expo-firebase-notifications": "^2.0.0",
+    "expo-firebase-performance": "^2.0.0",
+    "expo-firebase-remote-config": "^2.0.0",
+    "expo-firebase-storage": "^2.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  },
+  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+}
