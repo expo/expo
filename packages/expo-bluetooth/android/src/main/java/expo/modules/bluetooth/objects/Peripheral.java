@@ -472,7 +472,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       return;
     } else if (mDidConnectStateChangePeripheralBlock != null) {
       // TODO: Bacon: seems like this could be hard to work around given how long it takes a peripheral to disconnect.
-      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
+      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK(getID()));
       return;
     }
 
@@ -841,7 +841,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   private boolean guardConcurrency(Promise promise, Object possiblyDefinedPromise) {
     if (possiblyDefinedPromise != null) {
-      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK());
+      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK(getID()));
       return true;
     }
     return false;

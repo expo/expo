@@ -26,7 +26,6 @@ public class UUIDHelper {
   public static String fromUUID(UUID uuid) {
     return toString(uuid);
   }
-
   public static String toString(UUID uuid) {
     if (uuid == null) return null;
     String longUUID = uuid.toString();

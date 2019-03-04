@@ -113,8 +113,8 @@ public class BluetoothError {
     return new BluetoothError(PREFIX + "APP_REGISTRATION", "Failed to start scan because the app couldn't be registered.");
   }
 
-  public static final BluetoothError CONCURRENT_TASK() {
-    return new BluetoothError(PREFIX + "CONCURRENT_TASK", "Running concurrent task.");
+  public static final BluetoothError CONCURRENT_TASK(String deviceId) {
+    return new BluetoothError(PREFIX + "CONCURRENT_TASK", "Running concurrent task on: " + deviceId);
   }
 
   public static final BluetoothError ENABLE_REQUEST_DENIED() {

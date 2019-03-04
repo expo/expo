@@ -1,7 +1,7 @@
 import { EventEmitter } from 'expo-core';
 import { BLUETOOTH_EVENT } from './BluetoothConstants';
 import { getPeripherals } from './BluetoothLocalState';
-import ExpoBluetooth from './ExpoBluetooth';
+import ExpoBluetooth from './ExpoBluetooth/ExpoBluetooth';
 const eventEmitter = new EventEmitter(ExpoBluetooth);
 const multiEventHandlers = {
     everything: [],
@@ -73,11 +73,8 @@ export function getHandlersForKey(key) {
     return multiEventHandlers[key];
 }
 export function addListener(listener) {
-    // eventEmitter.removeAllListeners(BLUETOOTH_EVENT);
-    console.log('EXBLUE_INTERNAL: listener count: ', eventEmitter._listenerCount);
     return eventEmitter.addListener(BLUETOOTH_EVENT, listener);
 }
-// TODO: Bacon: How do we plan on calling this...
 export function removeAllListeners() {
     eventEmitter.removeAllListeners(BLUETOOTH_EVENT);
 }
