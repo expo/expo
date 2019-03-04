@@ -22,6 +22,10 @@ public class AppAuthConstants {
     String additionalParameters = "additionalParameters";
     String scopes = "scopes";
     String serviceConfiguration = "serviceConfiguration";
+    String idToken = "idToken";
+    String accessTokenExpirationDate = "accessTokenExpirationDate";
+    String accessToken = "accessToken";
+    String tokenType = "tokenType";
   }
 
   public interface HTTPS {
