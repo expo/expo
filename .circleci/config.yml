@@ -504,8 +504,8 @@ jobs:
               s3://docs.expo.io/_next/static/ \
               s3://docs.expo.io/_next/static/ && \
             # Temporarily create a redirect for a page that Home links to
-            aws s3 cp installation.html \
-              --metadata-directive REPLACE
+            aws s3 cp \
+              --metadata-directive REPLACE \
               --website-redirect /versions/latest/introduction/installation/ \
               s3://docs.expo.io/versions/latest/introduction/installation.html \
               s3://docs.expo.io/versions/latest/introduction/installation.html
