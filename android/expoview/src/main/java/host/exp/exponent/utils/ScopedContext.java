@@ -75,6 +75,9 @@ public class ScopedContext extends Context {
     return mFilesDir.exists();
   }
 
+  // The purpose of this method is to properly move data from old scoped path to unscoped one.
+  // We need this method in case somebody wants to update standalone app.
+  // This method can be removed when sdk 32 is phased out.
   void moveOldFiles() {
     mFilesDir.renameTo(mContext.getFilesDir());
   }
