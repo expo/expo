@@ -45,6 +45,12 @@ Get the step count between two dates.
 
 - Returns a promise that resolves to an `Object` with a `steps` key, which is a `Number` indicating the number of steps taken between the given dates.
 
+##### Note: iOS returns only last 7 days worth of data
+
+As [Apple documentation states](https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc):
+
+> Only the past seven days worth of data is stored and available for you to retrieve. Specifying a start date that is more than seven days in the past returns only the available data.
+
 ### `Pedometer.watchStepCount(callback)`
 
 Subscribe to pedometer updates.
