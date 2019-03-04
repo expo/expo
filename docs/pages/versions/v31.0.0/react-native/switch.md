@@ -3,10 +3,6 @@ id: switch
 title: Switch
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Renders a boolean input.
 
 This is a controlled component that requires an `onValueChange` callback that updates the `value` prop in order for the component to reflect user actions. If the `value` prop is not updated, the component will continue to render the supplied `value` prop instead of the expected result of any user actions.
@@ -48,7 +44,7 @@ _iOS_: When the switch value is false, the track shrinks into the border. If you
 
 | Type                                                          | Required |
 | ------------------------------------------------------------- | -------- |
-| object: ${"{"}false: [color](../colors/), true: [color](../colors/)${"}"} | No       |
+| object: {false: [color](../colors/), true: [color](../colors/)} | No       |
 
 ---
 

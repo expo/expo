@@ -9,23 +9,19 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 @interface EXUserNotificationManager ()
 
-@property (nonatomic, strong) NSMutableDictionary<NSString *, EXPendingNotification *> *pendingNotifications;
+@property (nonatomic, strong) EXPendingNotification *pendingNotification;
 
 @end
 
 @implementation EXUserNotificationManager
 
-- (instancetype)init
-{
-  if (self = [super init]) {
-    _pendingNotifications = [NSMutableDictionary new];
-  }
-  return self;
-}
-
 - (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId
 {
-  return _pendingNotifications[experienceId];
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return _pendingNotification;
+  }
+
+  return nil;
 }
 
 # pragma mark - EXNotificationsIdentifiersManager
@@ -53,7 +49,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 {
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response identifiersManager:self];
   if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
-    _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
+    _pendingNotification = pendingNotification;
   }
   completionHandler();
 }
@@ -74,7 +70,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotification:notification];
   if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
-    _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
+    _pendingNotification = pendingNotification;
   }
 
   completionHandler(UNNotificationPresentationOptionNone);

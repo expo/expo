@@ -2,10 +2,6 @@
 title: Debugging
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ## Using a Simulator / Emulator
 
 **There is no substitute to testing the performance and feel of your app on an actual device**, but when it comes to debugging you might have an easier time using an emulator/simulator.

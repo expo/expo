@@ -2,11 +2,21 @@
 title: MailComposer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API to compose mails using OS specific UI.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-mail-composer).
+
+## API
+
+```js
+// in managed apps:
+import { MailComposer } from 'expo';
+
+// in bare apps:
+import * as MailComposer from 'expo-mail-composer';
+```
 
 ### `MailComposer.composeAsync(options)`
 
@@ -26,3 +36,4 @@ Opens a mail modal for iOS and a mail app intent for Android and fills the field
 #### Returns
 
 Resolves to a promise with object containing `status` field that could be either `sent`, `saved` or `cancelled`. Android does not provide such info so it always resolves to `sent`.
+

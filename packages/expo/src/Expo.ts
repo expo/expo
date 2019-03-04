@@ -19,17 +19,18 @@ import * as Facebook from 'expo-facebook';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
 import { Audio, Video } from 'expo-av';
-import { BlurView, VibrancyView } from 'expo-blur';
+import { BlurView } from 'expo-blur';
 import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
 import * as Google from './Google/Google';
-import * as Haptic from './Haptic/Haptic';
-import * as IntentLauncherAndroid from './IntentLauncherAndroid/IntentLauncherAndroid';
+import * as Haptics from 'expo-haptics';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as IntentLauncher from 'expo-intent-launcher';
+import * as LocalAuthentication from 'expo-local-authentication';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
-import * as Util from './Util';
 import * as FacebookAds from 'expo-ads-facebook';
 import * as SplashScreen from './launch/SplashScreen';
 import * as WebBrowser from 'expo-web-browser';
@@ -48,21 +49,29 @@ export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Calendar };
 export { Camera } from 'expo-camera';
 export { Constants };
-export { Contacts } from 'expo-contacts';
+import * as Contacts from 'expo-contacts';
+export { Contacts };
 export { DocumentPicker };
-export { FaceDetector } from 'expo-face-detector';
+import * as FaceDetector from 'expo-face-detector';
+export { FaceDetector };
 export { FileSystem };
 export { Font };
 export { GLView } from 'expo-gl';
-export { GoogleSignIn } from 'expo-google-sign-in';
-import * as ImageManipulator from 'expo-image-manipulator';
+import * as GoogleSignIn from 'expo-google-sign-in';
+export { GoogleSignIn };
 export { ImageManipulator };
+export { Haptics };
 import * as ImagePicker from 'expo-image-picker';
 export { ImagePicker };
-export { LocalAuthentication } from 'expo-local-authentication';
-export { Localization } from 'expo-localization';
+export { LocalAuthentication };
+export { IntentLauncher };
+import * as Localization from 'expo-localization';
+export { Localization };
+import * as Crypto from 'expo-crypto';
+export { Crypto };
 export { Location };
-export { MediaLibrary } from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library';
+export { MediaLibrary };
 import * as Permissions from 'expo-permissions';
 export { Permissions };
 export { Print } from 'expo-print';
@@ -81,9 +90,9 @@ export { default as DangerZone } from './DangerZone';
 export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 export { Facebook };
 export { Google };
-export { Haptic };
+import * as Random from 'expo-random';
+export { Random };
 export { default as Icon } from './Icon';
-export { IntentLauncherAndroid };
 export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { default as Linking } from './Linking/Linking';
 export { MailComposer };
@@ -93,33 +102,35 @@ export { SecureStore };
 export { StoreReview };
 export { default as Svg } from './Svg';
 export { Updates };
-export { Util };
 export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 export { Audio, Video };
-export { BlurView, VibrancyView };
+export { BlurView };
 export { LinearGradient } from 'expo-linear-gradient';
 export { FacebookAds };
 export { default as AppLoading } from './launch/AppLoading';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
-
+export { default as Pedometer } from './Pedometer';
 // polyfill navigator.geolocation
 Location.installWebGeolocationPolyfill();
 
 // @ts-ignore
 Object.defineProperties(exports, {
-  // TODO: Unify the Pedometer module across platforms so we can export it normally
-  Pedometer: {
+  Haptic: {
+    enumerable: false,
+    get() {
+      console.log('Module name `Haptic` is deprecated. Use `Haptics` instead.');
+      return Haptics;
+    },
+  },
+  IntentLauncherAndroid: {
     enumerable: true,
     get() {
-      if (Platform.OS === 'android') {
-        return require('./Pedometer');
-      } else {
-        return require('expo-sensors').Pedometer;
-      }
+      console.warn(`Module name 'IntentLauncherAndroid' is deprecated, use 'IntentLauncher' instead`);
+      return IntentLauncher;
     },
   },
 });

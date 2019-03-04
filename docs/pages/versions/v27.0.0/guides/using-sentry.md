@@ -2,10 +2,6 @@
 title: Using Sentry
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 [Sentry](http://getsentry.com/) is a crash reporting and aggregation platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
 It notifies you of exceptions that your users run into while using your app and organizes for you to triage from their web dashboard. Reported exceptions include sourcemapped stacktraces and other relevant context (device id, platform, Expo verison, etc.) automatically; you can also provide other context that is specific to your application, like the current route and user id.

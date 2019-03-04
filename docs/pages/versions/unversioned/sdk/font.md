@@ -2,26 +2,34 @@
 title: Font
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](../../guides/using-custom-fonts/#using-custom-fonts) guide.
 
-## Usage
+## Installation
 
-### `Expo.Font.loadAsync(object)`
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-font).
 
-Convenience form of [`Expo.Font.loadAsync()`](#expofontloadasync "Expo.Font.loadAsync") that loads multiple fonts at once.
+## API
+
+```js
+// in managed apps:
+import { Font } from 'expo';
+
+// in bare apps:
+import * as Font from 'expo-font';
+```
+
+### `Font.loadAsync(object)`
+
+Convenience form of [`Font.loadAsync()`](#expofontloadasync "Font.loadAsync") that loads multiple fonts at once.
 
 #### Arguments
 
--   **map : `object`** -- A map of names to `require` statements as in [`Expo.Font.loadAsync()`](#expofontloadasync "Expo.Font.loadAsync").
+-   **map (_object_)** -- A map of names to `require` statements as in [`Font.loadAsync()`](#expofontloadasync "Font.loadAsync").
 
 #### Example
 
 ```javascript
-Expo.Font.loadAsync({
+Font.loadAsync({
   Montserrat: require('./assets/fonts/Montserrat.ttf'),
   'Montserrat-SemiBold': require('./assets/fonts/Montserrat-SemiBold.ttf'),
 });
@@ -30,3 +38,4 @@ Expo.Font.loadAsync({
 #### Returns
 
 Returns a promise. The promise will be resolved when the fonts have finished loading.
+

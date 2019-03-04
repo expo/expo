@@ -2,10 +2,6 @@
 title: Release Channels
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ## Introduction
 
 Use release channels in Expo to send out different versions of your application to your users by giving them a URL or configuring your standalone app. You should use release channels if:
@@ -34,7 +30,7 @@ with the `exp` cli. The binary produced will only pull releases published under 
 
 You can access the channel your release is published under with the `releaseChannel` field in the [manifest object](../../sdk/constants/#expoconstantsmanifest).
 
-> `Expo.Constants.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
+> `Constants.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
 
 ## Example Workflow
 

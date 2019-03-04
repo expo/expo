@@ -3,10 +3,6 @@ id: textinput
 title: TextInput
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A foundational component for inputting text into the app via a keyboard. Props provide configurability for several features, such as auto-correction, auto-capitalization, placeholder text, and different keyboard types, such as a numeric keypad.
 
 The simplest use case is to plop down a `TextInput` and subscribe to the `onChangeText` events to read the user input. There are also other events, such as `onSubmitEditing` and `onFocus` that can be subscribed to. A simple example:
@@ -635,7 +631,7 @@ The start and end of the text input's selection. Set start and end to the same v
 
 | Type                                | Required |
 | ----------------------------------- | -------- |
-| object: ${"{"}start: number,end: number${"}"} | No       |
+| object: {start: number,end: number} | No       |
 
 ---
 

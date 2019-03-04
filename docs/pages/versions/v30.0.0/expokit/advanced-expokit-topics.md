@@ -2,10 +2,6 @@
 title: Advanced ExpoKit Topics
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 This guide goes deeper into a few [ExpoKit](../expokit/) topics that aren't critical
 right out of the box, but that you may encounter down the road. If you're not familiar with
 ExpoKit, you might want to read [the ExpoKit guide](../expokit/) first.

@@ -2,11 +2,21 @@
 title: ImageManipulator
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+An API to modify images stored on the local file system.
 
-export default withDocumentationElements(meta);
+## Installation
 
-An API to modify images stored in app scope.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
+
+## API
+
+```js
+// in managed apps:
+import { ImageManipulator } from 'expo';
+
+// in bare apps:
+import * as ImageManipulator from 'expo-image-manipulator';
+```
 
 ### `ImageManipulator.manipulateAsync(uri, actions, saveOptions)`
 
@@ -14,20 +24,20 @@ Manipulate the image provided via `uri`. Available modifications are rotating, f
 
 #### Arguments
 
--   **uri : `string`** -- URI of the file to manipulate. Should be in the app's scope.
--   **actions : `array`** --
+-   **uri (_string_)** -- URI of the file to manipulate. Should be on the local file system.
+-   **actions (_array_)** --
 
        An array of objects representing manipulation options. Each object should have *only one* of the following keys that corresponds to specific transformation:
 
-    -   **resize : `object`** -- An object of shape `{ width, height }`. Values correspond to the result image dimensions. If you specify only one value, the other will be calculated automatically to preserve image ratio.
-    -   **rotate : `number`** -- Degrees to rotate the image. Rotation is clockwise when the value is positive and counter-clockwise when negative.
-    -   **flip : `string`** -- `ImageManipulator.FlipType.{Vertical, Horizontal}`. Only one flip per transformation is available. If you want to flip according to both axes then provide two separate transformations.
-    -   **crop : `object`** -- An object of shape `{ originX, originY, width, height }`. Fields specify top-left corner and dimensions of a crop rectangle.
+    -   **resize (_object_)** -- An object of shape `{ width, height }`. Values correspond to the result image dimensions. If you specify only one value, the other will be calculated automatically to preserve image ratio.
+    -   **rotate (_number_)** -- Degrees to rotate the image. Rotation is clockwise when the value is positive and counter-clockwise when negative.
+    -   **flip (_string_)** -- `ImageManipulator.FlipType.{Vertical, Horizontal}`. Only one flip per transformation is available. If you want to flip according to both axes then provide two separate transformations.
+    -   **crop (_object_)** -- An object of shape `{ originX, originY, width, height }`. Fields specify top-left corner and dimensions of a crop rectangle.
 
--  **saveOptions : `object`** -- A map defining how modified image should be saved:
-    -   **compress : `number`** -- A value in range `0.0` - `1.0` specifying compression level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality).
-    -   **format : `string`** -- `ImageManipulator.SaveFormat.{JPEG, PNG}`. Specifies what type of compression should be used and what is the result file extension. `SaveFormat.PNG` compression is lossless but slower, `SaveFormat.JPEG` is faster but the image has visible artifacts. Defaults to `SaveFormat.JPEG`.
-    -   **base64 : `boolean`** -- Whether to also include the image data in Base64 format.
+-  **saveOptions (_object_)** -- A map defining how modified image should be saved:
+    -   **compress (_number_)** -- A value in range `0.0` - `1.0` specifying compression level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality).
+    -   **format (_string_)** -- `ImageManipulator.SaveFormat.{JPEG, PNG}`. Specifies what type of compression should be used and what is the result file extension. `SaveFormat.PNG` compression is lossless but slower, `SaveFormat.JPEG` is faster but the image has visible artifacts. Defaults to `SaveFormat.JPEG`.
+    -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
 
 #### Returns
 
@@ -76,7 +86,7 @@ export default class ImageManipulatorSample extends React.Component {
     const manipResult = await ImageManipulator.manipulateAsync(
       this.state.image.localUri || this.state.image.uri,
       [{ rotate: 90}, { flip: { vertical: true }}],
-      { format: 'png' }
+      { format: ImageManipulator.SaveFormat.PNG }
     );
     this.setState({ image: manipResult });
   }
@@ -93,3 +103,4 @@ export default class ImageManipulatorSample extends React.Component {
   };
 }
 ```
+

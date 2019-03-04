@@ -3,10 +3,6 @@ id: tabbarios-item
 title: TabBarIOS.Item
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [View props...](../view/#props)
@@ -61,7 +57,7 @@ A custom icon for the tab. It is ignored when a system icon is defined.
 
 ### `onPress`
 
-Callback when this tab is being selected, you should change the state of your component to set selected=${"{"}true${"}"}.
+Callback when this tab is being selected, you should change the state of your component to set selected={true}.
 
 | Type     | Required |
 | -------- | -------- |

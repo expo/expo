@@ -3,10 +3,6 @@ id: imagestore
 title: ImageStore
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Methods
 
 * [`hasImageForTag`](../imagestore/#hasimagefortag)

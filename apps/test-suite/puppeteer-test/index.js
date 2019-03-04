@@ -3,8 +3,9 @@ const puppeteer = require('puppeteer');
 
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const path = require('path');
-const config = require('../webpack.config');
+const getConfig = require('../webpack/webpack.dev');
+
+const config = getConfig();
 
 const options = {
   ...config.devServer,
@@ -55,7 +56,7 @@ async function runPuppeteerAsync() {
   page.on('console', async msg => {
     // 2. Filter the results into a list of objects
     const args = await Promise.all(msg.args().map(arg => parseHandle(arg)));
-    console.log(msg);
+    console.log(args);
 
     // 4. Ignore anything that isn't an object - in test-suite we are sending the results as an object.
     const jsonObjects = args.filter(({ type }) => type === 'object');
@@ -103,8 +104,8 @@ function listenToServerAsync(server) {
 
 async function main(args) {
   if (manuallyRunWebpack) {
-    server = new WebpackDevServer(webpack(config), options);
     try {
+      server = new WebpackDevServer(webpack(config), options);
       await listenToServerAsync(server);
       console.log('WebpackDevServer listening at localhost:', port);
     } catch (error) {

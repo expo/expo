@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-errors';
 import { EventEmitter, Subscription } from 'expo-core';
 import UUID from 'uuid-js';
-import FS from './ExponentFileSystem';
+import ExponentFileSystem from './ExponentFileSystem';
 
 import {
   DownloadOptions,
@@ -16,7 +16,7 @@ import {
   ProgressEvent,
 } from './FileSystem.types';
 
-if (!FS) {
+if (!ExponentFileSystem) {
   console.warn(
     "No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?"
   );
@@ -42,29 +42,29 @@ function normalizeEndingSlash(p: string | null): string | null {
   return null;
 }
 
-FS.documentDirectory = normalizeEndingSlash(FS.documentDirectory);
-FS.cacheDirectory = normalizeEndingSlash(FS.cacheDirectory);
+export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documentDirectory);
+export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
 
-export const { documentDirectory, cacheDirectory, bundledAssets, bundleDirectory } = FS;
+export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
 
 export async function getInfoAsync(
   fileUri: string,
   options: { md5?: boolean; cache?: boolean } = {}
 ): Promise<FileInfo> {
-  if (!FS.getInfoAsync) {
+  if (!ExponentFileSystem.getInfoAsync) {
     throw new UnavailabilityError('expo-file-system', 'getInfoAsync');
   }
-  return await FS.getInfoAsync(fileUri, options);
+  return await ExponentFileSystem.getInfoAsync(fileUri, options);
 }
 
 export async function readAsStringAsync(
   fileUri: string,
   options?: ReadingOptions
 ): Promise<string> {
-  if (!FS.readAsStringAsync) {
+  if (!ExponentFileSystem.readAsStringAsync) {
     throw new UnavailabilityError('expo-file-system', 'readAsStringAsync');
   }
-  return await FS.readAsStringAsync(fileUri, options || {});
+  return await ExponentFileSystem.readAsStringAsync(fileUri, options || {});
 }
 
 export async function writeAsStringAsync(
@@ -72,51 +72,51 @@ export async function writeAsStringAsync(
   contents: string,
   options: WritingOptions = {}
 ): Promise<void> {
-  if (!FS.writeAsStringAsync) {
+  if (!ExponentFileSystem.writeAsStringAsync) {
     throw new UnavailabilityError('expo-file-system', 'writeAsStringAsync');
   }
-  return await FS.writeAsStringAsync(fileUri, contents, options);
+  return await ExponentFileSystem.writeAsStringAsync(fileUri, contents, options);
 }
 
 export async function deleteAsync(
   fileUri: string,
   options: { idempotent?: boolean } = {}
 ): Promise<void> {
-  if (!FS.deleteAsync) {
+  if (!ExponentFileSystem.deleteAsync) {
     throw new UnavailabilityError('expo-file-system', 'deleteAsync');
   }
-  return await FS.deleteAsync(fileUri, options);
+  return await ExponentFileSystem.deleteAsync(fileUri, options);
 }
 
 export async function moveAsync(options: { from: string; to: string }): Promise<void> {
-  if (!FS.moveAsync) {
+  if (!ExponentFileSystem.moveAsync) {
     throw new UnavailabilityError('expo-file-system', 'moveAsync');
   }
-  return await FS.moveAsync(options);
+  return await ExponentFileSystem.moveAsync(options);
 }
 
 export async function copyAsync(options: { from: string; to: string }): Promise<void> {
-  if (!FS.copyAsync) {
+  if (!ExponentFileSystem.copyAsync) {
     throw new UnavailabilityError('expo-file-system', 'copyAsync');
   }
-  return await FS.copyAsync(options);
+  return await ExponentFileSystem.copyAsync(options);
 }
 
 export async function makeDirectoryAsync(
   fileUri: string,
   options: { intermediates?: boolean } = {}
 ): Promise<void> {
-  if (!FS.makeDirectoryAsync) {
+  if (!ExponentFileSystem.makeDirectoryAsync) {
     throw new UnavailabilityError('expo-file-system', 'makeDirectoryAsync');
   }
-  return await FS.makeDirectoryAsync(fileUri, options);
+  return await ExponentFileSystem.makeDirectoryAsync(fileUri, options);
 }
 
 export async function readDirectoryAsync(fileUri: string): Promise<string[]> {
-  if (!FS.readDirectoryAsync) {
+  if (!ExponentFileSystem.readDirectoryAsync) {
     throw new UnavailabilityError('expo-file-system', 'readDirectoryAsync');
   }
-  return await FS.readDirectoryAsync(fileUri, {});
+  return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
 }
 
 export async function downloadAsync(
@@ -124,10 +124,10 @@ export async function downloadAsync(
   fileUri: string,
   options: DownloadOptions = {}
 ): Promise<DownloadResult> {
-  if (!FS.downloadAsync) {
+  if (!ExponentFileSystem.downloadAsync) {
     throw new UnavailabilityError('expo-file-system', 'downloadAsync');
   }
-  return await FS.downloadAsync(uri, fileUri, options);
+  return await ExponentFileSystem.downloadAsync(uri, fileUri, options);
 }
 
 export function createDownloadResumable(
@@ -164,15 +164,15 @@ export class DownloadResumable {
     this._resumeData = resumeData;
     this._callback = callback;
     this._subscription = null;
-    this._emitter = new EventEmitter(FS);
+    this._emitter = new EventEmitter(ExponentFileSystem);
   }
 
   async downloadAsync(): Promise<DownloadResult | undefined> {
-    if (!FS.downloadResumableStartAsync) {
+    if (!ExponentFileSystem.downloadResumableStartAsync) {
       throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
     }
     this._addSubscription();
-    return await FS.downloadResumableStartAsync(
+    return await ExponentFileSystem.downloadResumableStartAsync(
       this._url,
       this._fileUri,
       this._uuid,
@@ -182,10 +182,10 @@ export class DownloadResumable {
   }
 
   async pauseAsync(): Promise<DownloadPauseState> {
-    if (!FS.downloadResumablePauseAsync) {
+    if (!ExponentFileSystem.downloadResumablePauseAsync) {
       throw new UnavailabilityError('expo-file-system', 'downloadResumablePauseAsync');
     }
-    const pauseResult = await FS.downloadResumablePauseAsync(this._uuid);
+    const pauseResult = await ExponentFileSystem.downloadResumablePauseAsync(this._uuid);
     this._removeSubscription();
     if (pauseResult) {
       this._resumeData = pauseResult.resumeData;
@@ -196,11 +196,11 @@ export class DownloadResumable {
   }
 
   async resumeAsync(): Promise<DownloadResult | undefined> {
-    if (!FS.downloadResumableStartAsync) {
+    if (!ExponentFileSystem.downloadResumableStartAsync) {
       throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
     }
     this._addSubscription();
-    return await FS.downloadResumableStartAsync(
+    return await ExponentFileSystem.downloadResumableStartAsync(
       this._url,
       this._fileUri,
       this._uuid,

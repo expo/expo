@@ -3,10 +3,6 @@ id: progressviewios
 title: ProgressViewIOS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Use `ProgressViewIOS` to render a UIProgressView on iOS.
 
 ### Props

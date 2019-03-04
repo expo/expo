@@ -3,10 +3,6 @@ id: touchablewithoutfeedback
 title: TouchableWithoutFeedback
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Do not use unless you have a very good reason. All elements that respond to press should have a visual feedback when touched.
 
 TouchableWithoutFeedback supports only one child. If you wish to have several child components, wrap them in a View.
@@ -154,7 +150,7 @@ This defines how far your touch can start away from the button. This is added to
 
 | Type                                                               | Required |
 | ------------------------------------------------------------------ | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       |
+| object: {top: number, left: number, bottom: number, right: number} | No       |
 
 ### onBlur
 
@@ -232,7 +228,7 @@ When the scroll view is disabled, this defines how far your touch may move off o
 
 | Type                                                               | Required |
 | ------------------------------------------------------------------ | -------- |
-| object: ${"{"}top: number, left: number, bottom: number, right: number${"}"} | No       |
+| object: {top: number, left: number, bottom: number, right: number} | No       |
 
 ## Type Definitions
 

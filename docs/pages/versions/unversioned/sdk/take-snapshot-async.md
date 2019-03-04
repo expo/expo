@@ -2,34 +2,40 @@
 title: takeSnapshotAsync
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Given a view, `takeSnapshotAsync` will essentially screenshot that view and return an image for you. This is very useful for things like signature pads, where the user draws something and then you want to save an image from it.
 
 If you're interested in taking snapshots from the GLView, we recommend you use [GLView's takeSnapshotAsync](../gl-view/#takesnapshotasync) instead.
 
-### `Expo.takeSnapshotAsync(view, options)`
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. For [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, use the [react-native-view-shot](https://github.com/gre/react-native-view-shot) library instead.
+
+## API
+
+```js
+import { takeSnapshotAsync } from 'expo';
+```
+
+### `takeSnapshotAsync(view, options)`
 
 Snapshots the given view.
 
 #### Arguments
 
--   **view : `number|ReactElement`** -- The `ref` or `reactTag` (also known as node handle) for the view to snapshot.
--   **options : `object`** --
+-   **view (_number|ReactElement_)** -- The `ref` or `reactTag` (also known as node handle) for the view to snapshot.
+-   **options (_object_)** --
 
       An optional map of optional options
 
-    -   **format : `string`** -- `"png" | "jpg" | "webm"`, defaults to `"png"`, `"webm"` supported only on Android.
-    -   **quality : `number`** -- Number between 0 and 1 where 0 is worst quality and 1 is best, defaults to `1`
-    -   **result : `string`** -- The type for the resulting image.
+    -   **format (_string_)** -- `"png" | "jpg" | "webm"`, defaults to `"png"`, `"webm"` supported only on Android.
+    -   **quality (_number_)** -- Number between 0 and 1 where 0 is worst quality and 1 is best, defaults to `1`
+    -   **result (_string_)** -- The type for the resulting image.
             \-   `'tmpfile'` -- (default) Return a temporary file uri.
             \-   `'base64'` -- base64 encoded image.
             \-   `'data-uri'` -- base64 encoded image with data-uri prefix.
-    -   **height : `number`** -- Height of result in pixels
-    -   **width : `number`** -- Width of result in pixels
-    -   **snapshotContentContainer : `bool`** -- if true and when view is a ScrollView, the "content container" height will be evaluated instead of the container height
+    -   **height (_number_)** -- Height of result in pixels
+    -   **width (_number_)** -- Width of result in pixels
+    -   **snapshotContentContainer (_bool_)** -- if true and when view is a ScrollView, the "content container" height will be evaluated instead of the container height
 
 #### Returns
 

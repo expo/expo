@@ -2,10 +2,6 @@
 title: Using Modern JavaScript
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 JavaScript is an evolving language. You may have heard of ES2015, ES2016, and so on, which are new versions of JavaScript that have added features like classes, async functions, and more.
 
 You can use much of modern JavaScript with Expo and React Native. The JavaScript VMs on devices already support many modern features. The JavaScript packager ([Metro](https://github.com/facebook/metro)) also uses Babel to transform modern JavaScript into an older version that JavaScript VMs can interpret. Between newer JavaScript VMs and Babel, you can use many features of modern JavaScript.

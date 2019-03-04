@@ -2,13 +2,19 @@
 title: SplashScreen
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A module that tells Expo to keep the splash screen visible until you make it hide.
 
 This is useful to let you create an impression of a pure React component splash screen. You can combine it with [AppLoading](../app-loading/). Read more about [creating a splash screen.](../../guides/splash-screens/)
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
+## API
+
+```js
+import { SplashScreen } from 'expo';
+```
 
 ### `SplashScreen.preventAutoHide()`
 
@@ -192,3 +198,4 @@ export default class App extends React.Component {
   }
 }
 ```
+

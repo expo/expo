@@ -1,18 +1,28 @@
 {
   "name": "expo-camera-interface",
-  "version": "2.0.0",
-  "description": "Expo Camera interface package",
+  "version": "3.0.0",
+  "description": "expo-camera interface package.",
   "main": "index.js",
+  "scripts": {
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
     "camera"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
-    "expo-core": "~2.0.0"
-  },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-camera-interface",
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

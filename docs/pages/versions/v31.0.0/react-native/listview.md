@@ -3,10 +3,6 @@ id: listview
 title: ListView
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 DEPRECATED - use one of the new list components, such as [`FlatList`](../flatlist/) or [`SectionList`](../sectionlist/) for bounded memory use, fewer bugs, better performance, an easier to use API, and more features. Check out this [blog post](https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html) for more details.
 
 ListView - A core component designed for efficient display of vertically scrolling lists of changing data. The minimal API is to create a [`ListView.DataSource`](../listviewdatasource/), populate it with a simple array of data blobs, and instantiate a `ListView` component with that data source and a `renderRow` callback which takes a blob from the data array and returns a renderable component.
@@ -231,7 +227,7 @@ If provided, a renderable component to be rendered as the separator below each r
 
 (visibleRows, changedRows) => void
 
-Called when the set of visible rows changes. `visibleRows` maps ${"{"} sectionID: ${"{"} rowID: true ${"}"}${"}"} for all the visible rows, and `changedRows` maps ${"{"} sectionID: ${"{"} rowID: true | false ${"}"}${"}"} for the rows that have changed their visibility, with true indicating visible, and false indicating the view has moved out of view.
+Called when the set of visible rows changes. `visibleRows` maps { sectionID: { rowID: true }} for all the visible rows, and `changedRows` maps { sectionID: { rowID: true | false }} for the rows that have changed their visibility, with true indicating visible, and false indicating the view has moved out of view.
 
 | Type     | Required |
 | -------- | -------- |

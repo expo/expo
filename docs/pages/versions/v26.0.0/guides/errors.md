@@ -2,10 +2,6 @@
 title: Error Handling
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 This guide details a few strategies available for reporting and recovering from errors in your project.
 
 ## Handling Fatal JS Errors

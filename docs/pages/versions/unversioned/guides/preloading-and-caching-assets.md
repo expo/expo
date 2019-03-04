@@ -2,10 +2,6 @@
 title: Preloading & Caching Assets
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Assets are cached differently depending on where they're stored and how they're used. This guide offers best practices for making sure you only download assets when you need to. In order to keep the loading screen visible while caching assets, it's also a good idea to render [Expo.AppLoading](../../sdk/app-loading/#app-loading) and only that component until everything is ready. See also: [Offline Support](../offline-support/).
 
 For images that saved to the local filesytem, use `Expo.Asset.fromModule(image).downloadAsync()` to download and cache the image. There is also a [loadAsync()](../../sdk/asset/#expoassetloadasyncmodules) helper method to cache a batch of assets.

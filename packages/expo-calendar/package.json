@@ -1,7 +1,7 @@
 {
   "name": "expo-calendar",
-  "version": "1.0.0",
-  "description": "Expo universal module for Calendar",
+  "version": "3.0.0",
+  "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "main": "build/Calendar.js",
   "types": "build/Calendar.d.ts",
   "scripts": {
@@ -22,21 +22,19 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-calendar",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/calendar/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "expo-errors": "~1.0.0",
-    "expo-permissions-interface": "^2.0.0"
-  },
-  "peerDependencies": {
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-permissions-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

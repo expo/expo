@@ -21,7 +21,7 @@ const COLUMNS = 3;
 const PAGE_SIZE = COLUMNS * 10;
 const WINDOW_SIZE = Dimensions.get('window');
 
-const { MediaType, SortBy } = MediaLibrary;
+const { MediaType = {}, SortBy = {} } = MediaLibrary;
 
 const mediaTypeStates = {
   all: MediaType.photo,

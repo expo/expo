@@ -1,17 +1,16 @@
 import Router from 'next/router';
-import styled, { keyframes, css } from 'react-emotion';
+import { css } from 'react-emotion';
 
 import * as React from 'react';
 import * as Utilities from '~/common/utilities';
 import * as Constants from '~/common/constants';
 import * as WindowUtils from '~/common/window';
-import { VERSIONS, LATEST_VERSION } from '~/common/versions';
+import { VERSIONS } from '~/common/versions';
 
 import navigation from '~/common/navigation';
 
 import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationFooter from '~/components/DocumentationFooter';
-import DocumentationPageLayout from '~/components/DocumentationPageLayout';
 import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import Head from '~/components/Head';
@@ -100,7 +99,7 @@ export default class DocumentationPage extends React.Component {
 
     // TODO: Find what's stripping trailing slashes from these
     if (version.startsWith('v')) {
-      newPath += '/'
+      newPath += '/';
     }
 
     Router.push(newPath + '/');
@@ -149,8 +148,6 @@ export default class DocumentationPage extends React.Component {
       <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />
     );
 
-    console.log(this.props.title);
-
     return (
       <DocumentationNestedScrollLayout
         ref="layout"
@@ -166,19 +163,22 @@ export default class DocumentationPage extends React.Component {
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
             <div className={STYLES_ALERT}>
-              <strong className={STYLES_ALERT_BOLD}>Hey friend!</strong> We are co-hosting a
-              conference with <strong className={STYLES_ALERT_BOLD}>Software Mansion</strong>,{' '}
-              <a
-                className={STYLES_ALERT_BOLD}
-                style={{ color: Constants.colors.lila }}
-                href="https://appjs.co/"
-                target="blank">
-                learn more
-              </a>.
+              <span style={{ fontSize: 17 }}>
+                <strong className={STYLES_ALERT_BOLD}>Hi friend!</strong> Meet us at App.js Conf in
+                Krakow, Poland on April 4th and 5th with workshops and talks.{' '}
+                <a
+                  className={STYLES_ALERT_BOLD}
+                  style={{ color: Constants.colors.lila }}
+                  href="https://appjs.co/"
+                  target="_blank"
+                  rel="noopener">
+                  Learn more
+                </a>
+              </span>
             </div>
             <H1>{this.props.title}</H1>
             {this.props.children}
-            <DocumentationFooter />
+            <DocumentationFooter title={this.props.title} asPath={this.props.asPath} />
           </div>
         ) : (
           <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />

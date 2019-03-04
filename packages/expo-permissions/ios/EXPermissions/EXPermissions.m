@@ -50,7 +50,12 @@ EX_EXPORT_MODULE(ExpoPermissions);
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   if (self = [self init]) {
-    _experienceId = experienceId;
+      // TODO: something better than this
+      if (experienceId == nil) {
+          _experienceId = @"BARE";
+      } else {
+          _experienceId = experienceId;
+      }
   }
   return self;
 }

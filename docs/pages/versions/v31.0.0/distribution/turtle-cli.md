@@ -2,10 +2,6 @@
 title: Building Standalone Apps on Your CI
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 > **WARNING:** This feature is in beta.
 
 > **NOTE:** macOS is required to build standalone iOS apps.

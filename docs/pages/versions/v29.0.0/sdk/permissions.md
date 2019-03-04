@@ -2,10 +2,6 @@
 title: Permissions
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 When it comes to adding functionality that can access potentially sensitive information on a user's device, such as their location, or possibly send them possibly unwanted push notifications, you will need to ask the user for their permission first. Unless you've already asked their permission, then no need. And so we have the `Permissions` module.
 
 If you are deploying your app to the Apple iTunes Store, you should consider adding additional metadata to your app in order to customize the system permissions dialog and explain why your app requires permissions. See more info in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
@@ -20,7 +16,7 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Arguments
 
--   **type : `string`** -- The name of the permission.
+-   **type (_string_)** -- The name of the permission.
 
 #### Returns
 
@@ -44,7 +40,7 @@ Prompt the user for a permission. If they have already granted access, response 
 
 #### Arguments
 
--   **type : `string`** -- The name of the permission.
+-   **type (_string_)** -- The name of the permission.
 
 #### Returns
 
@@ -126,3 +122,4 @@ If you specified `android.permissions` inside your `app.json` ([read more about 
 | CONTACTS        | READ_CONTACTS                                 |
 | CAMERA_ROLL     | READ\_EXTERNAL\_STORAGE, WRITE\_EXTERNAL\_STORAGE |
 | CALENDAR        | READ\_CALENDAR, WRITE\_CALENDAR                 |
+

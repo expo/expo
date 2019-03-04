@@ -1,7 +1,7 @@
 {
   "name": "expo-constants",
-  "version": "2.0.0",
-  "description": "Expo Constants standalone universal module",
+  "version": "3.0.0",
+  "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
   "scripts": {
@@ -21,19 +21,18 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-constants",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/constants/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo": "~32.0.0",
-    "expo-constants-interface": "~2.0.0",
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-constants-interface": "*"
   },
   "dependencies": {
     "ua-parser-js": "^0.7.19"
@@ -42,5 +41,5 @@
     "expo-module-scripts": "^1.0.0",
     "uuid": "^3.3.2"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import ComponentListScreen from './ComponentListScreen';
 import { Layout } from '../constants';
+import { Screens } from '../navigation/ExpoComponents';
 
 export default class ExpoComponentsScreen extends React.Component {
   static path = '';
@@ -15,7 +16,7 @@ export default class ExpoComponentsScreen extends React.Component {
   }
 
   _getApis = () => {
-    return Platform.select({
+    const screens = Platform.select({
       web: [
         'AdMob',
         'BlurView',
@@ -49,5 +50,6 @@ export default class ExpoComponentsScreen extends React.Component {
         'Video',
       ],
     });
+    return screens.map(name => ({ name, isAvailable: !!Screens[name] }));
   };
 }

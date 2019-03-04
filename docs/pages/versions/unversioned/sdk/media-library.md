@@ -2,59 +2,67 @@
 title: MediaLibrary
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to user's media library.
 
 Requires `Permissions.CAMERA_ROLL` permissions.
 
-## Methods
+## Installation
 
-### `Expo.MediaLibrary.createAssetAsync(localUri)`
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
+
+## API
+
+```js
+// in managed apps:
+import { MediaLibrary } from 'expo';
+
+// in bare apps:
+import * as MediaLibrary from 'expo-media-library';
+```
+
+### `MediaLibrary.createAssetAsync(localUri)`
 
 Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
 
-```
+```js
 const { uri } = await camera.takePictureAsync();
 const asset = await MediaLibrary.createAssetAsync(uri);
 ```
 
 #### Arguments
 
--   **localUri : `string`** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+-   **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
 
 #### Returns
 
 An object representing an [asset](#asset).
 
-### `Expo.MediaLibrary.getAssetsAsync(options)`
+### `MediaLibrary.getAssetsAsync(options)`
 
 Fetches a page of assets matching the provided criteria.
 
 #### Arguments
--   **options : `object`**
+-   **options (_object_)**
 
-    -   **first : `number`** -- The maximum number of items on a single page.
-    -   **after : `string`** -- Asset ID of the last item returned on the previous page.
+    -   **first (_number_)** -- The maximum number of items on a single page.
+    -   **after (_string_)** -- Asset ID of the last item returned on the previous page.
     -   **album (_string_ | _Album_)** -- [Album](#album) or its ID to get assets from specific album.
-    -   **sortBy : `array`** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` 
+    -   **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` 
     -   value that means whether to use ascending order.
     Earlier items have higher priority when sorting out the results.
     If empty, this method will use the default sorting that is provided by the platform.
-    -   **mediaType : `array`** -- An array of [MediaType](#expomedialibrarymediatype) types. By default `MediaType.photo` is set.
+    -   **mediaType (_array_)** -- An array of [MediaType](#expomedialibrarymediatype) types. By default `MediaType.photo` is set.
 
 #### Returns
 
 A promise that resolves to an object that contains following keys:
 
--   **assets : `array`** -- A page of [assets](#asset) fetched by the query.
--   **endCursor : `string`** -- ID of the last fetched asset. It should be passed as `after` option in order to get the next page.
--   **hasNextPage : `boolean`** -- Whether there are more assets to fetch.
--   **totalCount : `number`** -- Estimated total number of assets that match the query.
+-   **assets (_array_)** -- A page of [assets](#asset) fetched by the query.
+-   **endCursor (_string_)** -- ID of the last fetched asset. It should be passed as `after` option in order to get the next page.
+-   **hasNextPage (_boolean_)** -- Whether there are more assets to fetch.
+-   **totalCount (_number_)** -- Estimated total number of assets that match the query.
 
-### `Expo.MediaLibrary.getAssetInfoAsync(asset)`
+### `MediaLibrary.getAssetInfoAsync(asset)`
 
 Provides more informations about an asset, including GPS location, local URI and EXIF metadata.
 
@@ -66,7 +74,7 @@ Provides more informations about an asset, including GPS location, local URI and
 
 Asset object extended by additional fields listed [in the table](#asset).
 
-### `Expo.MediaLibrary.deleteAssetsAsync(assets)`
+### `MediaLibrary.deleteAssetsAsync(assets)`
 
 Deletes assets from the library.
 On iOS it deletes assets from all albums they belong to, while on Android it keeps all copies of them (album is strictly connected to the asset).
@@ -74,13 +82,13 @@ Also, there is additional dialog on iOS that requires user to confirm this actio
 
 #### Arguments
 
--   **assets : `array`** -- An array of [assets](#asset) or their IDs.
+-   **assets (_array_)** -- An array of [assets](#asset) or their IDs.
 
 #### Returns
 
 Returns `true` if the assets were successfully deleted.
 
-### `Expo.MediaLibrary.getAlbumsAsync()`
+### `MediaLibrary.getAlbumsAsync()`
 
 Queries for user-created albums in media gallery.
 
@@ -88,19 +96,19 @@ Queries for user-created albums in media gallery.
 
 An array of [albums](#album).
 
-### `Expo.MediaLibrary.getAlbumAsync(albumName)`
+### `MediaLibrary.getAlbumAsync(albumName)`
 
 Queries for an album with a specific name.
 
 #### Arguments
 
--   **albumName : `string`** -- Name of the album to look for.
+-   **albumName (_string_)** -- Name of the album to look for.
 
 #### Returns
 
 An object representing an [album](#album) if album with given name exists, otherwise returns `null`.
 
-### `Expo.MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)`
+### `MediaLibrary.createAlbumAsync(albumName, asset, copyAsset)`
 
 Creates an album with given name and initial asset.
 The asset parameter is required on Android, since it's not possible to create empty album on this platform. 
@@ -109,15 +117,15 @@ In case it's copied you should keep in mind that `getAssetsAsync` will return du
 
 #### Arguments
 
--   **albumName : `string`** -- Name of the album to create.
+-   **albumName (_string_)** -- Name of the album to create.
 -   **asset (_string_ | _Asset_)** -- [Asset](#asset) or its ID. Required on Android.
--   **copyAsset : `boolean`** -- Whether to copy asset to the new album instead of move it. Defaults to `true`. (**Android only**)
+-   **copyAsset (_boolean_)** -- Whether to copy asset to the new album instead of move it. Defaults to `true`. (**Android only**)
 
 #### Returns
 
 Newly created [album](#album).
 
-### `Expo.MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)`
+### `MediaLibrary.deleteAlbumsAsync(albums, deleteAssets)`
 
 Deletes given albums from the library.
 
@@ -125,14 +133,14 @@ On Android by default it deletes assets belonging to given albums from the libra
 
 #### Arguments
 
--   **albums : `array`** -- Array of [albums](#album) or their IDs, that will be removed from the library.
--   **deleteAssets : `boolean`** -- Whether to also delete assets belonging to given albums. Defaults to `false`. (**iOS only**)
+-   **albums (_array_)** -- Array of [albums](#album) or their IDs, that will be removed from the library.
+-   **deleteAssets (_boolean_)** -- Whether to also delete assets belonging to given albums. Defaults to `false`. (**iOS only**)
 
 #### Returns
 
 Returns a promise resolving to `true` if the albums were successfully deleted from the library.
 
-### `Expo.MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)`
+### `MediaLibrary.addAssetsToAlbumAsync(assets, album, copyAssets)`
 
 Adds array of assets to the album.
 
@@ -141,15 +149,15 @@ In case they're copied you should keep in mind that `getAssetsAsync` will return
 
 #### Arguments
 
--   **assets : `array`** -- Array of [assets](#assets) to add.
+-   **assets (_array_)** -- Array of [assets](#assets) to add.
 -   **album (_string_ | _Album_)** -- [Album](#album) or its ID, to which the assets will be added.
--   **copyAssets : `boolean`** -- Whether to copy assets to the new album instead of move them. Defaults to `true`. (**Android only**)
+-   **copyAssets (_boolean_)** -- Whether to copy assets to the new album instead of move them. Defaults to `true`. (**Android only**)
 
 #### Returns
 
 Resolves to `true` if the assets were successfully added to the album.
 
-### `Expo.MediaLibrary.removeAssetsFromAlbumAsync(assets, album)`
+### `MediaLibrary.removeAssetsFromAlbumAsync(assets, album)`
 
 Removes given assets from album.
 
@@ -157,14 +165,14 @@ On Android, album will be automatically deleted if there are no more assets insi
 
 #### Arguments
 
--   **assets : `array`** -- Array of [assets](#assets) to remove from album.
+-   **assets (_array_)** -- Array of [assets](#assets) to remove from album.
 -   **album (_string_ | _Album_)** -- [Album](#album) or its ID, from which the assets will be removed.
 
 #### Returns
 
 Returns `true` if the assets were successfully removed from the album.
 
-### `Expo.MediaLibrary.getMomentsAsync()`
+### `MediaLibrary.getMomentsAsync()`
 
 **Available on iOS only.** Fetches a list of moments, which is a group of assets taken around the same place and time.
 
@@ -173,21 +181,21 @@ Returns `true` if the assets were successfully removed from the album.
 An array of [albums](#album) whose type is `moment`.
 
 
-### `Expo.MediaLibrary.addListener(listener)`
+### `MediaLibrary.addListener(listener)`
 
 Subscribes for updates in user's media library.
 
 #### Arguments
 
--   **listener : `function`** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
-    -   **insertedAssets : `array`** -- Array of [assets](#assets) that have been inserted to the library.
-    -   **deletedAssets : `array`** -- Array of [assets](#assets) that have been deleted from the library.
+-   **listener (_function_)** -- A callback that is called when any assets have been inserted or deleted from the library. **On Android** it's invoked with an empty object. **On iOS** it's invoked with an object that contains following keys:
+    -   **insertedAssets (_array_)** -- Array of [assets](#assets) that have been inserted to the library.
+    -   **deletedAssets (_array_)** -- Array of [assets](#assets) that have been deleted from the library.
 
 #### Returns
 
 An EventSubscription object that you can call `remove()` on when you would like to unsubscribe the listener.
 
-### `Expo.MediaLibrary.removeAllListeners()`
+### `MediaLibrary.removeAllListeners()`
 
 Removes all listeners.
 
@@ -233,7 +241,7 @@ Removes all listeners.
 
 ## Constants
 
-### `Expo.MediaLibrary.MediaType`
+### `MediaLibrary.MediaType`
 
 Possible media types:
 - `MediaType.photo`
@@ -241,7 +249,7 @@ Possible media types:
 - `MediaType.audio`
 - `MediaType.unknown`
 
-### `Expo.MediaLibrary.SortBy`
+### `MediaLibrary.SortBy`
 
 Supported keys that can be used to sort `getAssetsAsync` results:
 - `SortBy.default`
@@ -252,3 +260,4 @@ Supported keys that can be used to sort `getAssetsAsync` results:
 - `SortBy.width`
 - `SortBy.height`
 - `SortBy.duration`
+

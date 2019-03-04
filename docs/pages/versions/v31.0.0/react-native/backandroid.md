@@ -3,10 +3,6 @@ id: backandroid
 title: BackAndroid
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Deprecated. Use BackHandler instead.
 
 ### Methods

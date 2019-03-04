@@ -5,10 +5,10 @@ import android.net.Uri;
 
 import abi28_0_0.com.facebook.react.bridge.ReactContext;
 import abi28_0_0.com.facebook.react.modules.network.NetworkingModule;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.upstream.HttpDataSource;
+import expolib_v1.com.google.android.exoplayer2.upstream.DataSource;
+import expolib_v1.com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import expolib_v1.com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import expolib_v1.com.google.android.exoplayer2.upstream.HttpDataSource;
 
 import java.net.URI;
 import java.util.List;

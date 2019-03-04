@@ -1,7 +1,6 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -I nixpkgs=../../nix --packages expo-cli git yarn -i bash
-
-set -eo pipefail
+#!nix-shell -I nixpkgs=../../nix --packages direnv procps git yarn -i "direnv exec . bash"
+set -euo pipefail
 
 branch="$(git rev-parse --abbrev-ref HEAD)"
 # replace all the uppercase letters with lowercased equivalents
@@ -23,5 +22,5 @@ export EXPO_DEBUG=true
 export EXPO_SKIP_MANIFEST_VALIDATION_TOKEN=true
 export EXPO_NO_DOCTOR=true
 
-expo login --username "$EXPO_CI_ACCOUNT_USERNAME" --password "$EXPO_CI_ACCOUNT_PASSWORD"
-expo publish --release-channel "$channel"
+yarn run expo login --username "$EXPO_CI_ACCOUNT_USERNAME" --password "$EXPO_CI_ACCOUNT_PASSWORD"
+yarn run expo publish --release-channel "$channel"

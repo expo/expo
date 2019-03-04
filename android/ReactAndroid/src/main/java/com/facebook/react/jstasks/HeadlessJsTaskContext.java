@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import android.os.Handler;
 import android.util.SparseArray;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.LifecycleState;

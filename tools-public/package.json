@@ -19,6 +19,7 @@
     "@expo/json-file": "^8.0.0",
     "@expo/mux": "^1.0.6",
     "@exponent/spawn-async": "^1.2.4",
+    "expo-cli": "^2.6.14",
     "fs-extra": "^4.0.2",
     "globby": "^6.1.0",
     "gulp": "^4.0.0",
@@ -34,7 +35,7 @@
     "sharp": "^0.21.0",
     "shelljs": "^0.7.0",
     "uuid": "^3.1.0",
-    "xdl": "52.1.2-alpha.1"
+    "xdl": "53.1.2"
   },
   "devDependencies": {
     "jest": "^23.5.0"

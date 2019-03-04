@@ -2,10 +2,6 @@
 title: Additional Resources
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 The following resources are useful for learning Expo and some of the projects that it depends on.
 
 ## Expo Blog
@@ -30,7 +26,6 @@ Cross-Platform Mobile Development](https://web.stanford.edu/class/cs47si/) (free
 - [React Native Fundamentals](https://egghead.io/courses/react-native-fundamentals) (video course on Egghead.io)
 - [Animating React Native UI Elements](https://egghead.io/courses/animate-react-native-ui-elements) (video course on Egghead.io)
 - [Learning React Native, 2nd Edition](http://shop.oreilly.com/product/0636920085270.do) (book)
-- [Chat Tutorial by Jani Eväkallio](https://github.com/jevakallio/react-native-chat-tutorial)
 
 ## Talks
 

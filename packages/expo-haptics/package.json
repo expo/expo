@@ -1,0 +1,39 @@
+{
+  "name": "expo-haptics",
+  "version": "3.0.0",
+  "description": "Provides access to the system's haptics engine on iOS and vibration effects on Android.",
+  "main": "build/Haptics.js",
+  "types": "build/Haptics.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-haptics",
+    "haptics"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/haptics/",
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  }
+}

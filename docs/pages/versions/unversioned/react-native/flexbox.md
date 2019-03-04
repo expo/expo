@@ -3,10 +3,6 @@ id: flexbox
 title: Layout with Flexbox
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A component can specify the layout of its children using the flexbox algorithm. Flexbox is designed to provide a consistent layout on different screen sizes.
 
 You will normally use a combination of `flexDirection`, `alignItems`, and `justifyContent` to achieve the right layout.

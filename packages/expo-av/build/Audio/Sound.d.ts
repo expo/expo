@@ -1,5 +1,6 @@
 import { EventEmitter } from 'expo-core';
 import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from '../AV';
+import { PitchCorrectionQuality } from '../Audio';
 declare type AudioInstance = number | HTMLMediaElement | null;
 export declare class Sound implements Playback {
     _loaded: boolean;
@@ -51,7 +52,7 @@ export declare class Sound implements Playback {
         toleranceMillisBefore?: number;
         toleranceMillisAfter?: number;
     }) => Promise<PlaybackStatus>;
-    setRateAsync: (rate: number, shouldCorrectPitch: boolean) => Promise<PlaybackStatus>;
+    setRateAsync: (rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality) => Promise<PlaybackStatus>;
     setVolumeAsync: (volume: number) => Promise<PlaybackStatus>;
     setIsMutedAsync: (isMuted: boolean) => Promise<PlaybackStatus>;
     setIsLoopingAsync: (isLooping: boolean) => Promise<PlaybackStatus>;

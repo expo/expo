@@ -3,10 +3,6 @@ id: datepickerandroid
 title: DatePickerAndroid
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Opens the standard Android date picker dialog.
 
 ### Example

@@ -3,19 +3,15 @@ id: picker
 title: Picker
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Renders the native picker component on iOS and Android. Example:
 
 
 ```javascript
 
     <Picker
-      selectedValue=${"{"}this.state.language${"}"}
-      style=${"{"}${"{"} height: 50, width: 100 ${"}"}${"}"}
-      onValueChange=${"{"}(itemValue, itemIndex) => this.setState(${"{"}language: itemValue${"}"})${"}"}>
+      selectedValue={this.state.language}
+      style={{ height: 50, width: 100 }}
+      onValueChange={(itemValue, itemIndex) => this.setState({language: itemValue})}>
       <Picker.Item label="Java" value="java" />
       <Picker.Item label="JavaScript" value="js" />
     </Picker>

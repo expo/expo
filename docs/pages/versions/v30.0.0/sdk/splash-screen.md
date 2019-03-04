@@ -2,10 +2,6 @@
 title: SplashScreen
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A module that tells Expo to keep the splash screen visible until you make it hide.
 
 This is useful to let you create an impression of a pure React component splash screen. You can combine it with [AppLoading](../app-loading/). Read more about [creating a splash screen.](../../guides/splash-screens/)
@@ -59,7 +55,7 @@ export default class App extends React.Component {
         <Image source={require('./assets/images/expo-icon.png')} />
         <Image source={require('./assets/images/slack-icon.png')} />
       </View>
-    );    
+    );
   }
 
   _cacheSplashResourcesAsync = async () => {
@@ -117,7 +113,7 @@ export default class App extends React.Component {
         <Image source={require('./assets/images/expo-icon.png')} />
         <Image source={require('./assets/images/slack-icon.png')} />
       </View>
-    );    
+    );
   }
 
   _cacheSplashResourcesAsync = async () => {
@@ -142,7 +138,7 @@ export default class App extends React.Component {
 }
 ```
 
-## Example without any flickering between SplashScreen and it's later continueation
+## Example without any flickering between SplashScreen and it's later continuation
 
 ```javascript
 import React from 'react';
@@ -167,7 +163,7 @@ export default class App extends React.Component {
     if (!this.state.areReasourcesReady) {
       return null;
     }
-    
+
     return (
       <View style={{ flex: 1 }}>
         <Image
@@ -177,7 +173,7 @@ export default class App extends React.Component {
             console.log('Image#onLoadEnd: hiding SplashScreen');
             SplashScreen.hide(); // Image is fully presented, instruct SplashScreen to hide
           }}
-          fadeDuration={0} // we need to adjust Android devices (https://facebook.github.io/react-native/docs/image#fadeduration) fadeDuration prop to `0` as it's default value is `300` 
+          fadeDuration={0} // we need to adjust Android devices (https://facebook.github.io/react-native/docs/image#fadeduration) fadeDuration prop to `0` as it's default value is `300`
         />
       </View>
     );
@@ -192,3 +188,4 @@ export default class App extends React.Component {
   }
 }
 ```
+

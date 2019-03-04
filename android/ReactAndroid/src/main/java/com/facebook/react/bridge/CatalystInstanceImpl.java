@@ -11,7 +11,7 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import com.facebook.common.logging.FLog;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.MessageQueueThread;

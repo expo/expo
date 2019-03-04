@@ -2,12 +2,18 @@
 title: BackgroundFetch
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks. This module uses [TaskManager](../task-manager) Native API under the hood.
 In order to use `BackgroundFetch` API in standalone and detached apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration-for-standalone-apps) for more details.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+
+## API
+
+```js
+import { BackgroundFetch } from 'expo';
+```
 
 ### `BackgroundFetch.getStatusAsync()`
 
@@ -26,12 +32,12 @@ Registers background fetch task with given name. Registered tasks are saved in p
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task) for more details.
--   **options : `object`** -- An object of options:
-    -   **minimumInterval : `number`** -- Inexact interval in seconds between subsequent repeats of the background fetch alarm. The final interval may differ from the specified one to minimize wakeups and battery usage.
+-   **taskName (_string_)** -- Name of the task to register. The task needs to be defined first - see [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task) for more details.
+-   **options (_object_)** -- An object of options:
+    -   **minimumInterval (_number_)** -- Inexact interval in seconds between subsequent repeats of the background fetch alarm. The final interval may differ from the specified one to minimize wakeups and battery usage.
     On Android it defaults to **15 minutes**. On iOS it calls [BackgroundFetch.setMinimumIntervalAsync](#backgroundfetchsetminimumintervalasyncminimuminterval) behind the scenes and the default value is the smallest fetch interval supported by the system (**10-15 minutes**).
-    -   **stopOnTerminate : `boolean`** -- Whether to stop receiving background fetch events after user terminates the app. Defaults to `true`. (**Android only**)
-    -   **startOnBoot : `boolean`** -- Whether to restart background fetch events when the device has finished booting. Defaults to `false`. (**Android only**)
+    -   **stopOnTerminate (_boolean_)** -- Whether to stop receiving background fetch events after user terminates the app. Defaults to `true`. (**Android only**)
+    -   **startOnBoot (_boolean_)** -- Whether to restart background fetch events when the device has finished booting. Defaults to `false`. (**Android only**)
 
 #### Returns
 
@@ -65,7 +71,7 @@ Unregisters background fetch task, so the application will no longer be executin
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task to unregister.
+-   **taskName (_string_)** -- Name of the task to unregister.
 
 #### Returns
 
@@ -81,8 +87,9 @@ Sets the minimum number of seconds that must elapse before another background fe
 
 #### Arguments
 
--   **minimumInterval : `number`** -- Number of seconds that must elapse before another background fetch can be called.
+-   **minimumInterval (_number_)** -- Number of seconds that must elapse before another background fetch can be called.
 
 #### Returns
 
 A promise resolving once the minimum interval is set.
+

@@ -3,10 +3,6 @@ id: touchablenativefeedback
 title: TouchableNativeFeedback
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A wrapper for making views respond properly to touches (Android only). On Android this component uses native state drawable to display touch feedback.
 
 At the moment it only supports having a single View instance as a child node, as it's implemented by replacing that View with another instance of RCTView node with some additional properties set.

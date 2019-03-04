@@ -11,21 +11,12 @@ class ExpendencyPlugin implements Plugin<Project> {
                 }
             }
         }
-        // Depend on 'expo_flutter_adapter' except if the project depends on 'expo-core'
-        if (new File(project.rootProject.projectDir.parentFile, 'pubspec.yaml').exists() && 
-            project.name != 'expo_permissions_interface') {
-            project.dependencies {
-                implementation project.project(':expo_flutter_adapter')
-            }
-        }
+        
         project.ext.expendency = {
             String dep, Closure closure = null ->
                 Object dependency = null;
 
-                if (new File(project.rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
-                    // Parent directory of the android project has pubspec.yaml -- probably Flutter
-                    dependency = project.rootProject.findProject(':' + dep.replace('-', '_'))
-                } else if (new File(project.rootProject.projectDir.parentFile, 'package.json').exists()) {
+                if (new File(project.rootProject.projectDir.parentFile, 'package.json').exists()) {
                     // Parent directory of the android project has package.json -- probably React Native
                     dependency = project.project(":$dep")
                 } else {

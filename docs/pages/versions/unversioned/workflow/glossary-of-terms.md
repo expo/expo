@@ -2,17 +2,13 @@
 title: Glossary of terms
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### app.json
 
 `app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json"](../configuration/)
 
 ### create-react-native-app
 
-The React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). Gets you set up and creating a React Native app with no build configuration required, and it uses Expo to accomplish this. [Read more in "Expo & Create React Native App"](../create-react-native-app/).
+Formerly the React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). This has since been replaced with `expo-cli`.
 
 ### detach
 
@@ -35,7 +31,7 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 ### Expo CLI
 
-The command-line tool for working with Expo. [Read more](../exp-cli/).
+The command-line tool for working with Expo. [Read more](../expo-cli/).
 
 ### Expo Client
 

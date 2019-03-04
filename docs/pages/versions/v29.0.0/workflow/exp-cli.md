@@ -2,10 +2,6 @@
 title: exp Command-Line Interface
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 In addition to XDE we also have a CLI `exp` if you prefer to work on the command line or want to use Expo in tests or continuous integration (CI).
 
 ## Installation

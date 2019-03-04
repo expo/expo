@@ -2,12 +2,12 @@
 title: Localization
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 You can use this module to Localize your app, and access the locale data on the native device.
 Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
 
 ## Usage
 
@@ -40,6 +40,14 @@ export default class LitView extends React.Component {
 ```
 
 ## API
+
+```js
+// in managed apps:
+import { Localization } from 'expo';
+
+// in bare apps:
+import * as Localization from 'expo-local-authentication';
+```
 
 ### Constants
 
@@ -95,3 +103,4 @@ type NativeEvent = {
 
 const { locale } = await Localization.getLocalizationAsync();
 ```
+

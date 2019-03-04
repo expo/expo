@@ -1,7 +1,8 @@
 const {
   ROOT,
+  GROUPS,
   INTRODUCTION,
-  WORKING_WITH_EXPO,
+  FUNDAMENTALS,
   GUIDES,
   DISTRIBUTION,
   EXPOKIT,
@@ -28,7 +29,7 @@ const sections = [
   { name: 'Guides', reference: GUIDES },
   { name: 'Distributing Your App', reference: DISTRIBUTION },
   { name: 'ExpoKit', reference: EXPOKIT },
-  { name: 'Working with Expo', reference: WORKING_WITH_EXPO },
+  { name: 'Fundamentals', reference: FUNDAMENTALS },
   { name: 'React Native', reference: REACT_NATIVE },
   // { name: 'React Native Basics', reference: REACT_NATIVE_BASICS, },
   // { name: 'React Native Guides', reference: REACT_NATIVE_GUIDES, },
@@ -51,9 +52,46 @@ const sortNav = nav => {
   return nav;
 };
 
+// Yikes, this groups together multiple sections under one heading
+const groupNav = nav => {
+  let sections = [];
+  let groupIndex = {};
+  nav.forEach(section => {
+    if (section.name === 'Expo SDK') {
+      let overview;
+      section.posts.forEach(post => {
+        if (post.name === 'Overview') {
+          overview = post;
+        }
+      });
+      if (overview) {
+        section.posts.splice(section.posts.indexOf(overview), 1);
+        section.posts.unshift(overview);
+      }
+    }
+    let group = GROUPS[section.name];
+    if (group) {
+      let existingGroupIndex = groupIndex[group];
+      if (existingGroupIndex) {
+        sections[existingGroupIndex].children.push(section);
+      } else {
+        groupIndex[group] = sections.length;
+        sections.push({
+          name: group,
+          children: [section],
+        });
+      }
+    } else {
+      sections.push(section);
+    }
+  });
+
+  return sections;
+};
+
 const sortedNavigation = Object.assign(
   ...Object.entries(navigation).map(([version, versionNavigation]) => ({
-    [version]: sortNav(versionNavigation),
+    [version]: groupNav(sortNav(versionNavigation)),
   }))
 );
 

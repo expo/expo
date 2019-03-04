@@ -2,10 +2,6 @@
 title: Configuring StatusBar
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo and React Native provide APIs and configuration options for Android to configure the status bar for your app. These can be used to control the appearance of the status bar in your app.
 
 ## Configuration (Android)
@@ -57,7 +53,7 @@ The `StatusBar` API allows you to dynamically control the appearance of the stat
 
 ## Place an empty `View` on top of your screen
 
-You can place an empty `View` on top of your screen with a background color to act as a status bar, or set a top padding. You can get the height of the status bar with `Expo.Constants.statusBarHeight`. Though this should be your last resort since this doesn't work very well when status bar's height changes.
+You can place an empty `View` on top of your screen with a background color to act as a status bar, or set a top padding. You can get the height of the status bar with `Constants.statusBarHeight`. Though this should be your last resort since this doesn't work very well when status bar's height changes.
 
 Example:
 
