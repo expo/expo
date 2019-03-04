@@ -43,7 +43,7 @@ api project(':expo-local-authentication')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.localauthentication.LocalAuthenticationPackage;
+import expo.modules.localauthentication.LocalAuthenticationPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

@@ -43,7 +43,7 @@ api project(':expo-background-fetch')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.backgroundfetch.BackgroundFetchPackage;
+import expo.modules.backgroundfetch.BackgroundFetchPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

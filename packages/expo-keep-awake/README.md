@@ -43,7 +43,7 @@ api project(':expo-keep-awake')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.keepawake.KeepAwakePackage;
+import expo.modules.keepawake.KeepAwakePackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

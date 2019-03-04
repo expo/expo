@@ -47,7 +47,7 @@ api project(':expo-gl')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.gl.GLPackage;
+import expo.modules.gl.GLPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

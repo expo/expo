@@ -43,7 +43,7 @@ api project(':expo-payments-stripe')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.payments.stripe.StripePackage;
+import expo.modules.payments.stripe.StripePackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

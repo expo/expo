@@ -43,7 +43,7 @@ api project(':expo-barcode-scanner')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.barcodescanner.BarCodeScannerPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

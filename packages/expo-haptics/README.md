@@ -43,7 +43,7 @@ api project(':expo-haptics')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.haptics.HapticsPackage;
+import expo.modules.haptics.HapticsPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

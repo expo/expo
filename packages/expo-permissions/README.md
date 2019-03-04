@@ -43,7 +43,7 @@ api project(':expo-permissions')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.permissions.PermissionsPackage;
+import expo.modules.permissions.PermissionsPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
