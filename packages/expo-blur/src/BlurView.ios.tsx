@@ -30,7 +30,6 @@ export default class BlurView extends React.Component<Props> {
   };
 
   setNativeProps = nativeProps => {
-    console.log('setNativeProps', nativeProps);
     if (this._root) {
       NativeModulesProxy.ExpoBlurViewManager.updateProps(nativeProps, findNodeHandle(this._root));
     }

@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebasePerformance.js","sourceRoot":"","sources":["../../src/performance/FirebasePerformance.ts"],"names":[],"mappings":"AAAA,OAAO,2BAA2B,CAAC","sourcesContent":["import 'expo-firebase-performance';\n"]}
