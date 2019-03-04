@@ -43,7 +43,7 @@ api project(':expo-secure-store')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.securestore.SecureStorePackage;
+import expo.modules.securestore.SecureStorePackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

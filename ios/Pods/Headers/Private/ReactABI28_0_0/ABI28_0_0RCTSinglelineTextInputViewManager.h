@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI28_0_0/Libraries/Text/TextInput/Singleline/ABI28_0_0RCTSinglelineTextInputViewManager.h

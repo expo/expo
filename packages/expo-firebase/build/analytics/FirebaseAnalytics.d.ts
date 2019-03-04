@@ -1,0 +1,1 @@
+import 'expo-firebase-analytics';

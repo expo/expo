@@ -4,6 +4,10 @@ title: BarCodeScanner
 
 A React component that renders a viewfinder for the device's either front or back camera viewfinder and will scan bar codes that show up in the frame.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+
 ## Supported formats
 
 | Bar code format | iOS   | Android |
@@ -30,10 +34,6 @@ A React component that renders a viewfinder for the device's either front or bac
 | qr              | Yes   | Yes     |
 
 * sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
-
-## Installation
-
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
 
 ## Usage
 

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI27_0_0/Expo/Core/Api/MediaLibrary/ABI27_0_0EXMediaLibrary.h

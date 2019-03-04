@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseCrashlytics.js","sourceRoot":"","sources":["../../src/crashlytics/FirebaseCrashlytics.ts"],"names":[],"mappings":"AAAA,OAAO,2BAA2B,CAAC","sourcesContent":["import 'expo-firebase-crashlytics';\n"]}

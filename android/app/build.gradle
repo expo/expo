@@ -42,10 +42,6 @@ android {
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
     ]
-
-    // required by expo-blur
-    renderscriptTargetApi 23
-    renderscriptSupportModeEnabled true
   }
   dexOptions {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
@@ -258,7 +254,6 @@ dependencies {
   api 'host.exp.exponent:expo-analytics-segment:3.0.0'
   api 'host.exp.exponent:expo-barcode-scanner-interface:3.0.0'
   api 'host.exp.exponent:expo-barcode-scanner:3.0.0'
-  api 'host.exp.exponent:expo-blur:1.0.0'
   api 'host.exp.exponent:expo-brightness:3.0.0'
   api 'host.exp.exponent:expo-calendar:3.0.0'
   api 'host.exp.exponent:expo-camera-interface:3.0.0'
@@ -273,6 +268,7 @@ dependencies {
   api 'host.exp.exponent:expo-google-sign-in:3.0.0'
   api 'host.exp.exponent:expo-haptics:3.0.0'
   api 'host.exp.exponent:expo-image-manipulator:3.0.0'
+  api 'host.exp.exponent:expo-image-picker:3.0.0'
   api 'host.exp.exponent:expo-intent-launcher:3.0.0'
   api 'host.exp.exponent:expo-local-authentication:3.0.0'
   api 'host.exp.exponent:expo-localization:3.0.0'

@@ -1,0 +1,1 @@
+../../../Google-Maps-iOS-Utils/src/Geometry/Model/GMULineString.h

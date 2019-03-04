@@ -66,4 +66,5 @@ dependencies {
   expendency "expo-core"
   expendency "expo-constants-interface"
   implementation 'com.segment.analytics.android:analytics:4.3.0'
+  implementation 'com.segment.analytics.android.integrations:firebase:1.2.0'
 }

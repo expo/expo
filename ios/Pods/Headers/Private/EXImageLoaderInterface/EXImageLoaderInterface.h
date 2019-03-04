@@ -1,0 +1,1 @@
+../../../../../packages/expo-image-loader-interface/ios/EXImageLoaderInterface/EXImageLoaderInterface.h

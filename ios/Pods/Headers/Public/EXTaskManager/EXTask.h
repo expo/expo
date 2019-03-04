@@ -1,0 +1,1 @@
+../../../../../packages/expo-task-manager/ios/EXTaskManager/EXTask.h
