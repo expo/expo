@@ -13,11 +13,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 public class Serialization {
-
-  private static String join(List<String> msgs) {
-    return msgs == null || msgs.size() == 0 ? "" : msgs.size() == 1 ? msgs.get(0) : msgs.subList(0, msgs.size() - 1).toString().replaceAll("^.|.$", "") + " and " + msgs.get(msgs.size() - 1);
-  }
-
+  
   static Map<String, String> jsonToStrings(Map<String, Object> map) {
     Map<String, String> newMap = new HashMap<>();
     for (String strKey : map.keySet()) {
@@ -27,7 +23,11 @@ public class Serialization {
   }
 
   static String scopesToString(ArrayList<String> scopes) {
-    return join(scopes);
+    StringBuilder stringBuilder = new StringBuilder();
+    for (int i = 0; i < scopes.size(); i++) {
+      stringBuilder.append(scopes.get(i)).append(" ");
+    }
+    return stringBuilder.toString().trim();
   }
 
   private static String unixTimeToString(Long unixTime) {
