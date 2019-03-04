@@ -78,7 +78,7 @@ api project(':expo-web-browser')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.webbrowser.WebBrowserPackage;
+import expo.modules.webbrowser.WebBrowserPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
