@@ -43,7 +43,7 @@ api project(':expo-media-library')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.medialibrary.MediaLibraryPackage;
+import expo.modules.medialibrary.MediaLibraryPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

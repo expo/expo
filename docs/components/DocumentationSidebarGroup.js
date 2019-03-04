@@ -3,6 +3,7 @@ import NextLink from 'next/link';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
+import stripVersionFromPath from '~/common/stripVersionFromPath';
 
 const STYLES_TITLE = css`
   display: block;
@@ -100,7 +101,7 @@ export default class DocumentationSidebarGroup extends React.Component {
 
   isChildRouteActive() {
     // Special case for "Get Started"
-    if (this.props.info.name === 'Get Started') {
+    if (this.props.info.name === 'Getting to know Expo') {
       const pathname = this.props.url.pathname;
       const asPath = this.props.asPath;
       if (this.props.asPath.match(/\/versions\/[\w\.]+\/$/)) {
@@ -111,23 +112,23 @@ export default class DocumentationSidebarGroup extends React.Component {
     let result = false;
 
     let sections = this.props.info.children;
-    let posts = [];
 
     const isSectionActive = section => {
-      const linkUrl = section.as || section.href;
-      const pathname = this.props.url.pathname;
-      const asPath = this.props.asPath;
+      const linkUrl = stripVersionFromPath(section.as || section.href);
+      const pathname = stripVersionFromPath(this.props.url.pathname);
+      const asPath = stripVersionFromPath(this.props.asPath);
 
       if (linkUrl === pathname || linkUrl === asPath) {
         result = true;
       }
     };
 
+
+    let posts = [];
     sections.forEach(section => {
       posts = [...posts, ...section.posts];
     });
 
-    sections.forEach(isSectionActive);
     posts.forEach(isSectionActive);
     return result;
   }

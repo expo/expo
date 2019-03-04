@@ -4,23 +4,23 @@ export declare type ImageResult = {
     height: number;
     base64?: string;
 };
-declare type ActionResize = {
+export declare type ActionResize = {
     resize: {
         width?: number;
         height?: number;
     };
 };
-declare type ActionRotate = {
+export declare type ActionRotate = {
     rotate: number;
 };
 export declare enum FlipType {
     Vertical = "vertical",
-    horizontal = "horizontal"
+    Horizontal = "horizontal"
 }
-declare type ActionFlip = {
+export declare type ActionFlip = {
     flip: FlipType;
 };
-declare type ActionCrop = {
+export declare type ActionCrop = {
     crop: {
         originX: number;
         originY: number;
@@ -31,11 +31,11 @@ declare type ActionCrop = {
 export declare type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop;
 export declare enum SaveFormat {
     JPEG = "jpeg",
-    PNG = "png"
+    PNG = "png",
+    WEBP = "webp"
 }
 export interface SaveOptions {
     base64?: boolean;
     compress?: number;
     format?: SaveFormat;
 }
-export {};

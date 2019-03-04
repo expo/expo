@@ -14,7 +14,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ```javascript
 import React from 'react';
 import { Text } from 'react-native';
-import { Localization } from 'expo-localization';
+import  * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
 const en = {
   foo: 'Foo',
@@ -46,7 +46,7 @@ export default class LitView extends React.Component {
 import { Localization } from 'expo';
 
 // in bare apps:
-import * as Localization from 'expo-local-authentication';
+import * as Localization from 'expo-localization';
 ```
 
 ### Constants

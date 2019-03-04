@@ -109,7 +109,7 @@ export default class ImageManipulatorScreen extends React.Component {
   };
 
   _rotate = async deg => {
-    await this._manipulate([{ rotate: deg }]);
+    await this._manipulate([{ rotate: deg }], { format: ImageManipulator.SaveFormat.PNG });
   };
 
   _resize = async size => {
@@ -120,8 +120,8 @@ export default class ImageManipulatorScreen extends React.Component {
     await this._manipulate([{ flip: options }]);
   };
 
-  _compress = async value => {
-    await this._manipulate([], { compress: 0.1 });
+  _compress = async compress => {
+    await this._manipulate([], { compress });
   };
 
   _crop = async () => {

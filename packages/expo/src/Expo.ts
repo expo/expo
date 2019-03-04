@@ -15,7 +15,7 @@ import * as Facebook from 'expo-facebook';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
 import { Audio, Video } from 'expo-av';
-import { BlurView, VibrancyView } from 'expo-blur';
+import { BlurView } from 'expo-blur';
 import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
@@ -102,30 +102,19 @@ export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 export { Audio, Video };
-export { BlurView, VibrancyView };
+export { BlurView };
 export { LinearGradient } from 'expo-linear-gradient';
 export { FacebookAds };
 export { default as AppLoading } from './launch/AppLoading';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
-
+export { default as Pedometer } from './Pedometer';
 // polyfill navigator.geolocation
 Location.installWebGeolocationPolyfill();
 
 // @ts-ignore
 Object.defineProperties(exports, {
-  // TODO: Unify the Pedometer module across platforms so we can export it normally
-  Pedometer: {
-    enumerable: true,
-    get() {
-      if (Platform.OS === 'android') {
-        return require('./Pedometer');
-      } else {
-        return require('expo-sensors').Pedometer;
-      }
-    },
-  },
   Haptic: {
     enumerable: false,
     get() {

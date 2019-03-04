@@ -145,7 +145,6 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-background-fetch:3.0.0'
   compileOnly 'host.exp.exponent:expo-barcode-scanner:3.0.0'
   compileOnly 'host.exp.exponent:expo-barcode-scanner-interface:3.0.0'
-  compileOnly 'host.exp.exponent:expo-blur:3.0.0'
   compileOnly 'host.exp.exponent:expo-brightness:3.0.0'
   compileOnly 'host.exp.exponent:expo-calendar:3.0.0'
   compileOnly 'host.exp.exponent:expo-camera:3.0.0'
@@ -209,7 +208,6 @@ dependencies {
   api project(':expo-background-fetch')
   api project(':expo-barcode-scanner')
   api project(':expo-barcode-scanner-interface')
-  api project(':expo-blur')
   api project(':expo-brightness')
   api project(':expo-calendar')
   api project(':expo-camera')
