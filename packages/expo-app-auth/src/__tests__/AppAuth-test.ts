@@ -21,9 +21,7 @@ describe('authAsync', () => {
   });
 
   it(`rejects invalid IDs`, async () => {
-    await expect(AppAuth.authAsync(config)).rejects.toThrowError(
-      'Config error: clientId must be a string'
-    );
+    await expect(AppAuth.authAsync(config)).rejects.toThrowErrorMatchingSnapshot();
   });
 });
 
@@ -44,22 +42,16 @@ describe('refreshAsync', () => {
   });
 
   it(`rejects invalid IDs`, async () => {
-    await expect(AppAuth.refreshAsync(config, refreshToken)).rejects.toThrowError(
-      'Config error: clientId must be a string'
-    );
+    await expect(AppAuth.refreshAsync(config, refreshToken)).rejects.toThrowErrorMatchingSnapshot();
   });
 });
 
 describe('revokeAsync', () => {
   it(`rejects when a token isn't provided`, async () => {
-    await expect(AppAuth.revokeAsync(config, {} as any)).rejects.toThrowError(
-      'Please include the token to revoke'
-    );
+    await expect(AppAuth.revokeAsync(config, {} as any)).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it(`rejects invalid IDs`, async () => {
-    await expect(AppAuth.revokeAsync(config, { token: refreshToken })).rejects.toThrowError(
-      'Config error: clientId must be a string'
-    );
+    await expect(AppAuth.revokeAsync(config, { token: refreshToken })).rejects.toThrowErrorMatchingSnapshot();
   });
 });
