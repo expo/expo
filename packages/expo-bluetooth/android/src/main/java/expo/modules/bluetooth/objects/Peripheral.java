@@ -438,15 +438,15 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     }
 
     if (mDidDiscoverServicesBlock != null) {
-      mDidDiscoverServicesBlock.reject("ERR_BLE_CANCELLED", "This operation was cancelled because the device disconnected.");
+      mDidDiscoverServicesBlock.reject("ERR_BLE_CANCELLED", "The service discovery operation was cancelled because the device: " + getID() + " disconnected.");
       mDidDiscoverServicesBlock = null;
     }
     if (mRSSIBlock != null) {
-      mRSSIBlock.reject("ERR_BLE_CANCELLED", "This operation was cancelled because the device disconnected.");
+      mRSSIBlock.reject("ERR_BLE_CANCELLED", "RSSI read operation was cancelled because the device: " + getID() + " disconnected.");
       mRSSIBlock = null;
     }
     if (mMTUBlock != null) {
-      mMTUBlock.reject("ERR_BLE_CANCELLED", "This operation was cancelled because the device disconnected.");
+      mMTUBlock.reject("ERR_BLE_CANCELLED", "MTU request operation was cancelled because the device: " + getID() + " disconnected.");
       mMTUBlock = null;
     }
 
@@ -458,10 +458,11 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   private void rejectAllPromises(PromiseListHashMap<String, ArrayList<Promise>> promiseSet) {
+    String deviceId = getID();
     for (String id : promiseSet.keySet()) {
       List<Promise> promises = promiseSet.get(id);
       for (Promise promise : promises) {
-        promise.reject("ERR_BLE_CANCELLED", "This operation was cancelled because the device disconnected.");
+        promise.reject("ERR_BLE_CANCELLED", "The operation for task " + id + " was cancelled because the device: " + deviceId + " disconnected.");
       }
     }
   }
