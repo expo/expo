@@ -14,13 +14,15 @@ public class AuthTask {
       mTag = tag;
       return true;
     } else {
-      promise.reject("ERR_APP_AUTH_CONCURRENT_TASK", "Cannot start a new task while another task is currently in progress: " + mTag);
+      promise.reject(AppAuthConstants.Error.ConcurrentTask, "Cannot start a new task while another task is currently in progress: " + mTag);
       return false;
     }
   }
 
   public void resolve(Object value) {
-    if (mPromise == null) return;
+    if (mPromise == null) {
+      return;
+    }
     mPromise.resolve(value);
     clear();
   }
@@ -30,12 +32,14 @@ public class AuthTask {
       AuthorizationException authorizationException = (AuthorizationException) e;
       this.reject(String.valueOf(authorizationException.code), authorizationException.getLocalizedMessage());
     } else {
-      this.reject("ERR_APP_AUTH", e.getLocalizedMessage());
+      this.reject(AppAuthConstants.Error.Default, e.getLocalizedMessage());
     }
   }
 
   public void reject(String code, String message) {
-    if (mPromise == null) return;
+    if (mPromise == null) {
+      return;
+    }
     mPromise.reject(code, "ExpoAppAuth." + mTag + ": " + message);
     clear();
   }

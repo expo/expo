@@ -122,7 +122,14 @@ export async function revokeAsync(
       body,
     });
 
-    const data = await results.json();
+    return results;
+  } catch (error) {
+    throw new CodedError('ERR_APP_AUTH_REVOKE_FAILED', error.message);
+  }
+}
+
+async function parseAuthRevocationResults(results: Response): Promise<any> {
+  const data = await results.json();
     const token = results.headers['update-client-auth'];
     // the token has been revoked successfully or the client submitted an invalid token.
     if (results.status === 200) {
@@ -141,9 +148,6 @@ export async function revokeAsync(
       // Error
       return { type: 'error', status: results.status, data, token };
     }
-  } catch (error) {
-    throw new CodedError('ERR_APP_AUTH_REVOKE_FAILED', error.message);
-  }
 }
 
 function parseRetryTime(value: string): number {
