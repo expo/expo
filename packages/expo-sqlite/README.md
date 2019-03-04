@@ -24,7 +24,7 @@ npm install expo-sqlite
 Add the dependency to your `Podfile` and then run `pod install`.
 
 ```ruby
-pod 'EXSQlite', path: '../node_modules/expo-sqlite/ios'
+pod 'EXSQLite', path: '../node_modules/expo-sqlite/ios'
 ```
 
 ### Configure for Android
