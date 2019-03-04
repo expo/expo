@@ -19,9 +19,6 @@ import expo.modules.bluetooth.helpers.UUIDHelper;
 
 public class Serialize {
 
-  private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
-  private static final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-
   public static ArrayList<UUID> UUIDList_JSONToNative(ArrayList<String> input) {
     ArrayList<UUID> output = new ArrayList<>();
 

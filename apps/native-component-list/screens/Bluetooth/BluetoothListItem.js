@@ -39,15 +39,17 @@ export default class BluetoothListItem extends React.PureComponent {
                 </Text>
               ))}
           </View>
-          {onPress && !renderAction && (
-            <Ionicons size={24} color={Colors.tabIconDefault} name="ios-arrow-forward" />
-          )}
+          {onPress && !renderAction && <ArrowIcon />}
           {renderAction && renderAction()}
         </View>
       </TouchableHighlight>
     );
   }
 }
+
+const ArrowIcon = () => (
+  <Ionicons size={24} color={Colors.tabIconDefault} name="ios-arrow-forward" />
+);
 
 const styles = StyleSheet.create({
   container: {

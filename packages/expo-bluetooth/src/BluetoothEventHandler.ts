@@ -20,7 +20,11 @@ export function firePeripheralObservers() {
 
 export function fireSingleEventHandlers(
   event: string,
-  { central, peripheral, error }: { central?: Central | null; peripheral?: NativePeripheral | null, error: any }
+  {
+    central,
+    peripheral,
+    error,
+  }: { central?: Central | null; peripheral?: NativePeripheral | null; error: any }
 ) {
   fireMultiEventHandlers(event, { central, peripheral, error });
   resetHandlersForKey(event);
@@ -28,7 +32,11 @@ export function fireSingleEventHandlers(
 
 export function fireMultiEventHandlers(
   event: string,
-  { central, peripheral, error }: { central?: Central | null; peripheral?: NativePeripheral | null, error: any }
+  {
+    central,
+    peripheral,
+    error,
+  }: { central?: Central | null; peripheral?: NativePeripheral | null; error: any }
 ) {
   ensureKey(event);
   for (const callback of multiEventHandlers[event]) {

@@ -1,12 +1,12 @@
 import { Subscription } from 'expo-core';
 import { Central, NativePeripheral } from './Bluetooth.types';
 export declare function firePeripheralObservers(): void;
-export declare function fireSingleEventHandlers(event: string, { central, peripheral, error }: {
+export declare function fireSingleEventHandlers(event: string, { central, peripheral, error, }: {
     central?: Central | null;
     peripheral?: NativePeripheral | null;
     error: any;
 }): void;
-export declare function fireMultiEventHandlers(event: string, { central, peripheral, error }: {
+export declare function fireMultiEventHandlers(event: string, { central, peripheral, error, }: {
     central?: Central | null;
     peripheral?: NativePeripheral | null;
     error: any;

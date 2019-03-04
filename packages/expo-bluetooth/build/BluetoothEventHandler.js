@@ -12,11 +12,11 @@ export function firePeripheralObservers() {
         subscription({ peripherals: getPeripherals() });
     }
 }
-export function fireSingleEventHandlers(event, { central, peripheral, error }) {
+export function fireSingleEventHandlers(event, { central, peripheral, error, }) {
     fireMultiEventHandlers(event, { central, peripheral, error });
     resetHandlersForKey(event);
 }
-export function fireMultiEventHandlers(event, { central, peripheral, error }) {
+export function fireMultiEventHandlers(event, { central, peripheral, error, }) {
     ensureKey(event);
     for (const callback of multiEventHandlers[event]) {
         callback({ central, peripheral, error });

@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoBluetooth.js","sourceRoot":"","sources":["../src/ExpoBluetooth.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,WAAW,CAAC;AAC/C,eAAe,kBAAkB,CAAC,aAAa,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-core';\nexport default NativeModulesProxy.ExpoBluetooth;\n"]}

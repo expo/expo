@@ -1,7 +1,6 @@
 // @flow
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Bluetooth from 'expo-bluetooth';
-import { Permissions } from 'expo';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -98,7 +97,9 @@ export default class BluetoothScreen extends React.Component {
   };
 
   async componentDidMount() {
-    await Permissions.askAsync(Permissions.LOCATION);
+    
+    await Bluetooth.requestPermissionAsync();
+
     this.stateListener = await Bluetooth.observeStateAsync(state => {
       console.log('observeStateAsync', state);
       this.setState({ centralState: state });
@@ -154,9 +155,7 @@ export default class BluetoothScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.stopScanningAsync) {
-      this.stopScanningAsync();
-    }
+    if (this.stopScanningAsync) this.stopScanningAsync();
     if (this.stateListener) this.stateListener.remove();
     if (this.subscription) this.subscription.remove();
   }
@@ -254,7 +253,6 @@ class Item extends React.Component {
     if (item.state === 'disconnected') {
       this.setState({ isConnecting: true });
       try {
-        const peripheralUUID = item.id;
         // await Bluetooth.connectAsync(peripheralUUID, {
         //   // timeout: 5000,
         //   onDisconnect(props) {
@@ -264,9 +262,7 @@ class Item extends React.Component {
 
         // return;
 
-        const loadedPeripheral = await Bluetooth.loadPeripheralAsync({
-          id: peripheralUUID,
-        });
+        const loadedPeripheral = await Bluetooth.loadPeripheralAsync(item);
         console.log({ loadedPeripheral });
       } catch (error) {
         Alert.alert(
