@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseIID.js","sourceRoot":"","sources":["../../src/iid/FirebaseIID.ts"],"names":[],"mappings":"AAAA,OAAO,2BAA2B,CAAC","sourcesContent":["import 'expo-firebase-instance-id';\n"]}

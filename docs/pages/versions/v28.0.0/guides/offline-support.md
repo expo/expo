@@ -2,10 +2,6 @@
 title: Offline Support
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Your app will encounter circumstances where the internet connection is sub-par or totally unvailable and it still needs to work reasonably well. This guide offers more information and best practices for providing a great experience while the device is offline.
 
 ## Load JS updates in the background

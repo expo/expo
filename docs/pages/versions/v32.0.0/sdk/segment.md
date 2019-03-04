@@ -2,20 +2,22 @@
 title: Segment
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.
 
 > **Note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
-### Accessing Segment module
+## Installation
 
-To access the Segment module just import it from `Expo`:
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-segment).
+
+## API
 
 ```js
+// in managed apps:
 import { Segment } from 'expo';
+
+// in bare apps:
+import * as Segment from 'expo-analytics-segment';
 ```
 
 ### `Segment.initialize({ androidWriteKey, iosWriteKey })`
@@ -26,8 +28,8 @@ Segment requires separate write keys for iOS and Android. You will need to log i
 
 Accepts an object with the following keys:
 
--   **androidWriteKey : `string`** – Write key for Android source.
--   **iosWriteKey : `string`** – Write key for iOS source.
+-   **androidWriteKey (_string_)** – Write key for Android source.
+-   **iosWriteKey (_string_)** – Write key for iOS source.
 
 ### `Segment.identify(userId)`
 
@@ -35,14 +37,14 @@ Associates the current user with a user ID. Call this after calling [`Segment.in
 
 #### Arguments
 
--   **userId : `string`** – User ID for the current user.
+-   **userId (_string_)** – User ID for the current user.
 
 ### `Segment.identifyWithTraits(userId, traits)`
 
 #### Arguments
 
--   **userId : `string`** – User ID for the current user.
--   **traits : `object`** – A map of custom properties.
+-   **userId (_string_)** – User ID for the current user.
+-   **traits (_object_)** – A map of custom properties.
 
 ### `Segment.reset()`
 
@@ -54,7 +56,7 @@ Log an event to Segment. See <https://segment.com/docs/spec/track/>.
 
 #### Arguments
 
--   **event : `string`** – The event name.
+-   **event (_string_)** – The event name.
 
 ### `Segment.trackWithProperties(event, properties)`
 
@@ -62,8 +64,8 @@ Log an event to Segment with custom properties. See <https://segment.com/docs/sp
 
 #### Arguments
 
--   **event : `string`** – The event name.
--   **properties : `object`** – A map of custom properties.
+-   **event (_string_)** – The event name.
+-   **properties (_object_)** – A map of custom properties.
 
 ### `Segment.group(groupId)`
 
@@ -71,7 +73,7 @@ Associate the user with a group. See <https://segment.com/docs/spec/group/>.
 
 #### Arguments
 
--   **groupId : `string`** – ID of the group.
+-   **groupId (_string_)** – ID of the group.
 
 ### `Segment.groupWithTraits(groupId, traits)`
 
@@ -79,8 +81,8 @@ Associate the user with a group with traits. See <https://segment.com/docs/spec/
 
 #### Arguments
 
--   **groupId : `string`** – ID of the group.
--   **traits : `object`** – free-form dictionary of traits of the group.
+-   **groupId (_string_)** – ID of the group.
+-   **traits (_object_)** – free-form dictionary of traits of the group.
 
 ### `Segment.alias(newId, [options])`
 
@@ -88,8 +90,8 @@ Associate current identity with a new identifier. See <https://segment.com/docs/
 
 #### Arguments
 
--   **newId : `string`** – Identifier to associate with.
--   **options : `object`** – _(optional)_ extra dictionary with options for the call. You could pass a dictionary of form `{ [integrationKey]: { enabled: boolean, options: object } }` to configure destinations of the call.
+-   **newId (_string_)** – Identifier to associate with.
+-   **options (_object_)** – _(optional)_ extra dictionary with options for the call. You could pass a dictionary of form `{ [integrationKey]: { enabled: boolean, options: object } }` to configure destinations of the call.
 
 #### Returns
 
@@ -101,14 +103,14 @@ Record that a user has seen a screen to Segment. See <https://segment.com/docs/s
 
 #### Arguments
 
--   **screenName : `string`** – Name of the screen.
+-   **screenName (_string_)** – Name of the screen.
 
 ### `Segment.screenWithProperties(screenName, properties)`
 
 Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
 
--   **screenName : `string`** – Name of the screen.
--   **properties : `object`** – A map of custom properties.
+-   **screenName (_string_)** – Name of the screen.
+-   **properties (_object_)** – A map of custom properties.
 
 ### `Segment.flush()`
 
@@ -133,3 +135,4 @@ Segment.setEnabledAsync(true);
 This method is only supported in standalone and detached apps. In Expo Client the promise will reject.
 
 The setting value will be persisted across restarts, so once you call `setEnabledAsync(false)`, Segment won't track the users even when the app restarts. To check whether tracking is enabled, use `Segment.getEnabledAsync()` which returns a promise which should resolve to a boolean.
+

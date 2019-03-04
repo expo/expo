@@ -7,7 +7,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 import java.util.Map;
 
-import expolib_v1.okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 public class SharedCookiesDataSourceFactory implements DataSource.Factory {
   private final DataSource.Factory mDataSourceFactory;

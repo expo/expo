@@ -2,18 +2,31 @@
 title: Pedometer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 Use Core Motion (iOS) or Google Fit (Android) to get the user's step count.
 
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## Usage
+
 <SnackEmbed snackId="S1gdfOb4Z" />
+
+## API
+
+```js
+// in managed apps:
+import { Pedometer } from 'expo';
+
+// in bare apps:
+import { Pedometer } from 'expo-sensors';
+```
 
 ### `Pedometer.isAvailableAsync()`
 
-Determine whether the pedometer is available.
+Returns whether the pedometer is enabled on the device.
 
 #### Returns
 
@@ -25,8 +38,8 @@ Get the step count between two dates.
 
 #### Arguments
 
-- **start : `Date`** -- A date indicating the start of the range over which to measure steps.
-- **end : `Date`** -- A date indicating the end of the range over which to measure steps.
+- **start (_Date_)** -- A date indicating the start of the range over which to measure steps.
+- **end (_Date_)** -- A date indicating the end of the range over which to measure steps.
 
 #### Returns
 
@@ -38,7 +51,7 @@ Subscribe to pedometer updates.
 
 #### Arguments
 
-- **callback : `function`** A callback that is invoked when new step count data is available. The callback is provided a single argument that is an object with a `steps` key.
+- **callback (_function_)** A callback that is invoked when new step count data is available. The callback is provided a single argument that is an object with a `steps` key.
 
 #### Returns
 
@@ -46,3 +59,4 @@ Subscribe to pedometer updates.
 
 ## Standalone Applications
 You'll need to configure an Android OAuth client for your app on the Google Play console for it to work as a standalone application on the Android platform. See https://developers.google.com/fit/android/get-api-key
+

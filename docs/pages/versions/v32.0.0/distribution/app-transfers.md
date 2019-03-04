@@ -2,10 +2,6 @@
 title: App Transfers
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 When you upload an iOS app to App Store Connect and distribute it through the App Store, it becomes (semi-)permanently associated with your Apple Developer account. This means that any future updates to your app must go through your Apple account. Apple provides a process called [App Transfer](https://help.apple.com/app-store-connect/#/deved688524f) as a way around this, for cases in which you want to transfer the ownership and maintainability of one of your apps to a different Apple Developer account.
 
 One of the [criteria for an app to be eligible to transfer](https://help.apple.com/app-store-connect/#/devaf27784ff) is that `"No version of the app can use a Passbook entitlement."`. Until December 11, 2018, Expo apps built with SDK 30 or 31 included the `Payments` module, which necessitates linking a file called `PassKit.framework`. This file includes the native APIs for interacting with the native iOS payments functionality. All SDK 30 and 31 apps built before this date included this file -- this is because we always include the native code for all modules in every build, even modules that you don't import in your JS. (Among other reasons, this makes it possible for you to use different modules in OTA updates without having to build a new binary.)

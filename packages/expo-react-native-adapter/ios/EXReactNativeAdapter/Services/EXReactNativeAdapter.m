@@ -42,10 +42,16 @@ EX_REGISTER_MODULE();
 {
   if (self = [super init]) {
     _isForegrounded = false;
-    [self startObserving];
     _lifecycleListeners = [NSMutableSet set];
   }
   return self;
+}
+
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  if (moduleRegistry) {
+    [self startObserving];
+  }
 }
 
 - (void)dealloc

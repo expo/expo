@@ -15,7 +15,6 @@ import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
-import expo.modules.blurview.BlurViewPackage;
 import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
@@ -48,7 +47,7 @@ import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
-import expolib_v1.okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;
@@ -80,7 +79,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new AmplitudePackage(),
         new BackgroundFetchPackage(),
         new BarCodeScannerPackage(),
-        new BlurViewPackage(),
         new BrightnessPackage(),
         new CalendarPackage(),
         new CameraPackage(),
@@ -126,4 +124,5 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
     // Customize/override OkHttp client here
     return builder;
   }
+
 }

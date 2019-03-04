@@ -3,10 +3,6 @@ id: javascript-environment
 title: JavaScript Environment
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ## JavaScript Runtime
 
 When using React Native, you're going to be running your JavaScript code in two environments:

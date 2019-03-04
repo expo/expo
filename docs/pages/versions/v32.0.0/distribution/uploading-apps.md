@@ -2,10 +2,6 @@
 title: Uploading Apps to the Apple App Store and Google Play
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 **Disclaimer:** This feature works properly only on macOS.
 
 This guide will help you upload your Expo standalone apps to Apple TestFlight and to Google Play.

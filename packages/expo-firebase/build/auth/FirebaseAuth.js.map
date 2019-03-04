@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseAuth.js","sourceRoot":"","sources":["../../src/auth/FirebaseAuth.ts"],"names":[],"mappings":"AAAA,OAAO,oBAAoB,CAAC","sourcesContent":["import 'expo-firebase-auth';\n"]}

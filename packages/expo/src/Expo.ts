@@ -19,7 +19,7 @@ import * as Facebook from 'expo-facebook';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
 import { Audio, Video } from 'expo-av';
-import { BlurView, VibrancyView } from 'expo-blur';
+import { BlurView } from 'expo-blur';
 import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
@@ -31,7 +31,6 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
-import * as Util from './Util';
 import * as FacebookAds from 'expo-ads-facebook';
 import * as SplashScreen from './launch/SplashScreen';
 import * as WebBrowser from 'expo-web-browser';
@@ -68,6 +67,8 @@ export { LocalAuthentication };
 export { IntentLauncher };
 import * as Localization from 'expo-localization';
 export { Localization };
+import * as Crypto from 'expo-crypto';
+export { Crypto };
 export { Location };
 import * as MediaLibrary from 'expo-media-library';
 export { MediaLibrary };
@@ -89,6 +90,8 @@ export { default as DangerZone } from './DangerZone';
 export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 export { Facebook };
 export { Google };
+import * as Random from 'expo-random';
+export { Random };
 export { default as Icon } from './Icon';
 export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { default as Linking } from './Linking/Linking';
@@ -99,35 +102,23 @@ export { SecureStore };
 export { StoreReview };
 export { default as Svg } from './Svg';
 export { Updates };
-export { Util };
 export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 export { Audio, Video };
-export { BlurView, VibrancyView };
+export { BlurView };
 export { LinearGradient } from 'expo-linear-gradient';
 export { FacebookAds };
 export { default as AppLoading } from './launch/AppLoading';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
-
+export { default as Pedometer } from './Pedometer';
 // polyfill navigator.geolocation
 Location.installWebGeolocationPolyfill();
 
 // @ts-ignore
 Object.defineProperties(exports, {
-  // TODO: Unify the Pedometer module across platforms so we can export it normally
-  Pedometer: {
-    enumerable: true,
-    get() {
-      if (Platform.OS === 'android') {
-        return require('./Pedometer');
-      } else {
-        return require('expo-sensors').Pedometer;
-      }
-    },
-  },
   Haptic: {
     enumerable: false,
     get() {

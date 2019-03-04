@@ -1,7 +1,7 @@
 {
   "name": "expo-media-library",
-  "version": "2.1.1",
-  "description": "Expo MediaLibrary module",
+  "version": "3.0.0",
+  "description": "Provides access to user's media library.",
   "main": "build/MediaLibrary.js",
   "types": "build/MediaLibrary.d.ts",
   "scripts": {
@@ -14,21 +14,33 @@
   },
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "media",
+    "library",
+    "cameraroll",
+    "photos",
+    "videos"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/media-library/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "homepage": "https://docs.expo.io/",
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "dependencies": {
-    "expo-core": "~2.0.0",
-    "expo-errors": "~1.0.0",
-    "expo-permissions-interface": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "*",
+    "expo-permissions-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

@@ -14,8 +14,8 @@ import org.robolectric.RobolectricTestRunner;
 import java.io.IOException;
 import java.util.Map;
 
-import expolib_v1.okio.Buffer;
-import expolib_v1.okio.ByteString;
+import okio.Buffer;
+import okio.ByteString;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 

@@ -50,8 +50,13 @@ export default class AudioPlayer extends React.Component {
 
   _setIsMutedAsync = async isMuted => await this._sound.setIsMutedAsync(isMuted);
 
-  _setRateAsync = async (rate, shouldCorrectPitch) =>
-    await this._sound.setRateAsync(rate, shouldCorrectPitch);
+  _setRateAsync = async (
+    rate,
+    shouldCorrectPitch,
+    pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low
+  ) => {
+    await this._sound.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
+  };
 
   render() {
     return (

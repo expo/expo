@@ -3,10 +3,6 @@ id: toolbarandroid
 title: ToolbarAndroid
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 React component that wraps the Android-only [`Toolbar` widget](https://developer.android.com/reference/android/support/v7/widget/Toolbar.html). A Toolbar can display a logo, navigation icon (e.g. hamburger menu), a title & subtitle and a list of actions. The title and subtitle are expanded so the logo and navigation icons are displayed on the left, title and subtitle in the middle and the actions on the right.
 
 If the toolbar has an only child, it will be displayed between the title and actions.

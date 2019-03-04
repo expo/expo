@@ -3,10 +3,6 @@ id: view-style-props
 title: View Style Props
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [Layout Props](../layout-props/#props)

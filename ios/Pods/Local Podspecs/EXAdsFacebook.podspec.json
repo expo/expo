@@ -1,11 +1,11 @@
 {
   "name": "EXAdsFacebook",
-  "version": "1.0.0",
-  "summary": "Expo universal module for Facebook ads",
-  "description": "Expo universal module for Facebook ads",
+  "version": "3.0.0",
+  "summary": "Facebook Audience SDK integration",
+  "description": "Facebook Audience SDK integration",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-ads-facebook",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/facebook-ads/",
   "platforms": {
     "ios": "10.0"
   },

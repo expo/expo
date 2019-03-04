@@ -2,10 +2,6 @@
 title: Localization
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### `Expo.DangerZone.Localization.getCurrentDeviceCountryAsync()`
 
 Returns the current device country code.
@@ -143,3 +139,4 @@ const styles = StyleSheet.create({
   centeredText: { textAlign: 'center' },
 });
 ```
+

@@ -7,7 +7,7 @@
 
 package com.facebook.react.animated;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 
 import java.util.ArrayList;
 import java.util.List;

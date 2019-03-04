@@ -11,7 +11,7 @@ import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
 
 import android.util.Log;
 import android.util.SparseArray;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;

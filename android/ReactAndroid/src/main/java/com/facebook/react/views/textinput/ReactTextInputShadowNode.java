@@ -12,7 +12,7 @@ import android.text.Layout;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.LayoutShadowNode;

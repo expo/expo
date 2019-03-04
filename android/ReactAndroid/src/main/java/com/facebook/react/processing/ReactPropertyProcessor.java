@@ -11,7 +11,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.WARNING;
 
-import expolib_v1.com.facebook.infer.annotation.SuppressFieldNotInitialized;
+import com.facebook.infer.annotation.SuppressFieldNotInitialized;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;

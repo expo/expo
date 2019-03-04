@@ -1,6 +1,6 @@
 {
   "name": "EXCore",
-  "version": "2.0.0",
+  "version": "3.0.1",
   "summary": "The core Expo universal module between application code and the underlying platform",
   "description": "The core Expo universal module between application code and the underlying platform",
   "license": "MIT",

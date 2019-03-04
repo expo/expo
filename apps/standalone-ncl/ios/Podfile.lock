@@ -1,0 +1,145 @@
+PODS:
+  - boost-for-react-native (1.63.0)
+  - DoubleConversion (1.1.6)
+  - EXCore (2.0.0)
+  - EXFontInterface (2.0.0):
+    - EXCore
+  - EXImageLoaderInterface (2.0.0):
+    - EXCore
+  - EXReactNativeAdapter (2.0.0):
+    - EXCore
+    - EXFontInterface
+    - EXImageLoaderInterface
+    - React
+  - Folly (2016.10.31.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
+  - glog (0.3.5)
+  - React (0.57.1):
+    - React/Core (= 0.57.1)
+  - React/ART (0.57.1):
+    - React/Core
+  - React/Core (0.57.1):
+    - yoga (= 0.57.1.React)
+  - React/CxxBridge (0.57.1):
+    - Folly (= 2016.10.31.00)
+    - React/Core
+    - React/cxxreact
+  - React/cxxreact (0.57.1):
+    - boost-for-react-native (= 1.63.0)
+    - Folly (= 2016.10.31.00)
+    - React/jschelpers
+    - React/jsinspector
+  - React/DevSupport (0.57.1):
+    - React/Core
+    - React/RCTWebSocket
+  - React/fishhook (0.57.1)
+  - React/jschelpers (0.57.1):
+    - Folly (= 2016.10.31.00)
+    - React/PrivateDatabase
+  - React/jsinspector (0.57.1)
+  - React/PrivateDatabase (0.57.1)
+  - React/RCTActionSheet (0.57.1):
+    - React/Core
+  - React/RCTAnimation (0.57.1):
+    - React/Core
+  - React/RCTBlob (0.57.1):
+    - React/Core
+  - React/RCTCameraRoll (0.57.1):
+    - React/Core
+    - React/RCTImage
+  - React/RCTGeolocation (0.57.1):
+    - React/Core
+  - React/RCTImage (0.57.1):
+    - React/Core
+    - React/RCTNetwork
+  - React/RCTLinkingIOS (0.57.1):
+    - React/Core
+  - React/RCTNetwork (0.57.1):
+    - React/Core
+  - React/RCTText (0.57.1):
+    - React/Core
+  - React/RCTVibration (0.57.1):
+    - React/Core
+  - React/RCTWebSocket (0.57.1):
+    - React/Core
+    - React/fishhook
+    - React/RCTBlob
+  - RNGestureHandler (1.0.14):
+    - React
+  - RNReanimated (1.0.0-alpha.11):
+    - React
+  - yoga (0.57.1.React)
+
+DEPENDENCIES:
+  - DoubleConversion (from `../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EXCore (from `../../../packages/expo-core/ios`)
+  - EXFontInterface (from `../../../packages/expo-font-interface/ios`)
+  - EXImageLoaderInterface (from `../../../packages/expo-image-loader-interface/ios`)
+  - EXReactNativeAdapter (from `../../../packages/expo-react-native-adapter/ios`)
+  - Folly (from `../../../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
+  - glog (from `../../../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
+  - React/ART (from `../../../react-native-lab/react-native`)
+  - React/Core (from `../../../react-native-lab/react-native`)
+  - React/CxxBridge (from `../../../react-native-lab/react-native`)
+  - React/DevSupport (from `../../../react-native-lab/react-native`)
+  - React/RCTActionSheet (from `../../../react-native-lab/react-native`)
+  - React/RCTAnimation (from `../../../react-native-lab/react-native`)
+  - React/RCTCameraRoll (from `../../../react-native-lab/react-native`)
+  - React/RCTGeolocation (from `../../../react-native-lab/react-native`)
+  - React/RCTImage (from `../../../react-native-lab/react-native`)
+  - React/RCTLinkingIOS (from `../../../react-native-lab/react-native`)
+  - React/RCTNetwork (from `../../../react-native-lab/react-native`)
+  - React/RCTText (from `../../../react-native-lab/react-native`)
+  - React/RCTVibration (from `../../../react-native-lab/react-native`)
+  - React/RCTWebSocket (from `../../../react-native-lab/react-native`)
+  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated`)
+  - yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - boost-for-react-native
+
+EXTERNAL SOURCES:
+  DoubleConversion:
+    :podspec: "../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EXCore:
+    :path: "../../../packages/expo-core/ios"
+  EXFontInterface:
+    :path: "../../../packages/expo-font-interface/ios"
+  EXImageLoaderInterface:
+    :path: "../../../packages/expo-image-loader-interface/ios"
+  EXReactNativeAdapter:
+    :path: "../../../packages/expo-react-native-adapter/ios"
+  Folly:
+    :podspec: "../../../react-native-lab/react-native/third-party-podspecs/Folly.podspec"
+  glog:
+    :podspec: "../../../react-native-lab/react-native/third-party-podspecs/glog.podspec"
+  React:
+    :path: "../../../react-native-lab/react-native"
+  RNGestureHandler:
+    :path: "../../../node_modules/react-native-gesture-handler"
+  RNReanimated:
+    :path: "../../../node_modules/react-native-reanimated"
+  yoga:
+    :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
+
+SPEC CHECKSUMS:
+  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
+  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  EXCore: 81304a0284b7f2e0f691b8a6bc642854e730f5e2
+  EXFontInterface: 06126ec4f6a67415426074c3383a82b241f087c1
+  EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
+  EXReactNativeAdapter: 3f45b69ff6362839602d9feec0f481335dad2c5d
+  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
+  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  RNGestureHandler: afde2addc517e85cc97a25bfe119acbee779a7ce
+  RNReanimated: 45d9313b7a62318ed00d60a811937321e43e076e
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+
+PODFILE CHECKSUM: d4f428ab349631f41c70a623325e98274d64311b
+
+COCOAPODS: 1.5.3

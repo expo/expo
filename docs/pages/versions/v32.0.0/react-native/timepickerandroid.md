@@ -3,10 +3,6 @@ id: timepickerandroid
 title: TimePickerAndroid
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Opens the standard Android time picker dialog.
 
 ### Example

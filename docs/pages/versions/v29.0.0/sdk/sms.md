@@ -2,10 +2,6 @@
 title: Sms
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to the system's UI/app for sending SMS messages.
 
 ### `Expo.SMS.isAvailableAsync()`
@@ -35,9 +31,9 @@ Opens default UI/app for sending SMS messages with prefilled addresses and messa
 
 #### Arguments
 
--  **addresses: `Array<string>|string`** -- An array of addresses : `phone numbers` or single address passed as strings. Those would appear as recipients of the prepared message.
+-  **addresses: (_Array\<string\>|string_)** -- An array of addresses (_phone numbers_) or single address passed as strings. Those would appear as recipients of the prepared message.
 
--  **message: `string`** -- Message to be sent
+-  **message (_string_)** -- Message to be sent
 
 #### Returns
 
@@ -54,3 +50,4 @@ Returns a `Promise` that resolves when SMS action is invoked by the user with co
 ```javascript
 const { result } = await Expo.SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
 ```
+

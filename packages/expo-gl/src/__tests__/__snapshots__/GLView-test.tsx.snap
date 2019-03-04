@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly on web 1`] = `
+<div
+  style={
+    Object {
+      "flex": 1,
+    }
+  }
+>
+  <canvas
+    height={0}
+    style={
+      Object {
+        "flex": 1,
+        "height": 0,
+        "width": 0,
+      }
+    }
+    width={0}
+  />
+</div>
+`;
+
+exports[`renders correctly on iOS & Android 1`] = `
+<View>
+  <ViewManagerAdapter_ExponentGLView
+    proxiedProperties={
+      Object {
+        "msaaSamples": 4,
+        "onSurfaceCreate": [Function],
+      }
+    }
+    style={
+      Object {
+        "backgroundColor": "transparent",
+        "flex": 1,
+      }
+    }
+  />
+</View>
+`;

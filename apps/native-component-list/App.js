@@ -2,7 +2,7 @@ import './LegacyReact';
 
 import { AppLoading, Asset, Font } from 'expo';
 import React from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView, createStackNavigator, createAppContainer } from 'react-navigation';
 import { Assets as StackAssets } from 'react-navigation-stack';
@@ -42,7 +42,9 @@ export default class App extends React.Component {
         Asset.loadAsync(iconRequires),
         Asset.loadAsync(StackAssets),
         Font.loadAsync(Ionicons.font),
-        Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') }),
+        Font.loadAsync(Entypo.font),
+        Font.loadAsync(MaterialIcons.font),
+        Font.loadAsync({ 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf') })
       ]);
     } catch (e) {
       console.log({ e });

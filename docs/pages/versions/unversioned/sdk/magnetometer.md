@@ -2,13 +2,21 @@
 title: Magnetometer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+Access the device magnetometer sensor(s) to respond to measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
 
-export default withDocumentationElements(meta);
+## Installation
 
-Access the device magnetometer sensor(s) to respond to measure the changes
-in the magnetic field. You can access the calibrated values with `Magnetometer.`
-and uncalibrated raw values with `MagnetometerUncalibrated`.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+// in managed apps:
+import { Magnetometer } from 'expo';
+
+// in bare apps:
+import { Magnetometer } from 'expo-sensors';
+```
 
 ### `Magnetometer.isAvailableAsync()`
 
@@ -24,7 +32,7 @@ Subscribe for updates to the Magnetometer.
 
 #### Arguments
 
-- **listener : `function`** -- A callback that is invoked when an
+- **listener (_function_)** -- A callback that is invoked when an
   Magnetometer update is available. When invoked, the listener is
   provided a single argumument that is an object containing keys x, y,
   z.
@@ -44,7 +52,7 @@ Subscribe for updates to the Magnetometer.
 
 #### Arguments
 
-- **intervalMs : `number`** Desired interval in milliseconds between
+- **intervalMs (_number_)** Desired interval in milliseconds between
   Magnetometer updates.
 
 ## Example: basic subscription
@@ -155,3 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 ```
+

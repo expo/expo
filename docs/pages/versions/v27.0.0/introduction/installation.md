@@ -2,10 +2,6 @@
 title: Installation
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 There are two tools that you need to develop apps with Expo: a local development tool and a mobile client to open your app.
 
 ## Local Development Tool: Expo CLI

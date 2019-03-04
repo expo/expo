@@ -11,6 +11,7 @@
 /packages/expo-barcode-scanner            @bbarthec
 /packages/expo-barcode-scanner-interface  @bbarthec
 /packages/expo-blur                       @sjchmiela
+/packages/expo-branch                     @esamelson
 /packages/expo-brightness                 @sjchmiela
 /packages/expo-calendar                   @tsapeta
 /packages/expo-camera                     @bbarthec

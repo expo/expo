@@ -17,15 +17,15 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import expolib_v1.okhttp3.Cache;
-import expolib_v1.okhttp3.Interceptor;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Protocol;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
-import expolib_v1.okhttp3.ResponseBody;
-import expolib_v1.okio.BufferedSource;
-import expolib_v1.okio.Okio;
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.BufferedSource;
+import okio.Okio;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.ExpoViewBuildConfig;
 
@@ -107,6 +107,15 @@ public class ExponentNetwork {
     final File directory = new File(mContext.getFilesDir(), CACHE_DIR);
     return new Cache(directory, cacheSize);
   }
+
+  public expolib_v1.okhttp3.Cache getExpolibOkhttpCacheForClient() {
+    int cacheSize = 40 * 1024 * 1024; // 40 MiB
+
+    // Use getFilesDir() because it gives us much more space than getCacheDir()
+    final File directory = new File(mContext.getFilesDir(), CACHE_DIR + "_expolib_v1");
+    return new expolib_v1.okhttp3.Cache(directory, cacheSize);
+  }
+
   public boolean isNetworkAvailable() {
     return isNetworkAvailable(mContext);
   }
@@ -177,6 +186,100 @@ public class ExponentNetwork {
 
         // Response
         Response response = chain.proceed(request);
+        String responseCacheHeaderValue;
+        if (isNetworkAvailable) {
+          String currentResponseHeader = response.header("Cache-Control");
+          if (currentResponseHeader != null && currentResponseHeader.contains("public") &&
+              (currentResponseHeader.contains("max-age") || currentResponseHeader.contains("s-maxage"))) {
+            // Server sent back caching instructions, follow them
+            responseCacheHeaderValue = currentResponseHeader;
+          } else {
+            // Server didn't send Cache-Control header or told us not to cache. Tell OkHttp
+            // to cache the response but invalidate it after 0 seconds. This will allow us
+            // to access the response with max-stale if the network is turned off.
+            responseCacheHeaderValue = "public, max-age=0";
+          }
+        } else {
+          // Only read from the cache, don't try to hit the network
+          responseCacheHeaderValue = "public, only-if-cached";
+        }
+
+        return response.newBuilder()
+            .removeHeader("Pragma")
+            .removeHeader("Cache-Control")
+            .header("Cache-Control", responseCacheHeaderValue)
+            .build();
+      }
+    };
+
+
+    clientBuilder.addInterceptor(bundledAssetsInterceptor);
+    clientBuilder.addInterceptor(offlineInterceptor);
+    clientBuilder.addNetworkInterceptor(offlineInterceptor);
+  }
+
+  // TODO: Remove this method once SDK32 is phased out
+  public void addInterceptorsToPrefixedClient(expolib_v1.okhttp3.OkHttpClient.Builder clientBuilder) {
+    // TODO(janic): Either backport bundled assets from sdk25 or remove
+    // when sdk24 is no longer supported.
+    expolib_v1.okhttp3.Interceptor bundledAssetsInterceptor = new expolib_v1.okhttp3.Interceptor() {
+      @Override
+      public expolib_v1.okhttp3.Response intercept(Chain chain) throws IOException {
+        expolib_v1.okhttp3.Request originalRequest = chain.request();
+        String urlString = originalRequest.url().toString();
+
+        // Check if assets loaded from the cdn were included in the bundle.
+        if (urlString.startsWith("https://d1wp6m56sqw74a.cloudfront.net/~assets/")) {
+          List<String> path = originalRequest.url().pathSegments();
+          String assetName = "asset_" + path.get(path.size() - 1);
+          InputStream inputStream = null;
+          try {
+            inputStream = mContext.getAssets().open(assetName);
+          } catch (IOException ex) {
+            // The file doesn't exists in the bundle, fallback to network.
+          }
+          if (inputStream != null) {
+            expolib_v1.okio.BufferedSource buffer = expolib_v1.okio.Okio.buffer(expolib_v1.okio.Okio.source(inputStream));
+            expolib_v1.okhttp3.ResponseBody body = expolib_v1.okhttp3.ResponseBody.create(null, -1, buffer);
+            return new expolib_v1.okhttp3.Response.Builder()
+                .request(originalRequest)
+                .protocol(expolib_v1.okhttp3.Protocol.HTTP_1_1)
+                // Don't cache local assets to save disk space.
+                .addHeader("Cache-Control", "no-cache")
+                .body(body)
+                .code(200)
+                .build();
+          }
+        }
+        return chain.proceed(originalRequest);
+      }
+    };
+
+    expolib_v1.okhttp3.Interceptor offlineInterceptor = new expolib_v1.okhttp3.Interceptor() {
+      @Override
+      public expolib_v1.okhttp3.Response intercept(Chain chain) throws IOException {
+        boolean isNetworkAvailable = isNetworkAvailable();
+        // Request
+        expolib_v1.okhttp3.Request originalRequest = chain.request();
+        if (originalRequest.header(IGNORE_INTERCEPTORS_HEADER) != null) {
+          expolib_v1.okhttp3.Request request = originalRequest.newBuilder().removeHeader(IGNORE_INTERCEPTORS_HEADER).build();
+          return chain.proceed(request);
+        }
+
+        expolib_v1.okhttp3.Request request;
+        if (isNetworkAvailable) {
+          request = originalRequest.newBuilder()
+              .removeHeader("Cache-Control")
+              .build();
+        } else {
+          // If network isn't available we don't care if the cache is stale.
+          request = originalRequest.newBuilder()
+              .header("Cache-Control", "max-stale=" + ONE_YEAR_IN_SECONDS)
+              .build();
+        }
+
+        // Response
+        expolib_v1.okhttp3.Response response = chain.proceed(request);
         String responseCacheHeaderValue;
         if (isNetworkAvailable) {
           String currentResponseHeader = response.header("Cache-Control");

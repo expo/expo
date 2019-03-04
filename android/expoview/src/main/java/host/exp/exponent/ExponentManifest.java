@@ -12,7 +12,7 @@ import android.os.Debug;
 import android.util.Log;
 import android.util.LruCache;
 
-import expolib_v1.okhttp3.CacheControl;
+import okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ManifestException;
@@ -27,7 +27,7 @@ import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ColorParser;
 import host.exp.expoview.R;
-import expolib_v1.okhttp3.Request;
+import okhttp3.Request;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -223,32 +223,10 @@ public class ExponentManifest {
       Debug.startMethodTracing("manifest");
     }
 
-    mExponentNetwork.getClient().callSafe(requestBuilder.build(), new ExponentHttpClient.SafeCallback() {
-      private void handleResponse(ExpoResponse response, boolean isCached) {
-        if (!response.isSuccessful()) {
-          ManifestException exception;
-          try {
-            final JSONObject errorJSON = new JSONObject(response.body().string());
-            exception = new ManifestException(null, manifestUrl, errorJSON);
-          } catch (JSONException | IOException e) {
-            exception = new ManifestException(null, manifestUrl);
-          }
-          listener.onError(exception);
-          return;
-        }
+    Request request = requestBuilder.build();
+    final String finalUri = request.url().toString();
 
-        try {
-          String manifestString = response.body().string();
-          fetchManifestStep2(manifestUrl, manifestString, response.headers(), listener, false, isCached);
-        } catch (JSONException e) {
-          listener.onError(e);
-        } catch (IOException e) {
-          listener.onError(e);
-        } catch (URISyntaxException e) {
-          listener.onError(e);
-        }
-      }
-
+    mExponentNetwork.getClient().callSafe(request, new ExponentHttpClient.SafeCallback() {
       @Override
       public void onFailure(IOException e) {
         listener.onError(new ManifestException(e, manifestUrl));
@@ -261,13 +239,13 @@ public class ExponentManifest {
         if (response.networkResponse() == null) {
           isCached = true;
         }
-        handleResponse(response, isCached);
+        handleManifestResponse(response, manifestUrl, finalUri, listener, false, isCached);
       }
 
       @Override
       public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
         // this is only called if network is unavailable for some reason
-        handleResponse(response, true);
+        handleManifestResponse(response, manifestUrl, finalUri, listener, isEmbedded, true);
       }
     });
   }
@@ -305,105 +283,37 @@ public class ExponentManifest {
     Request request = requestBuilder.build();
     final String finalUri = request.url().toString();
 
-    final String embeddedResponse = mExponentNetwork.getClient().getHardCodedResponse(finalUri);
-
     // First check shared preferences cache, we always store the latest version here
     // that has a fully downloaded bundle
-    JSONObject safeCachedManifest = mExponentSharedPreferences.getSafeManifest(manifestUrl);
+    String safeCachedManifest = mExponentSharedPreferences.getSafeManifestString(manifestUrl);
     if (safeCachedManifest != null) {
-      JSONObject newerManifest = safeCachedManifest;
       try {
-        if (embeddedResponse != null) {
-          // compare to embedded manifest in case embedded manifest is newer (i.e. user has installed a new APK)
-          JSONObject embeddedManifest = new JSONObject(embeddedResponse);
-          newerManifest = newerManifest(embeddedManifest, safeCachedManifest);
-        }
-
-        newerManifest.put(MANIFEST_LOADED_FROM_CACHE_KEY, true);
+        // we return early here because we want to call the below logic (checking the OkHttp cache)
+        // iff this throws (or safeCachedManifest is null)
+        fetchManifestStep2(manifestUrl, finalUri, safeCachedManifest, null, listener, false, true);
+        return true;
       } catch (Exception e) {
         EXL.e(TAG, e);
       }
-      fetchManifestStep3(manifestUrl, newerManifest, true, listener);
-    } else {
-      // If nothing is in shared preferences, we need to query the OkHttp cache
-      mExponentNetwork.getClient().tryForcedCachedResponse(finalUri, request, new ExponentHttpClient.SafeCallback() {
-        private void handleResponse(ExpoResponse response, final boolean isEmbedded) {
-          if (!response.isSuccessful()) {
-            ManifestException exception;
-            try {
-              final JSONObject errorJSON = new JSONObject(response.body().string());
-              exception = new ManifestException(null, manifestUrl, errorJSON);
-            } catch (JSONException | IOException e) {
-              exception = new ManifestException(null, manifestUrl);
-            }
-            listener.onError(exception);
-            return;
-          }
-
-          try {
-            String manifestString = response.body().string();
-            ManifestListener newListener = listener;
-            if (embeddedResponse != null && !isEmbedded) {
-              // compare to embedded manifest in case embedded manifest is newer (i.e. user has installed a new APK)
-              // but we have to pass through fetchManifestStep2 first in order to access the publishedTime key
-              newListener = new ManifestListener() {
-                @Override
-                public void onCompleted(JSONObject manifest) {
-                  try {
-                    JSONObject embeddedManifest = new JSONObject(embeddedResponse);
-                    embeddedManifest.put(ExponentManifest.MANIFEST_LOADED_FROM_CACHE_KEY, true);
-
-                    JSONObject newerManifest = newerManifest(embeddedManifest, manifest);
-
-                    if (newerManifest == embeddedManifest) {
-                      fetchManifestStep3(manifestUrl, embeddedManifest, true, listener);
-                    } else {
-                      listener.onCompleted(manifest);
-                    }
-                  } catch (Throwable e) {
-                    EXL.e(TAG, e);
-                    listener.onCompleted(manifest);
-                  }
-                }
-
-                @Override
-                public void onError(Exception e) {
-                  listener.onError(e);
-                }
-
-                @Override
-                public void onError(String e) {
-                  listener.onError(e);
-                }
-              };
-            }
-
-            fetchManifestStep2(manifestUrl, manifestString, response.headers(), newListener, false, true);
-          } catch (JSONException e) {
-            listener.onError(e);
-          } catch (IOException e) {
-            listener.onError(e);
-          } catch (URISyntaxException e) {
-            listener.onError(e);
-          }
-        }
-
-        @Override
-        public void onFailure(IOException e) {
-          listener.onError(new ManifestException(e, manifestUrl));
-        }
-
-        @Override
-        public void onResponse(ExpoResponse response) {
-          handleResponse(response, false);
-        }
-
-        @Override
-        public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
-          handleResponse(response, isEmbedded);
-        }
-      }, null, null);
     }
+
+    // If nothing is in shared preferences, we need to query the OkHttp cache
+    mExponentNetwork.getClient().tryForcedCachedResponse(finalUri, request, new ExponentHttpClient.SafeCallback() {
+      @Override
+      public void onFailure(IOException e) {
+        listener.onError(new ManifestException(e, manifestUrl));
+      }
+
+      @Override
+      public void onResponse(ExpoResponse response) {
+        handleManifestResponse(response, manifestUrl, finalUri, listener, false, true);
+      }
+
+      @Override
+      public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
+        handleManifestResponse(response, manifestUrl, finalUri, listener, isEmbedded, true);
+      }
+    }, null, null);
 
     return true;
   }
@@ -430,6 +340,31 @@ public class ExponentManifest {
     } catch (Exception e) {
       listener.onError(new Exception("Could not load embedded manifest. Are you sure this experience has been published?", e));
       e.printStackTrace();
+    }
+  }
+
+  private void handleManifestResponse(ExpoResponse response, String manifestUrl, String httpManifestUrl, ManifestListener listener, boolean isEmbedded, boolean isCached) {
+    if (!response.isSuccessful()) {
+      ManifestException exception;
+      try {
+        final JSONObject errorJSON = new JSONObject(response.body().string());
+        exception = new ManifestException(null, manifestUrl, errorJSON);
+      } catch (JSONException | IOException e) {
+        exception = new ManifestException(null, manifestUrl);
+      }
+      listener.onError(exception);
+      return;
+    }
+
+    try {
+      String manifestString = response.body().string();
+      fetchManifestStep2(manifestUrl, httpManifestUrl, manifestString, response.headers(), listener, isEmbedded, isCached);
+    } catch (JSONException e) {
+      listener.onError(e);
+    } catch (IOException e) {
+      listener.onError(e);
+    } catch (URISyntaxException e) {
+      listener.onError(e);
     }
   }
 
@@ -484,49 +419,75 @@ public class ExponentManifest {
       throw new IOException("No compatible manifest found. SDK Versions supported: " + Constants.SDK_VERSIONS + " Provided manifestString: " + manifestString);
   }
 
-  private void fetchManifestStep2(final String manifestUrl, final String manifestString, final ExpoHeaders headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException, URISyntaxException, IOException {
+  private void fetchManifestStep2(final String manifestUrl, final String httpManifestUrl, final String manifestString, final ExpoHeaders headers, final ManifestListener listener, final boolean isEmbedded, boolean isCached) throws JSONException, URISyntaxException, IOException {
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.stopMethodTracing();
     }
-    Analytics.markEvent(Analytics.TimedEvent.FINISHED_MANIFEST_NETWORK_REQUEST);
+    if (headers != null) {
+      Analytics.markEvent(Analytics.TimedEvent.FINISHED_MANIFEST_NETWORK_REQUEST);
+    }
 
-    final JSONObject manifest = extractManifest(manifestString);
+    final JSONObject outerManifest = extractManifest(manifestString);
     final boolean isMainShellAppExperience = manifestUrl.equals(Constants.INITIAL_URL);
     final URI parsedManifestUrl = new URI(manifestUrl);
 
-    if (manifest.has(MANIFEST_STRING_KEY) && manifest.has(MANIFEST_SIGNATURE_KEY)) {
-      final JSONObject innerManifest = new JSONObject(manifest.getString(MANIFEST_STRING_KEY));
-      innerManifest.put(MANIFEST_LOADED_FROM_CACHE_KEY, isCached);
+    boolean isManifestSigned = outerManifest.has(MANIFEST_STRING_KEY) && outerManifest.has(MANIFEST_SIGNATURE_KEY);
 
+    JSONObject manifest = outerManifest;
+    if (isManifestSigned) {
+      // get inner manifest if manifest is wrapped in signature
+      manifest = new JSONObject(outerManifest.getString(MANIFEST_STRING_KEY));
+    }
+
+    // if the manifest we are passed is from the cache, we need to get the embedded manifest so that
+    // we can compare them in case embedded manifest is newer (i.e. user has installed a new APK)
+    boolean isUsingEmbeddedManifest = isEmbedded;
+    if (!isEmbedded && isCached) {
+      String embeddedResponse = mExponentNetwork.getClient().getHardCodedResponse(httpManifestUrl);
+      if (embeddedResponse != null) {
+        try {
+          JSONObject embeddedManifest = new JSONObject(embeddedResponse);
+          manifest = newerManifest(embeddedManifest, manifest);
+          isUsingEmbeddedManifest = embeddedManifest == manifest;
+        } catch (Exception e) {
+          EXL.e(TAG, e);
+        }
+      }
+    }
+    manifest.put(MANIFEST_LOADED_FROM_CACHE_KEY, isCached || isUsingEmbeddedManifest);
+
+    if (isManifestSigned) {
       final boolean isOffline = !ExponentNetwork.isNetworkAvailable(mContext);
 
-      if (isAnonymousExperience(innerManifest) || isMainShellAppExperience) {
+      if (isAnonymousExperience(manifest) || isMainShellAppExperience || isUsingEmbeddedManifest) {
         // Automatically verified.
-        fetchManifestStep3(manifestUrl, innerManifest, true, listener);
+        fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else {
+        final JSONObject finalManifest = manifest;
         mCrypto.verifyPublicRSASignature(Constants.API_HOST + "/--/manifest-public-key",
-            manifest.getString(MANIFEST_STRING_KEY), manifest.getString(MANIFEST_SIGNATURE_KEY), new Crypto.RSASignatureListener() {
+            outerManifest.getString(MANIFEST_STRING_KEY), outerManifest.getString(MANIFEST_SIGNATURE_KEY), new Crypto.RSASignatureListener() {
               @Override
               public void onError(String errorMessage, boolean isNetworkError) {
                 if (isOffline && isNetworkError) {
                   // automatically validate if offline and don't have public key
                   // TODO: we need to evict manifest from the cache if it doesn't pass validation when online
-                  fetchManifestStep3(manifestUrl, innerManifest, true, listener);
+                  fetchManifestStep3(manifestUrl, finalManifest, true, listener);
                 } else {
                   Log.w(TAG, errorMessage);
-                  fetchManifestStep3(manifestUrl, innerManifest, false, listener);
+                  fetchManifestStep3(manifestUrl, finalManifest, false, listener);
                 }
               }
 
               @Override
               public void onCompleted(boolean isValid) {
-                fetchManifestStep3(manifestUrl, innerManifest, isValid, listener);
+                fetchManifestStep3(manifestUrl, finalManifest, isValid, listener);
               }
             });
       }
     } else {
-      manifest.put(MANIFEST_LOADED_FROM_CACHE_KEY, isCached);
-      if (isEmbedded || isMainShellAppExperience) {
+      // if we're using a cached manifest that's stored without the signature, we can assume
+      // we've already verified it previously
+      if (isCached || isUsingEmbeddedManifest || isMainShellAppExperience) {
         fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else if (isThirdPartyHosted(parsedManifestUrl)){
         // Sandbox third party apps and consider them verified
@@ -546,13 +507,15 @@ public class ExponentManifest {
       }
     }
 
-    final String exponentServerHeader = headers.get(EXPONENT_SERVER_HEADER);
-    if (exponentServerHeader != null) {
-      try {
-        JSONObject eventProperties = new JSONObject(exponentServerHeader);
-        Analytics.logEvent(Analytics.LOAD_DEVELOPER_MANIFEST, eventProperties);
-      } catch (Throwable e) {
-        EXL.e(TAG, e);
+    if (headers != null) {
+      final String exponentServerHeader = headers.get(EXPONENT_SERVER_HEADER);
+      if (exponentServerHeader != null) {
+        try {
+          JSONObject eventProperties = new JSONObject(exponentServerHeader);
+          Analytics.logEvent(Analytics.LOAD_DEVELOPER_MANIFEST, eventProperties);
+        } catch (Throwable e) {
+          EXL.e(TAG, e);
+        }
       }
     }
   }

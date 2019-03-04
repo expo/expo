@@ -2,10 +2,6 @@
 title: Publishing
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 While you’re developing your project, you’re writing code on your
 computer, and when you use Expo CLI, a server and the React Native
 packager run on your machine and bundle up all your source code and make

@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseAnalytics.js","sourceRoot":"","sources":["../../src/analytics/FirebaseAnalytics.ts"],"names":[],"mappings":"AAAA,OAAO,yBAAyB,CAAC","sourcesContent":["import 'expo-firebase-analytics';\n"]}

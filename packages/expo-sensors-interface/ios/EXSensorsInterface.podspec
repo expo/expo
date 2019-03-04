@@ -15,9 +15,4 @@ Pod::Spec.new do |s|
   s.source_files   = 'EXSensorsInterface/**/*.{h,m}'
   s.preserve_paths = 'EXSensorsInterface/**/*.{h,m}'
   s.requires_arc   = true
-
-  s.dependency 'EXCore'
-
 end
-
-  

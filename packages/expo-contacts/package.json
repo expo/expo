@@ -1,7 +1,7 @@
 {
   "name": "expo-contacts",
-  "version": "2.0.0",
-  "description": "Expo Contacts universal module",
+  "version": "3.0.0",
+  "description": "Provides access to the phone's system contacts.",
   "main": "build/Contacts.js",
   "types": "build/Contacts.d.ts",
   "scripts": {
@@ -17,14 +17,23 @@
     "expo",
     "contacts"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/contacts/",
   "jest": {
     "preset": "expo-module-scripts"
   },
+  "unimodulePeerDependencies": {
+    "expo-core": "*"
+  },
   "dependencies": {
-    "expo-core": "~2.0.0",
     "uuid-js": "^0.7.5"
   },
   "devDependencies": {

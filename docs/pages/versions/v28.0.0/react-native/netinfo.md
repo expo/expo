@@ -3,10 +3,6 @@ id: netinfo
 title: NetInfo
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 NetInfo exposes info about online/offline status
 
 

@@ -7,6 +7,7 @@ import MonoText from '../../components/MonoText';
 import HeadingText from '../../components/HeadingText';
 
 const EXPO_ALBUM_NAME = 'Expo';
+const { MediaType = {} } = MediaLibrary;
 
 export default class MediaDetailsScreen extends React.Component {
   static navigationOptions = {
@@ -66,8 +67,8 @@ export default class MediaDetailsScreen extends React.Component {
     const aspectRatio = asset.height ? asset.width / asset.height : 1;
 
     switch (asset.mediaType) {
-      case MediaLibrary.MediaType.photo:
-      case MediaLibrary.MediaType.video: // TODO: render Expo.Video component
+      case MediaType.photo:
+      case MediaType.video: // TODO: render Expo.Video component
         return (
           <Image
             style={[styles.image, { aspectRatio }]}
@@ -113,7 +114,7 @@ export default class MediaDetailsScreen extends React.Component {
         <HeadingText>Base asset data</HeadingText>
         <MonoText>{JSON.stringify(asset, null, 2)}</MonoText>
 
-        { details && (
+        {details && (
           <View style={styles.details}>
             <HeadingText>MediaLibrary.getAssetInfoAsync(assetId)</HeadingText>
             <MonoText>{JSON.stringify(details, null, 2)}</MonoText>

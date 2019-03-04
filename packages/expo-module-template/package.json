@@ -1,6 +1,6 @@
 {
   "name": "expo-module-template",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -14,12 +14,14 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-module-template",
-  "dependencies": {},
   "peerDependencies": {
-    "expo-core": "~2.0.0"
+    "expo-core": "~3.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }
