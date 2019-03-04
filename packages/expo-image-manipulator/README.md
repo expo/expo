@@ -43,7 +43,7 @@ api project(':expo-image-manipulator')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.imagemanipulator.ImageManipulatorPackage;
+import expo.modules.imagemanipulator.ImageManipulatorPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

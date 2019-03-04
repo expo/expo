@@ -43,7 +43,7 @@ api project(':expo-analytics-amplitude')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.analytics.amplitude.AmplitudePackage;
+import expo.modules.analytics.amplitude.AmplitudePackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

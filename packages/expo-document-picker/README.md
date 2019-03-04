@@ -43,7 +43,7 @@ api project(':expo-document-picker')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.documentpicker.DocumentPickerPackage;
+import expo.modules.documentpicker.DocumentPickerPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
