@@ -49,5 +49,5 @@ export declare type TokenResponse = {
     } | null;
     idToken: string | null;
     tokenType: string | null;
-    refreshToken?: string;
+    refreshToken: string | null;
 };

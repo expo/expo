@@ -124,5 +124,5 @@ export type TokenResponse = {
   additionalParameters: { [key: string]: any } | null;
   idToken: string | null;
   tokenType: string | null;
-  refreshToken?: string;
+  refreshToken: string | null;
 };

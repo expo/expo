@@ -25,7 +25,7 @@ export type LogInResult =
     }
   | {
       type: 'success';
-      accessToken?: string;
+      accessToken: string | null;
       idToken: string | null;
       refreshToken: string | null;
       user: GoogleUser;
