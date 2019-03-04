@@ -1,5 +1,6 @@
 {
   "name": "expo-firebase",
+  "sideEffects": true,
   "version": "1.0.0-rc.1",
   "description": "Expo Unimodule for interfacing with Firebase Core",
   "main": "src/firebase/Firebase.js",
