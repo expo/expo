@@ -41,9 +41,6 @@ export async function requestConnectionPriorityAsync(
   invariantUUID(peripheralUUID);
   return await ExpoBluetooth.requestConnectionPriorityAsync(peripheralUUID, connectionPriority);
 }
-export function observeBluetoothAvailabilty(callback: (updates: Central) => void): Subscription {
-  return addHandlerForKey(EVENTS.SYSTEM_AVAILABILITY_CHANGED, callback);
-}
 export function observeBluetoothEnabled(callback: (updates: Central) => void): Subscription {
-  return addHandlerForKey(EVENTS.SYSTEM_ENABLED_STATE_CHANGED, callback);
+  return addHandlerForKey(EVENTS.SYSTEM_ENABLED_STATE_CHANGED!, callback);
 }
