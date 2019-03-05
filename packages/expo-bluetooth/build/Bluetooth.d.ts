@@ -1,6 +1,6 @@
 import { Subscription } from 'expo-core';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
-import { Base64, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, Priority, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
+import { Base64, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, Priority, StateUpdatedCallback, UUID, NativeDescriptor, WriteCharacteristicOptions, ScanOptions, CancelScanningCallback } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, EVENTS, TYPES } from './BluetoothConstants';
 import AndroidGATTError from './errors/AndroidGATTError';
 export * from './Bluetooth.types';
@@ -16,19 +16,6 @@ export declare function requestPermissionAsync(): Promise<{
 export declare function getPermissionAsync(): Promise<{
     status: PermissionStatus;
 }>;
-declare type ScanOptions = {
-    serviceUUIDsToQuery?: string[];
-    androidScanMode?: any;
-    androidMatchMode?: any;
-    /**
-     * Match as many advertisement per filter as hw could allow
-     * dependes on current capability and availability of the resources in hw.
-     */
-    androidNumberOfMatches?: any;
-    /** Oreo (26)+ */
-    androidOnlyConnectable?: boolean;
-};
-declare type CancelScanningCallback = () => void;
 /**
  * **iOS:**
  *
@@ -50,35 +37,35 @@ export declare function connectAsync(peripheralUUID: UUID, options?: {
 }): Promise<NativePeripheral>;
 /** This method will also cancel pending connections */
 export declare function disconnectAsync(peripheralUUID: UUID): Promise<any>;
-export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: any): Promise<Base64 | undefined>;
-export declare function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data, }: any): Promise<any>;
+export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: any): Promise<Base64 | null>;
+export declare function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data, }: any): Promise<NativeDescriptor>;
 export declare function setNotifyCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, shouldNotify, }: any): Promise<NativeCharacteristic>;
 export declare function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }: any): Promise<Base64 | null>;
 export declare function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: any): Promise<NativeCharacteristic>;
 export declare function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: WriteCharacteristicOptions): Promise<NativeCharacteristic>;
 export declare function readRSSIAsync(peripheralUUID: UUID): Promise<number>;
-export declare function getPeripheralsAsync(): Promise<any[]>;
+export declare function getPeripheralsAsync(): Promise<NativePeripheral[]>;
 export declare function getConnectedPeripheralsAsync(serviceUUIDsToQuery?: UUID[]): Promise<NativePeripheral[]>;
-export declare function getCentralAsync(): Promise<any>;
+export declare function getCentralAsync(): Promise<Central>;
 export declare function getPeripheralAsync({ peripheralUUID }: {
     peripheralUUID: any;
-}): Promise<any[]>;
+}): Promise<NativePeripheral>;
 export declare function getServiceAsync({ peripheralUUID, serviceUUID }: {
     peripheralUUID: any;
     serviceUUID: any;
-}): Promise<any[]>;
+}): Promise<NativeService>;
 export declare function getCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }: {
     peripheralUUID: any;
     serviceUUID: any;
     characteristicUUID: any;
-}): Promise<any[]>;
+}): Promise<NativeCharacteristic>;
 export declare function getDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: {
     peripheralUUID: any;
     serviceUUID: any;
     characteristicUUID: any;
     descriptorUUID: any;
-}): Promise<any[]>;
-export declare function isScanningAsync(): Promise<any>;
+}): Promise<NativeDescriptor>;
+export declare function isScanningAsync(): Promise<boolean>;
 export declare function discoverServicesForPeripheralAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
@@ -119,7 +106,7 @@ export declare const android: {
     unbondAsync(peripheralUUID: string): Promise<any>;
     enableBluetoothAsync(isBluetoothEnabled?: boolean): Promise<void>;
     getBondedPeripheralsAsync(): Promise<NativePeripheral[]>;
-    requestConnectionPriorityAsync(peripheralUUID: string, connectionPriority: Priority): Promise<any>;
+    requestConnectionPriorityAsync(peripheralUUID: string, connectionPriority: Priority): Promise<void>;
     observeBluetoothAvailabilty(callback: (updates: Central) => void): Subscription;
     observeBluetoothEnabled(callback: (updates: Central) => void): Subscription;
 };

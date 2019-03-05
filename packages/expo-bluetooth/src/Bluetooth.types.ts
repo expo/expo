@@ -225,4 +225,20 @@ type Prom = {
   resolve: Function;
   reject: Function;
 };
+
 export type TransactionHandler = any; // { callbacks: Array<Function | Prom> } | Prom;
+
+export type ScanOptions = {
+  serviceUUIDsToQuery?: string[];
+  androidScanMode?: any;
+  androidMatchMode?: any;
+  /**
+   * Match as many advertisement per filter as hw could allow
+   * dependes on current capability and availability of the resources in hw.
+   */
+  androidNumberOfMatches?: any;
+  /** Oreo (26)+ */
+  androidOnlyConnectable?: boolean;
+};
+
+export type CancelScanningCallback = () => void;

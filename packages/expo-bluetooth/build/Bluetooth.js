@@ -1,7 +1,7 @@
 import { Platform } from 'expo-core';
 import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
-import { CharacteristicProperty, } from './Bluetooth.types';
+import { CharacteristicProperty } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
 import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './BluetoothEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
@@ -121,6 +121,7 @@ export async function disconnectAsync(peripheralUUID) {
     return await ExpoBluetooth.disconnectPeripheralAsync(peripheralUUID);
 }
 export async function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }) {
+    invariantAvailability('readDescriptorAsync');
     const { descriptor } = await ExpoBluetooth.readDescriptorAsync({
         peripheralUUID,
         serviceUUID,
@@ -130,7 +131,6 @@ export async function readDescriptorAsync({ peripheralUUID, serviceUUID, charact
     });
     return descriptor.value;
 }
-/* TODO: Bacon: Add a return type */
 export async function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data, }) {
     invariantAvailability('writeDescriptorAsync');
     const { descriptor } = await ExpoBluetooth.writeDescriptorAsync({
@@ -155,6 +155,7 @@ export async function setNotifyCharacteristicAsync({ peripheralUUID, serviceUUID
 }
 /* TODO: Bacon: Add a return type */
 export async function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }) {
+    invariantAvailability('readCharacteristicAsync');
     const { characteristic } = await ExpoBluetooth.readCharacteristicAsync({
         peripheralUUID,
         serviceUUID,
@@ -165,6 +166,7 @@ export async function readCharacteristicAsync({ peripheralUUID, serviceUUID, cha
 }
 /* TODO: Bacon: Add a return type */
 export async function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }) {
+    invariantAvailability('writeCharacteristicAsync');
     const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
         peripheralUUID,
         serviceUUID,
@@ -176,6 +178,7 @@ export async function writeCharacteristicAsync({ peripheralUUID, serviceUUID, ch
 }
 // This is ~3x faster on Android.
 export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }) {
+    invariantAvailability('writeCharacteristicAsync');
     const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
         peripheralUUID,
         serviceUUID,
@@ -388,7 +391,7 @@ addListener(({ data, event }) => {
             // noop
             break;
         case EVENTS.PERIPHERAL_CONNECTED:
-            console.log('Connect peripheral: ', peripheral.id);
+            // console.log('Connect peripheral: ', peripheral!.id);
             break;
         case EVENTS.CENTRAL_STATE_CHANGED:
         case EVENTS.PERIPHERAL_DISCONNECTED:

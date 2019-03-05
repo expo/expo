@@ -171,3 +171,16 @@ export declare type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
     data: Base64;
 };
 export declare type TransactionHandler = any;
+export declare type ScanOptions = {
+    serviceUUIDsToQuery?: string[];
+    androidScanMode?: any;
+    androidMatchMode?: any;
+    /**
+     * Match as many advertisement per filter as hw could allow
+     * dependes on current capability and availability of the resources in hw.
+     */
+    androidNumberOfMatches?: any;
+    /** Oreo (26)+ */
+    androidOnlyConnectable?: boolean;
+};
+export declare type CancelScanningCallback = () => void;
