@@ -18,37 +18,37 @@ static id EXNullIfEmpty(NSString *input) {
 
 @interface EXBluetooth (JSON)
 
-+ (NSDictionary *)ScanningOptionsJSONToNative:(NSDictionary *)input;
++ (NSDictionary *)ScanningOptionsJSONToNative:(nullable NSDictionary *)input;
 
-+ (NSDictionary *)EXBluetoothPeripheralNativeToJSON:(EXBluetoothPeripheral *)input;
++ (nullable NSDictionary *)EXBluetoothPeripheralNativeToJSON:(EXBluetoothPeripheral *)input;
 
-+ (NSDictionary *)EXBluetoothCentralManagerNativeToJSON:(EXBluetoothCentralManager *)input;
++ (nullable NSDictionary *)EXBluetoothCentralManagerNativeToJSON:(EXBluetoothCentralManager *)input;
 
-+ (NSDictionary *)EXBluetoothServiceNativeToJSON:(EXBluetoothService *)input;
++ (nullable NSDictionary *)EXBluetoothServiceNativeToJSON:(EXBluetoothService *)input;
 
-+ (NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(EXBluetoothCharacteristic *)input;
++ (nullable NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(EXBluetoothCharacteristic *)input;
 
-+ (NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input;
++ (nullable NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input;
 
-+ (NSMutableArray *)EXBluetoothPeripheralListNativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input;
++ (nullable NSMutableArray *)EXBluetoothPeripheralListNativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input;
 
-+ (NSDictionary *)NSErrorNativeToJSON:(NSError *)input;
++ (nullable NSDictionary *)NSErrorNativeToJSON:(NSError *)input;
 
-+ (NSDictionary *)advertisementDataNativeToJSON:(NSDictionary<NSString *,id> *)input;
++ (nullable NSDictionary *)advertisementDataNativeToJSON:(NSDictionary<NSString *,id> *)input;
 
-+ (NSMutableArray<CBUUID *> *)CBUUIDListJSONToNative:(NSArray *)input;
++ (nullable NSMutableArray<CBUUID *> *)CBUUIDListJSONToNative:(NSArray *)input;
 
 + (CBCharacteristicProperties)CBCharacteristicPropertiesListJSONToNative:(NSString *)input;
 
 + (CBCharacteristicProperties)CBCharacteristicPropertiesJSONToNative:(NSString *)input;
 
-+ (NSMutableArray<NSString *> *)CBCharacteristicPropertiesNativeToJSON:(CBCharacteristicProperties)input;
++ (nullable NSMutableArray<NSString *> *)CBCharacteristicPropertiesNativeToJSON:(CBCharacteristicProperties)input;
 
 + (NSString *)CBPeripheralStateNativeToJSON:(CBPeripheralState)input;
 
 + (NSString *)CBManagerStateNativeToJSON:(CBManagerState)input;
 
-+ (NSDictionary *)CBL2CAPChannelNativeToJSON:(CBL2CAPChannel *)input
++ (nullable NSDictionary *)CBL2CAPChannelNativeToJSON:(CBL2CAPChannel *)input
 API_AVAILABLE(ios(11.0));
 
 @end

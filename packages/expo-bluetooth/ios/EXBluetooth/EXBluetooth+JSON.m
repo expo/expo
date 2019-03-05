@@ -171,7 +171,7 @@
   return output;
 }
 
-+ (NSDictionary *)NSErrorNativeToJSON:(NSError *)input
++ (nullable NSDictionary *)NSErrorNativeToJSON:(NSError *)input
 {
   if (!input) return nil;
   
@@ -221,14 +221,14 @@
            };
 }
 
-+ (NSString *)CBUUID_NativeToJSON:(CBUUID *)input
++ (nullable NSString *)CBUUID_NativeToJSON:(CBUUID *)input
 {
   if (!input) return nil;
   // TODO: Bacon: Maybe we should return all of the data??
   return [input UUIDString];
 }
 
-+ (NSMutableArray<NSString *> *)CBUUIDList_NativeToJSON:(NSArray<CBUUID *> *)input
++ (nullable NSMutableArray<NSString *> *)CBUUIDList_NativeToJSON:(NSArray<CBUUID *> *)input
 {
   if (!input) return nil;
   
@@ -240,7 +240,7 @@
   return output;
 }
 
-+ (NSMutableArray<CBUUID *> *)CBUUIDListJSONToNative:(NSArray *)input
++ (nullable NSMutableArray<CBUUID *> *)CBUUIDListJSONToNative:(NSArray *)input
 {
   if (!input) return nil;
   
@@ -258,7 +258,7 @@
   return output;
 }
 
-+ (NSDictionary *)serviceData_NativeToJSON:(NSDictionary<CBUUID *, NSData *> *)input
++ (nullable NSDictionary *)serviceData_NativeToJSON:(NSDictionary<CBUUID *, NSData *> *)input
 {
   if (!input) return nil;
   
@@ -270,7 +270,7 @@
   return output;
 }
 
-+ (NSDictionary *)ScanningOptionsJSONToNative:(NSDictionary *)input
++ (NSDictionary *)ScanningOptionsJSONToNative:(nullable NSDictionary *)input
 {
   if (!input) return @{};
   NSMutableDictionary *output = [NSMutableDictionary new];
@@ -288,7 +288,7 @@
   
 }
 
-+ (NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input
++ (nullable NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input
 {
   if (!input) return nil;
   
@@ -327,7 +327,7 @@
            };
 }
 // TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
-+ (NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(EXBluetoothCharacteristic *)input
++ (nullable NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(EXBluetoothCharacteristic *)input
 {
   if (!input) return nil;
   
@@ -349,7 +349,7 @@
            };
 }
 
-+ (NSDictionary *)EXBluetoothServiceNativeToJSON:(EXBluetoothService *)input
++ (nullable NSDictionary *)EXBluetoothServiceNativeToJSON:(EXBluetoothService *)input
 {
   if (!input) return nil;
   
@@ -367,7 +367,7 @@
            };
 }
 
-+ (NSDictionary *)EXBluetoothPeripheralNativeToJSON:(EXBluetoothPeripheral *)input
++ (nullable NSDictionary *)EXBluetoothPeripheralNativeToJSON:(EXBluetoothPeripheral *)input
 {
   if (!input) return nil;
   
@@ -385,7 +385,7 @@
            };
 }
 
-+ (NSDictionary *)EXBluetoothCentralManagerNativeToJSON:(EXBluetoothCentralManager *)input
++ (nullable NSDictionary *)EXBluetoothCentralManagerNativeToJSON:(EXBluetoothCentralManager *)input
 {
   if (!input) return nil;
   
@@ -397,14 +397,13 @@
            };
 }
 
-+ (NSString *)NSData_NativeToJSON:(NSData *)input
++ (nullable NSString *)NSData_NativeToJSON:(NSData *)input
 {
   if (!input) return nil;
   return [input base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
-
-+ (NSDictionary *)CBPeer_NativeToJSON:(CBPeer *)input
++ (nullable NSDictionary *)CBPeer_NativeToJSON:(CBPeer *)input
 {
   if (!input) return nil;
   
@@ -415,7 +414,7 @@
            };
 }
 
-+ (NSDictionary *)CBL2CAPChannelNativeToJSON:(CBL2CAPChannel *)input
++ (nullable NSDictionary *)CBL2CAPChannelNativeToJSON:(CBL2CAPChannel *)input
 API_AVAILABLE(ios(11.0)) {
   if (!input) return nil;
   
