@@ -3,7 +3,6 @@
 #ifndef EXBluetoothConstants_h
 #define EXBluetoothConstants_h
 
-static NSString *const EXBluetoothEvent_SYSTEM_ENABLED_STATE_CHANGED = @"SYSTEM_ENABLED_STATE_CHANGED";
 static NSString *const EXBluetoothEvent_SYSTEM_AVAILABILITY_CHANGED = @"SYSTEM_AVAILABILITY_CHANGED";
 static NSString *const EXBluetoothEvent_CENTRAL_SCAN_STARTED = @"CENTRAL_SCAN_STARTED";
 static NSString *const EXBluetoothEvent_CENTRAL_SCAN_STOPPED = @"CENTRAL_SCAN_STOPPED";
