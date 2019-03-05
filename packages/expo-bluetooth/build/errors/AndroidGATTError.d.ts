@@ -1,5 +1,5 @@
 import BluetoothPlatformError from './BluetoothPlatformError';
-import GATTStatusCode from '../GATTStatusCode';
+import GATTStatusCode from './GATTStatusCode';
 export default class AndroidGATTError extends BluetoothPlatformError {
     gattStatusCode: GATTStatusCode;
     constructor({ gattStatusCode, ...props }: {
