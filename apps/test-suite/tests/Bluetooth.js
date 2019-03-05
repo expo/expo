@@ -1,4 +1,3 @@
-import { Permissions } from 'expo';
 import * as Bluetooth from 'expo-bluetooth';
 import {
   Characteristics,
@@ -99,21 +98,27 @@ async function getConnectedPeripheralAsync(onDisconnect) {
           attemptedConnections.indexOf(peripheral.id) < 0
         ) {
           attemptedConnections.push(peripheral.id);
-          console.log('attempt to connect to ', peripheral.id);
+          console.log('getConnectedPeripheralAsync(): attempt to connect to ', peripheral.id);
           const _connected = await attemptQuickConnectionAsync(peripheral.id, onDisconnect, 3000);
           if (!connected && _connected) {
             connected = _connected;
-            console.log('actually connected to: ', connected.id, connected.name);
-            stopScanning();
+            console.log(
+              'getConnectedPeripheralAsync(): actually connected to: ',
+              connected.id,
+              connected.name
+            );
+            await stopScanning();
 
-            resolve(peripheral);
-
+            let disconnectionRequests = [];
             for (const connection of attemptedConnections) {
               if (connection !== connected.id) {
-                console.log('CANCEL ', connection);
-                Bluetooth.disconnectAsync(connection);
+                console.log('getConnectedPeripheralAsync(): Cancel losing: ', connection);
+                disconnectionRequests.push(async () => Bluetooth.disconnectAsync(connection));
               }
             }
+            await Promise.all(disconnectionRequests);
+
+            resolve(peripheral);
           }
         }
       }
@@ -121,7 +126,7 @@ async function getConnectedPeripheralAsync(onDisconnect) {
   });
 }
 
-function scanForSinglePeripheral(options) {
+function scanForSinglePeripheral(options = { androidOnlyConnectable: true }) {
   return new Promise(async resolve => {
     const stopScanning = await Bluetooth.startScanningAsync(options, peripheral => {
       /* Named peripherals have a higher chance of interaction. For brevity let's use them. */
@@ -149,19 +154,15 @@ export async function test({
   expect,
   afterEach,
   beforeEach,
+  beforeAll,
   jasmine,
 }) {
-  await Permissions.askAsync(Permissions.LOCATION);
+  await Bluetooth.requestPermissionAsync();
 
-  // const central = await Bluetooth.getCentralAsync();
-  // console.log("CENTRAL", central);
-  // const stopScanning = await Bluetooth.startScanningAsync({}, async (props) => {
-  //   console.log("BEFORE CENTRAL:", await Bluetooth.getCentralAsync());
-  //   console.log("FOUND", props);
-  //   await stopScanning();
-  //   const central = await Bluetooth.getCentralAsync();
-  //   console.log("STOPPED CENTRAL:", central);
-  // });
+  const connected = await Bluetooth.getConnectedPeripheralsAsync();
+  if (connected.length !== 0) {
+    throw new Error('There should not be any connected peripherals at startup');
+  }
 
   // return;
   async function clearAllConnections() {
@@ -233,7 +234,7 @@ export async function test({
   }
 
   function rejectsInvalidPeripheralUUID(method) {
-    it('rejects an invalid peripheral UUID', async () => {
+    it(`rejects an invalid peripheral UUID`, async () => {
       const error = await toThrowAsync(method);
       if (error) {
         expect(error.code).toBe('ERR_BLE_INVALID_UUID');
@@ -247,10 +248,7 @@ export async function test({
     console.log('- still connected: ', connected.length);
   }
 
-  // const error = Bluetooth._getGATTStatusError('ERR_BLE_GATT:' + 0x01);
-  // console.log('Test Error', error.log());
-
-  xdescribe('1. Scanning', () => {
+  describe('1. Scanning', () => {
     beforeEach(resetBLEStateAsync);
 
     describe('startScanAsync', () => {
@@ -284,10 +282,10 @@ export async function test({
     });
   });
 
-  describe('2. Connecting', async () => {
-    beforeEach(resetBLEStateAsync);
+  xdescribe('2. Connecting', async () => {
+    afterEach(resetBLEStateAsync);
 
-    xdescribe('disconnectAsync', () => {
+    describe('disconnectAsync', () => {
       rejectsInvalidPeripheralUUID(Bluetooth.disconnectAsync);
     });
 
@@ -295,17 +293,13 @@ export async function test({
       // rejectsInvalidPeripheralUUID(Bluetooth.connectAsync);
       let intervalID;
 
-      beforeEach(() => {
+      beforeEach(async () => {
         intervalID = setInterval(() => logConnectedPeripheralsCountAsync(), 1000);
+        await resetBLEStateAsync();
       });
 
-      afterEach(() => {
+      afterEach(async () => {
         clearInterval(intervalID);
-      });
-
-      xit(`can discover and connect to a peripheral`, async () => {
-        const connectedPeripheral = await getConnectedPeripheralAsync();
-        validatePeripheral(connectedPeripheral, expect);
       });
 
       it(`can discover and connect to a peripheral, then disconnect`, async () => {
@@ -314,21 +308,15 @@ export async function test({
         console.log('Disconnect from peripheral: ', connectedPeripheral.id);
         await Bluetooth.disconnectAsync(connectedPeripheral.id);
       });
-      it(`B. can discover and connect to a peripheral, then disconnect`, async () => {
-        const connectedPeripheral = await getConnectedPeripheralAsync();
-        validatePeripheral(connectedPeripheral, expect);
-        console.log('Disconnect from peripheral: ', connectedPeripheral.id);
-        await Bluetooth.disconnectAsync(connectedPeripheral.id);
-      });
 
-      xit(`can discover, connect, and load a peripheral`, async () => {
+      it(`can discover, connect, and load a peripheral`, async () => {
         const connectedPeripheral = await getConnectedPeripheralAsync();
         validatePeripheral(connectedPeripheral, expect);
         const loaded = await Bluetooth.loadPeripheralAsync(connectedPeripheral, true);
         expect(loaded).toBeDefined();
       });
 
-      xit('calls onDisconnect', async () => {
+      it('calls onDisconnect', async () => {
         function connectThenDisconnect() {
           return new Promise(async (resolve, reject) => {
             try {
@@ -347,25 +335,19 @@ export async function test({
       });
 
       // TODO: Bacon: This is hard on iOS because it can connect instantly. Maybe there is a way to clear caches.
-      xit('times out', async () => {
+      it('times out', async () => {
         const peripheral = await scanForSinglePeripheral();
         const { code } = await toThrowAsync(() =>
           Bluetooth.connectAsync(peripheral.id, { timeout: 1 })
         );
-        expect(code).toBe('timeout');
+        expect(code).toBe('ERR_BLE_TIMEOUT');
       });
-    });
-
-    xit(`can discover, connect, and disconnect a peripheral`, async () => {
-      const connectedPeripheral = await getConnectedPeripheralAsync();
-      validatePeripheral(connectedPeripheral, expect);
-      await Bluetooth.disconnectAsync(connectedPeripheral.id);
     });
   });
 
-  return;
+  describe('3. Retrieving', () => {
+    beforeEach(resetBLEStateAsync);
 
-  xdescribe('3. Retrieving', () => {
     it('getPeripheralsAsync', async () => {
       const arr = await Bluetooth.getPeripheralsAsync();
       expect(Array.isArray(arr)).toBe(true);
@@ -384,15 +366,18 @@ export async function test({
     });
   });
 
-  xdescribe('4. RSSI - readRSSIAsync()', () => {
-    rejectsInvalidPeripheralUUID(Bluetooth.readRSSIAsync);
+  // TODO: Bacon: Doesn't work on Android
+  describe('4. RSSI - readRSSIAsync()', () => {
+    beforeEach(resetBLEStateAsync);
 
-    it('fails if the peripheral is not connected.', async () => {
-      const peripheral = await scanForSinglePeripheral();
+    // rejectsInvalidPeripheralUUID(Bluetooth.readRSSIAsync);
+
+    xit('fails if the peripheral is not connected.', async () => {
+      const peripheral = await getConnectedPeripheralAsync();
       if (peripheral.state === Bluetooth.PeripheralState.Connected) {
         await Bluetooth.disconnectAsync(peripheral.id);
       }
-
+      console.log('Run with disconnection: ', peripheral.id);
       const { message: errorMessage } = await toThrowAsync(() =>
         Bluetooth.readRSSIAsync(peripheral.id)
       );
@@ -400,7 +385,7 @@ export async function test({
     });
 
     // TODO: Bacon: Broken on iOS - not ever calling the delegate method didReadRSSI
-    xit('can read an RSSI as expected.', async () => {
+    it('can read an RSSI as expected.', async () => {
       const connectedPeripheral = await getConnectedPeripheralAsync();
       const RSSI = await Bluetooth.readRSSIAsync(connectedPeripheral.id);
       console.log('HEYYYYY', RSSI);
@@ -409,7 +394,9 @@ export async function test({
     });
   });
 
-  xdescribe('5. Observing', () => {
+  describe('5. Observing', () => {
+    beforeEach(resetBLEStateAsync);
+
     describe('observeUpdates()', () => {
       it('will be called with all of the current peripheral data.', async () => {
         function getsUpdated() {
@@ -427,10 +414,10 @@ export async function test({
         stopScanning();
       });
     });
-    describe('observeStateAsync()', () => {
+    describe('observeCentralStateAsync()', () => {
       function getCentralManagerStateAsync() {
         return new Promise(async resolve => {
-          const subscription = await Bluetooth.observeStateAsync(state => {
+          const subscription = await Bluetooth.observeCentralStateAsync(state => {
             subscription.remove();
             resolve(state);
           });
@@ -442,24 +429,22 @@ export async function test({
         expect(Object.values(Bluetooth.CentralState).includes(state)).toBe(true);
       });
     });
+
+    xdescribe('modify notifications', () => {
+      // it('shouldNotifyDescriptorAsync', async () => {
+      //     if (!isNotifying && properties.includes('notify')) {
+      //       await Bluetooth.shouldNotifyDescriptorAsync({
+      //         ...getGATTNumbersFromID(this.props.id),
+      //         shouldNotify: true,
+      //       });
+      //     }
+      // });
+    });
   });
-  //   const peripheral = await scanForSinglePeripheral();
-  //       validatePeripheral(peripheral, expect);
 
-  //   afterEach(unmockAllProperties);
+  describe('6. Discovery', () => {
+    beforeEach(resetBLEStateAsync);
 
-  //   describe('modify notifications', () => {
-  //     describe('shouldNotifyDescriptorAsync', () => {
-  //       //   if (!isNotifying && properties.includes('notify')) {
-  //       //     await Bluetooth.shouldNotifyDescriptorAsync({
-  //       //       ...getGATTNumbersFromID(this.props.id),
-  //       //       shouldNotify: true,
-  //       //     });
-  //       //   }
-  //     });
-  //   });
-
-  xdescribe('6. Discovery', () => {
     describe('discoverServicesForPeripheralAsync()', async () => {
       it(`discovers, then connects to a peripheral, the peripheral then discovers it's services.`, async () => {
         const connectedPeripheral = await getConnectedPeripheralAsync();
@@ -654,47 +639,56 @@ export async function test({
   });
 
   if (Platform.OS === 'android') {
-    xdescribe('Android only', () => {
-      //   beforeEach(mockPlatformAndroid);
-      //   afterEach(unmockAllProperties);
-      xdescribe('requestMTUAsync', () => {
-        it(`works as expected`, async () => {
-          const peripheral = await getConnectedPeripheralAsync();
-          await Bluetooth.android.requestMTUAsync(peripheral.id, 4);
-        });
-      });
+    describe('Android only', () => {
+      beforeEach(resetBLEStateAsync);
 
-      xdescribe('bonding', () => {
+      describe('requestConnectionPriorityAsync', () => {
         it(`works as expected`, async () => {
-          const peripheral = await scanForSinglePeripheral();
-          await Bluetooth.android.createBondAsync(peripheral.id);
-
-          await Bluetooth.android.removeBondAsync(peripheral.id);
-        });
-      });
-      xdescribe('enableBluetoothAsync', () => {
-        it(`works as expected`, async () => {
-          // Bluetooth.android.observeBluetoothAvailabilty(central => {})
-          await Bluetooth.android.enableBluetoothAsync(true);
-        });
-      });
-      xdescribe('getBondedPeripheralsAsync', () => {
-        it(`works as expected`, async () => {
-          await Bluetooth.android.getBondedPeripheralsAsync();
-        });
-      });
-      xdescribe('requestConnectionPriorityAsync', () => {
-        it(`works as expected`, async () => {
-          const peripheral = await scanForSinglePeripheral();
+          const connectedPeripheral = await getConnectedPeripheralAsync();
           /// TODO: Bacon: No way to tell if it worked or not
           await Bluetooth.android.requestConnectionPriorityAsync(
-            peripheral.id,
+            connectedPeripheral.id,
             Bluetooth.Priority.High
           );
         });
       });
+
+      describe('requestMTUAsync', () => {
+        it(`works as expected`, async () => {
+          const connectedPeripheral = await getConnectedPeripheralAsync();
+          await Bluetooth.android.requestMTUAsync(connectedPeripheral.id, 4);
+        });
+      });
+
+      describe('bonding', () => {
+        it(`bonds then unbonds`, async () => {
+          const connectedPeripheral = await getConnectedPeripheralAsync();
+          await Bluetooth.android.bondAsync(connectedPeripheral.id);
+          await Bluetooth.android.unbondAsync(connectedPeripheral.id);
+        });
+      });
+
+      describe('enableBluetoothAsync', () => {
+        xit(`works as expected`, async () => {
+          // Bluetooth.android.observeBluetoothAvailabilty(central => {})
+          // await Bluetooth.android.enableBluetoothAsync(false);
+
+          await Bluetooth.android.enableBluetoothAsync(true);
+        });
+      });
+
+      describe('getBondedPeripheralsAsync', () => {
+        it(`works as expected`, async () => {
+          await Bluetooth.android.getBondedPeripheralsAsync();
+        });
+      });
     });
   }
+
+  xdescribe('Errors', () => {
+    // const error = Bluetooth._getGATTStatusError('ERR_BLE_GATT:' + 0x01);
+    // console.log('Test Error', error.log());
+  });
 }
 
 /**  
