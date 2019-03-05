@@ -36,7 +36,6 @@ public class EXBluetoothChildObject extends EXBluetoothObject {
 
   protected Bundle sendEvent(String eventName, int gattStatusCode) {
     Bundle output = new Bundle();
-//    output.putString(BluetoothConstants.JSON.TRANSACTION_ID, transactionIdForOperation(transaction));
     output.putBundle(BluetoothConstants.JSON.PERIPHERAL, getPeripheral().toJSON());
     output.putBundle(BluetoothConstants.JSON.ERROR, BluetoothError.fromGattStatusCodeAsJSON(gattStatusCode));
     return output;

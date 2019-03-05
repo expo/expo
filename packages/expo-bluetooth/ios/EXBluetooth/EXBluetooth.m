@@ -100,6 +100,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
                @"CHARACTERISTIC": EXBluetoothCharacteristicKey,
                },
            @"EVENTS": @{
+               @"UPDATE_STATE": EXBluetoothEvent_UPDATE_STATE,
                @"CENTRAL_SCAN_STARTED": EXBluetoothEvent_CENTRAL_SCAN_STARTED,
                @"CENTRAL_SCAN_STOPPED": EXBluetoothEvent_CENTRAL_SCAN_STOPPED,
                @"CENTRAL_STATE_CHANGED": EXBluetoothEvent_CENTRAL_STATE_CHANGED,
@@ -135,7 +136,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 
 - (void)emitFullState
 {
-  [self emit:@"UPDATE" data:@{
+  [self emit:EXBluetoothEvent_UPDATE_STATE data:@{
                               EXBluetoothCentralKey: EXNullIfNil([_manager getJSON]),
                               EXBluetoothPeripheralsKey: [EXBluetooth.class EXBluetoothPeripheralListNativeToJSON:[_manager.discoveredPeripherals allValues]]
                               }];
@@ -306,14 +307,6 @@ EX_EXPORT_METHOD_AS(connectPeripheralAsync,
       resolve(EXNullIfNil(peripheralData));
     }
     
-    // TODO: Bacon: Legacy?
-    //               [self
-    //                emit:EXBluetoothEvent_PERIPHERAL_CONNECTED
-    //                data:@{
-    //                       EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", @"connect", peripheralData[@"id"]],
-    //                       EXBluetoothCentralKey: EXNullIfNil([centralManager getJSON]),
-    //                       EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
-    //                       }];
   } withDidDisconnectPeripheralCallback:^(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error) {
     [self emitFullState];
     
@@ -357,18 +350,6 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
     } else {
       resolve(EXNullIfNil(peripheralData));
     }
-    
-    //    if (weakSelf) {
-    //      [weakSelf.manager updateLocalPeripheralStore:peripheral.peripheral];
-    //    }
-    // TODO: Bacon: Legacy?
-    //    [self
-    //     emit:EXBluetoothEvent_PERIPHERAL_UPDATED_RSSI
-    //     data:@{
-    //            EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", EXBluetoothRSSIKey, peripheralData[@"id"]],
-    //            EXBluetoothRSSIKey: RSSI,
-    //            EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
-    //            }];
   }];
   
 }

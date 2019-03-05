@@ -3,6 +3,7 @@
 #ifndef EXBluetoothConstants_h
 #define EXBluetoothConstants_h
 
+static NSString *const EXBluetoothEvent_UPDATE_STATE = @"UPDATE_STATE";
 static NSString *const EXBluetoothEvent_CENTRAL_SCAN_STARTED = @"CENTRAL_SCAN_STARTED";
 static NSString *const EXBluetoothEvent_CENTRAL_SCAN_STOPPED = @"CENTRAL_SCAN_STOPPED";
 static NSString *const EXBluetoothEvent_CENTRAL_STATE_CHANGED = @"CENTRAL_STATE_CHANGED";
@@ -53,6 +54,5 @@ static NSString *const EXBluetoothDescriptorUUID = @"descriptorUUID";
 static NSString *const EXBluetoothEventKey = @"event";
 static NSString *const EXBluetoothDataKey = @"data";
 static NSString *const EXBluetoothErrorKey = @"error";
-static NSString *const EXBluetoothTransactionIdKey = @"transactionId";
 
 #endif /* EXBluetoothConstants_h */

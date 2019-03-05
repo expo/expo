@@ -486,7 +486,7 @@ export async function _reset(): Promise<void> {
 addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   const { peripheral, peripherals, central, error } = data;
 
-  if (event === 'UPDATE') {
+  if (event === EVENTS.UPDATE_STATE) {
     clearPeripherals();
     if (peripherals) {
       for (const peripheral of peripherals) {
@@ -498,21 +498,6 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
   }
   
   switch (event) {
-    case EVENTS.DESCRIPTOR_DID_READ:
-    case EVENTS.DESCRIPTOR_DID_WRITE:
-    case EVENTS.CHARACTERISTIC_DID_READ:
-    case EVENTS.CHARACTERISTIC_DID_WRITE:
-    case EVENTS.CHARACTERISTIC_DID_NOTIFY:
-    case EVENTS.PERIPHERAL_DISCOVERED_SERVICES:
-    case EVENTS.SERVICE_DISCOVERED_CHARACTERISTICS:
-    case EVENTS.SERVICE_DISCOVERED_INCLUDED_SERVICES:
-    case EVENTS.CHARACTERISTIC_DISCOVERED_DESCRIPTORS:
-    case EVENTS.CHARACTERISTIC_DISCOVERED_DESCRIPTORS:
-      // noop
-      break;
-    case EVENTS.PERIPHERAL_CONNECTED:
-      // console.log('Connect peripheral: ', peripheral!.id);
-      break;
     case EVENTS.CENTRAL_STATE_CHANGED:
     case EVENTS.PERIPHERAL_DISCONNECTED:
     case EVENTS.CENTRAL_DISCOVERED_PERIPHERAL:
@@ -526,6 +511,7 @@ addListener(({ data, event }: { data: NativeEventData; event: string }) => {
       firePeripheralObservers();
       return;
     default:
-      throw new BluetoothError({ message: 'Unhandled event: ' + event, code: 'ERR_BLE_UNHANDLED_EVENT'});
+      // throw new BluetoothError({ message: 'Unhandled event: ' + event, code: 'ERR_BLE_UNHANDLED_EVENT'});
+    return;
   }
 });

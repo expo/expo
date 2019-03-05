@@ -142,7 +142,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         ArrayList<Peripheral> input = new ArrayList<>(peripheralsCopy.values());
         Bundle output = new Bundle();
         output.putParcelableArrayList(BluetoothConstants.JSON.PERIPHERALS, Peripheral.listToJSON(input));
-        sendEvent("UPDATE", output);
+        sendEvent(BluetoothConstants.UPDATE_STATE, output);
       }
     }
   }
@@ -198,6 +198,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     final Map<String, Object> events = new HashMap<>();
 
+    events.put("UPDATE_STATE", BluetoothConstants.UPDATE_STATE);
     events.put("SYSTEM_ENABLED_STATE_CHANGED", BluetoothConstants.EVENTS.SYSTEM_ENABLED_STATE_CHANGED);
 //    events.put("CENTRAL_SCAN_STARTED", BluetoothConstants.EVENTS.CENTRAL_SCAN_STARTED);
 //    events.put("CENTRAL_SCAN_STOPPED", BluetoothConstants.EVENTS.CENTRAL_SCAN_STOPPED);

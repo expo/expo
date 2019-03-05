@@ -9,9 +9,8 @@ public class BluetoothConstants {
   }
 
   public interface EVENTS {
+    String UPDATE_STATE = "UPDATE_STATE";
     String SYSTEM_ENABLED_STATE_CHANGED = "SYSTEM_ENABLED_STATE_CHANGED";
-//    String CENTRAL_SCAN_STARTED = "CENTRAL_SCAN_STARTED";
-//    String CENTRAL_SCAN_STOPPED = "CENTRAL_SCAN_STOPPED";
     String CENTRAL_STATE_CHANGED = "CENTRAL_STATE_CHANGED";
     String CENTRAL_DISCOVERED_PERIPHERAL = "CENTRAL_DISCOVERED_PERIPHERAL";
     String PERIPHERAL_DISCOVERED_SERVICES = "PERIPHERAL_DISCOVERED_SERVICES";
@@ -34,12 +33,10 @@ public class BluetoothConstants {
   public interface JSON {
 
     String SYSTEM = "system";
-//    String DEVICE_TYPE = "deviceType";
     String CENTRAL = "central";
     String PERIPHERAL = "peripheral";
     String PERIPHERALS = "peripherals";
     String ERROR = "error";
-//    String TRANSACTION_ID = "transactionId";
     String CHARACTERISTIC = "characteristic";
     String SERVICE = "service";
     String BLUETOOTH_EVENT = "bluetoothEvent";
