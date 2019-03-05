@@ -1,6 +1,5 @@
-import { NativePeripheral } from './Bluetooth.types';
+import { NativePeripheral, UUID } from './Bluetooth.types';
 import { peripheralIdFromId } from './BluetoothTransactions';
-import { UUID } from './Bluetooth';
 
 // Manage all of the bluetooth information.
 let _peripherals: { [peripheralId: string]: NativePeripheral } = {};

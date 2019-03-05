@@ -18,142 +18,38 @@ Expo Bluetooth provides access to native Bluetooth Low-Energy features in React 
 
 ## Methods
 
-### startScan
-
-```js
-Signature;
-```
-
-Description
-
-**Parameters**
-
-| Name | Type     | Description |
-| ---- | -------- | ----------- |
-| foo  | `string` | bar.        |
-
-**Returns**
-
-| Name | Type     | Description |
-| ---- | -------- | ----------- |
-| foo  | `string` | bar.        |
-
-**Example**
-
-```js
-
-Basic Usage
-
-```
-
-### stopScanningAsync
-
-```js
-```
-
-### observeUpdatesAsync
-
-```js
-```
-
-### observeCentralStateAsync
-
-```js
-```
-
-### connectAsync
-
-```js
-```
-
-### disconnectAsync
-
-```js
-```
-
-### readDescriptorAsync
-
-```js
-```
-
-### writeDescriptorAsync
-
-```js
-```
-
-### readCharacteristicAsync
-
-```js
-```
-
-### writeCharacteristicAsync
-
-```js
-```
-
-### writeCharacteristicWithoutResponseAsync
-
-```js
-```
-
-### setCharacteristicShouldNotifyAsync
-
-```js
-```
-
-### setCharacteristicShouldIndicateAsync
-
-```js
-```
-
-### readRSSIAsync
-
-```js
-```
-
-### getPeripheralsAsync
-
-```js
-```
-
-### getCentralAsync
-
-```js
-```
-
-### isScanningAsync
-
-```js
-```
-
-### discoverServicesForPeripheralAsync
-
-```js
-```
-
-### discoverCharacteristicsForServiceAsync
-
-```js
-```
-
-### discoverDescriptorsForCharacteristicAsync
-
-```js
-```
-
-### loadPeripheralAsync
-
-```js
-```
-
-### loadChildrenRecursivelyAsync
-
-```js
-```
-
-## getPeripherals
-
-## getPeripheralForId
+`requestPermissionAsync`
+`getPermissionAsync`
+`startScanningAsync`
+`initAsync`
+`stopScanningAsync`
+`observeUpdates`
+`observeCentralStateAsync`
+`connectAsync`
+`disconnectAsync`
+`readDescriptorAsync`
+`writeDescriptorAsync`
+`setNotifyCharacteristicAsync`
+`readCharacteristicAsync`
+`writeCharacteristicAsync`
+`writeCharacteristicWithoutResponseAsync`
+`readRSSIAsync`
+`getPeripheralsAsync`
+`getConnectedPeripheralsAsync`
+`getCentralAsync`
+`getPeripheralAsync`
+`getServiceAsync`
+`getCharacteristicAsync`
+`getDescriptorAsync`
+`isScanningAsync`
+`discoverServicesForPeripheralAsync`
+`discoverIncludedServicesForServiceAsync`
+`discoverCharacteristicsForServiceAsync`
+`discoverDescriptorsForCharacteristicAsync`
+`loadPeripheralAsync`
+`_loadChildrenRecursivelyAsync`
+`_reset`
+`_getGATTStatusError`
 
 ## Types
 

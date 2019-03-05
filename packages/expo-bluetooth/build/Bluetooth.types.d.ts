@@ -1,3 +1,15 @@
+export declare type RSSI = number;
+export declare type MTU = number;
+export declare type Base64 = string;
+export declare type UUID = string;
+export declare type Identifier = string;
+export declare type TransactionId = string;
+export declare enum BondState {
+    Bonded = "bonded",
+    Bonding = "bonding",
+    Unknown = "unknown",
+    None = "none"
+}
 export declare enum Priority {
     High = "high",
     LowPower = "lowPower",
@@ -64,15 +76,15 @@ export declare enum AndroidScanMode {
 }
 /** Android M 23+ */
 export declare enum AndroidMatchMode {
-    aggresive = "aggresive",
-    sticky = "sticky"
+    Aggresive = "aggresive",
+    Sticky = "sticky"
 }
 /** Android O 26+ */
 export declare enum AndroidPhyMode {
     LE1M = "LE1M",
     LE2M = "LE2M",
-    coded = "coded",
-    allSupported = "allSupported"
+    Coded = "coded",
+    AllSupported = "allSupported"
 }
 /** Android M 23+ */
 export declare enum AndroidNumberOfMatches {
@@ -105,10 +117,6 @@ export declare enum Permissions {
     ReadEncryptionRequired = "ReadEncryptionRequired",
     WriteEncryptionRequired = "WriteEncryptionRequired"
 }
-export declare type Base64 = string;
-export declare type UUID = string;
-export declare type Identifier = string;
-export declare type TransactionId = string;
 export interface NativeBluetoothElement {
     id: Identifier;
     uuid: UUID;
@@ -126,7 +134,7 @@ export declare type NativeEventData = {
     descriptor?: NativeDescriptor | null;
     service?: NativeService | null;
     advertisementData?: NativeAdvertismentData | null;
-    RSSI?: number;
+    RSSI?: RSSI;
     error?: NativeError | null;
 };
 export interface NativeError {
@@ -168,7 +176,7 @@ export interface NativeAdvertismentData {
 export interface NativePeripheral extends NativeBluetoothElement {
     advertisementData?: NativeAdvertismentData;
     name: string | null;
-    RSSI: number | null;
+    RSSI: RSSI | null;
     state: PeripheralState;
     services: NativeService[];
     includedServices: NativeService[];
@@ -189,12 +197,6 @@ export declare type ScanSettings = {
     scanningOptions?: any;
     callback?: PeripheralFoundCallback;
 };
-export declare enum BondState {
-    Bonded = "bonded",
-    Bonding = "bonding",
-    Unknown = "unknown",
-    None = "none"
-}
 export interface Central {
     state: CentralState;
     isScanning: boolean;
@@ -306,4 +308,9 @@ export declare type PeripheralConnectionOption = {
      *
      */
     startDelay?: number;
+};
+export declare type ConnectionOptions = {
+    timeout?: number;
+    options?: PeripheralConnectionOption;
+    onDisconnect?: (...args: any[]) => any;
 };

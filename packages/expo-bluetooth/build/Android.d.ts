@@ -1,6 +1,6 @@
 import { Subscription } from 'expo-core';
-import { Central, NativePeripheral, Priority, UUID } from './Bluetooth.types';
-export declare function requestMTUAsync(peripheralUUID: UUID, MTU: number): Promise<number>;
+import { Central, NativePeripheral, Priority, UUID, MTU } from './Bluetooth.types';
+export declare function requestMTUAsync(peripheralUUID: UUID, MTU: MTU): Promise<MTU>;
 export declare function bondAsync(peripheralUUID: UUID): Promise<any>;
 export declare function unbondAsync(peripheralUUID: UUID): Promise<any>;
 export declare function enableBluetoothAsync(isBluetoothEnabled?: boolean): Promise<void>;

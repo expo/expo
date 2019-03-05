@@ -1,13 +1,13 @@
 import { Subscription } from 'expo-core';
 
-import { Central, NativePeripheral, Priority, UUID } from './Bluetooth.types';
+import { Central, NativePeripheral, Priority, UUID, MTU } from './Bluetooth.types';
 import { EVENTS } from './BluetoothConstants';
 import { addHandlerForKey } from './BluetoothEventHandler';
 import BluetoothError from './errors/BluetoothError';
 import { invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
 import ExpoBluetooth from './ExpoBluetooth';
 
-export async function requestMTUAsync(peripheralUUID: UUID, MTU: number): Promise<number> {
+export async function requestMTUAsync(peripheralUUID: UUID, MTU: MTU): Promise<MTU> {
   invariantAvailability('requestMTUAsync');
   invariantUUID(peripheralUUID);
   if (MTU > 512 || MTU < 0) {

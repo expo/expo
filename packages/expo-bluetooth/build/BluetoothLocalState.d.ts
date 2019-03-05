@@ -1,5 +1,4 @@
-import { NativePeripheral } from './Bluetooth.types';
-import { UUID } from './Bluetooth';
+import { NativePeripheral, UUID } from './Bluetooth.types';
 export declare function getPeripherals(): {
     [peripheralId: string]: NativePeripheral;
 };

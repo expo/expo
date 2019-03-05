@@ -16,8 +16,9 @@ import {
   ScanOptions,
   StateUpdatedCallback,
   UUID,
-  PeripheralConnectionOption,
+  ConnectionOptions,
   WriteCharacteristicOptions,
+  RSSI,
 } from './Bluetooth.types';
 import { DELIMINATOR, EVENTS } from './BluetoothConstants';
 import {
@@ -110,12 +111,6 @@ export async function observeCentralStateAsync(callback: StateUpdatedCallback): 
   // Make the callback async so the subscription returns first.
   setTimeout(() => callback(central.state));
   return addHandlerForKey(EVENTS.CENTRAL_STATE_CHANGED, ({ central = {} }) => callback(central.state) );
-}
-
-type ConnectionOptions = {
-  timeout?: number;
-  options?: PeripheralConnectionOption;
-  onDisconnect?: (...args:any[]) => any;
 }
 
 export async function connectAsync(
@@ -280,7 +275,7 @@ export async function writeCharacteristicWithoutResponseAsync({
   return characteristic;
 }
 
-export async function readRSSIAsync(peripheralUUID: UUID): Promise<number> {
+export async function readRSSIAsync(peripheralUUID: UUID): Promise<RSSI> {
   invariantAvailability('readRSSIAsync');
   invariantUUID(peripheralUUID);
   return await ExpoBluetooth.readRSSIAsync(peripheralUUID);

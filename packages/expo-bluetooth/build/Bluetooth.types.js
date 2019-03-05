@@ -1,3 +1,10 @@
+export var BondState;
+(function (BondState) {
+    BondState["Bonded"] = "bonded";
+    BondState["Bonding"] = "bonding";
+    BondState["Unknown"] = "unknown";
+    BondState["None"] = "none";
+})(BondState || (BondState = {}));
 export var Priority;
 (function (Priority) {
     Priority["High"] = "high";
@@ -73,16 +80,16 @@ export var AndroidScanMode;
 /** Android M 23+ */
 export var AndroidMatchMode;
 (function (AndroidMatchMode) {
-    AndroidMatchMode["aggresive"] = "aggresive";
-    AndroidMatchMode["sticky"] = "sticky";
+    AndroidMatchMode["Aggresive"] = "aggresive";
+    AndroidMatchMode["Sticky"] = "sticky";
 })(AndroidMatchMode || (AndroidMatchMode = {}));
 /** Android O 26+ */
 export var AndroidPhyMode;
 (function (AndroidPhyMode) {
     AndroidPhyMode["LE1M"] = "LE1M";
     AndroidPhyMode["LE2M"] = "LE2M";
-    AndroidPhyMode["coded"] = "coded";
-    AndroidPhyMode["allSupported"] = "allSupported";
+    AndroidPhyMode["Coded"] = "coded";
+    AndroidPhyMode["AllSupported"] = "allSupported";
 })(AndroidPhyMode || (AndroidPhyMode = {}));
 /** Android M 23+ */
 export var AndroidNumberOfMatches;
@@ -138,11 +145,4 @@ export var Permissions;
     /* Writeable by trusted devices. */
     Permissions["WriteEncryptionRequired"] = "WriteEncryptionRequired";
 })(Permissions || (Permissions = {}));
-export var BondState;
-(function (BondState) {
-    BondState["Bonded"] = "bonded";
-    BondState["Bonding"] = "bonding";
-    BondState["Unknown"] = "unknown";
-    BondState["None"] = "none";
-})(BondState || (BondState = {}));
 //# sourceMappingURL=Bluetooth.types.js.map

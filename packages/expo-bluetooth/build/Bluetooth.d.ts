@@ -1,6 +1,6 @@
 import { Subscription } from 'expo-core';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
-import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, NativeCharacteristic, NativeDescriptor, NativePeripheral, NativeService, ScanOptions, StateUpdatedCallback, UUID, PeripheralConnectionOption, WriteCharacteristicOptions } from './Bluetooth.types';
+import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, NativeCharacteristic, NativeDescriptor, NativePeripheral, NativeService, ScanOptions, StateUpdatedCallback, UUID, ConnectionOptions, WriteCharacteristicOptions, RSSI } from './Bluetooth.types';
 import AndroidGATTError from './errors/AndroidGATTError';
 export declare function requestPermissionAsync(): Promise<{
     status: PermissionStatus;
@@ -20,11 +20,6 @@ export declare function initAsync(options: CentralManagerOptions): Promise<void>
 export declare function stopScanningAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
 export declare function observeCentralStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
-declare type ConnectionOptions = {
-    timeout?: number;
-    options?: PeripheralConnectionOption;
-    onDisconnect?: (...args: any[]) => any;
-};
 export declare function connectAsync(peripheralUUID: UUID, { timeout, options, onDisconnect }: ConnectionOptions): Promise<NativePeripheral>;
 /** This method will also cancel pending connections */
 export declare function disconnectAsync(peripheralUUID: UUID): Promise<any>;
@@ -34,7 +29,7 @@ export declare function setNotifyCharacteristicAsync({ peripheralUUID, serviceUU
 export declare function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }: any): Promise<Base64 | null>;
 export declare function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: any): Promise<NativeCharacteristic>;
 export declare function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }: WriteCharacteristicOptions): Promise<NativeCharacteristic>;
-export declare function readRSSIAsync(peripheralUUID: UUID): Promise<number>;
+export declare function readRSSIAsync(peripheralUUID: UUID): Promise<RSSI>;
 export declare function getPeripheralsAsync(): Promise<NativePeripheral[]>;
 export declare function getConnectedPeripheralsAsync(serviceUUIDsToQuery?: UUID[]): Promise<NativePeripheral[]>;
 export declare function getCentralAsync(): Promise<Central>;
@@ -93,4 +88,3 @@ export declare function _loadChildrenRecursivelyAsync({ id }: {
 }): Promise<any[]>;
 export declare function _reset(): Promise<void>;
 export declare function _getGATTStatusError(code: any, invokedMethod: any, stack?: undefined): AndroidGATTError | null;
-export {};

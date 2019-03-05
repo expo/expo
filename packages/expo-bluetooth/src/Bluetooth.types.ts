@@ -1,3 +1,17 @@
+export type RSSI = number;
+export type MTU = number;
+export type Base64 = string;
+export type UUID = string;
+export type Identifier = string;
+export type TransactionId = string;
+
+export enum BondState {
+  Bonded = 'bonded',
+  Bonding = 'bonding',
+  Unknown = 'unknown',
+  None = 'none',
+}
+
 export enum Priority {
   High = 'high',
   LowPower = 'lowPower',
@@ -74,16 +88,16 @@ export enum AndroidScanMode {
 
 /** Android M 23+ */
 export enum AndroidMatchMode {
-  aggresive = 'aggresive', // default
-  sticky = 'sticky',
+  Aggresive = 'aggresive', // default
+  Sticky = 'sticky',
 }
 
 /** Android O 26+ */
 export enum AndroidPhyMode {
   LE1M = 'LE1M',
   LE2M = 'LE2M',
-  coded = 'coded',
-  allSupported = 'allSupported', // default
+  Coded = 'coded',
+  AllSupported = 'allSupported', // default
 }
 
 /** Android M 23+ */
@@ -141,10 +155,6 @@ export enum Permissions {
 }
 
 /* Types */
-export type Base64 = string;
-export type UUID = string;
-export type Identifier = string;
-export type TransactionId = string;
 
 export interface NativeBluetoothElement {
   id: Identifier;
@@ -166,7 +176,7 @@ export type NativeEventData = {
   descriptor?: NativeDescriptor | null;
   service?: NativeService | null;
   advertisementData?: NativeAdvertismentData | null;
-  RSSI?: number;
+  RSSI?: RSSI;
   error?: NativeError | null;
 };
 
@@ -213,7 +223,7 @@ export interface NativeAdvertismentData {
 export interface NativePeripheral extends NativeBluetoothElement {
   advertisementData?: NativeAdvertismentData;
   name: string | null;
-  RSSI: number | null;
+  RSSI: RSSI | null;
   state: PeripheralState;
   services: NativeService[];
   includedServices: NativeService[];
@@ -240,12 +250,6 @@ export type ScanSettings = {
   callback?: PeripheralFoundCallback;
 };
 
-export enum BondState {
-  Bonded = 'bonded',
-  Bonding = 'bonding',
-  Unknown = 'unknown',
-  None = 'none',
-}
 export interface Central {
   state: CentralState;
   isScanning: boolean;
@@ -373,4 +377,10 @@ export type PeripheralConnectionOption = {
    *
    */
   startDelay?: number;
+};
+
+export type ConnectionOptions = {
+  timeout?: number;
+  options?: PeripheralConnectionOption;
+  onDisconnect?: (...args: any[]) => any;
 };
