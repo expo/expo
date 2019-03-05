@@ -200,7 +200,9 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   public void setGatt(BluetoothGatt gatt) {
     mGatt = gatt;
-    mDeviceID = gatt.getDevice().getAddress();
+    if (gatt != null && gatt.getDevice() != null) {
+      mDeviceID = gatt.getDevice().getAddress();
+    }
   }
 
     public void onPhyUpdate(int txPhy, int rxPhy, int status) {
@@ -212,15 +214,13 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     }
 
-    private void onConnectionFailed() {
-
-    }
-
     public void onConnectionStateChange(int status, int newState) {
       tryRejectingAllPendingConnectPromises();
 
       if (mDidConnectStateChangePeripheralBlock != null) {
-          BluetoothModule.emitState();
+        Log.d("BLE_TEST", "RESOLVED: " + mDidConnectStateChangePeripheralBlock.getEvent() + " | " + getID() + ", connected: " + isConnected());
+
+        BluetoothModule.emitState();
         if (shouldResolvePromiseWithStatusAndData(mDidConnectStateChangePeripheralBlock.getPromise(), status)) {
           mDidConnectStateChangePeripheralBlock.getPromise().resolve(toJSON());
         }
@@ -233,10 +233,12 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       } else {
         /** newState can only be one of STATE_CONNECTED, STATE_DISCONNECTED. */
         if (newState == BluetoothProfile.STATE_CONNECTED) {
+          Log.d("BLE_TEST", "UNHANDLED: Did connect: " + getID() + ", connected: " + isConnected());
           //      getDevice().createBond();
-          // Send Connection event
+          // TODO: Bacon: Send Connection event
+
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-          Log.d("BLE_TEST", "Did disconnect: " + getID() + ", connected: " + isConnected());
+          Log.d("BLE_TEST", "UNHANDLED: Did disconnect: " + getID() + ", connected: " + isConnected());
           sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED, status);
         }
       }
@@ -435,16 +437,27 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   public void disconnect() {
     clearChildren();
+    int status = BluetoothGatt.GATT_SUCCESS;
     // If the GATT doesn't exist, then the device isn't connect.
     if (mGatt != null) {
       Log.d("BLE_TEST", "disconnect(): " + mGatt.getDevice().getAddress());
-      mGatt.disconnect();
-      if (!refreshGattCacheIgnoringErrors(mGatt)) {
-        Log.d("BLE_TEST", "disconnect(): Failed to refresh cache: " + getID() + ", isConnected: " + isConnected());
+      try {
+        mGatt.disconnect();
+        // TODO: Bacon: Will this not send any update to onConnectionStateChange
+        if (!refreshGattCacheIgnoringErrors(mGatt)) {
+          Log.d("BLE_TEST", "disconnect(): Failed to refresh cache: " + getID() + ", isConnected: " + isConnected());
+        }
+        mGatt.close();
+        mGatt = null;
+      } catch (Exception e) {
+        status = BluetoothGatt.GATT_FAILURE;
       }
-      mGatt.close();
-      mGatt = null;
     }
+
+    // It would seem that onConnectionStateChange(DISCONNECTED) is called when the device loses connection.
+    // We will simulate the disconnect event from here.
+    // TODO: Bacon: Restructure to account for this extra logic.
+    onConnectionStateChange(status, BluetoothProfile.STATE_DISCONNECTED);
   }
 
   /** If any action that requires a connection is running, try to reject it. */
@@ -485,15 +498,27 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   // TODO: Bacon: Is this overriding the StateChange method
   public void disconnect(Promise promise) {
-    if (mDidConnectStateChangePeripheralBlock != null && mDidConnectStateChangePeripheralBlock.getEvent().equals(BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED)) {
-
-      // TODO: Bacon: seems like this could be hard to work around given how long it takes a peripheral to disconnect.
-      BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK(getID()));
-      return;
+    // A task is currently running. Either connecting or disconnecting.
+    if (mDidConnectStateChangePeripheralBlock != null) {
+      // A disconnection is already running. Reject with concurrent error.
+      if (mDidConnectStateChangePeripheralBlock.getEvent().equals(BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED)) {
+        // TODO: Bacon: seems like this could be hard to work around given how long it takes a peripheral to disconnect.
+        BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK(getID()));
+        return;
+      } else {
+        // A connection task is running. Reject the connection and proceed to cancel the connecting peripheral by closing it.
+        // TODO: Bacon: Cancel this instead of rejecting. Then proceed to disconnect.
+        if (shouldResolvePromiseWithStatusAndData(mDidConnectStateChangePeripheralBlock.getPromise(), BluetoothGatt.GATT_FAILURE)) {
+          mDidConnectStateChangePeripheralBlock.getPromise().resolve(toJSON());
+        }
+        // Ensure the promise isn't lost
+        mDidConnectStateChangePeripheralBlock = null;
+      }
     }
 
     Log.d("BLE_TEST", "disconnectPeripheralAsync.disconnect: " + getID() + ", connected: " + isConnected());
 
+    // Create a new promise for handling the disconnect.
     mDidConnectStateChangePeripheralBlock = new ConnectingPromise(promise, BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED);
 
     disconnect();
@@ -838,19 +863,6 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     if (!isConnected()) {
       promise.reject(BluetoothConstants.ERRORS.GENERAL, "Peripheral is not connected: " + getID());
       return true;
-    }
-    return false;
-  }
-
-  private boolean guardGATT(Promise promise) {
-    if (mGatt == null) {
-      Activity activity = BluetoothModule.getActivity();
-      if (activity != null) {
-        connectToGATT(activity);
-      } else {
-        promise.reject(BluetoothConstants.ERRORS.GENERAL, "GATT is not defined. Connect to the peripheral " + getID() + " to create one.");
-        return true;
-      }
     }
     return false;
   }

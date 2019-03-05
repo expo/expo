@@ -1117,17 +1117,20 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
           /** Update the connected cache locally */
           if (newState == BluetoothProfile.STATE_CONNECTED) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
+              peripheral.setGatt(gatt);
               Log.d(TAG, "Add connected GATT to the cache: " + gatt.getDevice().getAddress());
               BluetoothModule.connectedDevices.put(gatt.getDevice().getAddress(), gatt);
             }
           } else {
+            peripheral.setGatt(null);
             Log.d(TAG, "Remove connected GATT from the cache: " + gatt.getDevice().getAddress() + " Status: " + status);
             BluetoothModule.connectedDevices.remove(gatt.getDevice().getAddress());
           }
 
-          peripheral.setGatt(gatt); /** This may not do anything. */
           peripheral.onConnectionStateChange(status, newState);
         }
+      } else {
+        Log.d(TAG, "No peripheral for connection op: " + gatt.getDevice().getAddress() + " Status: " + status + " State: " + newState);
       }
     }
 
