@@ -1,28 +1,10 @@
-import { Platform } from 'expo-core';
-import * as Permissions from 'expo-permissions';
-import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
 import { CharacteristicProperty, } from './Bluetooth.types';
+import { AndroidGATTError, BluetoothError, invariant, invariantAvailability, invariantUUID } from './errors';
+import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './localEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './peripheralCache';
-import { peripheralIdFromId } from './transactions';
-import AndroidGATTError from './errors/AndroidGATTError';
-import BluetoothError from './errors/BluetoothError';
-import { invariant, invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
-import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import Transaction from './Transaction';
-// TODO: Bacon maybe move to `.android`
-export async function requestPermissionAsync() {
-    if (Platform.OS === 'android') {
-        return await Permissions.askAsync(Permissions.LOCATION);
-    }
-    return { status: PermissionStatus.GRANTED };
-}
-export async function getPermissionAsync() {
-    if (Platform.OS === 'android') {
-        return await Permissions.getAsync(Permissions.LOCATION);
-    }
-    return { status: PermissionStatus.GRANTED };
-}
+import { peripheralIdFromId } from './transactions';
 /**
  * Although strongly discouraged,
  * if `serviceUUIDsToQuery` is `null | undefined` all discovered peripherals will be returned.

@@ -1,13 +1,6 @@
 import { Subscription } from 'expo-core';
-import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
-import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, NativeCharacteristic, NativeDescriptor, Peripheral, NativeService, ScanOptions, StateUpdatedCallback, UUID, ConnectionOptions, WriteCharacteristicOptions, RSSI } from './Bluetooth.types';
-import AndroidGATTError from './errors/AndroidGATTError';
-export declare function requestPermissionAsync(): Promise<{
-    status: PermissionStatus;
-}>;
-export declare function getPermissionAsync(): Promise<{
-    status: PermissionStatus;
-}>;
+import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, ConnectionOptions, NativeCharacteristic, NativeDescriptor, NativeService, Peripheral, RSSI, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
+import { AndroidGATTError } from './errors';
 /**
  * Although strongly discouraged,
  * if `serviceUUIDsToQuery` is `null | undefined` all discovered peripherals will be returned.

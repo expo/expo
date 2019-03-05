@@ -1,6 +1,4 @@
-import { Platform, Subscription } from 'expo-core';
-import * as Permissions from 'expo-permissions';
-import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
+import { Subscription } from 'expo-core';
 
 import {
   Base64,
@@ -8,18 +6,20 @@ import {
   Central,
   CentralManagerOptions,
   CharacteristicProperty,
+  ConnectionOptions,
   NativeCharacteristic,
   NativeDescriptor,
   NativeEventData,
-  Peripheral,
   NativeService,
+  Peripheral,
+  RSSI,
   ScanOptions,
   StateUpdatedCallback,
   UUID,
-  ConnectionOptions,
   WriteCharacteristicOptions,
-  RSSI,
 } from './Bluetooth.types';
+import { AndroidGATTError, BluetoothError, invariant, invariantAvailability, invariantUUID } from './errors';
+import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import {
   _resetAllHandlers,
   addHandlerForID,
@@ -31,27 +31,9 @@ import {
   resetHandlersForKey,
 } from './localEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './peripheralCache';
-import { peripheralIdFromId } from './transactions';
-import AndroidGATTError from './errors/AndroidGATTError';
-import BluetoothError from './errors/BluetoothError';
-import { invariant, invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
-import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import Transaction from './Transaction';
+import { peripheralIdFromId } from './transactions';
 
-// TODO: Bacon maybe move to `.android`
-export async function requestPermissionAsync(): Promise<{ status: PermissionStatus }> {
-  if (Platform.OS === 'android') {
-    return await Permissions.askAsync(Permissions.LOCATION);
-  }
-  return { status: PermissionStatus.GRANTED };
-}
-
-export async function getPermissionAsync(): Promise<{ status: PermissionStatus }> {
-  if (Platform.OS === 'android') {
-    return await Permissions.getAsync(Permissions.LOCATION);
-  }
-  return { status: PermissionStatus.GRANTED };
-}
 
 /**
  * Although strongly discouraged,
