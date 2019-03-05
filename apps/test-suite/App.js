@@ -33,8 +33,6 @@ async function getTestModulesAsync() {
     }
   }
 
-  return [require('./tests/Bluetooth')];
-
   if (Platform.OS === 'web') {
     let modules = [
       require('./tests/Import1'),
