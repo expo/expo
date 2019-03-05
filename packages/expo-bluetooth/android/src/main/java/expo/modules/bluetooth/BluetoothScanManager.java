@@ -108,6 +108,7 @@ public class BluetoothScanManager {
       int scanMode = Serialize.ScanMode_JSONToNative(scanModeString);
       scanSettingsBuilder.setScanMode(scanMode);
     }
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (options.containsKey("androidCallbackType") && options.get("androidCallbackType") != null) {
         String androidCallbackTypeString = (String) options.get("androidCallbackType");
@@ -127,6 +128,19 @@ public class BluetoothScanManager {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         if (options.containsKey("androidOnlyConnectable") && options.get("androidOnlyConnectable") != null) {
           mOnlyConnectableDevices = (boolean) options.get("androidOnlyConnectable");
+        }
+
+        if (options.containsKey("androidPhy") && options.get("androidPhy") != null) {
+          // This is used only if {@link ScanSettings.Builder#setLegacy} is set to false.
+          scanSettingsBuilder.setLegacy(false);
+
+          String phyModeString = (String) options.get("androidPhy");
+          // Bacon: This should be verified as supported before we get to here.
+          int phyMode = Serialize.ScannerPhyMode_JSONToNative(phyModeString);
+          scanSettingsBuilder.setPhy(phyMode);
+        } else if (options.containsKey("androidUseLegacy") && options.get("androidUseLegacy") != null) {
+          // Use only if phy isn't defined.
+          scanSettingsBuilder.setLegacy((boolean) options.get("androidUseLegacy"));
         }
       }
     }

@@ -58,6 +58,13 @@ export declare enum AndroidMatchMode {
     aggresive = "aggresive",
     sticky = "sticky"
 }
+/** Android O 26+ */
+export declare enum AndroidPhyMode {
+    LE1M = "LE1M",
+    LE2M = "LE2M",
+    coded = "coded",
+    allSupported = "allSupported"
+}
 /** Android M 23+ */
 export declare enum AndroidNumberOfMatches {
     max = "max",
@@ -213,6 +220,16 @@ export declare type ScanOptions = {
     androidNumberOfMatches?: AndroidNumberOfMatches;
     /** Oreo (26+) */
     androidOnlyConnectable?: boolean;
+    /**
+     * Oreo (26+)
+     * This value will only be used if `androidPhy` is undefined.
+     */
+    androidUseLegacy?: boolean;
+    /**
+     * Oreo (26+)
+     * When defined, `androidUseLegacy` is automatically set to `false`.
+     */
+    androidPhy?: AndroidPhyMode;
     [key: string]: any;
 };
 export declare type CancelScanningCallback = () => void;

@@ -511,6 +511,21 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
 //    removeAllCachedPeripherals();
 
+
+    BluetoothAdapter adapter = getBluetoothAdapter();
+
+    // Ensure the Phy value is supported before starting.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && options.containsKey("androidPhy") && options.get("androidPhy") != null) {
+      String phyModeString = (String) options.get("androidPhy");
+      // Bacon: This should be verified as supported before we get to here.
+      int phyMode = Serialize.ScannerPhyMode_JSONToNative(phyModeString);
+      if (phyMode == BluetoothDevice.PHY_LE_CODED && !adapter.isLeCodedPhySupported()) {
+        BluetoothError.reject(promise, "LE Coded Phy is not supported on this device. Please use a different Phy.");
+        return;
+      }
+    }
+
+
     /** Create a new scanner. */
     mScanManager = new BluetoothScanManager(new PeripheralScanningDelegate() {
 
@@ -552,7 +567,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         emitState(); // TODO: Bacon
         sendEvent(BluetoothConstants.EVENTS.CENTRAL_STATE_CHANGED, map);
       }
-    }, getBluetoothAdapter());
+    }, adapter);
 
 
     try {
@@ -560,6 +575,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
+      stopScanning();
     }
   }
 

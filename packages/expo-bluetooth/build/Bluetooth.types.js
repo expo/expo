@@ -66,6 +66,14 @@ export var AndroidMatchMode;
     AndroidMatchMode["aggresive"] = "aggresive";
     AndroidMatchMode["sticky"] = "sticky";
 })(AndroidMatchMode || (AndroidMatchMode = {}));
+/** Android O 26+ */
+export var AndroidPhyMode;
+(function (AndroidPhyMode) {
+    AndroidPhyMode["LE1M"] = "LE1M";
+    AndroidPhyMode["LE2M"] = "LE2M";
+    AndroidPhyMode["coded"] = "coded";
+    AndroidPhyMode["allSupported"] = "allSupported";
+})(AndroidPhyMode || (AndroidPhyMode = {}));
 /** Android M 23+ */
 export var AndroidNumberOfMatches;
 (function (AndroidNumberOfMatches) {

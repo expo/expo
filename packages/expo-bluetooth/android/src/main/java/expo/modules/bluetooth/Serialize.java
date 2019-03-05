@@ -336,6 +336,40 @@ public class Serialize {
     return -1;
   }
 
+  public static int ScannerPhyMode_JSONToNative(String input) {
+    if (input.equals("LE1M")) {
+      /**
+       * Bluetooth LE 1M PHY. Used to refer to LE 1M Physical Channel for advertising, scanning or
+       * connection.
+       */
+      return BluetoothDevice.PHY_LE_1M;
+    } else if (input.equals("LE2M")) {
+      /**
+       * Bluetooth LE 2M PHY. Used to refer to LE 2M Physical Channel for advertising, scanning or
+       * connection.
+       */
+      return BluetoothDevice.PHY_LE_2M;
+    } else if (input.equals("coded")) {
+      /**
+       * Bluetooth LE Coded PHY. Used to refer to LE Coded Physical Channel for advertising, scanning
+       * or connection.
+       */
+      return BluetoothDevice.PHY_LE_CODED;
+    } else if (input.equals("allSupported")) {
+      /**
+       * Use all supported PHYs for scanning.
+       * This will check the controller capabilities, and start
+       * the scan on 1Mbit and LE Coded PHYs if supported, or on
+       * the 1Mbit PHY only.
+       */
+      return ScanSettings.PHY_LE_ALL_SUPPORTED;
+    }
+    /**
+     * No preferred coding when transmitting on the LE Coded PHY.
+     */
+    return BluetoothDevice.PHY_OPTION_NO_PREFERRED;
+  }
+
   public static int MatchMode_JSONToNative(String input) {
     if (input.equals("sticky")) {
       return ScanSettings.MATCH_MODE_STICKY;

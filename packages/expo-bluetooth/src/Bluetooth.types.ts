@@ -68,6 +68,14 @@ export enum AndroidMatchMode {
   sticky = 'sticky',
 }
 
+/** Android O 26+ */
+export enum AndroidPhyMode {
+  LE1M = 'LE1M',
+  LE2M = 'LE2M',
+  coded = 'coded',
+  allSupported = 'allSupported', // default
+}
+
 /** Android M 23+ */
 export enum AndroidNumberOfMatches {
   max = 'max', // default
@@ -277,6 +285,16 @@ export type ScanOptions = {
   androidNumberOfMatches?: AndroidNumberOfMatches;
   /** Oreo (26+) */
   androidOnlyConnectable?: boolean;
+  /**
+   * Oreo (26+)
+   * This value will only be used if `androidPhy` is undefined.
+   */
+  androidUseLegacy?: boolean;
+  /**
+   * Oreo (26+)
+   * When defined, `androidUseLegacy` is automatically set to `false`.
+   */
+  androidPhy?: AndroidPhyMode;
 
   // iOS SCAN_OPTIONS
   [key: string]: any;
