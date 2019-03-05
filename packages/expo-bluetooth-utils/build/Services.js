@@ -1,4 +1,4 @@
-const Services = {
+export default {
     '1800': {
         name: 'Generic Access',
         uti: 'org.bluetooth.service.generic_access',
@@ -235,5 +235,4 @@ const Services = {
         spec: 'GSS',
     },
 };
-export default Services;
 //# sourceMappingURL=Services.js.map

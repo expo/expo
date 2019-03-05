@@ -22,10 +22,11 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-bluetooth": "~2.0.0"
-  },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
+  },
+  "unimodulePeerDependencies": {
+    "expo-bluetooth": "~2.0.0",
+    "expo-core": "*"
   }
 }

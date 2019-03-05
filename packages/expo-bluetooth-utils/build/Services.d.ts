@@ -1,4 +1,4 @@
-declare const Services: {
+declare const _default: {
     '1800': {
         name: string;
         uti: string;
@@ -240,4 +240,4 @@ declare const Services: {
         spec: string;
     };
 };
-export default Services;
+export default _default;
