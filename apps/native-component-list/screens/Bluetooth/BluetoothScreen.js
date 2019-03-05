@@ -100,8 +100,8 @@ export default class BluetoothScreen extends React.Component {
     
     await Bluetooth.requestPermissionAsync();
 
-    this.stateListener = await Bluetooth.observeStateAsync(state => {
-      console.log('observeStateAsync', state);
+    this.stateListener = await Bluetooth.observeCentralStateAsync(state => {
+      console.log('observeCentralStateAsync', state);
       this.setState({ centralState: state });
     });
 

@@ -78,7 +78,7 @@ export async function stopScanningAsync() {
 export function observeUpdates(callback) {
     return addHandlerForKey('everything', callback);
 }
-export async function observeStateAsync(callback) {
+export async function observeCentralStateAsync(callback) {
     const central = await getCentralAsync();
     // Make the callback async so the subscription returns first.
     setTimeout(() => callback(central.state));

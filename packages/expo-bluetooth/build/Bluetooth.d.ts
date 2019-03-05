@@ -28,7 +28,7 @@ export declare function startScanningAsync(scanSettings: ScanOptions | undefined
 export declare function initAsync(options: CentralManagerOptions): Promise<void>;
 export declare function stopScanningAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
-export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
+export declare function observeCentralStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
 export declare function connectAsync(peripheralUUID: UUID, options?: {
     timeout?: number;
     options?: {

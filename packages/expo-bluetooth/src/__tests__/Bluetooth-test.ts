@@ -99,15 +99,15 @@
 //   });
 // });
 
-// describe('observeStateAsync', () => {
+// describe('observeCentralStateAsync', () => {
 //   it(`invokes the callback right away`, () => {
 //     const callback = jest.fn();
-//     Bluetooth.observeStateAsync(callback);
+//     Bluetooth.observeCentralStateAsync(callback);
 //     expect(callback).toBeCalled();
 //   });
 
 //   it(`get's the central state`, () => {
-//     Bluetooth.observeStateAsync(function() {});
+//     Bluetooth.observeCentralStateAsync(function() {});
 //     expect(ExpoBluetooth.getCentralAsync).toHaveBeenLastCalledWith();
 //   });
 // });

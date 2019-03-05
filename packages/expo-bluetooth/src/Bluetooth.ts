@@ -129,7 +129,7 @@ export function observeUpdates(callback: (updates: any) => void): Subscription {
   return addHandlerForKey('everything', callback);
 }
 
-export async function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription> {
+export async function observeCentralStateAsync(callback: StateUpdatedCallback): Promise<Subscription> {
   const central = await getCentralAsync();
   // Make the callback async so the subscription returns first.
   setTimeout(() => callback(central.state));

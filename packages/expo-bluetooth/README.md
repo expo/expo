@@ -56,7 +56,7 @@ Basic Usage
 ```js
 ```
 
-### observeStateAsync
+### observeCentralStateAsync
 
 ```js
 ```
