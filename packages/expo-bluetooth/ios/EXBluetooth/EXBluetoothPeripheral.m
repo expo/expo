@@ -45,7 +45,7 @@
 
 - (instancetype)initWithPeripheral:(CBPeripheral *)peripheral
 {
-  NSAssert(peripheral, @"EXBluetoothPeripheral cannot init with a nullable peripheral");
+  NSAssert(peripheral, @"EXBluetoothPeripheral cannot be created without a native peripheral.");
   self = [super init];
   if (self) {
     _peripheral = peripheral;
@@ -113,7 +113,6 @@
 
 - (void)readRSSI:(EXBluetoothPeripheralReadRSSI)onReadRSSI
 {
-  NSAssert(onReadRSSI, @"readRSSI: callback cannot be nil");
   _onReadRSSI = onReadRSSI;
   [_peripheral readRSSI];
 }
@@ -121,7 +120,6 @@
 - (void)discoverServices:(NSArray<CBUUID *> *)serviceUUIDs
                withDiscoverServicesCallback:(EXBluetoothPeripheralDiscoverServices)onDiscoverServices
 {
-//  NSAssert(callback, @"discoverServices:withBlock: callback cannot be nil");
   _onDiscoverServices = onDiscoverServices;
   _peripheral.delegate = self;
   [_peripheral discoverServices:serviceUUIDs];
@@ -131,7 +129,6 @@
                       forService:(EXBluetoothService *)service
                        withDiscoverIncludedServicesCallback:(EXBluetoothPeripheralDiscoverIncludedServices)onDiscoverIncludedServices
 {
-//  NSAssert(callback, @"discoverIncludedServices:forService:withBlock: callback cannot be nil");
   [_onDiscoverIncludedServices setObject:onDiscoverIncludedServices forKey:service.UUID.UUIDString];
   [_peripheral discoverIncludedServices:includedServiceUUIDs forService:service.service];
 }
@@ -139,7 +136,6 @@
 - (void)discoverCharacteristics:(NSArray<CBUUID *> *)characteristicUUIDs
                      forService:(EXBluetoothService *)service withDiscoverCharacteristicsCallback:(EXBluetoothPeripheralDiscoverCharacteristics)onDiscoverCharacteristics
 {
-//  NSAssert(onDiscoverCharacteristics, @"discoverCharacteristics:forService:withBlock: onDiscoverCharacteristics cannot be nil");
   [_onDiscoverCharacteristics setObject:onDiscoverCharacteristics forKey:service.UUID.UUIDString];
   [_peripheral discoverCharacteristics:characteristicUUIDs forService:service.service];
 }
@@ -147,7 +143,6 @@
 - (void)readValueForCharacteristic:(EXBluetoothCharacteristic *)characteristic
                          withReadValueForCharacteristicCallback:(EXBluetoothPeripheralReadValueForCharacteristic)onReadValueForCharacteristic
 {
-//  NSAssert(callback, @"readValueForCharacteristic:withBlock: callback cannot be nil");
   [_onReadValueForCharacteristics setValue:onReadValueForCharacteristic forKey:characteristic.UUID.UUIDString];
   [_peripheral readValueForCharacteristic:characteristic.characteristic];
 }
@@ -157,7 +152,6 @@
               type:(CBCharacteristicWriteType)type
          withWriteValueForCharacteristicsCallback:(EXBluetoothPeripheralWriteValueForCharacteristics)onWriteValueForCharacteristics
 {
-//  NSAssert(callback, @"writeValue:forCharacteristic:type:withBlock: callback cannot be nil");
   [_onWriteValueForCharacteristics setValue:onWriteValueForCharacteristics forKey:characteristic.UUID.UUIDString];
   [_peripheral writeValue:data forCharacteristic:characteristic.characteristic type:type];
 }
@@ -166,7 +160,6 @@
 {
   
   if (enabled) {
-//    NSAssert(callback, @"setNotifyValue:forCharacteristic:withBlock: callback cannot be nil");
     [_onNotifyValueForCharacteristics setValue:onNotifyValueForCharacteristics forKey:characteristic.UUID.UUIDString];
   } else {
     [_onNotifyValueForCharacteristics removeObjectForKey:characteristic.UUID.UUIDString];
@@ -177,21 +170,18 @@
 
 -(void)discoverDescriptorsForCharacteristic:(EXBluetoothCharacteristic *)characteristic withDiscoverDescriptorsForCharacteristicCallback:(EXBluetoothPeripheralDiscoverDescriptorsForCharacteristic)onDiscoverDescriptorsForCharacteristic
 {
-//  NSAssert(callback, @"discoverDescriptorsForCharacteristic:withBlcok: callback cannot be nil");
   [_onDiscoverDescriptorsForCharacteristic setObject:onDiscoverDescriptorsForCharacteristic forKey:characteristic.UUID.UUIDString];
   [_peripheral discoverDescriptorsForCharacteristic:characteristic.characteristic];
 }
 
 - (void)readValueForDescriptor:(EXBluetoothDescriptor *)descriptor withReadValueForDescriptors:(EXBluetoothPeripheralReadValueForDescriptors)onReadValueForDescriptors
 {
-//  NSAssert(callback, @"readValueForDescriptor:withBlock: callback cannot be nil");
   [_onReadValueForDescriptors setValue:onReadValueForDescriptors forKey:descriptor.UUID.UUIDString];
   [_peripheral readValueForDescriptor:descriptor.descriptor];
 }
 
 - (void)writeValue:(NSData *)data forDescriptor:(EXBluetoothDescriptor *)descriptor withWriteValueForDescriptorsCallback:(EXBluetoothPeripheralWriteValueForDescriptors)onWriteValueForDescriptors
 {
-//  NSAssert(callback, @"writeValue:forDescriptor:withBlock: callback cannot be nil");
   [_onWriteValueForDescriptors setValue:onWriteValueForDescriptors forKey:descriptor.UUID.UUIDString];
   [_peripheral writeValue:data forDescriptor:descriptor.descriptor];
 }
