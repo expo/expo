@@ -12,7 +12,6 @@ export const CONTACTS = 'contacts';
 export const CALENDAR = 'calendar';
 export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
-export const ANDROID_BLUETOOTH = 'location';
 
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
   return await _handlePermissionsRequestAsync(types, Permissions.getAsync);
