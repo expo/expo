@@ -35,5 +35,6 @@
   },
   "unimodulePeerDependencies": {
     "expo-core": "*"
-  }
+  },
+  "gitHead": "a14949a882119c0f74ca2bdc4d92183ae1c7a70b"
 }
