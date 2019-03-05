@@ -198,7 +198,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     final Map<String, Object> events = new HashMap<>();
 
-    events.put("SYSTEM_RESET", BluetoothConstants.EVENTS.SYSTEM_RESET);
     events.put("SYSTEM_ENABLED_STATE_CHANGED", BluetoothConstants.EVENTS.SYSTEM_ENABLED_STATE_CHANGED);
     events.put("SYSTEM_AVAILABILITY_CHANGED", BluetoothConstants.EVENTS.SYSTEM_AVAILABILITY_CHANGED);
     events.put("SYSTEM_PERMISSION_CHANGED", BluetoothConstants.EVENTS.SYSTEM_PERMISSION_CHANGED);

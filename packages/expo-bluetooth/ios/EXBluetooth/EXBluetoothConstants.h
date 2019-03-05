@@ -3,7 +3,6 @@
 #ifndef EXBluetoothConstants_h
 #define EXBluetoothConstants_h
 
-static NSString *const EXBluetoothEvent_SYSTEM_RESET = @"SYSTEM_RESET";
 static NSString *const EXBluetoothEvent_SYSTEM_ENABLED_STATE_CHANGED = @"SYSTEM_ENABLED_STATE_CHANGED";
 static NSString *const EXBluetoothEvent_SYSTEM_AVAILABILITY_CHANGED = @"SYSTEM_AVAILABILITY_CHANGED";
 static NSString *const EXBluetoothEvent_SYSTEM_PERMISSION_CHANGED = @"SYSTEM_PERMISSION_CHANGED";

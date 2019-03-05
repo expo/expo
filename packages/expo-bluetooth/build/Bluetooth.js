@@ -11,6 +11,8 @@ import BluetoothError from './errors/BluetoothError';
 import { invariant, invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
 import ExpoBluetooth from './ExpoBluetooth';
 import Transaction from './Transaction';
+import * as android from './Android';
+export { android };
 export * from './Bluetooth.types';
 export { default as AndroidGATTError } from './errors/AndroidGATTError';
 export { default as BluetoothError } from './errors/BluetoothError';
@@ -321,45 +323,6 @@ export async function _loadChildrenRecursivelyAsync({ id }) {
         throw new BluetoothError({ code: `ERR_BLE_LOADING`, message: `Unknown ID ${id}` });
     }
 }
-export const android = {
-    async requestMTUAsync(peripheralUUID, MTU) {
-        invariantAvailability('requestMTUAsync');
-        invariantUUID(peripheralUUID);
-        if (MTU > 512) {
-            throw new BluetoothError({ message: 'Max MTU size is 512', code: 'ERR_BLE_MTU' });
-        }
-        return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
-    },
-    async bondAsync(peripheralUUID) {
-        invariantAvailability('bondAsync');
-        invariantUUID(peripheralUUID);
-        return await ExpoBluetooth.bondAsync(peripheralUUID);
-    },
-    async unbondAsync(peripheralUUID) {
-        invariantAvailability('unbondAsync');
-        invariantUUID(peripheralUUID);
-        return await ExpoBluetooth.unbondAsync(peripheralUUID);
-    },
-    async enableBluetoothAsync(isBluetoothEnabled = true) {
-        invariantAvailability('enableBluetoothAsync');
-        return await ExpoBluetooth.enableBluetoothAsync(isBluetoothEnabled);
-    },
-    async getBondedPeripheralsAsync() {
-        invariantAvailability('getBondedPeripheralsAsync');
-        return await ExpoBluetooth.getBondedPeripheralsAsync();
-    },
-    async requestConnectionPriorityAsync(peripheralUUID, connectionPriority) {
-        invariantAvailability('requestConnectionPriorityAsync');
-        invariantUUID(peripheralUUID);
-        return await ExpoBluetooth.requestConnectionPriorityAsync(peripheralUUID, connectionPriority);
-    },
-    observeBluetoothAvailabilty(callback) {
-        return addHandlerForKey(EVENTS.SYSTEM_AVAILABILITY_CHANGED, callback);
-    },
-    observeBluetoothEnabled(callback) {
-        return addHandlerForKey(EVENTS.SYSTEM_ENABLED_STATE_CHANGED, callback);
-    },
-};
 export async function _reset() {
     await stopScanningAsync();
     clearPeripherals();

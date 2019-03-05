@@ -100,7 +100,6 @@ EX_EXPORT_MODULE(ExpoBluetooth);
                @"CHARACTERISTIC": EXBluetoothCharacteristicKey,
                },
            @"EVENTS": @{
-               @"SYSTEM_RESET": EXBluetoothEvent_SYSTEM_RESET,
                @"SYSTEM_ENABLED_STATE_CHANGED": EXBluetoothEvent_SYSTEM_ENABLED_STATE_CHANGED,
                @"SYSTEM_AVAILABILITY_CHANGED": EXBluetoothEvent_SYSTEM_AVAILABILITY_CHANGED,
                @"SYSTEM_PERMISSION_CHANGED": EXBluetoothEvent_SYSTEM_PERMISSION_CHANGED,

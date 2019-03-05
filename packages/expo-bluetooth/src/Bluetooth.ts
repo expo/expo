@@ -10,7 +10,6 @@ import {
   NativeEventData,
   NativePeripheral,
   NativeService,
-  Priority,
   StateUpdatedCallback,
   UUID,
   NativeDescriptor,
@@ -36,6 +35,9 @@ import BluetoothError from './errors/BluetoothError';
 import { invariant, invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
 import ExpoBluetooth from './ExpoBluetooth';
 import Transaction from './Transaction';
+
+import * as android from './Android';
+export { android }
 
 export * from './Bluetooth.types';
 
@@ -474,48 +476,6 @@ export async function _loadChildrenRecursivelyAsync({ id }): Promise<any[]> {
   }
 }
 
-export const android = {
-  async requestMTUAsync(peripheralUUID: UUID, MTU: number): Promise<number> {
-    invariantAvailability('requestMTUAsync');
-    invariantUUID(peripheralUUID);
-    if (MTU > 512) {
-      throw new BluetoothError({ message: 'Max MTU size is 512', code: 'ERR_BLE_MTU' });
-    }
-    return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);
-  },
-  async bondAsync(peripheralUUID: UUID): Promise<any> {
-    invariantAvailability('bondAsync');
-    invariantUUID(peripheralUUID);
-    return await ExpoBluetooth.bondAsync(peripheralUUID);
-  },
-  async unbondAsync(peripheralUUID: UUID): Promise<any> {
-    invariantAvailability('unbondAsync');
-    invariantUUID(peripheralUUID);
-    return await ExpoBluetooth.unbondAsync(peripheralUUID);
-  },
-  async enableBluetoothAsync(isBluetoothEnabled: boolean = true): Promise<void> {
-    invariantAvailability('enableBluetoothAsync');
-    return await ExpoBluetooth.enableBluetoothAsync(isBluetoothEnabled);
-  },
-  async getBondedPeripheralsAsync(): Promise<NativePeripheral[]> {
-    invariantAvailability('getBondedPeripheralsAsync');
-    return await ExpoBluetooth.getBondedPeripheralsAsync();
-  },
-  async requestConnectionPriorityAsync(
-    peripheralUUID: UUID,
-    connectionPriority: Priority
-  ): Promise<void> {
-    invariantAvailability('requestConnectionPriorityAsync');
-    invariantUUID(peripheralUUID);
-    return await ExpoBluetooth.requestConnectionPriorityAsync(peripheralUUID, connectionPriority);
-  },
-  observeBluetoothAvailabilty(callback: (updates: Central) => void): Subscription {
-    return addHandlerForKey(EVENTS.SYSTEM_AVAILABILITY_CHANGED, callback);
-  },
-  observeBluetoothEnabled(callback: (updates: Central) => void): Subscription {
-    return addHandlerForKey(EVENTS.SYSTEM_ENABLED_STATE_CHANGED, callback);
-  },
-};
 
 export async function _reset(): Promise<void> {
   await stopScanningAsync();
