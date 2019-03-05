@@ -1,12 +1,5 @@
 export declare const BLUETOOTH_EVENT: any, UUID: any, TYPES: any, CONNECT_PERIPHERAL_OPTIONS: any, PRIORITY: any;
 export declare const DELIMINATOR = "|";
-/** iOS only */
-export declare const CENTRAL_OPTIONS: {
-    /** CBCentralManagerOptionShowPowerAlertKey  */
-    SHOW_POWER_ALERT: string;
-    /** CBCentralManagerOptionRestoreIdentifierKey */
-    RESTORE_IDENTIFIER: string;
-};
 export declare const EVENTS: {
     UPDATE_STATE: 'UPDATE_STATE';
     SYSTEM_ENABLED_STATE_CHANGED?: 'SYSTEM_ENABLED_STATE_CHANGED';

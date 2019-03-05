@@ -18,7 +18,7 @@ import {
   ScanOptions,
   CancelScanningCallback
 } from './Bluetooth.types';
-import { CENTRAL_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
+import { CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
 import {
   _resetAllHandlers,
   addHandlerForID,
@@ -48,7 +48,6 @@ export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
 export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
 
 export { 
-  CENTRAL_OPTIONS,
   CONNECT_PERIPHERAL_OPTIONS, 
   BLUETOOTH_EVENT, 
   TYPES, 

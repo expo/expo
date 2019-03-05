@@ -72,10 +72,6 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 {
   return @{
            @"BLUETOOTH_EVENT": EXBluetoothEvent,
-           @"CENTRAL_OPTIONS": @{
-               @"SHOW_POWER_ALERT": CBCentralManagerOptionShowPowerAlertKey,
-               @"RESTORE_IDENTIFIER": CBCentralManagerOptionRestoreIdentifierKey,
-               },
            @"CONNECT_PERIPHERAL_OPTIONS": @{
                @"NotifyOnConnection": CBConnectPeripheralOptionNotifyOnConnectionKey,
                @"NotifyOnDisconnection": CBConnectPeripheralOptionNotifyOnDisconnectionKey,

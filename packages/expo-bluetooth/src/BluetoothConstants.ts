@@ -12,14 +12,6 @@ export const {
 
 export const DELIMINATOR = '|';
 
-/** iOS only */
-export const CENTRAL_OPTIONS: {
-  /** CBCentralManagerOptionShowPowerAlertKey  */
-  SHOW_POWER_ALERT: string;
-  /** CBCentralManagerOptionRestoreIdentifierKey */
-  RESTORE_IDENTIFIER: string;
-} = ExpoBluetooth.CENTRAL_OPTIONS;
-
 export const EVENTS: {
   UPDATE_STATE: 'UPDATE_STATE';
   SYSTEM_ENABLED_STATE_CHANGED?: 'SYSTEM_ENABLED_STATE_CHANGED';
