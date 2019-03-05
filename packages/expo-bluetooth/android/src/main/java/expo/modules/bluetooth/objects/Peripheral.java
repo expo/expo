@@ -214,8 +214,9 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     }
 
-    public void onConnectionStateChange(int status, int newState) {
+    public synchronized void onConnectionStateChange(int status, int newState) {
       tryRejectingAllPendingConnectPromises();
+
 
       if (mDidConnectStateChangePeripheralBlock != null) {
         Log.d("BLE_TEST", "RESOLVED: " + mDidConnectStateChangePeripheralBlock.getEvent() + " | " + getID() + ", connected: " + isConnected());
@@ -385,7 +386,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
 
     public void onReadRemoteRssi(int rssi, int status) {
-
+     Log.d("BluetoothGatt", "onReadRemoteRssi(" + rssi + ", " + status + ");");
       BluetoothModule.emitState();
       sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_UPDATED_RSSI, status);
       if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -748,21 +749,15 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void readRSSIAsync(final Promise promise) {
-    runInMainLoop(new Runnable() {
-      @Override
-      public void run() {
-        if (guardGATTExists(promise) || guardIsConnected(promise) || guardConcurrency(promise, mRSSIBlock)) {
-          return;
-        }
-
-        mRSSIBlock = promise;
-        if (!mGatt.readRemoteRssi()) {
-          mRSSIBlock = null;
-          BluetoothError.reject(promise, "Failed to read RSSI from peripheral: " + getID());
-          return;
-        }
-      }
-    });
+    if (guardGATTExists(promise) || guardIsConnected(promise) || guardConcurrency(promise, mRSSIBlock)) {
+      return;
+    }
+    mRSSIBlock = promise;
+    if (!mGatt.readRemoteRssi()) {
+      mRSSIBlock = null;
+      BluetoothError.reject(promise, "Failed to read RSSI from peripheral: " + getID());
+      return;
+    }
   }
 
   public void discoverServicesForPeripheralAsync(final Promise promise) {
