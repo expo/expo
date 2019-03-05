@@ -36,8 +36,6 @@ public class BluetoothScanManager {
   private PeripheralScanningDelegate mDelegate;
   private ScanCallback mScanCallback;
 
-
-
   private ScanCallback getScanCallback() {
     if (mScanCallback != null) {
       return mScanCallback;
@@ -110,18 +108,26 @@ public class BluetoothScanManager {
       int scanMode = Serialize.ScanMode_JSONToNative(scanModeString);
       scanSettingsBuilder.setScanMode(scanMode);
     }
-
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (options.containsKey("androidCallbackType") && options.get("androidCallbackType") != null) {
+        String androidCallbackTypeString = (String) options.get("androidCallbackType");
+        int callbackType = Serialize.ScanSettingsCallbackType_JSONToNative(androidCallbackTypeString);
+        scanSettingsBuilder.setCallbackType(callbackType);
+      }
       if (options.containsKey("androidNumberOfMatches") && options.get("androidNumberOfMatches") != null) {
-        scanSettingsBuilder.setNumOfMatches(((Number) options.get("androidNumberOfMatches")).intValue());
+        String numberOfMatchesString = (String) options.get("androidNumberOfMatches");
+        int numberOfMatches = Serialize.MatchNum_JSONToNative(numberOfMatchesString);
+        scanSettingsBuilder.setNumOfMatches(numberOfMatches);
       }
       if (options.containsKey("androidMatchMode") && options.get("androidMatchMode") != null) {
-        scanSettingsBuilder.setMatchMode(((Number) options.get("androidMatchMode")).intValue());
+        String matchModeString = (String) options.get("androidMatchMode");
+        int matchMode = Serialize.MatchMode_JSONToNative(matchModeString);
+        scanSettingsBuilder.setMatchMode(matchMode);
       }
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (options.containsKey("androidOnlyConnectable") && options.get("androidOnlyConnectable") != null) {
-        mOnlyConnectableDevices = (boolean) options.get("androidOnlyConnectable");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (options.containsKey("androidOnlyConnectable") && options.get("androidOnlyConnectable") != null) {
+          mOnlyConnectableDevices = (boolean) options.get("androidOnlyConnectable");
+        }
       }
     }
 

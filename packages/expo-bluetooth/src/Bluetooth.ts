@@ -17,7 +17,9 @@ import {
   ScanOptions,
   CancelScanningCallback
 } from './Bluetooth.types';
-import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
+import { CENTRAL_OPTIONS,
+  SCAN_OPTIONS,
+  CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
 import {
   _resetAllHandlers,
   addHandlerForID,
@@ -45,7 +47,15 @@ export { default as AndroidGATTError } from './errors/AndroidGATTError';
 export { default as BluetoothError } from './errors/BluetoothError';
 export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
 export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
-export { BLUETOOTH_EVENT, TYPES, EVENTS };
+
+export { 
+  CENTRAL_OPTIONS,
+  SCAN_OPTIONS,
+  CONNECT_PERIPHERAL_OPTIONS, 
+  BLUETOOTH_EVENT, 
+  TYPES, 
+  EVENTS 
+};
 
 export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
   const nStack = stack || new Error().stack;
@@ -71,8 +81,6 @@ export async function getPermissionAsync(): Promise<{ status: PermissionStatus }
 }
 
 /**
- * **iOS:**
- *
  * Although strongly discouraged,
  * if `serviceUUIDsToQuery` is `null | undefined` all discovered peripherals will be returned.
  * If the central is already scanning with different

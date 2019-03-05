@@ -312,6 +312,17 @@ public class Serialize {
 
   // Service
 
+  public static int ScanSettingsCallbackType_JSONToNative(String input) {
+    if (input.equals("allMatches")) {
+      return ScanSettings.CALLBACK_TYPE_ALL_MATCHES;
+    } else if (input.equals("firstMatch")) {
+      return ScanSettings.CALLBACK_TYPE_FIRST_MATCH;
+    } else if (input.equals("matchLost")) {
+      return ScanSettings.CALLBACK_TYPE_MATCH_LOST;
+    }
+    return -1;
+  }
+
   public static int ScanMode_JSONToNative(String input) {
     if (input.equals("lowLatency")) {
       return ScanSettings.SCAN_MODE_LOW_LATENCY;
@@ -319,9 +330,30 @@ public class Serialize {
       return ScanSettings.SCAN_MODE_LOW_POWER;
     } else if (input.equals("balanced")) {
       return ScanSettings.SCAN_MODE_BALANCED;
-    } else {
+    } else if (input.equals("opportunistic")) {
       return ScanSettings.SCAN_MODE_OPPORTUNISTIC;
     }
+    return -1;
+  }
+
+  public static int MatchMode_JSONToNative(String input) {
+    if (input.equals("sticky")) {
+      return ScanSettings.MATCH_MODE_STICKY;
+    } else if (input.equals("aggressive")) {
+      return ScanSettings.MATCH_MODE_AGGRESSIVE;
+    }
+    return -1;
+  }
+
+  public static int MatchNum_JSONToNative(String input) {
+    if (input.equals("one")) {
+      return ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT;
+    } else if (input.equals("few")) {
+      return ScanSettings.MATCH_NUM_FEW_ADVERTISEMENT;
+    } else if (input.equals("max")) {
+      return ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT;
+    }
+    return -1;
   }
 
   public static String bondingState_NativeToJSON(int bondState) {

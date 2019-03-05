@@ -5,14 +5,27 @@ export const {
   UUID,
   TYPES,
   /* iOS */
-  CENTRAL_OPTIONS,
-  SCAN_OPTIONS,
   CONNECT_PERIPHERAL_OPTIONS,
   /* Android */
   PRIORITY,
 } = ExpoBluetooth;
 
 export const DELIMINATOR = '|';
+
+export const SCAN_OPTIONS: {
+  /** CBCentralManagerScanOptionAllowDuplicatesKey */
+  ALLOW_DUPLICATES: string;
+  /** CBCentralManagerScanOptionSolicitedServiceUUIDsKey */
+  SOLICITED_SERVICE_UUIDS: string;
+} = ExpoBluetooth.SCAN_OPTIONS;
+
+/** iOS only */
+export const CENTRAL_OPTIONS: {
+  /** CBCentralManagerOptionShowPowerAlertKey  */
+  SHOW_POWER_ALERT: string;
+  /** CBCentralManagerOptionRestoreIdentifierKey */
+  RESTORE_IDENTIFIER: string;
+} = ExpoBluetooth.CENTRAL_OPTIONS;
 
 export const EVENTS: {
   UPDATE_STATE: 'UPDATE_STATE';

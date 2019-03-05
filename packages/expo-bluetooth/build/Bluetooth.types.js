@@ -35,6 +35,24 @@ export var AndroidAdapterScanMode;
     AndroidAdapterScanMode["connectable"] = "connectable";
     AndroidAdapterScanMode["discoverable"] = "discoverable";
 })(AndroidAdapterScanMode || (AndroidAdapterScanMode = {}));
+export var AndroidScanCallbackType;
+(function (AndroidScanCallbackType) {
+    /**
+     * Trigger a callback for every Bluetooth advertisement found that matches the filter criteria.
+     * If no filter is active, all advertisement packets are reported.
+     */
+    AndroidScanCallbackType["allMatches"] = "allMatches";
+    /**
+     * A result callback is only triggered for the first advertisement packet received that matches
+     * the filter criteria.
+     */
+    AndroidScanCallbackType["firstMatch"] = "firstMatch";
+    /**
+     * Receive a callback when advertisements are no longer received from a device that has been
+     * previously reported by a first match callback.
+     */
+    AndroidScanCallbackType["matchLost"] = "MATCH_LOST";
+})(AndroidScanCallbackType || (AndroidScanCallbackType = {}));
 export var AndroidScanMode;
 (function (AndroidScanMode) {
     AndroidScanMode["lowLatency"] = "lowLatency";
@@ -42,6 +60,19 @@ export var AndroidScanMode;
     AndroidScanMode["balanced"] = "balanced";
     AndroidScanMode["opportunistic"] = "opportunistic";
 })(AndroidScanMode || (AndroidScanMode = {}));
+/** Android M 23+ */
+export var AndroidMatchMode;
+(function (AndroidMatchMode) {
+    AndroidMatchMode["aggresive"] = "aggresive";
+    AndroidMatchMode["sticky"] = "sticky";
+})(AndroidMatchMode || (AndroidMatchMode = {}));
+/** Android M 23+ */
+export var AndroidNumberOfMatches;
+(function (AndroidNumberOfMatches) {
+    AndroidNumberOfMatches["max"] = "max";
+    AndroidNumberOfMatches["one"] = "one";
+    AndroidNumberOfMatches["few"] = "few";
+})(AndroidNumberOfMatches || (AndroidNumberOfMatches = {}));
 export var TransactionType;
 (function (TransactionType) {
     TransactionType["get"] = "get";

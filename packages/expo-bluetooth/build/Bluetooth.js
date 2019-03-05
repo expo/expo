@@ -2,7 +2,7 @@ import { Platform } from 'expo-core';
 import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
 import { CharacteristicProperty } from './Bluetooth.types';
-import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
+import { CENTRAL_OPTIONS, SCAN_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
 import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './BluetoothEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
 import { peripheralIdFromId } from './BluetoothTransactions';
@@ -18,7 +18,7 @@ export { default as AndroidGATTError } from './errors/AndroidGATTError';
 export { default as BluetoothError } from './errors/BluetoothError';
 export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
 export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
-export { BLUETOOTH_EVENT, TYPES, EVENTS };
+export { CENTRAL_OPTIONS, SCAN_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, TYPES, EVENTS };
 export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
     const nStack = stack || new Error().stack;
     if (code.indexOf('ERR_BLE_GATT:') > -1) {
@@ -40,8 +40,6 @@ export async function getPermissionAsync() {
     return { status: PermissionStatus.GRANTED };
 }
 /**
- * **iOS:**
- *
  * Although strongly discouraged,
  * if `serviceUUIDsToQuery` is `null | undefined` all discovered peripherals will be returned.
  * If the central is already scanning with different

@@ -35,11 +35,44 @@ export enum AndroidAdapterScanMode {
   discoverable = 'discoverable',
 }
 
+export enum AndroidScanCallbackType {
+  /**
+   * Trigger a callback for every Bluetooth advertisement found that matches the filter criteria.
+   * If no filter is active, all advertisement packets are reported.
+   */
+  allMatches = 'allMatches',
+
+  /**
+   * A result callback is only triggered for the first advertisement packet received that matches
+   * the filter criteria.
+   */
+  firstMatch = 'firstMatch',
+
+  /**
+   * Receive a callback when advertisements are no longer received from a device that has been
+   * previously reported by a first match callback.
+   */
+  matchLost = 'MATCH_LOST',
+}
+
 export enum AndroidScanMode {
   lowLatency = 'lowLatency',
   lowPower = 'lowPower',
   balanced = 'balanced',
   opportunistic = 'opportunistic',
+}
+
+/** Android M 23+ */
+export enum AndroidMatchMode {
+  aggresive = 'aggresive', // default
+  sticky = 'sticky',
+}
+
+/** Android M 23+ */
+export enum AndroidNumberOfMatches {
+  max = 'max', // default
+  one = 'one',
+  few = 'few',
 }
 
 export enum TransactionType {
@@ -229,16 +262,24 @@ type Prom = {
 export type TransactionHandler = any; // { callbacks: Array<Function | Prom> } | Prom;
 
 export type ScanOptions = {
-  serviceUUIDsToQuery?: string[];
-  androidScanMode?: any;
-  androidMatchMode?: any;
+  serviceUUIDsToQuery?: UUID[];
+
+  androidCallbackType?: AndroidScanCallbackType;
+
+  androidScanMode?: AndroidScanMode;
+  /** M (23+) */
+  androidMatchMode?: AndroidMatchMode;
   /**
+   * M (23+)
    * Match as many advertisement per filter as hw could allow
    * dependes on current capability and availability of the resources in hw.
    */
-  androidNumberOfMatches?: any;
-  /** Oreo (26)+ */
+  androidNumberOfMatches?: AndroidNumberOfMatches;
+  /** Oreo (26+) */
   androidOnlyConnectable?: boolean;
+
+  // iOS SCAN_OPTIONS
+  [key: string]: any;
 };
 
 export type CancelScanningCallback = () => void;
