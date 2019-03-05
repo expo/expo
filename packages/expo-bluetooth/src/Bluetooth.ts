@@ -11,7 +11,7 @@ import {
   NativeCharacteristic,
   NativeDescriptor,
   NativeEventData,
-  NativePeripheral,
+  Peripheral,
   NativeService,
   ScanOptions,
   StateUpdatedCallback,
@@ -20,7 +20,6 @@ import {
   WriteCharacteristicOptions,
   RSSI,
 } from './Bluetooth.types';
-import { DELIMINATOR, EVENTS } from './BluetoothConstants';
 import {
   _resetAllHandlers,
   addHandlerForID,
@@ -30,13 +29,13 @@ import {
   firePeripheralObservers,
   fireSingleEventHandlers,
   resetHandlersForKey,
-} from './BluetoothEventHandler';
-import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
-import { peripheralIdFromId } from './BluetoothTransactions';
+} from './localEventHandler';
+import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './peripheralCache';
+import { peripheralIdFromId } from './transactions';
 import AndroidGATTError from './errors/AndroidGATTError';
 import BluetoothError from './errors/BluetoothError';
 import { invariant, invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
-import ExpoBluetooth from './ExpoBluetooth';
+import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import Transaction from './Transaction';
 
 // TODO: Bacon maybe move to `.android`
@@ -62,7 +61,7 @@ export async function getPermissionAsync(): Promise<{ status: PermissionStatus }
  */
 export async function startScanningAsync(
   scanSettings: ScanOptions = {},
-  callback: (peripheral: NativePeripheral) => void
+  callback: (peripheral: Peripheral) => void
 ): Promise<CancelScanningCallback> {
   invariantAvailability('startScanningAsync');
   invariant(callback, 'startScanningAsync({ ... }, null): callback is not defined');
@@ -116,7 +115,7 @@ export async function observeCentralStateAsync(callback: StateUpdatedCallback): 
 export async function connectAsync(
   peripheralUUID: UUID,
   { timeout, options = {}, onDisconnect }: ConnectionOptions
-): Promise<NativePeripheral> {
+): Promise<Peripheral> {
   invariantAvailability('connectPeripheralAsync');
   invariantUUID(peripheralUUID);
 
@@ -281,14 +280,14 @@ export async function readRSSIAsync(peripheralUUID: UUID): Promise<RSSI> {
   return await ExpoBluetooth.readRSSIAsync(peripheralUUID);
 }
 
-export async function getPeripheralsAsync(): Promise<NativePeripheral[]> {
+export async function getPeripheralsAsync(): Promise<Peripheral[]> {
   invariantAvailability('getPeripheralsAsync');
   return await ExpoBluetooth.getPeripheralsAsync();
 }
 
 export async function getConnectedPeripheralsAsync(
   serviceUUIDsToQuery: UUID[] = []
-): Promise<NativePeripheral[]> {
+): Promise<Peripheral[]> {
   invariantAvailability('getConnectedPeripheralsAsync');
   return await ExpoBluetooth.getConnectedPeripheralsAsync(serviceUUIDsToQuery);
 }
@@ -298,7 +297,7 @@ export async function getCentralAsync(): Promise<Central> {
   return await ExpoBluetooth.getCentralAsync();
 }
 
-export async function getPeripheralAsync({ peripheralUUID }): Promise<NativePeripheral> {
+export async function getPeripheralAsync({ peripheralUUID }): Promise<Peripheral> {
   invariantAvailability('getPeripheralAsync');
   return await ExpoBluetooth.getPeripheralAsync({ peripheralUUID });
 }
@@ -345,7 +344,7 @@ export async function discoverServicesForPeripheralAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
   characteristicProperties?: CharacteristicProperty;
-}): Promise<{ peripheral: NativePeripheral }> {
+}): Promise<{ peripheral: Peripheral }> {
   invariantAvailability('discoverServicesForPeripheralAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverServicesForPeripheralAsync({
@@ -358,7 +357,7 @@ export async function discoverServicesForPeripheralAsync(options: {
 export async function discoverIncludedServicesForServiceAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
-}): Promise<{ peripheral: NativePeripheral }> {
+}): Promise<{ peripheral: Peripheral }> {
   invariantAvailability('discoverIncludedServicesForServiceAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverIncludedServicesForServiceAsync({
@@ -385,7 +384,7 @@ export async function discoverDescriptorsForCharacteristicAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
   characteristicProperties?: CharacteristicProperty;
-}): Promise<{ peripheral: NativePeripheral; characteristic: NativeCharacteristic }> {
+}): Promise<{ peripheral: Peripheral; characteristic: NativeCharacteristic }> {
   invariantAvailability('discoverDescriptorsForCharacteristicAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverDescriptorsForCharacteristicAsync({
@@ -398,7 +397,7 @@ export async function discoverDescriptorsForCharacteristicAsync(options: {
 export async function loadPeripheralAsync(
   { id },
   skipConnecting: boolean = false
-): Promise<NativePeripheral> {
+): Promise<Peripheral> {
   const peripheralId = peripheralIdFromId(id);
   const peripheral = getPeripherals()[peripheralId];
   if (!peripheral) {

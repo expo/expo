@@ -1,11 +1,10 @@
 import { Subscription } from 'expo-core';
 
-import { Central, NativePeripheral, Priority, UUID, MTU } from './Bluetooth.types';
-import { EVENTS } from './BluetoothConstants';
-import { addHandlerForKey } from './BluetoothEventHandler';
+import { Central, Peripheral, Priority, UUID, MTU } from './Bluetooth.types';
+import { addHandlerForKey } from './localEventHandler';
 import BluetoothError from './errors/BluetoothError';
 import { invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
-import ExpoBluetooth from './ExpoBluetooth';
+import ExpoBluetooth, { EVENTS } from './ExpoBluetooth';
 
 export async function requestMTUAsync(peripheralUUID: UUID, MTU: MTU): Promise<MTU> {
   invariantAvailability('requestMTUAsync');
@@ -29,7 +28,7 @@ export async function enableBluetoothAsync(isBluetoothEnabled: boolean = true): 
   invariantAvailability('enableBluetoothAsync');
   return await ExpoBluetooth.enableBluetoothAsync(isBluetoothEnabled);
 }
-export async function getBondedPeripheralsAsync(): Promise<NativePeripheral[]> {
+export async function getBondedPeripheralsAsync(): Promise<Peripheral[]> {
   invariantAvailability('getBondedPeripheralsAsync');
   return await ExpoBluetooth.getBondedPeripheralsAsync();
 }

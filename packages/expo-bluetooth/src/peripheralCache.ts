@@ -1,12 +1,12 @@
-import { NativePeripheral, UUID } from './Bluetooth.types';
-import { peripheralIdFromId } from './BluetoothTransactions';
+import { Peripheral, UUID } from './Bluetooth.types';
+import { peripheralIdFromId } from './transactions';
 
 // Manage all of the bluetooth information.
-let _peripherals: { [peripheralId: string]: NativePeripheral } = {};
+let _peripherals: { [peripheralId: string]: Peripheral } = {};
 
 let _advertisements: any = {};
 
-export function getPeripherals(): { [peripheralId: string]: NativePeripheral } {
+export function getPeripherals(): { [peripheralId: string]: Peripheral } {
   return _peripherals;
 }
 
@@ -23,7 +23,7 @@ export function removePeripheral(uuid: UUID) {
   delete _peripherals[uuid];
 }
 
-export function updateStateWithPeripheral(peripheral: NativePeripheral) {
+export function updateStateWithPeripheral(peripheral: Peripheral) {
   const {
     [peripheral.id]: currentPeripheral = {
       discoveryTimestamp: Date.now(),

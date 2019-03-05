@@ -1,6 +1,6 @@
-import { createTransactionId } from './BluetoothTransactions';
+import { createTransactionId } from './transactions';
 import { CharacteristicProperty, TransactionType } from './Bluetooth.types';
-import { DELIMINATOR } from './BluetoothConstants';
+import { DELIMINATOR } from './ExpoBluetooth';
 export default class Transaction {
     // Return a Transaction from a transactionId ex: read|some_peripheral_id|some_service_id
     static fromTransactionId(transactionId) {

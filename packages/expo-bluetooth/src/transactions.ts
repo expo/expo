@@ -4,7 +4,7 @@ import {
   TransactionId,
   TransactionType,
 } from './Bluetooth.types';
-import { DELIMINATOR } from './BluetoothConstants';
+import { DELIMINATOR } from './ExpoBluetooth';
 // TODO: this is a cycle
 import Transaction from './Transaction';
 

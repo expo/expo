@@ -1,8 +1,7 @@
 import { EventEmitter, Subscription } from 'expo-core';
 
-import { Central, NativePeripheral } from './Bluetooth.types';
-import { BLUETOOTH_EVENT } from './BluetoothConstants';
-import { getPeripherals } from './BluetoothLocalState';
+import { Central, Peripheral } from './Bluetooth.types';
+import { getPeripherals } from './peripheralCache';
 import ExpoBluetooth from './ExpoBluetooth/ExpoBluetooth';
 
 const eventEmitter = new EventEmitter(ExpoBluetooth);
@@ -24,7 +23,7 @@ export function fireSingleEventHandlers(
     central,
     peripheral,
     error,
-  }: { central?: Central | null; peripheral?: NativePeripheral | null; error: any }
+  }: { central?: Central | null; peripheral?: Peripheral | null; error: any }
 ) {
   fireMultiEventHandlers(event, { central, peripheral, error });
   resetHandlersForKey(event);
@@ -36,7 +35,7 @@ export function fireMultiEventHandlers(
     central,
     peripheral,
     error,
-  }: { central?: Central | null; peripheral?: NativePeripheral | null; error: any }
+  }: { central?: Central | null; peripheral?: Peripheral | null; error: any }
 ) {
   ensureKey(event);
   for (const callback of multiEventHandlers[event]) {
@@ -108,9 +107,9 @@ export function getHandlersForKey(key) {
 }
 
 export function addListener(listener: (event: any) => void): Subscription {
-  return eventEmitter.addListener(BLUETOOTH_EVENT, listener);
+  return eventEmitter.addListener(ExpoBluetooth.BLUETOOTH_EVENT, listener);
 }
 
 export function removeAllListeners(): void {
-  eventEmitter.removeAllListeners(BLUETOOTH_EVENT);
+  eventEmitter.removeAllListeners(ExpoBluetooth.BLUETOOTH_EVENT);
 }

@@ -1,6 +1,6 @@
-import { createTransactionId } from './BluetoothTransactions';
+import { createTransactionId } from './transactions';
 import { CharacteristicProperty, UUID, TransactionType, TransactionId } from './Bluetooth.types';
-import { DELIMINATOR } from './BluetoothConstants';
+import { DELIMINATOR } from './ExpoBluetooth';
 
 type PossibleTransaction = TransactionType | CharacteristicProperty;
 

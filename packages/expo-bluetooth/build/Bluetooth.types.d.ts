@@ -127,8 +127,8 @@ export interface NativeDescriptor extends NativeBluetoothElement {
 }
 export declare type NativeEventData = {
     transactionId?: TransactionId;
-    peripheral?: NativePeripheral | null;
-    peripherals?: NativePeripheral[];
+    peripheral?: Peripheral | null;
+    peripherals?: Peripheral[];
     characteristic?: NativeCharacteristic | null;
     central?: Central | null;
     descriptor?: NativeDescriptor | null;
@@ -173,7 +173,7 @@ export interface NativeAdvertismentData {
     isConnectable: boolean | null;
     overflowServiceUUIDs: UUID[] | null;
 }
-export interface NativePeripheral extends NativeBluetoothElement {
+export interface Peripheral extends NativeBluetoothElement {
     advertisementData?: NativeAdvertismentData;
     name: string | null;
     RSSI: RSSI | null;
@@ -190,7 +190,7 @@ export interface NativePeripheral extends NativeBluetoothElement {
     bondState?: BondState;
     discoveryTimestamp?: number;
 }
-export declare type PeripheralFoundCallback = (peripheral: NativePeripheral) => void;
+export declare type PeripheralFoundCallback = (peripheral: Peripheral) => void;
 export declare type StateUpdatedCallback = (state: CentralState) => void;
 export declare type ScanSettings = {
     serviceUUIDsToQuery?: UUID[];

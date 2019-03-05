@@ -1,8 +1,7 @@
-import { EVENTS } from './BluetoothConstants';
-import { addHandlerForKey } from './BluetoothEventHandler';
+import { addHandlerForKey } from './localEventHandler';
 import BluetoothError from './errors/BluetoothError';
 import { invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
-import ExpoBluetooth from './ExpoBluetooth';
+import ExpoBluetooth, { EVENTS } from './ExpoBluetooth';
 export async function requestMTUAsync(peripheralUUID, MTU) {
     invariantAvailability('requestMTUAsync');
     invariantUUID(peripheralUUID);

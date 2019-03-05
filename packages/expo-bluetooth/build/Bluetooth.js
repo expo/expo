@@ -2,14 +2,13 @@ import { Platform } from 'expo-core';
 import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
 import { CharacteristicProperty, } from './Bluetooth.types';
-import { DELIMINATOR, EVENTS } from './BluetoothConstants';
-import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './BluetoothEventHandler';
-import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
-import { peripheralIdFromId } from './BluetoothTransactions';
+import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './localEventHandler';
+import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './peripheralCache';
+import { peripheralIdFromId } from './transactions';
 import AndroidGATTError from './errors/AndroidGATTError';
 import BluetoothError from './errors/BluetoothError';
 import { invariant, invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
-import ExpoBluetooth from './ExpoBluetooth';
+import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import Transaction from './Transaction';
 // TODO: Bacon maybe move to `.android`
 export async function requestPermissionAsync() {
