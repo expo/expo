@@ -76,10 +76,6 @@ EX_EXPORT_MODULE(ExpoBluetooth);
                @"SHOW_POWER_ALERT": CBCentralManagerOptionShowPowerAlertKey,
                @"RESTORE_IDENTIFIER": CBCentralManagerOptionRestoreIdentifierKey,
                },
-           @"SCAN_OPTIONS": @{
-               @"ALLOW_DUPLICATES": CBCentralManagerScanOptionAllowDuplicatesKey,
-               @"SOLICITED_SERVICE_UUIDS": CBCentralManagerScanOptionSolicitedServiceUUIDsKey
-               },
            @"CONNECT_PERIPHERAL_OPTIONS": @{
                @"NotifyOnConnection": CBConnectPeripheralOptionNotifyOnConnectionKey,
                @"NotifyOnDisconnection": CBConnectPeripheralOptionNotifyOnDisconnectionKey,
@@ -241,10 +237,10 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
     return;
   }
   NSArray *serviceUUIDs = [EXBluetooth.class CBUUIDListJSONToNative:serviceUUIDStrings];
+  NSDictionary *nativeOptions = [EXBluetooth.class ScanningOptionsJSONToNative:options];
   
-  // SCAN_OPTIONS
   __weak EXBluetooth *weakSelf = self;
-  [_manager scanForPeripheralsWithServices:serviceUUIDs options:options withDidChangeScanningStateCallback:^(EXBluetoothCentralManager *centralManager, BOOL isScanning) {
+  [_manager scanForPeripheralsWithServices:serviceUUIDs options:nativeOptions withDidChangeScanningStateCallback:^(EXBluetoothCentralManager *centralManager, BOOL isScanning) {
     resolve(@(isScanning));
     if (weakSelf) {
       // TODO: Bacon: We emit on android when we start scanning. Figure out parity

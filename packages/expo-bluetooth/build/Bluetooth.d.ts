@@ -1,7 +1,7 @@
 import { Subscription } from 'expo-core';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
 import { Base64, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, NativeDescriptor, WriteCharacteristicOptions, ScanOptions, CancelScanningCallback } from './Bluetooth.types';
-import { CENTRAL_OPTIONS, SCAN_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, EVENTS, TYPES } from './BluetoothConstants';
+import { CENTRAL_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, EVENTS, TYPES } from './BluetoothConstants';
 import AndroidGATTError from './errors/AndroidGATTError';
 import * as android from './Android';
 export { android };
@@ -10,7 +10,7 @@ export { default as AndroidGATTError } from './errors/AndroidGATTError';
 export { default as BluetoothError } from './errors/BluetoothError';
 export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
 export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
-export { CENTRAL_OPTIONS, SCAN_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, TYPES, EVENTS };
+export { CENTRAL_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, TYPES, EVENTS };
 export declare function _getGATTStatusError(code: any, invokedMethod: any, stack?: undefined): AndroidGATTError | null;
 export declare function requestPermissionAsync(): Promise<{
     status: PermissionStatus;

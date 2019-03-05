@@ -208,6 +208,25 @@ export declare type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
 export declare type TransactionHandler = any;
 export declare type ScanOptions = {
     serviceUUIDsToQuery?: UUID[];
+    /**
+     * `CBCentralManagerScanOptionAllowDuplicatesKey`
+     *
+     * Indicating that the scan should run without duplicate filtering.
+     * By default, multiple discoveries of the same peripheral are coalesced
+     * into a single discovery event.
+     *
+     * Specifying this option will cause a discovery event to be generated
+     * every time the peripheral is seen, which may be many times per second.
+     * This can be useful in specific situations, such as making a connection based on
+     * a peripheral's RSSI, but may have an adverse affect on battery-life and application performance.
+     */
+    iosAllowDuplicates?: boolean;
+    /**
+     * `CBCentralManagerScanOptionSolicitedServiceUUIDsKey`
+     * An array of UUIDs respresenting service UUIDs.
+     * This causes the scan to also look for peripherals soliciting any of the services contained in the list.
+     */
+    iosSolicitedServiceUUIDs?: UUID[];
     androidCallbackType?: AndroidScanCallbackType;
     androidScanMode?: AndroidScanMode;
     /** M (23+) */
@@ -230,6 +249,5 @@ export declare type ScanOptions = {
      * When defined, `androidUseLegacy` is automatically set to `false`.
      */
     androidPhy?: AndroidPhyMode;
-    [key: string]: any;
 };
 export declare type CancelScanningCallback = () => void;

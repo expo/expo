@@ -261,16 +261,30 @@ export type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
   data: Base64;
 };
 
-// export type TransactionHandler = { callbacks: Array<Function | Promise<any>> } | Promise<any>;
-type Prom = {
-  resolve: Function;
-  reject: Function;
-};
-
 export type TransactionHandler = any; // { callbacks: Array<Function | Prom> } | Prom;
 
 export type ScanOptions = {
   serviceUUIDsToQuery?: UUID[];
+
+  /**
+   * `CBCentralManagerScanOptionAllowDuplicatesKey`
+   *
+   * Indicating that the scan should run without duplicate filtering.
+   * By default, multiple discoveries of the same peripheral are coalesced
+   * into a single discovery event.
+   *
+   * Specifying this option will cause a discovery event to be generated
+   * every time the peripheral is seen, which may be many times per second.
+   * This can be useful in specific situations, such as making a connection based on
+   * a peripheral's RSSI, but may have an adverse affect on battery-life and application performance.
+   */
+  iosAllowDuplicates?: boolean;
+  /**
+   * `CBCentralManagerScanOptionSolicitedServiceUUIDsKey`
+   * An array of UUIDs respresenting service UUIDs.
+   * This causes the scan to also look for peripherals soliciting any of the services contained in the list.
+   */
+  iosSolicitedServiceUUIDs?: UUID[];
 
   androidCallbackType?: AndroidScanCallbackType;
 
@@ -295,9 +309,6 @@ export type ScanOptions = {
    * When defined, `androidUseLegacy` is automatically set to `false`.
    */
   androidPhy?: AndroidPhyMode;
-
-  // iOS SCAN_OPTIONS
-  [key: string]: any;
 };
 
 export type CancelScanningCallback = () => void;

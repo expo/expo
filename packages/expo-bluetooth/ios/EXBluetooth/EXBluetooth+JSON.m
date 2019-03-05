@@ -270,6 +270,24 @@
   return output;
 }
 
++ (NSDictionary *)ScanningOptionsJSONToNative:(NSDictionary *)input
+{
+  if (!input) return @{};
+  NSMutableDictionary *output = [NSMutableDictionary new];
+  
+  if (input[@"iosAllowDuplicates"] && [input[@"iosAllowDuplicates"] boolValue]) {
+    output[CBCentralManagerScanOptionAllowDuplicatesKey] = input[@"iosAllowDuplicates"];
+  }
+  
+  if (input[@"iosSolicitedServiceUUIDs"] && [input[@"iosSolicitedServiceUUIDs"] isKindOfClass:NSArray.class]) {
+    NSArray *solicitedServiceUUIDs = (NSArray *)input[@"iosSolicitedServiceUUIDs"];
+    output[CBCentralManagerScanOptionSolicitedServiceUUIDsKey] = solicitedServiceUUIDs;
+  }
+  
+  return output;
+  
+}
+
 + (NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input
 {
   if (!input) return nil;

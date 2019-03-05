@@ -12,13 +12,6 @@ export const {
 
 export const DELIMINATOR = '|';
 
-export const SCAN_OPTIONS: {
-  /** CBCentralManagerScanOptionAllowDuplicatesKey */
-  ALLOW_DUPLICATES: string;
-  /** CBCentralManagerScanOptionSolicitedServiceUUIDsKey */
-  SOLICITED_SERVICE_UUIDS: string;
-} = ExpoBluetooth.SCAN_OPTIONS;
-
 /** iOS only */
 export const CENTRAL_OPTIONS: {
   /** CBCentralManagerOptionShowPowerAlertKey  */

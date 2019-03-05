@@ -1,11 +1,5 @@
 export declare const BLUETOOTH_EVENT: any, UUID: any, TYPES: any, CONNECT_PERIPHERAL_OPTIONS: any, PRIORITY: any;
 export declare const DELIMINATOR = "|";
-export declare const SCAN_OPTIONS: {
-    /** CBCentralManagerScanOptionAllowDuplicatesKey */
-    ALLOW_DUPLICATES: string;
-    /** CBCentralManagerScanOptionSolicitedServiceUUIDsKey */
-    SOLICITED_SERVICE_UUIDS: string;
-};
 /** iOS only */
 export declare const CENTRAL_OPTIONS: {
     /** CBCentralManagerOptionShowPowerAlertKey  */
