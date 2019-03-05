@@ -43,7 +43,9 @@ export declare function observeUpdates(callback: (updates: any) => void): Subscr
 export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
 export declare function connectAsync(peripheralUUID: UUID, options?: {
     timeout?: number;
-    options?: any;
+    options?: {
+        shouldAutoConnect?: boolean;
+    };
     onDisconnect?: any;
 }): Promise<NativePeripheral>;
 /** This method will also cancel pending connections */

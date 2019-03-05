@@ -95,22 +95,23 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   public static boolean isDeviceConnected(String peripheralUUID) {
 
     /** Native method seems to jump around and not be as accurate as simply caching data. */
-//    if (bluetoothManager == null) return false;
-//
-//    BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(peripheralUUID);
-//
-//    if (device == null) {
-//      return false;
-//    }
+    if (bluetoothManager == null) {
+      return isDeviceInLocalCache(peripheralUUID);
+    }
+    BluetoothDevice device = bluetoothManager.getAdapter().getRemoteDevice(peripheralUUID);
+    if (device == null) {
+      return false;
+    }
+    return bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device);
+  }
 
-//    return bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device);
-//    Log.d("BLE_TEST", "connectedMethods: " + connectedDevices.containsKey(peripheralUUID) + ", Native: " + bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).contains(device));
+  private static boolean isDeviceInLocalCache(String peripheralUUID) {
     synchronized (connectedDevices) {
       return connectedDevices.containsKey(peripheralUUID);
     }
   }
 
-  public static void sendEvent(final String eventName, Bundle data) {
+    public static void sendEvent(final String eventName, Bundle data) {
     if (mModuleRegistry != null) {
       EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
       if (eventEmitter != null) {
@@ -163,7 +164,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     mModuleRegistry = moduleRegistry;
     mPermissions = moduleRegistry.getModule(Permissions.class);
-
 
     /**
      * Stop scanning and deallocate the instance.
@@ -530,7 +530,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
       @Override
       public void onPeripheralFound(BluetoothDevice device, int RSSI, ScanRecord scanRecord) {
-        Boolean peripheralExists = peripheralExists(device.getAddress());
+        boolean peripheralExists = peripheralExists(device.getAddress());
 
         Peripheral peripheral = savePeripheral(device, RSSI, scanRecord);
 
@@ -666,14 +666,15 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardPeripheralAction(promise)) {
       return;
     }
-    promise.resolve(Peripheral.listToJSON(peripheralsFromGATTs(getConnectedGATTs())));
+//    promise.resolve(Peripheral.listToJSON(peripheralsFromGATTs(getConnectedGATTs())));
 
     /** Bluetooth native might be more accurate but it doesn't seem to sync as expected when devices disconnect */
-//    List<BluetoothDevice> peripherals = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT);
-//    promise.resolve(Peripheral.listToJSON(peripheralsFromDevices(peripherals)));
+    List<BluetoothDevice> peripherals = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT);
+    promise.resolve(Peripheral.listToJSON(peripheralsFromDevices(peripherals)));
   }
 
   private synchronized List<BluetoothGatt> getConnectedGATTs() {
+  //    List<BluetoothDevice> peripherals = getBluetoothManager().getConnectedDevices(BluetoothProfile.GATT);
     return new ArrayList<>(BluetoothModule.connectedDevices.values());
   }
 
@@ -691,7 +692,12 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       return;
     }
 
-    peripheral.connect(promise, getCurrentActivity());
+    boolean shouldAutoConnect = false;
+
+    if (options.containsKey("shouldAutoConnect")) {
+      shouldAutoConnect = (boolean) options.get("shouldAutoConnect");
+    }
+    peripheral.connect(promise, shouldAutoConnect, getCurrentActivity());
   }
 
   @ExpoMethod
@@ -808,18 +814,8 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
       promise.resolve(output);
       return;
     }
-
-//    boolean isConnected = isDeviceConnected(peripheralUUID);
-
     /** Don't guard connection because we can cancel a pending connection attempt this way.*/
-//    Log.d("BLE_TEST", "disconnectPeripheralAsync: " + peripheralUUID + ", connected: " + isConnected);
-//    if (!isConnected) {
-//      promise.resolve(peripheral.toJSON());
-//      return;
-//    } else {
-      peripheral.disconnect(promise);
-//      return;
-//    }
+    peripheral.disconnect(promise);
   }
 
   private Peripheral getPeripheralFromOptionsOrReject(Map<String, Object> options, Promise promise) {

@@ -154,7 +154,8 @@ export async function connectAsync(
   peripheralUUID: UUID,
   options: {
     timeout?: number;
-    options?: any;
+    /* On Android shouldAutoConnect is used for reconnecting to devices that have been connected without shouldAutoConnect enabled */
+    options?: { shouldAutoConnect?: boolean };
     onDisconnect?: any;
   } = {}
 ): Promise<NativePeripheral> {
@@ -184,7 +185,7 @@ export async function connectAsync(
     }
     
     try {
-      const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
+      const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options || {});
       console.log("API:INTERNAL:connectPeripheralAsync.resolved", result)
       clearTimeout(timeoutTag);
       resolve(result);
@@ -375,7 +376,6 @@ export async function isScanningAsync(): Promise<any> {
   return isScanning;
 }
 
-// TODO: Bacon: Add serviceUUIDs
 export async function discoverServicesForPeripheralAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];

@@ -102,7 +102,7 @@ export async function connectAsync(peripheralUUID, options = {}) {
             }, options.timeout);
         }
         try {
-            const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options);
+            const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options || {});
             console.log("API:INTERNAL:connectPeripheralAsync.resolved", result);
             clearTimeout(timeoutTag);
             resolve(result);
@@ -236,7 +236,6 @@ export async function isScanningAsync() {
     const { isScanning } = await getCentralAsync();
     return isScanning;
 }
-// TODO: Bacon: Add serviceUUIDs
 export async function discoverServicesForPeripheralAsync(options) {
     invariantAvailability('discoverServicesForPeripheralAsync');
     const transaction = Transaction.fromTransactionId(options.id);

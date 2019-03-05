@@ -153,15 +153,22 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     return null;
   }
 
-  public void connect(Promise promise, Activity activity) {
-    if (!isConnected()) {
-      if (guardConcurrency(promise, mDidConnectStateChangePeripheralBlock)) {
+  public void connect(Promise promise, boolean shouldAutoConnect, Activity activity) {
+    if (!isConnected() || activity != null) {
+
+      if (mDidConnectStateChangePeripheralBlock != null) {
+        if (mDidConnectStateChangePeripheralBlock.getEvent().equals(BluetoothConstants.EVENTS.PERIPHERAL_CONNECTED)) {
+          BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK(getID()));
+        } else {
+          // TODO: Bacon: Is this true?
+          BluetoothError.reject(promise, "Cannot start connecting to device: " + getID() + " until disconnect operation has completed.");
+        }
         return;
       }
       mDidConnectStateChangePeripheralBlock = new ConnectingPromise(promise, BluetoothConstants.EVENTS.PERIPHERAL_CONNECTED);
-      connectToGATT(activity);
+      connectToGATT(activity, shouldAutoConnect);
       return;
-    } else if (guardGATT(promise)) {
+    } else if (guardGATTExists(promise)) {
       return;
     } else {
       promise.resolve(toJSON());
@@ -179,12 +186,16 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     return device.getBondState();
   }
 
-  private void connectToGATT(Activity activity) {
+  private void connectToGATT(Activity activity, boolean shouldAutoConnect) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      mGatt = getDevice().connectGatt(activity, mShouldAutoConnect, BluetoothModule.bluetoothGattCallback);
+      mGatt = getDevice().connectGatt(activity, shouldAutoConnect, BluetoothModule.bluetoothGattCallback);
     } else {
-      mGatt = getDevice().connectGatt(activity, mShouldAutoConnect, BluetoothModule.bluetoothGattCallback, BluetoothDevice.TRANSPORT_LE);
+      mGatt = getDevice().connectGatt(activity, shouldAutoConnect, BluetoothModule.bluetoothGattCallback, BluetoothDevice.TRANSPORT_LE);
     }
+  }
+
+  private void connectToGATT(Activity activity) {
+    connectToGATT(activity, mShouldAutoConnect);
   }
 
   public void setGatt(BluetoothGatt gatt) {
@@ -201,6 +212,10 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     }
 
+    private void onConnectionFailed() {
+
+    }
+
     public void onConnectionStateChange(int status, int newState) {
       tryRejectingAllPendingConnectPromises();
 
@@ -210,7 +225,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
           mDidConnectStateChangePeripheralBlock.getPromise().resolve(toJSON());
         }
         /**
-         * If you attempt to connect and the process fails, the "newState" will be disconnected event though it was never connected.
+         * If you attempt to connect and the process fails, the "newState" will be "disconnected" even though it was never connected.
          * Send the pseudo event for proper resolution.
          */
         sendGattEvent(mDidConnectStateChangePeripheralBlock.getEvent(), status);
@@ -405,7 +420,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     try {
       final Method refreshGatt = BluetoothGatt.class.getMethod("refresh");
       if (refreshGatt != null) {
-        final boolean success = (Boolean) refreshGatt.invoke(gatt);
+        final boolean success = (boolean) refreshGatt.invoke(gatt);
         Log.d("BLE_TEST", "refreshGattCacheIgnoringErrors(): Was invoked: " + success);
         return success;
       } else {
@@ -420,6 +435,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   public void disconnect() {
     clearChildren();
+    // If the GATT doesn't exist, then the device isn't connect.
     if (mGatt != null) {
       Log.d("BLE_TEST", "disconnect(): " + mGatt.getDevice().getAddress());
       mGatt.disconnect();
@@ -469,9 +485,8 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
   // TODO: Bacon: Is this overriding the StateChange method
   public void disconnect(Promise promise) {
-    if (guardGATT(promise)) {
-      return;
-    } else if (mDidConnectStateChangePeripheralBlock != null) {
+    if (mDidConnectStateChangePeripheralBlock != null && mDidConnectStateChangePeripheralBlock.getEvent().equals(BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED)) {
+
       // TODO: Bacon: seems like this could be hard to work around given how long it takes a peripheral to disconnect.
       BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK(getID()));
       return;
@@ -479,7 +494,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     Log.d("BLE_TEST", "disconnectPeripheralAsync.disconnect: " + getID() + ", connected: " + isConnected());
 
-    mDidConnectStateChangePeripheralBlock = new ConnectingPromise(promise, BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED) ;
+    mDidConnectStateChangePeripheralBlock = new ConnectingPromise(promise, BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED);
 
     disconnect();
   }
@@ -610,7 +625,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void writeDescriptor(byte[] data, final Descriptor descriptor, final Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise)) {
+    if (guardGATTExists(promise) || guardIsConnected(promise)) {
       return;
     } else if (mGatt.writeDescriptor(descriptor.setValue(data).getDescriptor())) {
       mWriteDescriptorPromises.add(descriptor.getID(), promise);
@@ -622,7 +637,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void writeCharacteristicAsync(byte[] data, final Characteristic characteristic, final Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise)) {
+    if (guardGATTExists(promise) || guardIsConnected(promise)) {
       return;
     }
 
@@ -635,7 +650,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void readDescriptor(final Descriptor descriptor, final Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise)) {
+    if (guardGATTExists(promise) || guardIsConnected(promise)) {
       return;
     }
 
@@ -648,7 +663,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void readCharacteristicAsync(final Characteristic characteristic, final Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise)) {
+    if (guardGATTExists(promise) || guardIsConnected(promise)) {
       return;
     }
 
@@ -660,8 +675,8 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     }
   }
 
-  public void setNotify(Service service, String characteristicUUID, Boolean notify, Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise)) {
+  public void setNotify(Service service, String characteristicUUID, boolean notify, Promise promise) {
+    if (guardGATTExists(promise) || guardIsConnected(promise)) {
       return;
     }
 
@@ -711,7 +726,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     runInMainLoop(new Runnable() {
       @Override
       public void run() {
-        if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mRSSIBlock)) {
+        if (guardGATTExists(promise) || guardIsConnected(promise) || guardConcurrency(promise, mRSSIBlock)) {
           return;
         }
 
@@ -729,7 +744,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     runInMainLoop(new Runnable() {
       @Override
       public void run() {
-        if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mDidDiscoverServicesBlock)) {
+        if (guardGATTExists(promise) || guardIsConnected(promise) || guardConcurrency(promise, mDidDiscoverServicesBlock)) {
           return;
         }
 
@@ -748,7 +763,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void requestConnectionPriority(int connectionPriority, Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise)) {
+    if (guardGATTExists(promise) || guardIsConnected(promise)) {
       return;
     } else if (mGatt.requestConnectionPriority(connectionPriority)) {
       promise.resolve(null);
@@ -760,7 +775,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   }
 
   public void requestMTU(int MTU, Promise promise) {
-    if (guardGATT(promise) || guardIsConnected(promise) || guardConcurrency(promise, mMTUBlock)) {
+    if (guardGATTExists(promise) || guardIsConnected(promise) || guardConcurrency(promise, mMTUBlock)) {
       return;
     }
     mMTUBlock = promise;
@@ -836,6 +851,14 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
         promise.reject(BluetoothConstants.ERRORS.GENERAL, "GATT is not defined. Connect to the peripheral " + getID() + " to create one.");
         return true;
       }
+    }
+    return false;
+  }
+
+  private boolean guardGATTExists(Promise promise) {
+    if (mGatt == null) {
+      promise.reject(BluetoothConstants.ERRORS.GENERAL, "GATT is not defined. Connect to the peripheral " + getID() + " to create one.");
+      return true;
     }
     return false;
   }

@@ -63,9 +63,7 @@ public class Characteristic extends EXBluetoothChildObject {
     output.putString(BluetoothConstants.JSON.SERVICE_UUID, serviceUUIDString);
     output.putStringArrayList(BluetoothConstants.JSON.PROPERTIES, Serialize.CharacteristicProperties_NativeToJSON(characteristic.getProperties()));
     output.putString(BluetoothConstants.JSON.VALUE, Base64Helper.fromBase64(characteristic.getValue()));
-    if (characteristic.getPermissions() > 0) {
-      output.putStringArrayList(BluetoothConstants.JSON.PERMISSIONS, Serialize.CharacteristicPermissions_NativeToJSON(characteristic.getPermissions()));
-    }
+    output.putStringArrayList(BluetoothConstants.JSON.PERMISSIONS, Serialize.CharacteristicPermissions_NativeToJSON(characteristic.getPermissions()));
     output.putParcelableArrayList(BluetoothConstants.JSON.DESCRIPTORS, Serialize.DescriptorList_NativeToJSON(characteristic.getDescriptors(), peripheralUUIDString));
     output.putString("type", "characteristic");
 
