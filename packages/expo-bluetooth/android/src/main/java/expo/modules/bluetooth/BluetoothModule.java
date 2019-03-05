@@ -218,15 +218,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     events.put("DESCRIPTOR_DID_WRITE", BluetoothConstants.EVENTS.DESCRIPTOR_DID_WRITE);
     events.put("DESCRIPTOR_DID_READ", BluetoothConstants.EVENTS.DESCRIPTOR_DID_READ);
     constants.put("EVENTS", events);
-
-
-    final Map<String, Object> priority = new HashMap<>();
-    priority.put("High", BluetoothConstants.PRIORITY.HIGH);
-    priority.put("LowPower", BluetoothConstants.PRIORITY.LOW_POWER);
-    priority.put("Balanced", BluetoothConstants.PRIORITY.BALANCED);
-
-    constants.put("PRIORITY", priority);
-
+    
     return constants;
   }
 

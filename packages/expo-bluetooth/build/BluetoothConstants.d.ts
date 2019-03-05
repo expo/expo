@@ -1,4 +1,4 @@
-export declare const BLUETOOTH_EVENT: any, UUID: any, TYPES: any, CONNECT_PERIPHERAL_OPTIONS: any, PRIORITY: any;
+export declare const BLUETOOTH_EVENT: any, UUID: any, TYPES: any, CONNECT_PERIPHERAL_OPTIONS: any;
 export declare const DELIMINATOR = "|";
 export declare const EVENTS: {
     UPDATE_STATE: 'UPDATE_STATE';
