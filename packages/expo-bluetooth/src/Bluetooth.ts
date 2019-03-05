@@ -17,6 +17,7 @@ import {
   StateUpdatedCallback,
   UUID,
   WriteCharacteristicOptions,
+  ReadCharacteristicOptions,
 } from './Bluetooth.types';
 import { AndroidGATTError, BluetoothError, invariant, invariantAvailability, invariantUUID } from './errors';
 import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
@@ -199,61 +200,31 @@ export async function setNotifyCharacteristicAsync({
   return characteristic;
 }
 
-/* TODO: Bacon: Add a return type */
-export async function readCharacteristicAsync({
-  peripheralUUID,
-  serviceUUID,
-  characteristicUUID,
-}: any): Promise<Base64 | null> {
+export async function readCharacteristicAsync(options: ReadCharacteristicOptions): Promise<Base64 | null> {
   invariantAvailability('readCharacteristicAsync');
 
   const { characteristic } = await ExpoBluetooth.readCharacteristicAsync({
-    peripheralUUID,
-    serviceUUID,
-    characteristicUUID,
+    ...options,
     characteristicProperties: CharacteristicProperty.Read,
   });
 
   return characteristic.value;
 }
 
-/* TODO: Bacon: Add a return type */
-export async function writeCharacteristicAsync({
-  peripheralUUID,
-  serviceUUID,
-  characteristicUUID,
-  data,
-}: any): Promise<NativeCharacteristic> {
+export async function writeCharacteristicAsync(options: WriteCharacteristicOptions, characteristicProperties: CharacteristicProperty = CharacteristicProperty.Write): Promise<NativeCharacteristic> {
   invariantAvailability('writeCharacteristicAsync');
 
   const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
-    peripheralUUID,
-    serviceUUID,
-    characteristicUUID,
-    data,
-    characteristicProperties: CharacteristicProperty.Write,
+    ...options,
+    characteristicProperties,
   });
 
   return characteristic;
 }
 
 // This is ~3x faster on Android.
-export async function writeCharacteristicWithoutResponseAsync({
-  peripheralUUID,
-  serviceUUID,
-  characteristicUUID,
-  data,
-}: WriteCharacteristicOptions): Promise<NativeCharacteristic> {
-  invariantAvailability('writeCharacteristicAsync');
-
-  const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
-    peripheralUUID,
-    serviceUUID,
-    characteristicUUID,
-    data,
-    characteristicProperties: CharacteristicProperty.WriteWithoutResponse,
-  });
-  return characteristic;
+export async function writeCharacteristicWithoutResponseAsync(options: WriteCharacteristicOptions): Promise<NativeCharacteristic> {
+  return await writeCharacteristicAsync(options, CharacteristicProperty.WriteWithoutResponse);
 }
 
 export async function readRSSIAsync(peripheralUUID: UUID): Promise<RSSI> {

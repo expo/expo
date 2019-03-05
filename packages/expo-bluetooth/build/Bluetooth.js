@@ -121,40 +121,25 @@ export async function setNotifyCharacteristicAsync({ peripheralUUID, serviceUUID
     });
     return characteristic;
 }
-/* TODO: Bacon: Add a return type */
-export async function readCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }) {
+export async function readCharacteristicAsync(options) {
     invariantAvailability('readCharacteristicAsync');
     const { characteristic } = await ExpoBluetooth.readCharacteristicAsync({
-        peripheralUUID,
-        serviceUUID,
-        characteristicUUID,
+        ...options,
         characteristicProperties: CharacteristicProperty.Read,
     });
     return characteristic.value;
 }
-/* TODO: Bacon: Add a return type */
-export async function writeCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }) {
+export async function writeCharacteristicAsync(options, characteristicProperties = CharacteristicProperty.Write) {
     invariantAvailability('writeCharacteristicAsync');
     const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
-        peripheralUUID,
-        serviceUUID,
-        characteristicUUID,
-        data,
-        characteristicProperties: CharacteristicProperty.Write,
+        ...options,
+        characteristicProperties,
     });
     return characteristic;
 }
 // This is ~3x faster on Android.
-export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }) {
-    invariantAvailability('writeCharacteristicAsync');
-    const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
-        peripheralUUID,
-        serviceUUID,
-        characteristicUUID,
-        data,
-        characteristicProperties: CharacteristicProperty.WriteWithoutResponse,
-    });
-    return characteristic;
+export async function writeCharacteristicWithoutResponseAsync(options) {
+    return await writeCharacteristicAsync(options, CharacteristicProperty.WriteWithoutResponse);
 }
 export async function readRSSIAsync(peripheralUUID) {
     invariantAvailability('readRSSIAsync');
