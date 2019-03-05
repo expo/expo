@@ -22,8 +22,8 @@
 
 - (nullable instancetype)initWithDescriptor:(nullable CBDescriptor *)descriptor peripheral:(nullable EXBluetoothPeripheral *)peripheral;
 
-- (void)readValueForWithBlock:(nullable EXBluetoothPeripheralReadValueForDescriptorsBlock)block;
-- (void)writeValue:(nullable NSData *)data withBlock:(nullable EXBluetoothPeripheralWriteValueForDescriptorsBlock)block;
+- (void)readValueForWithReadValueForDescriptorsCallback:(EXBluetoothPeripheralReadValueForDescriptors)onReadValueForDescriptors;
+- (void)writeValue:(NSData *)data withWriteValueForDescriptorsCallback:(EXBluetoothPeripheralWriteValueForDescriptors)onWriteValueForDescriptors;
 
 - (NSDictionary *)getJSON;
 

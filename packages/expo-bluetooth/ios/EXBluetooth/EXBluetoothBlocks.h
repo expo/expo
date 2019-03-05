@@ -11,17 +11,17 @@
 
 #pragma mark - peripheral
 
-typedef void (^EXBluetoothPeripheralDiscoverServicesBlock)(EXBluetoothPeripheral *peripheral, NSError *error);
-typedef void (^EXBluetoothPeripheralDiscoverIncludedServicesBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothService *service, NSError *error);
-typedef void (^EXBluetoothPeripheralDiscoverCharacteristicsBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothService *service, NSError *error);
-typedef void (^EXBluetoothPeripheralDidUpdateNameBlock)(EXBluetoothPeripheral *peripheral);
-typedef void (^EXBluetoothPeripheralReadValueForCharacteristicBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error);
-typedef void (^EXBluetoothPeripheralWriteValueForCharacteristicsBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error);
-typedef void (^EXBluetoothPeripheralNotifyValueForCharacteristicsBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error);
-typedef void (^EXBluetoothPeripheralDiscoverDescriptorsForCharacteristicBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error);
-typedef void (^EXBluetoothPeripheralReadValueForDescriptorsBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothDescriptor *descriptor, NSError *error);
-typedef void (^EXBluetoothPeripheralWriteValueForDescriptorsBlock)(EXBluetoothPeripheral *peripheral, EXBluetoothDescriptor *descriptor, NSError *error);
-typedef void (^EXBluetoothPeripheralReadRSSIBlock)(EXBluetoothPeripheral *peripheral, NSNumber *RSSI, NSError *error);
+typedef void (^EXBluetoothPeripheralDiscoverServices)(EXBluetoothPeripheral *peripheral, NSError *error);
+typedef void (^EXBluetoothPeripheralDiscoverIncludedServices)(EXBluetoothPeripheral *peripheral, EXBluetoothService *service, NSError *error);
+typedef void (^EXBluetoothPeripheralDiscoverCharacteristics)(EXBluetoothPeripheral *peripheral, EXBluetoothService *service, NSError *error);
+typedef void (^EXBluetoothPeripheralDidUpdateName)(EXBluetoothPeripheral *peripheral);
+typedef void (^EXBluetoothPeripheralReadValueForCharacteristic)(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error);
+typedef void (^EXBluetoothPeripheralWriteValueForCharacteristics)(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error);
+typedef void (^EXBluetoothPeripheralNotifyValueForCharacteristics)(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error);
+typedef void (^EXBluetoothPeripheralDiscoverDescriptorsForCharacteristic)(EXBluetoothPeripheral *peripheral, EXBluetoothCharacteristic *characteristic, NSError *error);
+typedef void (^EXBluetoothPeripheralReadValueForDescriptors)(EXBluetoothPeripheral *peripheral, EXBluetoothDescriptor *descriptor, NSError *error);
+typedef void (^EXBluetoothPeripheralWriteValueForDescriptors)(EXBluetoothPeripheral *peripheral, EXBluetoothDescriptor *descriptor, NSError *error);
+typedef void (^EXBluetoothPeripheralReadRSSI)(EXBluetoothPeripheral *peripheral, NSNumber *RSSI, NSError *error);
 
 // TODO: Bacon: Services
 // TODO: Bacon: Characteristics
@@ -29,11 +29,11 @@ typedef void (^EXBluetoothPeripheralReadRSSIBlock)(EXBluetoothPeripheral *periph
 
 #pragma mark - central
 
-typedef void (^EXBluetoothCentralDidChangeScanningBlock)(EXBluetoothCentralManager *centralManager, BOOL isScanning);
-typedef void (^EXBluetoothCentralDidDiscoverPeripheralBlock)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSDictionary *advertisementData, NSNumber *RSSI);
-typedef void (^EXBluetoothCentralDidConnectPeripheralBlock)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error);
-typedef void (^EXBluetoothCentralDidDisconnectPeripheralBlock)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error);
-typedef void (^EXBluetoothCentralDidUpdateStateBlock)(EXBluetoothCentralManager *centralManager);
-typedef void (^EXBluetoothCentralDidFailToConnectPeripheralBlock)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error);
+typedef void (^EXBluetoothCentralDidChangeScanning)(EXBluetoothCentralManager *centralManager, BOOL isScanning);
+typedef void (^EXBluetoothCentralDidDiscoverPeripheral)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSDictionary *advertisementData, NSNumber *RSSI);
+typedef void (^EXBluetoothCentralDidConnectPeripheral)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error);
+typedef void (^EXBluetoothCentralDidDisconnectPeripheral)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error);
+typedef void (^EXBluetoothCentralDidUpdateState)(EXBluetoothCentralManager *centralManager);
+typedef void (^EXBluetoothCentralDidFailToConnectPeripheral)(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error);
 
 #endif

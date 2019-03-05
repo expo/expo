@@ -45,23 +45,23 @@
   return _descriptor.value;
 }
 
-- (void)readValueForWithBlock:(EXBluetoothPeripheralReadValueForDescriptorsBlock)block
+- (void)readValueForWithReadValueForDescriptorsCallback:(EXBluetoothPeripheralReadValueForDescriptors)onReadValueForDescriptors
 {
   if (_peripheral) {
-    [_peripheral readValueForDescriptor:self withBlock:[block copy]];
+    [_peripheral readValueForDescriptor:self withReadValueForDescriptors:[onReadValueForDescriptors copy]];
   }
 }
 
-- (void)writeValue:(NSData *)data withBlock:(EXBluetoothPeripheralWriteValueForDescriptorsBlock)block
+- (void)writeValue:(NSData *)data withWriteValueForDescriptorsCallback:(EXBluetoothPeripheralWriteValueForDescriptors)onWriteValueForDescriptors
 {
   if (_peripheral) {
-    [_peripheral writeValue:data forDescriptor:self withBlock:[block copy]];
+    [_peripheral writeValue:data forDescriptor:self withWriteValueForDescriptorsCallback:[onWriteValueForDescriptors copy]];
   }
 }
 
 - (NSDictionary *)getJSON
 {
-  return [EXBluetooth.class EXBluetoothDescriptor_NativeToJSON:self];
+  return [EXBluetooth.class EXBluetoothDescriptorNativeToJSON:self];
 }
 
 @end

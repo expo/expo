@@ -57,17 +57,17 @@
   return output;
 }
 
-- (void)discoverCharacteristics:(NSArray<CBUUID *> *)characteristicUUIDs withBlock:(EXBluetoothPeripheralDiscoverCharacteristicsBlock)block
+- (void)discoverCharacteristics:(NSArray<CBUUID *> *)characteristicUUIDs withDiscoverCharacteristicsCallback:(EXBluetoothPeripheralDiscoverCharacteristics)onDiscoverCharacteristics
 {
   if (_peripheral) {
-    [_peripheral discoverCharacteristics:characteristicUUIDs forService:self withBlock:[block copy]];
+    [_peripheral discoverCharacteristics:characteristicUUIDs forService:self withDiscoverCharacteristicsCallback:[onDiscoverCharacteristics copy]];
   }
 }
 
-- (void)discoverIncludedServices:(NSArray<CBUUID *> *)includedServiceUUIDs withBlock:(EXBluetoothPeripheralDiscoverIncludedServicesBlock)block
+- (void)discoverIncludedServices:(NSArray<CBUUID *> *)includedServiceUUIDs withDiscoverIncludedServicesCallback:(EXBluetoothPeripheralDiscoverIncludedServices)onDiscoverIncludedServices
 {
   if (_peripheral) {
-    [_peripheral discoverIncludedServices:includedServiceUUIDs forService:self withBlock:[block copy]];
+    [_peripheral discoverIncludedServices:includedServiceUUIDs forService:self withDiscoverIncludedServicesCallback:[onDiscoverIncludedServices copy]];
   }
 }
 
@@ -86,7 +86,7 @@
   if (!characteristic) {
     NSString *errorMessage = [NSString stringWithFormat:@"Could not find characteristic with UUID %@ that contains property %@ on service with UUID %@ on peripheral with UUID %@",
                               UUIDString,
-                              [EXBluetooth.class CBCharacteristicProperties_NativeToJSON:characteristicProperties],
+                              [EXBluetooth.class CBCharacteristicPropertiesNativeToJSON:characteristicProperties],
                               _service.UUID.UUIDString,
                               _service.peripheral.identifier.UUIDString];
     reject(EXBluetoothErrorNoCharacteristic, errorMessage, nil);
@@ -130,7 +130,7 @@
 
 - (NSDictionary *)getJSON
 {
-  return [EXBluetooth.class EXBluetoothService_NativeToJSON:self];
+  return [EXBluetooth.class EXBluetoothServiceNativeToJSON:self];
 }
 
 @end

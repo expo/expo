@@ -36,37 +36,32 @@
 
 - (nullable instancetype)initWithPeripheral:(nullable CBPeripheral *)peripheral;
 
-- (void)readRSSI:(nullable EXBluetoothPeripheralReadRSSIBlock)block;
+- (void)readRSSI:(EXBluetoothPeripheralReadRSSI)onReadRSSI;
 
-- (void)discoverServices:(nullable NSArray<CBUUID *> *)serviceUUIDs withBlock:(nullable EXBluetoothPeripheralDiscoverServicesBlock)block;
+- (void)discoverServices:(NSArray<CBUUID *> *)serviceUUIDs withDiscoverServicesCallback:(EXBluetoothPeripheralDiscoverServices)onDiscoverServices;
 
-- (void)discoverIncludedServices:(nullable NSArray<CBUUID *> *)includedServiceUUIDs
-                      forService:(nullable EXBluetoothService *)service
-                       withBlock:(nullable EXBluetoothPeripheralDiscoverIncludedServicesBlock)block;
+- (void)discoverIncludedServices:(NSArray<CBUUID *> *)includedServiceUUIDs
+                      forService:(EXBluetoothService *)service withDiscoverIncludedServicesCallback:(EXBluetoothPeripheralDiscoverIncludedServices)onDiscoverIncludedServices;
 
-- (void)discoverCharacteristics:(nullable NSArray<CBUUID *> *)characteristicUUIDs
-                     forService:(nullable EXBluetoothService *)service
-                      withBlock:(nullable EXBluetoothPeripheralDiscoverCharacteristicsBlock)block;
+- (void)discoverCharacteristics:(NSArray<CBUUID *> *)characteristicUUIDs
+                     forService:(EXBluetoothService *)service withDiscoverCharacteristicsCallback:(EXBluetoothPeripheralDiscoverCharacteristics)onDiscoverCharacteristics;
 
-- (void)readValueForCharacteristic:(nullable EXBluetoothCharacteristic *)characteristic withBlock:(nullable EXBluetoothPeripheralReadValueForCharacteristicBlock)block;
+- (void)readValueForCharacteristic:(EXBluetoothCharacteristic *)characteristic
+withReadValueForCharacteristicCallback:(EXBluetoothPeripheralReadValueForCharacteristic)onReadValueForCharacteristic;
 
-- (void)writeValue:(nullable NSData *)data
- forCharacteristic:(nullable EXBluetoothCharacteristic *)characteristic
+- (void)writeValue:(NSData *)data
+ forCharacteristic:(EXBluetoothCharacteristic *)characteristic
               type:(CBCharacteristicWriteType)type
-         withBlock:(nullable EXBluetoothPeripheralWriteValueForCharacteristicsBlock)block;
+  withWriteValueForCharacteristicsCallback:(EXBluetoothPeripheralWriteValueForCharacteristics)onWriteValueForCharacteristics;
 
-- (void)setNotifyValue:(BOOL)enabled
-     forCharacteristic:(nullable EXBluetoothCharacteristic *)characteristic
-             withBlock:(nullable EXBluetoothPeripheralNotifyValueForCharacteristicsBlock)block;
+- (void)setNotifyValue:(BOOL)enabled forCharacteristic:(EXBluetoothCharacteristic *)characteristic withNotifyValueForCharacteristicsCallback:(EXBluetoothPeripheralNotifyValueForCharacteristics)onNotifyValueForCharacteristics;
 
-- (void)discoverDescriptorsForCharacteristic:(nullable EXBluetoothCharacteristic *)characteristic
-                                   withBlock:(nullable EXBluetoothPeripheralDiscoverDescriptorsForCharacteristicBlock)block;
+-(void)discoverDescriptorsForCharacteristic:(EXBluetoothCharacteristic *)characteristic withDiscoverDescriptorsForCharacteristicCallback:(EXBluetoothPeripheralDiscoverDescriptorsForCharacteristic)onDiscoverDescriptorsForCharacteristic;
 
-- (void)readValueForDescriptor:(nullable EXBluetoothDescriptor *)descriptor withBlock:(nullable EXBluetoothPeripheralReadValueForDescriptorsBlock)block;
 
-- (void)writeValue:(nullable NSData *)data
-     forDescriptor:(nullable EXBluetoothDescriptor *)descriptor
-         withBlock:(nullable EXBluetoothPeripheralWriteValueForDescriptorsBlock)block;
+- (void)readValueForDescriptor:(EXBluetoothDescriptor *)descriptor withReadValueForDescriptors:(EXBluetoothPeripheralReadValueForDescriptors)onReadValueForDescriptors;
+
+- (void)writeValue:(NSData *)data forDescriptor:(EXBluetoothDescriptor *)descriptor withWriteValueForDescriptorsCallback:(EXBluetoothPeripheralWriteValueForDescriptors)onWriteValueForDescriptors;
 
 - (NSDictionary *)getJSON;
 

@@ -26,16 +26,13 @@
 - (nullable instancetype)initWithCharacteristic:(nullable CBCharacteristic *)characteristic
                                      peripheral:(nullable EXBluetoothPeripheral *)peripheral;
 
-- (void)readValueWithBlock:(nullable EXBluetoothPeripheralReadValueForCharacteristicBlock)block;
+- (void)readValueWithReadValueForCharacteristicCallback:(EXBluetoothPeripheralReadValueForCharacteristic)onReadValueForCharacteristic;
 
-- (void)writeValue:(nullable NSData *)data
-              type:(CBCharacteristicWriteType)type
-         withBlock:(nullable EXBluetoothPeripheralWriteValueForCharacteristicsBlock)block;
+- (void)writeValue:(NSData *)data type:(CBCharacteristicWriteType)type withWriteValueForCharacteristicsCallback:(EXBluetoothPeripheralWriteValueForCharacteristics)onWriteValueForCharacteristics;
 
-- (void)setNotifyValue:(BOOL)enabled
-             withBlock:(nullable EXBluetoothPeripheralNotifyValueForCharacteristicsBlock)block;
+- (void)setNotifyValue:(BOOL)enabled withNotifyValueForCharacteristicsCallback:(EXBluetoothPeripheralNotifyValueForCharacteristics)onNotifyValueForCharacteristics;
 
-- (void)discoverDescriptorsWithBlock:(nullable EXBluetoothPeripheralDiscoverDescriptorsForCharacteristicBlock)block;
+- (void)discoverDescriptorsWithDiscoverDescriptorsForCharacteristicCallback:(EXBluetoothPeripheralDiscoverDescriptorsForCharacteristic)onDiscoverDescriptorsForCharacteristic;
 
 - (EXBluetoothDescriptor *)getDescriptorOrReject:(NSString *)UUIDString
                                           reject:(EXPromiseRejectBlock)reject;

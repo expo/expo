@@ -62,39 +62,31 @@
   return _characteristic.isNotifying;
 }
 
-- (void)readValueWithBlock:(EXBluetoothPeripheralReadValueForCharacteristicBlock)block
+- (void)readValueWithReadValueForCharacteristicCallback:(EXBluetoothPeripheralReadValueForCharacteristic)onReadValueForCharacteristic
 {
   if (_peripheral) {
-    [_peripheral readValueForCharacteristic:self withBlock:[block copy]];
+    [_peripheral readValueForCharacteristic:self withReadValueForCharacteristicCallback:[onReadValueForCharacteristic copy]];
   }
 }
 
-- (void)writeValue:(NSData *)data
-              type:(CBCharacteristicWriteType)type
-         withBlock:(EXBluetoothPeripheralWriteValueForCharacteristicsBlock)block
+- (void)writeValue:(NSData *)data type:(CBCharacteristicWriteType)type withWriteValueForCharacteristicsCallback:(EXBluetoothPeripheralWriteValueForCharacteristics)onWriteValueForCharacteristics
 {
   if (_peripheral) {
-    [_peripheral writeValue:data
-          forCharacteristic:self
-                       type:type
-                  withBlock:[block copy]];
+    [_peripheral writeValue:data forCharacteristic:self type:type withWriteValueForCharacteristicsCallback:[onWriteValueForCharacteristics copy]];
   }
 }
 
-- (void)setNotifyValue:(BOOL)enabled
-             withBlock:(EXBluetoothPeripheralNotifyValueForCharacteristicsBlock)block
+- (void)setNotifyValue:(BOOL)enabled withNotifyValueForCharacteristicsCallback:(EXBluetoothPeripheralNotifyValueForCharacteristics)onNotifyValueForCharacteristics
 {
   if (_peripheral) {
-    [_peripheral setNotifyValue:enabled
-              forCharacteristic:self
-                      withBlock:[block copy]];
+    [_peripheral setNotifyValue:enabled forCharacteristic:self withNotifyValueForCharacteristicsCallback:[onNotifyValueForCharacteristics copy]];
   }
 }
 
-- (void)discoverDescriptorsWithBlock:(EXBluetoothPeripheralDiscoverDescriptorsForCharacteristicBlock)block
+- (void)discoverDescriptorsWithDiscoverDescriptorsForCharacteristicCallback:(EXBluetoothPeripheralDiscoverDescriptorsForCharacteristic)onDiscoverDescriptorsForCharacteristic
 {
   if (_peripheral) {
-    [_peripheral discoverDescriptorsForCharacteristic:self withBlock:[block copy]];
+    [_peripheral discoverDescriptorsForCharacteristic:self withDiscoverDescriptorsForCharacteristicCallback:[onDiscoverDescriptorsForCharacteristic copy]];
   }
 }
 
@@ -126,7 +118,7 @@
 
 - (NSDictionary *)getJSON
 {
-  return [EXBluetooth.class EXBluetoothCharacteristic_NativeToJSON:self];
+  return [EXBluetooth.class EXBluetoothCharacteristicNativeToJSON:self];
 }
 
 @end

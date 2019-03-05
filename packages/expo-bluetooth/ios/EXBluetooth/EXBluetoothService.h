@@ -21,13 +21,14 @@
 
 @property (readonly, nonatomic, nullable) CBUUID *UUID;
 
-- (nullable instancetype)initWithService:(nullable CBService *)service peripheral:(nullable EXBluetoothPeripheral *)peripheral;
+- (nullable instancetype)initWithService:(nullable CBService *)service
+                              peripheral:(nullable EXBluetoothPeripheral *)peripheral;
 
 - (void)discoverIncludedServices:(nullable NSArray<CBUUID *> *)includedServiceUUIDs
-                       withBlock:(nullable EXBluetoothPeripheralDiscoverIncludedServicesBlock)block;
+                       withDiscoverIncludedServicesCallback:(nullable EXBluetoothPeripheralDiscoverIncludedServices)onDiscoverIncludedServices;
 
 - (void)discoverCharacteristics:(nullable NSArray<CBUUID *> *)characteristicUUIDs
-                      withBlock:(nullable EXBluetoothPeripheralDiscoverCharacteristicsBlock)block;
+                      withDiscoverCharacteristicsCallback:(nullable EXBluetoothPeripheralDiscoverCharacteristics)onDiscoverCharacteristics;
 
 - (EXBluetoothCharacteristic *)characteristicFromUUID:(NSString *)UUID;
 - (EXBluetoothCharacteristic *)characteristicFromUUID:(NSString *)UUID prop:(CBCharacteristicProperties)prop;

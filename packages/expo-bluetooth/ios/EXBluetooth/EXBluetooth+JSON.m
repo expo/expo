@@ -6,7 +6,7 @@
 
 @implementation EXBluetooth (JSON)
 
-+ (NSString *)CBPeripheralState_NativeToJSON:(CBPeripheralState)input
++ (NSString *)CBPeripheralStateNativeToJSON:(CBPeripheralState)input
 {
   switch (input) {
     case CBPeripheralStateDisconnected:
@@ -26,7 +26,7 @@
 {
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothService *value in input) {
-    NSDictionary *serializedValue = [self.class EXBluetoothService_NativeToJSON:value];
+    NSDictionary *serializedValue = [self.class EXBluetoothServiceNativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
@@ -36,7 +36,7 @@
 {
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothCharacteristic *value in input) {
-    NSDictionary *serializedValue = [self.class EXBluetoothCharacteristic_NativeToJSON:value];
+    NSDictionary *serializedValue = [self.class EXBluetoothCharacteristicNativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
@@ -61,7 +61,7 @@
   return props;
 }
 
-+ (NSMutableArray<NSString *> *)CBCharacteristicProperties_NativeToJSON:(CBCharacteristicProperties)input
++ (NSMutableArray<NSString *> *)CBCharacteristicPropertiesNativeToJSON:(CBCharacteristicProperties)input
 {
   NSMutableArray *props = [NSMutableArray new];
   
@@ -98,16 +98,16 @@
   return props;
 }
 
-+ (CBCharacteristicProperties)CBCharacteristicPropertiesList_JSONToNative:(NSArray<NSString *> *)input
++ (CBCharacteristicProperties)CBCharacteristicPropertiesListJSONToNative:(NSArray<NSString *> *)input
 {
   CBCharacteristicProperties characteristicProperties = 0;
   for (NSString *property in input) {
-    characteristicProperties |= [self.class CBCharacteristicProperties_JSONToNative:property];
+    characteristicProperties |= [self.class CBCharacteristicPropertiesJSONToNative:property];
   }
   return characteristicProperties;
 }
 
-+ (CBCharacteristicProperties)CBCharacteristicProperties_JSONToNative:(NSString *)input
++ (CBCharacteristicProperties)CBCharacteristicPropertiesJSONToNative:(NSString *)input
 {
   if ([input isEqualToString:@"broadcast"]) {
     return CBCharacteristicPropertyBroadcast;
@@ -132,7 +132,7 @@
   }
 }
 
-+ (NSString *)CBManagerState_NativeToJSON:(CBManagerState)input
++ (NSString *)CBManagerStateNativeToJSON:(CBManagerState)input
 {
   switch (input) {
     case CBManagerStateResetting:
@@ -155,23 +155,23 @@
 {
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothDescriptor *value in input) {
-    NSDictionary *serializedValue = [self.class EXBluetoothDescriptor_NativeToJSON:value];
+    NSDictionary *serializedValue = [self.class EXBluetoothDescriptorNativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
 }
 
-+ (NSMutableArray *)EXBluetoothPeripheralList_NativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input
++ (NSMutableArray *)EXBluetoothPeripheralListNativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothPeripheral *value in input) {
-    NSDictionary *serializedValue = [self.class EXBluetoothPeripheral_NativeToJSON:value];
+    NSDictionary *serializedValue = [self.class EXBluetoothPeripheralNativeToJSON:value];
     [output addObject:EXNullIfNil(serializedValue)];
   }
   return output;
 }
 
-+ (NSDictionary *)NSError_NativeToJSON:(NSError *)input
++ (NSDictionary *)NSErrorNativeToJSON:(NSError *)input
 {
   if (!input) return nil;
   
@@ -191,7 +191,7 @@
            };
 }
 
-+ (NSDictionary *)advertisementData_NativeToJSON:(NSDictionary<NSString *,id> *)input
++ (NSDictionary *)advertisementDataNativeToJSON:(NSDictionary<NSString *,id> *)input
 {
   NSString *localNameKey = input[CBAdvertisementDataLocalNameKey];
   NSNumber *txPowerLevel = input[CBAdvertisementDataTxPowerLevelKey];
@@ -240,7 +240,7 @@
   return output;
 }
 
-+ (NSMutableArray<CBUUID *> *)CBUUIDList_JSONToNative:(NSArray *)input
++ (NSMutableArray<CBUUID *> *)CBUUIDListJSONToNative:(NSArray *)input
 {
   if (!input) return nil;
   
@@ -270,7 +270,7 @@
   return output;
 }
 
-+ (NSDictionary *)EXBluetoothDescriptor_NativeToJSON:(EXBluetoothDescriptor *)input
++ (NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input
 {
   if (!input) return nil;
   
@@ -309,7 +309,7 @@
            };
 }
 // TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
-+ (NSDictionary *)EXBluetoothCharacteristic_NativeToJSON:(EXBluetoothCharacteristic *)input
++ (NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(EXBluetoothCharacteristic *)input
 {
   if (!input) return nil;
   
@@ -322,7 +322,7 @@
            @"uuid": characteristicUUIDString,
            @"serviceUUID": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
-           @"properties": [EXBluetooth.class CBCharacteristicProperties_NativeToJSON:input.properties],
+           @"properties": [EXBluetooth.class CBCharacteristicPropertiesNativeToJSON:input.properties],
            @"value": EXNullIfEmpty([EXBluetooth.class NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
            @"descriptors": [EXBluetooth.class EXBluetoothDescriptorList_NativeToJSON:input.descriptors],
            @"isNotifying": @(input.isNotifying),
@@ -331,7 +331,7 @@
            };
 }
 
-+ (NSDictionary *)EXBluetoothService_NativeToJSON:(EXBluetoothService *)input
++ (NSDictionary *)EXBluetoothServiceNativeToJSON:(EXBluetoothService *)input
 {
   if (!input) return nil;
   
@@ -349,7 +349,7 @@
            };
 }
 
-+ (NSDictionary *)EXBluetoothPeripheral_NativeToJSON:(EXBluetoothPeripheral *)input
++ (NSDictionary *)EXBluetoothPeripheralNativeToJSON:(EXBluetoothPeripheral *)input
 {
   if (!input) return nil;
   
@@ -358,21 +358,21 @@
            @"id": input.identifier.UUIDString,
            @"uuid": input.identifier.UUIDString,
            @"name": EXNullIfEmpty(input.name),
-           @"state": [EXBluetooth.class CBPeripheralState_NativeToJSON:input.state],
+           @"state": [EXBluetooth.class CBPeripheralStateNativeToJSON:input.state],
            @"services": [EXBluetooth.class EXBluetoothServiceArray_NativeToJSON:input.services],
            @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse),
-           @"advertisementData": EXNullIfNil([EXBluetooth.class advertisementData_NativeToJSON:input.advertisementData]),
+           @"advertisementData": EXNullIfNil([EXBluetooth.class advertisementDataNativeToJSON:input.advertisementData]),
            @"type": @"peripheral",
            @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
-+ (NSDictionary *)EXBluetoothCentralManager_NativeToJSON:(EXBluetoothCentralManager *)input
++ (NSDictionary *)EXBluetoothCentralManagerNativeToJSON:(EXBluetoothCentralManager *)input
 {
   if (!input) return nil;
   
   return @{
-           @"state": [self.class CBManagerState_NativeToJSON:input.state],
+           @"state": [self.class CBManagerStateNativeToJSON:input.state],
            @"isScanning": @(input.isScanning),
            @"type": @"central",
            @"_nativeClass": NSStringFromClass(input.class)
@@ -397,7 +397,7 @@
            };
 }
 
-+ (NSDictionary *)CBL2CAPChannel_NativeToJSON:(CBL2CAPChannel *)input
++ (NSDictionary *)CBL2CAPChannelNativeToJSON:(CBL2CAPChannel *)input
 API_AVAILABLE(ios(11.0)) {
   if (!input) return nil;
   

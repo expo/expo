@@ -11,42 +11,42 @@
 
 static id EXNullIfEmpty(NSString *input) {
   if (!input || input == nil || [input isEqualToString:@""]) {
-    return [NSNull null];
+    return NSNull.null;
   }
   return input;
 }
 
 @interface EXBluetooth (JSON)
 
-+ (NSDictionary *)EXBluetoothPeripheral_NativeToJSON:(EXBluetoothPeripheral *)input;
++ (NSDictionary *)EXBluetoothPeripheralNativeToJSON:(EXBluetoothPeripheral *)input;
 
-+ (NSDictionary *)EXBluetoothCentralManager_NativeToJSON:(EXBluetoothCentralManager *)input;
++ (NSDictionary *)EXBluetoothCentralManagerNativeToJSON:(EXBluetoothCentralManager *)input;
 
-+ (NSDictionary *)EXBluetoothService_NativeToJSON:(EXBluetoothService *)input;
++ (NSDictionary *)EXBluetoothServiceNativeToJSON:(EXBluetoothService *)input;
 
-+ (NSDictionary *)EXBluetoothCharacteristic_NativeToJSON:(EXBluetoothCharacteristic *)input;
++ (NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(EXBluetoothCharacteristic *)input;
 
-+ (NSDictionary *)EXBluetoothDescriptor_NativeToJSON:(EXBluetoothDescriptor *)input;
++ (NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input;
 
-+ (NSMutableArray *)EXBluetoothPeripheralList_NativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input;
++ (NSMutableArray *)EXBluetoothPeripheralListNativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input;
 
-+ (NSDictionary *)NSError_NativeToJSON:(NSError *)input;
++ (NSDictionary *)NSErrorNativeToJSON:(NSError *)input;
 
-+ (NSDictionary *)advertisementData_NativeToJSON:(NSDictionary<NSString *,id> *)input;
++ (NSDictionary *)advertisementDataNativeToJSON:(NSDictionary<NSString *,id> *)input;
 
-+ (NSMutableArray<CBUUID *> *)CBUUIDList_JSONToNative:(NSArray *)input;
++ (NSMutableArray<CBUUID *> *)CBUUIDListJSONToNative:(NSArray *)input;
 
-+ (CBCharacteristicProperties)CBCharacteristicPropertiesList_JSONToNative:(NSString *)input;
++ (CBCharacteristicProperties)CBCharacteristicPropertiesListJSONToNative:(NSString *)input;
 
-+ (CBCharacteristicProperties)CBCharacteristicProperties_JSONToNative:(NSString *)input;
++ (CBCharacteristicProperties)CBCharacteristicPropertiesJSONToNative:(NSString *)input;
 
-+ (NSMutableArray<NSString *> *)CBCharacteristicProperties_NativeToJSON:(CBCharacteristicProperties)input;
++ (NSMutableArray<NSString *> *)CBCharacteristicPropertiesNativeToJSON:(CBCharacteristicProperties)input;
 
-+ (NSString *)CBPeripheralState_NativeToJSON:(CBPeripheralState)input;
++ (NSString *)CBPeripheralStateNativeToJSON:(CBPeripheralState)input;
 
-+ (NSString *)CBManagerState_NativeToJSON:(CBManagerState)input;
++ (NSString *)CBManagerStateNativeToJSON:(CBManagerState)input;
 
-+ (NSDictionary *)CBL2CAPChannel_NativeToJSON:(CBL2CAPChannel *)input
++ (NSDictionary *)CBL2CAPChannelNativeToJSON:(CBL2CAPChannel *)input
 API_AVAILABLE(ios(11.0));
 
 @end
