@@ -136,18 +136,18 @@
 {
   switch (input) {
     case CBManagerStateResetting:
-    return @"resetting";
+      return @"resetting";
     case CBManagerStateUnsupported:
-    return @"unsupported";
+      return @"unsupported";
     case CBManagerStateUnauthorized:
-    return @"unauthorized";
+      return @"unauthorized";
     case CBManagerStatePoweredOff:
-    return @"poweredOff";
+      return @"poweredOff";
     case CBManagerStatePoweredOn:
-    return @"poweredOn";
+      return @"poweredOn";
     case CBManagerStateUnknown:
     default:
-    return @"unknown";
+      return @"unknown";
   }
 }
 
@@ -175,19 +175,19 @@
 {
   if (!input) return nil;
   
-  NSDictionary *userInfo = [input userInfo];
+  NSDictionary *userInfo = input.userInfo;
   NSString *underlyingError = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
   NSString *errorCode = [NSString stringWithFormat:@"%ld", (long) input.code];
-
+  
   return @{
            @"code": errorCode,
-           @"domain": [input domain],
+           @"domain": input.domain,
            @"message": EXNullIfEmpty(input.localizedDescription),
            @"reason": EXNullIfEmpty(input.localizedFailureReason),
            @"suggestion": EXNullIfEmpty(input.localizedRecoverySuggestion),
            @"underlayingError": EXNullIfEmpty(underlyingError),
            @"type": @"error",
-           @"_nativeClass": NSStringFromClass([input class])
+           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -202,23 +202,23 @@
   if (input[CBAdvertisementDataManufacturerDataKey] != nil) {
     manufacturerDataValue = [NSString stringWithFormat:@"%lu bytes",(unsigned long)manufacturerData.length];
   }
-
+  
   NSDictionary *serviceData = [self.class serviceData_NativeToJSON:input[CBAdvertisementDataServiceDataKey]];
   
   NSArray *serviceUUIDs = [self.class CBUUIDList_NativeToJSON:input[CBAdvertisementDataServiceUUIDsKey]];
   NSArray *overflowServiceUUIDs = [self.class CBUUIDList_NativeToJSON:input[CBAdvertisementDataOverflowServiceUUIDsKey]];
   NSArray *solicitedServiceUUIDs = [self.class CBUUIDList_NativeToJSON:input[CBAdvertisementDataSolicitedServiceUUIDsKey]];
-
+  
   return @{
-        @"localName": EXNullIfEmpty(localNameKey),
-        @"txPowerLevel": EXNullIfNil(txPowerLevel),
-        @"isConnectable": @([isConnectable boolValue]),
-        @"manufacturerData": EXNullIfEmpty(manufacturerDataValue),
-        @"serviceData": EXNullIfNil(serviceData),
-        @"serviceUUIDs": EXNullIfNil(serviceUUIDs),
-        @"overflowServiceUUIDs": EXNullIfNil(overflowServiceUUIDs),
-        @"solicitedServiceUUIDs": EXNullIfNil(solicitedServiceUUIDs)
-        };
+           @"localName": EXNullIfEmpty(localNameKey),
+           @"txPowerLevel": EXNullIfNil(txPowerLevel),
+           @"isConnectable": @([isConnectable boolValue]),
+           @"manufacturerData": EXNullIfEmpty(manufacturerDataValue),
+           @"serviceData": EXNullIfNil(serviceData),
+           @"serviceUUIDs": EXNullIfNil(serviceUUIDs),
+           @"overflowServiceUUIDs": EXNullIfNil(overflowServiceUUIDs),
+           @"solicitedServiceUUIDs": EXNullIfNil(solicitedServiceUUIDs)
+           };
 }
 
 + (NSString *)CBUUID_NativeToJSON:(CBUUID *)input
@@ -246,7 +246,7 @@
   
   NSMutableArray *output = [NSMutableArray new];
   for (id value in input) {
-    if ([value isKindOfClass:[NSString class]]) {
+    if ([value isKindOfClass:NSString.class]) {
       CBUUID *uuid = [CBUUID UUIDWithString:(NSString *)value];
       [output addObject:uuid];
     }
@@ -263,7 +263,7 @@
   if (!input) return nil;
   
   NSMutableDictionary *output = [NSMutableDictionary new];
-  for (CBUUID *key in [input allKeys]) {
+  for (CBUUID *key in input.allKeys) {
     NSData *value = [input objectForKey:key];
     [output setObject:EXNullIfEmpty([self.class NSData_NativeToJSON:value]) forKey:key.UUIDString];
   }
@@ -278,7 +278,7 @@
   NSString *characteristicUUIDString = input.characteristic.UUID.UUIDString;
   NSString *serviceUUIDString = input.characteristic.service.UUID.UUIDString;
   NSString *peripheralUUIDString = input.characteristic.service.peripheral.identifier.UUIDString;
-
+  
   id outputData;
   NSString *parsedValue;
   if([descriptorUUIDString isEqualToString:CBUUIDCharacteristicExtendedPropertiesString]  ||
@@ -305,18 +305,18 @@
            @"value": outputData,
            @"parsedValue": EXNullIfEmpty(parsedValue),
            @"type": @"descriptor",
-           @"_nativeClass": NSStringFromClass([input class])
+           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 // TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
 + (NSDictionary *)EXBluetoothCharacteristic_NativeToJSON:(EXBluetoothCharacteristic *)input
 {
   if (!input) return nil;
-
+  
   NSString *characteristicUUIDString = input.UUID.UUIDString;
   NSString *serviceUUIDString = input.service.UUID.UUIDString;
   NSString *peripheralUUIDString = input.service.peripheral.identifier.UUIDString;
-
+  
   return @{
            @"id": [NSString stringWithFormat:@"%@|%@|%@", peripheralUUIDString, serviceUUIDString, characteristicUUIDString],
            @"uuid": characteristicUUIDString,
@@ -327,7 +327,7 @@
            @"descriptors": [EXBluetooth.class EXBluetoothDescriptorList_NativeToJSON:input.descriptors],
            @"isNotifying": @(input.isNotifying),
            @"type": @"characteristic",
-           @"_nativeClass": NSStringFromClass([input class])
+           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -345,37 +345,37 @@
            @"includedServices": [self.class EXBluetoothServiceArray_NativeToJSON:input.includedServices],
            @"characteristics": [self.class EXBluetoothCharacteristicArray_NativeToJSON:input.characteristics],
            @"type": @"service",
-           @"_nativeClass": NSStringFromClass([input class])
+           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
 + (NSDictionary *)EXBluetoothPeripheral_NativeToJSON:(EXBluetoothPeripheral *)input
 {
   if (!input) return nil;
-
+  
   return @{
            EXBluetoothRSSIKey: EXNullIfNil(input.RSSI),
            @"id": input.identifier.UUIDString,
            @"uuid": input.identifier.UUIDString,
            @"name": EXNullIfEmpty(input.name),
-           @"state": [[EXBluetooth class] CBPeripheralState_NativeToJSON:input.state],
-           @"services": [[EXBluetooth class] EXBluetoothServiceArray_NativeToJSON:input.services],
+           @"state": [EXBluetooth.class CBPeripheralState_NativeToJSON:input.state],
+           @"services": [EXBluetooth.class EXBluetoothServiceArray_NativeToJSON:input.services],
            @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse),
-           @"advertisementData": EXNullIfNil([[EXBluetooth class] advertisementData_NativeToJSON:input.advertisementData]),
+           @"advertisementData": EXNullIfNil([EXBluetooth.class advertisementData_NativeToJSON:input.advertisementData]),
            @"type": @"peripheral",
-           @"_nativeClass": NSStringFromClass([input class])
+           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
 + (NSDictionary *)EXBluetoothCentralManager_NativeToJSON:(EXBluetoothCentralManager *)input
 {
   if (!input) return nil;
-
+  
   return @{
-           @"state": [self.class CBManagerState_NativeToJSON:[input state]],
-           @"isScanning": @([input isScanning]),
+           @"state": [self.class CBManagerState_NativeToJSON:input.state],
+           @"isScanning": @(input.isScanning),
            @"type": @"central",
-           @"_nativeClass": NSStringFromClass([input class])
+           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -389,11 +389,11 @@
 + (NSDictionary *)CBPeer_NativeToJSON:(CBPeer *)input
 {
   if (!input) return nil;
-
+  
   return @{
            @"uuid": input.identifier.UUIDString,
            @"type": @"peer",
-           @"_nativeClass": NSStringFromClass([input class])
+           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -406,7 +406,7 @@ API_AVAILABLE(ios(11.0)) {
            @"peer": [self.class CBPeer_NativeToJSON:input.peer],
            @"PSM": [NSNumber numberWithUnsignedInteger:input.PSM],
            @"type": @"L2CAPChannel",
-           @"_nativeClass": NSStringFromClass([input class])
+           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 

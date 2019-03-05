@@ -17,8 +17,9 @@
 @interface EXBluetoothCentralManager : NSObject
 
 // Defaults to CBCentralManagerStateUnknown
-@property(readonly) CBManagerState state;
-@property(readonly) BOOL isScanning;
+@property (readonly) CBManagerState state;
+
+@property (readonly) BOOL isScanning;
 
 @property (nonatomic, copy, nullable) EXBluetoothCentralDidUpdateStateBlock updateStateBlock;
 
@@ -26,16 +27,14 @@
 @property (nonatomic, strong, readonly, nullable) NSMutableDictionary<NSString *, EXBluetoothPeripheral *> *discoveredPeripherals;
 @property (nonatomic, weak, nullable) id<EXBluetoothCentralManagerPeripheralFilter> filter;
 
-- (nullable instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype) initWithQueue:(nullable dispatch_queue_t)queue;
 
-- (nullable instancetype)initWithQueue:(nullable dispatch_queue_t)queue;
+- (nullable instancetype) initWithQueue:(nullable dispatch_queue_t)queue
+                                options:(nullable NSDictionary<NSString *, id> *)options;
 
-- (nullable instancetype)initWithQueue:(nullable dispatch_queue_t)queue
-                               options:(nullable NSDictionary<NSString *, id> *)options NS_AVAILABLE(NA, 7_0) NS_DESIGNATED_INITIALIZER;
+- (nullable NSArray<EXBluetoothPeripheral *> *)retrievePeripheralsWithIdentifiers:(nullable NSArray<NSUUID *> *)identifiers;
 
-- (nullable NSArray<EXBluetoothPeripheral *> *)retrievePeripheralsWithIdentifiers:(nullable NSArray<NSUUID *> *)identifiers NS_AVAILABLE(NA, 7_0);
-
-- (nullable NSArray<EXBluetoothPeripheral *> *)retrieveConnectedPeripheralsWithServices:(nullable NSArray<CBUUID *> *)serviceUUIDs NS_AVAILABLE(NA, 7_0);
+- (nullable NSArray<EXBluetoothPeripheral *> *)retrieveConnectedPeripheralsWithServices:(nullable NSArray<CBUUID *> *)serviceUUIDs;
 
 - (void)scanForPeripheralsWithServices:(nullable NSArray<CBUUID *> *)serviceUUIDs
                                options:(nullable NSDictionary<NSString *, id> *)options

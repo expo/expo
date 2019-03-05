@@ -9,7 +9,6 @@
 @interface EXBluetoothService()
 
 @property (nonatomic, strong) CBService *service;
-@property (nonatomic, weak) EXBluetoothPeripheral *peipheral;
 
 @end
 
@@ -20,7 +19,7 @@
   self = [super init];
   if (self) {
     _service = service;
-    _peipheral = peripheral;
+    _peripheral = peripheral;
   }
   return self;
 }
@@ -32,7 +31,7 @@
 
 - (EXBluetoothPeripheral *)peripheral
 {
-  return _peipheral;
+  return _peripheral;
 }
 
 - (BOOL)isPrimary
@@ -44,7 +43,7 @@
 {
   NSMutableArray *output = [[NSMutableArray alloc] init];
   for (CBService *service in _service.includedServices) {
-    [output addObject:[[EXBluetoothService alloc] initWithService:service peripheral:_peipheral]];
+    [output addObject:[[EXBluetoothService alloc] initWithService:service peripheral:_peripheral]];
   }
   return output;
 }
@@ -53,41 +52,41 @@
 {
   NSMutableArray *output = [[NSMutableArray alloc] init];
   for (CBCharacteristic *characteristic in _service.characteristics) {
-    [output addObject:[[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:_peipheral]];
+    [output addObject:[[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:_peripheral]];
   }
   return output;
 }
 
 - (void)discoverCharacteristics:(NSArray<CBUUID *> *)characteristicUUIDs withBlock:(EXBluetoothPeripheralDiscoverCharacteristicsBlock)block
 {
-  if (_peipheral) {
-    [_peipheral discoverCharacteristics:characteristicUUIDs forService:self withBlock:[block copy]];
+  if (_peripheral) {
+    [_peripheral discoverCharacteristics:characteristicUUIDs forService:self withBlock:[block copy]];
   }
 }
 
 - (void)discoverIncludedServices:(NSArray<CBUUID *> *)includedServiceUUIDs withBlock:(EXBluetoothPeripheralDiscoverIncludedServicesBlock)block
 {
-  if (_peipheral) {
-    [_peipheral discoverIncludedServices:includedServiceUUIDs forService:self withBlock:[block copy]];
+  if (_peripheral) {
+    [_peripheral discoverIncludedServices:includedServiceUUIDs forService:self withBlock:[block copy]];
   }
 }
 
-- (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString characteristicProperties:(CBCharacteristicProperties)characteristicProperties reject:(EXPromiseRejectBlock)reject
+- (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString
+                                characteristicProperties:(CBCharacteristicProperties)characteristicProperties
+                                                  reject:(EXPromiseRejectBlock)reject
 {
-  CBUUID *characteristicUUID = [CBUUID UUIDWithString:UUIDString];
-  
-  EXBluetoothCharacteristic *characteristic = [self characteristicFromUUID:characteristicUUID prop:characteristicProperties];
+  EXBluetoothCharacteristic *characteristic = [self characteristicFromUUID:UUIDString prop:characteristicProperties];
   
   if (characteristicProperties == CBCharacteristicPropertyNotify && !characteristic) {
-    characteristic = [self characteristicFromUUID:characteristicUUID prop:CBCharacteristicPropertyIndicate];
+    characteristic = [self characteristicFromUUID:UUIDString prop:CBCharacteristicPropertyIndicate];
   }
   //  if (!characteristic) {
-  //    characteristic = [self characteristicFromUUID:characteristicUUID service:service];
+  //    characteristic = [self characteristicFromUUID:UUIDString service:service];
   //  }
   if (!characteristic) {
     NSString *errorMessage = [NSString stringWithFormat:@"Could not find characteristic with UUID %@ that contains property %@ on service with UUID %@ on peripheral with UUID %@",
                               UUIDString,
-                              [[EXBluetooth class] CBCharacteristicProperties_NativeToJSON:characteristicProperties],
+                              [EXBluetooth.class CBCharacteristicProperties_NativeToJSON:characteristicProperties],
                               _service.UUID.UUIDString,
                               _service.peripheral.identifier.UUIDString];
     reject(EXBluetoothErrorNoCharacteristic, errorMessage, nil);
@@ -96,12 +95,11 @@
   return characteristic;
 }
 
-- (EXBluetoothCharacteristic *)characteristicFromUUID:(CBUUID *)UUID prop:(CBCharacteristicProperties)prop
+- (EXBluetoothCharacteristic *)characteristicFromUUID:(NSString *)UUID prop:(CBCharacteristicProperties)prop
 {
-  NSString *uuidString = UUID.UUIDString;
   for (CBCharacteristic *characteristic in _service.characteristics) {
-    if ((characteristic.properties & prop) != 0x0 && [characteristic.UUID.UUIDString isEqualToString:uuidString]) {
-      return [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:_peipheral];
+    if ((characteristic.properties & prop) != 0x0 && [characteristic.UUID.UUIDString isEqualToString:UUID]) {
+      return [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:_peripheral];
     }
   }
   return nil;
@@ -109,8 +107,7 @@
 
 - (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject
 {
-  CBUUID *characteristicUUID = [CBUUID UUIDWithString:UUIDString];
-  EXBluetoothCharacteristic *characteristic = [self characteristicFromUUID:characteristicUUID];
+  EXBluetoothCharacteristic *characteristic = [self characteristicFromUUID:UUIDString];
   if (!characteristic) {
     NSString *errorMessage = [NSString stringWithFormat:@"Could not find characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",
                               UUIDString,
@@ -121,13 +118,11 @@
   return characteristic;
 }
 
-- (EXBluetoothCharacteristic *)characteristicFromUUID:(CBUUID *)UUID
+- (EXBluetoothCharacteristic *)characteristicFromUUID:(NSString *)UUID
 {
-  NSString *uuidString = UUID.UUIDString;
-  
   for (CBCharacteristic *characteristic in _service.characteristics) {
-    if ([characteristic.UUID.UUIDString isEqualToString:uuidString]) {
-      return [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:_peipheral];
+    if ([characteristic.UUID.UUIDString isEqualToString:UUID]) {
+      return [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:_peripheral];
     }
   }
   return nil;
@@ -135,7 +130,7 @@
 
 - (NSDictionary *)getJSON
 {
-  return [[EXBluetooth class] EXBluetoothService_NativeToJSON:self];
+  return [EXBluetooth.class EXBluetoothService_NativeToJSON:self];
 }
 
 @end

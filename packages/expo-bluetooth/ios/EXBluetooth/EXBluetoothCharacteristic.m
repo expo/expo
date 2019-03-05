@@ -57,11 +57,6 @@
   return nil;
 }
 
-- (BOOL)isBroadcasted
-{
-  return _characteristic.isBroadcasted;
-}
-
 - (BOOL)isNotifying
 {
   return _characteristic.isNotifying;
@@ -74,17 +69,25 @@
   }
 }
 
-- (void)writeValue:(NSData *)data type:(CBCharacteristicWriteType)type withBlock:(EXBluetoothPeripheralWriteValueForCharacteristicsBlock)block
+- (void)writeValue:(NSData *)data
+              type:(CBCharacteristicWriteType)type
+         withBlock:(EXBluetoothPeripheralWriteValueForCharacteristicsBlock)block
 {
   if (_peripheral) {
-    [_peripheral writeValue:data forCharacteristic:self type:type withBlock:[block copy]];
+    [_peripheral writeValue:data
+          forCharacteristic:self
+                       type:type
+                  withBlock:[block copy]];
   }
 }
 
-- (void)setNotifyValue:(BOOL)enabled withBlock:(EXBluetoothPeripheralNotifyValueForCharacteristicsBlock)block
+- (void)setNotifyValue:(BOOL)enabled
+             withBlock:(EXBluetoothPeripheralNotifyValueForCharacteristicsBlock)block
 {
   if (_peripheral) {
-    [_peripheral setNotifyValue:enabled forCharacteristic:self withBlock:[block copy]];
+    [_peripheral setNotifyValue:enabled
+              forCharacteristic:self
+                      withBlock:[block copy]];
   }
 }
 
@@ -95,9 +98,10 @@
   }
 }
 
-- (EXBluetoothDescriptor *)getDescriptorOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject
+- (EXBluetoothDescriptor *)getDescriptorOrReject:(NSString *)UUIDString
+                                          reject:(EXPromiseRejectBlock)reject
 {
-  EXBluetoothDescriptor *descriptor = [self descriptorFromUUID:[CBUUID UUIDWithString:UUIDString]];
+  EXBluetoothDescriptor *descriptor = [self descriptorFromUUID:UUIDString];
   if (!descriptor) {
     NSString *errorMessage = [NSString stringWithFormat:@"Could not find descriptor with UUID %@ on characteristic with UUID %@ on service with UUID %@ on peripheral with UUID %@",
                               UUIDString,
@@ -110,12 +114,10 @@
   return descriptor;
 }
 
-- (EXBluetoothDescriptor *)descriptorFromUUID:(CBUUID *)UUID
+- (EXBluetoothDescriptor *)descriptorFromUUID:(NSString *)UUID
 {
-  NSString *uuidString = UUID.UUIDString;
-  
   for (CBDescriptor *descriptor in _characteristic.descriptors) {
-    if ([descriptor.UUID.UUIDString isEqualToString:uuidString]) {
+    if ([descriptor.UUID.UUIDString isEqualToString:UUID]) {
       return [[EXBluetoothDescriptor alloc] initWithDescriptor:descriptor peripheral:_peripheral];
     }
   }
@@ -124,7 +126,7 @@
 
 - (NSDictionary *)getJSON
 {
-  return [[EXBluetooth class] EXBluetoothCharacteristic_NativeToJSON:self];
+  return [EXBluetooth.class EXBluetoothCharacteristic_NativeToJSON:self];
 }
 
 @end

@@ -61,7 +61,7 @@
 
 - (NSDictionary *)getJSON
 {
-  return [[EXBluetooth class] EXBluetoothDescriptor_NativeToJSON:self];
+  return [EXBluetooth.class EXBluetoothDescriptor_NativeToJSON:self];
 }
 
 @end

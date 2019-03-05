@@ -3,7 +3,6 @@
 #ifndef EXBluetoothConstants_h
 #define EXBluetoothConstants_h
 
-
 static NSString *const EXBluetoothEvent_SYSTEM_RESET = @"SYSTEM_RESET";
 static NSString *const EXBluetoothEvent_SYSTEM_ENABLED_STATE_CHANGED = @"SYSTEM_ENABLED_STATE_CHANGED";
 static NSString *const EXBluetoothEvent_SYSTEM_AVAILABILITY_CHANGED = @"SYSTEM_AVAILABILITY_CHANGED";
@@ -29,16 +28,16 @@ static NSString *const EXBluetoothEvent_DESCRIPTOR_DID_WRITE = @"DESCRIPTOR_DID_
 static NSString *const EXBluetoothEvent_DESCRIPTOR_DID_READ = @"DESCRIPTOR_DID_READ";
 
 
-static NSString *const EXBluetoothErrorUnimplemented = @"ERR_UNIMPLEMENTED";
-static NSString *const EXBluetoothErrorNoPeripheral = @"ERR_NO_PERIPHERAL";
-static NSString *const EXBluetoothErrorNoService = @"ERR_NO_SERVICE";
-static NSString *const EXBluetoothErrorNoCharacteristic = @"ERR_NO_CHARACTERISTIC";
-static NSString *const EXBluetoothErrorNoDescriptor = @"ERR_NO_DESCRIPTOR";
-static NSString *const EXBluetoothErrorWrite = @"ERR_WRITE";
-static NSString *const EXBluetoothErrorRead = @"ERR_READ";
-static NSString *const EXBluetoothErrorInvalidBase64 = @"ERR_INVALID_BASE64";
-static NSString *const EXBluetoothErrorState = @"ERR_STATE";
-static NSString *const EXBluetoothErrorScanning = @"ERR_SCANNING";
+static NSString *const EXBluetoothErrorUnimplemented = @"ERR_BLE_UNIMPLEMENTED";
+static NSString *const EXBluetoothErrorNoPeripheral = @"ERR_BLE_NO_PERIPHERAL";
+static NSString *const EXBluetoothErrorNoService = @"ERR_BLE_NO_SERVICE";
+static NSString *const EXBluetoothErrorNoCharacteristic = @"ERR_BLE_NO_CHARACTERISTIC";
+static NSString *const EXBluetoothErrorNoDescriptor = @"ERR_BLE_NO_DESCRIPTOR";
+static NSString *const EXBluetoothErrorWrite = @"ERR_BLE_WRITE";
+static NSString *const EXBluetoothErrorRead = @"ERR_BLE_READ";
+static NSString *const EXBluetoothErrorInvalidBase64 = @"ERR_BLE_INVALID_BASE64";
+static NSString *const EXBluetoothErrorState = @"ERR_BLE_STATE";
+static NSString *const EXBluetoothErrorScanning = @"ERR_BLE_SCANNING";
 
 static NSString *const EXBluetoothEvent = @"bluetoothEvent";
 
@@ -62,6 +61,5 @@ static NSString *const EXBluetoothEventKey = @"event";
 static NSString *const EXBluetoothDataKey = @"data";
 static NSString *const EXBluetoothErrorKey = @"error";
 static NSString *const EXBluetoothTransactionIdKey = @"transactionId";
-
 
 #endif /* EXBluetoothConstants_h */

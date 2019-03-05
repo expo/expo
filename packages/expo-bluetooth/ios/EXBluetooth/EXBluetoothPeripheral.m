@@ -31,8 +31,7 @@
   NSMutableDictionary *_discoverCharacteristicsBlocks;
   NSMutableDictionary *_discoverIncludedServicesBlocks;
   NSMutableDictionary *_discoverDescriptorsForCharacteristicBlocks;
-
-  // Ops
+  // Operations
   NSMutableDictionary *_readValueForCharacteristicsBlocks;
   NSMutableDictionary *_writeValueForCharacteristicsBlocks;
   NSMutableDictionary *_notifyValueForCharacteristics;
@@ -118,7 +117,8 @@
   [_peripheral readRSSI];
 }
 
-- (void)discoverServices:(NSArray<CBUUID *> *)serviceUUIDs withBlock:(EXBluetoothPeripheralDiscoverServicesBlock)block
+- (void)discoverServices:(NSArray<CBUUID *> *)serviceUUIDs
+               withBlock:(EXBluetoothPeripheralDiscoverServicesBlock)block
 {
   NSAssert(block, @"discoverServices:withBlock: block cannot be nil");
   _discoverServicesBlock = block;
@@ -144,7 +144,8 @@
   [_peripheral discoverCharacteristics:characteristicUUIDs forService:service.service];
 }
 
-- (void)readValueForCharacteristic:(EXBluetoothCharacteristic *)characteristic withBlock:(EXBluetoothPeripheralReadValueForCharacteristicBlock)block
+- (void)readValueForCharacteristic:(EXBluetoothCharacteristic *)characteristic
+                         withBlock:(EXBluetoothPeripheralReadValueForCharacteristicBlock)block
 {
   NSAssert(block, @"readValueForCharacteristic:withBlock: block cannot be nil");
   [_readValueForCharacteristicsBlocks setValue:block forKey:characteristic.UUID.UUIDString];
@@ -206,16 +207,19 @@
   _didUpdateNameBlock(self);
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didModifyServices:(NSArray<CBService *> *)invalidatedServices
+- (void)peripheral:(CBPeripheral *)peripheral
+ didModifyServices:(NSArray<CBService *> *)invalidatedServices
 {
   if (!EXBluetoothPeripheralIsSelf(peripheral)) {
     return;
   }
-
+  
   // TODO: Bacon: Somehow notify that we've invalidated services
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(NSError *)error
+- (void)peripheral:(CBPeripheral *)peripheral
+       didReadRSSI:(NSNumber *)RSSI
+             error:(NSError *)error
 {
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !_readRSSIBlock) {
     return;
@@ -234,7 +238,8 @@
   _discoverServicesBlock = nil;
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverIncludedServicesForService:(CBService *)service error:(NSError *)error
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverIncludedServicesForService:(CBService *)service
+             error:(NSError *)error
 {
   EXBluetoothPeripheralDiscoverIncludedServicesBlock block = [_discoverIncludedServicesBlocks objectForKey:service.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
@@ -256,7 +261,8 @@
   [_discoverCharacteristicsBlocks removeObjectForKey:service.UUID.UUIDString];
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
+             error:(NSError *)error
 {
   if (!EXBluetoothPeripheralIsSelf(peripheral)) {
     return;
@@ -274,7 +280,8 @@
   }
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+- (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
+             error:(NSError *)error
 {
   EXBluetoothPeripheralWriteValueForCharacteristicsBlock block = [_writeValueForCharacteristicsBlocks objectForKey:characteristic.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
@@ -285,7 +292,8 @@
   [_writeValueForCharacteristicsBlocks removeObjectForKey:characteristic.UUID.UUIDString];
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+- (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic
+             error:(NSError *)error
 {
   EXBluetoothPeripheralNotifyValueForCharacteristicsBlock block = [_notifyValueForCharacteristics objectForKey:characteristic.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
@@ -294,10 +302,11 @@
   EXBluetoothCharacteristic *mCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
   block(self, mCharacteristic, error);
   [_notifyValueForCharacteristics removeObjectForKey:characteristic.UUID.UUIDString];
-
+  
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic
+             error:(NSError *)error
 {
   EXBluetoothPeripheralDiscoverDescriptorsForCharacteristicBlock block = [_discoverDescriptorsForCharacteristicBlocks objectForKey:characteristic.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
@@ -308,7 +317,8 @@
   [_discoverDescriptorsForCharacteristicBlocks removeObjectForKey:characteristic.UUID.UUIDString];
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error
+- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor
+             error:(NSError *)error
 {
   EXBluetoothPeripheralReadValueForDescriptorsBlock block = [_readValueForDescriptorsBlock objectForKey:descriptor.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
@@ -319,7 +329,8 @@
   [_readValueForDescriptorsBlock removeObjectForKey:descriptor.UUID.UUIDString];
 }
 
-- (void)peripheral:(CBPeripheral *)peripheral didWriteValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error
+- (void)peripheral:(CBPeripheral *)peripheral didWriteValueForDescriptor:(CBDescriptor *)descriptor
+             error:(NSError *)error
 {
   EXBluetoothPeripheralWriteValueForDescriptorsBlock block = [_writeValueForDescriptorsBlock objectForKey:descriptor.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !block) {
@@ -332,36 +343,34 @@
 
 - (NSDictionary *)getJSON
 {
-  return [[EXBluetooth class] EXBluetoothPeripheral_NativeToJSON:self];
+  return [EXBluetooth.class EXBluetoothPeripheral_NativeToJSON:self];
 }
 
--(BOOL)guardIsConnected:(EXPromiseRejectBlock)reject
+- (BOOL)guardIsConnected:(EXPromiseRejectBlock)reject
 {
   if (_peripheral.state != CBPeripheralStateConnected) {
-    NSString *state = [[EXBluetooth class] CBPeripheralState_NativeToJSON:_peripheral.state];
-
+    NSString *state = [EXBluetooth.class CBPeripheralState_NativeToJSON:_peripheral.state];
+    
     reject(EXBluetoothErrorState, [NSString stringWithFormat:@"Peripheral is not connected: %@ state: %@", _peripheral.identifier.UUIDString, state], nil);
-    return true;
+    return YES;
   }
-  return false;
+  return NO;
 }
 
-- (EXBluetoothService *)getServiceOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject
+- (EXBluetoothService *)getServiceOrReject:(NSString *)UUIDString
+                                    reject:(EXPromiseRejectBlock)reject
 {
-  CBUUID *serviceUUID = [CBUUID UUIDWithString:UUIDString];
-  EXBluetoothService *service = [self serviceFromUUID:serviceUUID];
+  EXBluetoothService *service = [self serviceFromUUID:UUIDString];
   if (!service) {
     reject(EXBluetoothErrorNoService, [NSString stringWithFormat:@"No valid service with UUID %@ found on peripheral %@", UUIDString, _peripheral.identifier.UUIDString], nil);
   }
   return service;
 }
 
-- (EXBluetoothService *)serviceFromUUID:(CBUUID *)UUID
+- (EXBluetoothService *):(NSString *)UUIDserviceFromUUID
 {
-  NSString *uuidString = UUID.UUIDString;
-  
   for (CBService *service in _peripheral.services) {
-    if ([service.UUID.UUIDString isEqualToString:uuidString]) {
+    if ([service.UUID.UUIDString isEqualToString:UUID]) {
       return [[EXBluetoothService alloc] initWithService:service peripheral:self];
     }
   }
