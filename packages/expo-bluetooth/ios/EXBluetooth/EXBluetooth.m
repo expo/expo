@@ -179,6 +179,7 @@ EX_EXPORT_METHOD_AS(getPeripheralsAsync,
   if ([_manager guardEnabled:reject]) {
     return;
   }
+  
   resolve([EXBluetooth.class EXBluetoothPeripheralListNativeToJSON:[_manager.discoveredPeripherals allValues]]);
   [self emitFullState];
 }
@@ -216,6 +217,58 @@ EX_EXPORT_METHOD_AS(getCentralAsync,
     return;
   }
   resolve(EXNullIfNil([_manager getJSON]));
+}
+
+EX_EXPORT_METHOD_AS(getPeripheralAsync,
+                    getPeripheralAsync:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  EXBluetoothPeripheral *peripheral = [self getPeripheralFromOptionsOrReject:options reject:reject];
+  if (!peripheral) {
+    return;
+  }
+  
+  resolve([EXBluetooth.class EXBluetoothPeripheralNativeToJSON:peripheral]);
+}
+
+EX_EXPORT_METHOD_AS(getServiceAsync,
+                    getServiceAsync:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  EXBluetoothService *service = [self getServiceFromOptionsOrReject:options reject:reject];
+  if (!service) {
+    return;
+  }
+  
+  resolve([EXBluetooth.class EXBluetoothServiceNativeToJSON:service]);
+}
+
+EX_EXPORT_METHOD_AS(getCharacteristicAsync,
+                    getCharacteristicAsync:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
+  if (!characteristic) {
+    return;
+  }
+  
+  resolve([EXBluetooth.class EXBluetoothCharacteristicNativeToJSON:characteristic]);
+}
+
+EX_EXPORT_METHOD_AS(getDescriptorAsync,
+                    getDescriptorAsync:(NSDictionary *)options
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  EXBluetoothDescriptor *descriptor = [self getDescriptorFromOptionsOrReject:options reject:reject];
+  if (!descriptor) {
+    return;
+  }
+  
+  resolve([EXBluetooth.class EXBluetoothDescriptorNativeToJSON:descriptor]);
 }
 
 EX_EXPORT_METHOD_AS(startScanningAsync,
@@ -346,12 +399,21 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   
 }
 
--(EXBluetoothService *)getServiceFromOptionsOrReject:(NSDictionary *)options reject:(EXPromiseRejectBlock)reject
+-(EXBluetoothPeripheral *)getPeripheralFromOptionsOrReject:(NSDictionary *)options reject:(EXPromiseRejectBlock)reject
 {
   if ([_manager guardEnabled:reject]) {
     return nil;
   }
   EXBluetoothPeripheral *peripheral = [_manager getPeripheralOrReject:options[EXBluetoothPeripheralUUID] reject:reject];
+  if (!peripheral) {
+    return nil;
+  }
+  return peripheral;
+}
+
+-(EXBluetoothService *)getServiceFromOptionsOrReject:(NSDictionary *)options reject:(EXPromiseRejectBlock)reject
+{
+  EXBluetoothPeripheral *peripheral = [self getPeripheralFromOptionsOrReject:options reject:reject];
   if (!peripheral || [peripheral guardIsConnected:reject]) {
     return nil;
   }

@@ -11,7 +11,6 @@ export { default as BluetoothError } from './errors/BluetoothError';
 export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
 export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
 export { CENTRAL_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, TYPES, EVENTS };
-export declare function _getGATTStatusError(code: any, invokedMethod: any, stack?: undefined): AndroidGATTError | null;
 export declare function requestPermissionAsync(): Promise<{
     status: PermissionStatus;
 }>;
@@ -100,6 +99,7 @@ export declare function loadPeripheralAsync({ id }: {
     id: any;
 }, skipConnecting?: boolean): Promise<NativePeripheral>;
 export declare function _loadChildrenRecursivelyAsync({ id }: {
-    id: any;
+    id: string;
 }): Promise<any[]>;
 export declare function _reset(): Promise<void>;
+export declare function _getGATTStatusError(code: any, invokedMethod: any, stack?: undefined): AndroidGATTError | null;

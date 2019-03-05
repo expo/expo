@@ -24,14 +24,7 @@ if (!hasWarned) {
     hasWarned = true;
     console.warn('expo-bluetooth is in very early beta, use at your own discretion!');
 }
-export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
-    const nStack = stack || new Error().stack;
-    if (code.indexOf('ERR_BLE_GATT:') > -1) {
-        const gattStatusCode = code.split(':')[1];
-        return new AndroidGATTError({ gattStatusCode, stack: nStack, invokedMethod });
-    }
-    return null;
-}
+// TODO: Bacon maybe move to `.android`
 export async function requestPermissionAsync() {
     if (Platform.OS === 'android') {
         return await Permissions.askAsync(Permissions.LOCATION);
@@ -85,9 +78,6 @@ export async function stopScanningAsync() {
 export function observeUpdates(callback) {
     return addHandlerForKey('everything', callback);
 }
-// export function observeScanningErrors(callback: (updates: any) => void): Subscription {
-//   return addHandlerForKey(EVENTS.CENTRAL_SCAN_STOPPED, callback);
-// }
 export async function observeStateAsync(callback) {
     const central = await getCentralAsync();
     // Make the callback async so the subscription returns first.
@@ -307,6 +297,7 @@ export async function loadPeripheralAsync({ id }, skipConnecting = false) {
     // In case any updates occured during this function.
     return getPeripherals()[peripheralId];
 }
+// Internal Methods
 export async function _loadChildrenRecursivelyAsync({ id }) {
     const components = id.split(DELIMINATOR);
     if (components.length === 4) {
@@ -336,6 +327,14 @@ export async function _reset() {
     await stopScanningAsync();
     clearPeripherals();
     await _resetAllHandlers();
+}
+export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
+    const nStack = stack || new Error().stack;
+    if (code.indexOf('ERR_BLE_GATT:') > -1) {
+        const gattStatusCode = code.split(':')[1];
+        return new AndroidGATTError({ gattStatusCode, stack: nStack, invokedMethod });
+    }
+    return null;
 }
 addListener(({ data, event }) => {
     const { peripheral, peripherals, central, error } = data;
