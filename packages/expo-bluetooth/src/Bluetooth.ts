@@ -5,6 +5,7 @@ import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
 import {
   Base64,
   Central,
+  CentralManagerOptions,
   CharacteristicProperty,
   NativeCharacteristic,
   NativeEventData,
@@ -108,6 +109,13 @@ export async function startScanningAsync(
       await stopScanningAsync();
     }
   };
+}
+
+/** Dangerously rebuild the manager with the given options */ 
+export async function initAsync(options: CentralManagerOptions): Promise<void> {
+  invariantAvailability('initAsync');
+  await _reset();
+  await ExpoBluetooth.initAsync(options);
 }
 
 export async function stopScanningAsync(): Promise<void> {

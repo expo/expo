@@ -22,6 +22,22 @@
   }
 }
 
++ (nullable NSDictionary *)centralManagerOptionsJSONToNative:(nullable NSDictionary *)input
+{
+  if (!input) return nil;
+  NSMutableDictionary *output = [NSMutableDictionary new];
+  
+  if (input[@"showPowerAlert"] && [input[@"showPowerAlert"] boolValue]) {
+    output[CBCentralManagerOptionShowPowerAlertKey] = input[@"showPowerAlert"];
+  }
+  
+  if (input[@"restorationId"] && [input[@"restorationId"] stringValue]) {
+    output[CBCentralManagerOptionRestoreIdentifierKey] = input[@"restorationId"];
+  }
+  
+  return output;
+}
+
 + (NSMutableArray *)EXBluetoothServiceArray_NativeToJSON:(NSArray<EXBluetoothService *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
@@ -280,8 +296,7 @@
   }
   
   if (input[@"iosSolicitedServiceUUIDs"] && [input[@"iosSolicitedServiceUUIDs"] isKindOfClass:NSArray.class]) {
-    NSArray *solicitedServiceUUIDs = (NSArray *)input[@"iosSolicitedServiceUUIDs"];
-    output[CBCentralManagerScanOptionSolicitedServiceUUIDsKey] = solicitedServiceUUIDs;
+    output[CBCentralManagerScanOptionSolicitedServiceUUIDsKey] = input[@"iosSolicitedServiceUUIDs"];
   }
   
   return output;

@@ -150,17 +150,14 @@ EX_EXPORT_MODULE(ExpoBluetooth);
   }
 }
 
-EX_EXPORT_METHOD_AS(initializeManagerAsync,
-                    initializeManagerAsync:(NSDictionary *)options
+EX_EXPORT_METHOD_AS(initAsync,
+                    initAsync:(NSDictionary *)options
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  _manager = [[EXBluetoothCentralManager alloc] initWithQueue:[self methodQueue] options:options];
+  NSDictionary *nativeOptions = [EXBluetooth.class centralManagerOptionsJSONToNative:options];
+  _manager = [[EXBluetoothCentralManager alloc] initWithQueue:[self methodQueue] options:nativeOptions];
   [self updateStateListener];
-  /*
-   CBCentralManagerOptionShowPowerAlertKey
-   CBCentralManagerOptionRestoreIdentifierKey
-   */
   resolve(nil);
 }
 

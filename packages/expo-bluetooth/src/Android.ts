@@ -10,7 +10,7 @@ import ExpoBluetooth from './ExpoBluetooth';
 export async function requestMTUAsync(peripheralUUID: UUID, MTU: number): Promise<number> {
   invariantAvailability('requestMTUAsync');
   invariantUUID(peripheralUUID);
-  if (MTU > 512) {
+  if (MTU > 512 || MTU < 0) {
     throw new BluetoothError({ message: 'Max MTU size is 512', code: 'ERR_BLE_MTU' });
   }
   return await ExpoBluetooth.requestMTUAsync(peripheralUUID, MTU);

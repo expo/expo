@@ -250,4 +250,20 @@ export declare type ScanOptions = {
      */
     androidPhy?: AndroidPhyMode;
 };
+export declare type CentralManagerOptions = {
+    /**
+     * `CBCentralManagerOptionShowPowerAlertKey`
+     * If this is toggled on, and the Bluetooth manager is powered off, then the system will display a warning dialog to the user.
+     */
+    showPowerAlert?: boolean;
+    /**
+     * **UNSUPPORTED**
+     * `CBCentralManagerOptionRestoreIdentifierKey`
+     * A `string` containing a unique identifier (UID) for the `CBCentralManager` that is being instantiated.
+     * This UID is used by the system to identify a specific `CBCentralManager` instance for restoration and,
+     * therefore, must remain the same for subsequent application executions
+     * in order for the manager to be restored.
+     */
+    restorationId?: string;
+};
 export declare type CancelScanningCallback = () => void;

@@ -1,6 +1,6 @@
 import { Subscription } from 'expo-core';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
-import { Base64, Central, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, NativeDescriptor, WriteCharacteristicOptions, ScanOptions, CancelScanningCallback } from './Bluetooth.types';
+import { Base64, Central, CentralManagerOptions, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, NativeDescriptor, WriteCharacteristicOptions, ScanOptions, CancelScanningCallback } from './Bluetooth.types';
 import { CENTRAL_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, EVENTS, TYPES } from './BluetoothConstants';
 import AndroidGATTError from './errors/AndroidGATTError';
 import * as android from './Android';
@@ -25,6 +25,8 @@ export declare function getPermissionAsync(): Promise<{
  * `serviceUUIDsToQuery` or `scanSettings`, the provided parameters will replace them.
  */
 export declare function startScanningAsync(scanSettings: ScanOptions | undefined, callback: (peripheral: NativePeripheral) => void): Promise<CancelScanningCallback>;
+/** Dangerously rebuild the manager with the given options */
+export declare function initAsync(options: CentralManagerOptions): Promise<void>;
 export declare function stopScanningAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
 export declare function observeStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;

@@ -64,6 +64,12 @@ export async function startScanningAsync(scanSettings = {}, callback) {
         }
     };
 }
+/** Dangerously rebuild the manager with the given options */
+export async function initAsync(options) {
+    invariantAvailability('initAsync');
+    await _reset();
+    await ExpoBluetooth.initAsync(options);
+}
 export async function stopScanningAsync() {
     invariantAvailability('stopScanningAsync');
     // Remove all callbacks

@@ -171,6 +171,16 @@
 
 #pragma mark - CBCentralManagerDelegate
 
+- (void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary<NSString *,id> *)dict
+{
+  /**
+   * TODO: Bacon: Add support for the following:
+   * CBCentralManagerRestoredStatePeripheralsKey;
+   * CBCentralManagerRestoredStateScanServicesKey;
+   * CBCentralManagerRestoredStateScanOptionsKey;
+   */
+}
+
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
   _centralManager = central;
