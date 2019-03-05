@@ -344,6 +344,15 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   @ExpoMethod
+  public void initAsync(Map<String, Object> options, Promise promise) {
+    if (guardBluetoothAvailability(promise)) {
+      return;
+    }
+    setModuleRegistry(mModuleRegistry);
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
   public void requestConnectionPriorityAsync(String peripheralUUID, String connectionPriority, Promise promise) {
     if (guardPeripheralAction(promise)) {
       return;

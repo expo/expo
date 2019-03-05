@@ -19,6 +19,11 @@ export { default as BluetoothError } from './errors/BluetoothError';
 export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
 export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
 export { CENTRAL_OPTIONS, CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, TYPES, EVENTS };
+let hasWarned = false;
+if (!hasWarned) {
+    hasWarned = true;
+    console.warn('expo-bluetooth is in very early beta, use at your own discretion!');
+}
 export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
     const nStack = stack || new Error().stack;
     if (code.indexOf('ERR_BLE_GATT:') > -1) {

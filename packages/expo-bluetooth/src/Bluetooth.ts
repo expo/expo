@@ -55,6 +55,14 @@ export {
   EVENTS 
 };
 
+
+let hasWarned = false;
+if (!hasWarned) {
+  hasWarned = true;
+  console.warn('expo-bluetooth is in very early beta, use at your own discretion!')
+}
+
+
 export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
   const nStack = stack || new Error().stack;
   if (code.indexOf('ERR_BLE_GATT:') > -1 ) {
