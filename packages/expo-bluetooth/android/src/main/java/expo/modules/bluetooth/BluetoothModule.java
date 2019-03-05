@@ -202,7 +202,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     events.put("SYSTEM_ENABLED_STATE_CHANGED", BluetoothConstants.EVENTS.SYSTEM_ENABLED_STATE_CHANGED);
     events.put("SYSTEM_AVAILABILITY_CHANGED", BluetoothConstants.EVENTS.SYSTEM_AVAILABILITY_CHANGED);
     events.put("SYSTEM_PERMISSION_CHANGED", BluetoothConstants.EVENTS.SYSTEM_PERMISSION_CHANGED);
-    events.put("ADAPTER_STATE_CHANGED", BluetoothConstants.EVENTS.ADAPTER_STATE_CHANGED);
 //    events.put("CENTRAL_SCAN_STARTED", BluetoothConstants.EVENTS.CENTRAL_SCAN_STARTED);
 //    events.put("CENTRAL_SCAN_STOPPED", BluetoothConstants.EVENTS.CENTRAL_SCAN_STOPPED);
     events.put("CENTRAL_STATE_CHANGED", BluetoothConstants.EVENTS.CENTRAL_STATE_CHANGED);
@@ -290,7 +289,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
 
     Bundle output = new Bundle();
     output.putBundle(BluetoothConstants.JSON.CENTRAL, centralAsJSON());
-    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.ADAPTER_STATE_CHANGED, output);
+    BluetoothModule.sendEvent(BluetoothConstants.EVENTS.SYSTEM_ENABLED_STATE_CHANGED, output);
   }
 
   private void createBondingReceiver() {
@@ -439,7 +438,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     }
   }
 
-  // TODO: Bacon: Done Maybe?
   @ExpoMethod
   public void enableBluetoothAsync(
       Boolean shouldEnable,
@@ -448,6 +446,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardBluetoothAvailability(promise)) {
       return;
     }
+    // TODO: Bacon: Should we do nothing if shouldEnable === getBluetoothAdapter().isEnabled()
 
     if (shouldEnable != getBluetoothAdapter().isEnabled()) {
       if (getCurrentActivity() == null) {

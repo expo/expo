@@ -22,7 +22,7 @@ function methodWithTransformedError(method, methodName) {
     const stack = decodeURI(new Error().stack || '');
     return async (...props) => {
         try {
-            console.log(`EXBLE: invoke: ${methodName}()`);
+            // console.log(`EXBLE: invoke: ${methodName}()`);
             return await method(...props);
         }
         catch ({ message, code, ...props }) {
@@ -42,7 +42,7 @@ function methodWithTransformedError(method, methodName) {
                 invokedMethod: methodName,
                 stack,
             });
-            error.log();
+            // error.log();
             throw error;
         }
     };

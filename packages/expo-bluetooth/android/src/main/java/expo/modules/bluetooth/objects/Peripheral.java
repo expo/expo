@@ -785,7 +785,9 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
   public void requestConnectionPriority(int connectionPriority, Promise promise) {
     if (guardGATTExists(promise) || guardIsConnected(promise)) {
       return;
-    } else if (mGatt.requestConnectionPriority(connectionPriority)) {
+    }
+
+    if (mGatt.requestConnectionPriority(connectionPriority)) {
       promise.resolve(null);
       return;
     } else {

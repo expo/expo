@@ -1,16 +1,16 @@
-import AndroidGATTError from './errors/AndroidGATTError';
 import { Platform } from 'expo-core';
 import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
 import { CharacteristicProperty, } from './Bluetooth.types';
 import { BLUETOOTH_EVENT, DELIMINATOR, EVENTS, TYPES } from './BluetoothConstants';
-import { addHandlerForKey, addListener, fireMultiEventHandlers, fireSingleEventHandlers, firePeripheralObservers, addHandlerForID, resetHandlersForKey, _resetAllHandlers, } from './BluetoothEventHandler';
-import { invariantAvailability, invariant, invariantUUID } from './errors/BluetoothInvariant';
+import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './BluetoothEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
 import { peripheralIdFromId } from './BluetoothTransactions';
+import AndroidGATTError from './errors/AndroidGATTError';
+import BluetoothError from './errors/BluetoothError';
+import { invariant, invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
 import ExpoBluetooth from './ExpoBluetooth';
 import Transaction from './Transaction';
-import BluetoothError from './errors/BluetoothError';
 export * from './Bluetooth.types';
 export { default as AndroidGATTError } from './errors/AndroidGATTError';
 export { default as BluetoothError } from './errors/BluetoothError';
@@ -103,13 +103,11 @@ export async function connectAsync(peripheralUUID, options = {}) {
         }
         try {
             const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options || {});
-            console.log("API:INTERNAL:connectPeripheralAsync.resolved", result);
             clearTimeout(timeoutTag);
             resolve(result);
             return;
         }
         catch (error) {
-            console.log("API:INTERNAL:connectPeripheralAsync.rejected", error);
             clearTimeout(timeoutTag);
             reject(error);
             return;
@@ -122,7 +120,6 @@ export async function disconnectAsync(peripheralUUID) {
     invariantUUID(peripheralUUID);
     return await ExpoBluetooth.disconnectPeripheralAsync(peripheralUUID);
 }
-/* TODO: Bacon: Add a return type */
 export async function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }) {
     const { descriptor } = await ExpoBluetooth.readDescriptorAsync({
         peripheralUUID,
@@ -177,9 +174,7 @@ export async function writeCharacteristicAsync({ peripheralUUID, serviceUUID, ch
     });
     return characteristic;
 }
-/* TODO: Bacon: Why would anyone use this? */
-/* TODO: Bacon: Test if this works */
-/* TODO: Bacon: Add a return type */
+// This is ~3x faster on Android.
 export async function writeCharacteristicWithoutResponseAsync({ peripheralUUID, serviceUUID, characteristicUUID, data, }) {
     const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
         peripheralUUID,
@@ -239,7 +234,6 @@ export async function isScanningAsync() {
 export async function discoverServicesForPeripheralAsync(options) {
     invariantAvailability('discoverServicesForPeripheralAsync');
     const transaction = Transaction.fromTransactionId(options.id);
-    console.log("discoverServicesForPeripheralAsync: Before Native: ", options);
     return await ExpoBluetooth.discoverServicesForPeripheralAsync({
         ...transaction.getUUIDs(),
         serviceUUIDs: options.serviceUUIDs,
@@ -271,13 +265,12 @@ export async function discoverDescriptorsForCharacteristicAsync(options) {
         serviceUUIDs: options.serviceUUIDs,
         characteristicProperties: options.characteristicProperties,
     });
-    // return await discoverAsync({ id });
 }
 export async function loadPeripheralAsync({ id }, skipConnecting = false) {
     const peripheralId = peripheralIdFromId(id);
     const peripheral = getPeripherals()[peripheralId];
     if (!peripheral) {
-        throw new Error('Not a peripheral ' + peripheralId);
+        throw new BluetoothError({ code: 'ERR_BLE_LOADING', message: 'Not a peripheral ' + peripheralId });
     }
     if (peripheral.state !== 'connected') {
         if (!skipConnecting) {
@@ -302,40 +295,30 @@ export async function loadPeripheralAsync({ id }, skipConnecting = false) {
 }
 export async function _loadChildrenRecursivelyAsync({ id }) {
     const components = id.split(DELIMINATOR);
-    console.log('_loadChildrenRecursivelyAsync(): components', components);
-    // console.log({ components });
     if (components.length === 4) {
         // Descriptor ID
-        throw new Error('Descriptors have no children');
+        throw new BluetoothError({ code: `ERR_BLE_LOADING`, message: 'Descriptors have no children' });
     }
     else if (components.length === 3) {
         // Characteristic ID
-        console.log('Load Characteristic ', id);
-        // DEBUG
-        // console.warn('DISABLE ME');
-        // return [];
         const { characteristic: { descriptors }, } = await discoverDescriptorsForCharacteristicAsync({ id });
         return descriptors;
     }
     else if (components.length === 2) {
         // Service ID
-        console.log('Load Service ', id);
         const { service } = await discoverCharacteristicsForServiceAsync({ id });
-        console.log('LOADED CHARACTERISTICS FROM SERVICE', service);
         return await Promise.all(service.characteristics.map(characteristic => _loadChildrenRecursivelyAsync(characteristic)));
     }
     else if (components.length === 1) {
         // Peripheral ID
-        console.log('Load Peripheral ', id);
         const { peripheral: { services }, } = await discoverServicesForPeripheralAsync({ id });
-        console.log('discoverServicesForPeripheralAsync(): ', services);
         return await Promise.all(services.map(service => _loadChildrenRecursivelyAsync(service)));
     }
     else {
-        throw new Error(`Unknown ID ${id}`);
+        throw new BluetoothError({ code: `ERR_BLE_LOADING`, message: `Unknown ID ${id}` });
     }
 }
-const android = {
+export const android = {
     async requestMTUAsync(peripheralUUID, MTU) {
         invariantAvailability('requestMTUAsync');
         invariantUUID(peripheralUUID);
@@ -354,7 +337,7 @@ const android = {
         invariantUUID(peripheralUUID);
         return await ExpoBluetooth.unbondAsync(peripheralUUID);
     },
-    async enableBluetoothAsync(isBluetoothEnabled) {
+    async enableBluetoothAsync(isBluetoothEnabled = true) {
         invariantAvailability('enableBluetoothAsync');
         return await ExpoBluetooth.enableBluetoothAsync(isBluetoothEnabled);
     },
@@ -374,16 +357,13 @@ const android = {
         return addHandlerForKey(EVENTS.SYSTEM_ENABLED_STATE_CHANGED, callback);
     },
 };
-export { android };
 export async function _reset() {
     await stopScanningAsync();
     clearPeripherals();
     await _resetAllHandlers();
 }
-let lastEvent;
 addListener(({ data, event }) => {
-    const { peripheral, peripherals, central, advertisementData, RSSI, error } = data;
-    // console.log('GOT EVENT: ', { data, event });
+    const { peripheral, peripherals, central, error } = data;
     if (event === 'UPDATE') {
         clearPeripherals();
         if (peripherals) {
@@ -393,16 +373,6 @@ addListener(({ data, event }) => {
         }
         firePeripheralObservers();
         return;
-    }
-    if (event === EVENTS.PERIPHERAL_DISCOVERED_SERVICES) {
-        console.log("SERVICES: ", peripheral);
-    }
-    else if (event === EVENTS.PERIPHERAL_DISCONNECTED) {
-        console.log("PERIPHERAL_DISCONNECTED: ", peripheral.id);
-    }
-    else {
-        console.log('Event: ' + event + ((lastEvent && lastEvent !== event) ? ', last: ' + lastEvent : ''));
-        lastEvent = event;
     }
     switch (event) {
         case EVENTS.DESCRIPTOR_DID_READ:

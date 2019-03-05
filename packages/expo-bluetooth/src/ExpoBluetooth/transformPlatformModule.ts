@@ -28,7 +28,7 @@ function methodWithTransformedError(
   const stack = decodeURI(new Error().stack || '');
   return async (...props: any[]): Promise<any> => {
     try {
-      console.log(`EXBLE: invoke: ${methodName}()`);
+      // console.log(`EXBLE: invoke: ${methodName}()`);
       return await method(...props);
     } catch ({ message, code, ...props }) {
       let error;
@@ -48,7 +48,7 @@ function methodWithTransformedError(
         stack,
       });
 
-      error.log();
+      // error.log();
       throw error;
     }
   };
