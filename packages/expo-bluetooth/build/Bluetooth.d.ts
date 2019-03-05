@@ -1,16 +1,7 @@
 import { Subscription } from 'expo-core';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
-import { Base64, Central, CentralManagerOptions, CharacteristicProperty, NativeCharacteristic, NativePeripheral, NativeService, StateUpdatedCallback, UUID, NativeDescriptor, WriteCharacteristicOptions, ScanOptions, CancelScanningCallback } from './Bluetooth.types';
-import { CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, EVENTS } from './BluetoothConstants';
+import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, NativeCharacteristic, NativeDescriptor, NativePeripheral, NativeService, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
 import AndroidGATTError from './errors/AndroidGATTError';
-import * as android from './Android';
-export { android };
-export * from './Bluetooth.types';
-export { default as AndroidGATTError } from './errors/AndroidGATTError';
-export { default as BluetoothError } from './errors/BluetoothError';
-export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
-export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
-export { CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, EVENTS };
 export declare function requestPermissionAsync(): Promise<{
     status: PermissionStatus;
 }>;

@@ -2,8 +2,8 @@
   "name": "expo-bluetooth",
   "version": "1.0.0",
   "description": "Expo Module Template standalone module",
-  "main": "build/Bluetooth.js",
-  "types": "build/Bluetooth.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

@@ -1,8 +1,8 @@
 import { Platform } from 'expo-core';
 import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
-import { CharacteristicProperty } from './Bluetooth.types';
-import { CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, DELIMINATOR, EVENTS } from './BluetoothConstants';
+import { CharacteristicProperty, } from './Bluetooth.types';
+import { DELIMINATOR, EVENTS } from './BluetoothConstants';
 import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './BluetoothEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './BluetoothLocalState';
 import { peripheralIdFromId } from './BluetoothTransactions';
@@ -11,19 +11,6 @@ import BluetoothError from './errors/BluetoothError';
 import { invariant, invariantAvailability, invariantUUID } from './errors/BluetoothInvariant';
 import ExpoBluetooth from './ExpoBluetooth';
 import Transaction from './Transaction';
-import * as android from './Android';
-export { android };
-export * from './Bluetooth.types';
-export { default as AndroidGATTError } from './errors/AndroidGATTError';
-export { default as BluetoothError } from './errors/BluetoothError';
-export { default as BluetoothInvariant } from './errors/BluetoothInvariant';
-export { default as BluetoothPlatformError } from './errors/BluetoothPlatformError';
-export { CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, EVENTS };
-let hasWarned = false;
-if (!hasWarned) {
-    hasWarned = true;
-    console.warn('expo-bluetooth is in very early beta, use at your own discretion!');
-}
 // TODO: Bacon maybe move to `.android`
 export async function requestPermissionAsync() {
     if (Platform.OS === 'android') {
