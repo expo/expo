@@ -1,5 +1,5 @@
 import * as android from './Android';
-import { BLUETOOTH_EVENT, CONNECT_PERIPHERAL_OPTIONS, EVENTS } from './BluetoothConstants';
+import { BLUETOOTH_EVENT, EVENTS } from './BluetoothConstants';
 
 export { default as AndroidGATTError } from './errors/AndroidGATTError';
 export { default as BluetoothError } from './errors/BluetoothError';
@@ -11,7 +11,7 @@ export { android };
 export * from './Bluetooth';
 export * from './Bluetooth.types';
 
-export { CONNECT_PERIPHERAL_OPTIONS, BLUETOOTH_EVENT, EVENTS };
+export { BLUETOOTH_EVENT, EVENTS };
 
 let hasWarned = false;
 if (!hasWarned) {

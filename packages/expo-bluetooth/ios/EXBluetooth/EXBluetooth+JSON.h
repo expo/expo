@@ -18,6 +18,8 @@ static id EXNullIfEmpty(NSString *input) {
 
 @interface EXBluetooth (JSON)
 
++ (nullable NSDictionary *)peripheralConnectionOptionsJSONToNative:(nullable NSDictionary *)input;
+
 + (nullable NSDictionary *)centralManagerOptionsJSONToNative:(nullable NSDictionary *)input;
 
 + (NSDictionary *)ScanningOptionsJSONToNative:(nullable NSDictionary *)input;

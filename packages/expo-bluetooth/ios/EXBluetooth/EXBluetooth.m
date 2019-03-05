@@ -72,12 +72,6 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 {
   return @{
            @"BLUETOOTH_EVENT": EXBluetoothEvent,
-           @"CONNECT_PERIPHERAL_OPTIONS": @{
-               @"NotifyOnConnection": CBConnectPeripheralOptionNotifyOnConnectionKey,
-               @"NotifyOnDisconnection": CBConnectPeripheralOptionNotifyOnDisconnectionKey,
-               @"NotifyOnNotification": CBConnectPeripheralOptionNotifyOnNotificationKey,
-               @"StartDelay": CBConnectPeripheralOptionStartDelayKey
-               },
            @"UUID": @{
                @"PERIPHERAL": EXBluetoothPeripheralUUID,
                @"SERVICE": EXBluetoothServiceUUID,
@@ -330,7 +324,8 @@ EX_EXPORT_METHOD_AS(connectPeripheralAsync,
     return;
   }
   
-  [_manager connectPeripheral:peripheral options:options withDidConnectPeripheralCallback:^(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error) {
+  NSDictionary *nativeOptions = [EXBluetooth peripheralConnectionOptionsJSONToNative:options];
+  [_manager connectPeripheral:peripheral options:nativeOptions withDidConnectPeripheralCallback:^(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error) {
     
     NSDictionary *peripheralData = [peripheral getJSON];
     [self emitFullState];
@@ -355,9 +350,6 @@ EX_EXPORT_METHOD_AS(connectPeripheralAsync,
             EXBluetoothErrorKey: EXNullIfNil([EXBluetooth.class NSErrorNativeToJSON:error])
             }];
   }];
-  // CONNECT_PERIPHERAL_OPTIONS
-  //  [_manager connectPeripheral:peripheral options:options[@"options"]];
-  //  resolve([NSNull null]);
 }
 
 EX_EXPORT_METHOD_AS(readRSSIAsync,

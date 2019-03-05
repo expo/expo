@@ -1,6 +1,6 @@
 import { Subscription } from 'expo-core';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
-import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, NativeCharacteristic, NativeDescriptor, NativePeripheral, NativeService, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions } from './Bluetooth.types';
+import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, NativeCharacteristic, NativeDescriptor, NativePeripheral, NativeService, ScanOptions, StateUpdatedCallback, UUID, PeripheralConnectionOption, WriteCharacteristicOptions } from './Bluetooth.types';
 import AndroidGATTError from './errors/AndroidGATTError';
 export declare function requestPermissionAsync(): Promise<{
     status: PermissionStatus;
@@ -20,13 +20,12 @@ export declare function initAsync(options: CentralManagerOptions): Promise<void>
 export declare function stopScanningAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
 export declare function observeCentralStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
-export declare function connectAsync(peripheralUUID: UUID, options?: {
+declare type ConnectionOptions = {
     timeout?: number;
-    options?: {
-        shouldAutoConnect?: boolean;
-    };
-    onDisconnect?: any;
-}): Promise<NativePeripheral>;
+    options?: PeripheralConnectionOption;
+    onDisconnect?: (...args: any[]) => any;
+};
+export declare function connectAsync(peripheralUUID: UUID, { timeout, options, onDisconnect }: ConnectionOptions): Promise<NativePeripheral>;
 /** This method will also cancel pending connections */
 export declare function disconnectAsync(peripheralUUID: UUID): Promise<any>;
 export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: any): Promise<Base64 | null>;
@@ -94,3 +93,4 @@ export declare function _loadChildrenRecursivelyAsync({ id }: {
 }): Promise<any[]>;
 export declare function _reset(): Promise<void>;
 export declare function _getGATTStatusError(code: any, invokedMethod: any, stack?: undefined): AndroidGATTError | null;
+export {};

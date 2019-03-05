@@ -22,6 +22,27 @@
   }
 }
 
++ (nullable NSDictionary *)peripheralConnectionOptionsJSONToNative:(nullable NSDictionary *)input
+{
+  if (!input) return nil;
+  NSMutableDictionary *output = [NSMutableDictionary new];
+  
+  if (input[@"shouldAlertConnection"] && [input[@"shouldAlertConnection"] boolValue]) {
+    output[CBConnectPeripheralOptionNotifyOnConnectionKey] = input[@"shouldAlertConnection"];
+  }
+  if (input[@"shouldAlertDisconnection"] && [input[@"shouldAlertDisconnection"] boolValue]) {
+    output[CBConnectPeripheralOptionNotifyOnDisconnectionKey] = input[@"shouldAlertDisconnection"];
+  }
+  if (input[@"shouldAlertNotification"] && [input[@"shouldAlertNotification"] boolValue]) {
+    output[CBConnectPeripheralOptionNotifyOnNotificationKey] = input[@"shouldAlertNotification"];
+  }
+  if (input[@"startDelay"] && [input[@"startDelay"] numberValue]) {
+    output[CBConnectPeripheralOptionStartDelayKey] = input[@"startDelay"];
+  }
+  
+  return output;
+}
+
 + (nullable NSDictionary *)centralManagerOptionsJSONToNative:(nullable NSDictionary *)input
 {
   if (!input) return nil;

@@ -16,6 +16,7 @@ import {
   ScanOptions,
   StateUpdatedCallback,
   UUID,
+  PeripheralConnectionOption,
   WriteCharacteristicOptions,
 } from './Bluetooth.types';
 import { DELIMINATOR, EVENTS } from './BluetoothConstants';
@@ -111,19 +112,19 @@ export async function observeCentralStateAsync(callback: StateUpdatedCallback): 
   return addHandlerForKey(EVENTS.CENTRAL_STATE_CHANGED, ({ central = {} }) => callback(central.state) );
 }
 
+type ConnectionOptions = {
+  timeout?: number;
+  options?: PeripheralConnectionOption;
+  onDisconnect?: (...args:any[]) => any;
+}
+
 export async function connectAsync(
   peripheralUUID: UUID,
-  options: {
-    timeout?: number;
-    /* On Android shouldAutoConnect is used for reconnecting to devices that have been connected without shouldAutoConnect enabled */
-    options?: { shouldAutoConnect?: boolean };
-    onDisconnect?: any;
-  } = {}
+  { timeout, options = {}, onDisconnect }: ConnectionOptions
 ): Promise<NativePeripheral> {
   invariantAvailability('connectPeripheralAsync');
   invariantUUID(peripheralUUID);
 
-  const { onDisconnect } = options;
   if (onDisconnect) {
     addHandlerForID(EVENTS.PERIPHERAL_DISCONNECTED, peripheralUUID, onDisconnect);
   }
@@ -131,22 +132,22 @@ export async function connectAsync(
   let timeoutTag: number | undefined;
 
   return new Promise(async (resolve, reject) => {
-    if (options.timeout) {
+    if (timeout) {
       timeoutTag = setTimeout(() => {
         disconnectAsync(peripheralUUID);
         reject(
           new BluetoothError({
             message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${
-              options.timeout
+              timeout
             }ms`,
             code: 'ERR_BLE_TIMEOUT',
           })
         );
-      }, options.timeout);
+      }, timeout);
     }
     
     try {
-      const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options || {});
+      const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options || {});
       clearTimeout(timeoutTag);
       resolve(result);
       return;

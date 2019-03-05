@@ -71,26 +71,25 @@ export async function observeCentralStateAsync(callback) {
     setTimeout(() => callback(central.state));
     return addHandlerForKey(EVENTS.CENTRAL_STATE_CHANGED, ({ central = {} }) => callback(central.state));
 }
-export async function connectAsync(peripheralUUID, options = {}) {
+export async function connectAsync(peripheralUUID, { timeout, options = {}, onDisconnect }) {
     invariantAvailability('connectPeripheralAsync');
     invariantUUID(peripheralUUID);
-    const { onDisconnect } = options;
     if (onDisconnect) {
         addHandlerForID(EVENTS.PERIPHERAL_DISCONNECTED, peripheralUUID, onDisconnect);
     }
     let timeoutTag;
     return new Promise(async (resolve, reject) => {
-        if (options.timeout) {
+        if (timeout) {
             timeoutTag = setTimeout(() => {
                 disconnectAsync(peripheralUUID);
                 reject(new BluetoothError({
-                    message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${options.timeout}ms`,
+                    message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${timeout}ms`,
                     code: 'ERR_BLE_TIMEOUT',
                 }));
-            }, options.timeout);
+            }, timeout);
         }
         try {
-            const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options.options || {});
+            const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options || {});
             clearTimeout(timeoutTag);
             resolve(result);
             return;

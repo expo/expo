@@ -276,3 +276,34 @@ export declare type CentralManagerOptions = {
     restorationId?: string;
 };
 export declare type CancelScanningCallback = () => void;
+export declare type PeripheralConnectionOption = {
+    /**
+     * **Android**
+     * Should be used for _reconnecting_ to devices that have already
+     * been connected (then disconnected) **without** `shouldAutoConnect` enabled.
+     */
+    shouldAutoConnect?: boolean;
+    /**
+     * `CBConnectPeripheralOptionNotifyOnConnectionKey`
+     * A Boolean value that specifies whether the system should display an alert for a given peripheral if the app is suspended when a successful connection is made.
+     * The value for this key is an NSNumber object. This key is useful for apps that have not specified the bluetooth-central background mode and cannot display their own alert. If more than one app has requested notification for a given peripheral, the one that was most recently in the foreground receives the alert. If the key is not specified, the default value is false.
+     */
+    shouldAlertConnection?: boolean;
+    /**
+     * `CBConnectPeripheralOptionNotifyOnDisconnectionKey`
+     * A Boolean value that specifies whether the system should display a disconnection alert for a given peripheral if the app is suspended at the time of the disconnection.
+     * The value for this key is an NSNumber object. This key is useful for apps that have not specified the bluetooth-central background mode and cannot display their own alert. If more than one app has requested notification for a given peripheral, the one that was most recently in the foreground receives the alert. If the key is not specified, the default value is false.
+     */
+    shouldAlertDisconnection?: boolean;
+    /**
+     * `CBConnectPeripheralOptionNotifyOnNotificationKey`
+     * A Boolean value that specifies whether the system should display an alert for all notifications received from a given peripheral if the app is suspended at the time.
+     * The value for this key is an NSNumber object. This key is useful for apps that have not specified the bluetooth-central background mode and cannot display their own alert. If more than one app has requested notification for a given peripheral, the one that was most recently in the foreground receives the alert. If the key is not specified, the default value is false.
+     */
+    shouldAlertNotification?: boolean;
+    /**
+     * `CBConnectPeripheralOptionStartDelayKey`
+     *
+     */
+    startDelay?: number;
+};
