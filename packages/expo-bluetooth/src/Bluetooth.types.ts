@@ -13,6 +13,16 @@ export enum CentralState {
   PoweredOn = 'poweredOn',
 }
 
+export enum DeviceType {
+  Central = 'central',
+  Peripheral = 'peripheral',
+  Descriptor = 'descriptor',
+  Service = 'service',
+  Characteristic = 'characteristic',
+  Peer = 'peer',
+  L2CAPChannel = 'L2CAPChannel',
+}
+
 export enum AndroidCentralState {
   poweringOff = 'poweringOff',
   poweredOff = 'poweredOff',

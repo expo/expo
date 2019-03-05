@@ -13,6 +13,16 @@ export var CentralState;
     CentralState["PoweredOff"] = "poweredOff";
     CentralState["PoweredOn"] = "poweredOn";
 })(CentralState || (CentralState = {}));
+export var DeviceType;
+(function (DeviceType) {
+    DeviceType["Central"] = "central";
+    DeviceType["Peripheral"] = "peripheral";
+    DeviceType["Descriptor"] = "descriptor";
+    DeviceType["Service"] = "service";
+    DeviceType["Characteristic"] = "characteristic";
+    DeviceType["Peer"] = "peer";
+    DeviceType["L2CAPChannel"] = "L2CAPChannel";
+})(DeviceType || (DeviceType = {}));
 export var AndroidCentralState;
 (function (AndroidCentralState) {
     AndroidCentralState["poweringOff"] = "poweringOff";

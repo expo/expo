@@ -84,13 +84,6 @@ EX_EXPORT_MODULE(ExpoBluetooth);
                @"CHARACTERISTIC": EXBluetoothCharacteristicUUID,
                @"DESCRIPTOR": EXBluetoothDescriptorUUID,
                },
-           @"TYPES": @{
-               @"CENTRAL": EXBluetoothCentralKey,
-               @"PERIPHERAL": EXBluetoothPeripheralKey,
-               @"DESCRIPTOR": EXBluetoothDescriptorKey,
-               @"SERVICE": EXBluetoothServiceKey,
-               @"CHARACTERISTIC": EXBluetoothCharacteristicKey,
-               },
            @"EVENTS": @{
                @"UPDATE_STATE": EXBluetoothEvent_UPDATE_STATE,
                @"CENTRAL_SCAN_STARTED": EXBluetoothEvent_CENTRAL_SCAN_STARTED,

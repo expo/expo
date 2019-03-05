@@ -11,6 +11,15 @@ export declare enum CentralState {
     PoweredOff = "poweredOff",
     PoweredOn = "poweredOn"
 }
+export declare enum DeviceType {
+    Central = "central",
+    Peripheral = "peripheral",
+    Descriptor = "descriptor",
+    Service = "service",
+    Characteristic = "characteristic",
+    Peer = "peer",
+    L2CAPChannel = "L2CAPChannel"
+}
 export declare enum AndroidCentralState {
     poweringOff = "poweringOff",
     poweredOff = "poweredOff",
