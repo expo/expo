@@ -405,7 +405,6 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       mMTU = mtu;
 
       BluetoothModule.emitState();
-      sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_UPDATED_MTU, status);
       if (mMTUBlock != null) {
         if (shouldResolvePromiseWithStatusAndData(mMTUBlock, status)) {
           mMTUBlock.resolve(mtu);
