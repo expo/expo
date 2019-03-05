@@ -2,7 +2,7 @@ import { EventSubscription } from 'fbemitter';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
-import { requireNativeViewManager } from 'expo-core';
+import { requireNativeViewManager } from '@unimodules/core';
 
 import { NativeAdIconView } from './AdIconView';
 import { NativeAdMediaView } from './AdMediaView';

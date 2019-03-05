@@ -1,6 +1,6 @@
 #import <AVFoundation/AVFoundation.h>
-#import <EXCore/EXViewManager.h>
+#import <UMCore/UMViewManager.h>
 
-@interface EXAdsAdMobDFPManager : EXViewManager
+@interface EXAdsAdMobDFPManager : UMViewManager
 
 @end

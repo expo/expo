@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;

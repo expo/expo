@@ -17,9 +17,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import expo.core.interfaces.services.EventEmitter;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.facedetector.FaceDetector;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.facedetector.FaceDetector;
 import expo.modules.camera.events.BarCodeScannedEvent;
 import expo.modules.camera.events.CameraMountErrorEvent;
 import expo.modules.camera.events.CameraReadyEvent;

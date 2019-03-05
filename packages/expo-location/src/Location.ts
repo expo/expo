@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from 'expo-core';
+import { EventEmitter, Platform } from '@unimodules/core';
 import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';

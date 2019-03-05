@@ -35,10 +35,9 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-camera-interface": "*",
-    "expo-core": "*",
-    "expo-errors": "*",
-    "expo-file-system-interface": "*",
+    "unimodules-camera-interface": "*",
+    "@unimodules/core": "*",
+    "unimodules-file-system-interface": "*",
     "expo-gl-cpp": "*"
   },
   "dependencies": {

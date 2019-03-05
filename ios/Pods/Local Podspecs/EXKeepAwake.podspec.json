@@ -16,7 +16,7 @@
   "preserve_paths": "EXKeepAwake/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

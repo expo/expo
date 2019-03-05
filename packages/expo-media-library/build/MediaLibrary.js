@@ -1,5 +1,5 @@
-import { EventEmitter } from 'expo-core';
-import { UnavailabilityError } from 'expo-errors';
+import { EventEmitter } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);

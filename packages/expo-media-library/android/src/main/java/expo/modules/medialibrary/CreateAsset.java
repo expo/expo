@@ -10,7 +10,7 @@ import android.provider.MediaStore;
 import java.io.File;
 import java.io.IOException;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION;

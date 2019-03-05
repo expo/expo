@@ -16,13 +16,13 @@
   "preserve_paths": "EXTaskManager/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ],
-    "EXTaskManagerInterface": [
+    "UMTaskManagerInterface": [
 
     ]
   }

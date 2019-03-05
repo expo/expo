@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-core';
+import { EventEmitter } from '@unimodules/core';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 import {
   Playback,

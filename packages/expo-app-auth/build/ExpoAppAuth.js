@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 export default NativeModulesProxy.ExpoAppAuth;
 //# sourceMappingURL=ExpoAppAuth.js.map

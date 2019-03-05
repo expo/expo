@@ -7,15 +7,7 @@ import {
   MagnetometerUncalibrated,
 } from 'expo-sensors';
 import React from 'react';
-import {
-  Animated,
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const FAST_INTERVAL = 16;
 const SLOW_INTERVAL = 1000;

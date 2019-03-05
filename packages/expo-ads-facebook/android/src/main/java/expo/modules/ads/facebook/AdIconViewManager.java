@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.facebook.ads.AdIconView;
 
-import expo.core.ViewManager;
+import org.unimodules.core.ViewManager;
 
 public class AdIconViewManager extends ViewManager {
   @Override

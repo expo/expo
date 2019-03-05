@@ -7,7 +7,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.lang.ref.WeakReference;
 
-import expo.core.ModuleRegistry;
+import org.unimodules.core.ModuleRegistry;
 
 class DocumentSnapshotSerializeAsyncTask extends AsyncTask<Object, Void, Bundle> {
   private WeakReference<ModuleRegistry> reactContextWeakReference;

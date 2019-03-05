@@ -2,12 +2,12 @@
 
 #import <Foundation/Foundation.h>
 #import <EXFileSystem/EXFileSystem.h>
-#import <EXCore/EXInternalModule.h>
-#import <EXFileSystemInterface/EXFileSystemManagerInterface.h>
+#import <UMCore/UMInternalModule.h>
+#import <UMFileSystemInterface/UMFileSystemManagerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXFileSystemManagerService : NSObject <EXInternalModule, EXFileSystemManager>
+@interface EXFileSystemManagerService : NSObject <UMInternalModule, UMFileSystemManager>
 
 - (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId;
 - (NSArray<NSString *> *)bundledAssetsForExperienceId:(NSString *)experienceId;

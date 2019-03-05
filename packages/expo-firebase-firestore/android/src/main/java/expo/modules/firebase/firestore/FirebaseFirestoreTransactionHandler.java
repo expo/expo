@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.Nullable;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 class FirebaseFirestoreTransactionHandler {
   private final ReentrantLock lock;

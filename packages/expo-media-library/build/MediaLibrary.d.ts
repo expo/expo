@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-core';
+import { Subscription } from '@unimodules/core';
 export declare type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export declare type SortByKey = 'default' | 'id' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
 export declare type SortByValue = [SortByKey, boolean] | SortByKey;

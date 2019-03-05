@@ -34,9 +34,9 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-face-detector-interface": "*",
-    "expo-permissions-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-face-detector-interface": "*",
+    "unimodules-permissions-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 public class ZxingBarCodeScanner extends ExpoBarCodeScanner {
 

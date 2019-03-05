@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXSegment/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
-  s.dependency 'EXConstantsInterface'
+  s.dependency 'UMCore'
+  s.dependency 'UMConstantsInterface'
   s.dependency 'Analytics', '~> 3.5'
 
 end

@@ -16,10 +16,10 @@
   "preserve_paths": "EXAmplitude/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ],
     "Amplitude-iOS": [

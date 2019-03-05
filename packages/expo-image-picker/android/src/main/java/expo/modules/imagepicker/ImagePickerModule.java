@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
-import expo.interfaces.permissions.*;
+import org.unimodules.interfaces.permissions.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,14 +48,14 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.apache.commons.io.IOUtils;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ActivityEventListener;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.UIManager;
 
 public class ImagePickerModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
 

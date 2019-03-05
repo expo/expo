@@ -25,8 +25,8 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
 import expo.modules.firebase.app.Utils;
 
 public class FirebaseFirestoreCollectionReference {

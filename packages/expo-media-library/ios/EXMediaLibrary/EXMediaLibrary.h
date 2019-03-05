@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Photos/Photos.h>
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXEventEmitter.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMEventEmitter.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXMediaLibrary : EXExportedModule <EXModuleRegistryConsumer, PHPhotoLibraryChangeObserver, EXEventEmitter>
+@interface EXMediaLibrary : UMExportedModule <UMModuleRegistryConsumer, PHPhotoLibraryChangeObserver, UMEventEmitter>
 
 @end

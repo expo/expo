@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import { BackgroundFetchResultValue } from './IOSNotifications';
 
 import Notification from './Notification';

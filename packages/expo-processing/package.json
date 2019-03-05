@@ -24,7 +24,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-processing",
   "unimodulePeerDependencies": {
-    "expo-core": "*",
+    "@unimodules/core": "*",
     "expo-gl": "*"
   },
   "peerDependencies": {

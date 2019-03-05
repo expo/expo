@@ -67,7 +67,7 @@ async function namespaceReactNativeFilesAsync(
       let dirname = path.dirname(filename);
       let basename = path.basename(filename);
       let target;
-      if (basename.includes('EXReact') || !basename.includes('React')) {
+      if (basename.includes('EXReact') || basename.includes('UMReact') || !basename.includes('React')) {
         target = `${versionPrefix}${basename}`;
       } else {
         target = basename.replace(/React/g, reactPodName);
@@ -93,7 +93,7 @@ async function namespaceReactNativeFilesAsync(
       await _transformFileContentsAsync(`${dirname}/${target}`, fileString => {
         // rename misc imports, e.g. Layout.h
         fileString = fileString.replace(
-          /(")((?:(?!ART)(?!YG)(?!RN)(?!AIR)(?![^J]SM)(?!RCT)(?!React)(?!REA)(?!FBSDK)(?!EX).)+)\.h(\W)/g,
+          /(")((?:(?!ART)(?!YG)(?!RN)(?!AIR)(?![^J]SM)(?!RCT)(?!React)(?!REA)(?!FBSDK)(?!EX)(?!UM).)+)\.h(\W)/g,
           `$1${versionPrefix}$2.h$3`
         );
 
@@ -199,14 +199,16 @@ exports.versionReactNativeIOSFilesAsync = async function versionReactNativeIOSFi
 async function generatePodspecsAsync(
   newVersionPath,
   versionedPodNames,
-  versionName
+  versionName,
+  versionNumber
 ) {
   const { React, yoga, ...universalModules } = versionedPodNames;
   await generateReactPodspecAsync(
     newVersionPath,
     versionedPodNames,
     versionName,
-    universalModules
+    universalModules,
+    versionNumber
   );
   await generateYogaPodspecAsync(
     path.join(newVersionPath, 'ReactCommon', `${versionName}yoga`),
@@ -239,7 +241,7 @@ async function generatePodspecsAsync(
 
     shell.exec(`sed -i -- 's/React/${React}/g' ${prefixedPodSpecPath}`);
     shell.exec(
-      `sed -i -- 's/${versionName}EX${React}/${versionName}EXReact/g' ${prefixedPodSpecPath}`
+      `sed -i -- 's/${versionName}UM${React}/${versionName}UMReact/g' ${prefixedPodSpecPath}`
     );
     shell.exec(`sed -i -- "s/'..', 'package.json'/'package.json'/g" ${prefixedPodSpecPath}`);
   });
@@ -254,7 +256,8 @@ async function generateReactPodspecAsync(
   specfilePath,
   versionedPodNames,
   versionName,
-  universalModulesPodNames
+  universalModulesPodNames,
+  versionNumber
 ) {
   const versionedReactPodName = versionedPodNames.React;
   const versionedYogaPodName = versionedPodNames.yoga;
@@ -280,7 +283,7 @@ async function generateReactPodspecAsync(
 
     // `universalModulesPodNames` contains only versioned unimodules,
     // so we fall back to the original name if the module is not there
-    const universalModulesDependencies = Modules.getAllNativeForExpoClientOnPlatform('ios').map(
+    const universalModulesDependencies = Modules.getAllNativeForExpoClientOnPlatform('ios', versionNumber).map(
       ({ podName }) => `ss.dependency         "${universalModulesPodNames[podName] || podName}"`
     ).join(`
     `);
@@ -394,7 +397,8 @@ async function generatePodfileDepsAsync(
   versionName,
   templatesPath,
   versionedPodNames,
-  versionedReactPodPath
+  versionedReactPodPath,
+  versionNumber
 ) {
   if (!versionedPodNames.React) {
     throw new Error(
@@ -405,7 +409,7 @@ async function generatePodfileDepsAsync(
   if (versionedPodNames.yoga) {
     yogaPodDependency = `pod '${versionedPodNames.yoga}', :path => '${versionedReactPodPath}/ReactCommon/${versionName}yoga'`;
   }
-  const versionableUniversalModulesPods = Modules.getVersionableModulesForPlatform('ios')
+  const versionableUniversalModulesPods = Modules.getVersionableModulesForPlatform('ios', versionNumber)
     .map(
       ({ podName }) =>
         `pod '${versionedPodNames[podName]}', :path => '${versionedReactPodPath}/${podName}'`
@@ -704,7 +708,7 @@ function getConfigsFromArguments(versionNumber, rootPath) {
   podsToVersion.forEach(pod => {
     versionedPodNames[pod] = `${pod}${versionName}`;
   });
-  Modules.getVersionableModulesForPlatform('ios')
+  Modules.getVersionableModulesForPlatform('ios', versionNumber)
     .forEach(({ podName }) => {
       versionedPodNames[podName] = `${versionName}${podName}`;
     });
@@ -806,7 +810,7 @@ exports.addVersionAsync = async function addVersionAsync(
   console.log(`Copying universal modules into the new Pods...`);
   shell.exec(
     Modules
-      .getVersionableModulesForPlatform('ios')
+      .getVersionableModulesForPlatform('ios', versionNumber)
       .map(({ libName, podName }) =>
         [
           `cp -R ${rootPath}/${RELATIVE_UNIVERSAL_MODULES_PATH}/${libName}/ios/ ${newVersionPath}/${podName}`,
@@ -836,7 +840,7 @@ exports.addVersionAsync = async function addVersionAsync(
   // Generate new Podspec from the existing React.podspec
   // TODO: condition on major version for now
   console.log('Generating Podspecs for new version...');
-  await generatePodspecsAsync(newVersionPath, versionedPodNames, versionName);
+  await generatePodspecsAsync(newVersionPath, versionedPodNames, versionName, versionNumber);
 
   // Namespace the new React clone
   console.log('Namespacing/transforming files...');
@@ -856,7 +860,8 @@ exports.addVersionAsync = async function addVersionAsync(
     versionName,
     `${rootPath}/template-files/ios`,
     versionedPodNames,
-    newVersionRelativePath
+    newVersionRelativePath,
+    versionNumber
   );
 
   // Add the new version to the iOS config list of available versions
@@ -964,6 +969,10 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       // paths: 'EX',
     },
     {
+      pattern: `s/^UM/${versionPrefix}UM/g`,
+      // paths: 'EX',
+    },
+    {
       pattern: `s/\\([^\\<\\/]\\)YG/\\1${versionPrefix}YG/g`,
     },
     {
@@ -978,6 +987,9 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     },
     {
       pattern: `s/\\([^A-Za-z0-9_]\\)EX/\\1${versionPrefix}EX/g`,
+    },
+    {
+      pattern: `s/\\([^A-Za-z0-9_]\\)UM/\\1${versionPrefix}UM/g`,
     },
     {
       pattern: `s/\\([^A-Za-z0-9_+]\\)ART/\\1${versionPrefix}ART/g`,
@@ -1017,6 +1029,10 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       // the cpp facebook::react namespace,
       // iOS categories ending in +React
       pattern: `s/[Rr]eact/${reactPodName}/g`,
+    },
+    {
+      // For UMReactNativeAdapter
+      pattern: `s/${versionPrefix}UM${reactPodName}/${versionPrefix}UMReact/g`,
     },
     {
       // For EXReactNativeAdapter

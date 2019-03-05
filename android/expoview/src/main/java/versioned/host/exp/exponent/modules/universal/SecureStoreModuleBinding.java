@@ -17,7 +17,7 @@ import java.util.Date;
 
 import javax.security.auth.x500.X500Principal;
 
-import expo.core.arguments.ReadableArguments;
+import org.unimodules.core.arguments.ReadableArguments;
 import expo.modules.securestore.SecureStoreModule;
 import host.exp.expoview.Exponent;
 

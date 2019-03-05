@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 export var BrightnessMode;
 (function (BrightnessMode) {
     BrightnessMode[BrightnessMode["UNKNOWN"] = 0] = "UNKNOWN";

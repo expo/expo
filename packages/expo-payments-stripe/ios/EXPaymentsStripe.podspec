@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXPaymentsStripe/**/*.{h,m,mm}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
+  s.dependency 'UMCore'
   s.dependency 'Stripe', '~> 13.2.0'
 
 end

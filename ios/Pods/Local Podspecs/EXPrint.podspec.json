@@ -16,7 +16,7 @@
   "preserve_paths": "EXPrint/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

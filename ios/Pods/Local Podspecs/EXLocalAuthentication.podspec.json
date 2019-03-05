@@ -16,10 +16,10 @@
   "preserve_paths": "EXLocalAuthentication/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ]
   }

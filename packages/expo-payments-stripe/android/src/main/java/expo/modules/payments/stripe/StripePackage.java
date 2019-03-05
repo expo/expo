@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.BasePackage;
-import expo.core.ExportedModule;
-import expo.core.ViewManager;
+import org.unimodules.core.BasePackage;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ViewManager;
 
 public class StripePackage extends BasePackage {
 

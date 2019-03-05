@@ -1,4 +1,4 @@
-import { NativeModulesProxy, EventEmitter, Subscription, Platform } from 'expo-core';
+import { NativeModulesProxy, EventEmitter, Subscription, Platform } from '@unimodules/core';
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,

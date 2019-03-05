@@ -56,8 +56,8 @@ project(':expo-random').projectDir = new File(rootProject.projectDir, '../node_m
 and if not already included
 
 ```gradle
-include ':expo-core'
-project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
+include ':unimodules-core'
+project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../node_modules/@unimodules/core/android')
 ```
 
 </details>
@@ -74,7 +74,7 @@ api project(':expo-random')
 and if not already included
 
 ```gradle
-api project(':expo-core')
+api project(':unimodules-core')
 ```
 
 </details>

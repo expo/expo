@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from 'expo-core';
+import { EventEmitter, Platform } from '@unimodules/core';
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements
  * specified by the parameter type `M`.

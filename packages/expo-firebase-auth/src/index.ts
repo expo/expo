@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import { App, SharedEventEmitter, INTERNALS, ModuleBase } from 'expo-firebase-app';
 
 import ConfirmationResult from './phone/ConfirmationResult';

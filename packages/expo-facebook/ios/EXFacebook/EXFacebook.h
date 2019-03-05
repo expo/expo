@@ -1,9 +1,9 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXFacebook : EXExportedModule <EXModuleRegistryConsumer>
+@interface EXFacebook : UMExportedModule <UMModuleRegistryConsumer>
 
 + (id)facebookAppIdFromNSBundle;
 

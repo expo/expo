@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import { utils } from 'expo-firebase-app';
 import AndroidNotification from './AndroidNotification';
 import IOSNotification from './IOSNotification';

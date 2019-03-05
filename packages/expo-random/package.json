@@ -37,12 +37,10 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-errors": "*"
+    "@unimodules/core": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0",
-    "babel-preset-expo": "^5.0.0"
+    "expo-module-scripts": "^1.0.0"
   },
   "dependencies": {
     "base64-js": "^1.3.0"

@@ -2,8 +2,8 @@
 
 #import <EXPrint/EXPrint.h>
 #import <EXPrint/EXPrintPDFRenderTask.h>
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 
 NSString *const EXPrintOrientationPortrait = @"portrait";
 NSString *const EXPrintOrientationLandscape = @"landscape";
@@ -12,13 +12,13 @@ NSString *const EXPrintOrientationLandscape = @"landscape";
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UIPrinter *> *printers;
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXPrint
 
-EX_EXPORT_MODULE(ExponentPrint);
+UM_EXPORT_MODULE(ExponentPrint);
 
 - (instancetype)init
 {
@@ -28,7 +28,7 @@ EX_EXPORT_MODULE(ExponentPrint);
   return self;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -53,14 +53,14 @@ EX_EXPORT_MODULE(ExponentPrint);
            };
 }
 
-EX_EXPORT_METHOD_AS(print,
+UM_EXPORT_METHOD_AS(print,
                     print:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   [self _getPrintingDataForOptions:options callback:^(NSData *printingData, NSDictionary *errorDetails) {
     if (errorDetails != nil) {
-      reject(errorDetails[@"code"], errorDetails[@"message"], EXErrorWithMessage(errorDetails[@"message"]));
+      reject(errorDetails[@"code"], errorDetails[@"message"], UMErrorWithMessage(errorDetails[@"message"]));
       return;
     }
     
@@ -79,7 +79,7 @@ EX_EXPORT_METHOD_AS(print,
           printInteractionController.printFormatter = formatter;
         } else {
           NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
-          reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
+          reject(@"E_HTML_INVALID", message, UMErrorWithMessage(message));
           return;
         }
       } else {
@@ -134,8 +134,8 @@ EX_EXPORT_METHOD_AS(print,
   }];
 }
 
-EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
-                  rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(UMPromiseResolveBlock)resolve
+                  rejecter:(UMPromiseRejectBlock)reject)
 {
   UIPrinterPickerController *printPicker = [UIPrinterPickerController printerPickerControllerWithInitiallySelectedPrinter:nil];
   
@@ -168,10 +168,10 @@ EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
   }
 }
 
-EX_EXPORT_METHOD_AS(printToFileAsync,
+UM_EXPORT_METHOD_AS(printToFileAsync,
                     printToFileWithOptions:(nonnull NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSString *format = options[@"format"];
   
@@ -216,7 +216,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 
 - (UIViewController *)printInteractionControllerParentViewController:(UIPrintInteractionController *)printInteractionController
 {
-  id<EXUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  id<UMUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
   return utils.currentViewController;
 }
 
@@ -224,7 +224,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 
 - (UIViewController *)printerPickerControllerParentViewController:(UIPrinterPickerController *)printerPickerController
 {
-  id<EXUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  id<UMUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
   return utils.currentViewController;
 }
 
@@ -315,7 +315,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 
 - (NSString *)_generatePath
 {
-  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   if (!fileSystem) {
     return nil;
   }

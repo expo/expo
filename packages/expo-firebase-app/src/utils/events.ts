@@ -1,4 +1,4 @@
-import { NativeModulesProxy, EventEmitter } from 'expo-core';
+import { NativeModulesProxy, EventEmitter } from '@unimodules/core';
 
 import SharedEventEmitter from './SharedEventEmitter';
 import ModuleBase from './ModuleBase';

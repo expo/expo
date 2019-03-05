@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 
 import ExponentFileSystemShim from './ExponentFileSystemShim';
 import { ExponentFileSystemModule } from './FileSystem.types';

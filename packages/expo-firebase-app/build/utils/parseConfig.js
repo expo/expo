@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import { isObject, isString } from './';
 const isAndroid = Platform.OS === 'android';
 function isValidString(str) {

@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { UnavailabilityError, CodedError } from 'expo-errors';
+import { UnavailabilityError, CodedError } from '@unimodules/core';
 import {
   BaseGLViewProps,
   GLSnapshot,

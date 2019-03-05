@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-   provided rootProject.findProject(":expo-core")
+   provided rootProject.findProject(":unimodules-core")
    provided rootProject.findProject(":expo_flutter_adapter")
    provided rootProject.findProject(":expo-contacts")
 }

@@ -30,9 +30,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/imagemanipulator/",
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-errors": "*",
-    "expo-file-system-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-file-system-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

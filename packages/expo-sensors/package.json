@@ -38,8 +38,8 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-sensors-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-sensors-interface": "*"
   },
   "dependencies": {
     "invariant": "^2.2.4"

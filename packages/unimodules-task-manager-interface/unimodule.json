@@ -1,0 +1,4 @@
+{
+  "name": "unimodules-task-manager-interface",
+  "platforms": ["ios", "android"]
+}

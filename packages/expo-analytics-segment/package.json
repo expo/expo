@@ -33,8 +33,8 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-constants-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-constants-interface": "*"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",

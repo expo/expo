@@ -1,12 +1,12 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXEventEmitter.h>
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXInternalModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMEventEmitter.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMInternalModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-#import <EXTaskManagerInterface/EXTaskManagerInterface.h>
+#import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
-@interface EXTaskManager : EXExportedModule <EXInternalModule, EXEventEmitter, EXModuleRegistryConsumer, EXTaskManagerInterface>
+@interface EXTaskManager : UMExportedModule <UMInternalModule, UMEventEmitter, UMModuleRegistryConsumer, UMTaskManagerInterface>
 
 @end

@@ -1,13 +1,13 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXTaskManagerInterface/EXTaskConsumerInterface.h>
+#import <UMTaskManagerInterface/UMTaskConsumerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXBackgroundFetchTaskConsumer : NSObject <EXTaskConsumerInterface>
+@interface EXBackgroundFetchTaskConsumer : NSObject <UMTaskConsumerInterface>
 
-@property (nonatomic, strong) id<EXTaskInterface> task;
+@property (nonatomic, strong) id<UMTaskInterface> task;
 
 @end
 
