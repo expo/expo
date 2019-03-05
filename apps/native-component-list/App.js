@@ -4,21 +4,13 @@ import { AppLoading, Asset, Font } from 'expo';
 import React from 'react';
 import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { SafeAreaView, createStackNavigator, createAppContainer } from 'react-navigation';
+import { SafeAreaView } from 'react-navigation';
 import { Assets as StackAssets } from 'react-navigation-stack';
 import { useScreens } from 'react-native-screens';
-import { NativeModulesProxy } from 'expo-core';
 
 import Icons from './constants/Icons';
-import BluetoothScreen from './screens/Bluetooth/BluetoothScreen';
-import BluetoothPeripheralScreen from './screens/Bluetooth/BluetoothPeripheralScreen';
-const RootNavigation = createAppContainer(
-  createStackNavigator({
-    BluetoothScreen,
-    BluetoothPeripheralScreen,
-  })
-);
-// import RootNavigation from './screens/GoogleScreen';
+import RootNavigation from './navigation/RootNavigation';
+
 
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
