@@ -52,12 +52,6 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
 
   @ExpoMethod
   public void sendSMSAsync(final ArrayList<String> addresses, final String message, final Promise promise) {
-    if (!getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY) &&
-        !getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY_CDMA)) {
-      promise.reject(ERROR_TAG + "_UNAVAILABLE", "SMS service not available");
-      return;
-    }
-
     if (pendingPromise != null) {
       promise.reject(ERROR_TAG + "_SENDING_IN_PROGRESS", "Different SMS sending in progress. Await the old request and then try again.");
       return;
