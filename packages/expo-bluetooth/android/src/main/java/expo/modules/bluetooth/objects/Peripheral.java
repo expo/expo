@@ -388,7 +388,6 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     public void onReadRemoteRssi(int rssi, int status) {
      Log.d("BluetoothGatt", "onReadRemoteRssi(" + rssi + ", " + status + ");");
       BluetoothModule.emitState();
-      sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_UPDATED_RSSI, status);
       if (status == BluetoothGatt.GATT_SUCCESS) {
         updateRSSI(rssi);
       }

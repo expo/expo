@@ -209,7 +209,6 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     events.put("PERIPHERAL_DISCONNECTED", BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED);
     events.put("PERIPHERAL_BONDED", BluetoothConstants.EVENTS.PERIPHERAL_BONDED);
     events.put("PERIPHERAL_UNBONDED", BluetoothConstants.EVENTS.PERIPHERAL_UNBONDED);
-    events.put("PERIPHERAL_UPDATED_RSSI", BluetoothConstants.EVENTS.PERIPHERAL_UPDATED_RSSI);
     events.put("PERIPHERAL_UPDATED_MTU", BluetoothConstants.EVENTS.PERIPHERAL_UPDATED_MTU);
     events.put("SERVICE_DISCOVERED_INCLUDED_SERVICES", BluetoothConstants.EVENTS.SERVICE_DISCOVERED_INCLUDED_SERVICES);
     events.put("SERVICE_DISCOVERED_CHARACTERISTICS", BluetoothConstants.EVENTS.SERVICE_DISCOVERED_CHARACTERISTICS);

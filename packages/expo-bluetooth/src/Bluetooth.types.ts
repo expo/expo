@@ -98,7 +98,7 @@ export type TransactionId = string;
 export interface NativeBluetoothElement {
   id: Identifier;
   uuid: UUID;
-  //TODO:Bacon: Maybe add a type like peripheral, service, characteristc, descriptor
+  // TODO: Bacon: Maybe add a type like peripheral, service, characteristc, descriptor
 }
 
 export interface NativeDescriptor extends NativeBluetoothElement {
