@@ -112,18 +112,20 @@ public class Service extends EXBluetoothChildObject {
     // TODO: Emit full state
     // TODO: Bacon: How do we refresh these?
     Bundle output = new Bundle();
-    output.putBundle(BluetoothConstants.JSON.SERVICE, toJSON());
-    promise.resolve(output);
+    Bundle json = toJSON();
+    output.putBundle(BluetoothConstants.JSON.SERVICE, json);
+    promise.resolve(json.get(BluetoothConstants.JSON.INCLUDED_SERVICES));
     return output;
   }
 
   public Bundle discoverCharacteristics(ArrayList<UUID> characteristicUUIDs, Promise promise) {
     //TODO: Bacon: Are these gotten automatically?
     Bundle output = new Bundle();
+    Bundle json = toJSON();
 //    Bundle peripheralData = getPeripheral().toJSON();
 //    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheralData);
-    output.putBundle(BluetoothConstants.JSON.SERVICE, toJSON());
-    promise.resolve(output);
+    output.putBundle(BluetoothConstants.JSON.SERVICE, json);
+    promise.resolve(json.get(BluetoothConstants.JSON.CHARACTERISTICS));
     return output;
   }
 

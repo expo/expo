@@ -49,30 +49,21 @@ export declare function discoverServicesForPeripheralAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
     characteristicProperties?: CharacteristicProperty;
-}): Promise<{
-    peripheral: Peripheral;
-}>;
+}): Promise<NativeService[]>;
 export declare function discoverIncludedServicesForServiceAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
-}): Promise<{
-    peripheral: Peripheral;
-}>;
+}): Promise<NativeService[]>;
 export declare function discoverCharacteristicsForServiceAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
     characteristicProperties?: CharacteristicProperty;
-}): Promise<{
-    service: NativeService;
-}>;
+}): Promise<NativeCharacteristic[]>;
 export declare function discoverDescriptorsForCharacteristicAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
     characteristicProperties?: CharacteristicProperty;
-}): Promise<{
-    peripheral: Peripheral;
-    characteristic: NativeCharacteristic;
-}>;
+}): Promise<NativeDescriptor[]>;
 export declare function loadPeripheralAsync({ id }: {
     id: any;
 }, skipConnecting?: boolean): Promise<Peripheral>;

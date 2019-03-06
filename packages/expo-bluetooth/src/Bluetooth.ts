@@ -299,7 +299,7 @@ export async function discoverServicesForPeripheralAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
   characteristicProperties?: CharacteristicProperty;
-}): Promise<{ peripheral: Peripheral }> {
+}): Promise<NativeService[]> {
   invariantAvailability('discoverServicesForPeripheralAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverServicesForPeripheralAsync({
@@ -312,7 +312,7 @@ export async function discoverServicesForPeripheralAsync(options: {
 export async function discoverIncludedServicesForServiceAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
-}): Promise<{ peripheral: Peripheral }> {
+}): Promise<NativeService[]> {
   invariantAvailability('discoverIncludedServicesForServiceAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverIncludedServicesForServiceAsync({
@@ -325,7 +325,7 @@ export async function discoverCharacteristicsForServiceAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
   characteristicProperties?: CharacteristicProperty;
-}): Promise<{ service: NativeService }> {
+}): Promise<NativeCharacteristic[]> {
   invariantAvailability('discoverCharacteristicsForServiceAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverCharacteristicsForServiceAsync({
@@ -339,7 +339,7 @@ export async function discoverDescriptorsForCharacteristicAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
   characteristicProperties?: CharacteristicProperty;
-}): Promise<{ peripheral: Peripheral; characteristic: NativeCharacteristic }> {
+}): Promise<NativeDescriptor[]> {
   invariantAvailability('discoverDescriptorsForCharacteristicAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverDescriptorsForCharacteristicAsync({
@@ -390,21 +390,17 @@ export async function _loadChildrenRecursivelyAsync({ id }: { id: string }): Pro
     throw new BluetoothError({ code: `ERR_BLE_LOADING`, message: 'Descriptors have no children'});
   } else if (components.length === 3) {
     // Characteristic ID
-    const {
-      characteristic: { descriptors },
-    } = await discoverDescriptorsForCharacteristicAsync({ id });
+    const descriptors = await discoverDescriptorsForCharacteristicAsync({ id });
     return descriptors;
   } else if (components.length === 2) {
     // Service ID
-    const { service } = await discoverCharacteristicsForServiceAsync({ id });
+    const characteristics = await discoverCharacteristicsForServiceAsync({ id });
     return await Promise.all(
-      service.characteristics.map(characteristic => _loadChildrenRecursivelyAsync(characteristic))
+      characteristics.map(characteristic => _loadChildrenRecursivelyAsync(characteristic))
     );
   } else if (components.length === 1) {
     // Peripheral ID
-    const {
-      peripheral: { services },
-    } = await discoverServicesForPeripheralAsync({ id });
+    const services = await discoverServicesForPeripheralAsync({ id });
     return await Promise.all(services.map(service => _loadChildrenRecursivelyAsync(service)));
   } else {
     throw new BluetoothError({ code: `ERR_BLE_LOADING`, message: `Unknown ID ${id}`});

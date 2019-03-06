@@ -59,7 +59,7 @@
   return output;
 }
 
-+ (NSMutableArray *)EXBluetoothServiceArray_NativeToJSON:(NSArray<EXBluetoothService *> *)input
++ (NSMutableArray *)EXBluetoothServiceArrayNativeToJSON:(NSArray<EXBluetoothService *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothService *value in input) {
@@ -69,7 +69,7 @@
   return output;
 }
 
-+ (NSMutableArray *)EXBluetoothCharacteristicArray_NativeToJSON:(NSArray<EXBluetoothCharacteristic *> *)input
++ (NSMutableArray *)EXBluetoothCharacteristicArrayNativeToJSON:(NSArray<EXBluetoothCharacteristic *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothCharacteristic *value in input) {
@@ -188,7 +188,7 @@
   }
 }
 
-+ (NSMutableArray *)EXBluetoothDescriptorList_NativeToJSON:(NSArray<EXBluetoothDescriptor *> *)input
++ (NSMutableArray *)EXBluetoothDescriptorArrayNativeToJSON:(NSArray<EXBluetoothDescriptor *> *)input
 {
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothDescriptor *value in input) {
@@ -377,7 +377,7 @@
            @"peripheralUUID": peripheralUUIDString,
            @"properties": [EXBluetooth CBCharacteristicPropertiesNativeToJSON:input.properties],
            @"value": EXNullIfEmpty([EXBluetooth NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
-           @"descriptors": [EXBluetooth EXBluetoothDescriptorList_NativeToJSON:input.descriptors],
+           @"descriptors": [EXBluetooth EXBluetoothDescriptorArrayNativeToJSON:input.descriptors],
            @"isNotifying": @(input.isNotifying),
            @"type": @"characteristic",
            };
@@ -394,8 +394,8 @@
            @"uuid": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
            @"isPrimary": @(input.isPrimary),
-           @"includedServices": [EXBluetooth EXBluetoothServiceArray_NativeToJSON:input.includedServices],
-           @"characteristics": [EXBluetooth EXBluetoothCharacteristicArray_NativeToJSON:input.characteristics],
+           @"includedServices": [EXBluetooth EXBluetoothServiceArrayNativeToJSON:input.includedServices],
+           @"characteristics": [EXBluetooth EXBluetoothCharacteristicArrayNativeToJSON:input.characteristics],
            @"type": @"service",
            };
 }
@@ -410,7 +410,7 @@
            @"uuid": input.identifier.UUIDString,
            @"name": EXNullIfEmpty(input.name),
            @"state": [EXBluetooth CBPeripheralStateNativeToJSON:input.state],
-           @"services": [EXBluetooth EXBluetoothServiceArray_NativeToJSON:input.services],
+           @"services": [EXBluetooth EXBluetoothServiceArrayNativeToJSON:input.services],
            @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse),
            @"advertisementData": EXNullIfNil([EXBluetooth advertisementDataNativeToJSON:input.advertisementData]),
            @"type": @"peripheral",

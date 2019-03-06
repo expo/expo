@@ -642,10 +642,7 @@ EX_EXPORT_METHOD_AS(discoverDescriptorsForCharacteristicAsync,
         [weakSelf.manager updateLocalPeripheralStore:peripheral.peripheral];
         [weakSelf emitFullState];
       }
-      resolve(@{
-                EXBluetoothCharacteristicKey: EXNullIfNil([characteristic getJSON]),
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON])
-                });
+      resolve([EXBluetooth EXBluetoothDescriptorArrayNativeToJSON: characteristic.descriptors]);
     }
   }];
 }
@@ -671,10 +668,8 @@ EX_EXPORT_METHOD_AS(discoverCharacteristicsForServiceAsync,
         [weakSelf.manager updateLocalPeripheralStore:peripheral.peripheral];
         [weakSelf emitFullState];
       }
-      resolve(@{
-                EXBluetoothServiceKey: EXNullIfNil([service getJSON]),
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON])
-                });
+      
+      resolve([EXBluetooth EXBluetoothCharacteristicArrayNativeToJSON:service.characteristics]);
     }
   }];
 }
@@ -700,10 +695,7 @@ EX_EXPORT_METHOD_AS(discoverIncludedServicesForServiceAsync,
         [weakSelf.manager updateLocalPeripheralStore:peripheral.peripheral];
         [weakSelf emitFullState];
       }
-      resolve(@{
-                EXBluetoothServiceKey: EXNullIfNil([service getJSON]),
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON])
-                });
+      resolve([EXBluetooth EXBluetoothServiceArrayNativeToJSON:service.includedServices]);
     }
   }];
 }
@@ -732,9 +724,7 @@ EX_EXPORT_METHOD_AS(discoverServicesForPeripheralAsync,
         [weakSelf.manager updateLocalPeripheralStore:peripheral.peripheral];
         [weakSelf emitFullState];
       }
-      resolve(@{
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON])
-                });
+      resolve([EXBluetooth EXBluetoothServiceArrayNativeToJSON:peripheral.services]);
     }
   }];
 }

@@ -36,6 +36,12 @@ static id EXNullIfEmpty(NSString *input) {
 
 + (nullable NSMutableArray *)EXBluetoothPeripheralListNativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input;
 
++ (NSMutableArray *)EXBluetoothServiceArrayNativeToJSON:(NSArray<EXBluetoothService *> *)input;
+
++ (NSMutableArray *)EXBluetoothCharacteristicArrayNativeToJSON:(NSArray<EXBluetoothCharacteristic *> *)input;
+
++ (NSMutableArray *)EXBluetoothDescriptorArrayNativeToJSON:(NSArray<EXBluetoothDescriptor *> *)input;
+
 + (nullable NSDictionary *)NSErrorNativeToJSON:(NSError *)input;
 
 + (nullable NSDictionary *)advertisementDataNativeToJSON:(NSDictionary<NSString *,id> *)input;

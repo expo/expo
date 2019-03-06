@@ -258,17 +258,17 @@ export async function _loadChildrenRecursivelyAsync({ id }) {
     }
     else if (components.length === 3) {
         // Characteristic ID
-        const { characteristic: { descriptors }, } = await discoverDescriptorsForCharacteristicAsync({ id });
+        const descriptors = await discoverDescriptorsForCharacteristicAsync({ id });
         return descriptors;
     }
     else if (components.length === 2) {
         // Service ID
-        const { service } = await discoverCharacteristicsForServiceAsync({ id });
-        return await Promise.all(service.characteristics.map(characteristic => _loadChildrenRecursivelyAsync(characteristic)));
+        const characteristics = await discoverCharacteristicsForServiceAsync({ id });
+        return await Promise.all(characteristics.map(characteristic => _loadChildrenRecursivelyAsync(characteristic)));
     }
     else if (components.length === 1) {
         // Peripheral ID
-        const { peripheral: { services }, } = await discoverServicesForPeripheralAsync({ id });
+        const services = await discoverServicesForPeripheralAsync({ id });
         return await Promise.all(services.map(service => _loadChildrenRecursivelyAsync(service)));
     }
     else {

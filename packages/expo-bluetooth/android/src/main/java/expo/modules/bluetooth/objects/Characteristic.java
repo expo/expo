@@ -89,8 +89,9 @@ public class Characteristic extends EXBluetoothChildObject {
     Bundle output = new Bundle();
 //    Bundle peripheralData = getPeripheral().toJSON();
 //    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheralData);
-    output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, toJSON());
-    promise.resolve(output);
+    Bundle json = toJSON();
+    output.putBundle(BluetoothConstants.JSON.CHARACTERISTIC, json);
+    promise.resolve(json.get(BluetoothConstants.JSON.DESCRIPTORS));
     return output;
   }
 

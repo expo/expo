@@ -250,7 +250,9 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       Bundle output = sendGattEvent(BluetoothConstants.EVENTS.PERIPHERAL_DISCOVERED_SERVICES, status);
       if (mDidDiscoverServicesBlock != null) {
         if (shouldResolvePromiseWithStatusAndData(mDidDiscoverServicesBlock, status)) {
-          mDidDiscoverServicesBlock.resolve(output);
+          Bundle peripheralBundle = (Bundle) output.get(BluetoothConstants.JSON.PERIPHERAL);
+          List services = (List) peripheralBundle.get(BluetoothConstants.JSON.SERVICES);
+          mDidDiscoverServicesBlock.resolve(services);
         }
         mDidDiscoverServicesBlock = null;
       }
