@@ -52,7 +52,7 @@ export async function observeCentralStateAsync(callback) {
     setTimeout(() => callback(central.state));
     return addHandlerForKey(EVENTS.CENTRAL_STATE_CHANGED, ({ central = {} }) => callback(central.state));
 }
-export async function connectAsync(peripheralUUID, { timeout, options = {}, onDisconnect }) {
+export async function connectAsync(peripheralUUID, { timeout, onDisconnect }, options = {}) {
     invariantAvailability('connectPeripheralAsync');
     invariantUUID(peripheralUUID);
     if (onDisconnect) {

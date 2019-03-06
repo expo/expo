@@ -131,8 +131,8 @@
 
 - (void)connectPeripheral:(EXBluetoothPeripheral *)peripheral
                   options:(NSDictionary<NSString *, id> *)options
-         withDidConnectPeripheralCallback:(EXBluetoothCentralDidConnectPeripheral)onDidConnectPeripheral
-      withDidDisconnectPeripheralCallback:(nullable EXBluetoothCentralDidDisconnectPeripheral)onDidDisconnectPeripheral
+withDidConnectPeripheralCallback:(EXBluetoothCentralDidConnectPeripheral)onDidConnectPeripheral
+withDidDisconnectPeripheralCallback:(nullable EXBluetoothCentralDidDisconnectPeripheral)onDidDisconnectPeripheral
 {
   NSString *peripheralID = peripheral.identifier.UUIDString;
   _onDidConnectPeripheral = onDidConnectPeripheral;
@@ -146,7 +146,7 @@
 }
 
 - (void)cancelPeripheralConnection:(EXBluetoothPeripheral *)peripheral
-                         withDidDisconnectPeripheralCallback:(EXBluetoothCentralDidDisconnectPeripheral)onDidDisconnectPeripheral
+withDidDisconnectPeripheralCallback:(EXBluetoothCentralDidDisconnectPeripheral)onDidDisconnectPeripheral
 {
   peripheral.delegate = nil;
   NSString *peripheralID = peripheral.identifier.UUIDString;
@@ -211,7 +211,7 @@
   [self updateLocalPeripheralStore:peripheral];
   if (_onDidConnectPeripheral) {
     [self updateLocalPeripheralStore:peripheral];
-//    EXBluetoothPeripheral *connectedPeripheral = [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral];
+    //    EXBluetoothPeripheral *connectedPeripheral = [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral];
     _onDidConnectPeripheral(self, [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral], nil);
     _onDidConnectPeripheral = nil;
   }
@@ -238,17 +238,13 @@
   [mPeripheral setRSSI:RSSI];
   [mPeripheral setAdvertisementData:advertisementData];
   
-  BOOL shouldShowPeripheral = YES;
-  if (_filter) {
-    shouldShowPeripheral = [_filter centralManager:self shouldShowPeripheral:mPeripheral advertisementData:advertisementData];
-  }
   
-  if (shouldShowPeripheral) {
-    discoveredPeripherals[mPeripheral.identifier.UUIDString] = mPeripheral;
-//    [_discoveredPeripherals setValue:mPeripheral forKey:mPeripheral.identifier.UUIDString];
-    if (_onDidDiscoverPeripheral) {
-      _onDidDiscoverPeripheral(self, mPeripheral, advertisementData, RSSI);
-    }
+  
+  
+  discoveredPeripherals[mPeripheral.identifier.UUIDString] = mPeripheral;
+  //    [_discoveredPeripherals setValue:mPeripheral forKey:mPeripheral.identifier.UUIDString];
+  if (_onDidDiscoverPeripheral) {
+    _onDidDiscoverPeripheral(self, mPeripheral, advertisementData, RSSI);
   }
 }
 

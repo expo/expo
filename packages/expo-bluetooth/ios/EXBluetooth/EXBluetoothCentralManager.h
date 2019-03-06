@@ -6,14 +6,6 @@
 #import <EXBluetooth/EXBluetoothPeripheral.h>
 #import <EXCore/EXExportedModule.h>
 
-@protocol EXBluetoothCentralManagerPeripheralFilter <NSObject>
-
-- (BOOL)centralManager:(nullable EXBluetoothCentralManager *)centralManager
-  shouldShowPeripheral:(nullable EXBluetoothPeripheral *)peripheral
-     advertisementData:(nullable NSDictionary<NSString *, id> *)advertisementData;
-
-@end
-
 @interface EXBluetoothCentralManager : NSObject
 
 // Defaults to CBCentralManagerStateUnknown
@@ -24,8 +16,6 @@
 @property (nonatomic, copy, nullable) EXBluetoothCentralDidUpdateState onDidUpdateState;
 
 @property (nonatomic, strong, nullable) EXBluetoothPeripheral *connectedPeripheral;
-
-@property (nonatomic, weak, nullable) id<EXBluetoothCentralManagerPeripheralFilter> filter;
 
 - (nullable instancetype)initWithQueue:(nullable dispatch_queue_t)queue;
 

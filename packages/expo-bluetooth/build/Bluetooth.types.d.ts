@@ -149,11 +149,6 @@ export interface NativeCharacteristic extends NativeBluetoothElement {
     descriptors: NativeDescriptor[];
     value: Base64 | null;
     isNotifying: boolean;
-    isReadable: boolean;
-    isWritableWithResponse: boolean;
-    isWritableWithoutResponse: boolean;
-    isNotifiable: boolean;
-    isIndicatable: boolean;
 }
 export interface NativeService extends NativeBluetoothElement {
     peripheralUUID: UUID;
@@ -311,6 +306,5 @@ export declare type PeripheralConnectionOption = {
 };
 export declare type ConnectionOptions = {
     timeout?: number;
-    options?: PeripheralConnectionOption;
     onDisconnect?: (...args: any[]) => any;
 };

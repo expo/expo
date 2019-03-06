@@ -1,5 +1,5 @@
 import { Subscription } from 'expo-core';
-import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, ConnectionOptions, NativeCharacteristic, NativeDescriptor, NativeService, Peripheral, RSSI, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions, ReadCharacteristicOptions } from './Bluetooth.types';
+import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, ConnectionOptions, NativeCharacteristic, NativeDescriptor, PeripheralConnectionOption, NativeService, Peripheral, RSSI, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions, ReadCharacteristicOptions } from './Bluetooth.types';
 import { AndroidGATTError } from './errors';
 /**
  * Although strongly discouraged,
@@ -13,7 +13,7 @@ export declare function initAsync(options: CentralManagerOptions): Promise<void>
 export declare function stopScanningAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;
 export declare function observeCentralStateAsync(callback: StateUpdatedCallback): Promise<Subscription>;
-export declare function connectAsync(peripheralUUID: UUID, { timeout, options, onDisconnect }: ConnectionOptions): Promise<Peripheral>;
+export declare function connectAsync(peripheralUUID: UUID, { timeout, onDisconnect }: ConnectionOptions, options?: PeripheralConnectionOption): Promise<Peripheral>;
 /** This method will also cancel pending connections */
 export declare function disconnectAsync(peripheralUUID: UUID): Promise<any>;
 export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: any): Promise<Base64 | null>;

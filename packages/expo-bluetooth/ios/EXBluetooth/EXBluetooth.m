@@ -599,7 +599,6 @@ EX_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
  case CBCharacteristicPropertyNotify:
  case CBCharacteristicPropertyIndicate:
  {
- // TODO: Bacon: Add filter to delegate method
  BOOL isEnabled = [options[@"isEnabled"] boolValue];
  [peripheral setNotifyValue:isEnabled forCharacteristic:characteristic];
  }

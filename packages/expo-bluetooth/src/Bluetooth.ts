@@ -9,6 +9,7 @@ import {
   ConnectionOptions,
   NativeCharacteristic,
   NativeDescriptor,
+  PeripheralConnectionOption,
   NativeEventData,
   NativeService,
   Peripheral,
@@ -97,7 +98,8 @@ export async function observeCentralStateAsync(callback: StateUpdatedCallback): 
 
 export async function connectAsync(
   peripheralUUID: UUID,
-  { timeout, options = {}, onDisconnect }: ConnectionOptions
+  { timeout, onDisconnect }: ConnectionOptions,
+  options: PeripheralConnectionOption = {}
 ): Promise<Peripheral> {
   invariantAvailability('connectPeripheralAsync');
   invariantUUID(peripheralUUID);
