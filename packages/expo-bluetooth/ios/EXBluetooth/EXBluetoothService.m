@@ -14,7 +14,7 @@
 
 @implementation EXBluetoothService
 
--(instancetype)initWithService:(CBService *)service peripheral:(EXBluetoothPeripheral *)peripheral
+- (instancetype)initWithService:(CBService *)service peripheral:(EXBluetoothPeripheral *)peripheral
 {
   self = [super init];
   if (self) {

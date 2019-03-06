@@ -213,7 +213,7 @@
   if (!input) return nil;
   
   NSDictionary *userInfo = input.userInfo;
-  NSString *underlyingError = [[userInfo objectForKey:NSUnderlyingErrorKey] localizedDescription];
+  NSString *underlyingError = [userInfo[NSUnderlyingErrorKey] localizedDescription];
   NSString *errorCode = [NSString stringWithFormat:@"%ld", (long) input.code];
   
   return @{
@@ -301,7 +301,7 @@
   
   NSMutableDictionary *output = [NSMutableDictionary new];
   for (CBUUID *key in input.allKeys) {
-    NSData *value = [input objectForKey:key];
+    NSData *value = input[key];
     [output setObject:EXNullIfEmpty([self.class NSData_NativeToJSON:value]) forKey:key.UUIDString];
   }
   return output;

@@ -229,7 +229,7 @@
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverIncludedServicesForService:(CBService *)service
              error:(NSError *)error
 {
-  EXBluetoothPeripheralDiscoverIncludedServices callback = [_onDiscoverIncludedServices objectForKey:service.UUID.UUIDString];
+  EXBluetoothPeripheralDiscoverIncludedServices callback = _onDiscoverIncludedServices[service.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !callback) {
     return;
   }
@@ -239,7 +239,7 @@
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
-  EXBluetoothPeripheralDiscoverCharacteristics callback = [_onDiscoverCharacteristics objectForKey:service.UUID.UUIDString];
+  EXBluetoothPeripheralDiscoverCharacteristics callback = _onDiscoverCharacteristics[service.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !callback) {
     return;
   }
@@ -253,13 +253,13 @@
   if (!EXBluetoothPeripheralIsSelf(peripheral)) {
     return;
   }
-  EXBluetoothPeripheralReadValueForCharacteristic readCallback = [_onReadValueForCharacteristics objectForKey:characteristic.UUID.UUIDString];
+  EXBluetoothPeripheralReadValueForCharacteristic readCallback = _onReadValueForCharacteristics[characteristic.UUID.UUIDString];
   EXBluetoothCharacteristic *exCharacteristic = [[EXBluetoothCharacteristic alloc] initWithCharacteristic:characteristic peripheral:self];
   if (readCallback) {
     readCallback(self, exCharacteristic, error);
     [_onReadValueForCharacteristics removeObjectForKey:characteristic.UUID.UUIDString];
   }
-  EXBluetoothPeripheralNotifyValueForCharacteristics notifyCallback = [_onNotifyValueForCharacteristics objectForKey:characteristic.UUID.UUIDString];
+  EXBluetoothPeripheralNotifyValueForCharacteristics notifyCallback = _onNotifyValueForCharacteristics[characteristic.UUID.UUIDString];
   if (notifyCallback) {
     notifyCallback(self, exCharacteristic, error);
     [_onNotifyValueForCharacteristics removeObjectForKey:characteristic.UUID.UUIDString];
@@ -269,7 +269,7 @@
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error
 {
-  EXBluetoothPeripheralWriteValueForCharacteristics callback = [_onWriteValueForCharacteristics objectForKey:characteristic.UUID.UUIDString];
+  EXBluetoothPeripheralWriteValueForCharacteristics callback = _onWriteValueForCharacteristics[characteristic.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !callback) {
     return;
   }
@@ -280,7 +280,7 @@
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error
 {
-  EXBluetoothPeripheralNotifyValueForCharacteristics callback = [_onNotifyValueForCharacteristics objectForKey:characteristic.UUID.UUIDString];
+  EXBluetoothPeripheralNotifyValueForCharacteristics callback = _onNotifyValueForCharacteristics[characteristic.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !callback) {
     return;
   }
@@ -292,7 +292,7 @@
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic
              error:(NSError *)error
 {
-  EXBluetoothPeripheralDiscoverDescriptorsForCharacteristic callback = [_onDiscoverDescriptorsForCharacteristic objectForKey:characteristic.UUID.UUIDString];
+  EXBluetoothPeripheralDiscoverDescriptorsForCharacteristic callback = _onDiscoverDescriptorsForCharacteristic[characteristic.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !callback) {
     return;
   }
@@ -303,7 +303,7 @@
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor
              error:(NSError *)error
 {
-  EXBluetoothPeripheralReadValueForDescriptors callback = [_onReadValueForDescriptors objectForKey:descriptor.UUID.UUIDString];
+  EXBluetoothPeripheralReadValueForDescriptors callback = _onReadValueForDescriptors[descriptor.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !callback) {
     return;
   }
@@ -313,7 +313,7 @@
 
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error
 {
-  EXBluetoothPeripheralWriteValueForDescriptors callback = [_onWriteValueForDescriptors objectForKey:descriptor.UUID.UUIDString];
+  EXBluetoothPeripheralWriteValueForDescriptors callback = _onWriteValueForDescriptors[descriptor.UUID.UUIDString];
   if (!EXBluetoothPeripheralIsSelf(peripheral) || !callback) {
     return;
   }

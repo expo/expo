@@ -130,9 +130,9 @@
   NSString *peripheralID = peripheral.identifier.UUIDString;
   _onDidConnectPeripheral = onDidConnectPeripheral;
   
-  if ([onDidDisconnectPeripheralCallbacks objectForKey:peripheralID]) {
+  if (onDidDisconnectPeripheralCallbacks[peripheralID]) {
     NSLog(@"Invalid transaction: Disconnection block was replaced");
-    [onDidDisconnectPeripheralCallbacks objectForKey:peripheralID](self, peripheral, nil);
+    onDidDisconnectPeripheralCallbacks[peripheralID](self, peripheral, nil);
   }
   [onDidDisconnectPeripheralCallbacks setObject:onDidDisconnectPeripheral forKey:peripheralID];
   [_centralManager connectPeripheral:peripheral.peripheral options:options];
@@ -144,9 +144,9 @@
   peripheral.delegate = nil;
   NSString *peripheralID = peripheral.identifier.UUIDString;
   
-  if ([onDidDisconnectPeripheralCallbacks objectForKey:peripheralID]) {
+  if (onDidDisconnectPeripheralCallbacks[peripheralID]) {
     NSLog(@"Invalid transaction: Disconnection block was replaced");
-    [onDidDisconnectPeripheralCallbacks objectForKey:peripheralID](self, peripheral, nil);
+    onDidDisconnectPeripheralCallbacks[peripheralID](self, peripheral, nil);
   }
   
   [onDidDisconnectPeripheralCallbacks setObject:onDidDisconnectPeripheral forKey:peripheralID];
@@ -193,8 +193,8 @@
 - (void)updateLocalPeripheralStore:(CBPeripheral *)peripheral
 {
   //  NSString *UUIDString = peripheral.identifier.UUIDString;
-  //  if ([_discoveredPeripherals objectForKey:UUIDString]) {
-  //    [[_discoveredPeripherals objectForKey:UUIDString] setPeripheral:peripheral];
+  //  if (_discoveredPeripherals[UUIDString]) {
+  //    [_discoveredPeripherals[UUIDString] setPeripheral:peripheral];
   //  }
 }
 
@@ -215,9 +215,9 @@
   [self updateLocalPeripheralStore:peripheral];
   NSString *peripheralID = peripheral.identifier.UUIDString;
   
-  if ([onDidDisconnectPeripheralCallbacks objectForKey:peripheralID]) {
+  if (onDidDisconnectPeripheralCallbacks[peripheralID]) {
     [self updateLocalPeripheralStore:peripheral];
-    [onDidDisconnectPeripheralCallbacks objectForKey:peripheralID](self, [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral], error);
+    onDidDisconnectPeripheralCallbacks[peripheralID](self, [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral], error);
     [onDidDisconnectPeripheralCallbacks removeObjectForKey:peripheralID];
   }
 }
@@ -286,7 +286,7 @@
 
 - (EXBluetoothPeripheral *)getPeripheralOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject
 {
-  EXBluetoothPeripheral *exPeripheral = [_discoveredPeripherals objectForKey:UUIDString];
+  EXBluetoothPeripheral *exPeripheral = _discoveredPeripherals[UUIDString];
   if (!exPeripheral) {
     reject(EXBluetoothErrorNoPeripheral, [NSString stringWithFormat:@"No valid peripheral with UUID %@", UUIDString], nil);
     return nil;

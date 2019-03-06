@@ -62,7 +62,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
       [weakSelf
        emit:EXBluetoothEvent_CENTRAL_STATE_CHANGED
        data:@{
-              EXBluetoothCentralKey: EXNullIfNil([[EXBluetooth class] EXBluetoothCentralManagerNativeToJSON:centralManager])
+              EXBluetoothCentralKey: EXNullIfNil([EXBluetooth.class EXBluetoothCentralManagerNativeToJSON:centralManager])
               }];
     }
   }];
