@@ -224,7 +224,6 @@
            @"suggestion": EXNullIfEmpty(input.localizedRecoverySuggestion),
            @"underlayingError": EXNullIfEmpty(underlyingError),
            @"type": @"error",
-           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -360,7 +359,6 @@
            @"value": outputData,
            @"parsedValue": EXNullIfEmpty(parsedValue),
            @"type": @"descriptor",
-           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 // TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
@@ -382,7 +380,6 @@
            @"descriptors": [EXBluetooth EXBluetoothDescriptorList_NativeToJSON:input.descriptors],
            @"isNotifying": @(input.isNotifying),
            @"type": @"characteristic",
-           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -400,7 +397,6 @@
            @"includedServices": [EXBluetooth EXBluetoothServiceArray_NativeToJSON:input.includedServices],
            @"characteristics": [EXBluetooth EXBluetoothCharacteristicArray_NativeToJSON:input.characteristics],
            @"type": @"service",
-           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -418,7 +414,6 @@
            @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse),
            @"advertisementData": EXNullIfNil([EXBluetooth advertisementDataNativeToJSON:input.advertisementData]),
            @"type": @"peripheral",
-           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -430,7 +425,6 @@
            @"state": [EXBluetooth CBManagerStateNativeToJSON:input.state],
            @"isScanning": @(input.isScanning),
            @"type": @"central",
-           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -447,7 +441,6 @@
   return @{
            @"uuid": input.identifier.UUIDString,
            @"type": @"peer",
-           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
@@ -460,7 +453,6 @@ API_AVAILABLE(ios(11.0)) {
            @"peer": [EXBluetooth CBPeer_NativeToJSON:input.peer],
            @"PSM": [NSNumber numberWithUnsignedInteger:input.PSM],
            @"type": @"L2CAPChannel",
-           @"_nativeClass": NSStringFromClass(input.class)
            };
 }
 
