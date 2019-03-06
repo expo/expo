@@ -1,6 +1,7 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
-import { AsyncStorage, DeviceEventEmitter, Platform } from 'react-native';
+import { AsyncStorage, Platform } from 'react-native';
+import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
 import ExponentNotifications from './ExponentNotifications';
 
 type Notification = {
