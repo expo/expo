@@ -125,7 +125,7 @@ export interface Descriptor extends BluetoothElement {
     characteristicUUID: UUID;
     value?: Base64;
 }
-export declare type NativeEventData = {
+export declare type EventData = {
     transactionId?: TransactionId;
     peripheral?: Peripheral | null;
     peripherals?: Peripheral[];
@@ -133,7 +133,7 @@ export declare type NativeEventData = {
     central?: Central | null;
     descriptor?: Descriptor | null;
     service?: Service | null;
-    advertisementData?: NativeAdvertismentData | null;
+    advertisementData?: AdvertismentData | null;
     RSSI?: RSSI;
     error?: NativeError | null;
 };
@@ -156,7 +156,7 @@ export interface Service extends BluetoothElement {
     includedServices: Service[];
     characteristics: Characteristic[];
 }
-export interface NativeAdvertismentData {
+export interface AdvertismentData {
     manufacturerData: Base64 | null;
     serviceData: {
         [uuid: string]: Base64;
@@ -169,7 +169,7 @@ export interface NativeAdvertismentData {
     overflowServiceUUIDs: UUID[] | null;
 }
 export interface Peripheral extends BluetoothElement {
-    advertisementData?: NativeAdvertismentData;
+    advertisementData?: AdvertismentData;
     name: string | null;
     RSSI: RSSI | null;
     state: PeripheralState;

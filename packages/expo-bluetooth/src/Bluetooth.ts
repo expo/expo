@@ -10,7 +10,7 @@ import {
   Characteristic,
   Descriptor,
   PeripheralConnectionOption,
-  NativeEventData,
+  EventData,
   Service,
   Peripheral,
   RSSI,
@@ -422,7 +422,7 @@ export function _getGATTStatusError(code, invokedMethod, stack = undefined) {
   return null;
 }
 
-addListener(({ data, event }: { data: NativeEventData; event: string }) => {
+addListener(({ data, event }: { data: EventData; event: string }) => {
   const { peripheral, peripherals, central, error } = data;
 
   if (event === EVENTS.UPDATE_STATE) {
