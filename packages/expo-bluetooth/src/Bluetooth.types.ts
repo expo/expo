@@ -156,13 +156,13 @@ export enum Permissions {
 
 /* Types */
 
-export interface NativeBluetoothElement {
+export interface BluetoothElement {
   id: Identifier;
   uuid: UUID;
   // TODO: Bacon: Maybe add a type like peripheral, service, characteristc, descriptor
 }
 
-export interface Descriptor extends NativeBluetoothElement {
+export interface Descriptor extends BluetoothElement {
   characteristicUUID: UUID;
   value?: Base64;
 }
@@ -186,7 +186,7 @@ export interface NativeError {
   stack?: string;
 }
 
-export interface Characteristic extends NativeBluetoothElement {
+export interface Characteristic extends BluetoothElement {
   serviceUUID: UUID;
   peripheralUUID: UUID;
   properties: string[]; // TODO: Bacon: more specific
@@ -195,7 +195,7 @@ export interface Characteristic extends NativeBluetoothElement {
   isNotifying: boolean;
 }
 
-export interface Service extends NativeBluetoothElement {
+export interface Service extends BluetoothElement {
   peripheralUUID: UUID;
   isPrimary: boolean;
   includedServices: Service[];
@@ -213,7 +213,7 @@ export interface NativeAdvertismentData {
   overflowServiceUUIDs: UUID[] | null;
 }
 
-export interface Peripheral extends NativeBluetoothElement {
+export interface Peripheral extends BluetoothElement {
   advertisementData?: NativeAdvertismentData;
   name: string | null;
   RSSI: RSSI | null;

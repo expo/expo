@@ -117,11 +117,11 @@ export declare enum Permissions {
     ReadEncryptionRequired = "ReadEncryptionRequired",
     WriteEncryptionRequired = "WriteEncryptionRequired"
 }
-export interface NativeBluetoothElement {
+export interface BluetoothElement {
     id: Identifier;
     uuid: UUID;
 }
-export interface Descriptor extends NativeBluetoothElement {
+export interface Descriptor extends BluetoothElement {
     characteristicUUID: UUID;
     value?: Base64;
 }
@@ -142,7 +142,7 @@ export interface NativeError {
     code: string;
     stack?: string;
 }
-export interface Characteristic extends NativeBluetoothElement {
+export interface Characteristic extends BluetoothElement {
     serviceUUID: UUID;
     peripheralUUID: UUID;
     properties: string[];
@@ -150,7 +150,7 @@ export interface Characteristic extends NativeBluetoothElement {
     value: Base64 | null;
     isNotifying: boolean;
 }
-export interface Service extends NativeBluetoothElement {
+export interface Service extends BluetoothElement {
     peripheralUUID: UUID;
     isPrimary: boolean;
     includedServices: Service[];
@@ -168,7 +168,7 @@ export interface NativeAdvertismentData {
     isConnectable: boolean | null;
     overflowServiceUUIDs: UUID[] | null;
 }
-export interface Peripheral extends NativeBluetoothElement {
+export interface Peripheral extends BluetoothElement {
     advertisementData?: NativeAdvertismentData;
     name: string | null;
     RSSI: RSSI | null;
