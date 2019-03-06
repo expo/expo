@@ -67,43 +67,26 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     intent.setData(Uri.parse(url));
     intent.putExtra(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.NO_TITLE);
 
-    activity.startActivityForResult(
-        ChromeTabsManagerActivity.createStartIntent(activity, intent),
-        OPEN_BROWSER_REQUEST_CODE);
+    activity.startActivityForResult(ChromeTabsManagerActivity.createStartIntent(activity, intent), OPEN_BROWSER_REQUEST_CODE);
   }
+
 
   @ExpoMethod
   public void dismissBrowser(Promise promise) {
-    if (mOpenBrowserPromise == null) {
-      promise.resolve(null);
-      return;
-    }
-
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    if (activityProvider == null || activityProvider.getCurrentActivity() == null) {
-      promise.reject("E_NO_OPEN_BROWSER", "No browser to dismiss.");
-      mOpenBrowserPromise.reject(ERROR_CODE, "No activity");
-      mOpenBrowserPromise = null;
-      return;
-    }
-
-    Activity activity = activityProvider.getCurrentActivity();
-
-    Bundle result = new Bundle();
-    result.putString("type", "dismiss");
-    mOpenBrowserPromise.resolve(result);
-    promise.resolve(null);
-    mOpenBrowserPromise = null;
-
-    activity.startActivity(ChromeTabsManagerActivity.createDismissIntent(activity));
+    promise.reject(ERROR_CODE, "Operation not supported on Android.");
   }
 
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    if (requestCode == OPEN_BROWSER_REQUEST_CODE && resultCode == ChromeTabsManagerActivity.DISMISSED_CODE && mOpenBrowserPromise != null) {
-      Bundle result = new Bundle();
-      result.putString("type", "cancel");
-      mOpenBrowserPromise.resolve(result);
+    if (requestCode == OPEN_BROWSER_REQUEST_CODE && mOpenBrowserPromise != null) {
+      if (resultCode == ChromeTabsManagerActivity.DISMISSED_CODE) {
+        Bundle result = new Bundle();
+        result.putString("type", "cancel");
+        mOpenBrowserPromise.resolve(result);
+      }
+      if (resultCode == ChromeTabsManagerActivity.UNSUPPORTED_INTENT_CODE) {
+        mOpenBrowserPromise.reject(ERROR_CODE, "No matching activity!");
+      }
       mOpenBrowserPromise = null;
     }
   }

@@ -3,10 +3,15 @@ package expo.modules.webbrowser;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+
+import java.util.List;
 
 public class ChromeTabsManagerActivity extends Activity {
   static final int DISMISSED_CODE = 1;
+  static final int UNSUPPORTED_INTENT_CODE = 2;
   static final String KEY_BROWSER_INTENT = "browserIntent";
 
   private boolean mOpened = false;
@@ -35,9 +40,16 @@ public class ChromeTabsManagerActivity extends Activity {
     // start that intent and if it is not it means this activity was started with FLAG_ACTIVITY_CLEAR_TOP
     // in order to close the intent that was started previously so we just close this.
     if (getIntent().hasExtra(KEY_BROWSER_INTENT)) {
+      PackageManager pm = getPackageManager();
       Intent browserIntent = getIntent().getParcelableExtra(KEY_BROWSER_INTENT);
-      browserIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-      startActivity(browserIntent);
+      List<ResolveInfo> activities = pm.queryIntentActivities(browserIntent, 0);
+      if (activities.size() > 0) {
+        browserIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(browserIntent);
+      } else {
+        setResult(UNSUPPORTED_INTENT_CODE);
+        finish();
+      }
     } else {
       finish();
     }
