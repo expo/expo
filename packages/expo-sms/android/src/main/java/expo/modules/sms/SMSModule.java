@@ -23,7 +23,7 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
   private static final String ERROR_TAG = "E_SMS";
 
   private ModuleRegistry mModuleRegistry;
-  private Promise pendingPromise;
+  private Promise mPendingPromise;
   private boolean mSMSComposerOpened = false;
 
   SMSModule(Context context) {
@@ -52,13 +52,13 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
 
   @ExpoMethod
   public void sendSMSAsync(final ArrayList<String> addresses, final String message, final Promise promise) {
-    if (pendingPromise != null) {
+    if (mPendingPromise != null) {
       promise.reject(ERROR_TAG + "_SENDING_IN_PROGRESS", "Different SMS sending in progress. Await the old request and then try again.");
       return;
     }
 
     final Intent SMSIntent = new Intent(Intent.ACTION_SENDTO);
-    final String smsTo = constructSmsTo(addresses);
+    final String smsTo = constructRecipients(addresses);
     SMSIntent.setData(Uri.parse("smsto:" + smsTo));
     SMSIntent.putExtra("exit_on_sent", true);
     SMSIntent.putExtra("compose_mode", true);
@@ -70,7 +70,7 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
       return;
     }
 
-    pendingPromise = promise;
+    mPendingPromise = promise;
 
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
     activityProvider.getCurrentActivity().startActivity(SMSIntent);
@@ -89,14 +89,14 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
 
   @Override
   public void onHostResume() {
-    if (mSMSComposerOpened && pendingPromise != null) {
+    if (mSMSComposerOpened && mPendingPromise != null) {
       // the only way to check the status of the message is to query the device's SMS database
       // but this requires READ_SMS permission, which Google is heavily restricting beginning Jan 2019
       // so we just resolve with an unknown value
       Bundle result = new Bundle();
       result.putString("result", "unknown");
-      pendingPromise.resolve(result);
-      pendingPromise = null;
+      mPendingPromise.resolve(result);
+      mPendingPromise = null;
     }
     mSMSComposerOpened = false;
   }
@@ -111,8 +111,8 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
     // do nothing
   }
 
-  private String constructSmsTo(List<String> addresses) {
-    if(addresses.size() > 0) {
+  private String constructRecipients(List<String> addresses) {
+    if (addresses.size() > 0) {
       final StringBuilder addressesBuilder = new StringBuilder(addresses.get(0));
       for (int idx = 1; idx < addresses.size(); idx++) {
         addressesBuilder.append(';').append(addresses.get(idx));
