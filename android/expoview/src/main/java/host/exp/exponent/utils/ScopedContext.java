@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 
 public class ScopedContext extends Context {
@@ -60,6 +61,25 @@ public class ScopedContext extends Context {
 
     mFilesDir = new File(mContext.getFilesDir() + "/ExperienceData/" + scope);
     mCacheDir = new File(mContext.getCacheDir() + "/ExperienceData/" + scope);
+
+    if (Constants.isStandaloneApp()) {
+      if (firstStartAfterUpdate()) {
+        moveOldFiles();
+      }
+      mFilesDir = mContext.getFilesDir();
+      mCacheDir = mContext.getCacheDir();
+    }
+  }
+
+  boolean firstStartAfterUpdate() {
+    return mFilesDir.exists();
+  }
+
+  // The purpose of this method is to properly move data from old scoped path to unscoped one.
+  // We need this method in case somebody wants to update standalone app.
+  // This method can be removed when sdk 32 is phased out.
+  void moveOldFiles() {
+    mFilesDir.renameTo(mContext.getFilesDir());
   }
 
   @Deprecated
