@@ -3,8 +3,8 @@ import { AndroidGATTError, BluetoothError, invariant, invariantAvailability, inv
 import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './localEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './peripheralCache';
-import Transaction from './Transaction';
-import { peripheralIdFromId } from './transactions';
+import Operation from './Operation';
+import { peripheralIdFromId } from './operations';
 /**
  * Although strongly discouraged,
  * if `serviceUUIDsToQuery` is `null | undefined` all discovered peripherals will be returned.
@@ -189,35 +189,35 @@ export async function isScanningAsync() {
 }
 export async function discoverServicesForPeripheralAsync(options) {
     invariantAvailability('discoverServicesForPeripheralAsync');
-    const transaction = Transaction.fromTransactionId(options.id);
+    const operation = Operation.fromOperationId(options.id);
     return await ExpoBluetooth.discoverServicesForPeripheralAsync({
-        ...transaction.getUUIDs(),
+        ...operation.getUUIDs(),
         serviceUUIDs: options.serviceUUIDs,
         characteristicProperties: options.characteristicProperties,
     });
 }
 export async function discoverIncludedServicesForServiceAsync(options) {
     invariantAvailability('discoverIncludedServicesForServiceAsync');
-    const transaction = Transaction.fromTransactionId(options.id);
+    const operation = Operation.fromOperationId(options.id);
     return await ExpoBluetooth.discoverIncludedServicesForServiceAsync({
-        ...transaction.getUUIDs(),
+        ...operation.getUUIDs(),
         serviceUUIDs: options.serviceUUIDs,
     });
 }
 export async function discoverCharacteristicsForServiceAsync(options) {
     invariantAvailability('discoverCharacteristicsForServiceAsync');
-    const transaction = Transaction.fromTransactionId(options.id);
+    const operation = Operation.fromOperationId(options.id);
     return await ExpoBluetooth.discoverCharacteristicsForServiceAsync({
-        ...transaction.getUUIDs(),
+        ...operation.getUUIDs(),
         serviceUUIDs: options.serviceUUIDs,
         characteristicProperties: options.characteristicProperties,
     });
 }
 export async function discoverDescriptorsForCharacteristicAsync(options) {
     invariantAvailability('discoverDescriptorsForCharacteristicAsync');
-    const transaction = Transaction.fromTransactionId(options.id);
+    const operation = Operation.fromOperationId(options.id);
     return await ExpoBluetooth.discoverDescriptorsForCharacteristicAsync({
-        ...transaction.getUUIDs(),
+        ...operation.getUUIDs(),
         serviceUUIDs: options.serviceUUIDs,
         characteristicProperties: options.characteristicProperties,
     });

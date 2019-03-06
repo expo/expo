@@ -33,8 +33,8 @@ import {
   resetHandlersForKey,
 } from './localEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './peripheralCache';
-import Transaction from './Transaction';
-import { peripheralIdFromId } from './transactions';
+import Operation from './Operation';
+import { peripheralIdFromId } from './operations';
 
 
 /**
@@ -301,9 +301,9 @@ export async function discoverServicesForPeripheralAsync(options: {
   characteristicProperties?: CharacteristicProperty;
 }): Promise<Service[]> {
   invariantAvailability('discoverServicesForPeripheralAsync');
-  const transaction = Transaction.fromTransactionId(options.id);
+  const operation = Operation.fromOperationId(options.id);
   return await ExpoBluetooth.discoverServicesForPeripheralAsync({
-    ...transaction.getUUIDs(),
+    ...operation.getUUIDs(),
     serviceUUIDs: options.serviceUUIDs,
     characteristicProperties: options.characteristicProperties,
   });
@@ -314,9 +314,9 @@ export async function discoverIncludedServicesForServiceAsync(options: {
   serviceUUIDs?: UUID[];
 }): Promise<Service[]> {
   invariantAvailability('discoverIncludedServicesForServiceAsync');
-  const transaction = Transaction.fromTransactionId(options.id);
+  const operation = Operation.fromOperationId(options.id);
   return await ExpoBluetooth.discoverIncludedServicesForServiceAsync({
-    ...transaction.getUUIDs(),
+    ...operation.getUUIDs(),
     serviceUUIDs: options.serviceUUIDs,
   });
 }
@@ -327,9 +327,9 @@ export async function discoverCharacteristicsForServiceAsync(options: {
   characteristicProperties?: CharacteristicProperty;
 }): Promise<Characteristic[]> {
   invariantAvailability('discoverCharacteristicsForServiceAsync');
-  const transaction = Transaction.fromTransactionId(options.id);
+  const operation = Operation.fromOperationId(options.id);
   return await ExpoBluetooth.discoverCharacteristicsForServiceAsync({
-    ...transaction.getUUIDs(),
+    ...operation.getUUIDs(),
     serviceUUIDs: options.serviceUUIDs,
     characteristicProperties: options.characteristicProperties,
   });
@@ -341,9 +341,9 @@ export async function discoverDescriptorsForCharacteristicAsync(options: {
   characteristicProperties?: CharacteristicProperty;
 }): Promise<Descriptor[]> {
   invariantAvailability('discoverDescriptorsForCharacteristicAsync');
-  const transaction = Transaction.fromTransactionId(options.id);
+  const operation = Operation.fromOperationId(options.id);
   return await ExpoBluetooth.discoverDescriptorsForCharacteristicAsync({
-    ...transaction.getUUIDs(),
+    ...operation.getUUIDs(),
     serviceUUIDs: options.serviceUUIDs,
     characteristicProperties: options.characteristicProperties,
   });

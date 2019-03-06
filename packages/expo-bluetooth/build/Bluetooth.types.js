@@ -98,14 +98,14 @@ export var AndroidNumberOfMatches;
     AndroidNumberOfMatches["one"] = "one";
     AndroidNumberOfMatches["few"] = "few";
 })(AndroidNumberOfMatches || (AndroidNumberOfMatches = {}));
-export var TransactionType;
-(function (TransactionType) {
-    TransactionType["get"] = "get";
-    TransactionType["rssi"] = "rssi";
-    TransactionType["connect"] = "connect";
-    TransactionType["disconnect"] = "disconnect";
-    TransactionType["scan"] = "scan";
-})(TransactionType || (TransactionType = {}));
+export var OperationType;
+(function (OperationType) {
+    OperationType["get"] = "get";
+    OperationType["rssi"] = "rssi";
+    OperationType["connect"] = "connect";
+    OperationType["disconnect"] = "disconnect";
+    OperationType["scan"] = "scan";
+})(OperationType || (OperationType = {}));
 export var CharacteristicProperty;
 (function (CharacteristicProperty) {
     /**

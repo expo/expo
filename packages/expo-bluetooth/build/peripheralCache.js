@@ -1,4 +1,4 @@
-import { peripheralIdFromId } from './transactions';
+import { peripheralIdFromId } from './operations';
 // Manage all of the bluetooth information.
 let _peripherals = {};
 let _advertisements = {};

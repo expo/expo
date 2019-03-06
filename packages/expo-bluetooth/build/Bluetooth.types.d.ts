@@ -3,7 +3,7 @@ export declare type MTU = number;
 export declare type Base64 = string;
 export declare type UUID = string;
 export declare type Identifier = string;
-export declare type TransactionId = string;
+export declare type OperationId = string;
 export declare enum BondState {
     Bonded = "bonded",
     Bonding = "bonding",
@@ -92,7 +92,7 @@ export declare enum AndroidNumberOfMatches {
     one = "one",
     few = "few"
 }
-export declare enum TransactionType {
+export declare enum OperationType {
     get = "get",
     rssi = "rssi",
     connect = "connect",
@@ -143,7 +143,7 @@ export interface Descriptor extends BluetoothElement {
     value?: Base64;
 }
 export declare type EventData = {
-    transactionId?: TransactionId;
+    operationId?: OperationId;
     peripheral?: Peripheral | null;
     peripherals?: Peripheral[];
     characteristic?: Characteristic | null;
@@ -228,7 +228,7 @@ export declare type ReadCharacteristicOptions = UpdateCharacteristicOptions;
 export declare type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
     data: Base64;
 };
-export declare type TransactionHandler = any;
+export declare type OperationHandler = any;
 export declare type ScanOptions = {
     serviceUUIDsToQuery?: UUID[];
     /**

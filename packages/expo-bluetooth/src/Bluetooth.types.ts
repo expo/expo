@@ -3,7 +3,7 @@ export type MTU = number;
 export type Base64 = string;
 export type UUID = string;
 export type Identifier = string;
-export type TransactionId = string;
+export type OperationId = string;
 
 export enum BondState {
   Bonded = 'bonded',
@@ -107,7 +107,7 @@ export enum AndroidNumberOfMatches {
   few = 'few',
 }
 
-export enum TransactionType {
+export enum OperationType {
   get = 'get',
   rssi = 'rssi',
   connect = 'connect',
@@ -169,7 +169,7 @@ export interface Descriptor extends BluetoothElement {
 }
 
 export type EventData = {
-  transactionId?: TransactionId;
+  operationId?: OperationId;
   peripheral?: Peripheral | null;
   peripherals?: Peripheral[];
   characteristic?: Characteristic | null;
@@ -269,7 +269,7 @@ export type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
   data: Base64;
 };
 
-export type TransactionHandler = any; // { callbacks: Array<Function | Prom> } | Prom;
+export type OperationHandler = any; // { callbacks: Array<Function | Prom> } | Prom;
 
 export type ScanOptions = {
   serviceUUIDsToQuery?: UUID[];
