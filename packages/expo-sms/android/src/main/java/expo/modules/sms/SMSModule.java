@@ -114,8 +114,8 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
   private String constructRecipients(List<String> addresses) {
     if (addresses.size() > 0) {
       final StringBuilder addressesBuilder = new StringBuilder(addresses.get(0));
-      for (int idx = 1; idx < addresses.size(); idx++) {
-        addressesBuilder.append(';').append(addresses.get(idx));
+      for (String address: addresses) {
+        addressesBuilder.append(';').append(address);
       }
       return addressesBuilder.toString();
     }
