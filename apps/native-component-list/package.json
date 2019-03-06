@@ -50,10 +50,7 @@
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
     "expo-yarn-workspaces": "^1.0.0",
-    "serve": "^10.1.2",
-    "webpack": "4.24.0",
-    "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.2.0"
+    "serve": "^10.1.2"
   },
   "browserslist": [
     ">0.2%",
