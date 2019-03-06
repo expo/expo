@@ -171,7 +171,7 @@ export type NativeEventData = {
   transactionId?: TransactionId;
   peripheral?: Peripheral | null;
   peripherals?: Peripheral[];
-  characteristic?: NativeCharacteristic | null;
+  characteristic?: Characteristic | null;
   central?: Central | null;
   descriptor?: Descriptor | null;
   service?: NativeService | null;
@@ -186,7 +186,7 @@ export interface NativeError {
   stack?: string;
 }
 
-export interface NativeCharacteristic extends NativeBluetoothElement {
+export interface Characteristic extends NativeBluetoothElement {
   serviceUUID: UUID;
   peripheralUUID: UUID;
   properties: string[]; // TODO: Bacon: more specific
@@ -199,7 +199,7 @@ export interface NativeService extends NativeBluetoothElement {
   peripheralUUID: UUID;
   isPrimary: boolean;
   includedServices: NativeService[];
-  characteristics: NativeCharacteristic[];
+  characteristics: Characteristic[];
 }
 
 export interface NativeAdvertismentData {

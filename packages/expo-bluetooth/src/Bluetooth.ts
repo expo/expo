@@ -7,7 +7,7 @@ import {
   CentralManagerOptions,
   CharacteristicProperty,
   ConnectionOptions,
-  NativeCharacteristic,
+  Characteristic,
   Descriptor,
   PeripheralConnectionOption,
   NativeEventData,
@@ -189,7 +189,7 @@ export async function setNotifyCharacteristicAsync({
   serviceUUID,
   characteristicUUID,
   shouldNotify,
-}: any): Promise<NativeCharacteristic> {
+}: any): Promise<Characteristic> {
   invariantAvailability('setNotifyCharacteristicAsync');
 
   const { characteristic } = await ExpoBluetooth.setNotifyCharacteristicAsync({
@@ -213,7 +213,7 @@ export async function readCharacteristicAsync(options: ReadCharacteristicOptions
   return characteristic.value;
 }
 
-export async function writeCharacteristicAsync(options: WriteCharacteristicOptions, characteristicProperties: CharacteristicProperty = CharacteristicProperty.Write): Promise<NativeCharacteristic> {
+export async function writeCharacteristicAsync(options: WriteCharacteristicOptions, characteristicProperties: CharacteristicProperty = CharacteristicProperty.Write): Promise<Characteristic> {
   invariantAvailability('writeCharacteristicAsync');
 
   const { characteristic } = await ExpoBluetooth.writeCharacteristicAsync({
@@ -225,7 +225,7 @@ export async function writeCharacteristicAsync(options: WriteCharacteristicOptio
 }
 
 // This is ~3x faster on Android.
-export async function writeCharacteristicWithoutResponseAsync(options: WriteCharacteristicOptions): Promise<NativeCharacteristic> {
+export async function writeCharacteristicWithoutResponseAsync(options: WriteCharacteristicOptions): Promise<Characteristic> {
   return await writeCharacteristicAsync(options, CharacteristicProperty.WriteWithoutResponse);
 }
 
@@ -266,7 +266,7 @@ export async function getCharacteristicAsync({
   peripheralUUID,
   serviceUUID,
   characteristicUUID,
-}): Promise<NativeCharacteristic> {
+}): Promise<Characteristic> {
   invariantAvailability('getCharacteristicAsync');
   return await ExpoBluetooth.getCharacteristicAsync({
     peripheralUUID,
@@ -325,7 +325,7 @@ export async function discoverCharacteristicsForServiceAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
   characteristicProperties?: CharacteristicProperty;
-}): Promise<NativeCharacteristic[]> {
+}): Promise<Characteristic[]> {
   invariantAvailability('discoverCharacteristicsForServiceAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverCharacteristicsForServiceAsync({

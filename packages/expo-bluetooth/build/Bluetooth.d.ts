@@ -1,5 +1,5 @@
 import { Subscription } from 'expo-core';
-import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, ConnectionOptions, NativeCharacteristic, Descriptor, PeripheralConnectionOption, NativeService, Peripheral, RSSI, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions, ReadCharacteristicOptions } from './Bluetooth.types';
+import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, ConnectionOptions, Characteristic, Descriptor, PeripheralConnectionOption, NativeService, Peripheral, RSSI, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions, ReadCharacteristicOptions } from './Bluetooth.types';
 import { AndroidGATTError } from './errors';
 /**
  * Although strongly discouraged,
@@ -18,10 +18,10 @@ export declare function connectAsync(peripheralUUID: UUID, { timeout, onDisconne
 export declare function disconnectAsync(peripheralUUID: UUID): Promise<any>;
 export declare function readDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: any): Promise<Base64 | null>;
 export declare function writeDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, data, }: any): Promise<Descriptor>;
-export declare function setNotifyCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, shouldNotify, }: any): Promise<NativeCharacteristic>;
+export declare function setNotifyCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, shouldNotify, }: any): Promise<Characteristic>;
 export declare function readCharacteristicAsync(options: ReadCharacteristicOptions): Promise<Base64 | null>;
-export declare function writeCharacteristicAsync(options: WriteCharacteristicOptions, characteristicProperties?: CharacteristicProperty): Promise<NativeCharacteristic>;
-export declare function writeCharacteristicWithoutResponseAsync(options: WriteCharacteristicOptions): Promise<NativeCharacteristic>;
+export declare function writeCharacteristicAsync(options: WriteCharacteristicOptions, characteristicProperties?: CharacteristicProperty): Promise<Characteristic>;
+export declare function writeCharacteristicWithoutResponseAsync(options: WriteCharacteristicOptions): Promise<Characteristic>;
 export declare function readRSSIAsync(peripheralUUID: UUID): Promise<RSSI>;
 export declare function getPeripheralsAsync(): Promise<Peripheral[]>;
 export declare function getConnectedPeripheralsAsync(serviceUUIDsToQuery?: UUID[]): Promise<Peripheral[]>;
@@ -37,7 +37,7 @@ export declare function getCharacteristicAsync({ peripheralUUID, serviceUUID, ch
     peripheralUUID: any;
     serviceUUID: any;
     characteristicUUID: any;
-}): Promise<NativeCharacteristic>;
+}): Promise<Characteristic>;
 export declare function getDescriptorAsync({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID, }: {
     peripheralUUID: any;
     serviceUUID: any;
@@ -58,7 +58,7 @@ export declare function discoverCharacteristicsForServiceAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
     characteristicProperties?: CharacteristicProperty;
-}): Promise<NativeCharacteristic[]>;
+}): Promise<Characteristic[]>;
 export declare function discoverDescriptorsForCharacteristicAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
