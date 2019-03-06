@@ -324,7 +324,7 @@
 - (BOOL)guardIsConnected:(EXPromiseRejectBlock)reject
 {
   if (_peripheral.state != CBPeripheralStateConnected) {
-    NSString *state = [EXBluetooth.class CBPeripheralStateNativeToJSON:_peripheral.state];
+    NSString *state = [EXBluetooth CBPeripheralStateNativeToJSON:_peripheral.state];
     
     reject(EXBluetoothErrorState, [NSString stringWithFormat:@"Peripheral is not connected: %@ state: %@", _peripheral.identifier.UUIDString, state], nil);
     return YES;
@@ -354,7 +354,7 @@
 
 - (NSDictionary *)getJSON
 {
-  return [EXBluetooth.class EXBluetoothPeripheralNativeToJSON:self];
+  return [EXBluetooth EXBluetoothPeripheralNativeToJSON:self];
 }
 
 @end

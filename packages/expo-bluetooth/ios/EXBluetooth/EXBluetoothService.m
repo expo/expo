@@ -86,7 +86,7 @@
   if (!characteristic) {
     NSString *errorMessage = [NSString stringWithFormat:@"Could not find characteristic with UUID %@ that contains property %@ on service with UUID %@ on peripheral with UUID %@",
                               UUIDString,
-                              [EXBluetooth.class CBCharacteristicPropertiesNativeToJSON:characteristicProperties],
+                              [EXBluetooth CBCharacteristicPropertiesNativeToJSON:characteristicProperties],
                               _service.UUID.UUIDString,
                               _service.peripheral.identifier.UUIDString];
     reject(EXBluetoothErrorNoCharacteristic, errorMessage, nil);
@@ -130,7 +130,7 @@
 
 - (NSDictionary *)getJSON
 {
-  return [EXBluetooth.class EXBluetoothServiceNativeToJSON:self];
+  return [EXBluetooth EXBluetoothServiceNativeToJSON:self];
 }
 
 @end

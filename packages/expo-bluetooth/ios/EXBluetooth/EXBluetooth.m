@@ -62,7 +62,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
       [weakSelf
        emit:EXBluetoothEvent_CENTRAL_STATE_CHANGED
        data:@{
-              EXBluetoothCentralKey: EXNullIfNil([EXBluetooth.class EXBluetoothCentralManagerNativeToJSON:centralManager])
+              EXBluetoothCentralKey: EXNullIfNil([EXBluetooth EXBluetoothCentralManagerNativeToJSON:centralManager])
               }];
     }
   }];
@@ -116,7 +116,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 {
   [self emit:EXBluetoothEvent_UPDATE_STATE data:@{
                               EXBluetoothCentralKey: EXNullIfNil([_manager getJSON]),
-                              EXBluetoothPeripheralsKey: [EXBluetooth.class EXBluetoothPeripheralListNativeToJSON:[_manager.discoveredPeripherals allValues]]
+                              EXBluetoothPeripheralsKey: [EXBluetooth EXBluetoothPeripheralListNativeToJSON:[_manager.discoveredPeripherals allValues]]
                               }];
 }
 
@@ -138,7 +138,7 @@ EX_EXPORT_METHOD_AS(initAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  NSDictionary *nativeOptions = [EXBluetooth.class centralManagerOptionsJSONToNative:options];
+  NSDictionary *nativeOptions = [EXBluetooth centralManagerOptionsJSONToNative:options];
   _manager = [[EXBluetoothCentralManager alloc] initWithQueue:[self methodQueue] options:nativeOptions];
   [self updateStateListener];
   resolve(nil);
@@ -163,7 +163,7 @@ EX_EXPORT_METHOD_AS(getPeripheralsAsync,
     return;
   }
   
-  resolve([EXBluetooth.class EXBluetoothPeripheralListNativeToJSON:[_manager.discoveredPeripherals allValues]]);
+  resolve([EXBluetooth EXBluetoothPeripheralListNativeToJSON:[_manager.discoveredPeripherals allValues]]);
   [self emitFullState];
 }
 
@@ -187,7 +187,7 @@ EX_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
     }
   }
   
-  resolve([EXBluetooth.class EXBluetoothPeripheralListNativeToJSON:output]);
+  resolve([EXBluetooth EXBluetoothPeripheralListNativeToJSON:output]);
   //  [self emitFullState];
 }
 
@@ -212,7 +212,7 @@ EX_EXPORT_METHOD_AS(getPeripheralAsync,
     return;
   }
   
-  resolve([EXBluetooth.class EXBluetoothPeripheralNativeToJSON:peripheral]);
+  resolve([EXBluetooth EXBluetoothPeripheralNativeToJSON:peripheral]);
 }
 
 EX_EXPORT_METHOD_AS(getServiceAsync,
@@ -225,7 +225,7 @@ EX_EXPORT_METHOD_AS(getServiceAsync,
     return;
   }
   
-  resolve([EXBluetooth.class EXBluetoothServiceNativeToJSON:service]);
+  resolve([EXBluetooth EXBluetoothServiceNativeToJSON:service]);
 }
 
 EX_EXPORT_METHOD_AS(getCharacteristicAsync,
@@ -238,7 +238,7 @@ EX_EXPORT_METHOD_AS(getCharacteristicAsync,
     return;
   }
   
-  resolve([EXBluetooth.class EXBluetoothCharacteristicNativeToJSON:characteristic]);
+  resolve([EXBluetooth EXBluetoothCharacteristicNativeToJSON:characteristic]);
 }
 
 EX_EXPORT_METHOD_AS(getDescriptorAsync,
@@ -251,7 +251,7 @@ EX_EXPORT_METHOD_AS(getDescriptorAsync,
     return;
   }
   
-  resolve([EXBluetooth.class EXBluetoothDescriptorNativeToJSON:descriptor]);
+  resolve([EXBluetooth EXBluetoothDescriptorNativeToJSON:descriptor]);
 }
 
 EX_EXPORT_METHOD_AS(startScanningAsync,
@@ -269,8 +269,8 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
     reject(@"ERR_SCAN_REDUNDANT_INIT", @"Bluetooth is already scanning.", nil);
     return;
   }
-  NSArray *serviceUUIDs = [EXBluetooth.class CBUUIDListJSONToNative:serviceUUIDStrings];
-  NSDictionary *nativeOptions = [EXBluetooth.class ScanningOptionsJSONToNative:options];
+  NSArray *serviceUUIDs = [EXBluetooth CBUUIDListJSONToNative:serviceUUIDStrings];
+  NSDictionary *nativeOptions = [EXBluetooth ScanningOptionsJSONToNative:options];
   
   __weak EXBluetooth *weakSelf = self;
   [_manager scanForPeripheralsWithServices:serviceUUIDs options:nativeOptions withDidChangeScanningStateCallback:^(EXBluetoothCentralManager *centralManager, BOOL isScanning) {
@@ -285,9 +285,9 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
       NSDictionary *peripheralData = [peripheral getJSON];
       
       [weakSelf emit:EXBluetoothEvent_CENTRAL_DISCOVERED_PERIPHERAL data:@{
-                                                                           EXBluetoothCentralKey: EXNullIfNil([EXBluetooth.class EXBluetoothCentralManagerNativeToJSON:centralManager]),
+                                                                           EXBluetoothCentralKey: EXNullIfNil([EXBluetooth EXBluetoothCentralManagerNativeToJSON:centralManager]),
                                                                            EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
-                                                                           EXBluetoothAdvertisementDataKey: EXNullIfNil([EXBluetooth.class advertisementDataNativeToJSON:advertisementData]),
+                                                                           EXBluetoothAdvertisementDataKey: EXNullIfNil([EXBluetooth advertisementDataNativeToJSON:advertisementData]),
                                                                            // The current received signal strength indicator (RSSI) of the peripheral, in decibels.
                                                                            EXBluetoothRSSIKey: EXNullIfNil(RSSI)
                                                                            }];
@@ -347,7 +347,7 @@ EX_EXPORT_METHOD_AS(connectPeripheralAsync,
      data:@{
             EXBluetoothCentralKey: EXNullIfNil([centralManager getJSON]),
             EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
-            EXBluetoothErrorKey: EXNullIfNil([EXBluetooth.class NSErrorNativeToJSON:error])
+            EXBluetoothErrorKey: EXNullIfNil([EXBluetooth NSErrorNativeToJSON:error])
             }];
   }];
 }
@@ -416,7 +416,7 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   EXBluetoothCharacteristic *characteristic;
   if (options[@"characteristicProperties"]) {
     // TODO: Bacon: CBCharacteristicPropertiesListJSONToNative
-    CBCharacteristicProperties characteristicProperties = [EXBluetooth.class CBCharacteristicPropertiesJSONToNative:options[@"characteristicProperties"]];
+    CBCharacteristicProperties characteristicProperties = [EXBluetooth CBCharacteristicPropertiesJSONToNative:options[@"characteristicProperties"]];
     characteristic = [service getCharacteristicOrReject:options[EXBluetoothCharacteristicUUID] characteristicProperties:characteristicProperties reject:reject];
   } else {
     characteristic = [service getCharacteristicOrReject:options[EXBluetoothCharacteristicUUID] reject:reject];
@@ -655,7 +655,7 @@ EX_EXPORT_METHOD_AS(discoverCharacteristicsForServiceAsync,
     return;
   }
   
-  NSArray *characteristicUUIDs = [EXBluetooth.class CBUUIDListJSONToNative:options[@"characteristicUUIDs"]];
+  NSArray *characteristicUUIDs = [EXBluetooth CBUUIDListJSONToNative:options[@"characteristicUUIDs"]];
   __weak EXBluetooth *weakSelf = self;
   
   [service discoverCharacteristics:characteristicUUIDs withDiscoverCharacteristicsCallback:^(EXBluetoothPeripheral *peripheral, EXBluetoothService *service, NSError *error) {
@@ -684,7 +684,7 @@ EX_EXPORT_METHOD_AS(discoverIncludedServicesForServiceAsync,
     return;
   }
   
-  NSArray *includedServicesUUIDs = [EXBluetooth.class CBUUIDListJSONToNative:options[@"includedServicesUUIDs"]];
+  NSArray *includedServicesUUIDs = [EXBluetooth CBUUIDListJSONToNative:options[@"includedServicesUUIDs"]];
   __weak EXBluetooth *weakSelf = self;
   
   [service discoverIncludedServices:includedServicesUUIDs withDiscoverIncludedServicesCallback:^(EXBluetoothPeripheral *peripheral, EXBluetoothService *service, NSError *error) {
@@ -716,7 +716,7 @@ EX_EXPORT_METHOD_AS(discoverServicesForPeripheralAsync,
     return;
   }
   
-  NSArray *serviceUUIDs = [EXBluetooth.class CBUUIDListJSONToNative:options[EXBluetoothServiceUUIDsKey]];
+  NSArray *serviceUUIDs = [EXBluetooth CBUUIDListJSONToNative:options[EXBluetoothServiceUUIDsKey]];
   __weak EXBluetooth *weakSelf = self;
   
   [peripheral discoverServices:serviceUUIDs withDiscoverServicesCallback:^(EXBluetoothPeripheral *peripheral, NSError *error) {
@@ -776,7 +776,7 @@ EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
 - (BOOL)guardBluetoothEnabled:(EXPromiseRejectBlock)reject
 {
   if (_manager.state < CBManagerStatePoweredOff) {
-    NSString *state = [self.class CBManagerStateNativeToJSON:_manager.state];
+    NSString *state = [EXBluetooth CBManagerStateNativeToJSON:_manager.state];
     reject(EXBluetoothErrorState, [NSString stringWithFormat:@"Bluetooth is unavailable. Manager state: %@", state], nil);
     return true;
   }
@@ -837,7 +837,7 @@ EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
   //   data:@{
   //          EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", @"scan", peripheralData[@"id"]],
   //          EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
-  //          EXBluetoothErrorKey: EXNullIfNil([self.class NSErrorNativeToJSON:error])
+  //          EXBluetoothErrorKey: EXNullIfNil([EXBluetooth NSErrorNativeToJSON:error])
   //          }];
 }
 
@@ -850,8 +850,8 @@ EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
 API_AVAILABLE(ios(11.0)) {
   //  This method returns the result of a @link openL2CAPChannel: @link call.
   
-  //  [self.class CBL2CAPChannelNativeToJSON:channel];
-  //  [self.class NSErrorNativeToJSON:error];
+  //  [EXBluetooth CBL2CAPChannelNativeToJSON:channel];
+  //  [EXBluetooth NSErrorNativeToJSON:error];
 }
 
 - (CBUUID *)generateUUID:(NSString *)uuidString {

@@ -11,7 +11,7 @@
 
 static id EXNullIfEmpty(NSString *input) {
   if (!input || input == nil || [input isEqualToString:@""]) {
-    return NSNull.null;
+    return nil;
   }
   return input;
 }

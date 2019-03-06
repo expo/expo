@@ -281,7 +281,7 @@
 
 - (NSDictionary *)getJSON
 {
-  return [EXBluetooth.class EXBluetoothCentralManagerNativeToJSON:self];
+  return [EXBluetooth EXBluetoothCentralManagerNativeToJSON:self];
 }
 
 - (EXBluetoothPeripheral *)getPeripheralOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject
@@ -297,7 +297,7 @@
 - (BOOL)guardEnabled:(EXPromiseRejectBlock)reject
 {
   if (self.state < CBManagerStatePoweredOff) {
-    NSString *state = [EXBluetooth.class CBManagerStateNativeToJSON:self.state];
+    NSString *state = [EXBluetooth CBManagerStateNativeToJSON:self.state];
     reject(EXBluetoothErrorState, [NSString stringWithFormat:@"Bluetooth is unavailable. Manager state: %@", state], nil);
     return YES;
   }
