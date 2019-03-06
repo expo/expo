@@ -106,10 +106,8 @@ class ItemContainer extends React.Component {
 }
 
 async function decodePeripheral(peripheral) {
-  // console.log("BATMAN", {peripheral});
   const servicesInfo = await Promise.all(
     peripheral.services.map(async service => {
-      console.log('ROBIN', service);
       const characteristics = await Promise.all(
         service.characteristics.map(async characteristic => {
           if (
@@ -139,15 +137,12 @@ async function decodePeripheral(peripheral) {
           const descriptors = await Promise.all(
             characteristic.descriptors.map(async descriptor => {
               try {
-                console.log('readDescriptorAsync: Start', descriptor);
-
                 const value = await Bluetooth.readDescriptorAsync({
                   peripheralUUID: characteristic.peripheralUUID,
                   serviceUUID: characteristic.serviceUUID,
                   characteristicUUID: characteristic.uuid,
                   descriptorUUID: descriptor.uuid,
                 });
-                console.log('readDescriptorAsync: resolved');
                 if (value) {
                   //Bluetooth.getInfoForCharacteristicUUID(uuid).format === 'utf8
                   console.log('ble.descriptor: ', {
@@ -170,7 +165,6 @@ async function decodePeripheral(peripheral) {
     })
   );
 
-  console.log('decodePeripheral resolved');
   return servicesInfo;
 }
 
@@ -191,8 +185,6 @@ class DisconnectPeripheralButton extends React.Component {
         await Bluetooth.connectAsync(uuid);
         connected = true;
       }
-
-      // console.log({ loadedPeripheral });
     } catch (error) {
       Alert.alert(
         'Connection Unsuccessful',
@@ -470,8 +462,6 @@ class DescriptorsView extends React.Component {
               ...getGATTNumbersFromID(gatt.id),
               data: JSONToNative('bacon'),
             });
-            // const some = await Bluetooth.readDescriptorAsync(getGATTNumbersFromID(gatt.id));
-            // console.log('SOME', some);
           } catch (error) {
             console.log('Descriptor reading error', error);
           }

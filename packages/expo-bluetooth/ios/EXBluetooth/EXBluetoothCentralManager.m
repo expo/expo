@@ -18,11 +18,12 @@
   EXBluetoothCentralDidDiscoverPeripheral _onDidDiscoverPeripheral;
   EXBluetoothCentralDidConnectPeripheral _onDidConnectPeripheral;
   NSMutableDictionary<NSString *, EXBluetoothCentralDidDisconnectPeripheral>  *onDidDisconnectPeripheralCallbacks;
+  NSMutableDictionary<NSString *, EXBluetoothPeripheral *> *discoveredPeripherals;
 }
 
 @property (nonatomic, strong) CBCentralManager *centralManager;
-@property (nonatomic, strong, readwrite) NSMutableDictionary<NSString *, EXBluetoothPeripheral *> *discoveredPeripherals;
-@property (nonatomic, strong, readwrite) EXBluetoothPeripheral *connectedPeripheral;
+//@property (nonatomic, strong, readwrite) NSMutableDictionary<NSString *, EXBluetoothPeripheral *> *discoveredPeripherals;
+//@property (nonatomic, strong, readwrite) EXBluetoothPeripheral *connectedPeripheral;
 
 @end
 
@@ -41,7 +42,7 @@
     _centralManager = [[CBCentralManager alloc] initWithDelegate:self
                                                            queue:queue
                                                          options:options];
-    _discoveredPeripherals = [NSMutableDictionary dictionary];
+    discoveredPeripherals = [NSMutableDictionary new];
     [_centralManager addObserver:self forKeyPath:@"isScanning"
                          options:NSKeyValueObservingOptionNew
                          context:(__bridge void *)self];
@@ -53,6 +54,10 @@
 - (void)dealloc
 {
   [_centralManager removeObserver:self forKeyPath:@"isScanning"];
+}
+
+- (NSArray<EXBluetoothPeripheral *> *)getDiscoveredPeripherals {
+  return [discoveredPeripherals allValues];
 }
 
 #pragma mark - Observer
@@ -116,9 +121,11 @@
 
 - (void)stopScanWithCallback:(EXBluetoothCentralDidChangeScanning)onDidChangeScanning
 {
+  if (_onDidChangeScanning) {
+    // TODO: Bacon: reject
+  }
   _onDidChangeScanning = onDidChangeScanning;
   _onDidDiscoverPeripheral = nil;
-  //  [_discoveredPeripherals removeAllObjects];
   [_centralManager stopScan];
 }
 
@@ -184,7 +191,7 @@
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central
 {
   _centralManager = central;
-  [_discoveredPeripherals removeAllObjects];
+  [discoveredPeripherals removeAllObjects];
   if (_onDidUpdateState) {
     _onDidUpdateState(self);
   }
@@ -204,7 +211,7 @@
   [self updateLocalPeripheralStore:peripheral];
   if (_onDidConnectPeripheral) {
     [self updateLocalPeripheralStore:peripheral];
-    _connectedPeripheral = [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral];
+//    EXBluetoothPeripheral *connectedPeripheral = [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral];
     _onDidConnectPeripheral(self, [[EXBluetoothPeripheral alloc] initWithPeripheral:peripheral], nil);
     _onDidConnectPeripheral = nil;
   }
@@ -237,7 +244,8 @@
   }
   
   if (shouldShowPeripheral) {
-    [_discoveredPeripherals setValue:mPeripheral forKey:mPeripheral.identifier.UUIDString];
+    discoveredPeripherals[mPeripheral.identifier.UUIDString] = mPeripheral;
+//    [_discoveredPeripherals setValue:mPeripheral forKey:mPeripheral.identifier.UUIDString];
     if (_onDidDiscoverPeripheral) {
       _onDidDiscoverPeripheral(self, mPeripheral, advertisementData, RSSI);
     }
@@ -286,7 +294,7 @@
 
 - (EXBluetoothPeripheral *)getPeripheralOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject
 {
-  EXBluetoothPeripheral *exPeripheral = _discoveredPeripherals[UUIDString];
+  EXBluetoothPeripheral *exPeripheral = discoveredPeripherals[UUIDString];
   if (!exPeripheral) {
     reject(EXBluetoothErrorNoPeripheral, [NSString stringWithFormat:@"No valid peripheral with UUID %@", UUIDString], nil);
     return nil;

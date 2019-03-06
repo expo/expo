@@ -23,8 +23,8 @@
 
 @property (nonatomic, copy, nullable) EXBluetoothCentralDidUpdateState onDidUpdateState;
 
-@property (nonatomic, strong, readonly, nullable) EXBluetoothPeripheral *connectedPeripheral;
-@property (nonatomic, strong, readonly, nullable) NSMutableDictionary<NSString *, EXBluetoothPeripheral *> *discoveredPeripherals;
+@property (nonatomic, strong, nullable) EXBluetoothPeripheral *connectedPeripheral;
+
 @property (nonatomic, weak, nullable) id<EXBluetoothCentralManagerPeripheralFilter> filter;
 
 - (nullable instancetype)initWithQueue:(nullable dispatch_queue_t)queue;
@@ -56,6 +56,8 @@
 - (BOOL)guardEnabled:(EXPromiseRejectBlock)reject;
 
 - (void)updateLocalPeripheralStore:(CBPeripheral *)peripheral;
+
+- (NSArray<EXBluetoothPeripheral *> *)getDiscoveredPeripherals;
 
 @end
 

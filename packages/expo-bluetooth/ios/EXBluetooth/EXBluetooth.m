@@ -116,7 +116,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 {
   [self emit:EXBluetoothEvent_UPDATE_STATE data:@{
                               EXBluetoothCentralKey: EXNullIfNil([_manager getJSON]),
-                              EXBluetoothPeripheralsKey: [EXBluetooth EXBluetoothPeripheralListNativeToJSON:[_manager.discoveredPeripherals allValues]]
+                              EXBluetoothPeripheralsKey: [EXBluetooth EXBluetoothPeripheralListNativeToJSON:[_manager getDiscoveredPeripherals]]
                               }];
 }
 
@@ -163,7 +163,7 @@ EX_EXPORT_METHOD_AS(getPeripheralsAsync,
     return;
   }
   
-  resolve([EXBluetooth EXBluetoothPeripheralListNativeToJSON:[_manager.discoveredPeripherals allValues]]);
+  resolve([EXBluetooth EXBluetoothPeripheralListNativeToJSON:[_manager getDiscoveredPeripherals]]);
   [self emitFullState];
 }
 
@@ -178,7 +178,7 @@ EX_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
   }
   
   NSMutableArray *output = [NSMutableArray array];
-  NSArray<EXBluetoothPeripheral *> *peripherals = [_manager.discoveredPeripherals allValues];
+  NSArray<EXBluetoothPeripheral *> *peripherals = [_manager getDiscoveredPeripherals];
   @synchronized(peripherals) {
     for (CBPeripheral *peripheral in peripherals){
       if (peripheral.state == CBPeripheralStateConnected){
@@ -238,7 +238,7 @@ EX_EXPORT_METHOD_AS(getCharacteristicAsync,
     return;
   }
   
-  resolve([EXBluetooth EXBluetoothCharacteristicNativeToJSON:characteristic]);
+  resolve(EXNullIfNil([EXBluetooth EXBluetoothCharacteristicNativeToJSON:characteristic]));
 }
 
 EX_EXPORT_METHOD_AS(getDescriptorAsync,
@@ -251,7 +251,7 @@ EX_EXPORT_METHOD_AS(getDescriptorAsync,
     return;
   }
   
-  resolve([EXBluetooth EXBluetoothDescriptorNativeToJSON:descriptor]);
+  resolve(EXNullIfNil([EXBluetooth EXBluetoothDescriptorNativeToJSON:descriptor]));
 }
 
 EX_EXPORT_METHOD_AS(startScanningAsync,
@@ -273,13 +273,19 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
   NSDictionary *nativeOptions = [EXBluetooth ScanningOptionsJSONToNative:options];
   
   __weak EXBluetooth *weakSelf = self;
-  [_manager scanForPeripheralsWithServices:serviceUUIDs options:nativeOptions withDidChangeScanningStateCallback:^(EXBluetoothCentralManager *centralManager, BOOL isScanning) {
+  [_manager scanForPeripheralsWithServices:serviceUUIDs
+                                   options:nativeOptions
+        withDidChangeScanningStateCallback:^(EXBluetoothCentralManager *centralManager,
+                                             BOOL isScanning) {
     resolve(@(isScanning));
     if (weakSelf) {
       // TODO: Bacon: We emit on android when we start scanning. Figure out parity
       [weakSelf emitFullState];
     }
-  } withDidDiscoverPeripheralCallback:^(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSDictionary *advertisementData, NSNumber *RSSI) {
+  } withDidDiscoverPeripheralCallback:^(EXBluetoothCentralManager *centralManager,
+                                        EXBluetoothPeripheral *peripheral,
+                                        NSDictionary *advertisementData,
+                                        NSNumber *RSSI) {
     
     if (weakSelf) {
       NSDictionary *peripheralData = [peripheral getJSON];

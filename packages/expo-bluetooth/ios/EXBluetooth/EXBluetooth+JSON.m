@@ -79,7 +79,7 @@
   return output;
 }
 
-+ (NSMutableArray<NSString *> *)CBAttributePermissions_NativeToJSON:(CBAttributePermissions)input
++ (NSMutableArray<NSString *> *)CBAttributePermissionsNativeToJSON:(CBAttributePermissions)input
 {
   NSMutableArray *props = [NSMutableArray new];
   
@@ -310,6 +310,7 @@
 + (NSDictionary *)ScanningOptionsJSONToNative:(nullable NSDictionary *)input
 {
   if (!input) return @{};
+  
   NSMutableDictionary *output = [NSMutableDictionary new];
   
   if (input[@"iosAllowDuplicates"] && [input[@"iosAllowDuplicates"] boolValue]) {
@@ -324,7 +325,7 @@
   
 }
 
-+ (nullable NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input
++ (nullable NSDictionary *)EXBluetoothDescriptorNativeToJSON:(nullable EXBluetoothDescriptor *)input
 {
   if (!input) return nil;
   
@@ -363,7 +364,7 @@
            };
 }
 // TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
-+ (nullable NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(EXBluetoothCharacteristic *)input
++ (nullable NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(nullable EXBluetoothCharacteristic *)input
 {
   if (!input) return nil;
   

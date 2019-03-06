@@ -11,7 +11,7 @@
 
 static id EXNullIfEmpty(NSString *input) {
   if (!input || input == nil || [input isEqualToString:@""]) {
-    return nil;
+    return NSNull.null;
   }
   return input;
 }
@@ -30,9 +30,9 @@ static id EXNullIfEmpty(NSString *input) {
 
 + (nullable NSDictionary *)EXBluetoothServiceNativeToJSON:(EXBluetoothService *)input;
 
-+ (nullable NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(EXBluetoothCharacteristic *)input;
++ (nullable NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(nullable EXBluetoothCharacteristic *)input;
 
-+ (nullable NSDictionary *)EXBluetoothDescriptorNativeToJSON:(EXBluetoothDescriptor *)input;
++ (nullable NSDictionary *)EXBluetoothDescriptorNativeToJSON:(nullable EXBluetoothDescriptor *)input;
 
 + (nullable NSMutableArray *)EXBluetoothPeripheralListNativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input;
 
