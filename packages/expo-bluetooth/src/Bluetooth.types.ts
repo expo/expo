@@ -174,7 +174,7 @@ export type NativeEventData = {
   characteristic?: Characteristic | null;
   central?: Central | null;
   descriptor?: Descriptor | null;
-  service?: NativeService | null;
+  service?: Service | null;
   advertisementData?: NativeAdvertismentData | null;
   RSSI?: RSSI;
   error?: NativeError | null;
@@ -195,10 +195,10 @@ export interface Characteristic extends NativeBluetoothElement {
   isNotifying: boolean;
 }
 
-export interface NativeService extends NativeBluetoothElement {
+export interface Service extends NativeBluetoothElement {
   peripheralUUID: UUID;
   isPrimary: boolean;
-  includedServices: NativeService[];
+  includedServices: Service[];
   characteristics: Characteristic[];
 }
 
@@ -218,8 +218,8 @@ export interface Peripheral extends NativeBluetoothElement {
   name: string | null;
   RSSI: RSSI | null;
   state: PeripheralState;
-  services: NativeService[];
-  includedServices: NativeService[];
+  services: Service[];
+  includedServices: Service[];
   /**
    * **ios**
    */

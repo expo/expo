@@ -1,5 +1,5 @@
 import { Subscription } from 'expo-core';
-import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, ConnectionOptions, Characteristic, Descriptor, PeripheralConnectionOption, NativeService, Peripheral, RSSI, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions, ReadCharacteristicOptions } from './Bluetooth.types';
+import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, ConnectionOptions, Characteristic, Descriptor, PeripheralConnectionOption, Service, Peripheral, RSSI, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions, ReadCharacteristicOptions } from './Bluetooth.types';
 import { AndroidGATTError } from './errors';
 /**
  * Although strongly discouraged,
@@ -32,7 +32,7 @@ export declare function getPeripheralAsync({ peripheralUUID }: {
 export declare function getServiceAsync({ peripheralUUID, serviceUUID }: {
     peripheralUUID: any;
     serviceUUID: any;
-}): Promise<NativeService>;
+}): Promise<Service>;
 export declare function getCharacteristicAsync({ peripheralUUID, serviceUUID, characteristicUUID, }: {
     peripheralUUID: any;
     serviceUUID: any;
@@ -49,11 +49,11 @@ export declare function discoverServicesForPeripheralAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
     characteristicProperties?: CharacteristicProperty;
-}): Promise<NativeService[]>;
+}): Promise<Service[]>;
 export declare function discoverIncludedServicesForServiceAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
-}): Promise<NativeService[]>;
+}): Promise<Service[]>;
 export declare function discoverCharacteristicsForServiceAsync(options: {
     id: string;
     serviceUUIDs?: UUID[];
