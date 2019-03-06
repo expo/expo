@@ -68,7 +68,7 @@ function getPlatformGUID(config: LogInConfig) {
   ) {
     throw new CodedError(
       'ERR_GOOGLE_CONFIG',
-      'Keys for Android an iOS cannot be the same value. Ensure you are linking the client IDs matching the given platforms in the Google APIs console: https://console.developers.google.com/apis/credentials'
+      'Keys for Android and iOS cannot be the same value. Ensure you are linking the client IDs matching the given platforms in the Google APIs console: https://console.developers.google.com/apis/credentials'
     );
   }
 
