@@ -1,6 +1,7 @@
 import { createOperationId } from './operations';
 import { CharacteristicProperty, OperationType } from './Bluetooth.types';
 import { DELIMINATOR } from './ExpoBluetooth';
+import { BluetoothError } from './errors';
 export default class Operation {
     // Return a Operation from a operationId ex: read|some_peripheral_id|some_service_id
     static fromOperationId(operationId) {
@@ -42,7 +43,7 @@ export default class Operation {
     generateId() {
         const { peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID } = this;
         if (this.type === undefined) {
-            throw new Error('expo-bluetooth: Operation.generateId(): type cannot be undefined');
+            throw new BluetoothError({ code: 'ERR_BLE_ID_GEN', message: 'Operation.generateId(): type cannot be undefined' });
         }
         return createOperationId({ peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID }, this.type);
     }
