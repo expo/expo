@@ -8,7 +8,7 @@ import {
   CharacteristicProperty,
   ConnectionOptions,
   NativeCharacteristic,
-  NativeDescriptor,
+  Descriptor,
   PeripheralConnectionOption,
   NativeEventData,
   NativeService,
@@ -170,7 +170,7 @@ export async function writeDescriptorAsync({
   characteristicUUID,
   descriptorUUID,
   data,
-}: any): Promise<NativeDescriptor> {
+}: any): Promise<Descriptor> {
   invariantAvailability('writeDescriptorAsync');
 
   const { descriptor } = await ExpoBluetooth.writeDescriptorAsync({
@@ -280,7 +280,7 @@ export async function getDescriptorAsync({
   serviceUUID,
   characteristicUUID,
   descriptorUUID,
-}): Promise<NativeDescriptor> {
+}): Promise<Descriptor> {
   invariantAvailability('getDescriptorAsync');
   return await ExpoBluetooth.getDescriptorAsync({
     peripheralUUID,
@@ -339,7 +339,7 @@ export async function discoverDescriptorsForCharacteristicAsync(options: {
   id: string;
   serviceUUIDs?: UUID[];
   characteristicProperties?: CharacteristicProperty;
-}): Promise<NativeDescriptor[]> {
+}): Promise<Descriptor[]> {
   invariantAvailability('discoverDescriptorsForCharacteristicAsync');
   const transaction = Transaction.fromTransactionId(options.id);
   return await ExpoBluetooth.discoverDescriptorsForCharacteristicAsync({

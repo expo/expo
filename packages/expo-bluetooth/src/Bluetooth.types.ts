@@ -162,7 +162,7 @@ export interface NativeBluetoothElement {
   // TODO: Bacon: Maybe add a type like peripheral, service, characteristc, descriptor
 }
 
-export interface NativeDescriptor extends NativeBluetoothElement {
+export interface Descriptor extends NativeBluetoothElement {
   characteristicUUID: UUID;
   value?: Base64;
 }
@@ -173,7 +173,7 @@ export type NativeEventData = {
   peripherals?: Peripheral[];
   characteristic?: NativeCharacteristic | null;
   central?: Central | null;
-  descriptor?: NativeDescriptor | null;
+  descriptor?: Descriptor | null;
   service?: NativeService | null;
   advertisementData?: NativeAdvertismentData | null;
   RSSI?: RSSI;
@@ -190,7 +190,7 @@ export interface NativeCharacteristic extends NativeBluetoothElement {
   serviceUUID: UUID;
   peripheralUUID: UUID;
   properties: string[]; // TODO: Bacon: more specific
-  descriptors: NativeDescriptor[];
+  descriptors: Descriptor[];
   value: Base64 | null;
   isNotifying: boolean;
 }

@@ -121,7 +121,7 @@ export interface NativeBluetoothElement {
     id: Identifier;
     uuid: UUID;
 }
-export interface NativeDescriptor extends NativeBluetoothElement {
+export interface Descriptor extends NativeBluetoothElement {
     characteristicUUID: UUID;
     value?: Base64;
 }
@@ -131,7 +131,7 @@ export declare type NativeEventData = {
     peripherals?: Peripheral[];
     characteristic?: NativeCharacteristic | null;
     central?: Central | null;
-    descriptor?: NativeDescriptor | null;
+    descriptor?: Descriptor | null;
     service?: NativeService | null;
     advertisementData?: NativeAdvertismentData | null;
     RSSI?: RSSI;
@@ -146,7 +146,7 @@ export interface NativeCharacteristic extends NativeBluetoothElement {
     serviceUUID: UUID;
     peripheralUUID: UUID;
     properties: string[];
-    descriptors: NativeDescriptor[];
+    descriptors: Descriptor[];
     value: Base64 | null;
     isNotifying: boolean;
 }
