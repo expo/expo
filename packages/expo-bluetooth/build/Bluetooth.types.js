@@ -108,41 +108,42 @@ export var TransactionType;
 })(TransactionType || (TransactionType = {}));
 export var CharacteristicProperty;
 (function (CharacteristicProperty) {
-    /* Permits broadcasts of the characteristic value using a characteristic configuration descriptor.
+    /**
+     * Permits broadcasts of the characteristic value using a characteristic configuration descriptor.
      * Not allowed for local characteristics.
      */
     CharacteristicProperty["Broadcast"] = "broadcast";
-    /* Permits reads of the characteristic value. */
+    /** Permits reads of the characteristic value. */
     CharacteristicProperty["Read"] = "read";
-    /* Permits writes of the characteristic value, without a response. */
+    /** Permits writes of the characteristic value, without a response. */
     CharacteristicProperty["WriteWithoutResponse"] = "writeWithoutResponse";
-    /* Permits writes of the characteristic value. */
+    /** Permits writes of the characteristic value. */
     CharacteristicProperty["Write"] = "write";
-    /* Permits notifications of the characteristic value, without a response. */
+    /** Permits notifications of the characteristic value, without a response. */
     CharacteristicProperty["Notify"] = "notify";
-    /* Permits indications of the characteristic value. */
+    /** Permits indications of the characteristic value. */
     CharacteristicProperty["Indicate"] = "indicate";
-    /* Permits signed writes of the characteristic value */
+    /** Permits signed writes of the characteristic value */
     CharacteristicProperty["AutheticateSignedWrites"] = "autheticateSignedWrites";
     /* If set, additional characteristic properties are defined in the characteristic extended properties descriptor.
      * Not allowed for local characteristics.
      */
     CharacteristicProperty["ExtendedProperties"] = "extendedProperties";
-    /* If set, only trusted devices can enable notifications of the characteristic value. */
+    /** If set, only trusted devices can enable notifications of the characteristic value. */
     CharacteristicProperty["NotifyEncryptionRequired"] = "notifyEncryptionRequired";
-    /* If set, only trusted devices can enable indications of the characteristic value. */
+    /** If set, only trusted devices can enable indications of the characteristic value. */
     CharacteristicProperty["IndicateEncryptionRequired"] = "indicateEncryptionRequired";
 })(CharacteristicProperty || (CharacteristicProperty = {}));
-/* Read, write, and encryption permissions for an ATT attribute. Can be combined. */
+/** Read, write, and encryption permissions for an ATT attribute. Can be combined. */
 export var Permissions;
 (function (Permissions) {
-    /* Read-only. */
+    /** Read-only. */
     Permissions["Readable"] = "Readable";
-    /* Write-only. */
+    /** Write-only. */
     Permissions["Writeable"] = "Writeable";
-    /* Readable by trusted devices. */
+    /** Readable by trusted devices. */
     Permissions["ReadEncryptionRequired"] = "ReadEncryptionRequired";
-    /* Writeable by trusted devices. */
+    /** Writeable by trusted devices. */
     Permissions["WriteEncryptionRequired"] = "WriteEncryptionRequired";
 })(Permissions || (Permissions = {}));
 //# sourceMappingURL=Bluetooth.types.js.map

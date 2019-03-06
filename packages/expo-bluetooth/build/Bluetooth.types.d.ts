@@ -100,21 +100,38 @@ export declare enum TransactionType {
     scan = "scan"
 }
 export declare enum CharacteristicProperty {
+    /**
+     * Permits broadcasts of the characteristic value using a characteristic configuration descriptor.
+     * Not allowed for local characteristics.
+     */
     Broadcast = "broadcast",
+    /** Permits reads of the characteristic value. */
     Read = "read",
+    /** Permits writes of the characteristic value, without a response. */
     WriteWithoutResponse = "writeWithoutResponse",
+    /** Permits writes of the characteristic value. */
     Write = "write",
+    /** Permits notifications of the characteristic value, without a response. */
     Notify = "notify",
+    /** Permits indications of the characteristic value. */
     Indicate = "indicate",
+    /** Permits signed writes of the characteristic value */
     AutheticateSignedWrites = "autheticateSignedWrites",
     ExtendedProperties = "extendedProperties",
+    /** If set, only trusted devices can enable notifications of the characteristic value. */
     NotifyEncryptionRequired = "notifyEncryptionRequired",
+    /** If set, only trusted devices can enable indications of the characteristic value. */
     IndicateEncryptionRequired = "indicateEncryptionRequired"
 }
+/** Read, write, and encryption permissions for an ATT attribute. Can be combined. */
 export declare enum Permissions {
+    /** Read-only. */
     Readable = "Readable",
+    /** Write-only. */
     Writeable = "Writeable",
+    /** Readable by trusted devices. */
     ReadEncryptionRequired = "ReadEncryptionRequired",
+    /** Writeable by trusted devices. */
     WriteEncryptionRequired = "WriteEncryptionRequired"
 }
 export interface BluetoothElement {

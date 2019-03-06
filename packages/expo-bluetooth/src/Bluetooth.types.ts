@@ -116,41 +116,42 @@ export enum TransactionType {
 }
 
 export enum CharacteristicProperty {
-  /* Permits broadcasts of the characteristic value using a characteristic configuration descriptor.
+  /**
+   * Permits broadcasts of the characteristic value using a characteristic configuration descriptor.
    * Not allowed for local characteristics.
    */
   Broadcast = 'broadcast',
-  /* Permits reads of the characteristic value. */
+  /** Permits reads of the characteristic value. */
   Read = 'read',
-  /* Permits writes of the characteristic value, without a response. */
+  /** Permits writes of the characteristic value, without a response. */
   WriteWithoutResponse = 'writeWithoutResponse',
-  /* Permits writes of the characteristic value. */
+  /** Permits writes of the characteristic value. */
   Write = 'write',
-  /* Permits notifications of the characteristic value, without a response. */
+  /** Permits notifications of the characteristic value, without a response. */
   Notify = 'notify',
-  /* Permits indications of the characteristic value. */
+  /** Permits indications of the characteristic value. */
   Indicate = 'indicate',
-  /* Permits signed writes of the characteristic value */
+  /** Permits signed writes of the characteristic value */
   AutheticateSignedWrites = 'autheticateSignedWrites',
   /* If set, additional characteristic properties are defined in the characteristic extended properties descriptor.
    * Not allowed for local characteristics.
    */
   ExtendedProperties = 'extendedProperties',
-  /* If set, only trusted devices can enable notifications of the characteristic value. */
+  /** If set, only trusted devices can enable notifications of the characteristic value. */
   NotifyEncryptionRequired = 'notifyEncryptionRequired',
-  /* If set, only trusted devices can enable indications of the characteristic value. */
+  /** If set, only trusted devices can enable indications of the characteristic value. */
   IndicateEncryptionRequired = 'indicateEncryptionRequired',
 }
 
-/* Read, write, and encryption permissions for an ATT attribute. Can be combined. */
+/** Read, write, and encryption permissions for an ATT attribute. Can be combined. */
 export enum Permissions {
-  /* Read-only. */
+  /** Read-only. */
   Readable = 'Readable',
-  /* Write-only. */
+  /** Write-only. */
   Writeable = 'Writeable',
-  /* Readable by trusted devices. */
+  /** Readable by trusted devices. */
   ReadEncryptionRequired = 'ReadEncryptionRequired',
-  /* Writeable by trusted devices. */
+  /** Writeable by trusted devices. */
   WriteEncryptionRequired = 'WriteEncryptionRequired',
 }
 
