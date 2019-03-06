@@ -5,7 +5,6 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const WebpackDeepScopeAnalysisPlugin = require('webpack-deep-scope-plugin').default;
 const getLocations = require('./webpackLocations');
 const createIndexHTMLFromAppJSON = require('./createIndexHTMLFromAppJSON');
 const createClientEnvironment = require('./createClientEnvironment');
@@ -167,9 +166,6 @@ module.exports = function(env) {
       useWebModule('RCTNetworking', 'Network/RCTNetworking'),
       useWebModule('Platform', 'Utilities/Platform'),
       useWebModule('HMRLoadingView', 'Utilities/HMRLoadingView'),
-
-      /** Remove unused import/exports  */
-      new WebpackDeepScopeAnalysisPlugin(),
 
       new WorkboxPlugin.GenerateSW({
         skipWaiting: true,
