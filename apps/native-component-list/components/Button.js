@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { StyleSheet, Text, TouchableHighlight, View, ActivityIndicator } from 'react-native';
 import Colors from '../constants/Colors';
 
 export default class Button extends React.Component {
@@ -12,11 +12,14 @@ export default class Button extends React.Component {
       <View style={[styles.container, this.props.style]}>
         <TouchableHighlight
           style={[style, this.props.buttonStyle]}
-          disabled={this.props.disabled}
+          disabled={this.props.disabled || this.props.loading}
           onPressIn={this.props.onPressIn}
           onPress={this.props.onPress}
           underlayColor={Colors.highlightColor}>
-          <Text style={styles.label}>{this.props.title}</Text>
+          {this.props.loading
+            ? <ActivityIndicator size="small" color="white" />
+            : <Text style={styles.label}>{this.props.title}</Text>
+          }
         </TouchableHighlight>
       </View>
     );
