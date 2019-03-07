@@ -173,6 +173,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-print:3.0.0'
   compileOnly 'host.exp.exponent:expo-random:3.0.0'
   compileOnly 'host.exp.exponent:expo-sensors:3.0.1'
+  compileOnly 'host.exp.exponent:expo-sharing:1.0.0'
   compileOnly 'host.exp.exponent:expo-sms:3.0.0'
   compileOnly 'host.exp.exponent:expo-speech:3.0.0'
   compileOnly 'host.exp.exponent:expo-sqlite:3.0.0'
