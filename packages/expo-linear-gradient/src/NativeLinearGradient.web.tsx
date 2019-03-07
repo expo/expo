@@ -49,14 +49,11 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     const { colors } = this.props;
     return colors
       .map((color, index) => {
-        const colorStr = `${color.toString(16)}`;
-        const hex = `#${colorStr.substring(2, colorStr.length)}`;
-
         const location = this.props.locations && this.props.locations[index];
         if (location) {
-          return `${hex} ${location * 100}%`;
+          return `${color} ${location * 100}%`;
         }
-        return hex;
+        return color;
       })
       .join(',');
   }

@@ -1,0 +1,1 @@
+{"version":3,"file":"processColor.js","sourceRoot":"","sources":["../src/processColor.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,cAAc,CAAC;AAC5C,eAAe,YAAY,CAAC","sourcesContent":["import { processColor } from 'react-native';\nexport default processColor;\n"]}

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ColorPropType, View, ViewPropTypes, processColor } from 'react-native';
-
+import { ColorPropType, View, ViewPropTypes } from 'react-native';
+import processColor from './processColor';
 import NativeLinearGradient from './NativeLinearGradient';
 
 type Props = {
