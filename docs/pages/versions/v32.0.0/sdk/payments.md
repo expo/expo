@@ -221,11 +221,10 @@ Launch `Add Card` view to to accept payment.
 
 **options.prefilledInformation** — An object with the following keys:
 
-| Key            | Type   | Description                                                                              |
-| :------------- | :----- | :--------------------------------------------------------------------------------------- |
-| email          | String | The user’s email address                                                                 |
-| phone          | String | The user’s phone number                                                                  |
-| billingAddress | Object | The user’s billing address. When set, the add card form will be filled with this address |
+|       Key       |  Type  | Description                                                                                                                                                                             |
+|:---------------:|:------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| shippingAddress | Object | The user’s shipping address. When set, the shipping address form will be filled with this address. The user will also have the option to fill their billing address using this address. |
+|  billingAddress | Object | The user’s billing address. When set, the add card form will be filled with this address. The user will also have the option to fill their shipping address using this address          |
 
 **options.prefilledInformation.billingAddress** — An object with the following keys:
 
@@ -842,4 +841,3 @@ If you want to use Apple Pay for payments, you'll need to set up your merchant I
 If you haven't already, set up an Apple Merchant ID via the [Apple Developer Portal](https://developer.apple.com/). Then, open the application in XCode and navigate to the capabilities tab. Enable Apple Pay and insert your merchant ID into the corresponding space.
 
 Note: Apple Pay can be used only for real world items (ex. appeal, car sharing, food) and not virtual goods. For more information about proper usage of Apple Pay, visit Apple's [Apple Pay guidelines](https://developer.apple.com/app-store/review/guidelines/#apple-pay) and [Acceptable Use](https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/).
-
