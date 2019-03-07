@@ -22,9 +22,10 @@ export default class WebBrowserScreen extends React.Component {
   };
 
   async componentDidMount() {
-    WebBrowser.getCustomTabsSupportingBrowsers().then(result => {
-      this.setState({ packages: result.packages.map(name => ({ label: name, value: name })) });
-    });
+    Platform.OS === 'android' &&
+      WebBrowser.getCustomTabsSupportingBrowsers().then(result => {
+        this.setState({ packages: result.packages.map(name => ({ label: name, value: name })) });
+      });
   }
 
   androidChoices() {

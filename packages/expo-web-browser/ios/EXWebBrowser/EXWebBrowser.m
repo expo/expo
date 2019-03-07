@@ -78,6 +78,7 @@ EX_EXPORT_METHOD_AS(openAuthSessionAsync,
 
 EX_EXPORT_METHOD_AS(openBrowserAsync,
                     openBrowserAsync:(NSString *)authURL
+                    openBrowserAsync:(NSDictionary *)arguments
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
