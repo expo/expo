@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker } from 'react-native';
+import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker, Platform } from 'react-native';
 import { WebBrowser } from 'expo';
 import Button from '../components/Button';
 
@@ -29,69 +29,84 @@ export default class WebBrowserScreen extends React.Component {
 
   androidChoices() {
     return (
-      <>
-        <View
-          style={{
-            paddingBottom: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text>Toolbar color (#rrggbb):</Text>
-          <TextInput
+      Platform.OS === 'android' && (
+        <>
+          <View
             style={{
-              padding: 10,
-              width: 100,
-            }}
-            borderBottomColor={'black'}
-            placeholder={'RRGGBB'}
-            onChangeText={value => this.setState({ colorText: value })}
-            value={this.state.colorText}
-          />
-        </View>
-        <View
-          style={{
-            paddingBottom: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text>Show Title</Text>
-          <Switch
-            style={{ padding: 5 }}
-            onValueChange={value => this.setState({ showTitle: value })}
-            value={this.state.showTitle}
-          />
-        </View>
-        <View
-          style={{
-            paddingBottom: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text>Force package:</Text>
-          <Picker
-            style={{
-              padding: 10,
-              width: 150,
-            }}
-            selectedValue={this.state.selectedPackage}
-            onValueChange={value => {
-              console.log(value);
-              this.setState({ selectedPackage: value });
+              paddingBottom: 5,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}>
-            {this.state.packages &&
-              [{ label: '(none)', value: '' }, ...this.state.packages].map(({ value, label }) => {
-                return <Picker.Item key={value} label={label} value={value} />;
-              })}
-          </Picker>
-        </View>
-      </>
+            <Text>Toolbar color (#rrggbb):</Text>
+            <TextInput
+              style={{
+                padding: 10,
+                width: 100,
+              }}
+              borderBottomColor={'black'}
+              placeholder={'RRGGBB'}
+              onChangeText={value => this.setState({ colorText: value })}
+              value={this.state.colorText}
+            />
+          </View>
+          <View
+            style={{
+              paddingBottom: 5,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text>Show Title</Text>
+            <Switch
+              style={{ padding: 5 }}
+              onValueChange={value => this.setState({ showTitle: value })}
+              value={this.state.showTitle}
+            />
+          </View>
+          <View
+            style={{
+              paddingBottom: 5,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text>Force package:</Text>
+            <Picker
+              style={{
+                padding: 10,
+                width: 150,
+              }}
+              selectedValue={this.state.selectedPackage}
+              onValueChange={value => {
+                console.log(value);
+                this.setState({ selectedPackage: value });
+              }}>
+              {this.state.packages &&
+                [{ label: '(none)', value: '' }, ...this.state.packages].map(({ value, label }) => {
+                  return <Picker.Item key={value} label={label} value={value} />;
+                })}
+            </Picker>
+          </View>
+        </>
+      )
     );
   }
 
-  androidButtons() {}
+  androidButtons() {
+    return (
+      Platform.OS === 'android' && (
+        <Button
+          style={styles.button}
+          onPress={async () => {
+            const result = await WebBrowser.getCustomTabsSupportingBrowsers();
+            Alert.alert('Result', JSON.stringify(result, null, 2));
+          }}
+          title="Show supporting browsers."
+        />
+      )
+    );
+  }
 
   render() {
     return (
