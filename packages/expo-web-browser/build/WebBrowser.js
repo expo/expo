@@ -7,11 +7,16 @@ export async function getCustomTabsSupportingBrowsers() {
     }
     return ExponentWebBrowser.getCustomTabsSupportingBrowsers();
 }
-export async function openBrowserAsync(url) {
+export async function openBrowserAsync(url, browserParams) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
     }
-    return ExponentWebBrowser.openBrowserAsync(url);
+    if (!browserParams) {
+        browserParams = {
+            showTitle: false,
+        };
+    }
+    return ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }
 export function dismissBrowser() {
     if (!ExponentWebBrowser.dismissBrowser) {

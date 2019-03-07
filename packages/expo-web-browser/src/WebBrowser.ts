@@ -6,9 +6,16 @@ type RedirectEvent = {
   url: string;
 };
 
+type OpenBrowserParams = {
+  toolbarColor?: string;
+  forceBrowser?: string;
+  showTitle: boolean;
+};
+
 type AuthSessionResult = RedirectResult | BrowserResult;
 
 type CustomTabsBrowsersResults = {
+  default: String[];
   packages: String[];
 };
 
@@ -28,11 +35,19 @@ export async function getCustomTabsSupportingBrowsers(): Promise<CustomTabsBrows
   return ExponentWebBrowser.getCustomTabsSupportingBrowsers();
 }
 
-export async function openBrowserAsync(url: string): Promise<BrowserResult> {
+export async function openBrowserAsync(
+  url: string,
+  browserParams?: OpenBrowserParams
+): Promise<BrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
-  return ExponentWebBrowser.openBrowserAsync(url);
+  if (!browserParams) {
+    browserParams = {
+      showTitle: false,
+    };
+  }
+  return ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }
 
 export function dismissBrowser(): void {

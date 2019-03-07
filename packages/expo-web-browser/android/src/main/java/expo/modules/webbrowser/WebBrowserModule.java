@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +18,7 @@ import java.util.List;
 import expo.core.ExportedModule;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
+import expo.core.arguments.ReadableArguments;
 import expo.core.interfaces.ActivityEventListener;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
@@ -51,10 +54,12 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   @ExpoMethod
   public void getCustomTabsSupportingBrowsers(final Promise promise) {
     try {
-      List<ResolveInfo> resolveInfos = mResolver.getCustomTabsResolvingActivities();
+      List<ResolveInfo> resolveInfo = mResolver.getCustomTabsResolvingActivities();
+      List<ResolveInfo> defaultResolveInfo = mResolver.getDefaultCustomTabsResolvingActivities();
 
       Bundle result = new Bundle();
-      result.putStringArrayList("packages", mapCollectionToDistincrArrayList(resolveInfos, resolveInfo -> resolveInfo.activityInfo.packageName));
+      result.putStringArrayList("packages", mapCollectionToDistinctArrayList(resolveInfo, info -> info.activityInfo.packageName));
+      result.putStringArrayList("default", mapCollectionToDistinctArrayList(defaultResolveInfo, info -> info.activityInfo.packageName));
 
       promise.resolve(result);
     } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
@@ -63,7 +68,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @ExpoMethod
-  public void openBrowserAsync(final String url, final Promise promise) {
+  public void openBrowserAsync(final String url, ReadableArguments arguments, final Promise promise) {
     if (mOpenBrowserPromise != null) {
       Bundle result = new Bundle();
       result.putString("type", "cancel");
@@ -73,12 +78,11 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     mOpenBrowserPromise = promise;
 
 
-    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+    CustomTabsIntent.Builder builder = createCustomTabsBuilder(arguments);
     CustomTabsIntent customTabsIntent = builder.build();
 
     Intent intent = customTabsIntent.intent;
     intent.setData(Uri.parse(url));
-    intent.putExtra(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.NO_TITLE);
 
     try {
       List<ResolveInfo> activities = mResolver.getResolvingActivities(customTabsIntent.intent);
@@ -120,7 +124,23 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     // do nothing
   }
 
-  private <T, R> ArrayList<R> mapCollectionToDistincrArrayList(Collection<? extends T> toMap, Function<T, R> mapper) {
+  private CustomTabsIntent.Builder createCustomTabsBuilder(ReadableArguments arguments) {
+    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+    String color = arguments.getString("toolbarColor");
+    try {
+      if (!TextUtils.isEmpty(color)) {
+        int intColor = Color.parseColor(color);
+        builder.setToolbarColor(intColor);
+      }
+    } catch (IllegalArgumentException ignored) {
+    }
+
+    boolean showTitle = arguments.getBoolean("showTitle");
+    builder.setShowTitle(showTitle);
+    return builder;
+  }
+
+  private <T, R> ArrayList<R> mapCollectionToDistinctArrayList(Collection<? extends T> toMap, Function<T, R> mapper) {
     LinkedHashSet<R> resultSet = new LinkedHashSet<>();
     for (T element : toMap) {
       resultSet.add(mapper.apply(element));

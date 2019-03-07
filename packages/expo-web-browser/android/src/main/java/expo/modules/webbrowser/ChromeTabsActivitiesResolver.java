@@ -27,16 +27,24 @@ class ChromeTabsActivitiesResolver {
   }
 
   List<ResolveInfo> getCustomTabsResolvingActivities() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
-    return getResolvingActivities(createDefaultChromeTabsIntent());
+    return getResolvingActivities(createDefaultChromeTabsIntent(), 0);
+  }
+
+  List<ResolveInfo> getDefaultCustomTabsResolvingActivities() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
+    return getResolvingActivities(createDefaultChromeTabsIntent(), PackageManager.MATCH_DEFAULT_ONLY);
   }
 
   List<ResolveInfo> getResolvingActivities(@NonNull Intent intent) throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
+    return getResolvingActivities(intent, 0);
+  }
+
+  List<ResolveInfo> getResolvingActivities(@NonNull Intent intent, int flag) throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
     PackageManager pm = getPackageManager();
     if (pm == null) {
       throw new PackageManagerNotFoundException();
     }
 
-    return pm.queryIntentActivities(intent, 0);
+    return pm.queryIntentActivities(intent, flag);
   }
 
   void startChromeTabs(Intent intent, int requestCode) throws CurrentActivityNotFoundException {
