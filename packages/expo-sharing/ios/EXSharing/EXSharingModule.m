@@ -8,18 +8,18 @@
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 
+@property (nonatomic, strong) EXPromiseResolveBlock pendingResolver;
+
 @end
 
 @implementation EXSharingModule
 
 EX_EXPORT_MODULE(ExpoSharing);
 
-
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
-
 
 EX_EXPORT_METHOD_AS(shareAsync,
                     fileUrl:(NSString *)fileUrl
@@ -27,28 +27,37 @@ EX_EXPORT_METHOD_AS(shareAsync,
                     resolve:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  NSURL *url = [NSURL URLWithString:fileUrl];
-  
-  _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
+  if (_documentInteractionController) {
+    NSString *errorMessage = @"Another item is being shared. Await the `shareAsync` request and then share the item again.";
+    reject(@"E_MUL_SHARING", errorMessage, EXErrorWithMessage(errorMessage));
+    return;
+  }
+
+  _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL URLWithString:fileUrl]];
   _documentInteractionController.delegate = self;
   _documentInteractionController.UTI = params[@"UTI"];
-  
+
+  UIViewController *viewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
+
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIView * rootView = [[[[[UIApplication sharedApplication] delegate] window] rootViewController] view];
-    BOOL canOpen = [self->_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:rootView animated:YES];
-    NSMutableArray *result = [[NSMutableArray alloc] init];
-    if(canOpen) resolve(result);
-    else {
-      NSError *error = [[NSError alloc] init];
-      reject(@"ERR_SHARING_UNSUPPORTED_TYPE", @"Could not share file since there were no apps registered for its type", error);
+    EX_ENSURE_STRONGIFY(self);
+    UIView *rootView = [viewController view];
+    if ([self.documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:rootView animated:YES]) {
+      self.pendingResolver = resolve;
+    } else {
+      reject(@"ERR_SHARING_UNSUPPORTED_TYPE", @"Could not share file since there were no apps registered for its type", nil);
+      self.documentInteractionController = nil;
     }
   });
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
 {
-  // clear reference when done sharing
-  _documentInteractionController = NULL;
+  _pendingResolver(@{});
+  _pendingResolver = nil;
+
+  _documentInteractionController = nil;
 }
 
 @end

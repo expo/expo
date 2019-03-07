@@ -1,26 +1,37 @@
 package expo.modules.sharing;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.content.FileProvider;
 
 import java.io.File;
 import java.net.URLConnection;
 
 import expo.core.ExportedModule;
+import expo.core.InvalidArgumentException;
 import expo.core.ModuleRegistry;
 import expo.core.Promise;
 import expo.core.arguments.ReadableArguments;
+import expo.core.interfaces.ActivityEventListener;
+import expo.core.interfaces.ActivityProvider;
 import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
+import expo.core.interfaces.services.UIManager;
+import expo.interfaces.filesystem.FilePermissionModuleInterface;
+import expo.interfaces.filesystem.Permission;
 
-public class SharingModule extends ExportedModule implements ModuleRegistryConsumer {
+public class SharingModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+  private static final int REQUEST_CODE = 8524;
   private static final String TAG = "ExpoSharing";
   private static final String MIME_TYPE_OPTIONS_KEY = "mimeType";
+  private static final String DIALOG_TITLE_OPTIONS_KEY = "dialogTitle";
 
   private ModuleRegistry mModuleRegistry;
   private Context mContext;
+  private Promise mPendingPromise;
 
   public SharingModule(Context context) {
     super(context);
@@ -31,59 +42,103 @@ public class SharingModule extends ExportedModule implements ModuleRegistryConsu
   public String getName() {
     return TAG;
   }
-  public ModuleRegistry getModuleRegistry() {
-    return mModuleRegistry;
-  }
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    if (mModuleRegistry != null) {
+      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+      uiManager.unregisterActivityEventListener(this);
+    }
+
     mModuleRegistry = moduleRegistry;
+
+    if (mModuleRegistry != null) {
+      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+      uiManager.registerActivityEventListener(this);
+    }
   }
 
   @ExpoMethod
   public void shareAsync(String url, ReadableArguments params, final Promise promise) {
-    Intent intent = new Intent(Intent.ACTION_SEND);
-    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-    Uri uri = Uri.parse(url);
-    String path = uri.getPath();
-
-    if (path == null) {
-      promise.reject(new Error(("Url is not valid")));
-      return;
-    }
-
-    File file = new File(path);
-
-    boolean localFile = "file".equals(uri.getScheme());
-
-    if (!localFile) {
-      promise.reject("ERR_SHARING_INVALID_URI", "Only local files are supported");
+    if (mPendingPromise != null) {
+      promise.reject("ERR_SHARING_MUL", "Another share request is being processed now.");
       return;
     }
 
     try {
-      uri = FileProvider.getUriForFile(mContext, mContext.getApplicationInfo().packageName + ".provider", file);
+      File fileToShare = getLocalFileFoUrl(url);
+      Uri contentUri = FileProvider.getUriForFile(mContext, mContext.getApplicationInfo().packageName + ".provider", fileToShare);
+
+      String mimeType = params.getString(MIME_TYPE_OPTIONS_KEY);
+      if (mimeType == null) {
+        String guessedMimeType = URLConnection.guessContentTypeFromName(fileToShare.getName());
+        if (guessedMimeType != null) {
+          mimeType = guessedMimeType;
+        } else {
+          mimeType = "*/*";
+        }
+      }
+
+      Intent intent = Intent.createChooser(createSharingIntent(contentUri, mimeType), params.getString(DIALOG_TITLE_OPTIONS_KEY));
+      mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().startActivityForResult(intent, REQUEST_CODE);
+
+      mPendingPromise = promise;
+    } catch (InvalidArgumentException e) {
+      promise.reject("ERR_SHARING_URL", e.getMessage(), e);
     } catch (Exception e) {
-      promise.reject("ERR_SHARING", "Failed to get the content URI for the file to share", e);
-      return;
+      promise.reject("ERR_SHARING", "Failed to share the file: " + e.getMessage(), e);
+    }
+  }
+
+  private File getLocalFileFoUrl(String url) throws InvalidArgumentException {
+    if (url == null) {
+      throw new InvalidArgumentException("URL to share cannot be null.");
     }
 
+    Uri uri = Uri.parse(url);
+    if (uri.getPath() == null) {
+      throw new InvalidArgumentException("Path component of the URL to share cannot be null.");
+    }
 
-    String mimeType = params.getString(MIME_TYPE_OPTIONS_KEY);
+    if (!"file".equals(uri.getScheme())) {
+      throw new InvalidArgumentException("Only local file URLs are supported (expected scheme to be 'file', got '" + uri.getScheme() + "'.");
+    }
 
-    if (mimeType == null) {
-      String guessedMimeType = URLConnection.guessContentTypeFromName(file.getName());
-      if (guessedMimeType != null) {
-        mimeType = guessedMimeType;
-      } else {
-        mimeType = "*/*";
+    if (!isAllowedToRead(uri.getPath())) {
+      throw new InvalidArgumentException("Not allowed to read file under given URL.");
+    }
+
+    return new File(uri.getPath());
+  }
+
+  private boolean isAllowedToRead(String url) {
+    if (mModuleRegistry != null) {
+      FilePermissionModuleInterface permissionModuleInterface = mModuleRegistry.getModule(FilePermissionModuleInterface.class);
+      if (permissionModuleInterface != null) {
+        return permissionModuleInterface.getPathPermissions(mContext, url).contains(Permission.READ);
       }
     }
+    return true;
+  }
 
+  protected Intent createSharingIntent(Uri uri, String mimeType) {
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     intent.setType(mimeType);
     intent.putExtra(Intent.EXTRA_STREAM, uri);
-    mContext.startActivity(Intent.createChooser(intent, "Share to"));
-    promise.resolve(true)
+    return intent;
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    if (requestCode == REQUEST_CODE && mPendingPromise != null) {
+      mPendingPromise.resolve(Bundle.EMPTY);
+      mPendingPromise = null;
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    // do nothing
   }
 }

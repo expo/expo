@@ -26,8 +26,9 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sharing",
   "dependencies": {},
-  "peerDependencies": {
-    "expo-core": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "expo-core": "*",
+    "expo-errors": "^1.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",

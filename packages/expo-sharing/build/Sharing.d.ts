@@ -1,6 +1,8 @@
-interface ShareParams {
+declare type ShareOptions = {
     mimeType?: string;
     UTI?: string;
-}
-export declare function shareAsync(url: string, params?: ShareParams): Promise<any>;
+    dialogTitle?: string;
+};
+export declare function isAvailableAsync(): Promise<boolean>;
+export declare function shareAsync(url: string, options?: ShareOptions): Promise<{}>;
 export {};
