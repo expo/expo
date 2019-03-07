@@ -1,9 +1,15 @@
 import React from 'react';
-import { Alert, View, StyleSheet, Text, Switch, TextInput } from 'react-native';
+import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker } from 'react-native';
 import { WebBrowser } from 'expo';
 import Button from '../components/Button';
 
-export default class App extends React.Component {
+export default class WebBrowserScreen extends React.Component {
+  constructor() {
+    super();
+    this.androidChoices = this.androidChoices.bind(this);
+    this.androidButtons = this.androidButtons.bind(this);
+  }
+
   static navigationOptions = {
     title: 'WebBrowser',
   };
@@ -11,16 +17,19 @@ export default class App extends React.Component {
   state = {
     showTitle: false,
     colorText: undefined,
+    packages: undefined,
+    selectedPackage: undefined,
   };
 
-  render() {
+  async componentDidMount() {
+    WebBrowser.getCustomTabsSupportingBrowsers().then(result => {
+      this.setState({ packages: result.packages.map(name => ({ label: name, value: name })) });
+    });
+  }
+
+  androidChoices() {
     return (
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          flex: 1,
-        }}>
+      <>
         <View
           style={{
             paddingBottom: 5,
@@ -54,25 +63,60 @@ export default class App extends React.Component {
             value={this.state.showTitle}
           />
         </View>
+        <View
+          style={{
+            paddingBottom: 5,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text>Force package:</Text>
+          <Picker
+            style={{
+              padding: 10,
+              width: 150,
+            }}
+            selectedValue={this.state.selectedPackage}
+            onValueChange={value => {
+              console.log(value);
+              this.setState({ selectedPackage: value });
+            }}>
+            {this.state.packages &&
+              [{ label: '(none)', value: '' }, ...this.state.packages].map(({ value, label }) => {
+                return <Picker.Item key={value} label={label} value={value} />;
+              })}
+          </Picker>
+        </View>
+      </>
+    );
+  }
+
+  androidButtons() {}
+
+  render() {
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 1,
+        }}>
+        {this.androidChoices()}
         <Button
           style={styles.button}
           onPress={async () => {
-            const result = await WebBrowser.openBrowserAsync('https://www.google.com', {
+            const args = {
               showTitle: this.state.showTitle,
               toolbarColor: this.state.colorText ? '#' + this.state.colorText : undefined,
-            });
+              package: this.state.selectedPackage,
+            };
+            console.log(args);
+            const result = await WebBrowser.openBrowserAsync('https://www.google.com', args);
             setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
           }}
           title="Open web url"
         />
-        <Button
-          style={styles.button}
-          onPress={async () => {
-            const result = await WebBrowser.getCustomTabsSupportingBrowsers();
-            Alert.alert('Result', JSON.stringify(result, null, 2));
-          }}
-          title="Show supporting browsers."
-        />
+        {this.androidButtons()}
       </View>
     );
   }

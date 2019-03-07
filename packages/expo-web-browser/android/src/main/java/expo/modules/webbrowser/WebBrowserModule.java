@@ -77,15 +77,11 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     }
     mOpenBrowserPromise = promise;
 
-
-    CustomTabsIntent.Builder builder = createCustomTabsBuilder(arguments);
-    CustomTabsIntent customTabsIntent = builder.build();
-
-    Intent intent = customTabsIntent.intent;
+    Intent intent = createCustomTabsIntent(arguments);
     intent.setData(Uri.parse(url));
 
     try {
-      List<ResolveInfo> activities = mResolver.getResolvingActivities(customTabsIntent.intent);
+      List<ResolveInfo> activities = mResolver.getResolvingActivities(intent);
       if (activities.size() > 0) {
         mResolver.startChromeTabs(intent, OPEN_BROWSER_REQUEST_CODE);
       } else {
@@ -124,9 +120,10 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     // do nothing
   }
 
-  private CustomTabsIntent.Builder createCustomTabsBuilder(ReadableArguments arguments) {
+  private Intent createCustomTabsIntent(ReadableArguments arguments) {
     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
     String color = arguments.getString("toolbarColor");
+    String packageName = arguments.getString("package");
     try {
       if (!TextUtils.isEmpty(color)) {
         int intColor = Color.parseColor(color);
@@ -137,7 +134,14 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
 
     boolean showTitle = arguments.getBoolean("showTitle");
     builder.setShowTitle(showTitle);
-    return builder;
+
+    Intent intent = builder.build().intent;
+
+    if (!TextUtils.isEmpty(packageName)) {
+      intent.setPackage(packageName);
+    }
+
+    return intent;
   }
 
   private <T, R> ArrayList<R> mapCollectionToDistinctArrayList(Collection<? extends T> toMap, Function<T, R> mapper) {

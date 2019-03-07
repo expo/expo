@@ -8,7 +8,7 @@ type RedirectEvent = {
 
 type OpenBrowserParams = {
   toolbarColor?: string;
-  forceBrowser?: string;
+  package?: string;
   showTitle: boolean;
 };
 
