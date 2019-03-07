@@ -465,6 +465,8 @@ PODS:
     - EXCore
     - EXSensorsInterface
   - EXSensorsInterface (3.0.0)
+  - EXSharing (1.0.0):
+    - EXCore
   - EXSMS (3.0.0):
     - EXCore
   - EXSpeech (3.0.0):
@@ -1338,6 +1340,7 @@ DEPENDENCIES:
   - EXSegment (from `../packages/expo-analytics-segment/ios`)
   - EXSensors (from `../packages/expo-sensors/ios`)
   - EXSensorsInterface (from `../packages/expo-sensors-interface/ios`)
+  - EXSharing (from `../packages/expo-sharing/ios`)
   - EXSMS (from `../packages/expo-sms/ios`)
   - EXSpeech (from `../packages/expo-speech/ios`)
   - EXSQLite (from `../packages/expo-sqlite/ios`)
@@ -1834,6 +1837,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-sensors/ios"
   EXSensorsInterface:
     :path: "../packages/expo-sensors-interface/ios"
+  EXSharing:
+    :path: "../packages/expo-sharing/ios"
   EXSMS:
     :path: "../packages/expo-sms/ios"
   EXSpeech:
@@ -2053,6 +2058,7 @@ SPEC CHECKSUMS:
   EXSegment: cfe9aed31dbd7f1455724afe89a4920e5dad0049
   EXSensors: 6aa3b3b9906beb0b574a88943d171ebc226b0fe5
   EXSensorsInterface: 2a6acb2a763a5cade55fe172a024c9ecde514923
+  EXSharing: 46c27479f31388bc4c26688b8d613075c2037a63
   EXSMS: 2a2f1abfb2f37b686e892261678c70f39c9b7fa8
   EXSpeech: ce84a1b607b39840e42cfeddbc82e2408734d05a
   EXSQLite: 0a4c0e7bf79f4210743fc6cc8d282bd34d79fdac
@@ -2095,6 +2101,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: 89d340d43b80ad7aba43cad274790af5008b30f1
+PODFILE CHECKSUM: 26e74b09df5ac17e748b2d15f7d5785bea524727
 
 COCOAPODS: 1.5.3

@@ -80,6 +80,7 @@ def includeUniversalModule = { name ->
     'expo-secure-store',
     'expo-sensors',
     'expo-sensors-interface',
+    'expo-sharing',
     'expo-sms',
     'expo-speech',
     'expo-sqlite',

@@ -1,0 +1,23 @@
+{
+  "name": "EXSharing",
+  "version": "1.0.0",
+  "summary": "ExpoSharing standalone module",
+  "description": "ExpoSharing standalone module",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sharing",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXSharing/**/*.{h,m}",
+  "preserve_paths": "EXSharing/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "EXCore": [
+
+    ]
+  }
+}

@@ -277,6 +277,7 @@ dependencies {
   api 'host.exp.exponent:expo-print:3.0.0'
   api 'host.exp.exponent:expo-secure-store:3.0.0'
   api 'host.exp.exponent:expo-sensors:3.0.1'
+  api 'host.exp.exponent:expo-sharing:1.0.0'
   api 'host.exp.exponent:expo-sms:3.0.0'
   api 'host.exp.exponent:expo-linear-gradient:3.0.0'
   api 'host.exp.exponent:expo-keep-awake:3.0.0'
