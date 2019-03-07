@@ -129,7 +129,7 @@ dependencies {
   api 'host.exp.exponent:expo-file-system-interface:3.0.0'
   api 'host.exp.exponent:expo-permissions:3.0.0'
   api 'host.exp.exponent:expo-permissions-interface:3.0.0'
-  api 'host.exp.exponent:expo-react-native-adapter:3.0.0'
+  api 'host.exp.exponent:expo-react-native-adapter:3.0.1'
   api 'host.exp.exponent:expo-secure-store:3.0.0'
   api 'host.exp.exponent:expo-sensors-interface:3.0.0'
   api 'host.exp.exponent:expo-task-manager:3.0.0'
