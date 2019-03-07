@@ -2,6 +2,8 @@
 
 #import <EXSharing/EXSharingModule.h>
 #import <EXCore/EXUtilitiesInterface.h>
+#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <EXFileSystemInterface/EXFilePermissionModuleInterface.h>
 
 @interface EXSharingModule ()
 
@@ -29,11 +31,22 @@ EX_EXPORT_METHOD_AS(shareAsync,
 {
   if (_documentInteractionController) {
     NSString *errorMessage = @"Another item is being shared. Await the `shareAsync` request and then share the item again.";
-    reject(@"E_MUL_SHARING", errorMessage, EXErrorWithMessage(errorMessage));
+    reject(@"E_SHARING_MUL", errorMessage, EXErrorWithMessage(errorMessage));
     return;
   }
 
-  _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL URLWithString:fileUrl]];
+  NSURL *url = [NSURL URLWithString:fileUrl];
+
+  id<EXFilePermissionModuleInterface> filePermissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFilePermissionModuleInterface)];
+  id<EXFileSystemInterface> fileSystemModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  NSArray<NSString *> *scopedDirs = @[fileSystemModule.cachesDirectory, fileSystemModule.documentDirectory];
+  if (filePermissionsModule && !([filePermissionsModule getPathPermissions:url.path scopedDirs:scopedDirs] & EXFileSystemPermissionRead)) {
+    NSString *errorMessage = @"You don't have access to provided file.";
+    reject(@"E_SHARING_PERM", errorMessage, EXErrorWithMessage(errorMessage));
+    return;
+  }
+
+  _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
   _documentInteractionController.delegate = self;
   _documentInteractionController.UTI = params[@"UTI"];
 
