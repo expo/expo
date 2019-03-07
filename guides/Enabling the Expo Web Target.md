@@ -1,8 +1,14 @@
 # Enabling the Expo Web Target
 
-Using Unimodules and other tools provided by Expo, you can configure your app to run as a website or progressive web application (PWA).
+> This is a beta release and subject to changes.
 
-Ideally all of the Expo modules will either support web or fail gracefully. Regardless the modules you run in your Expo web app should function to some degree on the web platform.
+Using Unimodules, **`react-native-web`** and **`expo-cli`**, you can configure your app to run as a website or progressive web application (PWA).
+
+Ideally all of the Expo modules will either have partial support for web or fail gracefully.
+
+## Getting Started
+
+By default Expo web will be enabled in any new project you create with the `expo-cli`!
 
 ## Adding support to existing projects
 
@@ -11,85 +17,60 @@ A standard Expo app (Running `expo init` with the `expo-cli`) will have the foll
 ```diff
 + App.js
 + package.json
+// Notice that Babel 7 is required.
 + babel.config.js
 + app.json
 ```
 
-You'll need to add and configure a couple of things manually while we finalize the official project creation of Expo for web.
+If you have a `.babelrc` file, upgrade to the **Babel 7** [`babel.config.js`][ncl-babel-config].
 
-- Add [`web/`][ncl-web-folder]
-- Add [`webpack/`][ncl-webpack-folder]
-- If you have a `.babelrc` file, upgrade to the **Babel 7** [`babel.config.js`][ncl-babel-config].
--
-- Make the following changes to your `package.json`
+Ensure you have the platform enabled in the `app.json`.
+
+**`app.json`**
+
+```diff
+{
+    platforms: [
+        'ios',
+        'android',
++        'web'
+    ]
+}
+```
+
+Now make the following changes in your `package.json`.
+
+**`package.json`**
 
 ```diff
 // Ensure your main entry point is `App.js` (Default for Expo)
 + "main": "node_modules/expo/AppEntry.js",
 "scripts": {
     ...
-    // To test secure features like camera or microphone, you will need to add: --https --host <YOUR_IP>
-+    "web:dev": "webpack-dev-server -d --config webpack/webpack.dev.js",
-+    "web:build": "webpack -p --config webpack/webpack.prod.js",
+    // Optionally you can test your prod bundle locally
 +    "web:serve": "serve ./web-build"
     // Optionally you can add a publish script as well.
 +    "web:publish": "netlify deploy --dir web-build",
 },
-"dependencies": {
-+    "@babel/polyfill": "^7.2.5",
-    ...
-},
 "devDependencies": {
-+    "babel-loader": "^8.0.5",
 +    "babel-preset-expo": "^5.0.0",
-+    "brotli-webpack-plugin": "^1.1.0",
-+    "case-sensitive-paths-webpack-plugin": "^2.2.0",
-+    "clean-webpack-plugin": "^1.0.1",
-+    "compression-webpack-plugin": "^2.0.0",
-+    "copy-webpack-plugin": "^5.0.0",
-+    "css-loader": "^2.1.0",
-+    "expo-yarn-workspaces": "^1.0.0",
-+    "file-loader": "^3.0.1",
-+    "find-yarn-workspace-root": "^1.2.1",
-+    "html-loader": "^0.5.5",
-+    "html-webpack-plugin": "4.0.0-alpha.2",
-+    "http-server": "^0.11.1",
-+    "mini-css-extract-plugin": "^0.5.0",
-+    "pnp-webpack-plugin": "^1.2.1",
-+    "react-dev-utils": "^7.0.3",
-+    "react-error-overlay": "^5.1.3",
-+    "serve": "^10.1.2",
-+    "style-loader": "^0.23.1",
-+    "terser-webpack-plugin": "^1.2.2",
-+    "url-loader": "^1.1.2",
-+    "webpack": "4.24.0",
-+    "webpack-bundle-analyzer": "^3.0.4",
-+    "webpack-cli": "^3.2.3",
-+    "webpack-dashboard": "^3.0.0",
-+    "webpack-dev-server": "^3.2.0",
-+    "webpack-hot-middleware": "^2.24.3",
-+    "webpack-manifest-plugin": "^2.0.4",
-+    "webpack-merge": "^4.2.1",
-+    "workbox-webpack-plugin": "^3.6.3"
-    ...
 },
+// Optionally you can define the browser support. This may become required in the future.
 + "browserslist": [
 +    ">0.2%",
 +    "not dead",
 +    "not ie <= 11",
 +    "not op_mini all"
 + ]
-
 ```
 
-You should now be able to run `yarn web:dev` to start webpack.
-Remember features are currently being added and changed rapidly, use with caution!
+Now you can start using web by running `expo start`. To generate a production build run `expo build:web` which will generate a `web-build/` folder.
 
 ## Usage
 
 After adding web support your main entry point should be the `App.js` file.
 
-**App.js**
+If you are upgrading your existing `react-native-web` project, you'll need to remove the `AppRegistry` as this is managed by `expo`.
 
 ```diff
 ❌ - This is managed by Expo, no need to register your application.
@@ -97,9 +78,33 @@ After adding web support your main entry point should be the `App.js` file.
 - AppRegistry.runApplication('App', { rootTag: document.getElementById('react-root') });
 ```
 
-Generally most of the interactions you will do with `react-native` will come from `react-native-web`, so you should refer to the [compatibility guide][react-native-web-compatibility] to see what's available.
+### Customization
 
+Most of the customization can be done via the `app.json`.
+
+- The `title` value will be used for the web `<title />` element.
+
+```diff
+{
++    web: {
++        favicon: "./favicon.ico",
++        productionPath: "web-build",
++    }
+}
+```
+
+### Coverage
+
+For coverage of Expo and various community libraries, check out [native.directory][native-directory]. For modules imported from `react-native`, you can look at the `react-native-web` [compatibility guide][react-native-web-compatibility].
+
+[native-directory]: http://native.directory
 [react-native-web-compatibility]: https://github.com/necolas/react-native-web#compatibility-with-react-native
 [ncl-web-folder]: https://github.com/expo/expo/tree/master/apps/native-component-list/web
 [ncl-webpack-folder]: https://github.com/expo/expo/tree/master/apps/native-component-list/webpack
 [ncl-babel-config]: https://github.com/expo/expo/blob/master/apps/native-component-list/babel.config.js
+
+### Customizing Webpack
+
+By default `expo-cli` will run your project with `@expo/webpack-config`.
+
+In the future this can be extended to match your needs.
