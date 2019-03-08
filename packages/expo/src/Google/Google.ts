@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
 const isInExpo = Constants.appOwnership === 'expo';
-export type LogInConfig = {
+export type GoogleLogInConfig = {
   androidClientId?: string;
   iosClientId?: string;
   androidStandaloneAppClientId?: string;
@@ -47,7 +47,7 @@ export type LogInResult =
       user: GoogleUser;
     };
 
-function getPlatformGUID(config: LogInConfig) {
+function getPlatformGUID(config: GoogleLogInConfig) {
   const { clientId } = config;
 
   const iosClientId =
@@ -124,7 +124,7 @@ function guidFromClientId(clientId: string): string {
   return guid;
 }
 
-export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
+export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult> {
   if (config.behavior !== undefined) {
     console.warn(
       "Deprecated: Native Google Sign-In has been moved to Expo.GoogleSignIn ('expo-google-sign-in') Falling back to `web` behavior. `behavior` deprecated in SDK 34"
@@ -191,7 +191,7 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
 export async function logOutAsync({
   accessToken,
   ...inputConfig
-}: LogInConfig & { accessToken: string }): Promise<any> {
+}: GoogleLogInConfig & { accessToken: string }): Promise<any> {
   const guid = getPlatformGUID(inputConfig);
 
   const clientId = `${guid}.apps.googleusercontent.com`;
