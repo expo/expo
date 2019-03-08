@@ -16,6 +16,9 @@ aws s3 cp \
 
 declare -A redirects # associative array variable
 
+# usage:
+# redicts[requests/for/this/path]=are/redirected/to/this/one
+
 # Temporarily create a redirect for a page that Home links to
 redirects[versions/latest/introduction/installation.html]=versions/latest/introduction/installation/
 # useful link on twitter
