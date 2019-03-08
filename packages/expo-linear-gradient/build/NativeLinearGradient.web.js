@@ -1,5 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+function hexStringFromProcessedColor(color) {
+    const colorStr = `${color.toString(16)}`;
+    const withoutAlpha = colorStr.substring(2, colorStr.length);
+    const alpha = colorStr.substring(0, 2);
+    return `#${withoutAlpha}${alpha}`;
+}
 export default class NativeLinearGradient extends React.PureComponent {
     constructor() {
         super(...arguments);
@@ -32,10 +38,11 @@ export default class NativeLinearGradient extends React.PureComponent {
         return colors
             .map((color, index) => {
             const location = this.props.locations && this.props.locations[index];
+            const hexColor = hexStringFromProcessedColor(color);
             if (location) {
-                return `${color} ${location * 100}%`;
+                return `${hexColor} ${location * 100}%`;
             }
-            return color;
+            return hexColor;
         })
             .join(',');
     }

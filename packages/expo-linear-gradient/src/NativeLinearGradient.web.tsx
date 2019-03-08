@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, processColor, View } from 'react-native';
 
 type Props = {
   colors: number[];
@@ -15,6 +15,13 @@ type State = {
 };
 
 type Point = [number, number];
+
+function hexStringFromProcessedColor(color: number) {
+  const colorStr = `${color.toString(16)}`;
+  const withoutAlpha = colorStr.substring(2, colorStr.length);
+  const alpha = colorStr.substring(0, 2);
+  return `#${withoutAlpha}${alpha}`;
+}
 
 export default class NativeLinearGradient extends React.PureComponent<Props, State> {
   state = {
@@ -50,10 +57,11 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     return colors
       .map((color, index) => {
         const location = this.props.locations && this.props.locations[index];
+        const hexColor = hexStringFromProcessedColor(color);
         if (location) {
-          return `${color} ${location * 100}%`;
+          return `${hexColor} ${location * 100}%`;
         }
-        return color;
+        return hexColor;
       })
       .join(',');
   }
