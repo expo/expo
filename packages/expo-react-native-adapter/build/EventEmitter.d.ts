@@ -1,4 +1,4 @@
-import NativeEventEmitter from './NativeEventEmitter';
+import NativeEventEmitter from './vendor/NativeEventEmitter';
 declare type NativeModule = {
     startObserving?: () => void;
     stopObserving?: () => void;

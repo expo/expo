@@ -1,6 +1,6 @@
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
-/*
+import RCTDeviceEventEmitter from './vendor/RCTDeviceEventEmitter';
+/**
  * This emitter is used for sending synthetic native events to listeners
  * registered in the API layer with `NativeEventEmitter`.
  */

@@ -1,7 +1,6 @@
 import invariant from 'invariant';
 import { Platform } from 'react-native';
-import NativeEventEmitter from './NativeEventEmitter';
-// import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
+import NativeEventEmitter from './vendor/NativeEventEmitter';
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
 export class EventEmitter {
     constructor(nativeModule) {
