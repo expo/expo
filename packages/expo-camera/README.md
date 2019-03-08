@@ -41,7 +41,20 @@ project(':expo-camera').projectDir = new File(rootProject.projectDir, '../node_m
 api project(':expo-camera')
 ```
 
-3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
+3. Adjust the `android/build.gradle` to add the `maven` block as described below:
+```gradle
+allprojects {
+    repositories {
+        // * Your other repositories here *
+        maven {
+            // expo-camera bundles a custom com.google.android:cameraview
+            url "$rootDir/../node_modules/expo-camera/android/maven"
+        }
+    }
+}
+```
+
+4. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
 import expo.modules.camera.CameraPackage;
 ```
