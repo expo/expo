@@ -58,7 +58,6 @@ EX_EXPORT_MODULE(ExponentSQLite);
     if (sqlite3_open([path UTF8String], &db) != SQLITE_OK) {
       return nil;
     };
-    sqlite3_exec(db, [@"PRAGMA foreign_keys = ON;" UTF8String], nil, nil, nil);
     cachedDB = [NSValue valueWithPointer:db];
     [cachedDatabases setObject:cachedDB forKey:dbName];
   }
@@ -81,12 +80,72 @@ EX_EXPORT_METHOD_AS(exec,
 
     sqlite3 *db = [databasePointer pointerValue];
     NSMutableArray *sqlResults = [NSMutableArray arrayWithCapacity:sqlQueries.count];
+
+    if ([self isPragmaForeignKeys:sqlQueries]) {
+      [self setForeignKeys:sqlQueries db:db resolver:resolve rejecter:reject];
+      return;
+    }
+
     for (NSArray *sqlQueryObject in sqlQueries) {
       NSString *sql = [sqlQueryObject objectAtIndex:0];
       NSArray *sqlArgs = [sqlQueryObject objectAtIndex:1];
       [sqlResults addObject:[self executeSql:sql withSqlArgs:sqlArgs withDb:db withReadOnly:readOnly]];
     }
     resolve(sqlResults);
+  }
+}
+
+- (NSString *)getNewForeignKeysValue:(NSString *)sql {
+  NSString *pattern = @"[\\s]*PRAGMA[\\s]*foreign_keys[\\s]*=[\\s]*([onfONF]{2,3})[\\s]*[;]*[\\s]*";
+  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
+  NSTextCheckingResult *match = [regex firstMatchInString:sql
+                                                   options:0
+                                                     range:NSMakeRange(0, [sql length])];
+  if (match) {
+    NSString *result = [sql substringWithRange:[match rangeAtIndex:1]];
+    result = [result uppercaseString];
+    return result;
+  }
+  return nil;
+}
+
+- (BOOL)isPragmaForeignKeys:(NSArray *)sqlQueries {
+  if ([sqlQueries count] != 2) {
+    return false;
+  }
+
+  NSString *sql = [sqlQueries[1] objectAtIndex:0];
+  NSArray *sqlArgs = [sqlQueries[1] objectAtIndex:1];
+
+  if ([sqlArgs count] > 0) {
+    return false;
+  }
+
+  NSString *value = [self getNewForeignKeysValue:sql];
+  if (value == nil) {
+    return false;
+  }
+  return true;
+}
+
+- (void)setForeignKeys:(NSArray *)sqlQueries
+                    db:(sqlite3 *)db
+              resolver:(EXPromiseResolveBlock)resolve
+              rejecter:(EXPromiseRejectBlock)reject {
+  NSString *sql = [sqlQueries[1] objectAtIndex:0];
+  NSString *value = [self getNewForeignKeysValue:sql];
+  int result = SQLITE_FAIL;
+  if ([value isEqualToString:@"ON"]) {
+    result = sqlite3_exec(db, [@"PRAGMA foreign_keys = ON;" UTF8String], nil, nil, nil);
+  }
+  if ([value isEqualToString:@"OFF"]) {
+    result = sqlite3_exec(db, [@"PRAGMA foreign_keys = OFF;" UTF8String], nil, nil, nil);
+  }
+  if (result == SQLITE_OK) {
+    NSArray *defaultValue = @[[NSNull null], @(0), @(0), @[], @[]];
+    resolve(@[defaultValue, defaultValue]);
+  } else {
+    reject(@"EXECUTION_ERROR", @"Couldn't set new value to foreign_keys variable", nil);
   }
 }
 
