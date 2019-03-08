@@ -1,8 +1,6 @@
 import invariant from 'invariant';
 import { Platform } from 'react-native';
-// Importing this directly will circumvent the webpack alias `react-native$`. This will enable us to
-// use NativeEventEmitter from React Native and not from RNWeb.
-import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
+import NativeEventEmitter from './vendor/NativeEventEmitter';
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
 export class EventEmitter {
     constructor(nativeModule) {

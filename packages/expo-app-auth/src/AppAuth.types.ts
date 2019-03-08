@@ -1,13 +1,8 @@
-//@flow
-import { NativeModulesProxy } from 'expo-core';
-import invariant from 'invariant';
-const { ExpoAppAuth } = NativeModulesProxy;
-
 export type OAuthServiceConfiguration = {
-  revocationEndpoint?: string,
-  authorizationEndpoint?: string,
-  registrationEndpoint?: string,
-  tokenEndpoint: string,
+  revocationEndpoint?: string;
+  authorizationEndpoint?: string;
+  registrationEndpoint?: string;
+  tokenEndpoint: string;
 };
 
 /* ASCII string value that specifies how the Authorization Server displays the authentication and consent user interface pages to the End-User. */
@@ -91,138 +86,43 @@ export type OAuthLoginHintParameter = string;
 export type OAuthACRValuesParameter = string;
 
 export type OAuthParameters = {
-  nonce?: OAuthNonceParameter,
-  display?: OAuthParametersDisplay,
-  prompt?: OAuthPromptParameter,
-  max_age?: OAuthMaxAgeParameter,
-  ui_locales?: OAuthUILocalesParameter,
-  id_token_hint?: OAuthIDTokenHintParameter,
-  login_hint?: OAuthLoginHintParameter,
-  acr_values?: OAuthACRValuesParameter,
-  [string]: string,
+  nonce?: OAuthNonceParameter;
+  display?: OAuthDisplayParameter;
+  prompt?: OAuthPromptParameter;
+  max_age?: OAuthMaxAgeParameter;
+  ui_locales?: OAuthUILocalesParameter;
+  id_token_hint?: OAuthIDTokenHintParameter;
+  login_hint?: OAuthLoginHintParameter;
+  acr_values?: OAuthACRValuesParameter;
+  [key: string]: any;
 };
 
 export type OAuthBaseProps = {
-  clientId: string,
-  issuer: string,
-  serviceConfiguration?: OAuthServiceConfiguration,
+  clientId: string;
+  issuer: string;
+  serviceConfiguration?: OAuthServiceConfiguration;
 };
 
 export type OAuthProps = OAuthBaseProps & {
-  redirectUrl?: string,
-  clientSecret?: string,
-  scopes?: Array<string>,
-  additionalParameters?: OAuthParameters,
-  canMakeInsecureRequests?: boolean,
+  redirectUrl?: string;
+  clientSecret?: string;
+  scopes?: Array<string>;
+  additionalParameters?: OAuthParameters;
+  canMakeInsecureRequests?: boolean;
+  isRefresh?: boolean;
+  refreshToken?: string;
 };
 
 export type OAuthRevokeOptions = {
-  token: string,
-  isClientIdProvided: boolean,
+  token: string;
+  isClientIdProvided?: boolean;
 };
 
 export type TokenResponse = {
-  accessToken: string | null,
-  accessTokenExpirationDate: string | null,
-  additionalParameters: { [string]: any } | null,
-  idToken: string | null,
-  tokenType: string | null,
-  refreshToken?: string,
+  accessToken: string | null;
+  accessTokenExpirationDate: string | null;
+  additionalParameters: { [key: string]: any } | null;
+  idToken: string | null;
+  tokenType: string | null;
+  refreshToken: string | null;
 };
-
-const isValidString = (s: ?string): boolean => s && typeof s === 'string';
-
-function isValidClientId(clientId: ?string): void {
-  if (!isValidString(clientId)) throw new Error('Config error: clientId must be a string');
-}
-
-function isValidProps({
-  isRefresh,
-  issuer,
-  redirectUrl,
-  clientId,
-  clientSecret,
-  scopes,
-  additionalParameters,
-  serviceConfiguration,
-}: OAuthProps): void {
-  const _serviceConfigIsValid =
-    serviceConfiguration &&
-    isValidString(serviceConfiguration.authorizationEndpoint) &&
-    isValidString(serviceConfiguration.tokenEndpoint);
-
-  if (!isValidString(issuer) && !_serviceConfigIsValid)
-    throw new Error('Invalid you must provide either an issuer or a service endpoints');
-  if (!isValidString(redirectUrl)) throw new Error('Config error: redirectUrl must be a string');
-  isValidClientId(clientId);
-}
-
-async function _executeAsync(props: OAuthProps): Promise<TokenResponse> {
-  if (!props.redirectUrl) {
-    props.redirectUrl = `${ExpoAppAuth.OAuthRedirect}:/oauthredirect`;
-  }
-  isValidProps(props);
-  return await ExpoAppAuth.executeAsync(props);
-}
-
-export async function authAsync(props: OAuthProps): Promise<TokenResponse> {
-  return await _executeAsync(props);
-}
-
-export async function refreshAsync(
-  props: OAuthProps,
-  refreshToken: string
-): Promise<TokenResponse> {
-  if (!refreshToken) throw new Error('Please include the refreshToken');
-  return await _executeAsync({
-    isRefresh: true,
-    refreshToken,
-    ...props,
-  });
-}
-
-export async function revokeAsync(
-  { clientId, issuer, serviceConfiguration }: OAuthBaseProps,
-  { token, isClientIdProvided = false }: OAuthRevokeOptions
-): Promise<any> {
-  if (!token) throw new Error('Please include the token to revoke');
-
-  isValidClientId(clientId);
-
-  if (
-    !isValidString(issuer) ||
-    (serviceConfiguration && !isValidString(serviceConfiguration.revocationEndpoint))
-  ) {
-    throw new Error('Config error: you must provide either an issuer or a revocation endpoint');
-  }
-
-  let revocationEndpoint;
-  if (serviceConfiguration && serviceConfiguration.revocationEndpoint) {
-    revocationEndpoint = serviceConfiguration.revocationEndpoint;
-  } else {
-    const response = await fetch(`${issuer}/.well-known/openid-configuration`);
-    const openidConfig = await response.json();
-
-    invariant(
-      openidConfig.revocation_endpoint,
-      'The OpenID config does not specify a revocation endpoint'
-    );
-
-    revocationEndpoint = openidConfig.revocation_endpoint;
-  }
-
-  const body = `token=${token}${isClientIdProvided ? `&client_id=${clientId}` : ''}`;
-  const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-  try {
-    const results = await fetch(revocationEndpoint, {
-      method: 'POST',
-      headers,
-      body,
-    });
-    return results;
-  } catch (error) {
-    throw new Error(`Failed to revoke token ${error.message}`);
-  }
-}
-
-export const { OAuthRedirect, URLSchemes } = ExpoAppAuth;

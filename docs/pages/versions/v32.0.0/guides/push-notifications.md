@@ -304,6 +304,11 @@ type PushMessage = {
   // iOS-specific fields
 
   /**
+   * The subtitle to display in the notification below the title
+   */
+  subtitle?: string,
+
+  /**
    * A sound to play when the recipient receives this notification. Specify
    * "default" to play the device's default notification sound, or omit this
    * field to play no sound.

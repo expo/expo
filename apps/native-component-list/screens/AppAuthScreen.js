@@ -38,8 +38,8 @@ async function getCachedAuthAsync() {
   }
 }
 
-function cacheAuthAsync(authState) {
-  return AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
+async function cacheAuthAsync(authState) {
+  return await AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
 }
 
 function checkIfTokenExpired({ accessTokenExpirationDate }) {
