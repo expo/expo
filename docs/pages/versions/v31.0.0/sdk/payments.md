@@ -126,7 +126,7 @@ Add the following code to your `AndroidManifest.xml`, replacing `your_scheme` wi
       ...
 ```
 
-If you have problems with this step just look at `AndroidManifest.xml` in one of our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples). Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
+If you have problems with this step just look at `AndroidManifest.xml` in one of our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples). Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
 
 ## Importing Payments
 
