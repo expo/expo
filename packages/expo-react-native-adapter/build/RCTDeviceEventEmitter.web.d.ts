@@ -3,9 +3,6 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow
  */
 import EventSubscriptionVendor from 'react-native/Libraries/vendor/emitter/EventSubscriptionVendor';
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
