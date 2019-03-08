@@ -224,7 +224,7 @@ Launch `Add Card` view to to accept payment.
 |       Key       |  Type  | Description                                                                                                                                                                             |
 |:---------------:|:------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | shippingAddress | Object | The user’s shipping address. When set, the shipping address form will be filled with this address. The user will also have the option to fill their billing address using this address. |
-|  billingAddress | Object | The user’s billing address. When set, the add card form will be filled with this address. The user will also have the option to fill their shipping address using this address          |
+|  billingAddress | Object | The user’s billing address. When set, the "add card" form will be filled with this address. The user will also have the option to fill their shipping address using this address.          |
 
 **options.prefilledInformation.billingAddress** — An object with the following keys:
 
