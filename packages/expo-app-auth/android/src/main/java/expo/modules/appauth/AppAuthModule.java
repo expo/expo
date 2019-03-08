@@ -66,9 +66,9 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
 
   private AuthorizationServiceConfiguration createOAuthServiceConfiguration(Map<String, String> config) {
     return new AuthorizationServiceConfiguration(
-        Uri.parse(config.get(AppAuthConstants.Props.tokenEndpoint)),
-        Uri.parse(config.get(AppAuthConstants.Props.authorizationEndpoint)),
-        config.containsKey(AppAuthConstants.Props.registrationEndpoint) ? null : Uri.parse(config.get(AppAuthConstants.Props.registrationEndpoint))
+        Uri.parse(config.get(AppAuthConstants.Props.TOKEN_ENDPOINT)),
+        Uri.parse(config.get(AppAuthConstants.Props.AUTHORIZATION_ENDPOINT)),
+        config.containsKey(AppAuthConstants.Props.REGISTRATION_ENDPOINT) ? null : Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT))
     );
   }
 
@@ -141,7 +141,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
       Map<String, String> serviceConfig
   ) {
     if (EventBus.getDefault().isRegistered(this)) {
-      mAuthTask.reject(AppAuthConstants.Error.Default, "Cannot start a new task while another task is currently in progress");
+      mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Cannot start a new task while another task is currently in progress");
       return;
     }
 
@@ -174,7 +174,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
                 return;
               }
               if (EventBus.getDefault().isRegistered(this)) {
-                mAuthTask.reject(AppAuthConstants.Error.Default, "Cannot start a new task while another task is currently in progress");
+                mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Cannot start a new task while another task is currently in progress");
                 return;
               }
 
@@ -203,29 +203,29 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
       @Override
       public void run() {
 
-        final String issuer = (String) options.get(AppAuthConstants.Props.issuer);
-        final String redirectUrl = (String) options.get(AppAuthConstants.Props.redirectUrl);
-        final String clientId = (String) options.get(AppAuthConstants.Props.clientId);
-        final String clientSecret = (String) options.get(AppAuthConstants.Props.clientSecret);
-        final String refreshToken = (String) options.get(AppAuthConstants.Props.refreshToken);
+        final String issuer = (String) options.get(AppAuthConstants.Props.ISSUER);
+        final String redirectUrl = (String) options.get(AppAuthConstants.Props.REDIRECT_URL);
+        final String clientId = (String) options.get(AppAuthConstants.Props.CLIENT_ID);
+        final String clientSecret = (String) options.get(AppAuthConstants.Props.CLIENT_SECRET);
+        final String refreshToken = (String) options.get(AppAuthConstants.Props.REFRESH_TOKEN);
 
-        final Boolean shouldMakeHTTPCalls = options.containsKey(AppAuthConstants.Props.canMakeInsecureRequests) ? (Boolean) options.get(AppAuthConstants.Props.canMakeInsecureRequests) : false;
-        final Boolean isRefresh = options.containsKey(AppAuthConstants.Props.isRefresh) ? (Boolean) options.get(AppAuthConstants.Props.isRefresh) : false;
+        final Boolean shouldMakeHTTPCalls = options.containsKey(AppAuthConstants.Props.CAN_MAKE_INSECURE_REQUESTS) ? (Boolean) options.get(AppAuthConstants.Props.CAN_MAKE_INSECURE_REQUESTS) : false;
+        final Boolean isRefresh = options.containsKey(AppAuthConstants.Props.IS_REFRESH) ? (Boolean) options.get(AppAuthConstants.Props.IS_REFRESH) : false;
 
-        final ArrayList<String> scopes = (ArrayList) options.get(AppAuthConstants.Props.scopes);
+        final ArrayList<String> scopes = (ArrayList) options.get(AppAuthConstants.Props.SCOPES);
 
         Map<String, String> params = new HashMap<>();
-        if (options.containsKey(AppAuthConstants.Props.additionalParameters) && options.get(AppAuthConstants.Props.additionalParameters) instanceof Map) {
-          params = Serialization.jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.additionalParameters));
+        if (options.containsKey(AppAuthConstants.Props.ADDITIONAL_PARAMETERS) && options.get(AppAuthConstants.Props.ADDITIONAL_PARAMETERS) instanceof Map) {
+          params = Serialization.jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.ADDITIONAL_PARAMETERS));
         }
 
         Map<String, String> serviceConfig = null;
-        if (options.containsKey(AppAuthConstants.Props.serviceConfiguration) && options.get(AppAuthConstants.Props.serviceConfiguration) instanceof Map) {
-          serviceConfig = Serialization.jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.serviceConfiguration));
+        if (options.containsKey(AppAuthConstants.Props.SERVICE_CONFIGURATION) && options.get(AppAuthConstants.Props.SERVICE_CONFIGURATION) instanceof Map) {
+          serviceConfig = Serialization.jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.SERVICE_CONFIGURATION));
         }
 
         if (clientSecret != null) {
-          params.put(AppAuthConstants.HTTPS.clientSecret, clientSecret);
+          params.put(AppAuthConstants.HTTPS.CLIENT_SECRET, clientSecret);
         }
 
         mAdditionalParametersMap = params;
@@ -283,17 +283,17 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
     }
 
     if (parameters != null) {
-      if (parameters.containsKey(AppAuthConstants.HTTPS.display)) {
-        authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.display));
-        parameters.remove(AppAuthConstants.HTTPS.display);
+      if (parameters.containsKey(AppAuthConstants.HTTPS.DISPLAY)) {
+        authReqBuilder.setDisplay(parameters.get(AppAuthConstants.HTTPS.DISPLAY));
+        parameters.remove(AppAuthConstants.HTTPS.DISPLAY);
       }
-      if (parameters.containsKey(AppAuthConstants.HTTPS.prompt)) {
-        authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.prompt));
-        parameters.remove(AppAuthConstants.HTTPS.prompt);
+      if (parameters.containsKey(AppAuthConstants.HTTPS.PROMPT)) {
+        authReqBuilder.setPrompt(parameters.get(AppAuthConstants.HTTPS.PROMPT));
+        parameters.remove(AppAuthConstants.HTTPS.PROMPT);
       }
-      if (parameters.containsKey(AppAuthConstants.HTTPS.loginHint)) {
-        authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.loginHint));
-        parameters.remove(AppAuthConstants.HTTPS.loginHint);
+      if (parameters.containsKey(AppAuthConstants.HTTPS.LOGIN_HINT)) {
+        authReqBuilder.setLoginHint(parameters.get(AppAuthConstants.HTTPS.LOGIN_HINT));
+        parameters.remove(AppAuthConstants.HTTPS.LOGIN_HINT);
       }
       authReqBuilder.setAdditionalParameters(parameters);
     }
@@ -308,11 +308,11 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
 
     ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
     if (!"standalone".equals(constantsService.getAppOwnership())) {
-      if (!constantsService.getConstants().containsKey(AppAuthConstants.ManifestURL)) {
-        mAuthTask.reject(AppAuthConstants.Error.Default, "Missing " + AppAuthConstants.ManifestURL + " in the experience Constants");
+      if (!constantsService.getConstants().containsKey(AppAuthConstants.MANIFEST_URL)) {
+        mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Missing " + AppAuthConstants.MANIFEST_URL + " in the experience Constants");
         return;
       } else {
-        String experienceUrl = (String) constantsService.getConstants().get(AppAuthConstants.ManifestURL);
+        String experienceUrl = (String) constantsService.getConstants().get(AppAuthConstants.MANIFEST_URL);
         postAuthIntent.putExtra(AppAuthBrowserActivity.EXTRA_REDIRECT_EXPERIENCE_URL, experienceUrl);
       }
     }

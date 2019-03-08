@@ -14,7 +14,7 @@ public class AuthTask {
       mTag = tag;
       return true;
     } else {
-      promise.reject(AppAuthConstants.Error.ConcurrentTask, "Cannot start a new task while another task is currently in progress: " + mTag);
+      promise.reject(AppAuthConstants.Error.CONCURRENT_TASK, "Cannot start a new task while another task is currently in progress: " + mTag);
       return false;
     }
   }
@@ -32,7 +32,7 @@ public class AuthTask {
       AuthorizationException authorizationException = (AuthorizationException) e;
       this.reject(String.valueOf(authorizationException.code), authorizationException.getLocalizedMessage());
     } else {
-      this.reject(AppAuthConstants.Error.Default, e.getLocalizedMessage());
+      this.reject(AppAuthConstants.Error.DEFAULT, e.getLocalizedMessage());
     }
   }
 

@@ -42,9 +42,9 @@ public class Serialization {
 
 
     // (RFC 6749), Section 4.1.4
-    map.putString(AppAuthConstants.Props.tokenType, response.tokenType);
+    map.putString(AppAuthConstants.Props.TOKEN_TYPE, response.tokenType);
     // nullable | (RFC 6749), Section 5.1
-    map.putString(AppAuthConstants.Props.accessToken, response.accessToken);
+    map.putString(AppAuthConstants.Props.ACCESS_TOKEN, response.accessToken);
     /**
      * If an access token is provided but the expiration time is not,
      * then the expiration time is typically some default value specified
@@ -52,16 +52,16 @@ public class Serialization {
      * non-standard field.
      */
     if (response.accessTokenExpirationTime != null) {
-      map.putString(AppAuthConstants.Props.accessTokenExpirationDate, unixTimeToString(response.accessTokenExpirationTime));
+      map.putString(AppAuthConstants.Props.ACCESS_TOKEN_EXPIRATION_DATE, unixTimeToString(response.accessTokenExpirationTime));
     }
     // OpenID Connect Core 1.0, Section 2
-    map.putString(AppAuthConstants.Props.idToken, response.idToken);
+    map.putString(AppAuthConstants.Props.ID_TOKEN, response.idToken);
     // (RFC 6749), Section 5.1
-    map.putString(AppAuthConstants.Props.refreshToken, response.refreshToken);
+    map.putString(AppAuthConstants.Props.REFRESH_TOKEN, response.refreshToken);
 
     if (response.getScopeSet() != null) {
       // (RFC 6749), Section 5.1
-      map.putStringArrayList(AppAuthConstants.Props.scopes, new ArrayList<>(response.getScopeSet()));
+      map.putStringArrayList(AppAuthConstants.Props.SCOPES, new ArrayList<>(response.getScopeSet()));
     }
 
     if (!response.additionalParameters.isEmpty()) {
@@ -69,9 +69,9 @@ public class Serialization {
       for (Map.Entry<String, String> entry : response.additionalParameters.entrySet()) {
         bundle.putString(entry.getKey(), entry.getValue());
       }
-      map.putBundle(AppAuthConstants.Props.additionalParameters, bundle);
+      map.putBundle(AppAuthConstants.Props.ADDITIONAL_PARAMETERS, bundle);
     } else {
-      map.putBundle(AppAuthConstants.Props.additionalParameters, null);
+      map.putBundle(AppAuthConstants.Props.ADDITIONAL_PARAMETERS, null);
     }
 
     return map;

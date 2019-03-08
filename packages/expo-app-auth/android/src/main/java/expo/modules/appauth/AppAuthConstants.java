@@ -1,38 +1,38 @@
 package expo.modules.appauth;
 
 public class AppAuthConstants {
-  static String ManifestURL = "experienceUrl";
+  static String MANIFEST_URL = "experienceUrl";
 
   public interface Error {
-    String Default = "ERR_APP_AUTH";
-    String ConcurrentTask = "ERR_APP_AUTH_CONCURRENT_TASK";
+    String DEFAULT = "ERR_APP_AUTH";
+    String CONCURRENT_TASK = "ERR_APP_AUTH_CONCURRENT_TASK";
   }
 
   public interface Props {
-    String tokenEndpoint = "tokenEndpoint";
-    String authorizationEndpoint = "authorizationEndpoint";
-    String registrationEndpoint = "registrationEndpoint";
-    String issuer = "issuer";
-    String redirectUrl = "redirectUrl";
-    String clientId = "clientId";
-    String clientSecret = "clientSecret";
-    String refreshToken = "refreshToken";
-    String canMakeInsecureRequests = "canMakeInsecureRequests";
-    String isRefresh = "isRefresh";
-    String additionalParameters = "additionalParameters";
-    String scopes = "scopes";
-    String serviceConfiguration = "serviceConfiguration";
-    String idToken = "idToken";
-    String accessTokenExpirationDate = "accessTokenExpirationDate";
-    String accessToken = "accessToken";
-    String tokenType = "tokenType";
+    String TOKEN_ENDPOINT = "tokenEndpoint";
+    String AUTHORIZATION_ENDPOINT = "authorizationEndpoint";
+    String REGISTRATION_ENDPOINT = "registrationEndpoint";
+    String ISSUER = "issuer";
+    String REDIRECT_URL = "redirectUrl";
+    String CLIENT_ID = "clientId";
+    String CLIENT_SECRET = "clientSecret";
+    String REFRESH_TOKEN = "refreshToken";
+    String CAN_MAKE_INSECURE_REQUESTS = "canMakeInsecureRequests";
+    String IS_REFRESH = "isRefresh";
+    String ADDITIONAL_PARAMETERS = "additionalParameters";
+    String SCOPES = "scopes";
+    String SERVICE_CONFIGURATION = "serviceConfiguration";
+    String ID_TOKEN = "idToken";
+    String ACCESS_TOKEN_EXPIRATION_DATE = "accessTokenExpirationDate";
+    String ACCESS_TOKEN = "accessToken";
+    String TOKEN_TYPE = "tokenType";
   }
 
   public interface HTTPS {
-    String clientSecret = "client_secret";
-    String display = "display";
-    String prompt = "prompt";
-    String loginHint = "login_hint";
-    String nonce = "nonce";
+    String CLIENT_SECRET = "client_secret";
+    String DISPLAY = "display";
+    String PROMPT = "prompt";
+    String LOGIN_HINT = "login_hint";
+    String NONCE = "nonce";
   }
 }
