@@ -18,6 +18,8 @@ declare -A redirects # associative array variable
 
 # Temporarily create a redirect for a page that Home links to
 redirects[versions/latest/introduction/installation.html]=versions/latest/introduction/installation/
+# useful link on twitter
+redirects[versions/latest/guides/app-stores.html]=versions/latest/distribution/app-stores/
 
 for i in "${!redirects[@]}" # iterate over keys
 do
