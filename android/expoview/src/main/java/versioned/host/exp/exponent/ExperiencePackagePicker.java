@@ -14,10 +14,10 @@ import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
-import expo.modules.blurview.BlurViewPackage;
 import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
+import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
 import expo.modules.crypto.CryptoPackage;
@@ -60,7 +60,6 @@ public class ExperiencePackagePicker {
       new AmplitudePackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
-      new BlurViewPackage(),
       new BrightnessPackage(),
       new CalendarPackage(),
       new CameraPackage(),
@@ -93,6 +92,7 @@ public class ExperiencePackagePicker {
       new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),
+      new SharingPackage(),
       new SpeechPackage(),
       new StripePackage(),
       new TaskManagerPackage(),

@@ -28,6 +28,16 @@ Note that FCM cannot be used to send messages to the Android Expo Client. Also, 
 
 Finally, make a new build of your app by running `exp build:android`.
 
+### ExpoKit projects
+
+If you do the above setup before ejecting to ExpoKit, your FCM notifications will continue to work properly without any extra steps after ejecting. However, if your project is already ejected to ExpoKit and you want to set up FCM retroactively, you'll need to do the following:
+
+1. Copy the same `google-services.json` file into the `android/app` directory. If that file already exists, you should overwrite it.
+
+2. In `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` change `FCM_ENABLED` from `false` to `true`.
+
+3. If your project is SDK 28 or below, you'll also need to add [these lines](https://github.com/expo/expo/blob/a44b8a65484d26a141550af59090c86432272ae5/template-files/android/AndroidManifest.xml#L270-L292) to `android/app/src/main/AndroidManifest.xml`.
+
 ## Uploading Server Credentials
 
 In order for Expo to send notifications from our servers using your credentials, you'll need to upload your secret server key. You can find this key in the Firebase Console for your project:

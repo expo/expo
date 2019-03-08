@@ -43,7 +43,7 @@ api project(':expo-image-picker')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.imagepicker.ImagePickerPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

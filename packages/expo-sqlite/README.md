@@ -24,7 +24,7 @@ npm install expo-sqlite
 Add the dependency to your `Podfile` and then run `pod install`.
 
 ```ruby
-pod 'EXSQlite', path: '../node_modules/expo-sqlite/ios'
+pod 'EXSQLite', path: '../node_modules/expo-sqlite/ios'
 ```
 
 ### Configure for Android
@@ -43,7 +43,7 @@ api project(':expo-sqlite')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.sqlite.SQLitePackage;
+import expo.modules.sqlite.SQLitePackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

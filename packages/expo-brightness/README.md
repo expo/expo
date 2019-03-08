@@ -43,7 +43,7 @@ api project(':expo-brightness')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.brightness.BrightnessPackage;
+import expo.modules.brightness.BrightnessPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

@@ -1,8 +1,4 @@
-import './environment/validate';
-import './environment/logging';
-
-// load expo-asset immediately to set a custom `source` transformer in React Native
-import 'expo-asset';
+import './sideEffects';
 
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
@@ -19,12 +15,13 @@ import * as Facebook from 'expo-facebook';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
 import { Audio, Video } from 'expo-av';
-import { BlurView, VibrancyView } from 'expo-blur';
+import { BlurView } from 'expo-blur';
 import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
 import * as Google from './Google/Google';
 import * as Haptics from 'expo-haptics';
+import * as Sharing from 'expo-sharing';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -43,7 +40,8 @@ export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from '
 import * as Segment from 'expo-analytics-segment';
 export { Segment };
 export { Asset } from 'expo-asset';
-export { AppAuth } from 'expo-app-auth';
+import * as AppAuth from 'expo-app-auth';
+export { AppAuth };
 export { BackgroundFetch };
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Calendar };
@@ -91,8 +89,9 @@ export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 export { Facebook };
 export { Google };
 import * as Random from 'expo-random';
-export { Random };
 export { default as Icon } from './Icon';
+export { Random };
+export { Sharing };
 export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { default as Linking } from './Linking/Linking';
 export { MailComposer };
@@ -106,42 +105,31 @@ export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 export { Audio, Video };
-export { BlurView, VibrancyView };
+export { BlurView };
 export { LinearGradient } from 'expo-linear-gradient';
 export { FacebookAds };
 export { default as AppLoading } from './launch/AppLoading';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
-
+export { default as Pedometer } from './Pedometer';
 // polyfill navigator.geolocation
 Location.installWebGeolocationPolyfill();
 
 // @ts-ignore
 Object.defineProperties(exports, {
-  // TODO: Unify the Pedometer module across platforms so we can export it normally
-  Pedometer: {
-    enumerable: true,
-    get() {
-      if (Platform.OS === 'android') {
-        return require('./Pedometer');
-      } else {
-        return require('expo-sensors').Pedometer;
-      }
-    },
-  },
   Haptic: {
     enumerable: false,
     get() {
       console.log('Module name `Haptic` is deprecated. Use `Haptics` instead.');
-      return Haptics;
+      return require('expo-haptics');
     },
   },
   IntentLauncherAndroid: {
     enumerable: true,
     get() {
       console.warn(`Module name 'IntentLauncherAndroid' is deprecated, use 'IntentLauncher' instead`);
-      return IntentLauncher;
+      return require('expo-intent-launcher');
     },
   },
 });

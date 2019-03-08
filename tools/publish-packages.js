@@ -311,11 +311,16 @@ function _isMaintainer(username, packageView) {
 }
 
 async function _preparePublishAsync({ libName, dir }, allConfigs, options) {
+  const isScoped = (options.scope.length === 0 || options.scope.includes(libName)) && !options.exclude.includes(libName);
+  // early bailout
+  if (!isScoped) {
+    return { shouldPublish: false };
+  }
+
   const packageJson = require(path.join(dir, 'package.json'));
   const packageView = await _getPackageViewFromRegistryAsync(libName);
   const currentVersion = packageView && packageView.currentVersion;
   const defaultVersion = _findDefaultVersion(packageJson, packageView, options);
-  const isScoped = (options.scope.length === 0 || options.scope.includes(libName)) && !options.exclude.includes(libName);
   const maintainers = packageView ? _getMaintainers(libName) : [];
   const isMaintainer = !packageView || maintainers.includes(options.npmProfile.name);
   let shouldPublish = false;

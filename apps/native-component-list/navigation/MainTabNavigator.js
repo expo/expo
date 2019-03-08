@@ -69,6 +69,7 @@ const MainTabNavigator = createTabNavigator(
         },
       };
     },
+    resetOnBlur: true,
     /* Below applies to material bottom tab navigator */
     activeTintColor: Colors.tabIconSelected,
     inactiveTintColor: Colors.tabIconDefault,

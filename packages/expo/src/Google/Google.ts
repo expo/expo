@@ -168,9 +168,9 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
 
     return {
       type: 'success',
-      accessToken: logInResult.accessToken || null,
+      accessToken: logInResult.accessToken,
       idToken: logInResult.idToken,
-      refreshToken: logInResult.refreshToken || null,
+      refreshToken: logInResult.refreshToken,
       user: {
         id: userInfo.id,
         name: userInfo.name,

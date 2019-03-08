@@ -49,7 +49,7 @@ export default class SMSScreen extends React.Component {
         <Button
           style={styles.button}
           title="Send"
-          disabled={!this.state.message || !this.state.phoneNumbers.length}
+          disabled={!this.state.message}
           onPress={this._sendSMS}>
           Send SMS
         </Button>

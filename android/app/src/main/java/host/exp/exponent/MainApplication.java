@@ -15,7 +15,6 @@ import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
-import expo.modules.blurview.BlurViewPackage;
 import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
@@ -43,6 +42,7 @@ import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
+import expo.modules.sharing.SharingPackage;
 import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
@@ -80,7 +80,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new AmplitudePackage(),
         new BackgroundFetchPackage(),
         new BarCodeScannerPackage(),
-        new BlurViewPackage(),
         new BrightnessPackage(),
         new CalendarPackage(),
         new CameraPackage(),
@@ -111,6 +110,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new SecureStorePackage(),
         new SegmentPackage(),
         new SensorsPackage(),
+        new SharingPackage(),
         new SpeechPackage(),
         new TaskManagerPackage(),
         new WebBrowserPackage()

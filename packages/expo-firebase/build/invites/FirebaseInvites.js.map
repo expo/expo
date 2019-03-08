@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseInvites.js","sourceRoot":"","sources":["../../src/invites/FirebaseInvites.ts"],"names":[],"mappings":"AAAA,OAAO,uBAAuB,CAAC","sourcesContent":["import 'expo-firebase-invites';\n"]}

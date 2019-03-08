@@ -43,7 +43,7 @@ api project(':expo-app-auth')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.appauth.AppAuthPackage;
+import expo.modules.appauth.AppAuthPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

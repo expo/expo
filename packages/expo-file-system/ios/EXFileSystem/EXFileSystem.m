@@ -771,25 +771,9 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   return [EXFileSystem documentDirectoryForExperienceId:experienceId];
 }
 
-+ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
-{
-  NSString *subdir = [self escapedResourceName:experienceId];
-  return [[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
-            stringByAppendingPathComponent:@"ExponentExperienceData"]
-           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
-}
-
 - (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
 {
   return [EXFileSystem cachesDirectoryForExperienceId:experienceId];
-}
-
-+ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
-{
-  NSString *subdir = [self escapedResourceName:experienceId];
-  return [[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
-            stringByAppendingPathComponent:@"ExponentExperienceData"]
-           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
 }
 
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension
@@ -805,12 +789,18 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-+ (NSString *)escapedResourceName:(NSString *)name
++ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
 {
-  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
-  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+  NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *documentDirectory = [paths objectAtIndex:0];
+  return documentDirectory;
 }
 
++ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
+{
+  NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  NSString *cacheDirectory = [paths objectAtIndex:0];
+  return cacheDirectory;
+}
 
 @end

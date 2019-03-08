@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseDatabase.js","sourceRoot":"","sources":["../../src/database/FirebaseDatabase.ts"],"names":[],"mappings":"AAAA,OAAO,wBAAwB,CAAC","sourcesContent":["import 'expo-firebase-database';\n"]}

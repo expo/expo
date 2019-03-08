@@ -32,10 +32,40 @@ project(':expo-errors').projectDir = new File(rootProject.projectDir, '../node_m
 ```
 
 2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
+
 ```gradle
 api project(':expo-errors')
 ```
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
+
+# Docs
+
+## deprecate
+
+This method will warn once if someone attempts to use deprecated API.
+If the deprecated version is lower than the current version, a `CodedError` will be thrown. This will help developers identify what code needs to be removed.
+
+```ts
+import { deprecate } from 'expo-errors';
+import pckgJson from '../package.json';
+
+// Deleting a property. ex: In the next version foo will be removed.
+deprecate('expo-example-library', 'foo', {
+  currentVersion: pckgJson.version,
+  versionToRemove: '2.0.0',
+});
+
+// Replacing a property. ex: I want to use the name bar instead of foo.
+deprecate('expo-example-library', 'foo', {
+  replacement: 'bar',
+  currentVersion: pckgJson.version,
+  versionToRemove: '2.0.0',
+});
+
+// Bad Form: Throw a deprecation error.
+deprecate('expo-example-library', 'foo');
+deprecate('expo-example-library', 'foo', { replacement: 'bar' });
+```
