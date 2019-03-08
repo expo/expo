@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, processColor, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 type Props = {
   colors: number[];
