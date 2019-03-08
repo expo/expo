@@ -9,7 +9,7 @@ export type AudioMode = {
   allowsRecordingIOS: boolean;
   interruptionModeIOS: number;
   playsInSilentModeIOS: boolean;
-  interruptionModeAndroid: boolean;
+  interruptionModeAndroid: number;
   shouldDuckAndroid: boolean;
   playThroughEarpieceAndroid: boolean;
 };
