@@ -465,7 +465,7 @@ PODS:
     - EXCore
     - EXSensorsInterface
   - EXSensorsInterface (3.0.0)
-  - EXSharing (1.0.0):
+  - EXSharing (1.0.1):
     - EXCore
     - EXFileSystemInterface
   - EXSMS (3.0.0):
