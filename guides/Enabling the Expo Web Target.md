@@ -97,7 +97,7 @@ Most of the customization can be done via the `app.json`.
 
 For coverage of Expo and various community libraries, check out [native.directory][native-directory]. For modules imported from `react-native`, you can look at the `react-native-web` [compatibility guide][react-native-web-compatibility].
 
-[native-directory]: http://native.directory
+[native-directory]: https://native.directory
 [react-native-web-compatibility]: https://github.com/necolas/react-native-web#compatibility-with-react-native
 [ncl-web-folder]: https://github.com/expo/expo/tree/master/apps/native-component-list/web
 [ncl-webpack-folder]: https://github.com/expo/expo/tree/master/apps/native-component-list/webpack
