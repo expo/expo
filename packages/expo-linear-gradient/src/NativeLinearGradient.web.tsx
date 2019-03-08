@@ -16,13 +16,6 @@ type State = {
 
 type Point = [number, number];
 
-function hexStringFromProcessedColor(color: number) {
-  const colorStr = `${color.toString(16)}`;
-  const withoutAlpha = colorStr.substring(2, colorStr.length);
-  const alpha = colorStr.substring(0, 2);
-  return `#${withoutAlpha}${alpha}`;
-}
-
 export default class NativeLinearGradient extends React.PureComponent<Props, State> {
   state = {
     width: undefined,
@@ -86,4 +79,11 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
     return <View style={flatStyle} onLayout={this.onLayout} {...props} />;
   }
+}
+
+function hexStringFromProcessedColor(argbColor: number): string {
+  const colorStr = argbColor.toString(16);
+  const withoutAlpha = colorStr.substring(2);
+  const alpha = colorStr.substring(0, 2);
+  return `#${withoutAlpha}${alpha}`;
 }

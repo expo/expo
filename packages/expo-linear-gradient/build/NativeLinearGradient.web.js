@@ -1,11 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-function hexStringFromProcessedColor(color) {
-    const colorStr = `${color.toString(16)}`;
-    const withoutAlpha = colorStr.substring(2, colorStr.length);
-    const alpha = colorStr.substring(0, 2);
-    return `#${withoutAlpha}${alpha}`;
-}
 export default class NativeLinearGradient extends React.PureComponent {
     constructor() {
         super(...arguments);
@@ -65,5 +59,11 @@ export default class NativeLinearGradient extends React.PureComponent {
         // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
         return <View style={flatStyle} onLayout={this.onLayout} {...props}/>;
     }
+}
+function hexStringFromProcessedColor(argbColor) {
+    const colorStr = argbColor.toString(16);
+    const withoutAlpha = colorStr.substring(2);
+    const alpha = colorStr.substring(0, 2);
+    return `#${withoutAlpha}${alpha}`;
 }
 //# sourceMappingURL=NativeLinearGradient.web.js.map
