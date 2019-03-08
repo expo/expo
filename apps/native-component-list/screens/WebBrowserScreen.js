@@ -19,6 +19,7 @@ export default class WebBrowserScreen extends React.Component {
     colorText: undefined,
     packages: undefined,
     selectedPackage: undefined,
+    barCollapsing: false,
   };
 
   async componentDidMount() {
@@ -118,6 +119,20 @@ export default class WebBrowserScreen extends React.Component {
           flex: 1,
         }}>
         {this.androidChoices()}
+        <View
+          style={{
+            paddingBottom: 5,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text>Bar collapsing</Text>
+          <Switch
+            style={{ padding: 5 }}
+            onValueChange={value => this.setState({ barCollapsing: value })}
+            value={this.state.barCollapsing}
+          />
+        </View>
         <Button
           style={styles.button}
           onPress={async () => {
@@ -125,9 +140,9 @@ export default class WebBrowserScreen extends React.Component {
               showTitle: this.state.showTitle,
               toolbarColor: this.state.colorText ? '#' + this.state.colorText : undefined,
               package: this.state.selectedPackage,
+              enableBarCollapsing: this.state.barCollapsing,
             };
-            console.log(args);
-            const result = await WebBrowser.openBrowserAsync('https://www.google.com', args);
+            const result = await WebBrowser.openBrowserAsync('https://www.onet.pl', args);
             setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
           }}
           title="Open web url"

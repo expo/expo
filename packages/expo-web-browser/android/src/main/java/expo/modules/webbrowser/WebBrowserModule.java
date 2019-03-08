@@ -132,11 +132,12 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     } catch (IllegalArgumentException ignored) {
     }
 
-    boolean showTitle = arguments.getBoolean("showTitle");
-    builder.setShowTitle(showTitle);
+    builder.setShowTitle(arguments.getBoolean("showTitle", false));
 
     Intent intent = builder.build().intent;
 
+    // We cannot use builder's method enableUrlBarHiding, because there is no corresponding disable method and some browsers enables it by default.
+    intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, arguments.getBoolean("enableBarCollapsing", false));
     if (!TextUtils.isEmpty(packageName)) {
       intent.setPackage(packageName);
     }

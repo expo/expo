@@ -9,7 +9,8 @@ type RedirectEvent = {
 type OpenBrowserParams = {
   toolbarColor?: string;
   package?: string;
-  showTitle: boolean;
+  enableBarCollapsing?: boolean;
+  showTitle?: boolean;
 };
 
 type AuthSessionResult = RedirectResult | BrowserResult;
@@ -43,9 +44,7 @@ export async function openBrowserAsync(
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
   if (!browserParams) {
-    browserParams = {
-      showTitle: false,
-    };
+    browserParams = {};
   }
   return ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }

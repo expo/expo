@@ -78,7 +78,7 @@ EX_EXPORT_METHOD_AS(openAuthSessionAsync,
 
 EX_EXPORT_METHOD_AS(openBrowserAsync,
                     openBrowserAsync:(NSString *)authURL
-                    openBrowserAsync:(NSDictionary *)arguments
+                    withArguments:(NSDictionary *)arguments
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
@@ -86,9 +86,20 @@ EX_EXPORT_METHOD_AS(openBrowserAsync,
     return;
   }
 
-  // Safari View Controller to authorize request
   NSURL *url = [[NSURL alloc] initWithString:authURL];
-  SFSafariViewController *safariVC = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:NO];
+  SFSafariViewController *safariVC = NULL;
+  if(@available(iOS 11, *)) {
+    SFSafariViewControllerConfiguration *config = [[SFSafariViewControllerConfiguration alloc]init];
+    bool enabled = false;
+    NSString *collapseBarKey = @"enableBarCollapsing";
+    if([[arguments allKeys] containsObject:collapseBarKey]) {
+      enabled = [arguments[collapseBarKey] boolValue];
+    }
+    config.barCollapsingEnabled = enabled;
+    safariVC = [[SFSafariViewController alloc] initWithURL:url configuration:config];
+  }
+  // Safari View Controller to authorize request
+  safariVC = [[SFSafariViewController alloc] initWithURL:url];
   safariVC.delegate = self;
 
   // By setting the modal presentation style to OverFullScreen, we disable the "Swipe to dismiss"
@@ -120,7 +131,7 @@ EX_EXPORT_METHOD_AS(dismissBrowser,
     resolve(nil);
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      strongSelf.redirectResolve(@{
+      self.redirectResolve(@{
                                    @"type": @"dismiss",
                                    });
       [strongSelf flowDidFinish];
