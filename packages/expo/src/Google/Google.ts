@@ -1,4 +1,4 @@
-import { AppAuth } from 'expo-app-auth';
+import * as AppAuth from 'expo-app-auth';
 import { UnavailabilityError } from 'expo-errors';
 import { Platform } from 'react-native';
 
@@ -25,7 +25,7 @@ export type LogInResult =
     }
   | {
       type: 'success';
-      accessToken?: string;
+      accessToken: string | null;
       idToken: string | null;
       refreshToken: string | null;
       user: GoogleUser;
@@ -81,9 +81,12 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
       headers: { Authorization: `Bearer ${logInResult.accessToken}` },
     });
     const userInfo = await userInfoResponse.json();
+
     return {
       type: 'success',
-      ...logInResult,
+      accessToken: logInResult.accessToken,
+      idToken: logInResult.idToken,
+      refreshToken: logInResult.refreshToken,
       user: {
         id: userInfo.id,
         name: userInfo.name,

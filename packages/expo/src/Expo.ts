@@ -40,7 +40,8 @@ export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from '
 import * as Segment from 'expo-analytics-segment';
 export { Segment };
 export { Asset } from 'expo-asset';
-export { AppAuth } from 'expo-app-auth';
+import * as AppAuth from 'expo-app-auth';
+export { AppAuth };
 export { BackgroundFetch };
 export { BarCodeScanner } from 'expo-barcode-scanner';
 export { Calendar };
