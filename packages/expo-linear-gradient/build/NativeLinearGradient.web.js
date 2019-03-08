@@ -61,9 +61,9 @@ export default class NativeLinearGradient extends React.PureComponent {
     }
 }
 function hexStringFromProcessedColor(argbColor) {
-    const colorStr = argbColor.toString(16);
-    const withoutAlpha = colorStr.substring(2);
-    const alpha = colorStr.substring(0, 2);
+    const hexColorString = argbColor.toString(16);
+    const withoutAlpha = hexColorString.substring(2);
+    const alpha = hexColorString.substring(0, 2);
     return `#${withoutAlpha}${alpha}`;
 }
 //# sourceMappingURL=NativeLinearGradient.web.js.map
