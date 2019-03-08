@@ -120,7 +120,7 @@ export default class MenuView extends React.Component {
           <View style={styles.buttonContainer}>
             {this._renderButton({
               key: 'refresh',
-              text: 'Refresh',
+              text: 'Reload Manifest and JS Bundle',
               onPress: () => ExponentKernel.selectRefresh(),
               iconSource: require('../assets/ios-menu-refresh.png'),
             })}
