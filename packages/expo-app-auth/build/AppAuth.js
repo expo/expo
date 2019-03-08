@@ -87,7 +87,7 @@ async function parseAuthRevocationResults(results) {
     const data = await results.json();
     const token = results.headers['update-client-auth'];
     // the token has been revoked successfully or the client submitted an invalid token.
-    if (results.status === 200) {
+    if (results.ok) {
         // successful op
         return { type: 'success', status: results.status, data, token };
     }
@@ -111,17 +111,13 @@ function parseRetryTime(value) {
     if (/^\d+$/.test(value)) {
         return parseInt(value, 10) * 1000;
     }
-    else {
-        const retry = Date.parse(value);
-        if (isNaN(retry)) {
-            throw new CodedError('ERR_APP_AUTH_FETCH_RETRY_TIME', 'Cannot parse the Retry-After header value returned by the server: ' + value);
-        }
-        else {
-            const now = Date.now();
-            const parsedDate = new Date(retry);
-            return parsedDate.getTime() - now;
-        }
+    const retry = Date.parse(value);
+    if (isNaN(retry)) {
+        throw new CodedError('ERR_APP_AUTH_FETCH_RETRY_TIME', 'Cannot parse the Retry-After header value returned by the server: ' + value);
     }
+    const now = Date.now();
+    const parsedDate = new Date(retry);
+    return parsedDate.getTime() - now;
 }
 export const { OAuthRedirect, URLSchemes } = ExpoAppAuth;
 //# sourceMappingURL=AppAuth.js.map
