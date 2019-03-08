@@ -49,14 +49,12 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     const { colors } = this.props;
     return colors
       .map((color, index) => {
-        const colorStr = `${color.toString(16)}`;
-        const hex = `#${colorStr.substring(2, colorStr.length)}`;
-
         const location = this.props.locations && this.props.locations[index];
+        const hexColor = hexStringFromProcessedColor(color);
         if (location) {
-          return `${hex} ${location * 100}%`;
+          return `${hexColor} ${location * 100}%`;
         }
-        return hex;
+        return hexColor;
       })
       .join(',');
   }
@@ -81,4 +79,11 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
     return <View style={flatStyle} onLayout={this.onLayout} {...props} />;
   }
+}
+
+function hexStringFromProcessedColor(argbColor: number): string {
+  const hexColorString = argbColor.toString(16);
+  const withoutAlpha = hexColorString.substring(2);
+  const alpha = hexColorString.substring(0, 2);
+  return `#${withoutAlpha}${alpha}`;
 }
