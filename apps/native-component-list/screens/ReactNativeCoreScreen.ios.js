@@ -23,7 +23,8 @@ import {
   View,
   WebView,
 } from 'react-native';
-import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
+// import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
+const TouchableBounce = TouchableOpacity;
 import { ScrollView as NavigationScrollView } from 'react-navigation';
 
 import Colors from '../constants/Colors';
