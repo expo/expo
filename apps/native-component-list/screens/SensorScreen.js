@@ -7,9 +7,8 @@ import {
   Gyroscope,
   Magnetometer,
   MagnetometerUncalibrated,
-  DangerZone,
-} from 'expo';
-const { DeviceMotion } = DangerZone;
+  DeviceMotion,
+} from 'expo-sensors';
 
 const FAST_INTERVAL = 16;
 const SLOW_INTERVAL = 1000;
