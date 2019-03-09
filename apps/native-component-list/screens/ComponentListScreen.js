@@ -16,7 +16,7 @@ class ComponentListScreen extends React.Component {
           <ExpoAPIIcon name={exampleName} style={styles.rowIcon} />
           <Text style={styles.rowLabel}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
-            <Entypo name="chevron-right" size={16} color="#aaaaaa" />
+            <Entypo name="chevron-right" size={16} color="#595959" />
           </Text>
         </View>
       </TouchableHighlight>
