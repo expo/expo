@@ -4,6 +4,7 @@
   "description": "Provides an API for iOS (AirPrint) and Android printing functionality.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
