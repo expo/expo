@@ -1,5 +1,5 @@
-import './environment/validate';
-import './environment/logging';
+import './environment/validate.fx';
+import './environment/logging.fx';
 
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
