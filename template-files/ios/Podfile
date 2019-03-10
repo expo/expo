@@ -5,7 +5,7 @@ target '${TARGET_NAME}' do
 ${EXPONENT_CLIENT_DEPS}
 
   # Universal modules
-  require_relative '../node_modules/@unimodules/core/cocoapods.rb'
+  require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
   use_unimodules!({
     modules_paths: ['../packages'],
     exclude: [

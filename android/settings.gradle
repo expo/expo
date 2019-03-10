@@ -19,7 +19,7 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 })
 
 // Import gradle helpers for unimodules.
-apply from: '../node_modules/@unimodules/core/gradle.groovy'
+apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
 // Include unimodules.
 includeUnimodules([
