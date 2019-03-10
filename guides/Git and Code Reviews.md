@@ -85,6 +85,6 @@ We couple responsibility with merging so the person responsible for code is pres
 
 ## Code reviews for external contributions
 
-All pull requests must be reviewed and potentially merged by someone on the Expo team. The best way to get your PR reviewed is to make it easy to review and accept. See [the contribution guide](../.github/CONTRIBUTING.md) for our expectations of contributions.
+All pull requests must be reviewed and potentially merged by someone on the Expo team. The best way to get your PR reviewed is to make it easy to review and accept. See [the contribution guide](../CONTRIBUTING.md) for our expectations of contributions.
 
 A maintainable PR is simple to understand and often small in scope. It is robust and unlikely to break if another part of the system is modified. It keeps related code close together and avoids prematurely separating concerns. It follows the coding standards implied by the codebase and Expo coding guidelines. It strikes a balance with enough code to provide a feature in a generalizable way.
