@@ -11064,6 +11064,29 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0:
   dependencies:
     prop-types "^15.6.1"
 
+react-native-unimodules@~0.1.0-rc.2:
+  version "0.1.0-rc.2"
+  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.1.0-rc.2.tgz#e34b26f8c80410103c1ae553d8b7ab1154de0b7d"
+  integrity sha512-jS14NvsJ8mG+hnJ9G11dX1nxdDDFN+crFjEUwjUbNUEe4sT+xjPmeYjR80k5oogtr7JLgRrRE8Wmx8CPHh8QwA==
+  dependencies:
+    expo-asset "~3.0.0"
+    expo-barcode-scanner-interface "~3.0.0"
+    expo-camera-interface "~3.0.0"
+    expo-constants "~3.0.0"
+    expo-constants-interface "~3.0.0"
+    expo-core "~3.0.0"
+    expo-errors "~3.0.0"
+    expo-face-detector-interface "~3.0.0"
+    expo-file-system "~3.0.0"
+    expo-file-system-interface "~3.0.0"
+    expo-font-interface "~3.0.0"
+    expo-image-loader-interface "~3.0.0"
+    expo-permissions "~3.0.0"
+    expo-permissions-interface "~3.0.0"
+    expo-react-native-adapter "~3.0.0"
+    expo-sensors-interface "~3.0.0"
+    expo-task-manager-interface "~3.0.0"
+
 react-native-vector-icons@6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-6.0.0.tgz#3a7076dbe244ea94c6d5e92802a870e64a4283c5"

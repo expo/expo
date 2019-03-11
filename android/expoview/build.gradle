@@ -107,6 +107,11 @@ configurations.all {
   }
 }
 
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// Import gradle helpers for unimodules.
+apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
+
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'com.android.support:multidex:1.0.3'
@@ -184,67 +189,31 @@ dependencies {
   api project(':ReactAndroid')
 
   // Universal modules
-  api project(':expo-app-loader-provider')
-  api project(':expo-core')
-  api project(':expo-constants')
-  api project(':expo-constants-interface')
-  api project(':expo-document-picker')
-  api project(':expo-errors')
-  api project(':expo-permissions')
-  api project(':expo-permissions-interface')
-  api project(':expo-react-native-adapter')
-  api project(':expo-sensors-interface')
-  api project(':expo-task-manager')
-  api project(':expo-task-manager-interface')
-
-  // Optional universal modules
   // They're defined as "api" so we don't have to define them again in app/build.gradle
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
-  api project(':expo-ads-admob')
-  api project(':expo-ads-facebook')
-  api project(':expo-analytics-amplitude')
-  api project(':expo-analytics-segment')
-  api project(':expo-app-auth')
-  api project(':expo-av')
-  api project(':expo-background-fetch')
-  api project(':expo-barcode-scanner')
-  api project(':expo-barcode-scanner-interface')
-  api project(':expo-brightness')
-  api project(':expo-calendar')
-  api project(':expo-camera')
-  api project(':expo-camera-interface')
-  api project(':expo-contacts')
-  api project(':expo-crypto')
-  api project(':expo-facebook')
-  api project(':expo-face-detector')
-  api project(':expo-file-system')
-  api project(':expo-file-system-interface')
-  api project(':expo-font')
-  api project(':expo-gl')
-  api project(':expo-gl-cpp')
-  api project(':expo-google-sign-in')
-  api project(':expo-haptics')
-  api project(':expo-image-loader-interface')
-  api project(':expo-image-manipulator')
-  api project(':expo-image-picker')
-  api project(':expo-intent-launcher')
-  api project(':expo-keep-awake')
-  api project(':expo-linear-gradient')
-  api project(':expo-local-authentication')
-  api project(':expo-localization')
-  api project(':expo-location')
-  api project(':expo-mail-composer')
-  api project(':expo-media-library')
-  api project(':expo-payments-stripe')
-  api project(':expo-print')
-  api project(':expo-random')
-  api project(':expo-secure-store')
-  api project(':expo-sensors')
-  api project(':expo-sharing')
-  api project(':expo-sms')
-  api project(':expo-speech')
-  api project(':expo-sqlite')
-  api project(':expo-web-browser')
+  useUnimodules([
+    modulesPaths: ['../../packages'],
+    configuration: 'api',
+    target: 'react-native',
+    exclude: [
+      'expo-firebase-analytics',
+      'expo-firebase-app',
+      'expo-firebase-auth',
+      'expo-firebase-crashlytics',
+      'expo-firebase-database',
+      'expo-firebase-firestore',
+      'expo-firebase-functions',
+      'expo-firebase-instance-id',
+      'expo-firebase-invites',
+      'expo-firebase-links',
+      'expo-firebase-messaging',
+      'expo-firebase-notifications',
+      'expo-firebase-performance',
+      'expo-firebase-remote-config',
+      'expo-firebase-storage',
+      'expo-module-template',
+    ]
+  ])
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
