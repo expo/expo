@@ -21,7 +21,6 @@ import {
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
-// import ModalExample from './ModalExample';
 
 export default class ReactNativeCoreScreen extends React.Component {
   static path = '';
