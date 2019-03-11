@@ -32,7 +32,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   private Promise mOpenBrowserPromise;
   private static int OPEN_BROWSER_REQUEST_CODE = 873;
 
-  private ChromeTabsActivitiesResolver mResolver;
+  private CustomTabsActivitiesHelper mResolver;
 
   public WebBrowserModule(Context context) {
     super(context);
@@ -45,7 +45,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mResolver = new ChromeTabsActivitiesResolver(moduleRegistry);
+    mResolver = new CustomTabsActivitiesHelper(moduleRegistry);
     if (moduleRegistry != null) {
       moduleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
     }
@@ -96,17 +96,12 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     }
 
   }
-
-
-  @ExpoMethod
-  public void dismissBrowser(Promise promise) {
-    promise.reject(ERROR_CODE, "Operation not supported on Android.");
-  }
+  
 
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     if (requestCode == OPEN_BROWSER_REQUEST_CODE && mOpenBrowserPromise != null) {
-      if (resultCode == ChromeTabsManagerActivity.DISMISSED_CODE) {
+      if (resultCode == CustomTabsManagerActivity.DISMISSED_CODE) {
         Bundle result = new Bundle();
         result.putString("type", "cancel");
         mOpenBrowserPromise.resolve(result);

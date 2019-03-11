@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name=".ChromeTabsManagerActivity">
+            android:name=".CustomTabsManagerActivity">
         </activity>
     </application>
 </manifest>

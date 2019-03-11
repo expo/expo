@@ -15,14 +15,14 @@ import expo.core.interfaces.ActivityProvider;
 import expo.errors.CurrentActivityNotFoundException;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
-class ChromeTabsActivitiesResolver {
+class CustomTabsActivitiesHelper {
 
 
   private final static String DUMMY_URL = "https://expo.io";
 
   private ModuleRegistry mModuleRegistry;
 
-  ChromeTabsActivitiesResolver(ModuleRegistry moduleRegistry) {
+  CustomTabsActivitiesHelper(ModuleRegistry moduleRegistry) {
     this.mModuleRegistry = moduleRegistry;
   }
 
@@ -48,7 +48,7 @@ class ChromeTabsActivitiesResolver {
   }
 
   void startChromeTabs(Intent intent, int requestCode) throws CurrentActivityNotFoundException {
-    getCurrentActivity().startActivityForResult(ChromeTabsManagerActivity.createStartIntent(getCurrentActivity(), intent), requestCode);
+    getCurrentActivity().startActivityForResult(CustomTabsManagerActivity.createStartIntent(getCurrentActivity(), intent), requestCode);
   }
 
   private PackageManager getPackageManager() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
