@@ -52,7 +52,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @ExpoMethod
-  public void getCustomTabsSupportingBrowsers(final Promise promise) {
+  public void getCustomTabsSupportingBrowsersAsync(final Promise promise) {
     try {
       List<ResolveInfo> resolveInfo = mResolver.getCustomTabsResolvingActivities();
       List<ResolveInfo> defaultResolveInfo = mResolver.getDefaultCustomTabsResolvingActivities();

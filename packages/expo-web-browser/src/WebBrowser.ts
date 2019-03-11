@@ -29,11 +29,11 @@ type RedirectResult = {
   url: string;
 };
 
-export async function getCustomTabsSupportingBrowsers(): Promise<CustomTabsBrowsersResults> {
-  if (!ExponentWebBrowser.getCustomTabsSupportingBrowsers) {
-    throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsers');
+export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults> {
+  if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
+    throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
   }
-  return ExponentWebBrowser.getCustomTabsSupportingBrowsers();
+  return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
 }
 
 export async function openBrowserAsync(

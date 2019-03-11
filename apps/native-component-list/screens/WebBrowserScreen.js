@@ -24,7 +24,7 @@ export default class WebBrowserScreen extends React.Component {
 
   async componentDidMount() {
     Platform.OS === 'android' &&
-      WebBrowser.getCustomTabsSupportingBrowsers().then(result => {
+      WebBrowser.getCustomTabsSupportingBrowsersAsync().then(result => {
         this.setState({ packages: result.packages.map(name => ({ label: name, value: name })) });
       });
   }
@@ -101,7 +101,7 @@ export default class WebBrowserScreen extends React.Component {
         <Button
           style={styles.button}
           onPress={async () => {
-            const result = await WebBrowser.getCustomTabsSupportingBrowsers();
+            const result = await WebBrowser.getCustomTabsSupportingBrowsersAsync();
             Alert.alert('Result', JSON.stringify(result, null, 2));
           }}
           title="Show supporting browsers."
