@@ -7,10 +7,7 @@
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "web:start": "/Users/evanbacon/Documents/GitHub/expo-cli/packages/expo-cli/bin/expo.js start",
-    "web:build": "/Users/evanbacon/Documents/GitHub/expo-cli/packages/expo-cli/bin/expo.js build:web",
-    "web:publish": "aws s3 sync build/ s3://expoweb-20190310144041-deployment",
-    "web:publish:net": "netlify deploy --dir web-build",
+    "web:publish": "netlify deploy --dir web-build",
     "web:serve": "serve ./web-build"
   },
   "powertools": {
@@ -18,9 +15,7 @@
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.0.1",
-    "@react-navigation/native": "^3.1.5",
     "@react-navigation/web": "^1.0.0-alpha.7",
-    "aws-amplify": "^1.1.22",
     "date-format": "^2.0.0",
     "eslint": "^5.4.0",
     "expo": "^32.0.0-rc.3",
@@ -43,7 +38,7 @@
     "react-native-paper": "github:brentvatne/react-native-paper#@brent/fix-bottom-navigation-rn-57",
     "react-native-platform-touchable": "^1.1.1",
     "react-native-web": "^0.10.0",
-    "react-navigation": "github:evanbacon/react-navigation#@evanbacon/expo-web/avoid-cjs",
+    "react-navigation": "3.1.0",
     "react-navigation-header-buttons": "^1.2.1",
     "react-navigation-material-bottom-tabs": "1.0.0",
     "regl": "^1.3.0",
