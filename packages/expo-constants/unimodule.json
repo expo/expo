@@ -1,0 +1,4 @@
+{
+  "name": "expo-constants",
+  "platforms": ["ios", "android"]
+}
