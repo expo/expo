@@ -35,6 +35,6 @@
     "react-native-gesture-handler": "1.0.14"
   },
   "dependencies": {
-    "react-native-unimodules": "~0.1.0-rc.1"
+    "react-native-unimodules": "~0.1.0-rc.2"
   }
 }

@@ -10849,10 +10849,10 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0:
   dependencies:
     prop-types "^15.6.1"
 
-react-native-unimodules@~0.1.0-rc.1:
-  version "0.1.0-rc.1"
-  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.1.0-rc.1.tgz#d5ae468583d3f400a1c9e667e4a2f40768f0cca4"
-  integrity sha512-GSEkl4IrkTrzLUaVQZZm5qoDPI/c8XPnGx6JTd9t5C21xAXuju8sqsvjBCoysSfiWMF/E+iex7biIbMvSKXjNA==
+react-native-unimodules@~0.1.0-rc.2:
+  version "0.1.0-rc.2"
+  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.1.0-rc.2.tgz#e34b26f8c80410103c1ae553d8b7ab1154de0b7d"
+  integrity sha512-jS14NvsJ8mG+hnJ9G11dX1nxdDDFN+crFjEUwjUbNUEe4sT+xjPmeYjR80k5oogtr7JLgRrRE8Wmx8CPHh8QwA==
   dependencies:
     expo-asset "~3.0.0"
     expo-barcode-scanner-interface "~3.0.0"

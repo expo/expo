@@ -23,7 +23,7 @@ apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
 // Include unimodules.
 includeUnimodules([
-    modulesPaths: ['../packages'],
+    modulesPaths: ['../../packages'],
     target: 'react-native',
     exclude: [
         'expo-firebase-analytics',
