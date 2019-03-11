@@ -1,13 +1,14 @@
 {
   "name": "expo",
-  "sideEffects": [
-    "build/sideEffects"
-  ],
   "version": "32.0.1",
   "description": "The Expo SDK",
   "main": "build/ExpoLazy.js",
   "module": "build/Expo.js",
   "types": "build/Expo.d.ts",
+  "sideEffects": [
+    "*.fx.js",
+    "*.fx.web.js"
+  ],
   "bin": {
     "expo": "bin/cli.js"
   },
