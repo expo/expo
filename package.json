@@ -32,7 +32,7 @@
     "prettier": "^1.14.2"
   },
   "resolutions": {
-    "react-native-gesture-handler": "1.0.14"
+    "react-native-gesture-handler": "1.1.0"
   },
   "dependencies": {
     "react-native-unimodules": "~0.1.0-rc.2"

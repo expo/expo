@@ -21,7 +21,6 @@ import {
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
-import ModalExample from './ModalExample';
 
 export default class ReactNativeCoreScreen extends React.Component {
   static path = '';
@@ -52,7 +51,6 @@ export default class ReactNativeCoreScreen extends React.Component {
           { title: 'Alert', data: [this._renderAlert] },
           { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
           { title: 'MaskView', data: [this._renderMaskView] },
-          { title: 'Modal', data: [this._renderModal] },
           { title: 'Picker', data: [this._renderPicker] },
           { title: 'Slider', data: [this._renderSlider] },
           { title: 'StatusBar', data: [this._renderStatusBar] },
@@ -93,8 +91,6 @@ export default class ReactNativeCoreScreen extends React.Component {
       </View>
     );
   };
-
-  _renderModal = () => <ModalExample />;
 
   _renderRefreshControl = () => (
     <View style={{ padding: 10 }}>
