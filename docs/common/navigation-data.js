@@ -12,7 +12,7 @@ const DIR_MAPPING = {
   tutorials: 'Tutorials',
   sdk: 'Expo SDK',
   'react-native': 'React Native',
-  // "react-native-apis": 'React Native APIs',
+  // 'react-native-apis': 'React Native APIs',
   // 'react-native-components': 'React Native Components',
   // 'react-native-guides': 'React Native Guides',
   // 'react-native-basics': 'React Native Basics',

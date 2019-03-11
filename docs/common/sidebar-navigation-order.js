@@ -103,7 +103,8 @@ const EXPOKIT = [
 ];
 
 const ESSENTIALS = [
-  'Hello World'
+  'Hello World',
+  'Unimodules Full List'
 ];
 
 const REACT_NATIVE = [
