@@ -96,7 +96,6 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     }
 
   }
-  
 
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {

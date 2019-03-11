@@ -36,6 +36,15 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser.
+- **arguments (_object_)** --
+  Optional. A dictionaty with following key-value pairs:
+
+  - `toolbarColor` : a string describing a color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`. This is supported only on Android. Optional.
+  - `enableBarCollapsing` : a boolean determinig whether toolbar might be hiding when user scrolls website. Optional.
+  - `showTitle` : a boolean determining whether browser should show title of website on Toolbar. Supported only on Android. Optional.
+  - `package` : package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by `WebBrowser.getCustomTabsSupportingBrowsers` method.
+
+  Note, that certain behavior depends on actual browser and its version. Some or all of arguments might be ignored.
 
 #### Returns
 
@@ -46,8 +55,7 @@ Returns a Promise:
 
 ### `WebBrowser.openAuthSessionAsync(url, redirectUrl)`
 
-Opens the url with Safari in a modal on iOS using `SFAuthenticationSession`, and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the user will be asked whether to allow the app to authenticate using
-the given url.
+Opens the url with Safari in a modal on iOS using `SFAuthenticationSession`. The user will be asked whether to allow the app to authenticate using the given url. Unavailable on Android.
 
 #### Arguments
 
@@ -67,5 +75,15 @@ Dismisses the system's presented web browser. On Android calling this method doe
 #### Returns
 
 The promise resolves with `{ type: 'dismiss' }`.
+
+### `WebBrowser.getCustomTabsSupportingBrowsers`
+
+Available only on Android.
+
+Returns two lists of applications package names supporting Custom Tabs. One is list of all applications and the other includes only default ones. However, this list might not be fully reliable, as they follow `PackageManager.getResolvingActivities` behavior with its flaws.
+
+#### Returns
+
+The probime resolves with `{ packages: string[], default: string[] }`
 
 #
