@@ -120,7 +120,7 @@ For JS integration tests, test the `ExponentIntegrationTests` target (not includ
 The Foundation Unimodules by Expo are under `packages`, along with other JS packages. Each Unimodule has its own tests in its package (`yarn test`) and under `apps/test-suite` (run a development build of the Expo client, run `expo start` in `test-suite`, and load it on a device). We recommend reading the source for several Unimodules to get a sense of the code conventions and taste.
 
 - [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
-- [Contributing to Expo in General](.github/CONTRIBUTING.md)
+- [Contributing to Expo in General](CONTRIBUTING.md)
 - [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
 
 ### Expo client
