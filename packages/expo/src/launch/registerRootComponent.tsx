@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { AppRegistry } from 'react-native';
-import withExpoRoot from './withExpoRoot';
-import { InitialProps } from './withExpoRoot.types';
+import withExpoRoot, { InitialProps } from './withExpoRoot';
 
 export default function registerRootComponent<P extends InitialProps>(
   component: React.ComponentClass<P>

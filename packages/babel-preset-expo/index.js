@@ -70,6 +70,15 @@ function getWebConfig() {
 
   const otherPlugins = [
     ['@babel/plugin-proposal-export-default-from'],
+    [
+      '@babel/plugin-transform-modules-commonjs',
+      {
+        strict: false,
+        strictMode: false, // prevent "use strict" injections
+        lazy: true,
+        allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
+      },
+    ],
     ['@babel/plugin-transform-object-assign'],
     ['@babel/plugin-proposal-nullish-coalescing-operator', { loose: true }],
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],

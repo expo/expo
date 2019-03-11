@@ -1,0 +1,4 @@
+{
+  "name": "expo-file-system-interface",
+  "platforms": ["ios", "android"]
+}

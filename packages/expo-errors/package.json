@@ -4,7 +4,6 @@
   "description": "An internal module in Expo that helps us standardize error handling across all of our modules and provide a place for all error-related code to live.",
   "main": "build/Errors.js",
   "types": "build/Errors.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

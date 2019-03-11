@@ -1,0 +1,4 @@
+{
+  "name": "expo-barcode-scanner-interface",
+  "platforms": ["ios", "android"]
+}

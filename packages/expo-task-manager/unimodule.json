@@ -1,0 +1,4 @@
+{
+  "name": "expo-task-manager",
+  "platforms": ["ios", "android"]
+}

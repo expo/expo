@@ -1,6 +1,7 @@
-import './Expo.fx';
+import './sideEffects';
 
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import * as Amplitude from 'expo-analytics-amplitude';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as Calendar from 'expo-calendar';
@@ -30,6 +31,11 @@ import * as Updates from './Updates/Updates';
 import * as FacebookAds from 'expo-ads-facebook';
 import * as SplashScreen from './launch/SplashScreen';
 import * as WebBrowser from 'expo-web-browser';
+
+if (typeof Constants.manifest.env === 'object') {
+  Object.assign(process.env, Constants.manifest.env);
+}
+
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 import * as Segment from 'expo-analytics-segment';
 export { Segment };
@@ -107,35 +113,32 @@ export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
 export { default as Pedometer } from './Pedometer';
+// polyfill navigator.geolocation
+Location.installWebGeolocationPolyfill();
 
-declare var module: any;
-
-if (module && module.exports) {
-
-  //@ts-ignore
-  Object.defineProperties(module.exports, {
-    Haptic: {
-      enumerable: false,
-      get() {
-        console.log('Module name `Haptic` is deprecated. Use `Haptics` instead. Expo.Haptic will be removed in SDK 34');
-        return require('expo-haptics');
-      },
+// @ts-ignore
+Object.defineProperties(exports, {
+  Haptic: {
+    enumerable: false,
+    get() {
+      console.log('Module name `Haptic` is deprecated. Use `Haptics` instead.');
+      return require('expo-haptics');
     },
-    IntentLauncherAndroid: {
-      enumerable: true,
-      get() {
-        console.warn(`Module name 'IntentLauncherAndroid' is deprecated, use 'IntentLauncher' instead. Expo.IntentLauncherAndroid will be removed in SDK 34`);
-        return require('expo-intent-launcher');
-      },
+  },
+  IntentLauncherAndroid: {
+    enumerable: true,
+    get() {
+      console.warn(`Module name 'IntentLauncherAndroid' is deprecated, use 'IntentLauncher' instead`);
+      return require('expo-intent-launcher');
     },
-  });
+  },
+});
 
-  if (global) {
-    // @ts-ignore
-    global.__exponent = module.exports;
-    // @ts-ignore
-    global.__expo = module.exports;
-    // @ts-ignore
-    global.Expo = module.exports;
-  }
+if (global) {
+  // @ts-ignore
+  global.__exponent = module.exports;
+  // @ts-ignore
+  global.__expo = module.exports;
+  // @ts-ignore
+  global.Expo = module.exports;
 }

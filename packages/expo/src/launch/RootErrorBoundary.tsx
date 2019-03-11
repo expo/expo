@@ -42,7 +42,6 @@ export default class RootErrorBoundary extends React.Component<Props, State> {
   _subscribeToGlobalErrors = () => {
     this._appLoadingIsMounted = true;
 
-    // Bacon: This isn't supported in RNWeb yet
     let ErrorUtils = global.ErrorUtils;
 
     if (!ErrorUtils) return;

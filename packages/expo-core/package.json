@@ -4,7 +4,6 @@
   "description": "The core Expo universal module between application code and the underlying platform",
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

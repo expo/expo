@@ -4,7 +4,6 @@
   "description": "Expo universal module for crypto",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

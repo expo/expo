@@ -1,0 +1,4 @@
+{
+  "name": "expo-firebase-database",
+  "platforms": ["ios", "android"]
+}

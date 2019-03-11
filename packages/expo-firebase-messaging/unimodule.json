@@ -1,0 +1,4 @@
+{
+  "name": "expo-firebase-messaging",
+  "platforms": ["ios", "android"]
+}
