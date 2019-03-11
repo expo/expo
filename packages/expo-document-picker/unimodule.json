@@ -1,0 +1,4 @@
+{
+  "name": "expo-document-picker",
+  "platforms": ["ios", "android"]
+}

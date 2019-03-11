@@ -1,0 +1,4 @@
+{
+  "name": "expo-firebase-links",
+  "platforms": ["ios", "android"]
+}

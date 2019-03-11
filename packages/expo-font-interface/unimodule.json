@@ -1,0 +1,4 @@
+{
+  "name": "expo-font-interface",
+  "platforms": ["ios", "android"]
+}
