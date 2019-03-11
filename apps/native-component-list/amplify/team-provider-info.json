@@ -1,0 +1,14 @@
+{
+    "expo": {
+        "awscloudformation": {
+            "AuthRoleName": "expoweb-20190310144041-authRole",
+            "UnauthRoleArn": "arn:aws:iam::752657665619:role/expoweb-20190310144041-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::752657665619:role/expoweb-20190310144041-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "expoweb-20190310144041-deployment",
+            "UnauthRoleName": "expoweb-20190310144041-unauthRole",
+            "StackName": "expoweb-20190310144041",
+            "StackId": "arn:aws:cloudformation:us-west-2:752657665619:stack/expoweb-20190310144041/27b24bc0-437d-11e9-94a7-06dcf5c4ac1e"
+        }
+    }
+}

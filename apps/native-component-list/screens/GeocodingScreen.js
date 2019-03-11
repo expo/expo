@@ -35,6 +35,9 @@ export default class GeocodingScreen extends React.Component {
 
   componentDidFocus() {
     Permissions.askAsync(Permissions.LOCATION);
+    if (Platform.OS === 'web') {
+      Location.setApiKey('AIzaSyA_Clyz3478YAUnsESNHE5dyktvvMoa-vw');
+    }
   }
 
   render() {

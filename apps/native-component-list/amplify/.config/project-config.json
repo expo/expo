@@ -1,0 +1,15 @@
+{
+  "projectName": "expoweb",
+  "version": "2.0",
+  "frontend": "javascript",
+  "javascript": {
+    "framework": "react",
+    "config": {
+      "SourceDir": "./",
+      "DistributionDir": "build",
+      "BuildCommand": "npm run web:build",
+      "StartCommand": "npm run web:start"
+    }
+  },
+  "providers": ["awscloudformation"]
+}

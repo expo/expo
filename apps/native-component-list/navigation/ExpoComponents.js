@@ -1,14 +1,14 @@
+import { Platform } from 'react-native';
 import AdMob from '../screens/AdMobScreen';
 import BarCodeScanner from '../screens/BarCodeScannerScreen';
+import Video from '../screens/AV/VideoScreen';
+import Gif from '../screens/GifScreen';
+import LinearGradient from '../screens/LinearGradientScreen';
 
 import GestureHandlerList from '../screens/GestureHandlerListScreen';
 import GestureHandlerPinch from '../screens/GestureHandlerPinchScreen';
 import GestureHandlerSwipeable from '../screens/GestureHandlerSwipeableScreen';
-import Gif from '../screens/GifScreen';
-import LinearGradient from '../screens/LinearGradientScreen';
 import Maps from '../screens/MapsScreen';
-import Video from '../screens/AV/VideoScreen';
-
 function optionalRequire(requirer) {
   try {
     return requirer().default;
@@ -27,27 +27,46 @@ const Lottie = optionalRequire(() => require('../screens/LottieScreen'));
 const ImagePreview = optionalRequire(() => require('../screens/Reanimated/ImagePreviewScreen'));
 const SVGExample = optionalRequire(() => require('../screens/SVG/SVGExampleScreen'));
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
+const disabledOnWeb = (module, predicate = () => false) => {
+  if (Platform.OS === 'web' && !predicate()) {
+    return undefined;
+  }
+  return module;
+};
+
+const ShimView = () => null;
+//
+// const AdMob = ShimView;
+// const BarCodeScanner = ShimView;
+// const GestureHandlerPinch = ShimView;
+// const GestureHandlerList = ShimView;
+// const GestureHandlerSwipeable = ShimView;
+// const ImagePreview = ShimView;
+// const FacebookAds = ShimView;
+// const Lottie = ShimView;
+// const Maps = ShimView;
+// const ScreensScreens = ShimView;
 
 const optionalScreens = {
-  AdMob,
-  BarCodeScanner,
+  AdMob: disabledOnWeb(AdMob),
+  BarCodeScanner: disabledOnWeb(BarCodeScanner),
   BlurView,
   Camera,
-  GL,
-  ...GLScreens,
-  GestureHandlerPinch,
-  GestureHandlerList,
-  GestureHandlerSwipeable,
-  ImagePreview,
+  GL: disabledOnWeb(ShimView),
+  // ...GLScreens,
+  GestureHandlerPinch: disabledOnWeb(GestureHandlerPinch),
+  GestureHandlerList: disabledOnWeb(GestureHandlerList),
+  GestureHandlerSwipeable: disabledOnWeb(GestureHandlerSwipeable),
+  ImagePreview: disabledOnWeb(ImagePreview),
   Gif,
-  FacebookAds,
+  FacebookAds: disabledOnWeb(FacebookAds),
   SVG,
   SVGExample,
   LinearGradient,
-  Lottie,
-  Maps,
+  Lottie: disabledOnWeb(Lottie),
+  Maps: disabledOnWeb(Maps),
   Video,
-  Screens: ScreensScreens,
+  Screens: disabledOnWeb(ScreensScreens),
 };
 
 export const Screens = Object.keys(optionalScreens).reduce((acc, key) => {
