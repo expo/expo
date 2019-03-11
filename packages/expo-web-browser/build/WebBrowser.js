@@ -7,12 +7,9 @@ export async function getCustomTabsSupportingBrowsersAsync() {
     }
     return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
 }
-export async function openBrowserAsync(url, browserParams) {
+export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
-    }
-    if (!browserParams) {
-        browserParams = {};
     }
     return ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }

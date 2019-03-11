@@ -38,13 +38,10 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabs
 
 export async function openBrowserAsync(
   url: string,
-  browserParams?: OpenBrowserParams
+  browserParams: OpenBrowserParams = {}
 ): Promise<BrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
-  }
-  if (!browserParams) {
-    browserParams = {};
   }
   return ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }

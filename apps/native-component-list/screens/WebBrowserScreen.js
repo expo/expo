@@ -6,8 +6,6 @@ import Button from '../components/Button';
 export default class WebBrowserScreen extends React.Component {
   constructor() {
     super();
-    this.androidChoices = this.androidChoices.bind(this);
-    this.androidButtons = this.androidButtons.bind(this);
   }
 
   static navigationOptions = {
@@ -29,17 +27,11 @@ export default class WebBrowserScreen extends React.Component {
       });
   }
 
-  androidChoices() {
+  renderAndroidChoices = () => {
     return (
       Platform.OS === 'android' && (
         <>
-          <View
-            style={{
-              paddingBottom: 5,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+          <View style={styles.label}>
             <Text>Toolbar color (#rrggbb):</Text>
             <TextInput
               style={{
@@ -52,13 +44,7 @@ export default class WebBrowserScreen extends React.Component {
               value={this.state.colorText}
             />
           </View>
-          <View
-            style={{
-              paddingBottom: 5,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+          <View style={styles.label}>
             <Text>Show Title</Text>
             <Switch
               style={{ padding: 5 }}
@@ -66,13 +52,7 @@ export default class WebBrowserScreen extends React.Component {
               value={this.state.showTitle}
             />
           </View>
-          <View
-            style={{
-              paddingBottom: 5,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+          <View style={styles.label}>
             <Text>Force package:</Text>
             <Picker
               style={{
@@ -93,9 +73,9 @@ export default class WebBrowserScreen extends React.Component {
         </>
       )
     );
-  }
+  };
 
-  androidButtons() {
+  renderAndroidButtons = () => {
     return (
       Platform.OS === 'android' && (
         <Button
@@ -108,7 +88,7 @@ export default class WebBrowserScreen extends React.Component {
         />
       )
     );
-  }
+  };
 
   render() {
     return (
@@ -118,14 +98,8 @@ export default class WebBrowserScreen extends React.Component {
           justifyContent: 'center',
           flex: 1,
         }}>
-        {this.androidChoices()}
-        <View
-          style={{
-            paddingBottom: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+        {this.renderAndroidChoices()}
+        <View style={styles.label}>
           <Text>Bar collapsing</Text>
           <Switch
             style={{ padding: 5 }}
@@ -147,13 +121,19 @@ export default class WebBrowserScreen extends React.Component {
           }}
           title="Open web url"
         />
-        {this.androidButtons()}
+        {this.renderAndroidButtons()}
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  label: {
+    paddingBottom: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   button: {
     margin: 10,
   },
