@@ -1,4 +1,10 @@
 package expo.modules.webbrowser.error;
 
-public class PackageManagerNotFoundException extends Exception {
+import expo.errors.CodedException;
+
+public class PackageManagerNotFoundException extends CodedException {
+
+  public PackageManagerNotFoundException() {
+    super("Package Manager not found!");
+  }
 }

@@ -36,13 +36,13 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser.
-- **arguments (_object_)** --
-  Optional. A dictionaty with following key-value pairs:
+- **arguments (_object_)** (_optional_) --
+  A dictionaty with following key-value pairs:
 
-  - `toolbarColor` : a string describing a color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`. This is supported only on Android. Optional.
-  - `enableBarCollapsing` : a boolean determinig whether toolbar might be hiding when user scrolls website. Optional.
-  - `showTitle` : a boolean determining whether browser should show title of website on Toolbar. Supported only on Android. Optional.
-  - `package` : package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by `WebBrowser.getCustomTabsSupportingBrowsers` method.
+  - **toolbarColor (_optional_) (_string_)** : _Android only_. color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`. This is supported only on Android.
+  - **enableBarCollapsing (_optional_) (_boolean_)** : flag determinig whether toolbar might be hiding when user scrolls website.
+  - **showTitle (_optional_) (_boolean_)** : _Android only_. Flag determining whether browser should show title of website on Toolbar.
+  - **package (_optional_) (_string_)** : _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
 
   Note, that certain behavior depends on actual browser and its version. Some or all of arguments might be ignored.
 
@@ -84,6 +84,6 @@ Returns two lists of applications package names supporting Custom Tabs. One is l
 
 #### Returns
 
-The probime resolves with `{ packages: string[], default: string[] }`
+The promise resolves with `{ packages: string[], default: string[] }`
 
 #
