@@ -3,7 +3,7 @@ import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker, Platform } fr
 import { WebBrowser } from 'expo';
 import Button from '../components/Button';
 
-const url = 'https://www.onet.pl';
+const url = 'https://expo.io';
 export default class WebBrowserScreen extends React.Component {
   static navigationOptions = {
     title: 'WebBrowser',

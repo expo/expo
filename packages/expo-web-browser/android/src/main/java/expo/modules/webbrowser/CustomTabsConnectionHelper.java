@@ -7,44 +7,35 @@ import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
-import expo.core.interfaces.Consumer;
 import expo.core.interfaces.LifecycleEventListener;
 
 public class CustomTabsConnectionHelper extends CustomTabsServiceConnection implements LifecycleEventListener {
 
   private Context mContext;
   private String mPackageName;
-  private CustomTabsClient mClient;
-  private CustomTabsSession mSession;
-  private Queue<Consumer<CustomTabsClient>> clientActions = new LinkedList<>();
-  private Queue<Consumer<CustomTabsSession>> sessionActions = new LinkedList<>();
+  private DefferedClientActionsQueue<CustomTabsClient> clientActions = new DefferedClientActionsQueue<>();
+  private DefferedClientActionsQueue<CustomTabsSession> sessionActions = new DefferedClientActionsQueue<>();
 
   CustomTabsConnectionHelper(Context context) {
     this.mContext = context;
   }
 
   void warmUp(String packageName) {
-    executeActionOnClient(client -> client.warmup(0));
+    clientActions.executeOrQueueAction(client -> client.warmup(0));
     ensureConnection(packageName);
   }
 
   void mayInitWithUrl(String packageName, Uri uri) {
-    executeActionOnSession(session -> session.mayLaunchUrl(uri, null, null));
+    sessionActions.executeOrQueueAction(session -> session.mayLaunchUrl(uri, null, null));
     ensureConnection(packageName);
     ensureSession();
   }
 
   private void ensureSession() {
-    if (mSession == null) {
-      executeActionOnClient(
-          client -> {
-            mSession = client.newSession(null);
-            executeQueuedSessionActions();
-          }
-      );
+    if (!sessionActions.hasClient()) {
+      clientActions.executeOrQueueAction(
+          client ->
+              sessionActions.setClient(client.newSession(null)));
     }
   }
 
@@ -80,8 +71,7 @@ public class CustomTabsConnectionHelper extends CustomTabsServiceConnection impl
   @Override
   public void onCustomTabsServiceConnected(ComponentName componentName, CustomTabsClient client) {
     if (componentName.getPackageName().equals(mPackageName)) {
-      mClient = client;
-      executeQueuedClientActions();
+      clientActions.setClient(client);
     }
   }
 
@@ -114,54 +104,8 @@ public class CustomTabsConnectionHelper extends CustomTabsServiceConnection impl
 
   private void clearConnection() {
     this.mPackageName = null;
-    this.mClient = null;
-    this.mSession = null;
     clientActions.clear();
     sessionActions.clear();
-  }
-
-  private void executeQueuedClientActions() {
-    if (mClient != null) {
-      Consumer<CustomTabsClient> action = clientActions.poll();
-      while (action != null) {
-        action.apply(mClient);
-        action = clientActions.poll();
-      }
-    }
-  }
-
-  private void addActionToClientQueue(Consumer<CustomTabsClient> consumer) {
-    clientActions.add(consumer);
-  }
-
-  private void executeActionOnClient(Consumer<CustomTabsClient> action) {
-    if (mClient != null) {
-      action.apply(mClient);
-    } else {
-      addActionToClientQueue(action);
-    }
-  }
-
-  private void executeQueuedSessionActions() {
-    if (mSession != null) {
-      Consumer<CustomTabsSession> action = sessionActions.poll();
-      while (action != null) {
-        action.apply(mSession);
-        action = sessionActions.poll();
-      }
-    }
-  }
-
-  private void addActionToSessionQueue(Consumer<CustomTabsSession> consumer) {
-    sessionActions.add(consumer);
-  }
-
-  private void executeActionOnSession(Consumer<CustomTabsSession> action) {
-    if (mSession != null) {
-      action.apply(mSession);
-    } else {
-      addActionToSessionQueue(action);
-    }
   }
 
   private Context getContext() {
