@@ -11,8 +11,6 @@ import android.support.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import expo.core.ExportedModule;
@@ -33,6 +31,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   private static int OPEN_BROWSER_REQUEST_CODE = 873;
 
   private CustomTabsActivitiesHelper mResolver;
+  private CustomTabsConnectionHelper mConnectionHelper;
 
   public WebBrowserModule(Context context) {
     super(context);
@@ -46,20 +45,59 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mResolver = new CustomTabsActivitiesHelper(moduleRegistry);
+    mConnectionHelper = new CustomTabsConnectionHelper(getContext());
     if (moduleRegistry != null) {
       moduleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
     }
   }
 
   @ExpoMethod
+  public void warmUp(final String packageName, final Promise promise) {
+    mConnectionHelper.warmUp(packageName);
+    Bundle result = new Bundle();
+    result.putString("type", "warming");
+    result.putString("package", packageName);
+    promise.resolve(result);
+  }
+
+  @ExpoMethod
+  public void coolDown(final String packageName, final Promise promise) {
+    if (mConnectionHelper.coolDown(packageName)) {
+      Bundle result = new Bundle();
+      result.putString("type", "cooled");
+      result.putString("package", packageName);
+      promise.resolve(result);
+    } else {
+      Bundle result = new Bundle();
+      result.putString("type", "Nothing to cool down");
+      result.putString("package", packageName);
+      promise.resolve(result);
+    }
+  }
+
+//
+//  @ExpoMethod
+//  public void mayInitWithUrl() {
+//  }
+
+  @ExpoMethod
   public void getCustomTabsSupportingBrowsersAsync(final Promise promise) {
     try {
-      List<ResolveInfo> resolveInfo = mResolver.getCustomTabsResolvingActivities();
-      List<ResolveInfo> defaultResolveInfo = mResolver.getDefaultCustomTabsResolvingActivities();
+      ArrayList<String> activities = mResolver.getCustomTabsResolvingActivities();
+      ArrayList<String> services = mResolver.getCustomTabsResolvingServices();
+      String preferredPackage = mResolver.getPreferredCustomTabsResolvingActivity(activities);
+      String defaultPackage = mResolver.getDefaultCustomTabsResolvingActivity();
+
+      String defaultCustomTabsPackage = null;
+      if (activities.contains(defaultPackage)) { // It might happen, that default activity does not support Chrome Tabs. Then it will be ResolvingActivity and we don't want to return it as a result.
+        defaultCustomTabsPackage = defaultPackage;
+      }
 
       Bundle result = new Bundle();
-      result.putStringArrayList("packages", mapCollectionToDistinctArrayList(resolveInfo, info -> info.activityInfo.packageName));
-      result.putStringArrayList("default", mapCollectionToDistinctArrayList(defaultResolveInfo, info -> info.activityInfo.packageName));
+      result.putStringArrayList("views", activities);
+      result.putStringArrayList("services", services);
+      result.putString("preferred", preferredPackage);
+      result.putString("default", defaultCustomTabsPackage);
 
       promise.resolve(result);
     } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
@@ -83,7 +121,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     try {
       List<ResolveInfo> activities = mResolver.getResolvingActivities(intent);
       if (activities.size() > 0) {
-        mResolver.startChromeTabs(intent, OPEN_BROWSER_REQUEST_CODE);
+        mResolver.startCustomTabs(intent, OPEN_BROWSER_REQUEST_CODE);
       } else {
         promise.reject(ERROR_CODE, "No matching activity!");
       }
@@ -137,18 +175,6 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     }
 
     return intent;
-  }
-
-  private <T, R> ArrayList<R> mapCollectionToDistinctArrayList(Collection<? extends T> toMap, Function<T, R> mapper) {
-    LinkedHashSet<R> resultSet = new LinkedHashSet<>();
-    for (T element : toMap) {
-      resultSet.add(mapper.apply(element));
-    }
-    return new ArrayList<>(resultSet);
-  }
-
-  private interface Function<T, R> {
-    R apply(T val);
   }
 
 }

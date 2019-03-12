@@ -1,5 +1,5 @@
-import { Linking, Platform } from 'react-native';
-import { UnavailabilityError } from 'expo-errors';
+import { Linking, Platform, Alert } from 'react-native';
+import { UnavailabilityError, CodedError } from 'expo-errors';
 import ExponentWebBrowser from './ExpoWebBrowser';
 
 type RedirectEvent = {
@@ -16,8 +16,10 @@ type OpenBrowserParams = {
 type AuthSessionResult = RedirectResult | BrowserResult;
 
 type CustomTabsBrowsersResults = {
-  default: String[];
-  packages: String[];
+  default: string;
+  preferred: string;
+  views: string[];
+  services: string[];
 };
 
 type BrowserResult = {
@@ -34,6 +36,44 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabs
     throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
   }
   return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+}
+
+export async function warmUp(packageName?: string) {
+  if (!ExponentWebBrowser.warmUp) {
+    throw new UnavailabilityError('WebBrowser', 'warmUp');
+  }
+  let packageToWarm = packageName;
+  if (!packageName) {
+    packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+  }
+
+  if (!packageToWarm) {
+    throw new CodedError(
+      'INSUFFICIENT_ARGS',
+      'WebBrowser.warmUp is unable to determine package name without supplying it!'
+    );
+  } else {
+    return ExponentWebBrowser.warmUp(packageToWarm);
+  }
+}
+
+export async function coolDown(packageName?: string) {
+  if (!ExponentWebBrowser.coolDown) {
+    throw new UnavailabilityError('WebBrowser', 'coolDown');
+  }
+  let packageToCool = packageName;
+  if (!packageName) {
+    packageToCool = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+  }
+
+  if (!packageToCool) {
+    throw new CodedError(
+      'INSUFFICIENT_ARGS',
+      'WebBrowser.warmUp is unable to determine package name without supplying it!'
+    );
+  } else {
+    return ExponentWebBrowser.coolDown(packageToCool);
+  }
 }
 
 export async function openBrowserAsync(

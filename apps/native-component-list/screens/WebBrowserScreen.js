@@ -19,7 +19,7 @@ export default class WebBrowserScreen extends React.Component {
   async componentDidMount() {
     Platform.OS === 'android' &&
       WebBrowser.getCustomTabsSupportingBrowsersAsync().then(result => {
-        this.setState({ packages: result.packages.map(name => ({ label: name, value: name })) });
+        this.setState({ packages: result.views.map(name => ({ label: name, value: name })) });
       });
   }
 
@@ -29,6 +29,16 @@ export default class WebBrowserScreen extends React.Component {
 
   showPackagesAlert = async () => {
     const result = await WebBrowser.getCustomTabsSupportingBrowsersAsync();
+    Alert.alert('Result', JSON.stringify(result, null, 2));
+  };
+
+  warmUp = async () => {
+    const result = await WebBrowser.warmUp(this.state.selectedPackage);
+    Alert.alert('Result', JSON.stringify(result, null, 2));
+  };
+
+  coolDown = async () => {
+    const result = await WebBrowser.coolDown(this.state.selectedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
@@ -89,11 +99,15 @@ export default class WebBrowserScreen extends React.Component {
 
   renderAndroidButtons = () =>
     Platform.OS === 'android' && (
-      <Button
-        style={styles.button}
-        onPress={this.showPackagesAlert}
-        title="Show supporting browsers."
-      />
+      <>
+        <Button style={styles.button} onPress={this.warmUp} title="Warm up." />
+        <Button style={styles.button} onPress={this.coolDown} title="Cool down." />
+        <Button
+          style={styles.button}
+          onPress={this.showPackagesAlert}
+          title="Show supporting browsers."
+        />
+      </>
     );
 
   render() {

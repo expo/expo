@@ -6,8 +6,10 @@ declare type OpenBrowserParams = {
 };
 declare type AuthSessionResult = RedirectResult | BrowserResult;
 declare type CustomTabsBrowsersResults = {
-    default: String[];
-    packages: String[];
+    default: string;
+    preferred: string;
+    views: string[];
+    services: string[];
 };
 declare type BrowserResult = {
     type: 'cancel' | 'dismiss';
@@ -17,6 +19,8 @@ declare type RedirectResult = {
     url: string;
 };
 export declare function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults>;
+export declare function warmUp(packageName?: string): Promise<any>;
+export declare function coolDown(packageName?: string): Promise<any>;
 export declare function openBrowserAsync(url: string, browserParams?: OpenBrowserParams): Promise<BrowserResult>;
 export declare function dismissBrowser(): void;
 export declare function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult>;
