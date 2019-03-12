@@ -21,6 +21,8 @@ if (!ExponentFileSystem) {
     "No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?"
   );
 }
+// Prevent webpack from pruning this.
+const nativeEmitter = new EventEmitter(ExponentFileSystem);
 
 export {
   DownloadOptions,
