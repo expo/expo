@@ -19,7 +19,7 @@ export default class WebBrowserScreen extends React.Component {
     barCollapsing: false,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     Platform.OS === 'android' &&
       WebBrowser.getCustomTabsSupportingBrowsersAsync().then(result => {
         this.setState({ packages: result.views.map(name => ({ label: name, value: name })) });

@@ -36,16 +36,16 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser.
-- **arguments (_object_)** (_optional_) --
+- **options (_object_)** (_optional_) --
   A dictionaty with following key-value pairs:
 
-  - **toolbarColor (_optional_) (_string_)** -- color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`.
-  - **controlsColor (_optional_) (_string_)** -- _iOS Only_ tint color for controls in SKSafariViewController. Required format `#AARRGGBB` or `#RRGGBB`.
-  - **enableBarCollapsing (_optional_) (_boolean_)** -- flag determinig whether toolbar might be hiding when user scrolls website.
-  - **showTitle (_optional_) (_boolean_)** -- _Android only_. Flag determining whether browser should show title of website on Toolbar.
+  - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+  - **controlsColor (_optional_) (_string_)** -- _iOS Only_ tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
+  - **collapseToolbar (_optional_) (_boolean_)** : a boolean determining whether the toolbar should be hiding when a user scrolls the website
+  - **showTitle (_optional_) (_boolean_)** : (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
   - **package (_optional_) (_string_)** -- _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
 
-  Note, that certain behavior depends on actual browser and its version. Some or all of arguments might be ignored.
+  Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
 #### Returns
 
@@ -124,7 +124,7 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 _Android only_
 
-Returns list of applications package names supporting Custom Tabs, and name of user chosen default one, if available. This list may not be fully reliable, because ot follows `PackageManager.getResolvingActivities` behavior with its flaws. For example, some browsers might not be visible on packages list after other browser is set to dafult.
+Returns list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preffered one. This may not be fully reliable, because ot follows `PackageManager.getResolvingActivities` behavior with its flaws. For example, some browsers might not be visible on packages list after other browser is set to dafult.
 
 #### Returns
 
