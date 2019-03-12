@@ -52,6 +52,15 @@ private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactMod
 ), Arrays.<SingletonModule>asList());
 ```
 
+4. In `AndroidManifest.xml` add the following `activity` within `application`:
+
+```xml
+<activity
+  android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+  android:theme="@style/Base.Theme.AppCompat">
+</activity>
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
