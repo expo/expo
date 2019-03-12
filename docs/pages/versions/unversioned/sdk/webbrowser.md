@@ -39,10 +39,10 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 - **arguments (_object_)** (_optional_) --
   A dictionaty with following key-value pairs:
 
-  - **toolbarColor (_optional_) (_string_)** : _Android only_. color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`. This is supported only on Android.
-  - **enableBarCollapsing (_optional_) (_boolean_)** : flag determinig whether toolbar might be hiding when user scrolls website.
-  - **showTitle (_optional_) (_boolean_)** : _Android only_. Flag determining whether browser should show title of website on Toolbar.
-  - **package (_optional_) (_string_)** : _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
+  - **toolbarColor (_optional_) (_string_)** -- _Android only_. color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`. This is supported only on Android.
+  - **enableBarCollapsing (_optional_) (_boolean_)** -- flag determinig whether toolbar might be hiding when user scrolls website.
+  - **showTitle (_optional_) (_boolean_)** -- _Android only_. Flag determining whether browser should show title of website on Toolbar.
+  - **package (_optional_) (_string_)** -- _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
 
   Note, that certain behavior depends on actual browser and its version. Some or all of arguments might be ignored.
 
@@ -68,9 +68,52 @@ Returns a Promise:
 - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
 - If the browser is closed using `WebBrowser.dismissBrowser()`, the Promise resolves with `{ type: 'dismiss' }`.
 
+### `WebBrowser.warmUp(package)`
+
+_Android Only_
+
+This method calls warmUp method on [CustomTabsClient](<https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long)>) for specified package.
+
+#### Arguments
+
+- **package (_string_)** -- **Optional** -- package of browser to be warmed up. If not set, preferred browser will be warmed.
+
+#### Returns
+
+The promise resolves with `{ type: warming, package: string }`
+
+### `WebBrowser.mayInitWithUrl(url, package)`
+
+_Andrdoi Only_
+
+This mathod initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/android/support/customtabs/CustomTabsSession.html#maylaunchurl) and calls its `mayLaunchUrl` method for browser specified by the package.
+
+#### Arguments
+
+- **url (_string_)** -- url of page that usert is expected to load
+- **package (_string_)** -- **Optional** -- package of browser to be informed. If not set, preferred browser will be used.
+
+#### Returns
+
+### `WebBrowser.coolDown(package)`
+
+_Andrdoi Only_
+
+This methods removes all bindings to services created by warmUp or mayInitWithUrl. You should call this method once you don't need them to avoid potential memory leaks. However, those binding would be cleared once your application is destroyed, which might be sufficient in most cases.
+
+#### Arguments
+
+- **package (_string_)** -- **Optional** -- package of browser to be cooled. If not set, preferred browser will be used.
+
+#### Returns
+
+The promise resolves with `{ type: cooled }` when cooling is performed, or `{ type: Nothing to cool down }` when there was no connection to be dismissed.
+
 ### `WebBrowser.dismissBrowser()`
 
-Dismisses the system's presented web browser. On Android calling this method doesn't actually do anything, the user still has to manually dismiss the browser.
+_iOS Only_
+
+Dismisses the system's presented web browser.
 
 #### Returns
 
@@ -78,12 +121,17 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 ### `WebBrowser.getCustomTabsSupportingBrowsers`
 
-Available only on Android.
+_Android only_
 
-Returns two lists of applications package names supporting Custom Tabs. One is list of all applications and the other includes only default ones. However, this list might not be fully reliable, as they follow `PackageManager.getResolvingActivities` behavior with its flaws.
+Returns list of applications package names supporting Custom Tabs, and name of user chosen default one, if available. This list may not be fully reliable, because ot follows `PackageManager.getResolvingActivities` behavior with its flaws. For example, some browsers might not be visible on packages list after other browser is set to dafult.
 
 #### Returns
 
-The promise resolves with `{ packages: string[], default: string[] }`
+The promise resolves with `{ packages: string[], default: string, service: string[], preferred: string }`
+
+- **packages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
+- **default (_string_)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
+- **services (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [warmUp](#WebBrowser.warmUp), [mayInitWithUrl](#WebBrowser.mayInitWithUrl() and [coolDown](#WebBrowser.coolDown).
+- **preferred (_string_)** : Package preferred by CustomTabsClient to be used to handle Custom Tabs.
 
 #
