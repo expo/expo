@@ -52,7 +52,7 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void startActivity(@NonNull String activityAction, @NonNull ReadableArguments params, final Promise promise) {
+  public void startActivity(String activityAction, @NonNull ReadableArguments params, final Promise promise) {
     if (mPendingPromise != null) {
       promise.reject(new ActivityAlreadyStartedException());
       return;
@@ -68,8 +68,15 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
       promise.reject(new ModuleNotFoundException("UIManager"));
       return;
     }
+    
+    Intent intent = null;
+    
+    if (activityAction != null) {
+      intent = new Intent(activityAction);
+    } else { 
+      intent = new Intent();
+    }
 
-    Intent intent = new Intent(activityAction);
 
     if (params.containsKey(ATTR_CLASS_NAME)) {
       ComponentName cn = params.containsKey(ATTR_PACKAGE_NAME)
