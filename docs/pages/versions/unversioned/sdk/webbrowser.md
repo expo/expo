@@ -36,7 +36,7 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser.
-- **arguments (_object_)** (_optional_) --
+- **options (_object_)** (_optional_) --
   A dictionaty with following key-value pairs:
 
   - **toolbarColor (_optional_) (_string_)** : _Android only_. color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`. This is supported only on Android.
