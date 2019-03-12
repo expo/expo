@@ -12,6 +12,7 @@ export default class WebBrowserScreen extends React.Component {
   state = {
     showTitle: false,
     colorText: undefined,
+    controlsColorText: undefined,
     packages: undefined,
     selectedPackage: undefined,
     lastWarmedPackage: undefined,
@@ -26,7 +27,7 @@ export default class WebBrowserScreen extends React.Component {
   }
 
   async componentWillUnmount() {
-    WebBrowser.coolDown(this.state.lastWarmedPackage);
+    if (Platform.OS === 'android') WebBrowser.coolDown(this.state.lastWarmedPackage);
   }
 
   barCollapsingSwitchChanged = value => {
@@ -64,7 +65,8 @@ export default class WebBrowserScreen extends React.Component {
   openWebUrlRequested = async () => {
     const args = {
       showTitle: this.state.showTitle,
-      toolbarColor: this.state.colorText ? '#' + this.state.colorText : undefined,
+      toolbarColor: this.state.colorText ? `#${this.state.colorText}` : undefined,
+      controlsColor: this.state.controlsColorText ? `#${this.state.controlsColorText}` : undefined,
       package: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
     };
@@ -74,25 +76,33 @@ export default class WebBrowserScreen extends React.Component {
 
   toolbarColorInputChanged = value => this.setState({ colorText: value });
 
+  controlsColorInputChanged = value => this.setState({ controlsColorText: value });
+
   packageSelected = value => {
     this.setState({ selectedPackage: value });
   };
 
   showTitleChanged = value => this.setState({ showTitle: value });
 
-  renderAndroidChoices = () =>
-    Platform.OS === 'android' && (
+  renderIOSChoices = () =>
+    Platform.OS === 'ios' && (
       <>
         <View style={styles.label}>
-          <Text>Toolbar color (#rrggbb):</Text>
+          <Text>Controls color (#rrggbb):</Text>
           <TextInput
             style={styles.input}
             borderBottomColor={'black'}
             placeholder={'RRGGBB'}
-            onChangeText={this.toolbarColorInputChanged}
-            value={this.state.colorText}
+            onChangeText={this.controlsColorInputChanged}
+            value={this.state.controlsColorText}
           />
         </View>
+      </>
+    );
+
+  renderAndroidChoices = () =>
+    Platform.OS === 'android' && (
+      <>
         <View style={styles.label}>
           <Text>Show Title</Text>
           <Switch
@@ -133,6 +143,17 @@ export default class WebBrowserScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <View style={styles.label}>
+          <Text>Toolbar color (#rrggbb):</Text>
+          <TextInput
+            style={styles.input}
+            borderBottomColor={'black'}
+            placeholder={'RRGGBB'}
+            onChangeText={this.toolbarColorInputChanged}
+            value={this.state.colorText}
+          />
+        </View>
+        {this.renderIOSChoices()}
         {this.renderAndroidChoices()}
         <View style={styles.label}>
           <Text>Bar collapsing</Text>

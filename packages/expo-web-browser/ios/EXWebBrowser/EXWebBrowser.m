@@ -3,6 +3,7 @@
 #import <SafariServices/SafariServices.h>
 #import <EXWebBrowser/EXWebBrowser.h>
 #import <EXCore/EXUtilities.h>
+#import "UIColor+Expanded.h"
 
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
 
@@ -99,6 +100,15 @@ EX_EXPORT_METHOD_AS(openBrowserAsync,
     safariVC = [[SFSafariViewController alloc] initWithURL:url configuration:config];
   } else {
     safariVC = [[SFSafariViewController alloc] initWithURL:url];
+  }
+  
+  NSString *toolbarColorKey = @"toolbarColor";
+  if([[arguments allKeys] containsObject:toolbarColorKey]) {
+    safariVC.preferredBarTintColor = [UIColor LOT_colorWithHexString:arguments[toolbarColorKey]];
+  }
+  NSString *controlsColorKey = @"controlsColor";
+  if([[arguments allKeys] containsObject:controlsColorKey]) {
+    safariVC.preferredControlTintColor = [UIColor LOT_colorWithHexString:arguments[controlsColorKey]];
   }
   safariVC.delegate = self;
 

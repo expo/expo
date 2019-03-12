@@ -39,7 +39,8 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 - **arguments (_object_)** (_optional_) --
   A dictionaty with following key-value pairs:
 
-  - **toolbarColor (_optional_) (_string_)** -- _Android only_. color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`. This is supported only on Android.
+  - **toolbarColor (_optional_) (_string_)** -- color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`.
+  - **controlsColor (_optional_) (_string_)** -- _iOS Only_ tint color for controls in SKSafariViewController. Required format `#AARRGGBB` or `#RRGGBB`.
   - **enableBarCollapsing (_optional_) (_boolean_)** -- flag determinig whether toolbar might be hiding when user scrolls website.
   - **showTitle (_optional_) (_boolean_)** -- _Android only_. Flag determining whether browser should show title of website on Toolbar.
   - **package (_optional_) (_string_)** -- _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
