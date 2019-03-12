@@ -22,7 +22,9 @@ export default class WebBrowserScreen extends React.Component {
   componentDidMount() {
     Platform.OS === 'android' &&
       WebBrowser.getCustomTabsSupportingBrowsersAsync().then(result => {
-        this.setState({ packages: result.views.map(name => ({ label: name, value: name })) });
+        this.setState({
+          packages: result.browserPackages.map(name => ({ label: name, value: name })),
+        });
       });
   }
 
@@ -67,7 +69,7 @@ export default class WebBrowserScreen extends React.Component {
       showTitle: this.state.showTitle,
       toolbarColor: this.state.colorText ? `#${this.state.colorText}` : undefined,
       controlsColor: this.state.controlsColorText ? `#${this.state.controlsColorText}` : undefined,
-      package: this.state.selectedPackage,
+      browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
     };
     const result = await WebBrowser.openBrowserAsync(url, args);

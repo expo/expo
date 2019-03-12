@@ -91,12 +91,7 @@ EX_EXPORT_METHOD_AS(openBrowserAsync,
   SFSafariViewController *safariVC = nil;
   if (@available(iOS 11, *)) {
     SFSafariViewControllerConfiguration *config = [[SFSafariViewControllerConfiguration alloc] init];
-    bool enabled = false;
-    NSString *collapseBarKey = @"enableBarCollapsing";
-    if([[arguments allKeys] containsObject:collapseBarKey]) {
-      enabled = [arguments[collapseBarKey] boolValue];
-    }
-    config.barCollapsingEnabled = enabled;
+    config.barCollapsingEnabled = [arguments[@"enableBarCollapsing"] boolValue];
     safariVC = [[SFSafariViewController alloc] initWithURL:url configuration:config];
   } else {
     safariVC = [[SFSafariViewController alloc] initWithURL:url];

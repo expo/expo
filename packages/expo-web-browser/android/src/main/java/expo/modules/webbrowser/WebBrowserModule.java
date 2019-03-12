@@ -25,12 +25,24 @@ import expo.errors.CurrentActivityNotFoundException;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
 public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+
+  private final static String BROWSER_PACKAGE_KEY = "browserPackage";
+  private final static String SERVICE_PACKAGE_KEY = "servicePackage";
+  private final static String BROWSER_PACKAGES_KEY = "browserPackages";
+  private final static String SERVICE_PACKAGES_KEY = "servicePackages";
+  private final static String PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage";
+  private final static String DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage";
+
+  private final static String TOOLBAR_COLOR_KEY = "toolbarColor";
   private final static String ERROR_CODE = "EXWebBrowser";
   private static final String TAG = "ExpoWebBrowser";
+  private static final String SHOW_TITLE_KEY = "showTitle";
+  private static final String ENABLE_BAR_COLLAPSING_KEY = "enableBarCollapsing";
+
   private Promise mOpenBrowserPromise;
   private static int OPEN_BROWSER_REQUEST_CODE = 873;
 
-  private CustomTabsActivitiesHelper mResolver;
+  private CustomTabsActivitiesHelper mCustomTabsResolver;
   private CustomTabsConnectionHelper mConnectionHelper;
 
   public WebBrowserModule(Context context) {
@@ -44,7 +56,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mResolver = new CustomTabsActivitiesHelper(moduleRegistry);
+    mCustomTabsResolver = new CustomTabsActivitiesHelper(moduleRegistry);
     mConnectionHelper = new CustomTabsConnectionHelper(getContext());
     if (moduleRegistry != null) {
       moduleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
@@ -56,7 +68,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     mConnectionHelper.warmUp(packageName);
     Bundle result = new Bundle();
     result.putString("type", "warming");
-    result.putString("package", packageName);
+    result.putString(SERVICE_PACKAGE_KEY, packageName);
     promise.resolve(result);
   }
 
@@ -65,12 +77,12 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     if (mConnectionHelper.coolDown(packageName)) {
       Bundle result = new Bundle();
       result.putString("type", "cooled");
-      result.putString("package", packageName);
+      result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     } else {
       Bundle result = new Bundle();
       result.putString("type", "Nothing to cool down");
-      result.putString("package", packageName);
+      result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     }
   }
@@ -80,7 +92,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
     Bundle result = new Bundle();
     result.putString("type", "mayInitWithUrl");
-    result.putString("package", packageName);
+    result.putString(SERVICE_PACKAGE_KEY, packageName);
     result.putString("url", url);
     promise.resolve(result);
   }
@@ -88,10 +100,10 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   @ExpoMethod
   public void getCustomTabsSupportingBrowsersAsync(final Promise promise) {
     try {
-      ArrayList<String> activities = mResolver.getCustomTabsResolvingActivities();
-      ArrayList<String> services = mResolver.getCustomTabsResolvingServices();
-      String preferredPackage = mResolver.getPreferredCustomTabsResolvingActivity(activities);
-      String defaultPackage = mResolver.getDefaultCustomTabsResolvingActivity();
+      ArrayList<String> activities = mCustomTabsResolver.getCustomTabsResolvingActivities();
+      ArrayList<String> services = mCustomTabsResolver.getCustomTabsResolvingServices();
+      String preferredPackage = mCustomTabsResolver.getPreferredCustomTabsResolvingActivity(activities);
+      String defaultPackage = mCustomTabsResolver.getDefaultCustomTabsResolvingActivity();
 
       String defaultCustomTabsPackage = null;
       if (activities.contains(defaultPackage)) { // It might happen, that default activity does not support Chrome Tabs. Then it will be ResolvingActivity and we don't want to return it as a result.
@@ -99,10 +111,10 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
       }
 
       Bundle result = new Bundle();
-      result.putStringArrayList("views", activities);
-      result.putStringArrayList("services", services);
-      result.putString("preferred", preferredPackage);
-      result.putString("default", defaultCustomTabsPackage);
+      result.putStringArrayList(BROWSER_PACKAGES_KEY, activities);
+      result.putStringArrayList(SERVICE_PACKAGES_KEY, services);
+      result.putString(PREFERRED_BROWSER_PACKAGE, preferredPackage);
+      result.putString(DEFAULT_BROWSER_PACKAGE, defaultCustomTabsPackage);
 
       promise.resolve(result);
     } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
@@ -124,9 +136,9 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     intent.setData(Uri.parse(url));
 
     try {
-      List<ResolveInfo> activities = mResolver.getResolvingActivities(intent);
+      List<ResolveInfo> activities = mCustomTabsResolver.getResolvingActivities(intent);
       if (activities.size() > 0) {
-        mResolver.startCustomTabs(intent, OPEN_BROWSER_REQUEST_CODE);
+        mCustomTabsResolver.startCustomTabs(intent, OPEN_BROWSER_REQUEST_CODE);
       } else {
         promise.reject(ERROR_CODE, "No matching activity!");
       }
@@ -159,8 +171,8 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
 
   private Intent createCustomTabsIntent(ReadableArguments arguments) {
     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-    String color = arguments.getString("toolbarColor");
-    String packageName = arguments.getString("package");
+    String color = arguments.getString(TOOLBAR_COLOR_KEY);
+    String packageName = arguments.getString(BROWSER_PACKAGE_KEY);
     try {
       if (!TextUtils.isEmpty(color)) {
         int intColor = Color.parseColor(color);
@@ -169,12 +181,12 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     } catch (IllegalArgumentException ignored) {
     }
 
-    builder.setShowTitle(arguments.getBoolean("showTitle", false));
+    builder.setShowTitle(arguments.getBoolean(SHOW_TITLE_KEY, false));
 
     Intent intent = builder.build().intent;
 
     // We cannot use builder's method enableUrlBarHiding, because there is no corresponding disable method and some browsers enables it by default.
-    intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, arguments.getBoolean("enableBarCollapsing", false));
+    intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, arguments.getBoolean(ENABLE_BAR_COLLAPSING_KEY, false));
     if (!TextUtils.isEmpty(packageName)) {
       intent.setPackage(packageName);
     }

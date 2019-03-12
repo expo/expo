@@ -13,7 +13,7 @@ export async function warmUp(packageName) {
     }
     let packageToWarm = packageName;
     if (!packageName) {
-        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
     }
     if (!packageToWarm) {
         throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
@@ -28,7 +28,7 @@ export async function mayInitWithUrl(url, packageName) {
     }
     let packageToWarm = packageName;
     if (!packageName) {
-        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
     }
     if (!packageToWarm) {
         throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
@@ -43,7 +43,7 @@ export async function coolDown(packageName) {
     }
     let packageToCool = packageName;
     if (!packageName) {
-        packageToCool = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+        packageToCool = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
     }
     if (!packageToCool) {
         throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');

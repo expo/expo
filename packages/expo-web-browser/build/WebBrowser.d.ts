@@ -1,15 +1,15 @@
 declare type OpenBrowserParams = {
     toolbarColor?: string;
-    package?: string;
+    browserPackage?: string;
     enableBarCollapsing?: boolean;
     showTitle?: boolean;
 };
 declare type AuthSessionResult = RedirectResult | BrowserResult;
 declare type CustomTabsBrowsersResults = {
-    default: string;
-    preferred: string;
-    views: string[];
-    services: string[];
+    defaultBrowserPackage: string;
+    preferredBrowserPackage: string;
+    browserPackages: string[];
+    servicePackages: string[];
 };
 declare type BrowserResult = {
     type: 'cancel' | 'dismiss';

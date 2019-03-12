@@ -8,7 +8,7 @@ type RedirectEvent = {
 
 type OpenBrowserParams = {
   toolbarColor?: string;
-  package?: string;
+  browserPackage?: string;
   enableBarCollapsing?: boolean;
   showTitle?: boolean;
 };
@@ -16,10 +16,10 @@ type OpenBrowserParams = {
 type AuthSessionResult = RedirectResult | BrowserResult;
 
 type CustomTabsBrowsersResults = {
-  default: string;
-  preferred: string;
-  views: string[];
-  services: string[];
+  defaultBrowserPackage: string;
+  preferredBrowserPackage: string;
+  browserPackages: string[];
+  servicePackages: string[];
 };
 
 type BrowserResult = {
@@ -44,7 +44,7 @@ export async function warmUp(packageName?: string) {
   }
   let packageToWarm = packageName;
   if (!packageName) {
-    packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+    packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
   }
 
   if (!packageToWarm) {
@@ -63,7 +63,7 @@ export async function mayInitWithUrl(url: string, packageName?: string) {
   }
   let packageToWarm = packageName;
   if (!packageName) {
-    packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+    packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
   }
 
   if (!packageToWarm) {
@@ -82,7 +82,7 @@ export async function coolDown(packageName?: string) {
   }
   let packageToCool = packageName;
   if (!packageName) {
-    packageToCool = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+    packageToCool = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
   }
 
   if (!packageToCool) {
