@@ -16,7 +16,7 @@ export default class WebBrowserScreen extends React.Component {
     barCollapsing: false,
   };
 
-  async componentDidMount() {
+  componentDidMount() {
     Platform.OS === 'android' &&
       WebBrowser.getCustomTabsSupportingBrowsersAsync().then(result => {
         this.setState({ packages: result.packages.map(name => ({ label: name, value: name })) });
@@ -39,7 +39,7 @@ export default class WebBrowserScreen extends React.Component {
       package: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
     };
-    const result = await WebBrowser.openBrowserAsync('https://www.onet.pl', args);
+    const result = await WebBrowser.openBrowserAsync('https://expo.io/', args);
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 
@@ -92,7 +92,7 @@ export default class WebBrowserScreen extends React.Component {
       <Button
         style={styles.button}
         onPress={this.showPackagesAlert}
-        title="Show supporting browsers."
+        title="Show supporting browsers"
       />
     );
 

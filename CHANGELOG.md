@@ -15,7 +15,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `ImageManipulator.manipulateAsync` is now accepting `ImageManipulator.FlipType.{Vertical, Horizontal}` as flipping action parameter and `ImageManipulator.SaveFormat.{JPEG, PNG}` as saving option [@bbarthec](https://github.com/bbarthec) ([#3245](https://github.com/expo/expo/pull/3245))
 - removed `devKernel` and `prodKernel` build flavors from Android ExpoKit projects (all Gradle commands become simply `[verb](Debug|Release)`, e.g. `installDebug` or `assembleRelease`) by [@esamelson](https://github.com/esamelson) ([#3386](https://github.com/expo/expo/pull/3386))
 - renamed `IntentLauncherAndroid` to `IntentLauncher` and changed signature of `startActivityAsync` method by [@tsapeta](https://github.com/tsapeta) ([#3427](https://github.com/expo/expo/pull/3427))
-- fixed crash in `WebBrowser.openBrowserAsync` when there is no supporting browser on Android by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
+- fixed crash in `WebBrowser.openBrowserAsync` when there is no browser supporting `customtabs` on Android by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
 - `WebBrowser.dismissBrowser` throws `UnavailabilityError` [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
 
 ### 🎉 New features
@@ -29,7 +29,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - upgraded Facebook Core- and LoginKit dependency to 4.40.0 by [@sjchmiela](https://github.com/sjchmiela) ([#3394](https://github.com/expo/expo/pull/3394))
 - upgrade `react-native-maps` to `0.23.0` by [@sjchmiela](https://github.com/sjchmiela) ([#3389](https://github.com/expo/expo/pull/3389))
 - added Firebase integration to `expo-analytics-segment` by [@sjchmiela](https://github.com/sjchmiela) ([#3615](https://github.com/expo/expo/pull/3615))
-- add support for new argumetns in `WebBrowser.openBrowserAsync` as described in [DOCS](https://docs.expo.io/versions/v32.0.0/sdk/webbrowser/) by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
+- add support for new arguments in `WebBrowser.openBrowserAsync` as described in [the documentation](https://docs.expo.io/versions/latest/sdk/webbrowser/) by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
 
 ### 🐛 Bug fixes
 

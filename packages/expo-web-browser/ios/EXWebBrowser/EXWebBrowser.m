@@ -87,7 +87,7 @@ EX_EXPORT_METHOD_AS(openBrowserAsync,
   }
 
   NSURL *url = [[NSURL alloc] initWithString:authURL];
-  SFSafariViewController *safariVC = NULL;
+  SFSafariViewController *safariVC = nil;
   if (@available(iOS 11, *)) {
     SFSafariViewControllerConfiguration *config = [[SFSafariViewControllerConfiguration alloc] init];
     bool enabled = false;

@@ -39,12 +39,12 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 - **options (_object_)** (_optional_) --
   A dictionaty with following key-value pairs:
 
-  - **toolbarColor (_optional_) (_string_)** : _Android only_. color of toolbar to be used by Custom Tab on Android. Required format `#AARRGGBB` or `#RRGGBB`. This is supported only on Android.
-  - **enableBarCollapsing (_optional_) (_boolean_)** : flag determinig whether toolbar might be hiding when user scrolls website.
-  - **showTitle (_optional_) (_boolean_)** : _Android only_. Flag determining whether browser should show title of website on Toolbar.
+  - **toolbarColor (_optional_) (_string_)**: (_Android only_) color of the toolbar to be used by the Custom Tab in either `#AARRGGBB` format or `#RRGGBB`
+  - **collapseToolbar (_optional_) (_boolean_)** : a boolean determining whether the toolbar should be hiding when a user scrolls the website
+  - **showTitle (_optional_) (_boolean_)** : (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
   - **package (_optional_) (_string_)** : _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
 
-  Note, that certain behavior depends on actual browser and its version. Some or all of arguments might be ignored.
+  Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
 #### Returns
 
@@ -80,7 +80,7 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 Available only on Android.
 
-Returns two lists of applications package names supporting Custom Tabs. One is list of all applications and the other includes only default ones. However, this list might not be fully reliable, as they follow `PackageManager.getResolvingActivities` behavior with its flaws.
+Returns two lists of applications package names supporting Custom Tabs. Under `packages` key you can find a list of all the applications. Under `default` key only the default applications will be listed. Note that list might not be fully reliable, as it uses `PackageManager.getResolvingActivities`.
 
 #### Returns
 
