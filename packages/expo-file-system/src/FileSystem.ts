@@ -22,7 +22,7 @@ if (!ExponentFileSystem) {
   );
 }
 // Prevent webpack from pruning this.
-const nativeEmitter = new EventEmitter(ExponentFileSystem);
+const _unused = new EventEmitter(ExponentFileSystem);
 
 export {
   DownloadOptions,
