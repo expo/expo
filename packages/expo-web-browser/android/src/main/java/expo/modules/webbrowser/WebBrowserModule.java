@@ -76,12 +76,12 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   public void coolDown(final String packageName, final Promise promise) {
     if (mConnectionHelper.coolDown(packageName)) {
       Bundle result = new Bundle();
-      result.putString("type", "cooled");
+      result.putString("result", "cooling");
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     } else {
       Bundle result = new Bundle();
-      result.putString("type", "Nothing to cool down");
+      result.putString("result", "Nothing to cool down");
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     }

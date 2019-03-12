@@ -108,7 +108,7 @@ This methods removes all bindings to services created by warmUp or mayInitWithUr
 
 #### Returns
 
-The promise resolves with `{ type: cooled }` when cooling is performed, or `{ type: Nothing to cool down }` when there was no connection to be dismissed.
+The promise resolves with `{ result: 'cooling' }` when cooling is performed, or `{ result: 'Nothing to cool down' }` when there was no connection to be dismissed.
 
 ### `WebBrowser.dismissBrowser()`
 
