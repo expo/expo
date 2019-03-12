@@ -22,6 +22,21 @@ export async function warmUp(packageName) {
         return ExponentWebBrowser.warmUp(packageToWarm);
     }
 }
+export async function mayInitWithUrl(url, packageName) {
+    if (!ExponentWebBrowser.mayInitWithUrl) {
+        throw new UnavailabilityError('WebBrowser', 'warmUp');
+    }
+    let packageToWarm = packageName;
+    if (!packageName) {
+        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferred;
+    }
+    if (!packageToWarm) {
+        throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
+    }
+    else {
+        return ExponentWebBrowser.mayInitWithUrl(url, packageToWarm);
+    }
+}
 export async function coolDown(packageName) {
     if (!ExponentWebBrowser.coolDown) {
         throw new UnavailabilityError('WebBrowser', 'coolDown');

@@ -20,6 +20,7 @@ declare type RedirectResult = {
 };
 export declare function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults>;
 export declare function warmUp(packageName?: string): Promise<any>;
+export declare function mayInitWithUrl(url: string, packageName?: string): Promise<any>;
 export declare function coolDown(packageName?: string): Promise<any>;
 export declare function openBrowserAsync(url: string, browserParams?: OpenBrowserParams): Promise<BrowserResult>;
 export declare function dismissBrowser(): void;

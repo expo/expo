@@ -2,10 +2,10 @@ package expo.modules.webbrowser;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.net.Uri;
 import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
-import android.util.Log;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -27,12 +27,25 @@ public class CustomTabsConnectionHelper extends CustomTabsServiceConnection impl
   }
 
   void warmUp(String packageName) {
+    executeActionOnClient(client -> client.warmup(0));
     ensureConnection(packageName);
-    executeActionOnClient(client -> {
-      Log.e("WARMUP", "Warming up! " + packageName);
-      client.warmup(0);
-    });
+  }
 
+  void mayInitWithUrl(String packageName, Uri uri) {
+    executeActionOnSession(session -> session.mayLaunchUrl(uri, null, null));
+    ensureConnection(packageName);
+    ensureSession();
+  }
+
+  private void ensureSession() {
+    if (mSession == null) {
+      executeActionOnClient(
+          client -> {
+            mSession = client.newSession(null);
+            executeQueuedSessionActions();
+          }
+      );
+    }
   }
 
   boolean coolDown(String packageName) {
@@ -126,6 +139,28 @@ public class CustomTabsConnectionHelper extends CustomTabsServiceConnection impl
       action.apply(mClient);
     } else {
       addActionToClientQueue(action);
+    }
+  }
+
+  private void executeQueuedSessionActions() {
+    if (mSession != null) {
+      Consumer<CustomTabsSession> action = sessionActions.poll();
+      while (action != null) {
+        action.apply(mSession);
+        action = sessionActions.poll();
+      }
+    }
+  }
+
+  private void addActionToSessionQueue(Consumer<CustomTabsSession> consumer) {
+    sessionActions.add(consumer);
+  }
+
+  private void executeActionOnSession(Consumer<CustomTabsSession> action) {
+    if (mSession != null) {
+      action.apply(mSession);
+    } else {
+      addActionToSessionQueue(action);
     }
   }
 

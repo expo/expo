@@ -75,10 +75,15 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     }
   }
 
-//
-//  @ExpoMethod
-//  public void mayInitWithUrl() {
-//  }
+  @ExpoMethod
+  public void mayInitWithUrl(final String url, final String packageName, final Promise promise) {
+    mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
+    Bundle result = new Bundle();
+    result.putString("type", "mayInitWithUrl");
+    result.putString("package", packageName);
+    result.putString("url", url);
+    promise.resolve(result);
+  }
 
   @ExpoMethod
   public void getCustomTabsSupportingBrowsersAsync(final Promise promise) {

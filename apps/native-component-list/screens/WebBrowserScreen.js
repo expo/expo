@@ -3,6 +3,7 @@ import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker, Platform } fr
 import { WebBrowser } from 'expo';
 import Button from '../components/Button';
 
+const url = 'https://www.onet.pl';
 export default class WebBrowserScreen extends React.Component {
   static navigationOptions = {
     title: 'WebBrowser',
@@ -13,6 +14,7 @@ export default class WebBrowserScreen extends React.Component {
     colorText: undefined,
     packages: undefined,
     selectedPackage: undefined,
+    lastWarmedPackage: undefined,
     barCollapsing: false,
   };
 
@@ -21,6 +23,10 @@ export default class WebBrowserScreen extends React.Component {
       WebBrowser.getCustomTabsSupportingBrowsersAsync().then(result => {
         this.setState({ packages: result.views.map(name => ({ label: name, value: name })) });
       });
+  }
+
+  async componentWillUnmount() {
+    WebBrowser.coolDown(this.state.lastWarmedPackage);
   }
 
   barCollapsingSwitchChanged = value => {
@@ -33,7 +39,20 @@ export default class WebBrowserScreen extends React.Component {
   };
 
   warmUp = async () => {
-    const result = await WebBrowser.warmUp(this.state.selectedPackage);
+    const selectedPackage = this.state.selectedPackage;
+    this.setState({
+      lastWarmedPackage: selectedPackage,
+    });
+    const result = await WebBrowser.warmUp(selectedPackage);
+    Alert.alert('Result', JSON.stringify(result, null, 2));
+  };
+
+  mayInitWithUrl = async () => {
+    const selectedPackage = this.state.selectedPackage;
+    this.setState({
+      lastWarmedPackage: selectedPackage,
+    });
+    const result = await WebBrowser.mayInitWithUrl(url, selectedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
@@ -49,7 +68,7 @@ export default class WebBrowserScreen extends React.Component {
       package: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
     };
-    const result = await WebBrowser.openBrowserAsync('https://www.onet.pl', args);
+    const result = await WebBrowser.openBrowserAsync(url, args);
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 
@@ -101,6 +120,7 @@ export default class WebBrowserScreen extends React.Component {
     Platform.OS === 'android' && (
       <>
         <Button style={styles.button} onPress={this.warmUp} title="Warm up." />
+        <Button style={styles.button} onPress={this.mayInitWithUrl} title="May init with url." />
         <Button style={styles.button} onPress={this.coolDown} title="Cool down." />
         <Button
           style={styles.button}
