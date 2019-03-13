@@ -17,7 +17,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ### Handling deep links from the WebBrowser
 
-If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call `WebBrowser.dismissBrowser()` -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../workflow/linking/#handling-links-into-your-app).
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../workflow/linking/#handling-links-into-your-app).
 
 ## API
 
@@ -31,7 +31,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 ### `WebBrowser.openBrowserAsync(url)`
 
-Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use `WebBrowser.openAuthSessionAsync`.
+Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use (openAuthSessionAsync)[#webbrowseropenauthsessionasync].
 
 #### Arguments
 
@@ -43,7 +43,7 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
   - **controlsColor (_optional_) (_string_)** -- _iOS Only_ tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **collapseToolbar (_optional_) (_boolean_)** : a boolean determining whether the toolbar should be hiding when a user scrolls the website
   - **showTitle (_optional_) (_boolean_)** : (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
-  - **package (_optional_) (_string_)** -- _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
+  - **package (_optional_) (_string_)** -- _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
 
   Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
@@ -52,7 +52,7 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 Returns a Promise:
 
 - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
-- If the browser is closed using `WebBrowser.dismissBrowser()`, the Promise resolves with `{ type: 'dismiss' }`.
+- If the browser is closed using [dismissBrowser](#webbrowserdismissbrowser) , the Promise resolves with `{ type: 'dismiss' }`.
 
 ### `WebBrowser.openAuthSessionAsync(url, redirectUrl)`
 
@@ -67,7 +67,7 @@ Returns a Promise:
 
 - If the user does not permit the application to authenticate with the given url, the Promise resolved with `{ type: 'cancel' }`.
 - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
-- If the browser is closed using `WebBrowser.dismissBrowser()`, the Promise resolves with `{ type: 'dismiss' }`.
+- If the browser is closed using [dismissBrowser](#webbrowserdismissbrowser), the Promise resolves with `{ type: 'dismiss' }`.
 
 ### `WebBrowser.warmUp(package)`
 
@@ -87,7 +87,7 @@ The promise resolves with `{ type: warming, package: string }`
 
 _Andrdoi Only_
 
-This mathod initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/android/support/customtabs/CustomTabsSession.html#maylaunchurl) and calls its `mayLaunchUrl` method for browser specified by the package.
+This method initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/android/support/customtabs/CustomTabsSession.html#maylaunchurl) and calls its `mayLaunchUrl` method for browser specified by the package.
 
 #### Arguments
 
@@ -132,7 +132,7 @@ The promise resolves with `{ packages: string[], default: string, service: strin
 
 - **packages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
 - **default (_string_)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
-- **services (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [warmUp](#WebBrowser.warmUp), [mayInitWithUrl](#WebBrowser.mayInitWithUrl() and [coolDown](#WebBrowser.coolDown).
+- **services (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [warmUp](#webbrowserwarmuppackage), [mayInitWithUrl](#webbrowsermayinitwithurlurl-package) and [coolDown](#webbrowsercooldownpackage).
 - **preferred (_string_)** : Package preferred by CustomTabsClient to be used to handle Custom Tabs.
 
 #
