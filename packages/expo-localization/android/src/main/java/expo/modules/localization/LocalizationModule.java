@@ -59,6 +59,8 @@ public class LocalizationModule extends ExportedModule {
         promise.resolve(getBundledConstants());
     }
 
+    // TODO: Bacon: add set language
+
     private Bundle getBundledConstants() {
         Bundle constants = new Bundle();
 
@@ -66,18 +68,26 @@ public class LocalizationModule extends ExportedModule {
         ArrayList<String> localeNames = getLocaleNames(locales);
         Boolean isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL;
 
+        String country = locales.get(0).getCountry();
+        String locale = localeNames.get(0);
         constants.putBoolean("isRTL", isRTL);
-        constants.putString("locale", localeNames.get(0));
+        constants.putString("locale", locale);
         constants.putStringArrayList("locales", localeNames);
-        constants.putString("timezone", TimeZone.getDefault().getID());
+        constants.putString("timezone", getTimezone());
         constants.putStringArrayList("isoCurrencyCodes", getISOCurrencyCodes());
-        constants.putString("country", locales.get(0).getCountry());
+        constants.putString("country", country);
 
         return constants;
     }
 
+    private String getTimezone() {
+        // https://stackoverflow.com/a/11061352/4047926
+        return TimeZone.getDefault().getID();
+    }
+
     private ArrayList<String> getISOCurrencyCodes() {
         ArrayList<String> locales = new ArrayList<>();
+        // https://github.com/expo/expo/blob/c47c64267e86258d1af1f4eed4d67c91202b2cc5/android/expoview/src/main/java/versioned/host/exp/exponent/modules/api/LocalizationModule.java#L65-L68
         final Set<Currency> availableCurrencies = getAvailableCurrencies();
         for (Currency handle : availableCurrencies) {
             locales.add(handle.getCurrencyCode());
@@ -89,39 +99,28 @@ public class LocalizationModule extends ExportedModule {
         ArrayList<Locale> locales = new ArrayList<>();
 
         Context context = getApplicationContext();
-        if (context != null) {
-            Configuration configuration = context.getResources().getConfiguration();
-            if (SDK_INT >= N) {
-                LocaleList localeList = configuration.getLocales();
-                for (int i = 0; i < localeList.size(); i++) {
-                    locales.add(localeList.get(i));
-                }
-            } else {
-                locales.add(configuration.locale);
-            }
+        if (context == null) {
+            return null;
         }
-
-
+        // https://github.com/expo/expo/blob/c47c64267e86258d1af1f4eed4d67c91202b2cc5/android/expoview/src/main/java/versioned/host/exp/exponent/modules/api/LocalizationModule.java#L47-L58
+        Configuration configuration = context.getResources().getConfiguration();
+        if (SDK_INT > N) {
+            LocaleList localeList = configuration.getLocales();
+            for (int i = 0; i < localeList.size(); i++) {
+                locales.add(localeList.get(i));
+            }
+        } else {
+            locales.add(configuration.locale);
+        }
         return locales;
     }
 
     private ArrayList<String> getLocaleNames(ArrayList<Locale> locales) {
-        ArrayList<String> localeNames = new ArrayList<>();
-        for (int i = 0; i < locales.size(); i++) localeNames.add(toLocaleTag(locales.get(i)));
-        return localeNames;
-    }
-
-    private String toLocaleTag(Locale locale) {
-        String localeTag = locale.toLanguageTag();
-
-        if (localeTag.matches("^(iw|in|ji).*")) {
-            localeTag = localeTag
-                    .replace("iw", "he")
-                    .replace("in", "id")
-                    .replace("ji", "yi");
+        ArrayList<String> languages = new ArrayList<>();
+        for (Locale locale : locales) {
+            // https://stackoverflow.com/a/46652446/4047926
+            languages.add(locale.toLanguageTag());
         }
-
-        return localeTag;
+        return languages;
     }
-
 }
