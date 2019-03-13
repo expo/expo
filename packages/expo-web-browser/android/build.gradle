@@ -52,6 +52,10 @@ android {
   lintOptions {
     abortOnError false
   }
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+  }
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
@@ -64,5 +68,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   expendency 'expo-core'
+  expendency 'expo-errors'
   api 'com.android.support:customtabs:27.1.1'
 }

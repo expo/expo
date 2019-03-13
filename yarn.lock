@@ -5235,6 +5235,14 @@ expo-firebase-analytics@^2.0.0:
     expo-core "~2.0.0"
     expo-firebase-app "~2.0.0"
 
+expo-firebase-analytics@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-analytics/-/expo-firebase-analytics-2.0.0.tgz#f755b6c022e7347884ab13a23e0e3946f6f85de2"
+  integrity sha512-nlhcm0vjgBXd1pua+hayeuNVa1djPwNEqrsgLsxAGAmNvetivSaos065Cgu9yxixdnDiQitBKOhNVXh0kQpsIA==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
 expo-image-loader-interface@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/expo-image-loader-interface/-/expo-image-loader-interface-2.0.0.tgz#3934f01c4ccdea40d4248110b7da234741abf9c8"

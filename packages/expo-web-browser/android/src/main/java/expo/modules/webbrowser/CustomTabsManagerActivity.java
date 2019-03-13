@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class ChromeTabsManagerActivity extends Activity {
+public class CustomTabsManagerActivity extends Activity {
   static final int DISMISSED_CODE = 1;
   static final String KEY_BROWSER_INTENT = "browserIntent";
 
@@ -24,7 +24,7 @@ public class ChromeTabsManagerActivity extends Activity {
   }
 
   private static Intent createBaseIntent(Context context) {
-    return new Intent(context, ChromeTabsManagerActivity.class);
+    return new Intent(context, CustomTabsManagerActivity.class);
   }
 
   @Override

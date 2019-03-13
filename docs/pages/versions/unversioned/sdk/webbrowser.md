@@ -36,6 +36,15 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser.
+- **options (_object_)** (_optional_) --
+  A dictionaty with following key-value pairs:
+
+  - **toolbarColor (_optional_) (_string_)**: (_Android only_) color of the toolbar to be used by the Custom Tab in either `#AARRGGBB` format or `#RRGGBB`
+  - **collapseToolbar (_optional_) (_boolean_)** : a boolean determining whether the toolbar should be hiding when a user scrolls the website
+  - **showTitle (_optional_) (_boolean_)** : (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
+  - **package (_optional_) (_string_)** : _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
+
+  Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
 #### Returns
 
@@ -46,8 +55,7 @@ Returns a Promise:
 
 ### `WebBrowser.openAuthSessionAsync(url, redirectUrl)`
 
-Opens the url with Safari in a modal on iOS using `SFAuthenticationSession`, and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the user will be asked whether to allow the app to authenticate using
-the given url.
+Opens the url with Safari in a modal on iOS using `SFAuthenticationSession`. The user will be asked whether to allow the app to authenticate using the given url. Unavailable on Android.
 
 #### Arguments
 
@@ -67,5 +75,15 @@ Dismisses the system's presented web browser. On Android calling this method doe
 #### Returns
 
 The promise resolves with `{ type: 'dismiss' }`.
+
+### `WebBrowser.getCustomTabsSupportingBrowsers`
+
+Available only on Android.
+
+Returns two lists of applications package names supporting Custom Tabs. Under `packages` key you can find a list of all the applications. Under `default` key only the default applications will be listed. Note that list might not be fully reliable, as it uses `PackageManager.getResolvingActivities`.
+
+#### Returns
+
+The promise resolves with `{ packages: string[], default: string[] }`
 
 #

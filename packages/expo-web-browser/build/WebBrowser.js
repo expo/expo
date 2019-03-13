@@ -1,11 +1,17 @@
 import { Linking, Platform } from 'react-native';
 import { UnavailabilityError } from 'expo-errors';
 import ExponentWebBrowser from './ExpoWebBrowser';
-export async function openBrowserAsync(url) {
+export async function getCustomTabsSupportingBrowsersAsync() {
+    if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
+        throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
+    }
+    return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+}
+export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
     }
-    return ExponentWebBrowser.openBrowserAsync(url);
+    return ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }
 export function dismissBrowser() {
     if (!ExponentWebBrowser.dismissBrowser) {
