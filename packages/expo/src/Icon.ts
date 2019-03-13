@@ -1,2 +1,2 @@
-import Icon from '@expo/vector-icons';
-export default Icon;
+import * as Icons from '@expo/vector-icons';
+export default Icons;
