@@ -6,7 +6,19 @@ type RedirectEvent = {
   url: string;
 };
 
+type OpenBrowserParams = {
+  toolbarColor?: string;
+  package?: string;
+  enableBarCollapsing?: boolean;
+  showTitle?: boolean;
+};
+
 type AuthSessionResult = RedirectResult | BrowserResult;
+
+type CustomTabsBrowsersResults = {
+  default: String[];
+  packages: String[];
+};
 
 type BrowserResult = {
   type: 'cancel' | 'dismiss';
@@ -17,11 +29,21 @@ type RedirectResult = {
   url: string;
 };
 
-export async function openBrowserAsync(url: string): Promise<BrowserResult> {
+export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults> {
+  if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
+    throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
+  }
+  return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+}
+
+export async function openBrowserAsync(
+  url: string,
+  browserParams: OpenBrowserParams = {}
+): Promise<BrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
-  return ExponentWebBrowser.openBrowserAsync(url);
+  return ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }
 
 export function dismissBrowser(): void {
@@ -31,7 +53,10 @@ export function dismissBrowser(): void {
   ExponentWebBrowser.dismissBrowser();
 }
 
-export async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult> {
+export async function openAuthSessionAsync(
+  url: string,
+  redirectUrl: string
+): Promise<AuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.openAuthSessionAsync) {
       throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
