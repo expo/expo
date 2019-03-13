@@ -41,15 +41,11 @@ function getWebConfig() {
             'expo-asset/build/AssetSourceResolver',
           'react-native/Libraries/Image/assetPathUtils$': 'expo-asset/build/Image/assetPathUtils',
           'react-native/Libraries/Image/resolveAssetSource$': 'expo-asset/build/resolveAssetSource',
-          // Depends on expo-react-native-adapter pending: https://github.com/necolas/react-native-web/pull/1275
-          'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter$':
-            'expo-react-native-adapter/build/vendor/RCTDeviceEventEmitter',
           // Alias internal react-native modules to react-native-web
           'react-native/Libraries/Components/View/ViewStylePropTypes$':
             'react-native-web/dist/exports/View/ViewStylePropTypes',
-
-          // Link vendors
-          // 'react-native/Libraries/vendor': 'react-native-web/dist/vendor/react-native',
+          'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter$':
+            'react-native-web/dist/vendor/react-native/NativeEventEmitter/RCTDeviceEventEmitter',
           'react-native/Libraries/vendor/emitter/EventEmitter$':
             'react-native-web/dist/vendor/react-native/emitter/EventEmitter',
           'react-native/Libraries/vendor/emitter/EventSubscriptionVendor$':
