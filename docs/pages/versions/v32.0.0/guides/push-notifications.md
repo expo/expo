@@ -25,11 +25,13 @@ async function registerForPushNotificationsAsync() {
   );
   let finalStatus = existingStatus;
 
-  // only ask if permissions have not already been determined, because
-  // iOS won't necessarily prompt the user a second time.
-  if (existingStatus !== 'granted') {
-    // Android remote notification permissions are granted during the app
-    // install, so this will only ask on iOS
+  // iOS and Android will not ask again once permissions are set as `granted` or `denied`, so
+  // the `if` clause isn't actually needed, but it helps us remember that users will never be
+  // asked twice. 
+  //
+  // Android remote notification permissions are granted during the app install, 
+  // so status will begin as `granted` for Android users.
+  if (existingStatus === 'undetermined') {
     const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
     finalStatus = status;
   }
