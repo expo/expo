@@ -43,7 +43,7 @@ open it.
 
 When you're ready to distribute your app to end-users, you can create a
 standalone app binary (an ipa or apk file) and put it in the iOS App
-Store and the Google Play Store. See [Distributing Your App](../../distribution/).
+Store and the Google Play Store. See [Distributing Your App](../../distribution/introduction/).
 
 The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
