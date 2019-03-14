@@ -684,8 +684,10 @@ async function publishPackagesAsync() {
   // pass our profile as an option to the pipelines
   options.npmProfile = npmProfile;
 
+  const { exp: { sdkVersion } } = JSON.parse(await fs.readFile('../package.json'));
+
   const publishConfigs = new Map();
-  const modules = Modules.getPublishableModules().map(module => {
+  const modules = Modules.getPublishableModules(argv.abi || sdkVersion).map(module => {
     return {
       ...module,
       dir: `${ROOT_DIR}/packages/${module.libName}`,
