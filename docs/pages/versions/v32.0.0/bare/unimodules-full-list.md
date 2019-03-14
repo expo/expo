@@ -4,7 +4,7 @@ title: Unimodules Full List
 
 Below is a quick reference list of all Bare Workflow unimodules.
 
-Also be sure to take a look at the Bare Workflow [Hello World](../hello-world/) page, to help with [Installing a Unimodule](../hello-world/#install-a-unimodule) and [using @unimodules/core](../hello-world/#using-unimodulescore).
+Also be sure to take a look at the Bare Workflow [Hello World](../hello-world/) page, to help with [Installing a Unimodule](../hello-world/#install-a-unimodule) and [using react-native-unimodules](../hello-world/#using-unimodulescore).
 
 ## Supported Expo APIs
 
