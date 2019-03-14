@@ -3,7 +3,8 @@
 
     <application>
         <activity
-            android:name=".CustomTabsManagerActivity">
+            android:name=".CustomTabsManagerActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
     </application>
 </manifest>
