@@ -39,18 +39,11 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 - **options (_object_)** (_optional_) --
   A dictionaty with following key-value pairs:
 
-<<<<<<< HEAD
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
   - **controlsColor (_optional_) (_string_)** -- (_iOS Only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **collapseToolbar (_optional_) (_boolean_)** : a boolean determining whether the toolbar should be hiding when a user scrolls the website
   - **showTitle (_optional_) (_boolean_)** : (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
   - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
-=======
-  - **toolbarColor (_optional_) (_string_)**: (_Android only_) color of the toolbar to be used by the Custom Tab in either `#AARRGGBB` format or `#RRGGBB`
-  - **collapseToolbar (_optional_) (_boolean_)** : a boolean determining whether the toolbar should be hiding when a user scrolls the website
-  - **showTitle (_optional_) (_boolean_)** : (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
-  - **package (_optional_) (_string_)** : _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#WebBrowser.getCustomTabsSupportingBrowsers) method.
->>>>>>> master
 
   Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
@@ -98,7 +91,7 @@ This method initiates (if needed) [CustomTabsSession](https://developer.android.
 
 #### Arguments
 
-- **url (_string_)** -- url of page that usert is expected to load
+- **url (_string_)** -- url of page that user is likely to be loaded firts
 - **package (_string_)** -- **Optional** -- package of browser to be informed. If not set, preferred browser will be used.
 
 #### Returns
@@ -131,7 +124,6 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 ### `WebBrowser.getCustomTabsSupportingBrowsers`
 
-<<<<<<< HEAD
 _Android only_
 
 Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and prefered one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to defult.)
@@ -144,14 +136,5 @@ The promise resolves with `{ browserPackages: string[], defaultPackage: string, 
 - **defaultPackage (_string_)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
 - **servicePackages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [coolDownAsync](#webbrowsercooldownasyncbrowserpackage).
 - **preferredPackage (_string_)** : Package preferred by CustomTabsClient to be used to handle Custom Tabs.
-=======
-Available only on Android.
-
-Returns two lists of applications package names supporting Custom Tabs. Under `packages` key you can find a list of all the applications. Under `default` key only the default applications will be listed. Note that list might not be fully reliable, as it uses `PackageManager.getResolvingActivities`.
-
-#### Returns
-
-The promise resolves with `{ packages: string[], default: string[] }`
->>>>>>> master
 
 #
