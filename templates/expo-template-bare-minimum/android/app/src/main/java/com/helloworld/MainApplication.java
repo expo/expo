@@ -8,14 +8,14 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import expo.adapters.react.ModuleRegistryAdapter;
-import expo.adapters.react.ReactAdapterPackage;
-import expo.adapters.react.ReactModuleRegistryProvider;
-import expo.core.interfaces.Package;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.adapters.react.ReactAdapterPackage;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
 import expo.modules.constants.ConstantsPackage;
-import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.permissions.PermissionsPackage;
+import expo.modules.filesystem.FileSystemPackage;
 
 import java.util.Arrays;
 import java.util.List;

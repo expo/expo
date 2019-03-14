@@ -1,5 +1,6 @@
 platform :ios, '10.0'
-require_relative '../node_modules/@unimodules/core/podfile-macro'
+
+require_relative '../node_modules/react-native-unimodules/cocoapods'
 
 target 'HelloWorld' do
   # Pods for HelloWorld
@@ -27,7 +28,6 @@ target 'HelloWorld' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
   use_unimodules!
-  # Add pods for additional unimodules here
 
   target 'HelloWorldTests' do
     inherit! :search_paths
