@@ -6,15 +6,11 @@
 
 EX_EXPORT_MODULE(ExpoLocalization)
 
-- (NSMutableArray *)ensureLocaleTags:(NSArray *)locales
-{
-    NSMutableArray *sanitizedLocales = [NSMutableArray array];
-    for (id locale in locales)
-        [sanitizedLocales addObject:[locale stringByReplacingOccurrencesOfString:@"_" withString:@"-"]];
-
-    return sanitizedLocales;
-}
-
+/* 
+ * Thanks to RNLocalize 
+ * https://github.com/react-native-community/react-native-localize/blame/e9e01ce65e3891241c88adf162679ab8e37759e3/ios/RNLanguages.m#L13
+ */
+ 
 EX_EXPORT_METHOD_AS(getLocalizationAsync,
                     getLocalizationAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
@@ -24,21 +20,24 @@ EX_EXPORT_METHOD_AS(getLocalizationAsync,
 
 - (NSDictionary *)constantsToExport
 {
-  NSArray *preferredLocales = [self ensureLocaleTags:[NSLocale preferredLanguages]];
+  NSArray<NSString *> *preferredLocales = [NSLocale preferredLanguages];
   NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
   NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
   
-  NSLocaleLanguageDirection localeLanguageDirection = [NSLocale characterDirectionForLanguage:[NSLocale preferredLanguages][0]];
-  BOOL isRTL = localeLanguageDirection == NSLocaleLanguageDirectionRightToLeft;
-  
   return @{
-           @"isRTL": @(isRTL),
+           @"isRTL": @([self isRTL]),
            @"locale": [preferredLocales objectAtIndex:0],
            @"locales": preferredLocales,
            @"timezone": [currentTimeZone name],
            @"isoCurrencyCodes": [NSLocale ISOCurrencyCodes],
            @"country": countryCode
            };
+}
+
+- (BOOL)isRTL
+{
+  // https://stackoverflow.com/a/11352545/4047926
+  return [NSLocale characterDirectionForLanguage:[NSLocale preferredLanguages][0]];
 }
 
 @end
