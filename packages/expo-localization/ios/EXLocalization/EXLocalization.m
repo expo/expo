@@ -6,6 +6,11 @@
 
 EX_EXPORT_MODULE(ExpoLocalization)
 
+/* 
+ * Thanks to RNLocalize 
+ * https://github.com/react-native-community/react-native-localize/blame/e9e01ce65e3891241c88adf162679ab8e37759e3/ios/RNLanguages.m#L13
+ */
+ 
 EX_EXPORT_METHOD_AS(getLocalizationAsync,
                     getLocalizationAsync:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
