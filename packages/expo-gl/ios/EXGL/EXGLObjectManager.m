@@ -1,8 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXModuleRegistry.h>
-#import <EXCore/EXUIManager.h>
-#import <EXCameraInterface/EXCameraInterface.h>
+#import <UMCore/UMModuleRegistry.h>
+#import <UMCore/UMUIManager.h>
+#import <UMCameraInterface/UMCameraInterface.h>
 
 #import <EXGL/EXGLObjectManager.h>
 #import <EXGL/EXGLObject.h>
@@ -11,7 +11,7 @@
 
 @interface EXGLObjectManager ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXGLContext *> *glContexts;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXGLObject *> *objects; // Key is `EXGLObjectId`
 
@@ -19,7 +19,7 @@
 
 @implementation EXGLObjectManager
 
-EX_REGISTER_MODULE();
+UM_REGISTER_MODULE();
 
 + (const NSString *)exportedModuleName
 {
@@ -40,11 +40,11 @@ EX_REGISTER_MODULE();
   return dispatch_queue_create("host.exp.exponent.GLObjectManager", DISPATCH_QUEUE_SERIAL);
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
 }
 
 - (EXGLContext *)getContextWithId:(NSNumber *)contextId
@@ -74,16 +74,16 @@ EX_REGISTER_MODULE();
 
 # pragma mark - Snapshots
 
-EX_EXPORT_METHOD_AS(takeSnapshotAsync,
+UM_EXPORT_METHOD_AS(takeSnapshotAsync,
                     takeSnapshotWithContextId:(nonnull NSNumber *)exglCtxId
                     andOptions:(nonnull NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   EXGLContext *glContext = [self getContextWithId:exglCtxId];
   
   if (glContext == nil) {
-    reject(@"E_GL_BAD_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.takeSnapshotAsync: EXGLContext not found for given context id."));
+    reject(@"E_GL_BAD_VIEW_TAG", nil, UMErrorWithMessage(@"ExponentGLObjectManager.takeSnapshotAsync: EXGLContext not found for given context id."));
     return;
   }
   
@@ -92,9 +92,9 @@ EX_EXPORT_METHOD_AS(takeSnapshotAsync,
 
 # pragma mark - Headless Context
 
-EX_EXPORT_METHOD_AS(createContextAsync,
-                    createContext:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(createContextAsync,
+                    createContext:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXGLContext *glContext = [[EXGLContext alloc] initWithDelegate:nil andModuleRegistry:_moduleRegistry];
   
@@ -105,16 +105,16 @@ EX_EXPORT_METHOD_AS(createContextAsync,
       reject(
              @"E_GL_CONTEXT_NOT_INITIALIZED",
              nil,
-             EXErrorWithMessage(@"ExponentGLObjectManager.createContextAsync: Unexpected error occurred when initializing headless context")
+             UMErrorWithMessage(@"ExponentGLObjectManager.createContextAsync: Unexpected error occurred when initializing headless context")
              );
     }
   }];
 }
 
-EX_EXPORT_METHOD_AS(destroyContextAsync,
+UM_EXPORT_METHOD_AS(destroyContextAsync,
                     destroyContextWithId:(nonnull NSNumber *)exglCtxId
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXGLContext *glContext = [self getContextWithId:exglCtxId];
   
@@ -128,31 +128,31 @@ EX_EXPORT_METHOD_AS(destroyContextAsync,
 
 # pragma mark - Camera integration
 
-EX_EXPORT_METHOD_AS(destroyObjectAsync,
+UM_EXPORT_METHOD_AS(destroyObjectAsync,
                     destroyObjectAsync:(nonnull NSNumber *)exglObjId
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   _objects[exglObjId] = nil;
   resolve(@(YES));
 }
 
-EX_EXPORT_METHOD_AS(createCameraTextureAsync,
+UM_EXPORT_METHOD_AS(createCameraTextureAsync,
                     createTextureForContextWithId:(nonnull NSNumber *)exglCtxId
                     andCameraWithReactTag:(nonnull NSNumber *)cameraViewTag
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   [_uiManager addUIBlock:^(id view) {
     EXGLContext *glContext = [self getContextWithId:exglCtxId];
-    id<EXCameraInterface> cameraView = (id<EXCameraInterface>)view;
+    id<UMCameraInterface> cameraView = (id<UMCameraInterface>)view;
     
     if (glContext == nil) {
-      reject(@"E_GL_BAD_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXGLView"));
+      reject(@"E_GL_BAD_VIEW_TAG", nil, UMErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXGLView"));
       return;
     }
     if (cameraView == nil) {
-      reject(@"E_GL_BAD_CAMERA_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXCamera"));
+      reject(@"E_GL_BAD_CAMERA_VIEW_TAG", nil, UMErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXCamera"));
       return;
     }
     
@@ -160,7 +160,7 @@ EX_EXPORT_METHOD_AS(createCameraTextureAsync,
     
     self->_objects[@(cameraTexture.exglObjId)] = cameraTexture;
     resolve(@{ @"exglObjId": @(cameraTexture.exglObjId) });
-  } forView:cameraViewTag implementingProtocol:@protocol(EXCameraInterface)];
+  } forView:cameraViewTag implementingProtocol:@protocol(UMCameraInterface)];
 }
 
 @end

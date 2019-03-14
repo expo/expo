@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import { SharedEventEmitter, utils, INTERNALS } from 'expo-firebase-app';
 
 // import type Auth from '../';

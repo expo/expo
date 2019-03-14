@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import firebase, { App, ModuleBase } from 'expo-firebase-app';
 import Reference from './Reference';
 import TransactionHandler from './transaction';

@@ -38,9 +38,9 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-permissions-interface": "*",
-    "expo-task-manager-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-permissions-interface": "*",
+    "unimodules-task-manager-interface": "*"
   },
   "dependencies": {
     "invariant": "^2.2.4"

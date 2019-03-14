@@ -16,6 +16,7 @@ const includeModulesThatContainPaths = [
   'node_modules/expo',
   'node_modules/@react',
   'node_modules/@expo',
+  'node_modules/@unimodules',
 ];
 
 // This is needed for webpack to import static images in JavaScript files.

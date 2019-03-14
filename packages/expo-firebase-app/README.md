@@ -39,8 +39,8 @@ and run `pod install`.
     and if not already included
 
     ```gradle
-    include ':expo-core'
-    project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
+    include ':unimodules-core'
+    project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../node_modules/@unimodules/core/android')
     ```
 
 2.  Insert the following lines inside the dependencies block in `android/app/build.gradle`:
@@ -49,7 +49,7 @@ and run `pod install`.
     ```
     and if not already included
     ```gradle
-    api project(':expo-core')
+    api project(':unimodules-core')
     ```
 3.  Include the module in your expo packages: `./android/app/src/main/java/host/exp/exponent/MainActivity.java`
 

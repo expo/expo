@@ -16,13 +16,13 @@
   "preserve_paths": "EXLocation/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXPermissionsInterface": [
+    "UMPermissionsInterface": [
 
     ],
-    "EXTaskManagerInterface": [
+    "UMTaskManagerInterface": [
 
     ]
   }

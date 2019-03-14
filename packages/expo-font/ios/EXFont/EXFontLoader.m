@@ -2,7 +2,7 @@
 
 #import <EXFont/EXFontLoader.h>
 #import <EXFont/EXFontLoaderProcessor.h>
-#import <EXFontInterface/EXFontManagerInterface.h>
+#import <UMFontInterface/UMFontManagerInterface.h>
 #import <EXFont/EXFontScaler.h>
 #import <EXFont/EXFont.h>
 #import <objc/runtime.h>
@@ -18,7 +18,7 @@
 
 @implementation EXFontLoader
 
-EX_EXPORT_MODULE(ExpoFontLoader);
+UM_EXPORT_MODULE(ExpoFontLoader);
 
 - (instancetype)init
 {
@@ -29,22 +29,22 @@ EX_EXPORT_MODULE(ExpoFontLoader);
   return self;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if (moduleRegistry) {
-    id<EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFontManagerInterface)];
+    id<UMFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFontManagerInterface)];
     [manager addFontProcessor:_processor];
 
-    id<EXFontScalersManagerInterface> scalersManager = [moduleRegistry getSingletonModuleForName:@"FontScalersManager"];
+    id<UMFontScalersManagerInterface> scalersManager = [moduleRegistry getSingletonModuleForName:@"FontScalersManager"];
     [scalersManager registerFontScaler:_scaler];
   }
 }
 
-EX_EXPORT_METHOD_AS(loadAsync,
+UM_EXPORT_METHOD_AS(loadAsync,
                     loadAsyncWithFontFamilyName:(NSString *)fontFamilyName
                     withLocalUri:(NSString *)path
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if ([EXFontManager getFontForName:fontFamilyName]) {
     reject(@"E_FONT_ALREADY_EXISTS",

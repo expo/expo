@@ -32,8 +32,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/background-fetch/",
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-task-manager-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-task-manager-interface": "*"
   },
   "dependencies": {
     "expo-task-manager": "~3.0.0"

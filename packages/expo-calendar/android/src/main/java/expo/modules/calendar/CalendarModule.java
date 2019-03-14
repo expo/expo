@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.permissions.Permissions;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.interfaces.permissions.Permissions;
 
 public class CalendarModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String TAG = CalendarModule.class.getSimpleName();

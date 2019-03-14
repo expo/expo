@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import expo.core.interfaces.InternalModule;
-import expo.interfaces.filesystem.FilePermissionModuleInterface;
-import expo.interfaces.filesystem.Permission;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
+import org.unimodules.interfaces.filesystem.Permission;
 
 public class FilePermissionModule implements FilePermissionModuleInterface, InternalModule {
 

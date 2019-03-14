@@ -7,7 +7,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.ref.WeakReference;
 
-import expo.core.ModuleRegistry;
+import org.unimodules.core.ModuleRegistry;
 
 public class QuerySnapshotSerializeAsyncTask extends AsyncTask<Object, Void, Bundle> {
   private WeakReference<ModuleRegistry> reactContextWeakReference;

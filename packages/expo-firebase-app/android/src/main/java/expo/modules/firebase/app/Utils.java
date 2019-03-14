@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.services.EventEmitter;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 @SuppressWarnings("WeakerAccess")
 public class Utils {

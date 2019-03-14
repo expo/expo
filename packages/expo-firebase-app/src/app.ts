@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 
 import SharedEventEmitter from './utils/SharedEventEmitter';
 import INTERNALS from './utils/internals';

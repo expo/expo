@@ -5,9 +5,9 @@ import android.content.pm.PackageManager;
 
 import com.facebook.react.bridge.ReactContext;
 
-import expo.adapters.react.services.UIManagerModuleWrapper;
-import expo.core.interfaces.ActivityEventListener;
-import expo.interfaces.permissions.PermissionsListener;
+import org.unimodules.adapters.react.services.UIManagerModuleWrapper;
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.interfaces.permissions.PermissionsListener;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.expoview.Exponent;

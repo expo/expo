@@ -55,16 +55,16 @@ android {
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(":expo-core").file("../expo-core.gradle")
+  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
   throw new GradleException(
-      "'expo-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
+      "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
           "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
 }
 
 dependencies {
-  expendency "expo-core"
-  expendency "expo-constants-interface"
+  unimodule "unimodules-core"
+  unimodule "unimodules-constants-interface"
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.segment.analytics.android.integrations:firebase:1.2.0'
 }

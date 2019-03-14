@@ -1,13 +1,13 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 #import <EXCamera/EXCameraManager.h>
-#import <EXCore/EXModuleRegistry.h>
-#import <EXCore/EXAppLifecycleListener.h>
-#import <EXCameraInterface/EXCameraInterface.h>
+#import <UMCore/UMModuleRegistry.h>
+#import <UMCore/UMAppLifecycleListener.h>
+#import <UMCameraInterface/UMCameraInterface.h>
 
 @class EXCameraManager;
 
-@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener, EXCameraInterface>
+@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, UMAppLifecycleListener, UMCameraInterface>
 
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
 @property (nonatomic, strong) AVCaptureSession *session;
@@ -29,7 +29,7 @@
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
 
-- (id)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
+- (id)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
 - (void)updateType;
 - (void)updateFlashMode;
 - (void)updateFocusMode;
@@ -39,8 +39,8 @@
 - (void)updatePictureSize;
 - (void)updateFaceDetectorSettings:(NSDictionary *)settings;
 - (void)setBarCodeScannerSettings:(NSDictionary *)settings;
-- (void)takePicture:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
-- (void)record:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
+- (void)takePicture:(NSDictionary *)options resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+- (void)record:(NSDictionary *)options resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
 - (void)stopRecording;
 - (void)resumePreview;
 - (void)pausePreview;

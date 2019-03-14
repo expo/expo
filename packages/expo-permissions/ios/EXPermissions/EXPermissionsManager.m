@@ -7,7 +7,7 @@ NSString * const EXPermissionsKey = @"ExpoPermissions";
 
 @implementation EXPermissionsManager
 
-EX_REGISTER_SINGLETON_MODULE(Permissions)
+UM_REGISTER_SINGLETON_MODULE(Permissions)
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
 {

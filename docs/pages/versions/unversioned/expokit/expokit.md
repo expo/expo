@@ -101,49 +101,57 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 - If upgrading to SDK 31 or below, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 
+If upgrading from SDK32 or below:
+
+1. change some package references in `android/app/build.gradle`:
+    - `host.exp.exponent:expo-core:*` to `org.unimodules:core:+`
+    - `host.exp.exponent:expo-react-native-adapter:*` to `org.unimodules:react-native-adapter:+`
+    - `host.exp.exponent:expo-<anything>-interface:*` to `org.unimodules:unimodules-<that something>-interface:+`
+2. remove `expo-errors` dependency from `build.gradle`.
+2. you will need to change some imported packages in `MainApplication` from `host.exp.exponent.` to `org.unimodules.`.
+
 If upgrading from SDK31 or below:
 
 1. add the following lines to `android/app/build.gradle`:
     ```groovy
-    api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
-    api 'host.exp.exponent:expo-core:2.0.0'
-    api 'host.exp.exponent:expo-constants-interface:2.0.0'
-    api 'host.exp.exponent:expo-constants:2.0.0'
-    api 'host.exp.exponent:expo-errors:1.0.0'
-    api 'host.exp.exponent:expo-file-system-interface:2.0.0'
-    api 'host.exp.exponent:expo-file-system:2.0.0'
-    api 'host.exp.exponent:expo-image-loader-interface:2.0.0'
-    api 'host.exp.exponent:expo-permissions:2.0.0'
-    api 'host.exp.exponent:expo-permissions-interface:2.0.0'
-    api 'host.exp.exponent:expo-sensors-interface:2.0.0'
-    api 'host.exp.exponent:expo-react-native-adapter:2.0.0'
-    api 'host.exp.exponent:expo-task-manager:1.0.0'
-    api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
+    api 'host.exp.exponent:expo-app-loader-provider:+'
+    api 'org.unimodules:core:+'
+    api 'org.unimodules:unimodules-constants-interface:+'
+    api 'host.exp.exponent:expo-constants:+'
+    api 'org.unimodules:unimodules-file-system-interface:+'
+    api 'host.exp.exponent:expo-file-system:+'
+    api 'org.unimodules:unimodules-image-loader-interface:+'
+    api 'host.exp.exponent:expo-permissions:+'
+    api 'org.unimodules:unimodules-permissions-interface:+'
+    api 'org.unimodules:unimodules-sensors-interface:+'
+    api 'host.exp.exponent:expo-react-native-adapter:+'
+    api 'host.exp.exponent:expo-task-manager:+'
+    api 'org.unimodules:unimodules-task-manager-interface:+'
 
     // Optional universal modules, could be removed
     // along with references in MainActivity
-    api 'host.exp.exponent:expo-ads-admob:2.0.0'
-    api 'host.exp.exponent:expo-app-auth:2.0.0'
-    api 'host.exp.exponent:expo-analytics-segment:2.0.0'
-    api 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
-    api 'host.exp.exponent:expo-barcode-scanner:2.0.0'
-    api 'host.exp.exponent:expo-camera-interface:2.0.0'
-    api 'host.exp.exponent:expo-camera:2.0.0'
-    api 'host.exp.exponent:expo-contacts:2.0.0'
-    api 'host.exp.exponent:expo-face-detector:2.0.0'
-    api 'host.exp.exponent:expo-face-detector-interface:2.0.0'
-    api 'host.exp.exponent:expo-font:2.0.0'
-    api 'host.exp.exponent:expo-gl-cpp:2.0.0'
-    api 'host.exp.exponent:expo-gl:2.0.0'
-    api 'host.exp.exponent:expo-google-sign-in:2.0.0'
-    api 'host.exp.exponent:expo-local-authentication:2.0.0'
-    api 'host.exp.exponent:expo-localization:2.0.0'
-    api 'host.exp.exponent:expo-location:2.0.0'
-    api 'host.exp.exponent:expo-media-library:2.0.0'
-    api 'host.exp.exponent:expo-print:2.0.0'
-    api 'host.exp.exponent:expo-sensors:2.0.0'
-    api 'host.exp.exponent:expo-sms:2.0.0'
-    api 'host.exp.exponent:expo-background-fetch:1.0.0'
+    api 'host.exp.exponent:expo-ads-admob:+'
+    api 'host.exp.exponent:expo-app-auth:+'
+    api 'host.exp.exponent:expo-analytics-segment:+'
+    api 'org.unimodules:unimodules-barcode-scanner-interface:+'
+    api 'host.exp.exponent:expo-barcode-scanner:+'
+    api 'org.unimodules:unimodules-camera-interface:+'
+    api 'host.exp.exponent:expo-camera:+'
+    api 'host.exp.exponent:expo-contacts:+'
+    api 'host.exp.exponent:expo-face-detector:+'
+    api 'org.unimodules:unimodules-face-detector-interface:+'
+    api 'host.exp.exponent:expo-font:+'
+    api 'host.exp.exponent:expo-gl-cpp:+'
+    api 'host.exp.exponent:expo-gl:+'
+    api 'host.exp.exponent:expo-google-sign-in:+'
+    api 'host.exp.exponent:expo-local-authentication:+'
+    api 'host.exp.exponent:expo-localization:+'
+    api 'host.exp.exponent:expo-location:+'
+    api 'host.exp.exponent:expo-media-library:+'
+    api 'host.exp.exponent:expo-print:+'
+    api 'host.exp.exponent:expo-sensors:+'
+    api 'host.exp.exponent:expo-sms:+'
+    api 'host.exp.exponent:expo-background-fetch:+'
     ```
 2. Ensure that in `MainActivity.java`, `expoPackages` method looks like this:
     ```java
@@ -162,7 +170,7 @@ If upgrading from SDK31 or below:
     ```
 4. Add the following lines in `MainApplication.java`:
     ```java
-    import expo.core.interfaces.Package;
+    import org.unimodules.core.interfaces.Package;
     import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
     import expo.modules.ads.admob.AdMobPackage;
     import expo.modules.analytics.segment.SegmentPackage;

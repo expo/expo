@@ -36,7 +36,7 @@ export default class App extends React.Component {
 }
 
 async function _getExpoModuleSpecsAsync() {
-  let whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|RN)(?![a-z])/;
+  let whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|RN|NativeUnimoduleProxy)(?![a-z])/;
   let moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
   let expoModuleNames = moduleNames.filter(moduleName => whitelist.test(moduleName)).sort();
   let specPromises = {};
@@ -55,7 +55,7 @@ async function _getModuleSpecAsync(moduleName, module) {
     moduleName
   );
   let spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
-  if (moduleName === 'ExpoNativeModuleProxy') {
+  if (moduleName === 'NativeUnimoduleProxy') {
     spec.exportedMethods.mock = _sortObject(module.exportedMethods);
     spec.viewManagersNames.mock = module.viewManagersNames.sort();
     spec.modulesConstants.type = 'mock';

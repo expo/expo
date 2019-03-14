@@ -32,13 +32,12 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-errors": "*",
-    "expo-camera-interface": "*",
-    "expo-barcode-scanner-interface": "*",
-    "expo-file-system-interface": "*",
-    "expo-face-detector-interface": "*",
-    "expo-permissions-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-camera-interface": "*",
+    "unimodules-barcode-scanner-interface": "*",
+    "unimodules-file-system-interface": "*",
+    "unimodules-face-detector-interface": "*",
+    "unimodules-permissions-interface": "*"
   },
   "dependencies": {
     "lodash.mapvalues": "^4.6.0",

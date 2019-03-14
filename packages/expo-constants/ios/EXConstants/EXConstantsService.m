@@ -4,7 +4,7 @@
 #include <sys/sysctl.h>
 #include <sys/utsname.h>
 
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 #import <EXConstants/EXConstantsService.h>
 
 @interface EXConstantsService ()
@@ -15,7 +15,7 @@
 
 @implementation EXConstantsService
 
-EX_REGISTER_MODULE();
+UM_REGISTER_MODULE();
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
@@ -27,7 +27,7 @@ EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXConstantsInterface)];
+  return @[@protocol(UMConstantsInterface)];
 }
 
 - (NSDictionary *)constants
@@ -70,7 +70,7 @@ EX_REGISTER_MODULE();
 - (CGFloat)statusBarHeight
 {
   __block CGSize statusBarSize;
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
   }];
   return MIN(statusBarSize.width, statusBarSize.height);

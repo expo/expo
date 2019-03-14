@@ -104,7 +104,7 @@ for (let moduleName of Object.keys(expoModules)) {
   });
 }
 
-mockNativeModules.ExpoNativeModuleProxy.viewManagersNames.forEach(viewManagerName => {
+mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach(viewManagerName => {
   Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
     get: () => ({
       NativeProps: {},
@@ -123,8 +123,8 @@ Object.defineProperty(mockNativeModules.UIManager, 'RCTView', {
   }),
 });
 
-const modulesConstants = mockNativeModules.ExpoNativeModuleProxy.modulesConstants;
-mockNativeModules.ExpoNativeModuleProxy.modulesConstants = {
+const modulesConstants = mockNativeModules.NativeUnimoduleProxy.modulesConstants;
+mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
   ...modulesConstants,
   ExponentConstants: {
     ...modulesConstants.ExponentConstants,
@@ -200,9 +200,9 @@ jest.mock('react-native-gesture-handler', () => {
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 
-jest.mock('expo-react-native-adapter', () => {
-  const ExpoReactNativeAdapter = require.requireActual('expo-react-native-adapter');
-  const { NativeModulesProxy } = ExpoReactNativeAdapter;
+jest.mock('@unimodules/react-native-adapter', () => {
+  const ReactNativeAdapter = require.requireActual('@unimodules/react-native-adapter');
+  const { NativeModulesProxy } = ReactNativeAdapter;
 
   // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
   // into the native proxy module. We're not really interested in checking whether the underlying
@@ -220,5 +220,5 @@ jest.mock('expo-react-native-adapter', () => {
     }
   }
 
-  return ExpoReactNativeAdapter;
+  return ReactNativeAdapter;
 });

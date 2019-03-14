@@ -142,8 +142,8 @@ dependencies {
     implementation project(":react-native-reanimated")
     implementation project(":react-native-screens")
 
-    implementation project(":expo-core")
-    implementation project(":expo-react-native-adapter")
+    implementation project(":unimodules-core")
+    implementation project(":unimodules-react-native-adapter")
 }
 
 // Run this once to be able to run the application with BUCK

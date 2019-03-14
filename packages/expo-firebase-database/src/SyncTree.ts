@@ -1,4 +1,4 @@
-import { EventEmitter, NativeModulesProxy } from 'expo-core';
+import { EventEmitter, NativeModulesProxy } from '@unimodules/core';
 import { SharedEventEmitter, utils } from 'expo-firebase-app';
 
 import DataSnapshot from './DataSnapshot';

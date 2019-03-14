@@ -5,9 +5,9 @@ import android.content.Context;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 public class ModuleTemplateViewManager extends ViewManager<ModuleTemplateView> implements ModuleRegistryConsumer {
   private static final String TAG = "ExpoModuleTemplateView";

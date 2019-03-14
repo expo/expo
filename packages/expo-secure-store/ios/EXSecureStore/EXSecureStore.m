@@ -223,18 +223,18 @@
            };
 };
 
-EX_EXPORT_MODULE(ExpoSecureStore);
+UM_EXPORT_MODULE(ExpoSecureStore);
 
-EX_EXPORT_METHOD_AS(setValueWithKeyAsync,
+UM_EXPORT_METHOD_AS(setValueWithKeyAsync,
                     setValueWithKeyAsync:(NSString *)value
                     key:(NSString *)key
                     options:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   NSString *scopedKey = [self _scopedKey:key];
   if (!scopedKey) {
-    reject(@"E_SECURESTORE_SETVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_SETVALUEFAIL", nil, UMErrorWithMessage(@"Invalid key."));
   } else {
     NSError *error;
     BOOL setValue = [self _setValue:value
@@ -244,20 +244,20 @@ EX_EXPORT_METHOD_AS(setValueWithKeyAsync,
     if (setValue) {
       resolve(nil);
     } else {
-      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, EXErrorWithMessage([[self class] _messageForError:error]));
+      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, UMErrorWithMessage([[self class] _messageForError:error]));
     }
   }
 }
 
-EX_EXPORT_METHOD_AS(getValueWithKeyAsync,
+UM_EXPORT_METHOD_AS(getValueWithKeyAsync,
                     getValueWithKeyAsync:(NSString *)key
                     options:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   NSString *scopedKey = [self _scopedKey:key];
   if (!scopedKey) {
-    reject(@"E_SECURESTORE_GETVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_GETVALUEFAIL", nil, UMErrorWithMessage(@"Invalid key."));
   } else {
     NSError *error;
     NSString *value = [self _getValueWithKey:scopedKey
@@ -267,7 +267,7 @@ EX_EXPORT_METHOD_AS(getValueWithKeyAsync,
       if (error.code == errSecItemNotFound) {
         resolve([NSNull null]);
       } else {
-        reject(@"E_SECURESTORE_GETVALUEFAIL", nil, EXErrorWithMessage([[self class] _messageForError:error]));
+        reject(@"E_SECURESTORE_GETVALUEFAIL", nil, UMErrorWithMessage([[self class] _messageForError:error]));
       }
     } else {
       resolve(value);
@@ -275,15 +275,15 @@ EX_EXPORT_METHOD_AS(getValueWithKeyAsync,
   }
 }
 
-EX_EXPORT_METHOD_AS(deleteValueWithKeyAsync,
+UM_EXPORT_METHOD_AS(deleteValueWithKeyAsync,
                     deleteValueWithKeyAsync:(NSString *)key
                     options:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   NSString *scopedKey = [self _scopedKey:key];
   if (!scopedKey) {
-    reject(@"E_SECURESTORE_DELETEVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_DELETEVALUEFAIL", nil, UMErrorWithMessage(@"Invalid key."));
   } else {
     [self _deleteValueWithKey:scopedKey
                   withOptions:options];

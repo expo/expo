@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';

@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import processTheme from './utils/processTheme';
 import checkArgs from './utils/checkArgs';
 import checkInit from './utils/checkInit';

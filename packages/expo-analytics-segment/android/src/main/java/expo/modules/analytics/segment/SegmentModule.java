@@ -14,12 +14,12 @@ import com.segment.analytics.android.integrations.firebase.FirebaseIntegration;
 import java.util.HashMap;
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.constants.ConstantsInterface;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 
 public class SegmentModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String NAME = "ExponentSegment";

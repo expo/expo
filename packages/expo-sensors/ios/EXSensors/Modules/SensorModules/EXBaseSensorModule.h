@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXEventEmitter.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMEventEmitter.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXBaseSensorModule : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer>
+@interface EXBaseSensorModule : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer>
 
 @property (nonatomic, weak, readonly) id sensorManager;
 

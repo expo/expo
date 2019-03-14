@@ -6,8 +6,8 @@
     "start": "node ../../react-native-lab/react-native/local-cli/cli.js start --config ../../../../apps/standalone-ncl/rn-cli.config.js"
   },
   "dependencies": {
-    "expo-core": "~2.0.0",
-    "expo-react-native-adapter": "~2.0.0",
+    "@unimodules/core": "*",
+    "@unimodules/react-native-adapter": "*",
     "native-component-list": "*",
     "react": "16.5.0",
     "react-native": "^0.57.0"

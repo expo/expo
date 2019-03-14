@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import ExponentPrint from './ExponentPrint';
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 const Orientation = ExponentPrint.Orientation;
 async function printAsync(options) {
     if (Platform.OS === 'web') {

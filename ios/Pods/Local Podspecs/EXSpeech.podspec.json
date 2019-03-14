@@ -16,7 +16,7 @@
   "preserve_paths": "EXSpeech/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

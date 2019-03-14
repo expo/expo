@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 #import <EXCalendar/EXCalendarConverter.h>
 
 @implementation EXCalendarConverter
@@ -132,11 +132,11 @@
 {
   NSMutableDictionary *serializedCalendar = [[NSMutableDictionary alloc] init];
 
-  serializedCalendar[@"id"] = EXNullIfNil(calendar.calendarIdentifier);
-  serializedCalendar[@"title"] = EXNullIfNil(calendar.title);
-  serializedCalendar[@"source"] = EXNullIfNil([EXCalendarConverter serializeSource:calendar.source]);
+  serializedCalendar[@"id"] = UMNullIfNil(calendar.calendarIdentifier);
+  serializedCalendar[@"title"] = UMNullIfNil(calendar.title);
+  serializedCalendar[@"source"] = UMNullIfNil([EXCalendarConverter serializeSource:calendar.source]);
   serializedCalendar[@"entityType"] = [EXCalendarConverter _entityType:calendar.allowedEntityTypes];
-  serializedCalendar[@"color"] = calendar.CGColor ? [EXUtilities hexStringWithCGColor:calendar.CGColor] : [NSNull null];
+  serializedCalendar[@"color"] = calendar.CGColor ? [UMUtilities hexStringWithCGColor:calendar.CGColor] : [NSNull null];
   serializedCalendar[@"type"] = [EXCalendarConverter _calendarType:calendar.type];
   serializedCalendar[@"allowsModifications"] = @(calendar.allowsContentModifications);
   serializedCalendar[@"allowedAvailabilities"] = [EXCalendarConverter _calendarSupportedAvailabilitiesFromMask:calendar.supportedEventAvailabilities];
@@ -183,9 +183,9 @@
     serializedItem[@"lastModifiedDate"] = [dateFormatter stringFromDate:item.lastModifiedDate];
   }
 
-  serializedItem[@"timeZone"] = EXNullIfNil(item.timeZone.name);
-  serializedItem[@"url"] = EXNullIfNil(item.URL.absoluteString.stringByRemovingPercentEncoding);
-  serializedItem[@"notes"] = EXNullIfNil(item.notes);
+  serializedItem[@"timeZone"] = UMNullIfNil(item.timeZone.name);
+  serializedItem[@"url"] = UMNullIfNil(item.URL.absoluteString.stringByRemovingPercentEncoding);
+  serializedItem[@"notes"] = UMNullIfNil(item.notes);
   serializedItem[@"alarms"] = [EXCalendarConverter _serializeAlarms:item.alarms withDateFormatter:dateFormatter];
 
   if (item.hasRecurrenceRules) {
@@ -251,7 +251,7 @@
   formedCalendarEvent[@"allDay"] = [NSNumber numberWithBool:event.allDay];
   formedCalendarEvent[@"availability"] = [EXCalendarConverter _eventAvailability:event.availability];
   formedCalendarEvent[@"status"] = [EXCalendarConverter _eventStatus:event.status];
-  formedCalendarEvent[@"organizer"] = EXNullIfNil([EXCalendarConverter _serializeAttendee:event.organizer]);
+  formedCalendarEvent[@"organizer"] = UMNullIfNil([EXCalendarConverter _serializeAttendee:event.organizer]);
 
   return formedCalendarEvent;
 }

@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-core';
+import { EventEmitter } from '@unimodules/core';
 import DataSnapshot from './DataSnapshot';
 import DatabaseReference from './Reference';
 declare type Listener = (snapshot: DataSnapshot) => any;

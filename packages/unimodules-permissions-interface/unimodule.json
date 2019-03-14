@@ -1,0 +1,4 @@
+{
+  "name": "unimodules-permissions-interface",
+  "platforms": ["ios", "android"]
+}

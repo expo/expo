@@ -6,13 +6,13 @@ import android.os.Build;
 import android.provider.Settings;
 import android.view.WindowManager;
 
-import expo.core.ExportedModule;
-import expo.core.InvalidArgumentException;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.InvalidArgumentException;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 public class BrightnessModule extends ExportedModule implements ModuleRegistryConsumer {
   private ModuleRegistry mModuleRegistry;

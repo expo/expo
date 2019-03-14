@@ -10,8 +10,8 @@ import android.view.Surface;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioEventHandler;
 import expo.modules.av.AudioFocusNotAcquiredException;

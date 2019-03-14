@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import firebase from 'expo-firebase-app';
 
 const { ExpoFirebaseAnalytics } = NativeModulesProxy;

@@ -1,5 +1,5 @@
 import * as AppAuth from 'expo-app-auth';
-import { CodedError } from 'expo-errors';
+import { CodedError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 

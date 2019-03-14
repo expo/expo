@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { ViewPropTypes, findNodeHandle } from 'react-native';
-import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
+import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
 export default class BlurView extends React.Component {
     constructor() {
         super(...arguments);

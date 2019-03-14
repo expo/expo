@@ -2,7 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <EXCore/EXDefines.h>
+#import <UMCore/UMDefines.h>
 
 #import <EXAV/EXAudioSessionManager.h>
 
@@ -26,7 +26,7 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 
 @implementation EXAudioSessionManager
 
-EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
+UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 
 - (instancetype)init
 {

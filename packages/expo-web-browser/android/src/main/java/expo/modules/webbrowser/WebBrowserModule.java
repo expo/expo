@@ -10,20 +10,21 @@ import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.errors.CurrentActivityNotFoundException;
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.UIManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ActivityEventListener;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
-import expo.errors.CurrentActivityNotFoundException;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
 public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {

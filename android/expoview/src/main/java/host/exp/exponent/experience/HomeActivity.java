@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import expo.core.interfaces.Package;
+import org.unimodules.core.interfaces.Package;
 import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.constants.ConstantsPackage;

@@ -1,7 +1,7 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <EXReactNativeAdapter/EXReactNativeAdapter.h>
+#import <UMReactNativeAdapter/UMReactNativeAdapter.h>
 
-@interface EXScopedReactNativeAdapter : EXReactNativeAdapter
+@interface EXScopedReactNativeAdapter : UMReactNativeAdapter
 
 @end

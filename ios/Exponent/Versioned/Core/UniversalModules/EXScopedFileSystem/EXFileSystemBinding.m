@@ -1,19 +1,19 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import "EXFileSystemBinding.h"
-#import <EXConstantsInterface/EXConstantsInterface.h>
+#import <UMConstantsInterface/UMConstantsInterface.h>
 
 @interface EXFileSystemBinding ()
 
-@property (nonatomic, weak) id<EXConstantsInterface> constantsModule;
+@property (nonatomic, weak) id<UMConstantsInterface> constantsModule;
 
 @end
 
 @implementation EXFileSystemBinding
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _constantsModule = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+  _constantsModule = [moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
 }
 
 - (NSString *)bundleDirectoryForExperienceId:(NSString *)experienceId

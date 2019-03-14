@@ -2,8 +2,8 @@
 
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
-#import <EXBarCodeScannerInterface/EXBarCodeScannerInterface.h>
-#import <EXCore/EXDefines.h>
+#import <UMBarCodeScannerInterface/UMBarCodeScannerInterface.h>
+#import <UMCore/UMDefines.h>
 
 @interface EXBarCodeScanner() <AVCaptureMetadataOutputObjectsDelegate>
 
@@ -53,9 +53,9 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     return;
   }
   _barCodesScanning = newBarCodeScanning;
-  EX_WEAKIFY(self);
+  UM_WEAKIFY(self);
   [self _runBlockIfQueueIsPresent:^{
-    EX_ENSURE_STRONGIFY(self);
+    UM_ENSURE_STRONGIFY(self);
     if ([self isScanningBarCodes]) {
       if (self.metadataOutput) {
         [self _setConnectionsEnabled:true];
