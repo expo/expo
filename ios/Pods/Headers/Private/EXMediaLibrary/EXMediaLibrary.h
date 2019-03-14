@@ -1,1 +1,0 @@
-../../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h

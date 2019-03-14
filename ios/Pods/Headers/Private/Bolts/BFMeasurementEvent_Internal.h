@@ -1,1 +1,0 @@
-../../../Bolts/Bolts/iOS/Internal/BFMeasurementEvent_Internal.h

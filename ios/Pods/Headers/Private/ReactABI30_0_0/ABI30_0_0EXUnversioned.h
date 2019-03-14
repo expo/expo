@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/Expo/Core/ABI30_0_0EXUnversioned.h

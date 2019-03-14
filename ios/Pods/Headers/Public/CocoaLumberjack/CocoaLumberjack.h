@@ -1,1 +1,0 @@
-../../../CocoaLumberjack/Classes/CocoaLumberjack.h
