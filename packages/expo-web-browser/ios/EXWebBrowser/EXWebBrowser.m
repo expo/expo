@@ -4,7 +4,7 @@
 #import <EXWebBrowser/EXWebBrowser.h>
 
 #import <UMCore/UMUtilities.h>
-#import "UIColor+Expanded.h"
+#import "UIColor+Extension.h"
 
 
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
