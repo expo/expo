@@ -113,7 +113,12 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   }
 
   dispatch_async([module methodQueue], ^{
-    [module callExportedMethod:methodName withArguments:arguments resolver:resolve rejecter:reject];
+    @try {
+      [module callExportedMethod:methodName withArguments:arguments resolver:resolve rejecter:reject];
+    } @catch (NSException *e) {
+      NSString *message = [NSString stringWithFormat:@"An exception was thrown while calling `%@.%@` with arguments `%@`: %@", moduleName, methodName, arguments, e];
+      reject(@"E_EXC", message, nil);
+    }
   });
 }
 
