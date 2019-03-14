@@ -1,5 +1,5 @@
 import { Linking, Platform } from 'react-native';
-import { UnavailabilityError, CodedError } from 'expo-errors';
+import { UnavailabilityError } from 'expo-errors';
 import ExponentWebBrowser from './ExpoWebBrowser';
 export async function getCustomTabsSupportingBrowsersAsync() {
     if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
@@ -8,49 +8,22 @@ export async function getCustomTabsSupportingBrowsersAsync() {
     return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
 }
 export async function warmUpAsync(browserPackage) {
-    if (!ExponentWebBrowser.warmUpAsync) {
+    if (!ExponentWebBrowser.mayInitWithUrlAsync) {
         throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
     }
-    let packageToWarm = browserPackage;
-    if (!browserPackage) {
-        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
-    }
-    if (!packageToWarm) {
-        throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
-    }
-    else {
-        return ExponentWebBrowser.warmUpAsync(packageToWarm);
-    }
+    return ExponentWebBrowser.warmUpAsync(browserPackage);
 }
-export async function mayInitWithUrlAsync(url, packageName) {
+export async function mayInitWithUrlAsync(url, browserPackage) {
     if (!ExponentWebBrowser.mayInitWithUrlAsync) {
         throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
     }
-    let packageToWarm = packageName;
-    if (!packageName) {
-        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
-    }
-    if (!packageToWarm) {
-        throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
-    }
-    else {
-        return ExponentWebBrowser.mayInitWithUrlAsync(url, packageToWarm);
-    }
+    return ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
 }
 export async function coolDownAsync(browserPackage) {
     if (!ExponentWebBrowser.coolDownAsync) {
         throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
     }
-    let packageToCool = browserPackage;
-    if (!browserPackage) {
-        packageToCool = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
-    }
-    if (!packageToCool) {
-        throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
-    }
-    else {
-        return ExponentWebBrowser.coolDownAsync(packageToCool);
-    }
+    return ExponentWebBrowser.coolDownAsync(browserPackage);
 }
 export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {

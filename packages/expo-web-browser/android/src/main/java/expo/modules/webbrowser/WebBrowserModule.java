@@ -7,6 +7,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 
@@ -22,6 +23,7 @@ import expo.core.interfaces.ExpoMethod;
 import expo.core.interfaces.ModuleRegistryConsumer;
 import expo.core.interfaces.services.UIManager;
 import expo.errors.CurrentActivityNotFoundException;
+import expo.modules.webbrowser.error.NoPrefferedPackageFound;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
 public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
@@ -64,37 +66,52 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @ExpoMethod
-  public void warmUpAsync(final String packageName, final Promise promise) {
-    mConnectionHelper.warmUp(packageName);
-    Bundle result = new Bundle();
-    result.putString("type", "warming");
-    result.putString(SERVICE_PACKAGE_KEY, packageName);
-    promise.resolve(result);
-  }
-
-  @ExpoMethod
-  public void coolDownAsync(final String packageName, final Promise promise) {
-    if (mConnectionHelper.coolDown(packageName)) {
+  public void warmUpAsync(@Nullable String packageName, final Promise promise) {
+    try {
+      packageName = givenOfPreferredPackageName(packageName);
+      mConnectionHelper.warmUp(packageName);
       Bundle result = new Bundle();
-      result.putString("type", "cooling");
+      result.putString("type", "warming");
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
-    } else {
-      Bundle result = new Bundle();
-      result.putString("result", "Nothing to cool down");
-      result.putString(SERVICE_PACKAGE_KEY, packageName);
-      promise.resolve(result);
+    } catch (NoPrefferedPackageFound ex) {
+      promise.reject(ERROR_CODE, "no_preferred_package");
     }
   }
 
   @ExpoMethod
-  public void mayInitWithUrlAsync(final String url, final String packageName, final Promise promise) {
-    mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
-    Bundle result = new Bundle();
-    result.putString("type", "mayInitWithUrl");
-    result.putString(SERVICE_PACKAGE_KEY, packageName);
-    result.putString("url", url);
-    promise.resolve(result);
+  public void coolDownAsync(@Nullable String packageName, final Promise promise) {
+    try {
+      packageName = givenOfPreferredPackageName(packageName);
+      if (mConnectionHelper.coolDown(packageName)) {
+        Bundle result = new Bundle();
+        result.putString("type", "cooling");
+        result.putString(SERVICE_PACKAGE_KEY, packageName);
+        promise.resolve(result);
+      } else {
+        Bundle result = new Bundle();
+        result.putString("result", "Nothing to cool down");
+        result.putString(SERVICE_PACKAGE_KEY, packageName);
+        promise.resolve(result);
+      }
+    } catch (NoPrefferedPackageFound ex) {
+      promise.reject(ERROR_CODE, "no_preferred_package");
+    }
+  }
+
+  @ExpoMethod
+  public void mayInitWithUrlAsync(@Nullable final String url, String packageName, final Promise promise) {
+    try {
+      packageName = givenOfPreferredPackageName(packageName);
+      mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
+      Bundle result = new Bundle();
+      result.putString("type", "mayInitWithUrl");
+      result.putString(SERVICE_PACKAGE_KEY, packageName);
+      result.putString("url", url);
+      promise.resolve(result);
+    } catch (NoPrefferedPackageFound ex) {
+      promise.reject(ERROR_CODE, "no_preferred_package");
+    }
   }
 
   @ExpoMethod
@@ -192,6 +209,20 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     }
 
     return intent;
+  }
+
+  private String givenOfPreferredPackageName(@Nullable String packageName) throws NoPrefferedPackageFound {
+    try {
+      if (TextUtils.isEmpty(packageName)) {
+        packageName = mCustomTabsResolver.getPreferredCustomTabsResolvingActivity(null);
+      }
+    } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
+      throw new NoPrefferedPackageFound();
+    }
+    if (TextUtils.isEmpty(packageName)) {
+      throw new NoPrefferedPackageFound();
+    }
+    return packageName;
   }
 
 }

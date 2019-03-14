@@ -11,20 +11,18 @@ export default class WebBrowserScreen extends React.Component {
 
   state = {
     showTitle: false,
-    controlsColorText: undefined,
-    packages: undefined,
-    selectedPackage: undefined,
-    lastWarmedPackage: undefined,
+    controlsColorText: null,
+    packages: null,
+    selectedPackage: null,
+    lastWarmedPackage: null,
     barCollapsing: false,
   };
 
   componentDidMount() {
     Platform.OS === 'android' &&
-      WebBrowser.getCustomTabsSupportingBrowsersAsync().then(result => {
-        this.setState({
-          packages: result.browserPackages.map(name => ({ label: name, value: name })),
-        });
-      });
+      WebBrowser.getCustomTabsSupportingBrowsersAsync()
+        .then(({ browserPackages }) => browserPackages.map(name => ({ label: name, value: name })))
+        .then(packages => this.setState({ packages }));
   }
 
   componentWillUnmount() {
@@ -42,30 +40,30 @@ export default class WebBrowserScreen extends React.Component {
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
-  warmUp = async () => {
-    const selectedPackage = this.state.selectedPackage;
+  handleWarmUpClicked = async () => {
+    const { selectedPackage: lastWarmedPackage } = this.state;
     this.setState({
-      lastWarmedPackage: selectedPackage,
+      lastWarmedPackage,
     });
-    const result = await WebBrowser.warmUpAsync(selectedPackage);
+    const result = await WebBrowser.warmUpAsync(lastWarmedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
-  mayInitWithUrl = async () => {
-    const selectedPackage = this.state.selectedPackage;
+  handleMayInitWithUrlClicke = async () => {
+    const { selectedPackage: lastWarmedPackage } = this.state;
     this.setState({
-      lastWarmedPackage: selectedPackage,
+      lastWarmedPackage,
     });
-    const result = await WebBrowser.mayInitWithUrlAsync(url, selectedPackage);
+    const result = await WebBrowser.mayInitWithUrlAsync(url, lastWarmedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
-  coolDown = async () => {
+  handleCoolDownClicked = async () => {
     const result = await WebBrowser.coolDownAsync(this.state.selectedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
-  openWebUrlRequested = async () => {
+  handleOpenWebUrlClicked = async () => {
     const args = {
       showTitle: this.state.showTitle,
       toolbarColor: this.state.colorText ? `#${this.state.colorText}` : undefined,
@@ -77,15 +75,15 @@ export default class WebBrowserScreen extends React.Component {
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 
-  toolbarColorInputChanged = value => this.setState({ colorText: value });
+  handleToolbarColorInputChanged = colorText => this.setState({ colorText });
 
-  controlsColorInputChanged = value => this.setState({ controlsColorText: value });
+  handleControlsColorInputChanged = controlsColorText => this.setState({ controlsColorText });
 
-  packageSelected = value => {
-    this.setState({ selectedPackage: value });
+  packageSelected = selectedPackage => {
+    this.setState({ selectedPackage });
   };
 
-  showTitleChanged = value => this.setState({ showTitle: value });
+  handleShowTitleChanged = showTitle => this.setState({ showTitle });
 
   renderIOSChoices = () =>
     Platform.OS === 'ios' && (
@@ -96,7 +94,7 @@ export default class WebBrowserScreen extends React.Component {
             style={styles.input}
             borderBottomColor={'black'}
             placeholder={'RRGGBB'}
-            onChangeText={this.controlsColorInputChanged}
+            onChangeText={this.handleControlsColorInputChanged}
             value={this.state.controlsColorText}
           />
         </View>
@@ -110,7 +108,7 @@ export default class WebBrowserScreen extends React.Component {
           <Text>Show Title</Text>
           <Switch
             style={styles.switch}
-            onValueChange={this.showTitleChanged}
+            onValueChange={this.handleShowTitleChanged}
             value={this.state.showTitle}
           />
         </View>
@@ -132,9 +130,13 @@ export default class WebBrowserScreen extends React.Component {
   renderAndroidButtons = () =>
     Platform.OS === 'android' && (
       <>
-        <Button style={styles.button} onPress={this.warmUp} title="Warm up." />
-        <Button style={styles.button} onPress={this.mayInitWithUrl} title="May init with url." />
-        <Button style={styles.button} onPress={this.coolDown} title="Cool down." />
+        <Button style={styles.button} onPress={this.handleWarmUpClicked} title="Warm up." />
+        <Button
+          style={styles.button}
+          onPress={this.handleMayInitWithUrlClicke}
+          title="May init with url."
+        />
+        <Button style={styles.button} onPress={this.handleCoolDownClicked} title="Cool down." />
         <Button
           style={styles.button}
           onPress={this.showPackagesAlert}
@@ -152,7 +154,7 @@ export default class WebBrowserScreen extends React.Component {
             style={styles.input}
             borderBottomColor="black"
             placeholder="RRGGBB"
-            onChangeText={this.toolbarColorInputChanged}
+            onChangeText={this.handleToolbarColorInputChanged}
             value={this.state.colorText}
           />
         </View>
@@ -166,7 +168,7 @@ export default class WebBrowserScreen extends React.Component {
             value={this.state.barCollapsing}
           />
         </View>
-        <Button style={styles.button} onPress={this.openWebUrlRequested} title="Open web url" />
+        <Button style={styles.button} onPress={this.handleOpenWebUrlClicked} title="Open web url" />
         {this.renderAndroidButtons()}
       </View>
     );

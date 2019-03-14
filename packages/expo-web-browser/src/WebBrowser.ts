@@ -39,60 +39,24 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabs
 }
 
 export async function warmUpAsync(browserPackage?: string) {
-  if (!ExponentWebBrowser.warmUpAsync) {
+  if (!ExponentWebBrowser.mayInitWithUrlAsync) {
     throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
   }
-  let packageToWarm = browserPackage;
-  if (!browserPackage) {
-    packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
-  }
-
-  if (!packageToWarm) {
-    throw new CodedError(
-      'INSUFFICIENT_ARGS',
-      'WebBrowser.warmUp is unable to determine package name without supplying it!'
-    );
-  } else {
-    return ExponentWebBrowser.warmUpAsync(packageToWarm);
-  }
+  return ExponentWebBrowser.warmUpAsync(browserPackage);
 }
 
-export async function mayInitWithUrlAsync(url: string, packageName?: string) {
+export async function mayInitWithUrlAsync(url: string, browserPackage?: string) {
   if (!ExponentWebBrowser.mayInitWithUrlAsync) {
     throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
   }
-  let packageToWarm = packageName;
-  if (!packageName) {
-    packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
-  }
-
-  if (!packageToWarm) {
-    throw new CodedError(
-      'INSUFFICIENT_ARGS',
-      'WebBrowser.warmUp is unable to determine package name without supplying it!'
-    );
-  } else {
-    return ExponentWebBrowser.mayInitWithUrlAsync(url, packageToWarm);
-  }
+  return ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
 }
 
 export async function coolDownAsync(browserPackage?: string) {
   if (!ExponentWebBrowser.coolDownAsync) {
     throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
   }
-  let packageToCool = browserPackage;
-  if (!browserPackage) {
-    packageToCool = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
-  }
-
-  if (!packageToCool) {
-    throw new CodedError(
-      'INSUFFICIENT_ARGS',
-      'WebBrowser.warmUp is unable to determine package name without supplying it!'
-    );
-  } else {
-    return ExponentWebBrowser.coolDownAsync(packageToCool);
-  }
+  return ExponentWebBrowser.coolDownAsync(browserPackage);
 }
 
 export async function openBrowserAsync(

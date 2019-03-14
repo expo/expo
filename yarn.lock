@@ -1152,6 +1152,17 @@
     react-is "^16.5.2"
     react-lifecycles-compat "^3.0.4"
 
+"@react-navigation/core@3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.2.0.tgz#329dfe54f305ee22ed750d51cb09c5d18562d56f"
+  integrity sha512-MXjTqqPFbifXGlws4hSye9Ax4dEM2OvV7VMEJOJU9TbzQjyewi59Cjplbt8pYQ5ummvkKeRS2FlQYIygNR5oCQ==
+  dependencies:
+    create-react-context "0.2.2"
+    hoist-non-react-statics "^2.5.5"
+    path-to-regexp "^1.7.0"
+    query-string "^6.2.0"
+    react-is "^16.6.3"
+
 "@react-navigation/native@3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.1.1.tgz#fac445f36a70c5db10d4bc99a36c5a055f4a9318"
@@ -1160,6 +1171,16 @@
     hoist-non-react-statics "^3.0.1"
     react-native-gesture-handler "^1.0.12"
     react-native-safe-area-view "^0.12.0"
+    react-native-screens "^1.0.0 || ^1.0.0-alpha"
+
+"@react-navigation/native@3.1.5":
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.1.5.tgz#fe584f393225b6a3f6cc2ce0dc68c1fe110e9d30"
+  integrity sha512-sDqgNCx98XmiJR4lF8xCMVdADR4NBrx10TkTYbYcwFJ6SJ2LzrfxAW+FwUsESXr5TcSu3/6rGrLGr4rTGjkvRQ==
+  dependencies:
+    hoist-non-react-statics "^3.0.1"
+    react-native-gesture-handler "~1.0.14"
+    react-native-safe-area-view "^0.13.0"
     react-native-screens "^1.0.0 || ^1.0.0-alpha"
 
 "@react-navigation/web@^1.0.0-alpha.7":
@@ -2001,7 +2022,7 @@ arrify@^1.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
   integrity sha1-iYUI2iIm84DfkEcoRWhJwVAaSw0=
 
-art@^0.10.0, art@^0.10.1:
+art@^0.10.0:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/art/-/art-0.10.3.tgz#b01d84a968ccce6208df55a733838c96caeeaea2"
   integrity sha512-HXwbdofRTiJT6qZX/FnchtldzJjS3vkLJxQilc3Xj+ma2MXjY4UAyQ0ls1XZYVnDvVIBiFZbC6QsvtW86TD6tQ==
@@ -5265,22 +5286,6 @@ expo-firebase-analytics@^2.0.0:
     expo-core "~2.0.0"
     expo-firebase-app "~2.0.0"
 
-expo-firebase-analytics@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/expo-firebase-analytics/-/expo-firebase-analytics-2.0.0.tgz#f755b6c022e7347884ab13a23e0e3946f6f85de2"
-  integrity sha512-nlhcm0vjgBXd1pua+hayeuNVa1djPwNEqrsgLsxAGAmNvetivSaos065Cgu9yxixdnDiQitBKOhNVXh0kQpsIA==
-  dependencies:
-    expo-core "~2.0.0"
-    expo-firebase-app "~2.0.0"
-
-expo-firebase-analytics@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/expo-firebase-analytics/-/expo-firebase-analytics-2.0.0.tgz#f755b6c022e7347884ab13a23e0e3946f6f85de2"
-  integrity sha512-nlhcm0vjgBXd1pua+hayeuNVa1djPwNEqrsgLsxAGAmNvetivSaos065Cgu9yxixdnDiQitBKOhNVXh0kQpsIA==
-  dependencies:
-    expo-core "~2.0.0"
-    expo-firebase-app "~2.0.0"
-
 expo-image-loader-interface@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/expo-image-loader-interface/-/expo-image-loader-interface-2.0.0.tgz#3934f01c4ccdea40d4248110b7da234741abf9c8"
@@ -6540,7 +6545,7 @@ hoist-non-react-statics@^1.2.0:
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz#aa448cf0986d55cc40773b17174b7dd066cb7cfb"
   integrity sha1-qkSM8JhtVcxAdzsXF0t90GbLfPs=
 
-hoist-non-react-statics@^2.2.2, hoist-non-react-statics@^2.3.1, hoist-non-react-statics@^2.5.0:
+hoist-non-react-statics@^2.2.2, hoist-non-react-statics@^2.3.1, hoist-non-react-statics@^2.5.0, hoist-non-react-statics@^2.5.5:
   version "2.5.5"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
   integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
@@ -10667,18 +10672,6 @@ react-apollo@~1.0.1:
   optionalDependencies:
     react-dom "0.14.x || 15.* || ^15.0.0"
 
-react-art@^16.8.2:
-  version "16.8.4"
-  resolved "https://registry.yarnpkg.com/react-art/-/react-art-16.8.4.tgz#9c9afa3d8a78ded11c3328f262ba3495d9efa77e"
-  integrity sha512-f8dH7bWrWE9oFXjjvFf4NnhXSJAjPlGxtKsQyzJEHyDGX8iir1zwtuPamPByybezkGw2pxaSukCu+5ShJH8I6g==
-  dependencies:
-    art "^0.10.1"
-    create-react-class "^15.6.2"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
-    scheduler "^0.13.4"
-
 react-clone-referenced-element@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-clone-referenced-element/-/react-clone-referenced-element-1.1.0.tgz#9cdda7f2aeb54fea791f3ab8c6ab96c7a77d0158"
@@ -10774,7 +10767,7 @@ react-google-maps@^9.4.5:
     scriptjs "^2.5.8"
     warning "^3.0.0"
 
-react-is@^16.5.0, react-is@^16.5.2, react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4:
+react-is@^16.5.0, react-is@^16.5.2, react-is@^16.6.0, react-is@^16.6.3, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.8.4"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.4.tgz#90f336a68c3a29a096a3d648ab80e87ec61482a2"
   integrity sha512-PVadd+WaUDOAciICm/J1waJaSvgq+4rHE/K70j0PFqKhkTBsPv/82UGQJNXAngz1fOQLLxI6z1sEDmJDQhCTAA==
@@ -10814,7 +10807,7 @@ react-native-deprecated-custom-components@^0.1.0:
     react-timer-mixin "^0.13.2"
     rebound "^0.0.13"
 
-react-native-gesture-handler@^1.0.12, react-native-gesture-handler@^1.1.0:
+react-native-gesture-handler@1.1.0, react-native-gesture-handler@^1.0.12, react-native-gesture-handler@^1.1.0, react-native-gesture-handler@~1.0.14:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.1.0.tgz#2a7d545ad2e0ca23adce22b2af441ad360ecccee"
   integrity sha512-E9IKHpmL+sz/iCYkUriTUjBaQBORWV+oheYPQleADkxjo2sYsQfnlyTz4EQYFONkUwJ6WmfTNkYt2/yc5U4Ziw==
@@ -10865,6 +10858,13 @@ react-native-safe-area-view@^0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.12.0.tgz#5c312f087300ecf82e8541c3eac25d560e147f22"
   integrity sha512-UrAXmBC4KNR5K2eczIDZgqceWyKsgG9gmWFerHCvoyApfei8ceBB9u/c//PWCpS5Gt8MRLTmX5jPtzdXo2yNqg==
+  dependencies:
+    hoist-non-react-statics "^2.3.1"
+
+react-native-safe-area-view@^0.13.0:
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.13.1.tgz#834bbb6d22f76a7ff07de56725ee5667ba1386b0"
+  integrity sha512-d/pu2866jApSwLtK/xWAvMXZkNTIQcFrjjbcTATBrmIfFNnu8TNFUcMRFpfJ+eOn5nmx7uGmDvs9B53Ft7JGpQ==
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
@@ -10961,6 +10961,13 @@ react-navigation-drawer@1.1.0:
   dependencies:
     react-native-tab-view "^1.2.0"
 
+react-navigation-drawer@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-drawer/-/react-navigation-drawer-1.3.0.tgz#0bb8022003b36e919e3ae55394a81384f36a14f0"
+  integrity sha512-IDOaMseBeH1PutxRXkqDZTboZ/1mXVd4991JetsE5VmYvedmeh6z1AtBaCJu2rwRdV4U9K2I0xMyjwI0Nijqjg==
+  dependencies:
+    react-native-tab-view "^1.2.0"
+
 react-navigation-header-buttons@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-navigation-header-buttons/-/react-navigation-header-buttons-1.2.1.tgz#847e25da0422068f6549b477f17360dae7f383b1"
@@ -10981,6 +10988,11 @@ react-navigation-stack@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.0.6.tgz#5c2b6617dccc1de6001b387cd967baa6b205132d"
   integrity sha512-7vnoceO6d/KYvtOSi3Ui3u1gvZEF/dBrOn+Gb1zqiZ3t+0oWRPpU36OmXAh/SwI5aokQyoihAlH9UBMfp+fbEA==
+
+react-navigation-stack@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.1.0.tgz#a4e693f7b077945ba04e1d50a653c0dc338f6621"
+  integrity sha512-Yp8ZdVOvddMfUCPFI78x8l1RAubyfuVhq10MvOdcUTtBetQVlXNBfdLKdMRtqXgBLGOjWElGrbpLDxi+TfX8bQ==
 
 react-navigation-tabs@1.0.0:
   version "1.0.0"
@@ -11011,6 +11023,17 @@ react-navigation@3.1.0:
     "@react-navigation/native" "3.1.1"
     react-navigation-drawer "1.1.0"
     react-navigation-stack "1.0.6"
+    react-navigation-tabs "1.0.2"
+
+react-navigation@^3.4.0-rc.0:
+  version "3.4.0-rc.0"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.4.0-rc.0.tgz#70b085c714b64d5a3340d717058b967c6ca4a3df"
+  integrity sha512-ymqbAlNcZVGG3TLK7r2yyuQoraIRD/f0gLmx1Kl+VoK4SrjRq9Hgfou179Wjsd9qDuSoVZDmWwwCOT6DdSY/Ew==
+  dependencies:
+    "@react-navigation/core" "3.2.0"
+    "@react-navigation/native" "3.1.5"
+    react-navigation-drawer "1.3.0"
+    react-navigation-stack "1.1.0"
     react-navigation-tabs "1.0.2"
 
 react-proxy@^1.1.7:

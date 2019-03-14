@@ -31,7 +31,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 ### `WebBrowser.openBrowserAsync(url)`
 
-Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use (openAuthSessionAsync)[#webbrowseropenauthsessionasync].
+Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use (openAuthSessionAsync)[#webbrowseropenauthsessionasync].
 
 #### Arguments
 
