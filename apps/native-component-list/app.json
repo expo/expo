@@ -21,6 +21,7 @@
     "packagerOpts": {
       "config": "rn-cli.config.js"
     },
+    "platforms": ["android", "ios", "web"],
     "facebookScheme": "fb1201211719949057",
     "facebookAppId": "1201211719949057",
     "facebookDisplayName": "Expo APIs",
@@ -57,7 +58,6 @@
       }
     },
     "web": {
-      "favicon": "web/favicon.ico",
       "productionPath": "web-build"
     },
     "assetBundlePatterns": [

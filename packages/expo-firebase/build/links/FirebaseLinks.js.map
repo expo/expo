@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseLinks.js","sourceRoot":"","sources":["../../src/links/FirebaseLinks.ts"],"names":[],"mappings":"AAAA,OAAO,qBAAqB,CAAC","sourcesContent":["import 'expo-firebase-links';\n"]}

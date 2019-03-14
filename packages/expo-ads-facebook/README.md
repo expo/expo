@@ -43,7 +43,7 @@ api project(':expo-ads-facebook')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.ads.facebook.AdsFacebookPackage;
+import expo.modules.ads.facebook.AdsFacebookPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

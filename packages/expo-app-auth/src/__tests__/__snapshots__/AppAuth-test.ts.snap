@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`authAsync rejects invalid IDs 1`] = `"\`clientId\` must be a string with more than 0 characters"`;
+
+exports[`refreshAsync rejects invalid IDs 1`] = `"\`clientId\` must be a string with more than 0 characters"`;
+
+exports[`revokeAsync rejects invalid IDs 1`] = `"\`clientId\` must be a string with more than 0 characters"`;
+
+exports[`revokeAsync rejects when a token isn't provided 1`] = `"Cannot revoke a null \`token\`"`;

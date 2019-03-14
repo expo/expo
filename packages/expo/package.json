@@ -2,8 +2,13 @@
   "name": "expo",
   "version": "32.0.1",
   "description": "The Expo SDK",
-  "main": "build/Expo.js",
+  "main": "build/ExpoLazy.js",
+  "module": "build/Expo.js",
   "types": "build/Expo.d.ts",
+  "sideEffects": [
+    "*.fx.js",
+    "*.fx.web.js"
+  ],
   "bin": {
     "expo": "bin/cli.js"
   },
@@ -14,11 +19,12 @@
     "AppEntry.js"
   ],
   "scripts": {
-    "build": "EXPO_NONINTERACTIVE=1 expo-module build && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
+    "generate-lazy": "expo-module babel --config-file ./babel.config.build.js --source-maps --out-file build/ExpoLazy.js build/Expo.js",
+    "build": "EXPO_NONINTERACTIVE=1 expo-module build && npm run generate-lazy",
     "clean": "expo-module clean",
     "lint": "eslint tools",
     "test": "expo-module test",
-    "prepare": "expo-module prepare && expo-module babel --config-file ./babel.config.build.js --out-dir build build/Expo.js",
+    "prepare": "expo-module prepare && npm run generate-lazy",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -111,6 +117,7 @@
     "expo-secure-store": "~3.0.0",
     "expo-sensors": "~3.0.0",
     "expo-sensors-interface": "~3.0.0",
+    "expo-sharing": "~1.0.0",
     "expo-sms": "~3.0.0",
     "expo-speech": "~3.0.0",
     "expo-sqlite": "~3.0.0",
@@ -130,7 +137,7 @@
     "qs": "^6.5.0",
     "react-google-maps": "^9.4.5",
     "react-native-branch": "2.2.5",
-    "react-native-gesture-handler": "1.0.14",
+    "react-native-gesture-handler": "^1.1.0",
     "react-native-maps": "expo/react-native-maps#v0.23.0-exp.0",
     "react-native-reanimated": "1.0.0-alpha.11",
     "react-native-screens": "1.0.0-alpha.22",

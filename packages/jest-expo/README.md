@@ -12,7 +12,8 @@ at https://github.com/expo/expo. Thanks!
 
   ```js
   "scripts": {
-    "test": "node_modules/.bin/jest"
+    "test": "node_modules/.bin/jest",
+    "test:debug": "node --inspect-brk node_modules/jest/bin/jest.js --runInBand"
   },
   "jest": {
     "preset": "jest-expo"

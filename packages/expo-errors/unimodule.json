@@ -1,0 +1,4 @@
+{
+  "name": "expo-errors",
+  "platforms": ["ios", "android"]
+}

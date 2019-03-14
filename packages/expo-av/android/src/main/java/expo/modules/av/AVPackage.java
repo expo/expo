@@ -10,6 +10,7 @@ import expo.core.BasePackage;
 import expo.core.ExportedModule;
 import expo.core.ViewManager;
 import expo.core.interfaces.InternalModule;
+import expo.modules.av.player.datasource.SharedCookiesDataSourceFactoryProvider;
 import expo.modules.av.video.VideoManager;
 import expo.modules.av.video.VideoViewManager;
 
@@ -17,7 +18,10 @@ public class AVPackage extends BasePackage {
 
   @Override
   public List<InternalModule> createInternalModules(Context context) {
-    return Collections.singletonList((InternalModule) new AVManager(context));
+    return Arrays.asList(
+        new AVManager(context),
+        new SharedCookiesDataSourceFactoryProvider()
+    );
   }
 
   @Override

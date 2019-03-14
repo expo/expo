@@ -1,0 +1,4 @@
+{
+  "name": "expo-google-sign-in",
+  "platforms": ["ios", "android"]
+}

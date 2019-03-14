@@ -1,4 +1,4 @@
-import NativeEventEmitter from 'react-native/Libraries/EventEmitter/NativeEventEmitter';
+import { NativeEventEmitter } from 'react-native';
 declare type NativeModule = {
     startObserving?: () => void;
     stopObserving?: () => void;

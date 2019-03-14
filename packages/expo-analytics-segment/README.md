@@ -43,7 +43,7 @@ api project(':expo-analytics-segment')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.analytics.segment.SegmentPackage;
+import expo.modules.analytics.segment.SegmentPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

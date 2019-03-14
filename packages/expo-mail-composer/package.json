@@ -4,6 +4,7 @@
   "description": "Provides an API to compose mails using OS specific UI",
   "main": "build/MailComposer.js",
   "types": "build/MailComposer.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -40,6 +41,7 @@
   },
   "gitHead": "9132f99f2ceb431006060c7f89d0928cc2053897",
   "dependencies": {
+    "lodash.filter": "^4.6.0",
     "query-string": "^6.2.0"
   }
 }

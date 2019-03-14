@@ -18,72 +18,29 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
 
-// Universal modules
+// Import gradle helpers for unimodules.
+apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
-def modulesDir = new File(rootDir, "../packages")
-
-def includeUniversalModule = { name ->
-  include ":$name"
-  project(":$name").projectDir = new File(modulesDir, "$name/android")
-}
-
-[
-    'expo-ads-admob',
-    'expo-ads-facebook',
-    'expo-analytics-amplitude',
-    'expo-analytics-segment',
-    'expo-app-auth',
-    'expo-app-loader-provider',
-    'expo-av',
-    'expo-background-fetch',
-    'expo-barcode-scanner',
-    'expo-barcode-scanner-interface',
-    'expo-brightness',
-    'expo-calendar',
-    'expo-camera',
-    'expo-camera-interface',
-    'expo-constants',
-    'expo-constants-interface',
-    'expo-contacts',
-    'expo-core',
-    'expo-crypto',
-    'expo-document-picker',
-    'expo-errors',
-    'expo-face-detector',
-    'expo-face-detector-interface',
-    'expo-facebook',
-    'expo-file-system',
-    'expo-file-system-interface',
-    'expo-font',
-    'expo-font-interface',
-    'expo-gl',
-    'expo-gl-cpp',
-    'expo-google-sign-in',
-    'expo-haptics',
-    'expo-image-loader-interface',
-    'expo-image-manipulator',
-    'expo-image-picker',
-    'expo-intent-launcher',
-    'expo-keep-awake',
-    'expo-linear-gradient',
-    'expo-local-authentication',
-    'expo-localization',
-    'expo-location',
-    'expo-mail-composer',
-    'expo-media-library',
-    'expo-payments-stripe',
-    'expo-permissions',
-    'expo-permissions-interface',
-    'expo-print',
-    'expo-random',
-    'expo-react-native-adapter',
-    'expo-secure-store',
-    'expo-sensors',
-    'expo-sensors-interface',
-    'expo-sms',
-    'expo-speech',
-    'expo-sqlite',
-    'expo-task-manager',
-    'expo-task-manager-interface',
-    'expo-web-browser'
-].forEach({ moduleName -> includeUniversalModule(moduleName) })
+// Include unimodules.
+includeUnimodules([
+    modulesPaths: ['../../packages'],
+    target: 'react-native',
+    exclude: [
+        'expo-firebase-analytics',
+        'expo-firebase-app',
+        'expo-firebase-auth',
+        'expo-firebase-crashlytics',
+        'expo-firebase-database',
+        'expo-firebase-firestore',
+        'expo-firebase-functions',
+        'expo-firebase-instance-id',
+        'expo-firebase-invites',
+        'expo-firebase-links',
+        'expo-firebase-messaging',
+        'expo-firebase-notifications',
+        'expo-firebase-performance',
+        'expo-firebase-remote-config',
+        'expo-firebase-storage',
+        'expo-module-template',
+    ]
+])

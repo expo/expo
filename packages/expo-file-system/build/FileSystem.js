@@ -6,6 +6,8 @@ import { EncodingType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
 }
+// Prevent webpack from pruning this.
+const nativeEmitter = new EventEmitter(ExponentFileSystem);
 export { EncodingType, };
 function normalizeEndingSlash(p) {
     if (p != null) {

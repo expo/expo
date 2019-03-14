@@ -4,6 +4,8 @@ title: Notifications
 
 Provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
+Want to see it in action? Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications)!
+
 ## Installation
 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, although there are some comparable libraries that you may use instead.

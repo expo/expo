@@ -1,0 +1,4 @@
+{
+  "name": "expo-firebase-crashlytics",
+  "platforms": ["ios", "android"]
+}

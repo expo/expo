@@ -320,7 +320,7 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
               CropImage.ActivityBuilder cropImage = CropImage.activity(uri);
               if (forceAspect != null) {
                 cropImage
-                    .setAspectRatio((Integer) forceAspect.get(0), (Integer) forceAspect.get(1))
+                    .setAspectRatio(((Number) forceAspect.get(0)).intValue(), ((Number) forceAspect.get(1)).intValue())
                     .setFixAspectRatio(true)
                     .setInitialCropWindowPaddingRatio(0);
               }

@@ -1,0 +1,1 @@
+{"version":3,"file":"FirebaseFunctions.js","sourceRoot":"","sources":["../../src/functions/FirebaseFunctions.ts"],"names":[],"mappings":"AAAA,OAAO,yBAAyB,CAAC","sourcesContent":["import 'expo-firebase-functions';\n"]}

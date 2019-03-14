@@ -43,13 +43,22 @@ api project(':expo-image-picker')
 
 3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
-import expo.modules.expo.modules.imagepicker.ImagePickerPackage;
+import expo.modules.imagepicker.ImagePickerPackage;
 ```
 ```java
 private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
   // Your other packages will be here
   new ImagePickerPackage()
 ), Arrays.<SingletonModule>asList());
+```
+
+4. In `AndroidManifest.xml` add the following `activity` within `application`:
+
+```xml
+<activity
+  android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+  android:theme="@style/Base.Theme.AppCompat">
+</activity>
 ```
 
 # Contributing

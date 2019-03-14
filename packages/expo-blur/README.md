@@ -1,6 +1,6 @@
 # expo-blur
 
-Blur view standalone module
+A component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars, tab bars, and modals.
 
 # API documentation
 
@@ -27,30 +27,6 @@ Add the dependency to your `Podfile` and then run `pod install`.
 pod 'EXBlur', path: '../node_modules/expo-blur/ios'
 ```
 
-### Configure for Android
-
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':expo-blur'
-project(':expo-blur').projectDir = new File(rootProject.projectDir, '../node_modules/expo-blur/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':expo-blur')
-```
-
-3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.expo.modules.blur.BlurPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new BlurPackage()
-), Arrays.<SingletonModule>asList());
-```
 
 # Contributing
 

@@ -28,6 +28,7 @@ import Print from '../screens/PrintScreen';
 import Recording from '../screens/AV/RecordingScreen';
 import Reminders from '../screens/RemindersScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
+import Sharing from '../screens/SharingScreen';
 import SecureStore from '../screens/SecureStoreScreen';
 import SMS from '../screens/SMSScreen';
 import StoreReview from '../screens/StoreReview';
@@ -93,6 +94,7 @@ const optionalScreens = {
   ScreenOrientation,
   SecureStore,
   Sensor,
+  Sharing,
   SMS,
   StoreReview,
   TaskManager,
