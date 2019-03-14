@@ -87,7 +87,6 @@ public class LocalizationModule extends ExportedModule {
 
     private ArrayList<String> getISOCurrencyCodes() {
         ArrayList<String> locales = new ArrayList<>();
-        // https://github.com/expo/expo/blob/c47c64267e86258d1af1f4eed4d67c91202b2cc5/android/expoview/src/main/java/versioned/host/exp/exponent/modules/api/LocalizationModule.java#L65-L68
         final Set<Currency> availableCurrencies = getAvailableCurrencies();
         for (Currency handle : availableCurrencies) {
             locales.add(handle.getCurrencyCode());
@@ -102,7 +101,6 @@ public class LocalizationModule extends ExportedModule {
         if (context == null) {
             return null;
         }
-        // https://github.com/expo/expo/blob/c47c64267e86258d1af1f4eed4d67c91202b2cc5/android/expoview/src/main/java/versioned/host/exp/exponent/modules/api/LocalizationModule.java#L47-L58
         Configuration configuration = context.getResources().getConfiguration();
         if (SDK_INT > N) {
             LocaleList localeList = configuration.getLocales();
