@@ -42,26 +42,27 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     const { startPoint, endPoint } = this.props;
 
     let correctedStartPoint: Point = [0.5, 0.0];
-    if (startPoint && Array.isArray(startPoint)) {
+    if (Array.isArray(startPoint)) {
       correctedStartPoint = [
-        startPoint[0] ? startPoint[0] : 0.5,
-        startPoint[1] ? startPoint[1] : 0.0,
+        startPoint[0] != null ? startPoint[0] : 0.5,
+        startPoint[1] != null ? startPoint[1] : 0.0,
       ];
     }
     let correctedEndPoint: Point = [0.5, 1.0];
-    if (endPoint && Array.isArray(endPoint)) {
-      correctedEndPoint = [endPoint[0] ? endPoint[0] : 0.5, endPoint[1] ? endPoint[1] : 1.0];
+    if (Array.isArray(endPoint)) {
+      correctedEndPoint = [
+        endPoint[0] != null ? endPoint[0] : 0.5,
+        endPoint[1] != null ? endPoint[1] : 1.0,
+      ];
     }
     return [correctedStartPoint, correctedEndPoint];
   };
 
   calculateGradientAngleFromControlPoints = (): number => {
     const [start, end] = this.getControlPoints();
-    console.log({ start, end });
     const { width = 0, height = 0 } = this.state;
     const radians = Math.atan2(height * (end[0] - start[0]), width * (end[1] - start[1])) + PI_2;
     const degrees = radToDeg(radians);
-    console.log({ radians, degrees });
     return degrees;
   };
 
