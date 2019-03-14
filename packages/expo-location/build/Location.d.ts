@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-core';
+import { EventEmitter } from '@unimodules/core';
 declare const LocationEventEmitter: EventEmitter;
 interface ProviderStatus {
     locationServicesEnabled: boolean;

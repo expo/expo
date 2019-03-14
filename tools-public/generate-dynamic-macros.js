@@ -22,7 +22,9 @@ const ProjectVersions = require('./project-versions');
 
 const EXPONENT_DIR = process.env.EXPONENT_DIR || path.join(__dirname, '..');
 
-const EXPO_CLIENT_UNIVERSAL_MODULES = Modules.getAllNativeForExpoClientOnPlatform('ios');
+const { exp: { sdkVersion } } = require('../package.json');
+
+const EXPO_CLIENT_UNIVERSAL_MODULES = Modules.getAllNativeForExpoClientOnPlatform('ios', sdkVersion);
 
 // We need these permissions when testing but don't want them
 // ending up in our release.

@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import { SharedEventEmitter, utils, INTERNALS } from 'expo-firebase-app';
 const { generatePushID, isFunction, isString, nativeToJSError } = utils;
 const isIOS = Platform.OS === 'ios';

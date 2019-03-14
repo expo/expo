@@ -10,15 +10,16 @@ import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsIntent;
 
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.errors.CurrentActivityNotFoundException;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.Function;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.function.Function;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.ActivityProvider;
-import expo.errors.CurrentActivityNotFoundException;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
 import static android.support.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION;

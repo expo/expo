@@ -40,8 +40,7 @@
   },
   "unimodulePeerDependencies": {
     "expo-constants": "*",
-    "expo-core": "*",
-    "expo-errors": "*"
+    "@unimodules/core": "*"
   },
   "peerDependencies": {
     "react-native": "*"

@@ -1,5 +1,5 @@
 import { describeCrossPlatform, mockProperty, unmockAllProperties } from 'jest-expo';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import * as WebBrowser from '../WebBrowser';
 
 const fakeReturnValue = {

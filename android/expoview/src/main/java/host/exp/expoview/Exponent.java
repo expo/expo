@@ -48,8 +48,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import expo.core.interfaces.Package;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;

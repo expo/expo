@@ -16,7 +16,7 @@
   
   NSString *remindersUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSRemindersUsageDescription"];
   if (!remindersUsageDescription) {
-    EXFatal(EXErrorWithMessage(@"This app is missing NSRemindersUsageDescription, so reminders methods will fail. Add this key to your bundle's Info.plist."));
+    UMFatal(UMErrorWithMessage(@"This app is missing NSRemindersUsageDescription, so reminders methods will fail. Add this key to your bundle's Info.plist."));
     permissions = EKAuthorizationStatusDenied;
   } else {
     permissions = [EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder];
@@ -39,7 +39,7 @@
            };
 }
 
-- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   EKEventStore *eventStore = [[EKEventStore alloc] init];
   [eventStore requestAccessToEntityType:EKEntityTypeReminder completion:^(BOOL granted, NSError *error) {

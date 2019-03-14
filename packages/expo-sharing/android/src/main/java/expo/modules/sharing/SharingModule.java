@@ -7,21 +7,21 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.FileProvider;
 
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.InvalidArgumentException;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
+import org.unimodules.interfaces.filesystem.Permission;
+
 import java.io.File;
 import java.net.URLConnection;
-
-import expo.core.ExportedModule;
-import expo.core.InvalidArgumentException;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ActivityEventListener;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.filesystem.FilePermissionModuleInterface;
-import expo.interfaces.filesystem.Permission;
 
 public class SharingModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
   private static final int REQUEST_CODE = 8524;

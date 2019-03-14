@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoIntentLauncher from './ExpoIntentLauncher';
 /**
  * Constants are from the source code of Settings:

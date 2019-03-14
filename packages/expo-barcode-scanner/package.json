@@ -33,9 +33,8 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-errors": "*",
-    "expo-barcode-scanner-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-barcode-scanner-interface": "*"
   },
   "dependencies": {
     "lodash.mapvalues": "^4.6.0",

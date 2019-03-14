@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_MEDIA_LIBRARY_CORRUPTED;

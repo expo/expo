@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import expo.interfaces.taskManager.TaskConsumer;
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumer;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
 import expo.modules.location.LocationHelpers;
 import expo.modules.location.LocationModule;
 

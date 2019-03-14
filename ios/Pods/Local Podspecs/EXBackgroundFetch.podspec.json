@@ -16,10 +16,10 @@
   "preserve_paths": "EXBackgroundFetch/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXTaskManagerInterface": [
+    "UMTaskManagerInterface": [
 
     ]
   }

@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import { initialiseNativeModuleEventEmitter } from './events';
 import INTERNALS from './internals';
 const NATIVE_MODULES = {};

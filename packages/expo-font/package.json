@@ -34,8 +34,8 @@
   "unimodulePeerDependencies": {
     "expo-asset": "*",
     "expo-constants": "*",
-    "expo-core": "*",
-    "expo-font-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-font-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

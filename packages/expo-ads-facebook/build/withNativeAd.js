@@ -1,7 +1,7 @@
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { Platform, findNodeHandle } from 'react-native';
-import { requireNativeViewManager } from 'expo-core';
+import { requireNativeViewManager } from '@unimodules/core';
 import AdsManager from './NativeAdsManager';
 /**
  * A higher-order function that wraps the given `Component` type and returns a new container

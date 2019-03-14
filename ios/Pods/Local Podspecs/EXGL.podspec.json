@@ -16,13 +16,13 @@
   "preserve_paths": "**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXFileSystemInterface": [
+    "UMFileSystemInterface": [
 
     ],
-    "EXCameraInterface": [
+    "UMCameraInterface": [
 
     ],
     "EXGL-CPP": [

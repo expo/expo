@@ -16,7 +16,7 @@
   "preserve_paths": "EXWebBrowser/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

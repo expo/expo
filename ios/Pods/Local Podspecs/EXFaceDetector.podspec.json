@@ -16,10 +16,10 @@
   "preserve_paths": "EXFaceDetector/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXFaceDetectorInterface": [
+    "UMFaceDetectorInterface": [
 
     ],
     "GoogleMobileVision/FaceDetector": [

@@ -33,7 +33,7 @@
   },
   "unimodulePeerDependencies": {
     "expo-constants": "*",
-    "expo-core": "*",
+    "@unimodules/core": "*",
     "expo-file-system": "*"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 
 import invariant from 'invariant';
 import App from '../app';

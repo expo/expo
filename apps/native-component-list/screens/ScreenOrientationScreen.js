@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, Text } from 'react-native';
 import { ScreenOrientation } from 'expo';
-import { Platform } from 'expo-react-native-adapter';
+import { Platform } from '@unimodules/core';
 import ListButton from '../components/ListButton';
 
 export default class ScreenOrientationScreen extends React.Component {

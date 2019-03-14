@@ -1,8 +1,8 @@
 CONFIGURATION_BUILD_DIR = ${PODS_CONFIGURATION_BUILD_DIR}/EXFaceDetector
 FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/GoogleMobileVision/Detector/Frameworks/frameworks" "${PODS_ROOT}/GoogleMobileVision/FaceDetector/Frameworks/frameworks" "${PODS_ROOT}/GoogleMobileVision/MVDataOutput/Frameworks/frameworks" "${PODS_ROOT}/GoogleInterchangeUtilities/Frameworks/frameworks" "${PODS_ROOT}/GoogleNetworkingUtilities/Frameworks/frameworks" "${PODS_ROOT}/GoogleUtilities/Frameworks/frameworks" "${PODS_ROOT}/GoogleSymbolUtilities/Frameworks/frameworks"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/EXFaceDetector" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/EXCore" "${PODS_ROOT}/Headers/Public/EXFaceDetector" "${PODS_ROOT}/Headers/Public/EXFaceDetectorInterface" "${PODS_ROOT}/Headers/Public/GoogleMobileVision"
-LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/EXCore"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/EXFaceDetector" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/EXFaceDetector" "${PODS_ROOT}/Headers/Public/GoogleMobileVision" "${PODS_ROOT}/Headers/Public/UMCore" "${PODS_ROOT}/Headers/Public/UMFaceDetectorInterface"
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/UMCore"
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_ROOT = ${SRCROOT}

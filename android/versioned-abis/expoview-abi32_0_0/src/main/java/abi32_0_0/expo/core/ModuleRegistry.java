@@ -9,7 +9,7 @@ import java.util.Map;
 
 import abi32_0_0.expo.core.interfaces.InternalModule;
 import abi32_0_0.expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.SingletonModule;
 
 public class ModuleRegistry {
   private volatile boolean mIsInitialized = false;

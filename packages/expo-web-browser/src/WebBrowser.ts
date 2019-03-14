@@ -1,5 +1,5 @@
-import { Linking, Platform, Alert } from 'react-native';
-import { UnavailabilityError, CodedError } from 'expo-errors';
+import { Linking, Platform } from 'react-native';
+import { UnavailabilityError } from '@unimodules/core';
 import ExponentWebBrowser from './ExpoWebBrowser';
 
 type RedirectEvent = {

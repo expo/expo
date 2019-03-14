@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter } from 'expo-core';
+import { SyntheticPlatformEmitter } from '@unimodules/core';
 export default {
     get name() {
         return 'ExponentGyroscope';

@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoCrypto from './ExpoCrypto';
 import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';
 export * from './Crypto.types';

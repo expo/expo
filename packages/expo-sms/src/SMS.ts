@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import ExpoSMS from './ExpoSMS';
 
 type SMSResponse = {

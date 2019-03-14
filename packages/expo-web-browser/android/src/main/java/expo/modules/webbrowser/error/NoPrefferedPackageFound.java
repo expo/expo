@@ -1,6 +1,6 @@
 package expo.modules.webbrowser.error;
 
-import expo.errors.CodedException;
+import org.unimodules.core.errors.CodedException;
 
 public class NoPrefferedPackageFound extends CodedException {
 

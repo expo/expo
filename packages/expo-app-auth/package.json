@@ -42,8 +42,8 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-constants-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-constants-interface": "*"
   },
   "dependencies": {
     "invariant": "^2.2.4"

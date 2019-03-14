@@ -1,6 +1,6 @@
 'use strict';
 import { Localization, GoogleSignIn } from 'expo';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import { Image } from 'react-native';
 export const name = 'GoogleSignIn';
 /*

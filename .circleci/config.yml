@@ -211,6 +211,12 @@ jobs:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
       - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/@unimodules/core
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/@unimodules/react-native-adapter
+      - yarn:
           command: build
           working_directory: ~/expo/packages/expo-barcode-scanner
       - yarn:
@@ -242,9 +248,6 @@ jobs:
           working_directory: ~/expo/packages/expo-analytics-amplitude
       - yarn:
           command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-errors
-      - yarn:
-          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-face-detector
       - yarn:
           command: test --maxWorkers 1
@@ -273,9 +276,6 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-random
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-react-native-adapter
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-secure-store

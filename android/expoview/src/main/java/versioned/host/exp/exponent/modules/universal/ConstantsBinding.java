@@ -15,7 +15,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import expo.interfaces.constants.ConstantsInterface;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 import expo.modules.constants.ConstantsService;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;

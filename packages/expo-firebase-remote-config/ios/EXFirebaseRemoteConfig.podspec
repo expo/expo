@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXFirebaseRemoteConfig/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
+  s.dependency 'UMCore'
   s.dependency 'Firebase/RemoteConfig'
 end
 

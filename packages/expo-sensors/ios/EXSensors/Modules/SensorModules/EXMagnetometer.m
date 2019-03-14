@@ -1,20 +1,20 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSensors/EXMagnetometer.h>
-#import <EXSensorsInterface/EXMagnetometerInterface.h>
+#import <UMSensorsInterface/UMMagnetometerInterface.h>
 
 @implementation EXMagnetometer
 
-EX_EXPORT_MODULE(ExponentMagnetometer);
+UM_EXPORT_MODULE(ExponentMagnetometer);
 
 - (const NSString *)updateEventName
 {
   return @"magnetometerDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  return [moduleRegistry getModuleImplementingProtocol:@protocol(EXMagnetometerInterface)];
+  return [moduleRegistry getModuleImplementingProtocol:@protocol(UMMagnetometerInterface)];
 }
 
 - (void)setUpdateInterval:(double)updateInterval onSensorService:(id)sensorService

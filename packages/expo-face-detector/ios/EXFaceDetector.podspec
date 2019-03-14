@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXFaceDetector/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
-  s.dependency 'EXFaceDetectorInterface'
+  s.dependency 'UMCore'
+  s.dependency 'UMFaceDetectorInterface'
   s.dependency 'GoogleMobileVision/FaceDetector', '~> 1.1.0'
   s.dependency 'GoogleMobileVision/MVDataOutput', '~> 1.1.0'
 

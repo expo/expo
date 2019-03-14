@@ -32,8 +32,8 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-constants-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-constants-interface": "*"
   },
   "dependencies": {
     "ua-parser-js": "^0.7.19"

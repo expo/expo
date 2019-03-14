@@ -4,10 +4,10 @@ import android.os.Bundle;
 
 import java.util.Map;
 
-import expo.interfaces.taskManager.TaskExecutionCallback;
-import expo.interfaces.taskManager.TaskServiceInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
 
 public class Task implements TaskInterface {
   private String mName;

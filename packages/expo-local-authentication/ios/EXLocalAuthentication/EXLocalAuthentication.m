@@ -2,8 +2,8 @@
 
 #import <LocalAuthentication/LocalAuthentication.h>
 
-#import <EXCore/EXUtilities.h>
-#import <EXConstantsInterface/EXConstantsInterface.h>
+#import <UMCore/UMUtilities.h>
+#import <UMConstantsInterface/UMConstantsInterface.h>
 #import <EXLocalAuthentication/EXLocalAuthentication.h>
 
 typedef NS_ENUM(NSInteger, EXAuthenticationType) {
@@ -13,23 +13,23 @@ typedef NS_ENUM(NSInteger, EXAuthenticationType) {
 
 @interface EXLocalAuthentication ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXLocalAuthentication
 
-EX_EXPORT_MODULE(ExpoLocalAuthentication)
+UM_EXPORT_MODULE(ExpoLocalAuthentication)
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
 
-EX_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
-                    supportedAuthenticationTypesAsync:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
+                    supportedAuthenticationTypesAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSMutableArray *results = [NSMutableArray array];
   if (EXIsTouchIDDevice()) {
@@ -41,9 +41,9 @@ EX_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
   resolve(results);
 }
 
-EX_EXPORT_METHOD_AS(hasHardwareAsync,
-                    hasHardwareAsync:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(hasHardwareAsync,
+                    hasHardwareAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   LAContext *context = [LAContext new];
   NSError *error = nil;
@@ -60,9 +60,9 @@ EX_EXPORT_METHOD_AS(hasHardwareAsync,
   resolve(@(isAvailable));
 }
 
-EX_EXPORT_METHOD_AS(isEnrolledAsync,
-                    isEnrolledAsync:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(isEnrolledAsync,
+                    isEnrolledAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   LAContext *context = [LAContext new];
   NSError *error = nil;
@@ -73,10 +73,10 @@ EX_EXPORT_METHOD_AS(isEnrolledAsync,
   resolve(@(isEnrolled));
 }
 
-EX_EXPORT_METHOD_AS(authenticateAsync,
+UM_EXPORT_METHOD_AS(authenticateAsync,
                     authenticateAsync:(NSString *)reason
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSString *warningMessage;
 
@@ -84,7 +84,7 @@ EX_EXPORT_METHOD_AS(authenticateAsync,
     NSString *usageDescription = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"NSFaceIDUsageDescription"];
 
     if (!usageDescription) {
-      id<EXConstantsInterface> constants = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+      id<UMConstantsInterface> constants = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
 
       // it works fine if there is no module implementing `expo-constants-interface` because in that case we know it isn't Expo Client
       if ([constants.appOwnership isEqualToString:@"expo"]) {
@@ -107,7 +107,7 @@ EX_EXPORT_METHOD_AS(authenticateAsync,
                       resolve(@{
                                 @"success": @(success),
                                 @"error": error == nil ? [NSNull null] : [self convertErrorCode:error],
-                                @"warning": EXNullIfNil(warningMessage),
+                                @"warning": UMNullIfNil(warningMessage),
                                 });
                     }];
 }

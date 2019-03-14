@@ -16,10 +16,10 @@
   "preserve_paths": "EXSensors/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXSensorsInterface": [
+    "UMSensorsInterface": [
 
     ]
   }

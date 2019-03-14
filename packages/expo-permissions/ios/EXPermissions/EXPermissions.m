@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMCore/UMUtilities.h>
 #import <EXPermissions/EXAudioRecordingPermissionRequester.h>
 #import <EXPermissions/EXCalendarRequester.h>
 #import <EXPermissions/EXCameraPermissionRequester.h>
@@ -18,20 +18,20 @@ NSString * const EXPermissionExpiresNever = @"never";
 @interface EXPermissions ()
 
 @property (nonatomic, strong) NSMutableArray *requests;
-@property (nonatomic, weak) id<EXPermissionsServiceInterface> permissionsService;
-@property (nonatomic, weak) id<EXUtilitiesInterface> utils;
+@property (nonatomic, weak) id<UMPermissionsServiceInterface> permissionsService;
+@property (nonatomic, weak) id<UMUtilitiesInterface> utils;
 @property (nonatomic, assign) NSString *experienceId;
-@property (nonatomic, weak) EXModuleRegistry * moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry * moduleRegistry;
 
 @end
 
 @implementation EXPermissions
 
-EX_EXPORT_MODULE(ExpoPermissions);
+UM_EXPORT_MODULE(ExpoPermissions);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXPermissionsInterface), @protocol(EXPermissionsModule)];
+  return @[@protocol(UMPermissionsInterface), @protocol(EXPermissionsModule)];
 }
 
 - (NSDictionary *)constantsToExport
@@ -60,19 +60,19 @@ EX_EXPORT_MODULE(ExpoPermissions);
   return self;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _permissionsService = [moduleRegistry getSingletonModuleForName:@"Permissions"];
-  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
   _moduleRegistry = moduleRegistry;
 }
 
 # pragma mark - Expo exported methods
 
-EX_EXPORT_METHOD_AS(getAsync,
+UM_EXPORT_METHOD_AS(getAsync,
                     getPermissionsWithTypes:(NSArray<NSString *> *)permissionsTypes
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   NSMutableDictionary *permissions = [NSMutableDictionary new];
   for (NSString *permissionType in permissionsTypes) {
@@ -96,10 +96,10 @@ EX_EXPORT_METHOD_AS(getAsync,
   resolve([NSDictionary dictionaryWithDictionary:permissions]);
 }
 
-EX_EXPORT_METHOD_AS(askAsync,
+UM_EXPORT_METHOD_AS(askAsync,
                     askForPermissionsWithTypes:(NSArray<NSString *> *)permissionsTypes
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   [self askForPermissionsWithTypes:permissionsTypes
                        withResults:resolve
@@ -110,7 +110,7 @@ EX_EXPORT_METHOD_AS(askAsync,
 
 - (void)askForGlobalPermissions:(NSArray<NSString *> *)permissionsTypes
                    withResolver:(void (^)(NSDictionary *))resolver
-                   withRejecter:(EXPromiseRejectBlock)reject
+                   withRejecter:(UMPromiseRejectBlock)reject
 {
   // nothing to ask for - return immediately
   if (permissionsTypes.count == 0) {
@@ -120,7 +120,7 @@ EX_EXPORT_METHOD_AS(askAsync,
   __block NSMutableDictionary *permissions = [NSMutableDictionary new];
   __block NSMutableSet *permissionsToBeAsked = [NSMutableSet setWithArray:permissionsTypes];
   __block NSString *permissionType; // accumulator for currently proceessed permissionType
-  EX_WEAKIFY(self);
+  UM_WEAKIFY(self);
   
   __block void (^customResolver)(NSDictionary *); // forward declaration
   __block void (^askForNextPermission)(void) = ^() {
@@ -129,7 +129,7 @@ EX_EXPORT_METHOD_AS(askAsync,
       return resolver(permissions);
     }
   
-    EX_ENSURE_STRONGIFY(self);
+    UM_ENSURE_STRONGIFY(self);
   
     // pop next permissionType from set
     permissionType = [permissionsToBeAsked anyObject];
@@ -150,7 +150,7 @@ EX_EXPORT_METHOD_AS(askAsync,
   
   // we need custom resolver for the requester cause we need to save given permissions per experience
   customResolver = ^(NSDictionary *permission) {
-    EX_ENSURE_STRONGIFY(self);
+    UM_ENSURE_STRONGIFY(self);
     
     // save results for permission
     permissions[permissionType] = [NSMutableDictionary dictionaryWithDictionary:permission];
@@ -174,7 +174,7 @@ EX_EXPORT_METHOD_AS(askAsync,
 
 - (void)askForScopedPermissions:(NSArray<NSString *> *)permissionsTypes
                    withResolver:(void (^)(NSDictionary *))resolver
-                   withRejecter:(EXPromiseRejectBlock)reject
+                   withRejecter:(UMPromiseRejectBlock)reject
 {
   // nothing to ask for - return immediately
   if (permissionsTypes.count == 0) {
@@ -184,7 +184,7 @@ EX_EXPORT_METHOD_AS(askAsync,
   __block NSMutableDictionary *permissions = [NSMutableDictionary new];
   __block NSMutableSet *permissionsToBeAsked = [NSMutableSet setWithArray:permissionsTypes];
   __block NSString *permissionType; // accumulator for currently proceessed permissionType
-  EX_WEAKIFY(self);
+  UM_WEAKIFY(self);
   
   __block void (^askForNextPermission)(void) = ^() {
     // stop condition: no permission left to be asked - resolve with results
@@ -194,7 +194,7 @@ EX_EXPORT_METHOD_AS(askAsync,
       return;
     }
     
-    EX_ENSURE_STRONGIFY(self);
+    UM_ENSURE_STRONGIFY(self);
 
     // pop next permissionType from set
     permissionType = [permissionsToBeAsked anyObject];
@@ -205,7 +205,7 @@ EX_EXPORT_METHOD_AS(askAsync,
 
     // had to reinitilize UIAlertActions between alertShow invocations
     UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-      EX_ENSURE_STRONGIFY(self);
+      UM_ENSURE_STRONGIFY(self);
       // try to save scoped permissions - if fails than permission is denied
       if (![self.permissionsService savePermission:permissions[permissionType] ofType:permissionType forExperience:self.experienceId]) {
         permissions[permissionType][@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
@@ -215,7 +215,7 @@ EX_EXPORT_METHOD_AS(askAsync,
     }];
 
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-      EX_ENSURE_STRONGIFY(self);
+      UM_ENSURE_STRONGIFY(self);
       permissions[permissionType][@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
       permissions[@"granted"] = @(NO);
       askForNextPermission();
@@ -243,9 +243,9 @@ EX_EXPORT_METHOD_AS(askAsync,
   [alert addAction:deny];
   [alert addAction:allow];
 
-  EX_WEAKIFY(self);
-  [EXUtilities performSynchronouslyOnMainThread:^{
-    EX_ENSURE_STRONGIFY(self);
+  UM_WEAKIFY(self);
+  [UMUtilities performSynchronouslyOnMainThread:^{
+    UM_ENSURE_STRONGIFY(self);
     // TODO: below line is sometimes failing with: "Presenting view controllers on detached view controllers is discourage"
     [self->_utils.currentViewController presentViewController:alert animated:YES completion:nil];
   }];
@@ -291,7 +291,7 @@ EX_EXPORT_METHOD_AS(askAsync,
   NSDictionary *permissions = [self getPermissionsForResource:permissionType];
 
   if (!permissions) {
-    EXLogWarn(@"Permission with type '%@' not found.", permissionType);
+    UMLogWarn(@"Permission with type '%@' not found.", permissionType);
     return false;
   }
   
@@ -300,7 +300,7 @@ EX_EXPORT_METHOD_AS(askAsync,
 
 - (void)askForPermission:(NSString *)permissionType
               withResult:(void (^)(NSDictionary *))onResult
-            withRejecter:(EXPromiseRejectBlock)reject
+            withRejecter:(UMPromiseRejectBlock)reject
 {
   return [self askForPermissions:@[permissionType]
                      withResults:^(NSArray<NSDictionary *> *results) {
@@ -311,7 +311,7 @@ EX_EXPORT_METHOD_AS(askAsync,
 
 - (void)askForPermissions:(NSArray<NSString *> *)permissionsTypes
               withResults:(void (^)(NSArray<NSDictionary *> *))onResults
-             withRejecter:(EXPromiseRejectBlock)reject
+             withRejecter:(UMPromiseRejectBlock)reject
 {
   return [self askForPermissionsWithTypes:permissionsTypes
                               withResults:^(NSDictionary *results) {
@@ -328,7 +328,7 @@ EX_EXPORT_METHOD_AS(askAsync,
 
 - (void)askForPermissionsWithTypes:(NSArray<NSString *> *)permissionsTypes
                        withResults:(void (^)(NSDictionary *results))onResults
-                      withRejecter:(EXPromiseRejectBlock)reject
+                      withRejecter:(UMPromiseRejectBlock)reject
 {
   NSMutableArray<NSString *> *scopedPermissionsToBeAsked = [NSMutableArray new];
   NSMutableArray<NSString *> *globalPermissionsToBeAsked = [NSMutableArray new];
@@ -371,9 +371,9 @@ EX_EXPORT_METHOD_AS(askAsync,
     onResults([NSDictionary dictionaryWithDictionary:permissions]);
   };
   
-  EX_WEAKIFY(self);
+  UM_WEAKIFY(self);
   void (^scopedPermissionResolver)(NSDictionary *) = ^(NSDictionary *scopedPermissions) {
-    EX_ENSURE_STRONGIFY(self);
+    UM_ENSURE_STRONGIFY(self);
     [permissions addEntriesFromDictionary:scopedPermissions];
     [self askForGlobalPermissions:globalPermissionsToBeAsked
                      withResolver:globalPermissionResolver

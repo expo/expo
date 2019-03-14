@@ -16,10 +16,10 @@
   "preserve_paths": "EXFont/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXFontInterface": [
+    "UMFontInterface": [
 
     ]
   }

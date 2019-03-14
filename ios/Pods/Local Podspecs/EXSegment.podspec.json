@@ -16,10 +16,10 @@
   "preserve_paths": "EXSegment/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ],
     "Analytics": [

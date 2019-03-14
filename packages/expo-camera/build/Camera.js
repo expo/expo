@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import mapValues from 'lodash.mapvalues';
 import PropTypes from 'prop-types';
 import React from 'react';

@@ -7,11 +7,11 @@ import com.yqritc.scalablevideoview.ScalableType;
 import java.util.ArrayList;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ExpoProp;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ExpoProp;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 public class VideoViewManager extends ViewManager<VideoViewWrapper> implements ModuleRegistryConsumer {
   public static final String REACT_CLASS = "ExpoVideoView";

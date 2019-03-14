@@ -16,10 +16,10 @@
   "preserve_paths": "EXFacebook/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ],
     "FBSDKCoreKit": [

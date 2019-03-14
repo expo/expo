@@ -2,7 +2,7 @@
 
 @implementation EXNativeMediaViewManager
 
-EX_EXPORT_MODULE(MediaViewManager)
+UM_EXPORT_MODULE(MediaViewManager)
 
 - (NSString *)viewName
 {

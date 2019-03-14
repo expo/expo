@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from 'expo-core';
+import { EventEmitter, Subscription } from '@unimodules/core';
 import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent } from './FileSystem.types';
 export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, };
 export declare const documentDirectory: string | null;

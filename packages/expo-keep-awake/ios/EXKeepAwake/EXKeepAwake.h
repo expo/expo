@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXKeepAwake : EXExportedModule <EXModuleRegistryConsumer>
+@interface EXKeepAwake : UMExportedModule <UMModuleRegistryConsumer>
 @end

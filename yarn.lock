@@ -5273,45 +5273,6 @@ expo-cli@^2.7.1:
     "@expo/traveling-fastlane-darwin" "1.8.2"
     "@expo/traveling-fastlane-linux" "1.8.2"
 
-expo-core@~2.0.0:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/expo-core/-/expo-core-2.0.2.tgz#61e1e5cc6c4341a834a0d7f37c68887cee8d971f"
-  integrity sha512-QKkICJ06m/J1PxTJqtVu03+fUXwjLqb2YPF5J9DT7W4EknPq1sHY3ZKJgAr1PhK24fzvVoxWOKqiIstliZdBOA==
-
-expo-firebase-analytics@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/expo-firebase-analytics/-/expo-firebase-analytics-2.0.0.tgz#f755b6c022e7347884ab13a23e0e3946f6f85de2"
-  integrity sha512-nlhcm0vjgBXd1pua+hayeuNVa1djPwNEqrsgLsxAGAmNvetivSaos065Cgu9yxixdnDiQitBKOhNVXh0kQpsIA==
-  dependencies:
-    expo-core "~2.0.0"
-    expo-firebase-app "~2.0.0"
-
-expo-image-loader-interface@~2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/expo-image-loader-interface/-/expo-image-loader-interface-2.0.0.tgz#3934f01c4ccdea40d4248110b7da234741abf9c8"
-  integrity sha512-aOHa37N/8gEyzDGO5df6PST8uce1L94OxNTfD5JtWVH3tWmkaN760S33T9ecWmydcUv9zFCOcCC4gZTwEWUJiQ==
-  dependencies:
-    expo-core "~2.0.0"
-
-expo-permissions-interface@~2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/expo-permissions-interface/-/expo-permissions-interface-2.0.0.tgz#563fd815925fd472a1b04f292afc9bef77f14774"
-  integrity sha512-hk9oR6CtV2MLONdtPkKvOfpfmbJ48BDbYjvW/Na31znVvUAPHs7owckqSgh5BVoIAz8tMgp7fptaifEhPOayvg==
-  dependencies:
-    expo-core "~2.0.0"
-
-expo-react-native-adapter@~2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/expo-react-native-adapter/-/expo-react-native-adapter-2.0.0.tgz#0a8f74e7f79116b2f28eec79deab236c2ee0611f"
-  integrity sha512-pRlmqqb9mPr1abgzEGnzeEWa7VI8WWqMWRnU/ySJTcOWRyX63oUobTKX/Bw1HuwGyB6+rVRqEF+IObOeo8va4w==
-  dependencies:
-    expo-image-loader-interface "~2.0.0"
-    expo-permissions-interface "~2.0.0"
-    invariant "^2.2.4"
-    lodash.omit "^4.5.0"
-    lodash.pick "^4.4.0"
-    prop-types "^15.6.1"
-
 expo-three@^3.0.0-alpha.6:
   version "3.0.0-alpha.8"
   resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-3.0.0-alpha.8.tgz#42e3143f3b188a7bae1cd4043810aecdacf8f91a"
@@ -10901,28 +10862,27 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0:
   dependencies:
     prop-types "^15.6.1"
 
-react-native-unimodules@~0.1.0-rc.2:
-  version "0.1.0-rc.2"
-  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.1.0-rc.2.tgz#e34b26f8c80410103c1ae553d8b7ab1154de0b7d"
-  integrity sha512-jS14NvsJ8mG+hnJ9G11dX1nxdDDFN+crFjEUwjUbNUEe4sT+xjPmeYjR80k5oogtr7JLgRrRE8Wmx8CPHh8QwA==
+react-native-unimodules@~0.2.0-beta.0:
+  version "0.2.0-beta.0"
+  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.2.0-beta.0.tgz#849c683dde11115e958a6625a83c419e8d5c3830"
+  integrity sha512-Qw5ilTRI5lK58+MTUjfhRNBUwEWLquG3y9mzi0HbFnv6FlmTmYvzVx7WlpJ9myOwoVm8qkWogOUs53WAQFQ5bA==
   dependencies:
+    "@unimodules/core" "~1.0.0"
+    "@unimodules/react-native-adapter" "~1.0.0"
     expo-asset "~3.0.0"
-    expo-barcode-scanner-interface "~3.0.0"
-    expo-camera-interface "~3.0.0"
     expo-constants "~3.0.0"
-    expo-constants-interface "~3.0.0"
-    expo-core "~3.0.0"
-    expo-errors "~3.0.0"
-    expo-face-detector-interface "~3.0.0"
     expo-file-system "~3.0.0"
-    expo-file-system-interface "~3.0.0"
-    expo-font-interface "~3.0.0"
-    expo-image-loader-interface "~3.0.0"
     expo-permissions "~3.0.0"
-    expo-permissions-interface "~3.0.0"
-    expo-react-native-adapter "~3.0.0"
-    expo-sensors-interface "~3.0.0"
-    expo-task-manager-interface "~3.0.0"
+    unimodules-barcode-scanner-interface "~1.0.0"
+    unimodules-camera-interface "~1.0.0"
+    unimodules-constants-interface "~1.0.0"
+    unimodules-face-detector-interface "~1.0.0"
+    unimodules-file-system-interface "~1.0.0"
+    unimodules-font-interface "~1.0.0"
+    unimodules-image-loader-interface "~1.0.0"
+    unimodules-permissions-interface "~1.0.0"
+    unimodules-sensors-interface "~1.0.0"
+    unimodules-task-manager-interface "~1.0.0"
 
 react-native-vector-icons@6.0.0:
   version "6.0.0"

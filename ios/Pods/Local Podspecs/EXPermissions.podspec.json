@@ -16,10 +16,10 @@
   "preserve_paths": "EXPermissions/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXPermissionsInterface": [
+    "UMPermissionsInterface": [
 
     ]
   }

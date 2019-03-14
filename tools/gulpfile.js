@@ -94,7 +94,7 @@ gulp.task(
 );
 gulp.task(
   'android-copy-universal-modules',
-  gulp.series(...Modules.getVersionableModulesForPlatform('android').map(
+  gulp.series(...Modules.getVersionableModulesForPlatform('android', argv.abi).map(
     module => shell.task([
       `./android-copy-universal-module.sh ${argv.abi} ../packages/${module.libName}/${module.subdirectory}`
     ])

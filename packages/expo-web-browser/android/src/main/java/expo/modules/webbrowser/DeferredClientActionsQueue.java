@@ -1,9 +1,10 @@
 package expo.modules.webbrowser;
 
+import org.unimodules.core.interfaces.Consumer;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
-import expo.core.interfaces.Consumer;
 
 public class DeferredClientActionsQueue<T> {
 

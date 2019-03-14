@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
-import expo.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
 
 public class TaskManagerUtils implements TaskManagerUtilsInterface {
   private static final int DEFAULT_OVERRIDE_DEADLINE = 60 * 1000; // 1 minute

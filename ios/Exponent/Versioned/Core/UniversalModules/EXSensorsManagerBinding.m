@@ -117,7 +117,7 @@
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(EXAccelerometerInterface), @protocol(EXBarometerInterface),  @protocol(EXDeviceMotionInterface), @protocol(EXGyroscopeInterface), @protocol(EXMagnetometerInterface), @protocol(EXMagnetometerUncalibratedInterface)];
+  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface),  @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface)];
 }
 
 @end

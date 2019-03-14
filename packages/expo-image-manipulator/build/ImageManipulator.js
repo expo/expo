@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoImageManipulator from './ExpoImageManipulator';
 import { SaveFormat } from './ImageManipulator.types';
 export async function manipulateAsync(uri, actions = [], { format = SaveFormat.JPEG, ...rest } = {}) {

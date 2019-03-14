@@ -7,7 +7,7 @@ import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
 
-import expo.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.LifecycleEventListener;
 
 public class CustomTabsConnectionHelper extends CustomTabsServiceConnection implements LifecycleEventListener {
 

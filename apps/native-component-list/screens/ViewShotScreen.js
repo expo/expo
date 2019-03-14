@@ -3,7 +3,7 @@ import { LinearGradient, takeSnapshotAsync } from 'expo';
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { captureScreen } from 'react-native-view-shot';
 
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import Button from '../components/Button';
 
 // Source: https://codepen.io/zessx/pen/rDEAl <3

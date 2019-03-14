@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
 // Background fetch result
 typedef NS_ENUM(NSUInteger, EXBackgroundFetchResult) {
@@ -17,6 +17,6 @@ typedef NS_ENUM(NSUInteger, EXBackgroundFetchStatus) {
   EXBackgroundFetchStatusAvailable = 3,
 };
 
-@interface EXBackgroundFetch : EXExportedModule <EXModuleRegistryConsumer>
+@interface EXBackgroundFetch : UMExportedModule <UMModuleRegistryConsumer>
 
 @end

@@ -36,8 +36,8 @@ and run `pod install`.
     and if not already included
 
     ```gradle
-    include ':expo-core'
-    project(':expo-core').projectDir = new File(rootProject.projectDir, '../node_modules/expo-core/android')
+    include ':unimodules-core'
+    project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../node_modules/@unimodules/core/android')
 
     include ':expo-firebase-app'
     project(':expo-firebase-app').projectDir = new File(rootProject.projectDir, '../node_modules/expo-firebase-app/android')
@@ -52,7 +52,7 @@ and run `pod install`.
     and if not already included
 
     ```gradle
-    api project(':expo-core')
+    api project(':unimodules-core')
     api project(':expo-firebase-app')
     ```
 

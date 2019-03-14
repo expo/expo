@@ -1,5 +1,5 @@
 import { describeCrossPlatform } from 'jest-expo';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import * as Amplitude from '../Amplitude';
 
 const { ExpoAmplitude } = NativeModulesProxy;

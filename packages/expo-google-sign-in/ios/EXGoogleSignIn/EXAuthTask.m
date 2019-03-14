@@ -5,8 +5,8 @@
 
 @interface EXAuthTask ()
 
-@property (nonatomic, strong) EXPromiseResolveBlock resolver;
-@property (nonatomic, strong) EXPromiseRejectBlock rejecter;
+@property (nonatomic, strong) UMPromiseResolveBlock resolver;
+@property (nonatomic, strong) UMPromiseRejectBlock rejecter;
 @property (nonatomic, strong) NSString *tag;
 
 @end
@@ -14,8 +14,8 @@
 @implementation EXAuthTask
 
 - (BOOL)update:(NSString *)tag
-      resolver:(EXPromiseResolveBlock)resolve
-      rejecter:(EXPromiseRejectBlock)reject
+      resolver:(UMPromiseResolveBlock)resolve
+      rejecter:(UMPromiseRejectBlock)reject
 {
   if (!_resolver) {
     _tag = tag;
@@ -51,7 +51,7 @@
     // Override this rejection to create parity with FBSDK
     [self reject:[EXGoogleSignIn jsonFromGIDSignInErrorCode:error.code] error:error];
   } else {
-    [self resolve:EXNullIfNil(user)];
+    [self resolve:UMNullIfNil(user)];
   }
 }
 

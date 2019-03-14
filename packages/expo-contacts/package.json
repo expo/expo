@@ -32,7 +32,7 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*"
+    "@unimodules/core": "*"
   },
   "dependencies": {
     "uuid-js": "^0.7.5"

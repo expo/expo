@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
 const isWeb = Platform.OS === 'web';
 const loaded = {};

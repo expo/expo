@@ -1,7 +1,7 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXCore/EXModuleRegistry.h>
+#import <UMCore/UMModuleRegistry.h>
 
 #import <React/RCTBridgeModule.h>
 
@@ -9,13 +9,13 @@
 
 @interface EXScopedModuleRegistry (ModuleRegistry)
 
-@property (nonatomic, readonly) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, readonly) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @interface EXModuleRegistryBinding : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
-- (EXModuleRegistry *)moduleRegistry;
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
+- (UMModuleRegistry *)moduleRegistry;
 
 @end
