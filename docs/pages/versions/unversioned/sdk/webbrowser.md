@@ -40,10 +40,10 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
   A dictionaty with following key-value pairs:
 
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
-  - **controlsColor (_optional_) (_string_)** -- _iOS Only_ tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
+  - **controlsColor (_optional_) (_string_)** -- (_iOS Only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **collapseToolbar (_optional_) (_boolean_)** : a boolean determining whether the toolbar should be hiding when a user scrolls the website
   - **showTitle (_optional_) (_boolean_)** : (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
-  - **package (_optional_) (_string_)** -- _Android only_. Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
+  - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
 
   Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
@@ -52,7 +52,7 @@ Opens the url with Safari in a modal on iOS using `SFSafariViewController`, and 
 Returns a Promise:
 
 - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
-- If the browser is closed using [dismissBrowser](#webbrowserdismissbrowser) , the Promise resolves with `{ type: 'dismiss' }`.
+- If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser) , the Promise resolves with `{ type: 'dismiss' }`.
 
 ### `WebBrowser.openAuthSessionAsync(url, redirectUrl)`
 
@@ -67,25 +67,25 @@ Returns a Promise:
 
 - If the user does not permit the application to authenticate with the given url, the Promise resolved with `{ type: 'cancel' }`.
 - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
-- If the browser is closed using [dismissBrowser](#webbrowserdismissbrowser), the Promise resolves with `{ type: 'dismiss' }`.
+- If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser), the Promise resolves with `{ type: 'dismiss' }`.
 
-### `WebBrowser.warmUp(package)`
+### `WebBrowser.warmUpAsync(browserPackage)`
 
 _Android Only_
 
-This method calls warmUp method on [CustomTabsClient](<https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long)>) for specified package.
+This method calls `warmUp` method on [CustomTabsClient](<https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long)>) for specified package.
 
 #### Arguments
 
-- **package (_string_)** -- **Optional** -- package of browser to be warmed up. If not set, preferred browser will be warmed.
+- **browserPackage (_string_)** -- **Optional** -- package of browser to be warmed up. If not set, preferred browser will be warmed.
 
 #### Returns
 
-The promise resolves with `{ type: warming, package: string }`
+The promise resolves with `{ type: 'warming', package: string }`
 
-### `WebBrowser.mayInitWithUrl(url, package)`
+### `WebBrowser.mayInitWithUrlAsync(url, package)`
 
-_Andrdoi Only_
+_Andrdoi only_
 
 This method initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/android/support/customtabs/CustomTabsSession.html#maylaunchurl) and calls its `mayLaunchUrl` method for browser specified by the package.
 
@@ -96,25 +96,27 @@ This method initiates (if needed) [CustomTabsSession](https://developer.android.
 
 #### Returns
 
-### `WebBrowser.coolDown(package)`
+The promise resolves with `{ type: 'mayInitWithUrl', package: string, url: string }`.
 
-_Andrdoi Only_
+### `WebBrowser.coolDownAsync(browserPackage)`
 
-This methods removes all bindings to services created by warmUp or mayInitWithUrl. You should call this method once you don't need them to avoid potential memory leaks. However, those binding would be cleared once your application is destroyed, which might be sufficient in most cases.
+_Andrdoi only_
+
+This methods removes all bindings to services created by [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage) or [`mayInitWithUrlAsync`](#webbrowseramayinitwithurlsyncurl-package). You should call this method once you don't need them to avoid potential memory leaks. However, those binding would be cleared once your application is destroyed, which might be sufficient in most cases.
 
 #### Arguments
 
-- **package (_string_)** -- **Optional** -- package of browser to be cooled. If not set, preferred browser will be used.
+- **browserPackage (_string_)** -- **optional** -- package of browser to be cooled. If not set, preferred browser will be used.
 
 #### Returns
 
-The promise resolves with `{ result: 'cooling' }` when cooling is performed, or `{ result: 'Nothing to cool down' }` when there was no connection to be dismissed.
+The promise resolves with `{ type: 'cooling', package: string }` when cooling is performed, or `{ result: 'Nothing to cool down' }` when there was no connection to be dismissed.
 
 ### `WebBrowser.dismissBrowser()`
 
 _iOS Only_
 
-Dismisses the system's presented web browser.
+Dismisses the presented web browser.
 
 #### Returns
 
@@ -124,15 +126,15 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 _Android only_
 
-Returns list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preffered one. This may not be fully reliable, because ot follows `PackageManager.getResolvingActivities` behavior with its flaws. For example, some browsers might not be visible on packages list after other browser is set to dafult.
+Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and prefered one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to defult.)
 
 #### Returns
 
-The promise resolves with `{ packages: string[], default: string, service: string[], preferred: string }`
+The promise resolves with `{ browserPackages: string[], defaultPackage: string, servicePackages: string[], preferredPackage: string }`
 
-- **packages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
-- **default (_string_)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
-- **services (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [warmUp](#webbrowserwarmuppackage), [mayInitWithUrl](#webbrowsermayinitwithurlurl-package) and [coolDown](#webbrowsercooldownpackage).
-- **preferred (_string_)** : Package preferred by CustomTabsClient to be used to handle Custom Tabs.
+- **browserPackages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
+- **defaultPackage (_string_)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
+- **servicePackages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [coolDownAsync](#webbrowsercooldownasyncbrowserpackage).
+- **preferredPackage (_string_)** : Package preferred by CustomTabsClient to be used to handle Custom Tabs.
 
 #

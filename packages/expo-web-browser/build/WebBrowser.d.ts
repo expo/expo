@@ -19,9 +19,9 @@ declare type RedirectResult = {
     url: string;
 };
 export declare function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults>;
-export declare function warmUp(packageName?: string): Promise<any>;
-export declare function mayInitWithUrl(url: string, packageName?: string): Promise<any>;
-export declare function coolDown(packageName?: string): Promise<any>;
+export declare function warmUpAsync(browserPackage?: string): Promise<any>;
+export declare function mayInitWithUrlAsync(url: string, packageName?: string): Promise<any>;
+export declare function coolDownAsync(browserPackage?: string): Promise<any>;
 export declare function openBrowserAsync(url: string, browserParams?: OpenBrowserParams): Promise<BrowserResult>;
 export declare function dismissBrowser(): void;
 export declare function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult>;

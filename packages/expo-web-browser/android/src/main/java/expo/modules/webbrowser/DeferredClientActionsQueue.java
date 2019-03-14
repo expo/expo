@@ -5,7 +5,7 @@ import java.util.Queue;
 
 import expo.core.interfaces.Consumer;
 
-public class DefferedClientActionsQueue<T> {
+public class DeferredClientActionsQueue<T> {
 
   private Queue<Consumer<T>> actions = new LinkedList<>();
   private T client;

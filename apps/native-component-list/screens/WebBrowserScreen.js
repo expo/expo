@@ -11,7 +11,6 @@ export default class WebBrowserScreen extends React.Component {
 
   state = {
     showTitle: false,
-    colorText: undefined,
     controlsColorText: undefined,
     packages: undefined,
     selectedPackage: undefined,
@@ -28,8 +27,10 @@ export default class WebBrowserScreen extends React.Component {
       });
   }
 
-  async componentWillUnmount() {
-    if (Platform.OS === 'android') WebBrowser.coolDown(this.state.lastWarmedPackage);
+  componentWillUnmount() {
+    if (Platform.OS === 'android') {
+      WebBrowser.coolDownAsync(this.state.lastWarmedPackage);
+    }
   }
 
   barCollapsingSwitchChanged = value => {
@@ -46,7 +47,7 @@ export default class WebBrowserScreen extends React.Component {
     this.setState({
       lastWarmedPackage: selectedPackage,
     });
-    const result = await WebBrowser.warmUp(selectedPackage);
+    const result = await WebBrowser.warmUpAsync(selectedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
@@ -55,12 +56,12 @@ export default class WebBrowserScreen extends React.Component {
     this.setState({
       lastWarmedPackage: selectedPackage,
     });
-    const result = await WebBrowser.mayInitWithUrl(url, selectedPackage);
+    const result = await WebBrowser.mayInitWithUrlAsync(url, selectedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
   coolDown = async () => {
-    const result = await WebBrowser.coolDown(this.state.selectedPackage);
+    const result = await WebBrowser.coolDownAsync(this.state.selectedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
@@ -149,8 +150,8 @@ export default class WebBrowserScreen extends React.Component {
           <Text>Toolbar color (#rrggbb):</Text>
           <TextInput
             style={styles.input}
-            borderBottomColor={'black'}
-            placeholder={'RRGGBB'}
+            borderBottomColor="black"
+            placeholder="RRGGBB"
             onChangeText={this.toolbarColorInputChanged}
             value={this.state.colorText}
           />

@@ -13,8 +13,8 @@ public class CustomTabsConnectionHelper extends CustomTabsServiceConnection impl
 
   private Context mContext;
   private String mPackageName;
-  private DefferedClientActionsQueue<CustomTabsClient> clientActions = new DefferedClientActionsQueue<>();
-  private DefferedClientActionsQueue<CustomTabsSession> sessionActions = new DefferedClientActionsQueue<>();
+  private DeferredClientActionsQueue<CustomTabsClient> clientActions = new DeferredClientActionsQueue<>();
+  private DeferredClientActionsQueue<CustomTabsSession> sessionActions = new DeferredClientActionsQueue<>();
 
   CustomTabsConnectionHelper(Context context) {
     this.mContext = context;

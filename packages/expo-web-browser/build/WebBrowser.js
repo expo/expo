@@ -7,9 +7,24 @@ export async function getCustomTabsSupportingBrowsersAsync() {
     }
     return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
 }
-export async function warmUp(packageName) {
-    if (!ExponentWebBrowser.warmUp) {
-        throw new UnavailabilityError('WebBrowser', 'warmUp');
+export async function warmUpAsync(browserPackage) {
+    if (!ExponentWebBrowser.warmUpAsync) {
+        throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
+    }
+    let packageToWarm = browserPackage;
+    if (!browserPackage) {
+        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
+    }
+    if (!packageToWarm) {
+        throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
+    }
+    else {
+        return ExponentWebBrowser.warmUpAsync(packageToWarm);
+    }
+}
+export async function mayInitWithUrlAsync(url, packageName) {
+    if (!ExponentWebBrowser.mayInitWithUrlAsync) {
+        throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
     }
     let packageToWarm = packageName;
     if (!packageName) {
@@ -19,37 +34,22 @@ export async function warmUp(packageName) {
         throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
     }
     else {
-        return ExponentWebBrowser.warmUp(packageToWarm);
+        return ExponentWebBrowser.mayInitWithUrlAsync(url, packageToWarm);
     }
 }
-export async function mayInitWithUrl(url, packageName) {
-    if (!ExponentWebBrowser.mayInitWithUrl) {
-        throw new UnavailabilityError('WebBrowser', 'warmUp');
+export async function coolDownAsync(browserPackage) {
+    if (!ExponentWebBrowser.coolDownAsync) {
+        throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
     }
-    let packageToWarm = packageName;
-    if (!packageName) {
-        packageToWarm = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
-    }
-    if (!packageToWarm) {
-        throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
-    }
-    else {
-        return ExponentWebBrowser.mayInitWithUrl(url, packageToWarm);
-    }
-}
-export async function coolDown(packageName) {
-    if (!ExponentWebBrowser.coolDown) {
-        throw new UnavailabilityError('WebBrowser', 'coolDown');
-    }
-    let packageToCool = packageName;
-    if (!packageName) {
+    let packageToCool = browserPackage;
+    if (!browserPackage) {
         packageToCool = (await getCustomTabsSupportingBrowsersAsync()).preferredBrowserPackage;
     }
     if (!packageToCool) {
         throw new CodedError('INSUFFICIENT_ARGS', 'WebBrowser.warmUp is unable to determine package name without supplying it!');
     }
     else {
-        return ExponentWebBrowser.coolDown(packageToCool);
+        return ExponentWebBrowser.coolDownAsync(packageToCool);
     }
 }
 export async function openBrowserAsync(url, browserParams = {}) {

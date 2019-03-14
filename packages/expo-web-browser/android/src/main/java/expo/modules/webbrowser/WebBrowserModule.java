@@ -64,7 +64,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @ExpoMethod
-  public void warmUp(final String packageName, final Promise promise) {
+  public void warmUpAsync(final String packageName, final Promise promise) {
     mConnectionHelper.warmUp(packageName);
     Bundle result = new Bundle();
     result.putString("type", "warming");
@@ -73,10 +73,10 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @ExpoMethod
-  public void coolDown(final String packageName, final Promise promise) {
+  public void coolDownAsync(final String packageName, final Promise promise) {
     if (mConnectionHelper.coolDown(packageName)) {
       Bundle result = new Bundle();
-      result.putString("result", "cooling");
+      result.putString("type", "cooling");
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
     } else {
@@ -88,7 +88,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @ExpoMethod
-  public void mayInitWithUrl(final String url, final String packageName, final Promise promise) {
+  public void mayInitWithUrlAsync(final String url, final String packageName, final Promise promise) {
     mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
     Bundle result = new Bundle();
     result.putString("type", "mayInitWithUrl");
