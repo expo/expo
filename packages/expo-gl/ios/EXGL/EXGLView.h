@@ -2,20 +2,20 @@
 
 #import <EXGL-CPP/UEXGL.h>
 #import <EXGL/EXGLContext.h>
-#import <EXCore/EXModuleRegistry.h>
+#import <UMCore/UMModuleRegistry.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXGLView : UIView <EXGLContextDelegate>
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
 - (UEXGLContextId)exglCtxId;
 
 // AR
 - (void)setArSessionManager:(id)arSessionManager;
 - (void)maybeStopARSession;
 
-@property (nonatomic, copy, nullable) EXDirectEventBlock onSurfaceCreate;
+@property (nonatomic, copy, nullable) UMDirectEventBlock onSurfaceCreate;
 @property (nonatomic, assign) NSNumber *msaaSamples;
 
 // "protected"

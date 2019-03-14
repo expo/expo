@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter } from 'expo-core';
+import { SyntheticPlatformEmitter } from '@unimodules/core';
 
 import { PlaybackNativeSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 

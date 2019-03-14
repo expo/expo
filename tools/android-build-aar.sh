@@ -3,6 +3,7 @@
 # with packages renamed. Must rename the JNI code before using this.
 
 ORIGINAL_ABI_VERSION=`echo $1`
+MAJOR_ABI_VERSION=`echo $1 | sed 's/\..*//g'`
 ABI_VERSION=`echo $1 | sed 's/\./_/g'`
 ABI_VERSION="abi$ABI_VERSION"
 TOOLS_DIR=`pwd`
@@ -95,10 +96,12 @@ NEWLINE='\
 '
 SED_APPEND_COMMAND=" a$NEWLINE"
 REPLACE_TEXT='DO NOT MODIFY'
-sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ api 'host.exp:reactandroid-$ABI_VERSION:1.0.0'$NEWLINE" expoview/build.gradle
+ADD_NEW_SDKS_HERE='ADD_NEW_SDKS_HERE'
+sed -i '' "/$ADD_NEW_SDKS_HERE/$SED_APPEND_COMMAND$ADD_NEW_SDKS_HERE$NEWLINE$NEWLINE\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ implementation(project(':expoview-$ABI_VERSION'))$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" app/build.gradle
+sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ api 'host.exp:reactandroid-$ABI_VERSION:1.0.0'$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" expoview/build.gradle
 
 # Update Constants.java
-sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \ \ abiVersions.add(\"$ORIGINAL_ABI_VERSION\");$NEWLINE" expoview/src/main/java/host/exp/exponent/Constants.java
+sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ abiVersions.add(\"$ORIGINAL_ABI_VERSION\");$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" expoview/src/main/java/host/exp/exponent/Constants.java
 
 # Add new version
 
@@ -107,9 +110,9 @@ sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \ \ abiVersions.add(\"$ORIGINAL
 
 # Update classes that implement DefaultHardwareBackBtnHandler
 BACK_BUTTON_HANDLER_CLASS='com.facebook.react.modules.core.DefaultHardwareBackBtnHandler'
-find expoview/src/main/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/MultipleVersionReactNativeActivity extends ReactNativeActivity implements/MultipleVersionReactNativeActivity extends ReactNativeActivity implements $ABI_VERSION\.$BACK_BUTTON_HANDLER_CLASS,/"
+find expoview/src/main/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/ADD_NEW_SDKS_HERE/BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ $ABI_VERSION\.$BACK_BUTTON_HANDLER_CLASS,$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_SDKS_HERE/"
 
 # Update AndroidManifest
-sed -i '' "/ADD DEV SETTINGS HERE \-\-\>/$SED_APPEND_COMMAND\ \ \ \ \<activity android:name=\"$ABI_VERSION.com.facebook.react.devsupport.DevSettingsActivity\"\/\>$NEWLINE" ../template-files/android/AndroidManifest.xml
+sed -i '' "/ADD DEV SETTINGS HERE \-\-\>/$SED_APPEND_COMMAND\ \ \ \ \<!-- BEGIN_SDK_$MAJOR_ABI_VERSION --\>$NEWLINE\ \ \ \ \<activity android:name=\"$ABI_VERSION.com.facebook.react.devsupport.DevSettingsActivity\"\/\>$NEWLINE\ \ \ \ \<!-- END_SDK_$MAJOR_ABI_VERSION --\>$NEWLINE" ../template-files/android/AndroidManifest.xml
 popd
 ./add-stripe-activity-to-manifest.sh ../template-files/android/AndroidManifest.xml $ABI_VERSION

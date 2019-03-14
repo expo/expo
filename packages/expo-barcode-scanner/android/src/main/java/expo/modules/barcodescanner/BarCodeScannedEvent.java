@@ -6,8 +6,8 @@ import android.util.Pair;
 
 import java.util.List;
 
-import expo.core.interfaces.services.EventEmitter;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 import expo.modules.barcodescanner.utils.BarCodeScannerEventHelper;
 
 public class BarCodeScannedEvent extends EventEmitter.BaseEvent {

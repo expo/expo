@@ -1,14 +1,14 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXModuleRegistry.h>
+#import <UMCore/UMModuleRegistry.h>
 #import <EXKeepAwake/EXKeepAwake.h>
-#import <EXCore/EXAppLifecycleService.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMAppLifecycleService.h>
+#import <UMCore/UMUtilities.h>
 
-@interface EXKeepAwake () <EXAppLifecycleListener>
+@interface EXKeepAwake () <UMAppLifecycleListener>
 
-@property (nonatomic, weak) id<EXAppLifecycleService> lifecycleManager;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
@@ -16,11 +16,11 @@
   BOOL _active;
 }
 
-EX_EXPORT_MODULE(ExpoKeepAwake);
+UM_EXPORT_MODULE(ExpoKeepAwake);
 
-# pragma mark - EXModuleRegistryConsumer
+# pragma mark - UMModuleRegistryConsumer
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if (_moduleRegistry) {
     [_lifecycleManager unregisterAppLifecycleListener:self];
@@ -29,7 +29,7 @@ EX_EXPORT_MODULE(ExpoKeepAwake);
   _lifecycleManager = nil;
   
   if (moduleRegistry) {
-    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
+    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
   }
   
   if (_lifecycleManager) {
@@ -37,37 +37,37 @@ EX_EXPORT_MODULE(ExpoKeepAwake);
   }
 }
 
-EX_EXPORT_METHOD_AS(activate, activate:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(activate, activate:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   _active = YES;
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
   }];
   resolve(@YES);
 }
 
-EX_EXPORT_METHOD_AS(deactivate, deactivate:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(deactivate, deactivate:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   _active = NO;
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
   }];
   resolve(@YES);
 }
 
-# pragma mark - EXAppLifecycleListener
+# pragma mark - UMAppLifecycleListener
 
 - (void)onAppBackgrounded {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
   }];
 }
 
 - (void)onAppForegrounded {
   if (_active) {
-    [EXUtilities performSynchronouslyOnMainThread:^{
+    [UMUtilities performSynchronouslyOnMainThread:^{
       [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     }];
   }

@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXEventEmitter.h>
-#import <EXCore/EXInternalModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMEventEmitter.h>
+#import <UMCore/UMInternalModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXPedometer : EXExportedModule <EXEventEmitter, EXInternalModule, EXModuleRegistryConsumer>
+@interface EXPedometer : UMExportedModule <UMEventEmitter, UMInternalModule, UMModuleRegistryConsumer>
 
 @end

@@ -2,7 +2,7 @@
 import { Asset, GLView } from 'expo';
 import React from 'react';
 
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import { mountAndWaitFor } from './helpers';
 
 export const name = 'GLView';

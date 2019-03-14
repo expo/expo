@@ -27,7 +27,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/payments/",
   "unimodulePeerDependencies": {
-    "expo-core": "*"
+    "@unimodules/core": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

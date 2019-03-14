@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 import expo.modules.payments.stripe.util.ArgCheck;
 import expo.modules.payments.stripe.util.Fun0;
 import com.google.android.gms.common.ConnectionResult;

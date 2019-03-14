@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AACA,cAAc,gBAAgB,CAAC;AAC/B,cAAc,UAAU,CAAC","sourcesContent":["\nexport * from './AdapterProxy';\nexport * from './Errors';\n"]}

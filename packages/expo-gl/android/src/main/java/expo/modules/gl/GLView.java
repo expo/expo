@@ -5,8 +5,8 @@ import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.view.TextureView;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.services.EventEmitter;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class GLView extends TextureView implements TextureView.SurfaceTextureListener {
   private boolean mOnSurfaceCreateCalled = false;

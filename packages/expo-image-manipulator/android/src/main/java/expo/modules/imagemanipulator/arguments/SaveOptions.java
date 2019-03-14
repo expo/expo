@@ -2,7 +2,7 @@ package expo.modules.imagemanipulator.arguments;
 
 import android.support.annotation.NonNull;
 
-import expo.core.arguments.ReadableArguments;
+import org.unimodules.core.arguments.ReadableArguments;
 
 public class SaveOptions {
   private static final String TAG = "saveOptions";

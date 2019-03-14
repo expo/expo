@@ -4,7 +4,7 @@
 #import "EXViewController.h"
 #import "EXStandaloneAppDelegate.h"
 
-#import <EXCore/EXModuleRegistryProvider.h>
+#import <UMCore/UMModuleRegistryProvider.h>
 
 #if __has_include(<EXAppAuth/EXAppAuth.h>)
 #import <EXAppAuth/EXAppAuth.h>
@@ -44,7 +44,7 @@
     [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
   }
 #if __has_include(<EXTaskManager/EXTaskService.h>)
-  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
+  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
 #endif
   return YES;
 }
@@ -74,7 +74,7 @@
 #if __has_include(<EXTaskManager/EXTaskService.h>)
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
+  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:UMTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
 }
 #endif
 
@@ -129,7 +129,7 @@
 {
   [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 #if __has_include(<EXTaskManager/EXTaskService.h>)
-  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
+  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:UMTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
 #endif
 }
 

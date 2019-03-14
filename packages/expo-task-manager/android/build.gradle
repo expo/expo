@@ -59,18 +59,18 @@ android {
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-    apply from: project(":expo-core").file("../expo-core.gradle")
+    apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
     throw new GradleException(
-            "'expo-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
+            "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
             "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
 }
 
 dependencies {
-    expendency "expo-core"
-    expendency "expo-task-manager-interface"
-    expendency "expo-constants-interface"
-    expendency "expo-app-loader-provider"
+    unimodule "unimodules-core"
+    unimodule "unimodules-task-manager-interface"
+    unimodule "unimodules-constants-interface"
+    unimodule "expo-app-loader-provider"
 
     compile 'com.android.support:support-compat:27.1.1'
 }

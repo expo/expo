@@ -31,10 +31,10 @@
 ##### Expo Universal Modules #####
 
 -keepclassmembers class * {
-  @expo.core.interfaces.ExpoProp *;
+  @org.unimodules.core.interfaces.ExpoProp *;
 }
 -keepclassmembers class * {
-  @expo.core.interfaces.ExpoMethod *;
+  @org.unimodules.core.interfaces.ExpoMethod *;
 }
 
 -keepclassmembers class * {

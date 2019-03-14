@@ -70,7 +70,7 @@ public class LinearGradientView extends View {
   }
 
   // Copied from RN PixelUtil
-  // We might want to expose display metrics on expo-core somewhere to avoid
+  // We might want to expose display metrics on @unimodules/core somewhere to avoid
   // having code similar to this littered throughout modules
   private float toPixelFromDIP(float value) {
     return TypedValue.applyDimension(

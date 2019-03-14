@@ -2,13 +2,13 @@
 
 #import <SafariServices/SafariServices.h>
 #import <EXWebBrowser/EXWebBrowser.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
 
-@property (nonatomic, copy) EXPromiseResolveBlock redirectResolve;
-@property (nonatomic, copy) EXPromiseRejectBlock redirectReject;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, copy) UMPromiseResolveBlock redirectResolve;
+@property (nonatomic, copy) UMPromiseRejectBlock redirectReject;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpartial-availability"
@@ -25,18 +25,18 @@ NSString *EXWebBrowserErrorCode = @"EXWebBrowser";
   UIStatusBarStyle _initialStatusBarStyle;
 }
 
-EX_EXPORT_MODULE(ExpoWebBrowser)
+UM_EXPORT_MODULE(ExpoWebBrowser)
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-EX_EXPORT_METHOD_AS(openAuthSessionAsync,
+UM_EXPORT_METHOD_AS(openAuthSessionAsync,
                     openAuthSessionAsync:(NSString *)authURL
                     redirectURL:(NSString *)redirectURL
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   [self initializeWebBrowserWithResolver:resolve andRejecter:reject];
 
@@ -76,11 +76,11 @@ EX_EXPORT_METHOD_AS(openAuthSessionAsync,
 }
 
 
-EX_EXPORT_METHOD_AS(openBrowserAsync,
+UM_EXPORT_METHOD_AS(openBrowserAsync,
                     openBrowserAsync:(NSString *)authURL
                     withArguments:(NSDictionary *)arguments
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![self initializeWebBrowserWithResolver:resolve andRejecter:reject]) {
     return;
@@ -118,9 +118,9 @@ EX_EXPORT_METHOD_AS(openBrowserAsync,
   [currentViewController presentViewController:safariHackVC animated:true completion:nil];
 }
 
-EX_EXPORT_METHOD_AS(dismissBrowser,
-                    dismissBrowserWithResolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(dismissBrowser,
+                    dismissBrowserWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   __weak typeof(self) weakSelf = self;
   UIViewController *currentViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
@@ -139,9 +139,9 @@ EX_EXPORT_METHOD_AS(dismissBrowser,
   }];
 }
 
-EX_EXPORT_METHOD_AS(dismissAuthSession,
-                    dismissAuthSessionWithResolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(dismissAuthSession,
+                    dismissAuthSessionWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (@available(iOS 11, *)) {
     [_authSession cancel];
@@ -161,7 +161,7 @@ EX_EXPORT_METHOD_AS(dismissAuthSession,
 /**
  * Helper that is used in openBrowserAsync and openAuthSessionAsync
  */
-- (BOOL)initializeWebBrowserWithResolver:(EXPromiseResolveBlock)resolve andRejecter:(EXPromiseRejectBlock)reject {
+- (BOOL)initializeWebBrowserWithResolver:(UMPromiseResolveBlock)resolve andRejecter:(UMPromiseRejectBlock)reject {
   if (_redirectResolve) {
     reject(EXWebBrowserErrorCode, @"Another WebBrowser is already being presented.", nil);
     return NO;
@@ -200,7 +200,7 @@ EX_EXPORT_METHOD_AS(dismissAuthSession,
   _redirectReject = nil;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

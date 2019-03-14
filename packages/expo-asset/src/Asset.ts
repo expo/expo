@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';
 import { getAssetByID } from './AssetRegistry';

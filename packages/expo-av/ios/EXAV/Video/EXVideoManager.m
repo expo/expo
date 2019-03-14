@@ -4,24 +4,24 @@
 
 #import <EXAV/EXVideoManager.h>
 #import <EXAV/EXVideoView.h>
-#import <EXCore/EXUIManager.h>
+#import <UMCore/UMUIManager.h>
 
 @interface EXVideoManager ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXVideoManager
 
-EX_EXPORT_MODULE(ExpoVideoManager);
+UM_EXPORT_MODULE(ExpoVideoManager);
 
 - (NSString *)viewName
 {
   return @"ExpoVideoView";
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -40,22 +40,22 @@ EX_EXPORT_MODULE(ExpoVideoManager);
 }
 
 // Props set directly in <Video> component
-EX_VIEW_PROPERTY(status, NSDictionary *, EXVideoView)
+UM_VIEW_PROPERTY(status, NSDictionary *, EXVideoView)
 {
   [view setStatus:value];
 }
 
-EX_VIEW_PROPERTY(useNativeControls, BOOL, EXVideoView)
+UM_VIEW_PROPERTY(useNativeControls, BOOL, EXVideoView)
 {
   [view setUseNativeControls:value];
 }
 
 // Native only props -- set by Video.js
-EX_VIEW_PROPERTY(source, NSDictionary *, EXVideoView)
+UM_VIEW_PROPERTY(source, NSDictionary *, EXVideoView)
 {
   [view setSource:value];
 }
-EX_VIEW_PROPERTY(resizeMode, NSString *, EXVideoView)
+UM_VIEW_PROPERTY(resizeMode, NSString *, EXVideoView)
 {
   [view setNativeResizeMode:value];
 }
@@ -74,24 +74,24 @@ EX_VIEW_PROPERTY(resizeMode, NSString *, EXVideoView)
 
 - (void)_runBlock:(void (^)(EXVideoView *view))block
 withEXVideoViewForTag:(nonnull NSNumber *)viewTag
-     withRejecter:(EXPromiseRejectBlock)reject
+     withRejecter:(UMPromiseRejectBlock)reject
 {
-  id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
+  id<UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
   [uiManager addUIBlock:^(id view) {
     if ([view isKindOfClass:[EXVideoView class]]) {
       block((EXVideoView *)view);
     } else {
       NSString *errorMessage = [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view];
-      reject(@"E_VIDEO_TAGINCORRECT", errorMessage, EXErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_TAGINCORRECT", errorMessage, UMErrorWithMessage(errorMessage));
     }
   } forView:viewTag ofClass:[EXVideoView class]];
 }
 
-EX_EXPORT_METHOD_AS(setFullscreen,
+UM_EXPORT_METHOD_AS(setFullscreen,
                     setFullscreen:(NSNumber *)viewTag
                     toValue:(BOOL)value
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
     [view setFullscreen:value resolver:resolve rejecter:reject];

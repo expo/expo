@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.BasePackage;
-import expo.core.ExportedModule;
-import expo.core.ViewManager;
-import expo.core.interfaces.InternalModule;
+import org.unimodules.core.BasePackage;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.InternalModule;
 
 public class AdsFacebookPackage extends BasePackage {
 

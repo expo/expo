@@ -2,23 +2,23 @@
 
 #import <EXBarCodeScanner/EXBarCodeScannerModule.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
-#import <EXImageLoaderInterface/EXImageLoaderInterface.h>
+#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 
 @interface EXBarCodeScannerModule ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<EXImageLoaderInterface> imageLoader;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMImageLoaderInterface> imageLoader;
 
 @end
 
 @implementation EXBarCodeScannerModule
 
-EX_EXPORT_MODULE(ExpoBarCodeScannerModule);
+UM_EXPORT_MODULE(ExpoBarCodeScannerModule);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];
+  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(UMImageLoaderInterface)];
 }
 
 - (NSDictionary *)constantsToExport
@@ -32,11 +32,11 @@ EX_EXPORT_MODULE(ExpoBarCodeScannerModule);
            };
 }
 
-EX_EXPORT_METHOD_AS(scanFromURLAsync,
+UM_EXPORT_METHOD_AS(scanFromURLAsync,
                     scanFromURLAsync:(NSString *)url
                     barCodeTypes:(NSArray *)barCodeTypes
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   // We only support QR codes, so barCodeTypes is ignored
   NSURL *imageURL = [NSURL URLWithString:url];

@@ -8,9 +8,9 @@ import android.hardware.Sensor;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.InternalModule;
 
-public class BarometerService extends SubscribableSensorService implements InternalModule, expo.interfaces.sensors.services.BarometerService {
+public class BarometerService extends SubscribableSensorService implements InternalModule, org.unimodules.interfaces.sensors.services.BarometerService {
   public BarometerService(Context reactContext) {
     super(reactContext);
   }
@@ -22,6 +22,6 @@ public class BarometerService extends SubscribableSensorService implements Inter
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(expo.interfaces.sensors.services.BarometerService.class);
+    return Collections.<Class>singletonList(org.unimodules.interfaces.sensors.services.BarometerService.class);
   }
 }

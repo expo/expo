@@ -50,7 +50,7 @@ describe(`importing Expo`, () => {
     };
     // Clear all the native modules as a way to simulate running outside of Expo
     const { NativeModules } = require('react-native');
-    const { NativeModulesProxy } = require('expo-react-native-adapter');
+    const { NativeModulesProxy } = require('@unimodules/react-native-adapter');
     clearPropertiesInPlace(NativeModules);
     clearPropertiesInPlace(NativeModulesProxy);
 

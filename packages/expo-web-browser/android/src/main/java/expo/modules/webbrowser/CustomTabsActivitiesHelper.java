@@ -10,9 +10,9 @@ import android.support.customtabs.CustomTabsIntent;
 
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.ActivityProvider;
-import expo.errors.CurrentActivityNotFoundException;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
 class CustomTabsActivitiesHelper {

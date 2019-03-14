@@ -61,16 +61,16 @@ repositories {
   }
 }
 
-apply from: project(":expo-core").file("../expo-core.gradle")
+apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 
 dependencies {
-  expendency 'expo-core'
-  expendency 'expo-barcode-scanner-interface'
-  expendency 'expo-face-detector-interface'
-  expendency 'expo-permissions-interface'
-  expendency 'expo-file-system-interface'
-  expendency 'expo-image-loader-interface'
-  expendency 'expo-camera-interface'
+  unimodule 'unimodules-core'
+  unimodule 'unimodules-barcode-scanner-interface'
+  unimodule 'unimodules-face-detector-interface'
+  unimodule 'unimodules-permissions-interface'
+  unimodule 'unimodules-file-system-interface'
+  unimodule 'unimodules-image-loader-interface'
+  unimodule 'unimodules-camera-interface'
   implementation 'com.google.android.gms:play-services-vision:15.0.2'
   implementation 'com.android.support:exifinterface:26.1.0'
   implementation 'com.google.android:cameraview:1.0.0'

@@ -1,31 +1,31 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import <EXFileSystem/EXFilePermissionModule.h>
-#import <EXCore/EXModuleRegistry.h>
+#import <UMCore/UMModuleRegistry.h>
 
 @implementation EXFilePermissionModule
 
-EX_REGISTER_MODULE();
+UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXFilePermissionModuleInterface)];
+  return @[@protocol(UMFilePermissionModuleInterface)];
 }
 
-- (EXFileSystemPermissionFlags)getPathPermissions:(NSString *)path
+- (UMFileSystemPermissionFlags)getPathPermissions:(NSString *)path
                                        scopedDirs:(NSArray<NSString *> *)scopedDirs
 {
-  NSString * bundleDirectory = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemManager)] bundleDirectoryForExperienceId:_moduleRegistry.experienceId];
-  EXFileSystemPermissionFlags permissionsForInternalDirectories = [self getInternalPathPermissions:path
+  NSString * bundleDirectory = [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemManager)] bundleDirectoryForExperienceId:_moduleRegistry.experienceId];
+  UMFileSystemPermissionFlags permissionsForInternalDirectories = [self getInternalPathPermissions:path
                                                                                             scopedDirs:scopedDirs
                                                                                        bundleDirectory:bundleDirectory];
-  if (permissionsForInternalDirectories != EXFileSystemPermissionNone) {
+  if (permissionsForInternalDirectories != UMFileSystemPermissionNone) {
     return permissionsForInternalDirectories;
   } else {
     return [self getExternalPathPermissions: path];
   }
 }
 
-- (EXFileSystemPermissionFlags)getInternalPathPermissions:(NSString *)path
+- (UMFileSystemPermissionFlags)getInternalPathPermissions:(NSString *)path
                                                scopedDirs:(NSArray<NSString *> *)scopedDirs
                                           bundleDirectory:(NSString *)bundleDirectory
 {
@@ -33,32 +33,32 @@ EX_REGISTER_MODULE();
   for (NSString *scopedDirectory in scopedDirs) {
     if ([standardizedPath hasPrefix:[scopedDirectory stringByAppendingString:@"/"]] ||
         [standardizedPath isEqualToString:scopedDirectory]) {
-      return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
+      return UMFileSystemPermissionRead | UMFileSystemPermissionWrite;
     }
   }
 
   if (bundleDirectory != nil && [path hasPrefix:[bundleDirectory stringByAppendingString:@"/"]]) {
-    return EXFileSystemPermissionRead;
+    return UMFileSystemPermissionRead;
   }
 
-  return EXFileSystemPermissionNone;
+  return UMFileSystemPermissionNone;
 }
 
-- (EXFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
+- (UMFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
 {
-  EXFileSystemPermissionFlags filePermissions = EXFileSystemPermissionNone;
+  UMFileSystemPermissionFlags filePermissions = UMFileSystemPermissionNone;
   if ([[NSFileManager defaultManager] isReadableFileAtPath:path]) {
-    filePermissions |= EXFileSystemPermissionRead;
+    filePermissions |= UMFileSystemPermissionRead;
   }
 
   if ([[NSFileManager defaultManager] isWritableFileAtPath:path]) {
-    filePermissions |= EXFileSystemPermissionWrite;
+    filePermissions |= UMFileSystemPermissionWrite;
   }
 
   return filePermissions;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry {
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry {
   _moduleRegistry = moduleRegistry;
 }
 

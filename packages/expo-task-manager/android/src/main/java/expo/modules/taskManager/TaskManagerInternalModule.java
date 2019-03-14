@@ -9,16 +9,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.InternalModule;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.constants.ConstantsInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskServiceInterface;
-import expo.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.constants.ConstantsInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 public class TaskManagerInternalModule implements InternalModule, ModuleRegistryConsumer, TaskManagerInterface, LifecycleEventListener {
   private UIManager mUIManager;

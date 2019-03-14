@@ -3,20 +3,20 @@
 #import <EXGoogleSignIn/EXGoogleSignIn.h>
 #import <EXGoogleSignIn/EXAuthTask.h>
 #import <EXGoogleSignIn/EXGoogleSignIn+Serialization.h>
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMCore/UMUtilities.h>
 
 @interface EXGoogleSignIn ()
 
-@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) EXAuthTask *authTask;
 
 @end
 
 @implementation EXGoogleSignIn
 
-EX_EXPORT_MODULE(ExpoGoogleSignIn);
+UM_EXPORT_MODULE(ExpoGoogleSignIn);
 
 - (instancetype)init
 {
@@ -34,10 +34,10 @@ EX_EXPORT_MODULE(ExpoGoogleSignIn);
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
 - (NSDictionary *)constantsToExport
@@ -87,7 +87,7 @@ EX_EXPORT_MODULE(ExpoGoogleSignIn);
            };
 }
 
-- (NSString *)_getNativeClientIdOrReject:(EXPromiseRejectBlock)reject
+- (NSString *)_getNativeClientIdOrReject:(UMPromiseRejectBlock)reject
 {
   NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
   
@@ -117,10 +117,10 @@ EX_EXPORT_MODULE(ExpoGoogleSignIn);
   if (serverClientID) [GIDSignIn sharedInstance].serverClientID = serverClientID;
 }
 
-EX_EXPORT_METHOD_AS(initAsync,
+UM_EXPORT_METHOD_AS(initAsync,
                     initAsync:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   NSString *_clientId = options[@"clientId"];
   if (_clientId == nil || [_clientId isEqualToString:@""]) _clientId = [self _getNativeClientIdOrReject:reject];
@@ -137,57 +137,57 @@ EX_EXPORT_METHOD_AS(initAsync,
   resolve([NSNull null]);
 }
 
-EX_EXPORT_METHOD_AS(signInSilentlyAsync,
-                    signInSilentlyAsync:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(signInSilentlyAsync,
+                    signInSilentlyAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if ([self.authTask update:@"signInSilentlyAsync" resolver:resolve rejecter:reject])
     [[GIDSignIn sharedInstance] signInSilently];
 }
 
-EX_EXPORT_METHOD_AS(signInAsync,
-                    signInAsync:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(signInAsync,
+                    signInAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if ([self.authTask update:@"signInAsync" resolver:resolve rejecter:reject])
     [[GIDSignIn sharedInstance] signIn];
 }
 
-EX_EXPORT_METHOD_AS(signOutAsync,
-                    signOutAsync:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(signOutAsync,
+                    signOutAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   [[GIDSignIn sharedInstance] signOut];
   resolve([NSNull null]);
 }
 
-EX_EXPORT_METHOD_AS(disconnectAsync,
-                    disconnectAsync:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(disconnectAsync,
+                    disconnectAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if ([self.authTask update:@"disconnectAsync" resolver:resolve rejecter:reject])
     [[GIDSignIn sharedInstance] disconnect];
 }
 
-EX_EXPORT_METHOD_AS(isConnectedAsync,
-                    isConnectedAsync:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(isConnectedAsync,
+                    isConnectedAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve(@([[GIDSignIn sharedInstance] hasAuthInKeychain]));
 }
 
-EX_EXPORT_METHOD_AS(getCurrentUserAsync,
-                    getCurrentUserAsync:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getCurrentUserAsync,
+                    getCurrentUserAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
-  resolve(EXNullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:currentUser]));
+  resolve(UMNullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:currentUser]));
 }
 
-EX_EXPORT_METHOD_AS(getPhotoAsync,
+UM_EXPORT_METHOD_AS(getPhotoAsync,
                     getPhotoAsync:(NSNumber *)size
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
   if (currentUser == nil || currentUser.profile.hasImage == NO) {
@@ -201,10 +201,10 @@ EX_EXPORT_METHOD_AS(getPhotoAsync,
   }
 }
 
-EX_EXPORT_METHOD_AS(getTokensAsync,
+UM_EXPORT_METHOD_AS(getTokensAsync,
                     getTokensAsync:(NSNumber *)shouldRefresh
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   GIDGoogleUser *currentUser = [GIDSignIn sharedInstance].currentUser;
   if (currentUser == nil) {
@@ -242,7 +242,7 @@ EX_EXPORT_METHOD_AS(getTokensAsync,
 - (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
   __weak EXGoogleSignIn *weakSelf = self;
   
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     __strong EXGoogleSignIn *strongSelf = weakSelf;
     if (strongSelf == nil) {
       return;
@@ -254,7 +254,7 @@ EX_EXPORT_METHOD_AS(getTokensAsync,
 }
 
 - (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     [viewController dismissViewControllerAnimated:true completion:nil];
   }];
 }

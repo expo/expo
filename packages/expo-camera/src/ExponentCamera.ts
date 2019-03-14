@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from 'expo-core';
+import { requireNativeViewManager } from '@unimodules/core';
 import * as React from 'react';
 import { NativeProps } from './Camera.types';
 

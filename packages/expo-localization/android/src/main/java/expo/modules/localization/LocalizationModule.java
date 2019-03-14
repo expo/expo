@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import expo.core.ExportedModule;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;

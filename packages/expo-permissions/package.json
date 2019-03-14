@@ -32,8 +32,8 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-permissions-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-permissions-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"

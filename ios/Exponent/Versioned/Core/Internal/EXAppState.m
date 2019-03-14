@@ -4,7 +4,7 @@
 #import "EXModuleRegistryBinding.h"
 #import "EXScopedModuleRegistry.h"
 
-#import <EXCore/EXAppLifecycleService.h>
+#import <UMCore/UMAppLifecycleService.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -81,9 +81,9 @@
                          body:@{@"app_state": _lastKnownState}];
     }
     // change state on universal modules
-    // TODO: just make EXAppState a universal module implementing EXAppLifecycleService
-    id<EXAppLifecycleService> lifeCycleManager = [self.bridge.scopedModules.moduleRegistry
-                                                  getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
+    // TODO: just make EXAppState a universal module implementing UMAppLifecycleService
+    id<UMAppLifecycleService> lifeCycleManager = [self.bridge.scopedModules.moduleRegistry
+                                                  getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
     if ([state isEqualToString:@"background"]) {
       [lifeCycleManager setAppStateToBackground];
     } else if ([state isEqualToString:@"active"]) {

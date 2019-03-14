@@ -10,11 +10,11 @@ import android.view.TextureView;
 
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.interfaces.barcodescanner.BarCodeScanner;
-import expo.interfaces.barcodescanner.BarCodeScannerProvider;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 class BarCodeScannerViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
   private final ModuleRegistry mModuleRegistry;

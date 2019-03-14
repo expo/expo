@@ -6,12 +6,12 @@ import android.content.Context;
 
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.constants.ConstantsInterface;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 
 public class ConstantsModule extends ExportedModule implements ModuleRegistryConsumer {
   private ModuleRegistry mModuleRegistry;

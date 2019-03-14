@@ -4,10 +4,10 @@ package expo.modules.sensors.services;
 
 import android.content.Context;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.UIManager;
 
 /* package */ abstract class BaseService implements ModuleRegistryConsumer, LifecycleEventListener {
   private Context mContext;

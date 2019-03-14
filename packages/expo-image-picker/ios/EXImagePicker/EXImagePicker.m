@@ -2,9 +2,9 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <EXPermissions/EXPermissions.h>
-#import <EXCore/EXUtilitiesInterface.h>
+#import <UMCore/UMUtilitiesInterface.h>
 
 #import "EXCameraPermissionRequester.h"
 #import "EXCameraRollRequester.h"
@@ -19,21 +19,21 @@ const CGFloat EXDefaultImageQuality = 0.2;
 
 @property (nonatomic, strong) UIAlertController *alertController;
 @property (nonatomic, strong) UIImagePickerController *picker;
-@property (nonatomic, strong) EXPromiseResolveBlock resolve;
-@property (nonatomic, strong) EXPromiseRejectBlock reject;
+@property (nonatomic, strong) UMPromiseResolveBlock resolve;
+@property (nonatomic, strong) UMPromiseRejectBlock reject;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<EXPermissionsInterface> permissionsModule;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
 @property (nonatomic, assign) BOOL shouldRestoreStatusBarVisibility;
 
 @end
 
 @implementation EXImagePicker
 
-EX_EXPORT_MODULE(ExponentImagePicker);
+UM_EXPORT_MODULE(ExponentImagePicker);
 
 - (instancetype)init
 {
@@ -56,15 +56,15 @@ EX_EXPORT_MODULE(ExponentImagePicker);
   return NO;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  _permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
 }
 
-EX_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
-                  resolver:(EXPromiseResolveBlock)resolve
-                  rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
+                  resolver:(UMPromiseResolveBlock)resolve
+                  rejecter:(UMPromiseRejectBlock)reject)
 {
 
   BOOL permissionsAreGranted = [self.permissionsModule hasGrantedPermission:@"cameraRoll"] &&
@@ -79,9 +79,9 @@ EX_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
   [self launchImagePicker:EXImagePickerTargetCamera options:options];
 }
 
-EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictionary *)options
-                  resolver:(EXPromiseResolveBlock)resolve
-                  rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictionary *)options
+                  resolver:(UMPromiseResolveBlock)resolve
+                  rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![self.permissionsModule hasGrantedPermission:@"cameraRoll"]) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
@@ -144,7 +144,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
   dispatch_async(dispatch_get_main_queue(), ^{
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
-    id<EXUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+    id<UMUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
     [utils.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
@@ -156,7 +156,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
     response[@"cancelled"] = @NO;
-    id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+    id<UMFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
     if (!fileSystem) {
       self.reject(@"E_MISSING_MODULE", @"No FileSystem module", nil);
       return;
@@ -204,7 +204,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     data = UIImagePNGRepresentation(image);
   }
 
-  id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<UMFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   if (!fileSystem) {
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;
@@ -251,7 +251,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
           completionHandler();
         }];
       } else {
-        EXLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
+        UMLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
         completionHandler();
       }
     }
@@ -289,7 +289,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     response[@"height"] = @(videoAsset.pixelHeight);
     response[@"duration"] = @(videoAsset.duration * 1000);
   } else {
-    EXLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
+    UMLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
   }
 
   if (([[self.options objectForKey:@"allowsEditing"] boolValue])) {
@@ -300,7 +300,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
   response[@"type"] = @"video";
   NSError *error = nil;
-  id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<UMFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   if (!fileSystem) {
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;

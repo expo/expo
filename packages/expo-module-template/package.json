@@ -21,7 +21,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-module-template",
   "peerDependencies": {
-    "expo-core": "~3.0.0"
+    "@unimodules/core": "~1.0.0"
   },
   "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
 }

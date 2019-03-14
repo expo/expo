@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 
 type ShareOptions = { title?: string; text?: string; url?: string };
 

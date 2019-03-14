@@ -1,17 +1,17 @@
 #import <EXAdsFacebook/EXBannerView.h>
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
-#import <EXCore/EXUtilitiesInterface.h>
+#import <UMCore/UMUtilitiesInterface.h>
 
 @interface EXBannerView () <FBAdViewDelegate>
 
 @property (nonatomic, strong) FBAdView *adView;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXBannerView
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     _moduleRegistry = moduleRegistry;
@@ -43,7 +43,7 @@
   }
   
   FBAdSize fbAdSize = [self fbAdSizeForHeight:_size];
-  UIViewController *rootViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
+  UIViewController *rootViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController];
   FBAdView *adView = [[FBAdView alloc] initWithPlacementID:_placementId
                                                     adSize:fbAdSize
                                         rootViewController:rootViewController];
@@ -85,7 +85,7 @@
   if (_onAdError) {
     _onAdError(@{ @"message": error.description, @"userInfo": error.userInfo });
   } else {
-    EXLogError(@"%@: %@", error.localizedDescription, error.userInfo);
+    UMLogError(@"%@: %@", error.localizedDescription, error.userInfo);
   }
 }
 

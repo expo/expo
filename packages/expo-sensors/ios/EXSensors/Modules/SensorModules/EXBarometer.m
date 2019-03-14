@@ -1,20 +1,20 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSensors/EXBarometer.h>
-#import <EXSensorsInterface/EXBarometerInterface.h>
+#import <UMSensorsInterface/UMBarometerInterface.h>
 
 @implementation EXBarometer
 
-EX_EXPORT_MODULE(ExpoBarometer);
+UM_EXPORT_MODULE(ExpoBarometer);
 
 - (const NSString *)updateEventName
 {
   return @"barometerDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  return [moduleRegistry getModuleImplementingProtocol:@protocol(EXBarometerInterface)];
+  return [moduleRegistry getModuleImplementingProtocol:@protocol(UMBarometerInterface)];
 }
 
 - (void)setUpdateInterval:(double)updateInterval onSensorService:(id)sensorService

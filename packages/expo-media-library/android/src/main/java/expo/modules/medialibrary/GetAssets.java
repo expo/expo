@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;

@@ -54,7 +54,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, assign) BOOL isLooping;
 @property (nonatomic, strong) NSArray<AVPlayerItem *> *items;
 
-@property (nonatomic, strong) EXPromiseResolveBlock replayResolve;
+@property (nonatomic, strong) UMPromiseResolveBlock replayResolve;
 
 @end
 
@@ -211,8 +211,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 }
 
 - (void)setStatus:(NSDictionary *)parameters
-         resolver:(EXPromiseResolveBlock)resolve
-         rejecter:(EXPromiseRejectBlock)reject
+         resolver:(UMPromiseResolveBlock)resolve
+         rejecter:(UMPromiseRejectBlock)reject
 {
   BOOL mustUpdateTimeObserver = NO;
   BOOL mustSeek = NO;
@@ -322,7 +322,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           }
         } else if (!seekSucceeded) {
           if (reject) {
-            reject(@"E_AV_SEEKING", nil, EXErrorWithMessage(@"Seeking interrupted."));
+            reject(@"E_AV_SEEKING", nil, UMErrorWithMessage(@"Seeking interrupted."));
           }
         } else if (resolve) {
           resolve([strongSelf getStatus]);
@@ -482,8 +482,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 #pragma mark - Replay
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(EXPromiseResolveBlock)resolve
-                rejecter:(EXPromiseRejectBlock)reject
+                resolver:(UMPromiseResolveBlock)resolve
+                rejecter:(UMPromiseRejectBlock)reject
 {
   [self _callStatusUpdateCallbackWithExtraFields:@{
                                                    EXAVPlayerDataStatusHasJustBeenInterruptedKeyPath: @([self _isPlayerPlaying]),

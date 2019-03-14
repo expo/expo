@@ -28,12 +28,10 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sharing",
   "dependencies": {},
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-errors": "^1.0.0",
-    "expo-file-system-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-file-system-interface": "*"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"

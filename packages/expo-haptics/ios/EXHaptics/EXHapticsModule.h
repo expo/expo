@@ -1,7 +1,7 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXHapticsModule : EXExportedModule
+@interface EXHapticsModule : UMExportedModule
 @end

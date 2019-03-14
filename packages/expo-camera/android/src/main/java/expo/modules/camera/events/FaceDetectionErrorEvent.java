@@ -3,8 +3,8 @@ package expo.modules.camera.events;
 import android.os.Bundle;
 import android.support.v4.util.Pools;
 
-import expo.core.interfaces.services.EventEmitter;
-import expo.interfaces.facedetector.FaceDetector;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.interfaces.facedetector.FaceDetector;
 import expo.modules.camera.CameraViewManager;
 
 public class FaceDetectionErrorEvent extends EventEmitter.BaseEvent {

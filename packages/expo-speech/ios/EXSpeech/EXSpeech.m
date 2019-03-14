@@ -2,7 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <EXCore/EXEventEmitterService.h>
+#import <UMCore/UMEventEmitterService.h>
 #import <EXSpeech/EXSpeech.h>
 
 @interface EXSpeechUtteranceWithId : AVSpeechUtterance
@@ -32,15 +32,15 @@ static NSString *const INVALID_VOICE_ERROR_MSG = @"Cannot find voice with identi
 @interface EXSpeech () <AVSpeechSynthesizerDelegate>
 
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXSpeech
 
-EX_EXPORT_MODULE(ExponentSpeech)
+UM_EXPORT_MODULE(ExponentSpeech)
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -61,7 +61,7 @@ EX_EXPORT_MODULE(ExponentSpeech)
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer
   didStartSpeechUtterance:(AVSpeechUtterance *)utterance
 {
-  id<EXEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
+  id<UMEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   if (emitter != nil) {
     [emitter sendEventWithName:@"Exponent.speakingStarted" body:@{ @"id": ((EXSpeechUtteranceWithId *) utterance).utteranceId }];
   }
@@ -70,7 +70,7 @@ EX_EXPORT_MODULE(ExponentSpeech)
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer
  didCancelSpeechUtterance:(AVSpeechUtterance *)utterance
 {
-  id<EXEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
+  id<UMEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   if (emitter != nil) {
     [emitter sendEventWithName:@"Exponent.speakingStopped" body:@{ @"id": ((EXSpeechUtteranceWithId *) utterance).utteranceId }];
   }
@@ -79,19 +79,19 @@ EX_EXPORT_MODULE(ExponentSpeech)
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer
  didFinishSpeechUtterance:(AVSpeechUtterance *)utterance
 {
-  id<EXEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
+  id<UMEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   if (emitter != nil) {
     [emitter sendEventWithName:@"Exponent.speakingDone" body:@{ @"id": ((EXSpeechUtteranceWithId *) utterance).utteranceId }];
   }
 }
 
 
-EX_EXPORT_METHOD_AS(speak,
+UM_EXPORT_METHOD_AS(speak,
                     speak:(nonnull NSString *)utteranceId
                     text:(nonnull NSString *)text
                     options:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject) {
   if (_synthesizer == nil) {
     _synthesizer = [[AVSpeechSynthesizer alloc] init];
     _synthesizer.delegate = self;
@@ -125,9 +125,9 @@ EX_EXPORT_METHOD_AS(speak,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(getVoices,
-                    getVoices:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
+UM_EXPORT_METHOD_AS(getVoices,
+                    getVoices:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject) {
   NSArray<AVSpeechSynthesisVoice *> *availableVoices = [AVSpeechSynthesisVoice speechVoices];
   NSMutableArray<NSDictionary *> *availableVoicesResult = [NSMutableArray array];
   for (AVSpeechSynthesisVoice* voice in availableVoices) {
@@ -146,30 +146,30 @@ EX_EXPORT_METHOD_AS(getVoices,
   resolve([availableVoicesResult mutableCopy]);
 }
 
-EX_EXPORT_METHOD_AS(stop,
-                    stop:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
+UM_EXPORT_METHOD_AS(stop,
+                    stop:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject) {
   [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(pause,
-                    pause:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
+UM_EXPORT_METHOD_AS(pause,
+                    pause:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject) {
   [_synthesizer pauseSpeakingAtBoundary:AVSpeechBoundaryImmediate];
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(resume,
-                    resume:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
+UM_EXPORT_METHOD_AS(resume,
+                    resume:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject) {
   [_synthesizer continueSpeaking];
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(isSpeaking,
-                    isSpeaking:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
+UM_EXPORT_METHOD_AS(isSpeaking,
+                    isSpeaking:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject) {
   resolve(@([_synthesizer isSpeaking]));
 }
 
