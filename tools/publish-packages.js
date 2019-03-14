@@ -407,6 +407,8 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
       continue;
     }
 
+    const escapedLibName = config.libName.replace(/\//g, '\\\\');
+
     console.log(
       `${chalk.yellow('>')} Dependency ${chalk.green(config.libName)} updated to ${chalk.red(
         config.newVersion
@@ -415,18 +417,18 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
 
     // updates dependencies in package.json
     _runCommand(
-      `${SED} -i -- 's/"${config.libName}": "[^"]*"/"${config.libName}": "~${config.newVersion}"/g' package.json`,
+      `${SED} -i -- 's/"${escapedLibName}": "[^"]*"/"${escapedLibName}": "~${config.newVersion}"/g' package.json`,
     );
 
     if (fs.existsSync(path.join(dir, 'yarn.lock'))) {
       const commands = [
         // updates dependencies in yarn.lock
-        `${SED} -z -i -- 's/"${config.libName}@[^"]*"[:,]\\n  version "[^"]*"/"${config.libName}@~${config.newVersion}":\\n  version "${config.newVersion}"/' yarn.lock`,
-        `${SED} -z -i -- 's/${config.libName}@[^:,]*[:,]\\n  version "[^"]*"/${config.libName}@~${config.newVersion}:\\n  version "${config.newVersion}"/' yarn.lock`,
-        `${SED} -z -i -- 's/${config.libName} "[^"]*"/${config.libName} "~${config.newVersion}"/g' yarn.lock`,
+        `${SED} -z -i -- 's/"${escapedLibName}@[^"]*"[:,]\\n  version "[^"]*"/"${escapedLibName}@~${config.newVersion}":\\n  version "${config.newVersion}"/' yarn.lock`,
+        `${SED} -z -i -- 's/${escapedLibName}@[^:,]*[:,]\\n  version "[^"]*"/${escapedLibName}@~${config.newVersion}:\\n  version "${config.newVersion}"/' yarn.lock`,
+        `${SED} -z -i -- 's/${escapedLibName} "[^"]*"/${escapedLibName} "~${config.newVersion}"/g' yarn.lock`,
 
         // updates resolved links in yarn.lock
-        `${SED} -i -- 's/-\\/${config.libName}-[0-9].*\\.tgz#[^"]*"/-\\/${config.libName}-${config.newVersion}.tgz"/g' yarn.lock`,
+        `${SED} -i -- 's/-\\/${escapedLibName}-[0-9].*\\.tgz#[^"]*"/-\\/${escapedLibName}-${config.newVersion}.tgz"/g' yarn.lock`,
       ];
       commands.map(_runCommand);
     }
