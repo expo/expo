@@ -18,23 +18,9 @@ npm install unimodules-barcode-scanner-interface
 
 Add the dependency to your `Podfile` and then run `pod install`.
 
-```ruby
-pod 'UMBarCodeScannerInterface', path: '../node_modules/unimodules-barcode-scanner-interface/ios'
-```
-
 ### Configure for Android
 
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':unimodules-barcode-scanner-interface'
-project(':unimodules-barcode-scanner-interface').projectDir = new File(rootProject.projectDir, '../node_modules/unimodules-barcode-scanner-interface/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':unimodules-barcode-scanner-interface')
-```
+No additional set up necessary.
 
 # Contributing
 

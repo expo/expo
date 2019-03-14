@@ -11,7 +11,7 @@ C++ bindings for WebGL 2.0 used in Expo GL module
 
 This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
 
-For bare React Native projects, you must ensure that you have [installed and configured the `@unimodules/core` package](https://github.com/unimodules/core) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -23,7 +23,7 @@ npm install expo-gl-cpp
 
 ### Configure for iOS
 
-Add the dependency to your `Podfile` and then run `pod install`.
+Run `pod install` in the ios directory after installing the npm package.
 
 ```ruby
 pod 'EXGL-CPP', path: '../node_modules/expo-gl-cpp/cpp'

@@ -18,23 +18,9 @@ npm install unimodules-image-loader-interface
 
 Add the dependency to your `Podfile` and then run `pod install`.
 
-```ruby
-pod 'UMImageLoaderInterface', path: '../node_modules/unimodules-image-loader-interface/ios'
-```
-
 ### Configure for Android
 
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':unimodules-image-loader-interface'
-project(':unimodules-image-loader-interface').projectDir = new File(rootProject.projectDir, '../node_modules/unimodules-image-loader-interface/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':unimodules-image-loader-interface')
-```
+No additional set up necessary.
 
 # Contributing
 
