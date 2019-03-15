@@ -34,7 +34,8 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   NSArray<id<RCTBridgeModule>> *extraModules = [_moduleRegistryAdapter extraModulesForBridge:bridge andExperience:nil];
-  // If you'd like to export some custom RCTBridgeModules that are not Unimodules modules, add them here!
+  // You can inject any extra modules that you would like here, more information at:
+  // https://facebook.github.io/react-native/docs/native-modules-ios.html#dependency-injection
   return extraModules;
 }
 
