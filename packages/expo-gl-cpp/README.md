@@ -25,23 +25,9 @@ npm install expo-gl-cpp
 
 Run `pod install` in the ios directory after installing the npm package.
 
-```ruby
-pod 'EXGL-CPP', path: '../node_modules/expo-gl-cpp/cpp'
-```
-
 ### Configure for Android
 
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':expo-gl-cpp'
-project(':expo-gl-cpp').projectDir = new File(rootProject.projectDir, '../node_modules/expo-gl-cpp/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':expo-gl-cpp')
-```
+No additional set up necessary.
 
 # Contributing
 
