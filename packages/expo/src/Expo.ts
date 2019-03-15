@@ -107,6 +107,7 @@ export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { default as Logs } from './logs/Logs';
 export { default as Pedometer } from './Pedometer';
+export { WebView } from 'react-native-webview';
 
 declare var module: any;
 

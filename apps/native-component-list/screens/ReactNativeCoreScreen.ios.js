@@ -21,8 +21,9 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   View,
-  WebView,
+  // WebView,
 } from 'react-native';
+import { WebView } from 'expo';
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 import { ScrollView as NavigationScrollView } from 'react-navigation';
 
