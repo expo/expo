@@ -69,15 +69,8 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
       return;
     }
     
-    Intent intent = null;
+    Intent intent = new Intent(activityAction);
     
-    if (activityAction != null) {
-      intent = new Intent(activityAction);
-    } else { 
-      intent = new Intent();
-    }
-
-
     if (params.containsKey(ATTR_CLASS_NAME)) {
       ComponentName cn = params.containsKey(ATTR_PACKAGE_NAME)
           ? new ComponentName(params.getString(ATTR_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME))
