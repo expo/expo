@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI28_0_0/Expo/Optional/FaceDetector/ABI28_0_0EXFaceDetectorModule.h

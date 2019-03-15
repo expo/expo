@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI27_0_0/Expo/Core/Api/FBAds/ABI27_0_0EXNativeAdEmitter.h

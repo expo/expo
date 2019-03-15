@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI27_0_0/React/CxxBridge/ABI27_0_0NSDataBigString.h
