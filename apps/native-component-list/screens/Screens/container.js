@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Button, View, TextInput } from 'react-native';
-import { Screen, ScreenContainer } from 'expo/DangerZone';
+import { StyleSheet, Button, View, TextInput, DangerZone } from 'react-native';
+const { Screen, ScreenContainer } = DangerZone;
 
 export class LazyTabs extends Component {
   state = {
