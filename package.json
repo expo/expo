@@ -18,7 +18,7 @@
       "apps/*",
       "expokit-npm-package",
       "home",
-      "packages/*",
+      "packages/!(expo-firebase)*",
       "packages/@unimodules/*",
       "react-native-lab/react-native"
     ]
@@ -36,6 +36,6 @@
     "react-native-gesture-handler": "1.1.0"
   },
   "dependencies": {
-    "react-native-unimodules": "~0.2.0-beta.0"
+    "react-native-unimodules": "~0.2.0"
   }
 }

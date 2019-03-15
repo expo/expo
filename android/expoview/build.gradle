@@ -192,7 +192,7 @@ dependencies {
   // Universal modules
   // They're defined as "api" so we don't have to define them again in app/build.gradle
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
-  useUnimodules([
+  addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'api',
       target       : 'react-native',
