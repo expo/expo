@@ -2,11 +2,21 @@
 title: Expo CLI
 ---
 
-Expo CLI is a command line interface for developing Expo apps. It also includes a web-based inteface (Expo Dev Tools) for using some of the most often used features also from a quick to use graphical interface.
+Expo CLI is a command line interface that enhances your workflow by empowering developers to perform actions such as:
+
+- Creating a new Expo project
+- Serving your app so you can begin development
+- Publishing your JS and assets
+- Building `apk` and `ipa` files to be uploaded to the App Store and Play Store
+- Uploading Apple Credentials and Google Keystores
+
+It also includes a web-based interface, named Expo Dev Tools, which enables you to use some of the most often used features from a quick-to-use graphical interface. We’ve only scratched the surface of what expo-cli can do so far. Be sure to check out all the possible commands below!
 
 ## Installation
 
-See [Installation](../../introduction/installation).
+```
+npm install -g expo-cli
+```
 
 ## Commands
 
