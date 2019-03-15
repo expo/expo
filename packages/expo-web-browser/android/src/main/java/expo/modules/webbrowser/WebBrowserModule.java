@@ -1,6 +1,5 @@
 package expo.modules.webbrowser;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -16,10 +15,8 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
-import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.ModuleRegistryConsumer;
-import org.unimodules.core.interfaces.services.UIManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +24,7 @@ import java.util.List;
 import expo.modules.webbrowser.error.NoPrefferedPackageFound;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
-public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer {
 
   private final static String BROWSER_PACKAGE_KEY = "browserPackage";
   private final static String SERVICE_PACKAGE_KEY = "servicePackage";
@@ -41,9 +38,6 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   private static final String TAG = "ExpoWebBrowser";
   private static final String SHOW_TITLE_KEY = "showTitle";
   private static final String ENABLE_BAR_COLLAPSING_KEY = "enableBarCollapsing";
-
-  private Promise mOpenBrowserPromise;
-  private static int OPEN_BROWSER_REQUEST_CODE = 873;
 
   private CustomTabsActivitiesHelper mCustomTabsResolver;
   private CustomTabsConnectionHelper mConnectionHelper;
@@ -61,9 +55,6 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mCustomTabsResolver = new CustomTabsActivitiesHelper(moduleRegistry);
     mConnectionHelper = new CustomTabsConnectionHelper(getContext());
-    if (moduleRegistry != null) {
-      moduleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
-    }
   }
 
   @ExpoMethod
@@ -142,13 +133,6 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
 
   @ExpoMethod
   public void openBrowserAsync(final String url, ReadableArguments arguments, final Promise promise) {
-    if (mOpenBrowserPromise != null) {
-      Bundle result = new Bundle();
-      result.putString("type", "cancel");
-      mOpenBrowserPromise.resolve(result);
-      return;
-    }
-    mOpenBrowserPromise = promise;
 
     Intent intent = createCustomTabsIntent(arguments);
     intent.setData(Uri.parse(url));
@@ -156,35 +140,19 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     try {
       List<ResolveInfo> activities = mCustomTabsResolver.getResolvingActivities(intent);
       if (activities.size() > 0) {
-        mCustomTabsResolver.startCustomTabs(intent, OPEN_BROWSER_REQUEST_CODE);
+        mCustomTabsResolver.startCustomTabs(intent);
+        Bundle result = new Bundle();
+        result.putString("type", "openBrowser");
+        promise.resolve(result);
       } else {
         promise.reject(ERROR_CODE, "No matching activity!");
       }
     } catch (CurrentActivityNotFoundException ex) {
       promise.reject(ERROR_CODE, "No activity");
-      mOpenBrowserPromise = null;
     } catch (PackageManagerNotFoundException ex) {
       promise.reject(ERROR_CODE, "No package manager");
-      mOpenBrowserPromise = null;
     }
 
-  }
-
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    if (requestCode == OPEN_BROWSER_REQUEST_CODE && mOpenBrowserPromise != null) {
-      if (resultCode == CustomTabsManagerActivity.DISMISSED_CODE) {
-        Bundle result = new Bundle();
-        result.putString("type", "cancel");
-        mOpenBrowserPromise.resolve(result);
-      }
-      mOpenBrowserPromise = null;
-    }
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    // do nothing
   }
 
   private Intent createCustomTabsIntent(ReadableArguments arguments) {

@@ -40,16 +40,20 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   A dictionaty with following key-value pairs:
 
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
-  - **controlsColor (_optional_) (_string_)** -- (_iOS Only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
-  - **collapseToolbar (_optional_) (_boolean_)** : a boolean determining whether the toolbar should be hiding when a user scrolls the website
-  - **showTitle (_optional_) (_boolean_)** : (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
+  - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
+  - **collapseToolbar (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
+  - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
   - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
 
   Note that behavior customization options depend on the actual browser and its version. Some or all of the arguments may be ignored.
 
 #### Returns
 
-Returns a Promise:
+Prmise behaves differently on iOS and Android.
+
+On Android promise resolves with `{type: 'openBrowser'}` if we were able to open browser.
+
+On iOS:
 
 - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
 - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser) , the Promise resolves with `{ type: 'dismiss' }`.
@@ -61,7 +65,7 @@ Opens the url with Safari in a modal on iOS using `SFAuthenticationSession`. The
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser. This should be a login page.
-- **redirectUrl (_string_)** -- **Optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](../constants/#expoconstantslinkinguri)
+- **redirectUrl (_string_)** -- **optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](../constants/#expoconstantslinkinguri)
 
 Returns a Promise:
 
@@ -71,17 +75,17 @@ Returns a Promise:
 
 ### `WebBrowser.warmUpAsync(browserPackage)`
 
-_Android Only_
+_Android only_
 
 This method calls `warmUp` method on [CustomTabsClient](<https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long)>) for specified package.
 
 #### Arguments
 
-- **browserPackage (_string_)** -- **Optional** -- package of browser to be warmed up. If not set, preferred browser will be warmed.
+- **browserPackage (_string_)** -- **optional** -- package of browser to be warmed up. If not set, preferred browser will be warmed.
 
 #### Returns
 
-The promise resolves with `{ type: 'warming', package: string }`
+A promise resolving with `{ type: 'warming', package: string }`
 
 ### `WebBrowser.mayInitWithUrlAsync(url, package)`
 
@@ -92,7 +96,7 @@ This method initiates (if needed) [CustomTabsSession](https://developer.android.
 #### Arguments
 
 - **url (_string_)** -- url of page that user is likely to be loaded firts
-- **package (_string_)** -- **Optional** -- package of browser to be informed. If not set, preferred browser will be used.
+- **package (_string_)** -- **optional** -- package of browser to be informed. If not set, preferred browser will be used.
 
 #### Returns
 
@@ -114,7 +118,7 @@ The promise resolves with `{ type: 'cooling', package: string }` when cooling is
 
 ### `WebBrowser.dismissBrowser()`
 
-_iOS Only_
+_iOS only_
 
 Dismisses the presented web browser.
 
@@ -134,7 +138,9 @@ The promise resolves with `{ browserPackages: string[], defaultPackage: string, 
 
 - **browserPackages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
 - **defaultPackage (_string_)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
-- **servicePackages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [coolDownAsync](#webbrowsercooldownasyncbrowserpackage).
-- **preferredPackage (_string_)** : Package preferred by CustomTabsClient to be used to handle Custom Tabs.
+- **servicePackages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [`coolDownAsync`](#webbrowsercooldownasyncbrowserpackage).
+- **preferredPackage (_string_)** : Package preferred by CustomTabsClient to be used to handle Custom Tabs. It favors browser chosen by user as default, as long as it is present on both `browserPackages` and `servicePackages` lists. Only such browsers are considered as fully supporting Custom Tabs. It might be `null` when there is no such browser installed or when default browser is not on `servicePackages` list.
+
+In general, services are used to perform background tasks. If a browser is available on `servicePackage` list, it should be capable of performing [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [`coolDownAsync`](#webbrowsercooldownasyncbrowserpackage). For opening an actual webPage, browser must be on `browserPackages` list. Browser has to be on both lists to be considered as fully supporting Custom Tabs.
 
 #

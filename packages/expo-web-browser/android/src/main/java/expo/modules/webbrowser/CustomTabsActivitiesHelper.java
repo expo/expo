@@ -61,8 +61,8 @@ class CustomTabsActivitiesHelper {
     return pm.queryIntentActivities(intent, 0);
   }
 
-  void startCustomTabs(Intent intent, int requestCode) throws CurrentActivityNotFoundException {
-    getCurrentActivity().startActivityForResult(CustomTabsManagerActivity.createStartIntent(getCurrentActivity(), intent), requestCode);
+  void startCustomTabs(Intent intent) throws CurrentActivityNotFoundException {
+    getCurrentActivity().startActivity(intent);
   }
 
   private PackageManager getPackageManager() throws PackageManagerNotFoundException, CurrentActivityNotFoundException {
