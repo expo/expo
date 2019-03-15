@@ -8,7 +8,7 @@ Provides cryptography primitives.
 
 # Installation
 
-Not yet available in managed projects. For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/react-native-unimodules) before continuing.
+Not yet available in managed projects. For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
