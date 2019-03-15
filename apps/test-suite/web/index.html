@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>%WEB_TITLE%</title>
+    <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!-- iOS icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-touch-icon.png" />
+    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/apple-touch-icon.png" />
+    <link rel="mask-icon" href="" color="" />
+
+    <style>
+      html,
+      body,
+      #main {
+        height: 100%;
+      }
+      #main {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="main"></div>
+
+    <script>
+      if ('serviceWorker' in navigator)
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+    </script>
+  </body>
+</html>
