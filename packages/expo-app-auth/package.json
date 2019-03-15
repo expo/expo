@@ -49,7 +49,7 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.1.0",
+    "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
