@@ -8,10 +8,7 @@
     "test": "cd runner && yarn && cd .. && node runner/index.js .",
     "test:web": "node puppeteer-test/index.js",
     "test:web:ci": "cd puppeteer-test && yarn && cd .. && node puppeteer-test/index.js .",
-    "web:dev": "webpack-dev-server -d --open --config webpack/webpack.dev.js",
-    "web:build": "webpack -p --config webpack/webpack.prod.js",
-    "web:build:stats": "webpack -p --config webpack/webpack.prod.js --json > web-stats.json",
-    "web:publish": "netlify deploy --dir web-build",
+    "web": "webpack-dev-server -d --open --config webpack.ci.js --env.development=true",
     "web:serve": "serve ./web-build"
   },
   "author": "",
@@ -21,7 +18,7 @@
   },
   "dependencies": {
     "async-retry": "^1.1.4",
-    "expo": "^32.0.0",
+    "expo": "^33.0.0-alpha.web.0",
     "i18n-js": "^3.0.11",
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",
@@ -33,8 +30,9 @@
   },
   "devDependencies": {
     "@babel/polyfill": "^7.2.5",
+    "@expo/webpack-config": "^0.1.4",
     "babel-loader": "^8.0.5",
-    "babel-preset-expo": "^5.0.0",
+    "babel-preset-expo": "^5.1.0",
     "brotli-webpack-plugin": "^1.1.0",
     "case-sensitive-paths-webpack-plugin": "^2.2.0",
     "clean-webpack-plugin": "^1.0.1",
