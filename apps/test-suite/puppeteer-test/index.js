@@ -16,7 +16,7 @@ const options = {
   stats: { colors: true },
 };
 
-const port = 19002;
+const port = 19003;
 
 const manuallyRunWebpack = true;
 
