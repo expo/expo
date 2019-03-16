@@ -1,4 +1,4 @@
-import Package from '~/package.json';
+import Package from '../package.json';
 
 const VERSIONS = preval`
   const { readdirSync } = require('fs');

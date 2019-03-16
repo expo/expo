@@ -2,7 +2,7 @@ import styled, { keyframes, css } from 'react-emotion';
 import NextLink from 'next/link';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import * as Constants from '../common/constants';
 
 const STYLES_TITLE = css`
   display: block;

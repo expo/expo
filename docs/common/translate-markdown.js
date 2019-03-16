@@ -1,10 +1,10 @@
-import { H2, H3, H4 } from '~/components/base/headings';
-import { PDIV, P, Quote } from '~/components/base/paragraph';
-import { UL, OL, LI } from '~/components/base/list';
-import { Code, InlineCode } from '~/components/base/code';
-import { ExternalLink } from '~/components/base/link';
+import { H2, H3, H4 } from '../components/base/headings';
+import { PDIV, P, Quote } from '../components/base/paragraph';
+import { UL, OL, LI } from '../components/base/list';
+import { Code, InlineCode } from '../components/base/code';
+import { ExternalLink } from '../components/base/link';
 
-import Permalink from '~/components/Permalink';
+import Permalink from '../components/Permalink';
 
 const createPermalinkedComponent = BaseComponent => {
   return ({ children }) => (

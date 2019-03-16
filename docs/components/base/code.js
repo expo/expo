@@ -2,7 +2,7 @@ import styled, { keyframes, css } from 'react-emotion';
 import Prism from 'prismjs';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import * as Constants from '../../common/constants';
 
 const attributes = {
   'data-text': true,

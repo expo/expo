@@ -2,7 +2,7 @@
 title: Linking
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 ## Introduction
 

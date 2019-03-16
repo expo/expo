@@ -10,7 +10,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ## Usage
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 

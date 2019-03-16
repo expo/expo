@@ -3,9 +3,9 @@ import GithubSlugger from 'github-slugger';
 import { withRouter } from 'next/router';
 import { MDXProvider } from '@mdx-js/tag';
 
-import DocumentationPage from '~/components/DocumentationPage';
-import { SluggerContext } from '~/components/page-higher-order/withSlugger';
-import * as components from '~/common/translate-markdown';
+import DocumentationPage from '../DocumentationPage';
+import { SluggerContext } from './withSlugger';
+import * as components from '../../common/translate-markdown';
 
 export default meta =>
   withRouter(

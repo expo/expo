@@ -1,3 +1,3 @@
-import redirect from '~/common/redirect';
+import redirect from '../../common/redirect';
 
 export default redirect('/versions/latest/');

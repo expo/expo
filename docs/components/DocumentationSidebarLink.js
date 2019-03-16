@@ -2,8 +2,8 @@ import styled, { keyframes, css } from 'react-emotion';
 import NextLink from 'next/link';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
-import stripVersionFromPath from '~/common/stripVersionFromPath';
+import * as Constants from '../common/constants';
+import stripVersionFromPath from '../common/stripVersionFromPath';
 
 const STYLES_LINK = css`
   display: block;

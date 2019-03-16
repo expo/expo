@@ -2,7 +2,7 @@
 title: MapView
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Built by Airbnb at [airbnb/react-native-maps](https://github.com/airbnb/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
 

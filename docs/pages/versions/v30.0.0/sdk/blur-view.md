@@ -2,7 +2,7 @@
 title: BlurView
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 A React component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars, tab bars, and modals.
 

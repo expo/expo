@@ -2,7 +2,7 @@
 title: AR
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 > ARCore is not yet supported. This lib is iOS only right now.
 > Augmented Reality with ARKit for iOS

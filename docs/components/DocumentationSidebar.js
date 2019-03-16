@@ -1,12 +1,12 @@
 import styled, { keyframes, css } from 'react-emotion';
 
 import * as React from 'react';
-import * as Utilities from '~/common/utilities';
-import * as Constants from '~/common/constants';
+import * as Utilities from '../common/utilities';
+import * as Constants from '../common/constants';
 
-import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
-import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
-import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
+import DocumentationSidebarLink from './DocumentationSidebarLink';
+import DocumentationSidebarTitle from './DocumentationSidebarTitle';
+import DocumentationSidebarGroup from './DocumentationSidebarGroup';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;

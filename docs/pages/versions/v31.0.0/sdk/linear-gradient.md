@@ -2,7 +2,7 @@
 title: LinearGradient
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 A React component that renders a gradient view.
 

@@ -2,7 +2,7 @@
 title: Lottie
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
 

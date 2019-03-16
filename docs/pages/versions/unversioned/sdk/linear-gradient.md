@@ -10,7 +10,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ## Usage
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 <SnackEmbed snackId="BJbef43HW" />
 

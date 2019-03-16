@@ -2,7 +2,7 @@
 title: Pedometer
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 Use Core Motion (iOS) or Google Fit (Android) to get the user's step count.
 

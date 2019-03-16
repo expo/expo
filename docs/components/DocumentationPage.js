@@ -2,19 +2,19 @@ import Router from 'next/router';
 import { css } from 'react-emotion';
 
 import * as React from 'react';
-import * as Utilities from '~/common/utilities';
-import * as Constants from '~/common/constants';
-import * as WindowUtils from '~/common/window';
-import { VERSIONS } from '~/common/versions';
+import * as Utilities from '../common/utilities';
+import * as Constants from '../common/constants';
+import * as WindowUtils from '../common/window';
+import { VERSIONS } from '../common/versions';
 
-import navigation from '~/common/navigation';
+import navigation from '../common/navigation';
 
-import DocumentationHeader from '~/components/DocumentationHeader';
-import DocumentationFooter from '~/components/DocumentationFooter';
-import DocumentationSidebar from '~/components/DocumentationSidebar';
-import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
-import Head from '~/components/Head';
-import { H1 } from '~/components/base/headings';
+import DocumentationHeader from './DocumentationHeader';
+import DocumentationFooter from './DocumentationFooter';
+import DocumentationSidebar from './DocumentationSidebar';
+import DocumentationNestedScrollLayout from './DocumentationNestedScrollLayout';
+import Head from './Head';
+import { H1 } from './base/headings';
 
 const STYLES_DOCUMENT = css`
   padding: 24px 24px 24px 32px;

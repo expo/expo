@@ -3,10 +3,10 @@ import styled, { keyframes, css } from 'react-emotion';
 import Router from 'next/router';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
-import * as Utilities from '~/common/utilities';
+import * as Constants from '../../common/constants';
+import * as Utilities from '../../common/utilities';
 
-import { LATEST_VERSION } from '~/common/versions';
+import { LATEST_VERSION } from '../../common/versions';
 
 const STYLES_INPUT = css`
   display: flex;

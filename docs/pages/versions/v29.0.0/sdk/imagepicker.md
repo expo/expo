@@ -2,7 +2,7 @@
 title: ImagePicker
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 

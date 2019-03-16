@@ -2,7 +2,7 @@
 title: Creating A 2D Game
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 > **Notice** This tutorial is written for Expo v22.
 

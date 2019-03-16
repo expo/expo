@@ -2,7 +2,7 @@
 title: Location
 ---
 
-import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackEmbed from '../../../../components/plugins/SnackEmbed';
 
 This module allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 

@@ -3,15 +3,15 @@ import { extractCritical } from 'emotion-server';
 import { hydrate } from 'react-emotion';
 
 import * as React from 'react';
-import * as Analytics from '~/common/analytics';
+import * as Analytics from '../common/analytics';
 
-import { globalReset } from '~/global-styles/reset';
-import { globalNProgress } from '~/global-styles/nprogress';
-import { globalTables } from '~/global-styles/tables';
-import { globalFonts } from '~/global-styles/fonts';
-import { globalPrism } from '~/global-styles/prism';
-import { globalTippy } from '~/global-styles/tippy';
-import { globalExtras } from '~/global-styles/extras';
+import { globalReset } from '../global-styles/reset';
+import { globalNProgress } from '../global-styles/nprogress';
+import { globalTables } from '../global-styles/tables';
+import { globalFonts } from '../global-styles/fonts';
+import { globalPrism } from '../global-styles/prism';
+import { globalTippy } from '../global-styles/tippy';
+import { globalExtras } from '../global-styles/extras';
 
 if (typeof window !== 'undefined') {
   hydrate(window.__NEXT_DATA__.ids);

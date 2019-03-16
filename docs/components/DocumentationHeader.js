@@ -2,13 +2,13 @@ import { css } from 'react-emotion';
 import Link from 'next/link';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
+import * as Constants from '../common/constants';
 
-import BrandLogo from '~/components/icons/BrandLogo';
-import MenuIcon from '~/components/icons/Menu';
-import DismissIcon from '~/components/icons/DismissIcon';
-import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
-import VersionSelector from '~/components/VersionSelector';
+import BrandLogo from './icons/BrandLogo';
+import MenuIcon from './icons/Menu';
+import DismissIcon from './icons/DismissIcon';
+import AlgoliaSearch from './plugins/AlgoliaSearch';
+import VersionSelector from './VersionSelector';
 
 const STYLES_LOGO = css`
   display: flex;

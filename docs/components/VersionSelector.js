@@ -1,10 +1,10 @@
 import styled, { keyframes, css } from 'react-emotion';
 
 import * as React from 'react';
-import * as Constants from '~/common/constants';
-import { VERSIONS, LATEST_VERSION } from '~/common/versions';
+import * as Constants from '../common/constants';
+import { VERSIONS, LATEST_VERSION } from '../common/versions';
 
-import ChevronDownIcon from '~/components/icons/ChevronDown';
+import ChevronDownIcon from './icons/ChevronDown';
 
 const STYLES_SELECT = css`
   display: inline-flex;

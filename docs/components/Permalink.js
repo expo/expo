@@ -1,10 +1,10 @@
 import { css } from 'react-emotion';
 
 import * as React from 'react';
-import * as Utilities from '~/common/utilities';
+import * as Utilities from '../common/utilities';
 
-import PermalinkIcon from '~/components/icons/Permalink';
-import withSlugger from '~/components/page-higher-order/withSlugger';
+import PermalinkIcon from './icons/Permalink';
+import withSlugger from './page-higher-order/withSlugger';
 
 class Permalink extends React.Component {
   render() {
