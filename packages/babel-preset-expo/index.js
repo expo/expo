@@ -54,15 +54,6 @@ function getWebConfig() {
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
     ['@babel/plugin-transform-react-display-name'],
     ['@babel/plugin-transform-react-jsx-source'],
-    [
-      '@babel/plugin-transform-runtime',
-      {
-        corejs: false,
-        helpers: true,
-        regenerator: true,
-        useESModules: true,
-      },
-    ],
   ];
 
   return {
