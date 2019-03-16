@@ -5,7 +5,7 @@
     "slug": "test-suite",
     "version": "1.0.0",
     "sdkVersion": "UNVERSIONED",
-    "platforms": ["android", "ios", "web"],
+    "platforms": ["android", "ios"],
     "packagerOpts": {
       "assetExts": ["db"],
       "config": "rn-cli.config.js"
