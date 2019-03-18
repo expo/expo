@@ -19,7 +19,7 @@ import java.util.List;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
-public class NativeAdView extends ViewGroup {
+public class NativeAdView extends NativeAdLayout {
   /**
    * @{NativeAd} received from the ads manager
    **/
