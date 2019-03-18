@@ -30,6 +30,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - upgrade `react-native-maps` to `0.23.0` by [@sjchmiela](https://github.com/sjchmiela) ([#3389](https://github.com/expo/expo/pull/3389))
 - added Firebase integration to `expo-analytics-segment` by [@sjchmiela](https://github.com/sjchmiela) ([#3615](https://github.com/expo/expo/pull/3615))
 - add support for new arguments in `WebBrowser.openBrowserAsync` as described in [the documentation](https://docs.expo.io/versions/latest/sdk/webbrowser/) by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
+- add tags supprt in `KeepAwake.activate` and `KeepAwake.deactivate` by [@mczernek](<[#3747](https://github.com/expo/expo/pull/3747)>)
 
 ### 🐛 Bug fixes
 

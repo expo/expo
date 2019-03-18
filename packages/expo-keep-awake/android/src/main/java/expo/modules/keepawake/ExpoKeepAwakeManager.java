@@ -11,12 +11,14 @@ import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.KeepAwakeManager;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule, ModuleRegistryConsumer {
 
   private ModuleRegistry mModuleRegistry;
-  private boolean mIsActivated;
+  private Set<String> tags = new HashSet<>();
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
@@ -33,34 +35,31 @@ public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule, M
   }
 
   @Override
-  public void activate(final Runnable done) throws CurrentActivityNotFoundException {
+  public void activate(final String tag, final Runnable done) throws CurrentActivityNotFoundException {
     final Activity activity = getCurrentActivity();
 
-    if (activity != null) {
-      activity.runOnUiThread(() -> {
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mIsActivated = true;
-        done.run();
-      });
+    if (!isActivated()) {
+      if (activity != null) {
+        activity.runOnUiThread(() -> activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
+      }
     }
+    tags.add(tag);
+    done.run();
   }
 
   @Override
-  public void deactivate(final Runnable done) throws CurrentActivityNotFoundException {
+  public void deactivate(final String tag, final Runnable done) throws CurrentActivityNotFoundException {
     final Activity activity = getCurrentActivity();
-
-    if (activity != null) {
-      activity.runOnUiThread(() -> {
-        mIsActivated = false;
-        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-      });
+    if (isActivated() && activity != null) {
+      activity.runOnUiThread(() -> activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
     }
+    tags.remove(tag);
     done.run();
   }
 
   @Override
   public boolean isActivated() {
-    return mIsActivated;
+    return tags.size() > 0;
   }
 
   @Override

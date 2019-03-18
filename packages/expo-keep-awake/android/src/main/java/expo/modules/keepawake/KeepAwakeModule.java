@@ -34,18 +34,18 @@ public class KeepAwakeModule extends ExportedModule implements ModuleRegistryCon
 
 
   @ExpoMethod
-  public void activate(final Promise promise) {
+  public void activate(String tag, final Promise promise) {
     try {
-      mKeepAwakeManager.activate(() -> promise.resolve(true));
+      mKeepAwakeManager.activate(tag, () -> promise.resolve(true));
     } catch (CurrentActivityNotFoundException ex) {
       promise.reject(NO_ACTIVITY_ERROR_CODE, "Unable to activate keep awake");
     }
   }
 
   @ExpoMethod
-  public void deactivate(Promise promise) {
+  public void deactivate(String tag, Promise promise) {
     try {
-      mKeepAwakeManager.deactivate(() -> promise.resolve(true));
+      mKeepAwakeManager.deactivate(tag, () -> promise.resolve(true));
     } catch (CurrentActivityNotFoundException ex) {
       promise.reject(NO_ACTIVITY_ERROR_CODE, "Unable to deactivate keep awake. However, it probably is deactivated already.");
     }
