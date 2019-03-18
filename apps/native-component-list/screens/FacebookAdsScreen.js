@@ -13,6 +13,7 @@ const {
   AdMediaView,
   AdIconView,
   AdTriggerView,
+  AdChoiceWrapper,
 } = FacebookAds;
 
 let adsManager = null;
@@ -35,7 +36,7 @@ class ChangingFullAd extends React.Component {
   };
 
   render() {
-    const { nativeAd } = this.props;
+    const { nativeAd, nativeAdViewTag } = this.props;
     return (
       <View style={styles.fullad}>
         <View style={[styles.nativeRow, { paddingVertical: 10 }]}>
@@ -48,6 +49,7 @@ class ChangingFullAd extends React.Component {
             onValueChange={() => this.setState({ expanded: !this.state.expanded })}
           />
         </View>
+        <AdChoiceWrapper nativeAdViewTag={nativeAdViewTag} />
         <View style={styles.nativeRow}>
           <AdIconView style={styles.iconView} />
           <View style={styles.nativeColumn}>

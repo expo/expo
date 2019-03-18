@@ -15,10 +15,17 @@ export default function withNativeAd(Component) {
         constructor(props) {
             super(props);
             this._subscription = null;
-            this._nativeAdViewRef = React.createRef();
+            this._nativeAdViewRef = null;
             this._adMediaViewNodeHandle = null;
             this._adIconViewNodeHandle = null;
             this._interactiveTriggerNodeHandles = new Map();
+            this._setNativeAdViewRef = ref => {
+                this._nativeAdViewRef = ref;
+                const nodeHandle = findNodeHandle(ref);
+                if (nodeHandle != null) {
+                    this.setState({ nativeAdViewTag: nodeHandle });
+                }
+            };
             this._handleAdLoaded = ({ nativeEvent: ad }) => {
                 this.setState({ ad }, () => {
                     if (this.props.onAdLoaded) {
@@ -61,7 +68,7 @@ export default function withNativeAd(Component) {
                 },
                 onTriggerAd: () => {
                     if (this._adMediaViewNodeHandle !== null && Platform.OS === 'android') {
-                        let nodeHandle = findNodeHandle(this._nativeAdViewRef.current);
+                        let nodeHandle = findNodeHandle(this._nativeAdViewRef);
                         AdsManager.triggerEvent(nodeHandle);
                     }
                 },
@@ -69,6 +76,7 @@ export default function withNativeAd(Component) {
             this.state = {
                 ad: null,
                 canRequestAds: props.adsManager.isValid,
+                nativeAdViewTag: -1,
             };
         }
         componentDidMount() {
@@ -91,11 +99,11 @@ export default function withNativeAd(Component) {
             }
             let { adsManager } = this.props;
             let props = this._getForwardedProps();
-            return (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
+            return (<NativeAdView ref={this._setNativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
           <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
             <AdIconViewContext.Provider value={this._adIconViewContextValue}>
               <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                {this.state.ad ? <Component {...props} nativeAd={this.state.ad}/> : null}
+                {this.state.ad ? <Component {...props} nativeAd={this.state.ad} nativeAdViewTag={this.state.nativeAdViewTag}/> : null}
               </AdTriggerViewContext.Provider>
             </AdIconViewContext.Provider>
           </AdMediaViewContext.Provider>
@@ -120,7 +128,7 @@ export default function withNativeAd(Component) {
                 this._interactiveTriggerNodeHandles = interactiveTriggerNodeHandles;
                 // TODO: handle unregistering views when components are unmounted
                 if (this._adMediaViewNodeHandle !== null && this._adIconViewNodeHandle !== null) {
-                    AdsManager.registerViewsForInteractionAsync(nullthrows(findNodeHandle(this._nativeAdViewRef.current)), this._adMediaViewNodeHandle, this._adIconViewNodeHandle, [...this._interactiveTriggerNodeHandles.values()]);
+                    AdsManager.registerViewsForInteractionAsync(nullthrows(findNodeHandle(this._nativeAdViewRef)), this._adMediaViewNodeHandle, this._adIconViewNodeHandle, [...this._interactiveTriggerNodeHandles.values()]);
                 }
             }
         }
