@@ -21,6 +21,8 @@
 
 @interface RNCWKWebView : RCTView
 
+@property (nonatomic, strong) NSString *experienceId;
+
 @property (nonatomic, weak) id<RNCWKWebViewDelegate> delegate;
 @property (nonatomic, copy) NSDictionary *source;
 @property (nonatomic, assign) BOOL messagingEnabled;
