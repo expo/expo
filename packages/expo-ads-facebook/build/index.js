@@ -6,4 +6,8 @@ export { default as AdSettings } from './AdSettings';
 export { default as NativeAdsManager } from './NativeAdsManager';
 export { default as InterstitialAdManager } from './InterstitialAdManager';
 export { default as BannerAd } from './BannerAd';
+import { requireNativeViewManager } from 'expo-core';
+const AdChoiceWrapper = requireNativeViewManager('AdChoiceWrapper');
+;
+export { AdChoiceWrapper };
 //# sourceMappingURL=index.js.map

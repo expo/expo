@@ -17,6 +17,7 @@ type AdContainerProps<P> = {
 type AdContainerState = {
   ad: NativeAd | null;
   canRequestAds: boolean;
+  nativeAdViewTag: number | null;
 };
 
 type AdProps = { nativeAd: NativeAd };
@@ -85,7 +86,13 @@ export default function withNativeAd<P>(
           <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
             <AdIconViewContext.Provider value={this._adIconViewContextValue}>
               <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                {this.state.ad ? <Component {...props} nativeAd={this.state.ad} /> : null}
+                {this.state.ad ? (
+                  <Component
+                    {...props}
+                    nativeAd={this.state.ad}
+                    nativeAdViewTag={findNodeHandle(this._nativeAdViewRef.current)}
+                  />
+                ) : null}
               </AdTriggerViewContext.Provider>
             </AdIconViewContext.Provider>
           </AdMediaViewContext.Provider>

@@ -4,12 +4,16 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
+import com.facebook.ads.NativeAdLayout;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.unimodules.core.ModuleRegistry;
@@ -77,10 +81,15 @@ public class NativeAdView extends ViewGroup {
     mEventEmitter.emit(getId(), "onAdLoaded", event);
   }
 
+  public NativeAd getNativeAd() {
+    return mNativeAd;
+  }
+
   public void registerViewsForInteraction(MediaView mediaView, AdIconView adIconView, List<View> clickableViews) {
+    mMediaView = new WeakReference<>(mediaView);
+
     clickableViews.add(mediaView);
     mNativeAd.registerViewForInteraction(this, mediaView, adIconView, clickableViews);
-    mMediaView = new WeakReference<>(mediaView);
   }
 
   public void triggerClick() {
@@ -94,4 +103,5 @@ public class NativeAdView extends ViewGroup {
   protected void onLayout(boolean b, int i, int i1, int i2, int i3) {
     // do nothing
   }
+
 }
