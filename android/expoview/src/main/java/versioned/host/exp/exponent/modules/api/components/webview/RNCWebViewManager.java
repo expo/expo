@@ -4,24 +4,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.Context;
-
-import com.facebook.react.uimanager.UIManagerModule;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-import javax.annotation.Nullable;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -43,7 +25,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -52,54 +33,59 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
-import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingErrorEvent;
-import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingFinishEvent;
-import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingStartEvent;
-import versioned.host.exp.exponent.modules.api.components.webview.events.TopMessageEvent;
-import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingProgressEvent;
-import versioned.host.exp.exponent.modules.api.components.webview.events.TopShouldStartLoadWithRequestEvent;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import javax.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingErrorEvent;
+import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingFinishEvent;
+import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingProgressEvent;
+import versioned.host.exp.exponent.modules.api.components.webview.events.TopLoadingStartEvent;
+import versioned.host.exp.exponent.modules.api.components.webview.events.TopMessageEvent;
+import versioned.host.exp.exponent.modules.api.components.webview.events.TopShouldStartLoadWithRequestEvent;
+
 /**
  * Manages instances of {@link WebView}
- *
+ * <p>
  * Can accept following commands:
- *  - GO_BACK
- *  - GO_FORWARD
- *  - RELOAD
- *  - LOAD_URL
- *
+ * - GO_BACK
+ * - GO_FORWARD
+ * - RELOAD
+ * - LOAD_URL
+ * <p>
  * {@link WebView} instances could emit following direct events:
- *  - topLoadingFinish
- *  - topLoadingStart
- *  - topLoadingStart
- *  - topLoadingProgress
- *  - topShouldStartLoadWithRequest
- *
+ * - topLoadingFinish
+ * - topLoadingStart
+ * - topLoadingStart
+ * - topLoadingProgress
+ * - topShouldStartLoadWithRequest
+ * <p>
  * Each event will carry the following properties:
- *  - target - view's react tag
- *  - url - url set for the webview
- *  - loading - whether webview is in a loading state
- *  - title - title of the current page
- *  - canGoBack - boolean, whether there is anything on a history stack to go back
- *  - canGoForward - boolean, whether it is possible to request GO_FORWARD command
+ * - target - view's react tag
+ * - url - url set for the webview
+ * - loading - whether webview is in a loading state
+ * - title - title of the current page
+ * - canGoBack - boolean, whether there is anything on a history stack to go back
+ * - canGoForward - boolean, whether it is possible to request GO_FORWARD command
  */
 @ReactModule(name = RNCWebViewManager.REACT_CLASS)
 public class RNCWebViewManager extends SimpleViewManager<WebView> {
@@ -130,7 +116,8 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
   protected static class RNCWebViewClient extends WebViewClient {
 
     protected boolean mLastLoadFailed = false;
-    protected @Nullable ReadableArray mUrlPrefixesForDefaultIntent;
+    protected @Nullable
+    ReadableArray mUrlPrefixesForDefaultIntent;
 
     @Override
     public void onPageFinished(WebView webView, String url) {
@@ -162,8 +149,8 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
       dispatchEvent(
           view,
           new TopShouldStartLoadWithRequestEvent(
-                  view.getId(),
-                  createWebViewEvent(view, url)));
+              view.getId(),
+              createWebViewEvent(view, url)));
       return true;
     }
 
@@ -228,10 +215,13 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
    * to call {@link WebView#destroy} on activity destroy event and also to clear the client
    */
   protected static class RNCWebView extends WebView implements LifecycleEventListener {
-    protected @Nullable String injectedJS;
+    protected @Nullable
+    String injectedJS;
     protected boolean messagingEnabled = false;
-    protected @Nullable RNCWebViewClient mRNCWebViewClient;
+    protected @Nullable
+    RNCWebViewClient mRNCWebViewClient;
     protected boolean sendContentSizeChangeEvents = false;
+
     public void setSendContentSizeChangeEvents(boolean sendContentSizeChangeEvents) {
       this.sendContentSizeChangeEvents = sendContentSizeChangeEvents;
     }
@@ -246,7 +236,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
       /**
        * This method is called whenever JavaScript running within the web view calls:
-       *   - window[JAVASCRIPT_INTERFACE].postMessage
+       * - window[JAVASCRIPT_INTERFACE].postMessage
        */
       @JavascriptInterface
       public void postMessage(String message) {
@@ -256,10 +246,9 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
     /**
      * WebView must be created with an context of the current activity
-     *
+     * <p>
      * Activity Context is required for creation of dialogs internally by WebView
      * Reactive Native needed for access to ReactNative internal system functionality
-     *
      */
     public RNCWebView(ThemedReactContext reactContext) {
       super(reactContext);
@@ -286,12 +275,12 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
       if (sendContentSizeChangeEvents) {
         dispatchEvent(
-          this,
-          new ContentSizeChangeEvent(
-            this.getId(),
-            w,
-            h
-          )
+            this,
+            new ContentSizeChangeEvent(
+                this.getId(),
+                w,
+                h
+            )
         );
       }
     }
@@ -299,10 +288,11 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public void setWebViewClient(WebViewClient client) {
       super.setWebViewClient(client);
-      mRNCWebViewClient = (RNCWebViewClient)client;
+      mRNCWebViewClient = (RNCWebViewClient) client;
     }
 
-    public @Nullable RNCWebViewClient getRNCWebViewClient() {
+    public @Nullable
+    RNCWebViewClient getRNCWebViewClient() {
       return mRNCWebViewClient;
     }
 
@@ -396,21 +386,21 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
       }
 
 
-    @Override
-    public void onProgressChanged(WebView webView, int newProgress) {
+      @Override
+      public void onProgressChanged(WebView webView, int newProgress) {
         super.onProgressChanged(webView, newProgress);
         WritableMap event = Arguments.createMap();
         event.putDouble("target", webView.getId());
         event.putString("title", webView.getTitle());
         event.putBoolean("canGoBack", webView.canGoBack());
         event.putBoolean("canGoForward", webView.canGoForward());
-        event.putDouble("progress", (float)newProgress/100);
+        event.putDouble("progress", (float) newProgress / 100);
         dispatchEvent(
-                  webView,
-                  new TopLoadingProgressEvent(
-                      webView.getId(),
-                      event));
-    }
+            webView,
+            new TopLoadingProgressEvent(
+                webView.getId(),
+                event));
+      }
 
       @Override
       public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
@@ -420,9 +410,11 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
       protected void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType) {
         getModule().startPhotoPickerIntent(filePathCallback, acceptType);
       }
+
       protected void openFileChooser(ValueCallback<Uri> filePathCallback) {
         getModule().startPhotoPickerIntent(filePathCallback, "");
       }
+
       protected void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType, String capture) {
         getModule().startPhotoPickerIntent(filePathCallback, acceptType);
       }
@@ -453,8 +445,8 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
     webView.setLayoutParams(
-            new LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT));
+        new LayoutParams(LayoutParams.MATCH_PARENT,
+            LayoutParams.MATCH_PARENT));
 
     setGeolocationEnabled(webView, false);
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -516,7 +508,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
   public void setShowsVerticalScrollIndicator(WebView view, boolean enabled) {
     view.setVerticalScrollBarEnabled(enabled);
   }
-  
+
   @ReactProp(name = "cacheEnabled")
   public void setCacheEnabled(WebView view, boolean enabled) {
     if (enabled) {
@@ -699,15 +691,15 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "allowFileAccess")
   public void setAllowFileAccess(
-    WebView view,
-    @Nullable Boolean allowFileAccess) {
+      WebView view,
+      @Nullable Boolean allowFileAccess) {
     view.getSettings().setAllowFileAccess(allowFileAccess != null && allowFileAccess);
   }
 
   @ReactProp(name = "geolocationEnabled")
   public void setGeolocationEnabled(
-    WebView view,
-    @Nullable Boolean isGeolocationEnabled) {
+      WebView view,
+      @Nullable Boolean isGeolocationEnabled) {
     view.getSettings().setGeolocationEnabled(isGeolocationEnabled != null && isGeolocationEnabled);
   }
 
@@ -729,7 +721,8 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
   }
 
   @Override
-  public @Nullable Map<String, Integer> getCommandsMap() {
+  public @Nullable
+  Map<String, Integer> getCommandsMap() {
     return MapBuilder.of(
         "goBack", COMMAND_GO_BACK,
         "goForward", COMMAND_GO_FORWARD,
@@ -738,7 +731,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
         "postMessage", COMMAND_POST_MESSAGE,
         "injectJavaScript", COMMAND_INJECT_JAVASCRIPT,
         "loadUrl", COMMAND_LOAD_URL
-      );
+    );
   }
 
   @Override
@@ -762,16 +755,16 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
           reactWebView.evaluateJavascriptWithFallback("(function () {" +
-            "var event;" +
-            "var data = " + eventInitDict.toString() + ";" +
-            "try {" +
+              "var event;" +
+              "var data = " + eventInitDict.toString() + ";" +
+              "try {" +
               "event = new MessageEvent('message', data);" +
-            "} catch (e) {" +
+              "} catch (e) {" +
               "event = document.createEvent('MessageEvent');" +
               "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
-            "}" +
-            "document.dispatchEvent(event);" +
-          "})();");
+              "}" +
+              "document.dispatchEvent(event);" +
+              "})();");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
@@ -799,7 +792,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
   protected static void dispatchEvent(WebView webView, Event event) {
     ReactContext reactContext = (ReactContext) webView.getContext();
     EventDispatcher eventDispatcher =
-      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     eventDispatcher.dispatchEvent(event);
   }
 
