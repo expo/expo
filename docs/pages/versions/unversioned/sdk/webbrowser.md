@@ -95,7 +95,7 @@ This method initiates (if needed) [CustomTabsSession](https://developer.android.
 
 #### Arguments
 
-- **url (_string_)** -- url of page that user is likely to be loaded firts
+- **url (_string_)** -- url of page that is likely to be loaded firts when opening browser
 - **package (_string_)** -- **optional** -- package of browser to be informed. If not set, preferred browser will be used.
 
 #### Returns
