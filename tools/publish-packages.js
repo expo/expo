@@ -310,6 +310,11 @@ function _isMaintainer(username, packageView) {
   });
 }
 
+function _requireUnimoduleConfig(dir) {
+  const unimoduleConfigPath = path.join(dir, 'unimodule.json');
+  return fs.existsSync(unimoduleConfigPath) ? require(unimoduleConfigPath) : null;
+}
+
 async function _preparePublishAsync({ libName, dir }, allConfigs, options) {
   const isScoped = (options.scope.length === 0 || options.scope.includes(libName)) && !options.exclude.includes(libName);
   // early bailout
@@ -482,7 +487,7 @@ async function _saveGitHeadAsync({ shouldPublish, dir }) {
   await fs.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n', 'utf8');
 }
 
-async function _prepackAsync({ libName, newVersion, shouldPublish }) {
+async function _prepackAsync({ libName, libSlug, newVersion, shouldPublish }) {
   if (!shouldPublish) {
     return;
   }
@@ -492,7 +497,7 @@ async function _prepackAsync({ libName, newVersion, shouldPublish }) {
   // Unfortunately, pack command sends notice logs to stderr :(
   _runCommand('npm pack 2>/dev/null');
 
-  const filename = `${libName}-${newVersion}.tgz`;
+  const filename = `${libSlug}-${newVersion}.tgz`;
 
   return {
     tarball: { filename },
@@ -632,8 +637,8 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
   }
 
   function updateAndroidDependenciesInFileAsync(file, dependencies) {
-    for (const { libName, newVersion } of dependencies) {
-      const dependencyName = `host.exp.exponent:${libName}`;
+    for (const { libSlug, newVersion } of dependencies) {
+      const dependencyName = `host.exp.exponent:${libSlug}`;
 
       console.log(chalk.yellow('>'), `Updating ${chalk.green(dependencyName)} dependency`);
       _runCommand(
@@ -690,9 +695,13 @@ async function publishPackagesAsync() {
 
   const publishConfigs = new Map();
   const modules = Modules.getPublishableModules(argv.abi || sdkVersion).map(module => {
+    const dir = `${ROOT_DIR}/packages/${module.libName}`;
+    const unimoduleConfig = _requireUnimoduleConfig(dir);
+
     return {
       ...module,
-      dir: `${ROOT_DIR}/packages/${module.libName}`,
+      libSlug: unimoduleConfig && unimoduleConfig.name || module.libName,
+      dir,
     };
   });
 
