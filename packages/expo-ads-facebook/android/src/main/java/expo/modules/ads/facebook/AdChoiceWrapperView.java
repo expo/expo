@@ -16,18 +16,51 @@ import java.lang.ref.WeakReference;
 
 public class AdChoiceWrapperView extends LinearLayout {
 
+  private int mIconSize = -1;
+  private WeakReference<NativeAdView> mNativeAdViewWeakReference;
+
   public AdChoiceWrapperView(Context context) {
     super(context);
   }
 
   public void setNativeAdView(NativeAdView nativeAdView) {
-    injectAdChoiceView(nativeAdView);
+    mNativeAdViewWeakReference = new WeakReference<>(nativeAdView);
+    injectAdChoiceView();
   }
 
-  public void injectAdChoiceView(NativeAdView nativeAdView) {
+  public void setIconSize(int iconSize) {
+    mIconSize = iconSize;
+    injectAdChoiceView();
+  }
+
+  boolean arePropsSet() {
+    return (
+        mNativeAdViewWeakReference != null ||
+        mNativeAdViewWeakReference.get() != null ||
+        mIconSize != -1
+    );
+  }
+
+  public void injectAdChoiceView() {
+    if (!arePropsSet()) {
+      return;
+    }
     removeAllViews();
-    AdChoicesView adChoicesView = new AdChoicesView(getContext(), nativeAdView.getNativeAd(), true);
-    addView(adChoicesView);
+
+    NativeAdView nativeAdView = mNativeAdViewWeakReference.get();
+    AdOptionsView adOptionsView = createAdOptionsViewWithProperIconSize(mIconSize, nativeAdView);
+
+    addView(adOptionsView);
+  }
+
+  private AdOptionsView createAdOptionsViewWithProperIconSize(int iconSize, NativeAdView nativeAdView) {
+    return new AdOptionsView(
+        getContext(),
+        nativeAdView.getNativeAd(),
+        nativeAdView,
+        AdOptionsView.Orientation.HORIZONTAL,
+        iconSize
+    );
   }
 
   @Override

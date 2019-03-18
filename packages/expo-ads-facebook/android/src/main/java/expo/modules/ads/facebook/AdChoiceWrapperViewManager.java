@@ -25,6 +25,11 @@ public class AdChoiceWrapperViewManager extends ViewManager<AdChoiceWrapperView>
     return ViewManagerType.GROUP;
   }
 
+  @ExpoProp(name = "iconSize")
+  public void setIconSize(final AdChoiceWrapperView view, final int iconSize) {
+    view.setIconSize(iconSize);
+  }
+
   @ExpoProp(name = "nativeAdViewTag")
   public void setNativeAdViewTag(final AdChoiceWrapperView view, final int nativeAdTag) {
     if (nativeAdTag == -1) {
