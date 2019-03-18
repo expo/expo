@@ -12,6 +12,8 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
+import org.unimodules.core.ModuleRegistry;
+
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.HttpCookie;
@@ -22,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.unimodules.core.ModuleRegistry;
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
 
@@ -412,11 +413,15 @@ class MediaPlayerData extends PlayerData implements
         try {
           Map<String, List<String>> headersMap = cookieHandler.get(URI.create(mUri.toString()), null);
           List<String> cookies = headersMap.get("Cookie");
-          List<HttpCookie> httpCookies = new ArrayList<>();
-          for (String cookieValue : cookies) {
-            httpCookies.addAll(HttpCookie.parse(cookieValue));
+          if (cookies != null) {
+            List<HttpCookie> httpCookies = new ArrayList<>();
+            for (String cookieValue : cookies) {
+              httpCookies.addAll(HttpCookie.parse(cookieValue));
+            }
+            return httpCookies;
+          } else {
+            return null;
           }
-          return httpCookies;
         } catch (IOException e) {
           // do nothing, we'll return an empty list
         }
