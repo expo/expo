@@ -96,7 +96,7 @@ The difference between this method and native authentication are very sparce. Go
 ```js
 import { Google } from 'expo';
 
-const clientId = '<YOUR_WEB_CLIENT_ID>';
+const clientId = '<YOUR_IOS_CLIENT_ID>';
 const { type, accessToken, user } = await Google.logInAsync({ clientId });
 
 if (type === 'success') {
