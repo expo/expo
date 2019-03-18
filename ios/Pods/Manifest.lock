@@ -1156,7 +1156,7 @@ PODS:
   - UMFontInterface (1.0.0)
   - UMImageLoaderInterface (1.0.0)
   - UMPermissionsInterface (1.0.0)
-  - UMReactNativeAdapter (1.0.1):
+  - UMReactNativeAdapter (1.0.2):
     - React
     - UMCore
     - UMFontInterface
