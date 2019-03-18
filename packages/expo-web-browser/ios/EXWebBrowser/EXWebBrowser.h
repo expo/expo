@@ -4,4 +4,8 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 
 @interface EXWebBrowser : UMExportedModule <UMModuleRegistryConsumer>
+
++ (UIColor *)convertHexColorString:(NSString *)stringToConvert;
++ (UIColor *)colorWithRGBHex:(UInt32)hex;
+
 @end

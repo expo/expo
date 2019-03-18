@@ -87,18 +87,16 @@ export default class WebBrowserScreen extends React.Component {
 
   renderIOSChoices = () =>
     Platform.OS === 'ios' && (
-      <>
-        <View style={styles.label}>
-          <Text>Controls color (#rrggbb):</Text>
-          <TextInput
-            style={styles.input}
-            borderBottomColor={'black'}
-            placeholder={'RRGGBB'}
-            onChangeText={this.handleControlsColorInputChanged}
-            value={this.state.controlsColorText}
-          />
-        </View>
-      </>
+      <View style={styles.label}>
+        <Text>Controls color (#rrggbb):</Text>
+        <TextInput
+          style={styles.input}
+          borderBottomColor={'black'}
+          placeholder={'RRGGBB'}
+          onChangeText={this.handleControlsColorInputChanged}
+          value={this.state.controlsColorText}
+        />
+      </View>
     );
 
   renderAndroidChoices = () =>

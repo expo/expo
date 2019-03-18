@@ -39,7 +39,7 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabs
 }
 
 export async function warmUpAsync(browserPackage?: string) {
-  if (!ExponentWebBrowser.mayInitWithUrlAsync) {
+  if (!ExponentWebBrowser.warmUpAsync) {
     throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
   }
   return ExponentWebBrowser.warmUpAsync(browserPackage);

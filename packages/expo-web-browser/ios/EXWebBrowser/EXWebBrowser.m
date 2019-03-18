@@ -4,7 +4,7 @@
 #import <EXWebBrowser/EXWebBrowser.h>
 
 #import <UMCore/UMUtilities.h>
-#import "UIColor+Extension.h"
+#import <EXWebBrowser/UIColor+Extension.h>
 
 
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
@@ -101,11 +101,11 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
   
   NSString *toolbarColorKey = @"toolbarColor";
   if([[arguments allKeys] containsObject:toolbarColorKey]) {
-    safariVC.preferredBarTintColor = [UIColor LOT_colorWithHexString:arguments[toolbarColorKey]];
+    safariVC.preferredBarTintColor = [EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
   }
   NSString *controlsColorKey = @"controlsColor";
   if([[arguments allKeys] containsObject:controlsColorKey]) {
-    safariVC.preferredControlTintColor = [UIColor LOT_colorWithHexString:arguments[controlsColorKey]];
+    safariVC.preferredControlTintColor = [EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
   }
   safariVC.delegate = self;
 
@@ -210,6 +210,25 @@ UM_EXPORT_METHOD_AS(dismissAuthSession,
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+}
+
++ (UIColor *)convertHexColorString:(NSString *)stringToConvert:(NSString *)stringToConvert {
+  NSString *strippedString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
+  NSScanner *scanner = [NSScanner scannerWithString:strippedString];
+  unsigned hexNum;
+  if (![scanner scanHexInt:&hexNum]) return nil;
+  return [EXWebBrowser colorWithRGBHex:hexNum];
+}
+
++ (UIColor *)colorWithRGBHex:(UInt32)hex {
+  int r = (hex >> 16) & 0xFF;
+  int g = (hex >> 8) & 0xFF;
+  int b = (hex) & 0xFF;
+  
+  return [UIColor colorWithRed:r / 255.0f
+                         green:g / 255.0f
+                          blue:b / 255.0f
+                         alpha:1.0f];
 }
 
 @end

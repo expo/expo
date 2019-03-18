@@ -21,7 +21,7 @@ import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import java.util.ArrayList;
 import java.util.List;
 
-import expo.modules.webbrowser.error.NoPrefferedPackageFound;
+import expo.modules.webbrowser.error.NoPreferredPackageFound;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
 public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer {
@@ -38,6 +38,8 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   private static final String TAG = "ExpoWebBrowser";
   private static final String SHOW_TITLE_KEY = "showTitle";
   private static final String ENABLE_BAR_COLLAPSING_KEY = "enableBarCollapsing";
+
+  private final static String NO_PREFERRED_PACKAGE_MSG = "Cannot determine preferred package without satisfying it.";
 
   private CustomTabsActivitiesHelper mCustomTabsResolver;
   private CustomTabsConnectionHelper mConnectionHelper;
@@ -63,11 +65,10 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
       packageName = givenOfPreferredPackageName(packageName);
       mConnectionHelper.warmUp(packageName);
       Bundle result = new Bundle();
-      result.putString("type", "warming");
       result.putString(SERVICE_PACKAGE_KEY, packageName);
       promise.resolve(result);
-    } catch (NoPrefferedPackageFound ex) {
-      promise.reject(ERROR_CODE, "no_preferred_package");
+    } catch (NoPreferredPackageFound ex) {
+      promise.reject(ex);
     }
   }
 
@@ -77,17 +78,13 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
       packageName = givenOfPreferredPackageName(packageName);
       if (mConnectionHelper.coolDown(packageName)) {
         Bundle result = new Bundle();
-        result.putString("type", "cooling");
         result.putString(SERVICE_PACKAGE_KEY, packageName);
         promise.resolve(result);
       } else {
-        Bundle result = new Bundle();
-        result.putString("result", "Nothing to cool down");
-        result.putString(SERVICE_PACKAGE_KEY, packageName);
-        promise.resolve(result);
+        promise.resolve(new Bundle());
       }
-    } catch (NoPrefferedPackageFound ex) {
-      promise.reject(ERROR_CODE, "no_preferred_package");
+    } catch (NoPreferredPackageFound ex) {
+      promise.reject(ex);
     }
   }
 
@@ -97,12 +94,10 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
       packageName = givenOfPreferredPackageName(packageName);
       mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
       Bundle result = new Bundle();
-      result.putString("type", "mayInitWithUrl");
       result.putString(SERVICE_PACKAGE_KEY, packageName);
-      result.putString("url", url);
       promise.resolve(result);
-    } catch (NoPrefferedPackageFound ex) {
-      promise.reject(ERROR_CODE, "no_preferred_package");
+    } catch (NoPreferredPackageFound ex) {
+      promise.reject(ex);
     }
   }
 
@@ -127,7 +122,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
 
       promise.resolve(result);
     } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
-      promise.reject(ERROR_CODE, "Unable to determine list of supporting applications");
+      promise.reject(ex);
     }
   }
 
@@ -142,15 +137,13 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
       if (activities.size() > 0) {
         mCustomTabsResolver.startCustomTabs(intent);
         Bundle result = new Bundle();
-        result.putString("type", "openBrowser");
+        result.putString("type", "opened");
         promise.resolve(result);
       } else {
         promise.reject(ERROR_CODE, "No matching activity!");
       }
-    } catch (CurrentActivityNotFoundException ex) {
-      promise.reject(ERROR_CODE, "No activity");
-    } catch (PackageManagerNotFoundException ex) {
-      promise.reject(ERROR_CODE, "No package manager");
+    } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
+      promise.reject(ex);
     }
 
   }
@@ -180,16 +173,16 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
     return intent;
   }
 
-  private String givenOfPreferredPackageName(@Nullable String packageName) throws NoPrefferedPackageFound {
+  private String givenOfPreferredPackageName(@Nullable String packageName) throws NoPreferredPackageFound {
     try {
       if (TextUtils.isEmpty(packageName)) {
         packageName = mCustomTabsResolver.getPreferredCustomTabsResolvingActivity(null);
       }
     } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
-      throw new NoPrefferedPackageFound();
+      throw new NoPreferredPackageFound(NO_PREFERRED_PACKAGE_MSG);
     }
     if (TextUtils.isEmpty(packageName)) {
-      throw new NoPrefferedPackageFound();
+      throw new NoPreferredPackageFound(NO_PREFERRED_PACKAGE_MSG);
     }
     return packageName;
   }

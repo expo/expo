@@ -40,8 +40,8 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   A dictionaty with following key-value pairs:
 
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
-  - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **collapseToolbar (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
+  - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
   - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
 
@@ -49,9 +49,9 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
 
 #### Returns
 
-Prmise behaves differently on iOS and Android.
+The promise behaves differently on iOS and Android.
 
-On Android promise resolves with `{type: 'openBrowser'}` if we were able to open browser.
+On Android promise resolves with `{type: 'opened'}` if we were able to open browser.
 
 On iOS:
 
@@ -85,11 +85,11 @@ This method calls `warmUp` method on [CustomTabsClient](<https://developer.andro
 
 #### Returns
 
-A promise resolving with `{ type: 'warming', package: string }`
+A promise resolving with `{ package: string }`
 
 ### `WebBrowser.mayInitWithUrlAsync(url, package)`
 
-_Andrdoi only_
+_Android only_
 
 This method initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/android/support/customtabs/CustomTabsSession.html#maylaunchurl) and calls its `mayLaunchUrl` method for browser specified by the package.
 
@@ -100,11 +100,11 @@ This method initiates (if needed) [CustomTabsSession](https://developer.android.
 
 #### Returns
 
-The promise resolves with `{ type: 'mayInitWithUrl', package: string, url: string }`.
+The promise resolves with `{ package: string }`.
 
 ### `WebBrowser.coolDownAsync(browserPackage)`
 
-_Andrdoi only_
+_Android only_
 
 This methods removes all bindings to services created by [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage) or [`mayInitWithUrlAsync`](#webbrowseramayinitwithurlsyncurl-package). You should call this method once you don't need them to avoid potential memory leaks. However, those binding would be cleared once your application is destroyed, which might be sufficient in most cases.
 
@@ -114,7 +114,7 @@ This methods removes all bindings to services created by [`warmUpAsync`](#webbro
 
 #### Returns
 
-The promise resolves with `{ type: 'cooling', package: string }` when cooling is performed, or `{ result: 'Nothing to cool down' }` when there was no connection to be dismissed.
+The promise resolves with `{ package: string }` when cooling is performed, or an empty object when there was no connection to be dismissed.
 
 ### `WebBrowser.dismissBrowser()`
 
@@ -130,17 +130,17 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 _Android only_
 
-Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and prefered one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to defult.)
+Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preferred one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to defult.)
 
 #### Returns
 
 The promise resolves with `{ browserPackages: string[], defaultPackage: string, servicePackages: string[], preferredPackage: string }`
 
-- **browserPackages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
-- **defaultPackage (_string_)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
-- **servicePackages (_string[]_)** : All packages recognized by PackageManager as capable of handling Custom Tabs Service. This service is used by [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [`coolDownAsync`](#webbrowsercooldownasyncbrowserpackage).
-- **preferredPackage (_string_)** : Package preferred by CustomTabsClient to be used to handle Custom Tabs. It favors browser chosen by user as default, as long as it is present on both `browserPackages` and `servicePackages` lists. Only such browsers are considered as fully supporting Custom Tabs. It might be `null` when there is no such browser installed or when default browser is not on `servicePackages` list.
+- **browserPackages (_string[]_)** : All packages recognized by `PackageManager` as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
+- **defaultPackage (_string_ | null)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
+- **servicePackages (_string[]_)** : All packages recognized by `PackageManager` as capable of handling Custom Tabs Service. This service is used by [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [`coolDownAsync`](#webbrowsercooldownasyncbrowserpackage).
+- **preferredPackage (_string_ | null)** : Package preferred by `CustomTabsClient` to be used to handle Custom Tabs. It favors browser chosen by user as default, as long as it is present on both `browserPackages` and `servicePackages` lists. Only such browsers are considered as fully supporting Custom Tabs. It might be `null` when there is no such browser installed or when default browser is not in `servicePackages` list.
 
-In general, services are used to perform background tasks. If a browser is available on `servicePackage` list, it should be capable of performing [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [`coolDownAsync`](#webbrowsercooldownasyncbrowserpackage). For opening an actual webPage, browser must be on `browserPackages` list. Browser has to be on both lists to be considered as fully supporting Custom Tabs.
+In general, services are used to perform background tasks. If a browser is available in `servicePackage` list, it should be capable of performing [`warmUpAsync`](#webbrowserwarmupasyncnbrowserpackage), [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-package) and [`coolDownAsync`](#webbrowsercooldownasyncbrowserpackage). For opening an actual web page, browser must be in `browserPackages` list. A browser has to be present in both lists to be considered as fully supporting Custom Tabs.
 
 #
