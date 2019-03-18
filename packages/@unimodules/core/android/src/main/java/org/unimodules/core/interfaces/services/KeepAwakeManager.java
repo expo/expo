@@ -1,11 +1,11 @@
 package org.unimodules.core.interfaces.services;
 
-import org.unimodules.core.Promise;
+import org.unimodules.core.errors.CurrentActivityNotFoundException;
 
 public interface KeepAwakeManager {
-  void activate(Promise promise);
+  void activate(Runnable done) throws CurrentActivityNotFoundException;
 
-  void deactivate(Promise promise);
+  void deactivate(Runnable done) throws CurrentActivityNotFoundException;
 
   boolean isActivated();
 }

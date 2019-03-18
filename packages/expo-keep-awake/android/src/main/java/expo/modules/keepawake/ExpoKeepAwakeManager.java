@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.view.WindowManager;
 
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.InternalModule;
@@ -15,8 +14,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule, ModuleRegistryConsumer {
-
-  private final static String NO_ACTIVITY_ERROR_CODE = "NO_CURRENT_ACTIVITY";
 
   private ModuleRegistry mModuleRegistry;
   private boolean mIsActivated;
@@ -36,44 +33,29 @@ public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule, M
   }
 
   @Override
-  public void activate(Promise promise) {
-    try {
-      final Activity activity = getCurrentActivity();
+  public void activate(final Runnable done) throws CurrentActivityNotFoundException {
+    final Activity activity = getCurrentActivity();
 
-      if (activity != null) {
-        activity.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            mIsActivated = true;
-          }
-        });
-      }
-
-      promise.resolve(true);
-    } catch (CurrentActivityNotFoundException ex) {
-      promise.reject(NO_ACTIVITY_ERROR_CODE, "Unable to activate keep awake");
+    if (activity != null) {
+      activity.runOnUiThread(() -> {
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mIsActivated = true;
+        done.run();
+      });
     }
   }
 
   @Override
-  public void deactivate(Promise promise) {
-    try {
-      final Activity activity = getCurrentActivity();
+  public void deactivate(final Runnable done) throws CurrentActivityNotFoundException {
+    final Activity activity = getCurrentActivity();
 
-      if (activity != null) {
-        activity.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            mIsActivated = false;
-            activity.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-          }
-        });
-      }
-      promise.resolve(true);
-    } catch (CurrentActivityNotFoundException ex) {
-      promise.reject(NO_ACTIVITY_ERROR_CODE, "Unable to deactivate keep awake. However, it probably is deactivated already.");
+    if (activity != null) {
+      activity.runOnUiThread(() -> {
+        mIsActivated = false;
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+      });
     }
+    done.run();
   }
 
   @Override
