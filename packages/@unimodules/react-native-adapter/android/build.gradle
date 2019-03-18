@@ -61,6 +61,5 @@ dependencies {
   unimodule 'unimodules-font-interface'
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
-  compileOnly 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-native:+'
 }
-  
