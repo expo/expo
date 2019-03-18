@@ -91,7 +91,6 @@ import versioned.host.exp.exponent.modules.api.components.webview.events.TopShou
 public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
   protected static final String REACT_CLASS = "RNCWebView";
-  private RNCWebViewPackage aPackage;
 
   protected static final String HTML_ENCODING = "UTF-8";
   protected static final String HTML_MIME_TYPE = "text/html";
@@ -373,7 +372,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
   @Override
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  protected WebView createViewInstance(ThemedReactContext reactContext) {
+  protected WebView createViewInstance(final ThemedReactContext reactContext) {
     RNCWebView webView = createRNCWebViewInstance(reactContext);
     webView.setWebChromeClient(new WebChromeClient() {
       @Override
@@ -408,15 +407,15 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
       }
 
       protected void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType) {
-        getModule().startPhotoPickerIntent(filePathCallback, acceptType);
+        getModule(reactContext).startPhotoPickerIntent(filePathCallback, acceptType);
       }
 
       protected void openFileChooser(ValueCallback<Uri> filePathCallback) {
-        getModule().startPhotoPickerIntent(filePathCallback, "");
+        getModule(reactContext).startPhotoPickerIntent(filePathCallback, "");
       }
 
       protected void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType, String capture) {
-        getModule().startPhotoPickerIntent(filePathCallback, acceptType);
+        getModule(reactContext).startPhotoPickerIntent(filePathCallback, acceptType);
       }
 
       @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -425,7 +424,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
         String[] acceptTypes = fileChooserParams.getAcceptTypes();
         boolean allowMultiple = fileChooserParams.getMode() == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE;
         Intent intent = fileChooserParams.createIntent();
-        return getModule().startPhotoPickerIntent(filePathCallback, intent, acceptTypes, allowMultiple);
+        return getModule(reactContext).startPhotoPickerIntent(filePathCallback, intent, acceptTypes, allowMultiple);
       }
     });
     reactContext.addLifecycleEventListener(webView);
@@ -455,7 +454,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
 
     webView.setDownloadListener(new DownloadListener() {
       public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-        RNCWebViewModule module = getModule();
+        RNCWebViewModule module = getModule(reactContext);
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
 
@@ -796,15 +795,7 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     eventDispatcher.dispatchEvent(event);
   }
 
-  public RNCWebViewPackage getPackage() {
-    return this.aPackage;
-  }
-
-  public void setPackage(RNCWebViewPackage aPackage) {
-    this.aPackage = aPackage;
-  }
-
-  public RNCWebViewModule getModule() {
-    return this.aPackage.getModule();
+  public RNCWebViewModule getModule(ReactContext reactContext) {
+    return reactContext.getNativeModule(RNCWebViewModule.class);
   }
 }

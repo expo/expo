@@ -37,9 +37,6 @@ import static android.app.Activity.RESULT_OK;
 
 public class RNCWebViewModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
-  private final ReactApplicationContext reactContext;
-  private RNCWebViewPackage aPackage;
-
   private static final int PICKER = 1;
   private static final int PICKER_LEGACY = 3;
 
@@ -54,7 +51,6 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
 
   public RNCWebViewModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.reactContext = reactContext;
     reactContext.addActivityEventListener(this);
   }
 
@@ -218,14 +214,6 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
     }
 
     return result;
-  }
-
-  public RNCWebViewPackage getPackage() {
-    return this.aPackage;
-  }
-
-  public void setPackage(RNCWebViewPackage aPackage) {
-    this.aPackage = aPackage;
   }
 
   private Intent getPhotoIntent() {
