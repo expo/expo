@@ -7,7 +7,7 @@ const ExpoPackageJson = require('expo/package.json');
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
-declare var __DEV__: boolean;
+const __DEV__ = process.env.NODE_ENV !== 'production';
 declare var process: { env: any };
 declare var navigator: Navigator;
 declare var location: Location;

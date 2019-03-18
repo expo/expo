@@ -11,6 +11,9 @@ type SerializedData = {
   includesStack: boolean;
 };
 
+declare var process: { env: any };
+const __DEV__ = process.env.NODE_ENV !== 'production';
+
 export const EXPO_CONSOLE_METHOD_NAME = '__expoConsoleLog';
 
 async function serializeLogDataAsync(data: unknown[], level: LogLevel): Promise<SerializedData> {

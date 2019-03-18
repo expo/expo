@@ -5,6 +5,7 @@ import ExpoFontLoader from './ExpoFontLoader';
 const isWeb = Platform.OS === 'web';
 const loaded = {};
 const loadPromises = {};
+const __DEV__ = process.env.NODE_ENV !== 'production';
 export function processFontFamily(name) {
     if (typeof name !== 'string' || Constants.systemFonts.includes(name) || name === 'System') {
         return name;

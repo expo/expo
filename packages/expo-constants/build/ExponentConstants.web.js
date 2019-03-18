@@ -3,6 +3,7 @@ import uuidv4 from 'uuid/v4';
 const ExpoPackageJson = require('expo/package.json');
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
+const __DEV__ = process.env.NODE_ENV !== 'production';
 const _sessionId = uuidv4();
 export default {
     get name() {
