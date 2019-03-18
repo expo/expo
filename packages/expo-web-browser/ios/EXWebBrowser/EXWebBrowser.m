@@ -4,8 +4,6 @@
 #import <EXWebBrowser/EXWebBrowser.h>
 
 #import <UMCore/UMUtilities.h>
-#import <EXWebBrowser/UIColor+Extension.h>
-
 
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
 
@@ -212,7 +210,7 @@ UM_EXPORT_METHOD_AS(dismissAuthSession,
   _moduleRegistry = moduleRegistry;
 }
 
-+ (UIColor *)convertHexColorString:(NSString *)stringToConvert:(NSString *)stringToConvert {
+- (UIColor *)convertHexColorString:(NSString *)stringToConvert:(NSString *)stringToConvert {
   NSString *strippedString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
   NSScanner *scanner = [NSScanner scannerWithString:strippedString];
   unsigned hexNum;
@@ -220,7 +218,7 @@ UM_EXPORT_METHOD_AS(dismissAuthSession,
   return [EXWebBrowser colorWithRGBHex:hexNum];
 }
 
-+ (UIColor *)colorWithRGBHex:(UInt32)hex {
+- (UIColor *)colorWithRGBHex:(UInt32)hex {
   int r = (hex >> 16) & 0xFF;
   int g = (hex >> 8) & 0xFF;
   int b = (hex) & 0xFF;
