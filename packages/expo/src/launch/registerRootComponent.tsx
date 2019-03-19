@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Platform } from 'react-native';
 import withExpoRoot from './withExpoRoot';
 import { InitialProps } from './withExpoRoot.types';
 
@@ -8,4 +8,7 @@ export default function registerRootComponent<P extends InitialProps>(
 ): void {
   // @ts-ignore: TypeScript says ComponentClass<P> does not satisfy ComponentClass<any>
   AppRegistry.registerComponent('main', () => withExpoRoot(component));
+  if (Platform.OS === 'web' && document.getElementById) {
+    AppRegistry.runApplication('main', { rootTag: document.getElementById('main') });
+  }
 }
