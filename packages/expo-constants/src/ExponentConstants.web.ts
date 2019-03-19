@@ -76,7 +76,6 @@ export default {
   },
   get deviceYearClass(): number | null {
     // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
-    console.log(`ExponentConstants.deviceYearClass: is unimplemented on web.`);
     return null;
   },
   get manifest(): WebManifest {

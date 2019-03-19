@@ -331,138 +331,138 @@ PODS:
   - Crashlytics (3.12.0):
     - Fabric (~> 1.9.0)
   - DoubleConversion (1.1.6)
-  - EXAdsAdMob (3.0.0):
+  - EXAdsAdMob (4.0.0):
     - Google-Mobile-Ads-SDK
     - UMCore
-  - EXAdsFacebook (3.0.0):
+  - EXAdsFacebook (4.0.0):
     - FBAudienceNetwork
     - UMCore
-  - EXAmplitude (3.0.0):
+  - EXAmplitude (4.0.0):
     - Amplitude-iOS
     - UMConstantsInterface
     - UMCore
-  - EXAppAuth (3.0.0):
+  - EXAppAuth (4.0.0):
     - AppAuth
     - UMCore
-  - EXAppLoaderProvider (3.0.0)
-  - EXAV (3.0.0):
+  - EXAppLoaderProvider (4.0.0)
+  - EXAV (4.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXBackgroundFetch (3.0.0):
+  - EXBackgroundFetch (4.0.0):
     - UMCore
     - UMTaskManagerInterface
-  - EXBarCodeScanner (3.0.0):
+  - EXBarCodeScanner (4.0.0):
     - UMCore
-  - EXBlur (3.0.0):
+  - EXBlur (4.0.0):
     - UMCore
-  - EXBrightness (3.0.0):
+  - EXBrightness (4.0.0):
     - UMCore
-  - EXCalendar (3.0.0):
+  - EXCalendar (4.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXCamera (3.0.0):
+  - EXCamera (4.0.0):
     - UMBarCodeScannerInterface
     - UMCore
     - UMFaceDetectorInterface
     - UMFileSystemInterface
     - UMImageLoaderInterface
     - UMPermissionsInterface
-  - EXConstants (3.0.0):
+  - EXConstants (4.0.0):
     - UMConstantsInterface
     - UMCore
-  - EXContacts (3.0.0):
+  - EXContacts (4.0.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
-  - EXCrypto (3.0.0):
+  - EXCrypto (4.0.0):
     - UMCore
-  - EXDocumentPicker (3.0.0):
+  - EXDocumentPicker (4.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFacebook (3.0.0):
+  - EXFacebook (4.0.0):
     - FBSDKCoreKit
     - FBSDKLoginKit
     - UMConstantsInterface
     - UMCore
-  - EXFaceDetector (3.0.0):
+  - EXFaceDetector (4.0.0):
     - GoogleMobileVision/FaceDetector (~> 1.1.0)
     - GoogleMobileVision/MVDataOutput (~> 1.1.0)
     - UMCore
     - UMFaceDetectorInterface
-  - EXFileSystem (3.0.1):
+  - EXFileSystem (4.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFont (3.0.1):
+  - EXFont (4.0.0):
     - UMCore
     - UMFontInterface
-  - EXGL (3.0.1):
+  - EXGL (4.0.0):
     - EXGL-CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL-CPP (3.0.0):
-    - EXGL-CPP/UEXGL (= 3.0.0)
-  - EXGL-CPP/UEXGL (3.0.0)
-  - EXGoogleSignIn (3.0.0):
+  - EXGL-CPP (4.0.0):
+    - EXGL-CPP/UEXGL (= 4.0.0)
+  - EXGL-CPP/UEXGL (4.0.0)
+  - EXGoogleSignIn (4.0.0):
     - GoogleSignIn (~> 4.4)
     - UMCore
-  - EXHaptics (3.0.0):
+  - EXHaptics (4.0.0):
     - UMCore
-  - EXImageManipulator (3.0.0):
+  - EXImageManipulator (4.0.0):
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (3.0.0):
+  - EXImagePicker (4.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXKeepAwake (3.0.0):
+  - EXKeepAwake (4.0.0):
     - UMCore
-  - EXLinearGradient (3.0.0):
+  - EXLinearGradient (4.0.0):
     - UMCore
-  - EXLocalAuthentication (3.0.0):
+  - EXLocalAuthentication (4.0.0):
     - UMConstantsInterface
     - UMCore
-  - EXLocalization (3.0.0):
+  - EXLocalization (4.0.0):
     - UMCore
-  - EXLocation (3.0.0):
+  - EXLocation (4.0.0):
     - UMCore
     - UMPermissionsInterface
     - UMTaskManagerInterface
-  - EXMailComposer (3.0.0):
+  - EXMailComposer (4.0.0):
     - UMCore
-  - EXMediaLibrary (3.0.0):
-    - UMCore
-    - UMPermissionsInterface
-  - EXPermissions (3.0.0):
+  - EXMediaLibrary (4.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXPrint (3.0.0):
+  - EXPermissions (4.0.0):
     - UMCore
-  - EXRandom (3.0.0):
+    - UMPermissionsInterface
+  - EXPrint (4.0.0):
     - UMCore
-  - EXSecureStore (3.0.0):
+  - EXRandom (4.0.0):
     - UMCore
-  - EXSegment (3.0.0):
+  - EXSecureStore (4.0.0):
+    - UMCore
+  - EXSegment (4.0.0):
     - Analytics (~> 3.5)
     - UMConstantsInterface
     - UMCore
-  - EXSensors (3.0.1):
+  - EXSensors (4.0.0):
     - UMCore
     - UMSensorsInterface
-  - EXSharing (1.0.1):
+  - EXSharing (2.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXSMS (3.0.0):
+  - EXSMS (4.0.0):
     - UMCore
-  - EXSpeech (3.0.0):
+  - EXSpeech (4.0.0):
     - UMCore
-  - EXSQLite (3.0.0):
+  - EXSQLite (4.0.0):
     - UMCore
-  - EXTaskManager (3.0.0):
+  - EXTaskManager (4.0.0):
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
-  - EXWebBrowser (3.0.0):
+  - EXWebBrowser (4.0.0):
     - UMCore
   - Fabric (1.9.0)
   - FBAudienceNetwork (5.1.1)
@@ -1156,7 +1156,7 @@ PODS:
   - UMFontInterface (1.0.0)
   - UMImageLoaderInterface (1.0.0)
   - UMPermissionsInterface (1.0.0)
-  - UMReactNativeAdapter (1.0.0):
+  - UMReactNativeAdapter (1.0.1):
     - React
     - UMCore
     - UMFontInterface

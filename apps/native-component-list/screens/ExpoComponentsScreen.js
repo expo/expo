@@ -34,6 +34,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'Screens',
       'SVG',
       'Video',
+      'WebView',
     ];
     return screens
       .map(name => ({ name, isAvailable: !!Screens[name] }))

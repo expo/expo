@@ -22,7 +22,7 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
 // Include unimodules.
-includeUnimodules([
+includeUnimodulesProjects([
     modulesPaths: ['../../packages'],
     target: 'react-native',
     exclude: [

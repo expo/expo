@@ -3,18 +3,20 @@ const puppeteer = require('puppeteer');
 
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const getConfig = require('../webpack/webpack.dev');
+const getConfig = require('../webpack.ci');
 
-const config = getConfig();
+const config = getConfig({ development: true });
+
+const { devServer = {} } = config;
 
 const options = {
-  ...config.devServer,
+  ...devServer,
   hot: true,
   inline: true,
   stats: { colors: true },
 };
 
-const port = 8080;
+const port = 19003;
 
 const manuallyRunWebpack = true;
 

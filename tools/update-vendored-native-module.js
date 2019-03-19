@@ -33,8 +33,8 @@ module.exports = function updateVendoredNativeModule(options) {
     return find(dir).filter(file => file.match(regex));
   }
 
-  function findJavaFiles(dir) {
-    return find(dir).filter(file => file.match(/.*\.java$/));
+  function findAndroidFiles(dir) {
+    return find(dir).filter(file => file.match(/.*\.(java|kt)$/));
   }
 
   function renamePackageAndroid(file) {
@@ -113,7 +113,7 @@ module.exports = function updateVendoredNativeModule(options) {
   // Android
   if (argv.android || argv.allPlatforms) {
     echo(`Copying Android files...`);
-    let javaFiles = findJavaFiles(TMP_ANDROID_DIR);
+    let javaFiles = findAndroidFiles(TMP_ANDROID_DIR);
     for (let javaFile of javaFiles) {
       let javaFileRelativePath = path.relative(TMP_ANDROID_DIR, javaFile);
       let javaFileTargetPath = path.join(TARGET_ANDROID_DIR, javaFileRelativePath);
@@ -121,7 +121,7 @@ module.exports = function updateVendoredNativeModule(options) {
       cp(javaFile, javaFileTargetPath);
     }
 
-    findJavaFiles(TARGET_ANDROID_DIR).forEach(file => {
+    findAndroidFiles(TARGET_ANDROID_DIR).forEach(file => {
       renamePackageAndroid(file);
     });
   }

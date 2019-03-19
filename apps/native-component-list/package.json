@@ -18,7 +18,7 @@
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
     "eslint": "^5.4.0",
-    "expo": "^32.0.0-rc.3",
+    "expo": "^33.0.0-alpha.web.0",
     "expo-cli": "^2.7.1",
     "expo-processing": "~2.0.0",
     "expo-three": "^3.0.0-alpha.6",
@@ -47,7 +47,7 @@
     "victory-native": "^30.4.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
+    "babel-preset-expo": "^5.1.0",
     "expo-yarn-workspaces": "^1.0.0",
     "serve": "^10.1.2"
   },

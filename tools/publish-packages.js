@@ -310,6 +310,11 @@ function _isMaintainer(username, packageView) {
   });
 }
 
+function _requireUnimoduleConfig(dir) {
+  const unimoduleConfigPath = path.join(dir, 'unimodule.json');
+  return fs.existsSync(unimoduleConfigPath) ? require(unimoduleConfigPath) : null;
+}
+
 async function _preparePublishAsync({ libName, dir }, allConfigs, options) {
   const isScoped = (options.scope.length === 0 || options.scope.includes(libName)) && !options.exclude.includes(libName);
   // early bailout
@@ -407,6 +412,8 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
       continue;
     }
 
+    const escapedLibName = config.libName.replace(/\//g, '\\\\');
+
     console.log(
       `${chalk.yellow('>')} Dependency ${chalk.green(config.libName)} updated to ${chalk.red(
         config.newVersion
@@ -415,18 +422,18 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
 
     // updates dependencies in package.json
     _runCommand(
-      `${SED} -i -- 's/"${config.libName}": "[^"]*"/"${config.libName}": "~${config.newVersion}"/g' package.json`,
+      `${SED} -i -- 's/"${escapedLibName}": "[^"]*"/"${escapedLibName}": "~${config.newVersion}"/g' package.json`,
     );
 
     if (fs.existsSync(path.join(dir, 'yarn.lock'))) {
       const commands = [
         // updates dependencies in yarn.lock
-        `${SED} -z -i -- 's/"${config.libName}@[^"]*"[:,]\\n  version "[^"]*"/"${config.libName}@~${config.newVersion}":\\n  version "${config.newVersion}"/' yarn.lock`,
-        `${SED} -z -i -- 's/${config.libName}@[^:,]*[:,]\\n  version "[^"]*"/${config.libName}@~${config.newVersion}:\\n  version "${config.newVersion}"/' yarn.lock`,
-        `${SED} -z -i -- 's/${config.libName} "[^"]*"/${config.libName} "~${config.newVersion}"/g' yarn.lock`,
+        `${SED} -z -i -- 's/"${escapedLibName}@[^"]*"[:,]\\n  version "[^"]*"/"${escapedLibName}@~${config.newVersion}":\\n  version "${config.newVersion}"/' yarn.lock`,
+        `${SED} -z -i -- 's/${escapedLibName}@[^:,]*[:,]\\n  version "[^"]*"/${escapedLibName}@~${config.newVersion}:\\n  version "${config.newVersion}"/' yarn.lock`,
+        `${SED} -z -i -- 's/${escapedLibName} "[^"]*"/${escapedLibName} "~${config.newVersion}"/g' yarn.lock`,
 
         // updates resolved links in yarn.lock
-        `${SED} -i -- 's/-\\/${config.libName}-[0-9].*\\.tgz#[^"]*"/-\\/${config.libName}-${config.newVersion}.tgz"/g' yarn.lock`,
+        `${SED} -i -- 's/-\\/${escapedLibName}-[0-9].*\\.tgz#[^"]*"/-\\/${escapedLibName}-${config.newVersion}.tgz"/g' yarn.lock`,
       ];
       commands.map(_runCommand);
     }
@@ -480,7 +487,7 @@ async function _saveGitHeadAsync({ shouldPublish, dir }) {
   await fs.writeFile(packagePath, JSON.stringify(packageJson, null, 2) + '\n', 'utf8');
 }
 
-async function _prepackAsync({ libName, newVersion, shouldPublish }) {
+async function _prepackAsync({ libName, libSlug, newVersion, shouldPublish }) {
   if (!shouldPublish) {
     return;
   }
@@ -490,7 +497,7 @@ async function _prepackAsync({ libName, newVersion, shouldPublish }) {
   // Unfortunately, pack command sends notice logs to stderr :(
   _runCommand('npm pack 2>/dev/null');
 
-  const filename = `${libName}-${newVersion}.tgz`;
+  const filename = `${libSlug}-${newVersion}.tgz`;
 
   return {
     tarball: { filename },
@@ -630,8 +637,8 @@ async function _updateAndroidDependenciesAsync(allConfigs) {
   }
 
   function updateAndroidDependenciesInFileAsync(file, dependencies) {
-    for (const { libName, newVersion } of dependencies) {
-      const dependencyName = `host.exp.exponent:${libName}`;
+    for (const { libSlug, newVersion } of dependencies) {
+      const dependencyName = `host.exp.exponent:${libSlug}`;
 
       console.log(chalk.yellow('>'), `Updating ${chalk.green(dependencyName)} dependency`);
       _runCommand(
@@ -684,11 +691,17 @@ async function publishPackagesAsync() {
   // pass our profile as an option to the pipelines
   options.npmProfile = npmProfile;
 
+  const { exp: { sdkVersion } } = JSON.parse(await fs.readFile('../package.json'));
+
   const publishConfigs = new Map();
-  const modules = Modules.getPublishableModules().map(module => {
+  const modules = Modules.getPublishableModules(argv.abi || sdkVersion).map(module => {
+    const dir = `${ROOT_DIR}/packages/${module.libName}`;
+    const unimoduleConfig = _requireUnimoduleConfig(dir);
+
     return {
       ...module,
-      dir: `${ROOT_DIR}/packages/${module.libName}`,
+      libSlug: unimoduleConfig && unimoduleConfig.name || module.libName,
+      dir,
     };
   });
 

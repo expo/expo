@@ -8,6 +8,7 @@ import Gif from '../screens/GifScreen';
 import LinearGradient from '../screens/LinearGradientScreen';
 import Maps from '../screens/MapsScreen';
 import Video from '../screens/AV/VideoScreen';
+import WebView from '../screens/WebViewScreen';
 
 function optionalRequire(requirer) {
   try {
@@ -48,6 +49,7 @@ const optionalScreens = {
   Maps,
   Video,
   Screens: ScreensScreens,
+  WebView,
 };
 
 export const Screens = Object.keys(optionalScreens).reduce((acc, key) => {

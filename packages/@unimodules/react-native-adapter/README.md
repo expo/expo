@@ -14,6 +14,8 @@ $ npm install @unimodules/react-native-adapter --save
 
 ## Installation
 
+If you are using `react-native-unimodules`, this package will already be installed and configured!
+
 ### iOS (Cocoapods)
 
 If you're using Cocoapods, add the dependency to your `Podfile`:

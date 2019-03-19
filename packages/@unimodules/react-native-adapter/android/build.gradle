@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'org.unimodules'
-version = '1.0.0'
+version = '1.0.1'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -46,8 +46,8 @@ android {
   defaultConfig {
     minSdkVersion 21
     targetSdkVersion 26
-    versionCode 1
-    versionName "1.0.0"
+    versionCode 3
+    versionName "1.0.1"
   }
   lintOptions {
     abortOnError false
@@ -61,6 +61,7 @@ dependencies {
   unimodule 'unimodules-font-interface'
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
-  compileOnly 'com.facebook.react:react-native:+'
+  compileOnly('com.facebook.react:react-native:+') {
+    exclude group: 'com.android.support'
+  }
 }
-  

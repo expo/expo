@@ -12,6 +12,8 @@ $ npm install @unimodules/core --save
 
 ## Installation
 
+If you are using `react-native-unimodules`, this package will already be installed and configured!
+
 ### iOS (Cocoapods)
 
 If you're using Cocoapods, add the following dependency to your `Podfile`:

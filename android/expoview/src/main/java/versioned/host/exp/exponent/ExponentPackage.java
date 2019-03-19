@@ -12,6 +12,9 @@ import com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -22,9 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
@@ -44,6 +44,8 @@ import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.R
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
+import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
+import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
@@ -172,7 +174,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNAWSCognitoModule(reactContext));
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
-
+        nativeModules.add(new RNCWebViewModule(reactContext));
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 
@@ -200,7 +202,8 @@ public class ExponentPackage implements ReactPackage {
         new MapsPackage(),
         new LottiePackage(),
         new RNGestureHandlerPackage(),
-        new RNScreensPackage()
+        new RNScreensPackage(),
+        new RNCWebViewPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));
