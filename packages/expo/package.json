@@ -130,7 +130,7 @@
     "react-native-branch": "2.2.5",
     "react-native-gesture-handler": "^1.1.0",
     "react-native-maps": "expo/react-native-maps#v0.23.0-exp.0",
-    "react-native-reanimated": "1.0.0-alpha.11",
+    "react-native-reanimated": "1.0.0-alpha.12",
     "react-native-screens": "1.0.0-alpha.22",
     "react-native-svg": "9.3.6",
     "react-native-view-shot": "2.5.0",
@@ -154,9 +154,9 @@
     "@types/react-native": "^0.57.17",
     "@types/react-test-renderer": "^16.0.2",
     "expo-module-scripts": "^1.0.0",
-    "react": "16.5.0",
-    "react-native": "^0.57.1",
-    "react-test-renderer": "16.5.0"
+    "react": "16.8.3",
+    "react-native": "0.59.3",
+    "react-test-renderer": "16.8.3"
   },
   "gitHead": "354cdc348a81b23f4fe9ad036cc06e1afddd0e01"
 }
