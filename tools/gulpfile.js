@@ -340,6 +340,20 @@ gulp.task('update-react-native-webview', () => {
   });
 });
 
+gulp.task('update-react-native-netinfo', () => {
+  return updateVendoredNativeModule({
+    argv,
+    name: 'react-native-netinfo',
+    repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
+    sourceIosPath: 'ios',
+    sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/netinfo',
+    targetIosPath: 'Api/NetInfo',
+    targetAndroidPath: 'modules/api/netinfo',
+    sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
+  });
+});
+
 // Upload kernel bundles
 gulp.task('bundle', saveKernelBundlesAsync);
 gulp.task('android-jarjar-on-aar', androidVersionLibraries.runJarJarOnAAR);
