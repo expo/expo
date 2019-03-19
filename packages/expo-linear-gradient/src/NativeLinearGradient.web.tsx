@@ -87,28 +87,30 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     return this.props.colors.map(this.convertJSColorToGradientSafeColor);
   };
 
-  getBackgroundImage = (): string => {
+  getBackgroundImage = (): string | null => {
     if (this.state.width && this.state.height) {
       return `linear-gradient(${this.calculateGradientAngleFromControlPoints()}deg, ${this.getWebGradientColorStyle()})`;
     }
-    return `transparent`;
+    return null;
   };
 
   render() {
     const { colors, locations, startPoint, endPoint, onLayout, style, ...props } = this.props;
-
-    let flatStyle = style;
     const backgroundImage = this.getBackgroundImage();
-    if (backgroundImage) {
-      let compiledStyle = StyleSheet.flatten(style) || {};
-      flatStyle = {
-        ...compiledStyle,
-        // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
-        backgroundImage: this.getBackgroundImage(),
-      };
-    }
     // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
-    return <View style={flatStyle} onLayout={this.onLayout} {...props} />;
+    return (
+      <View
+        style={[
+          style,
+          backgroundImage != null && {
+            // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
+            backgroundImage,
+          },
+        ]}
+        onLayout={this.onLayout}
+        {...props}
+      />
+    );
   }
 }
 
