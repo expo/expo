@@ -5,6 +5,7 @@ const { resolve } = require('path');
 const shell = require('gulp-shell');
 const argv = require('minimist')(process.argv.slice(2));
 const { Modules } = require('xdl');
+const chalk = require('chalk');
 
 const { saveKernelBundlesAsync } = require('./bundle-tasks');
 const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
@@ -321,6 +322,21 @@ gulp.task('update-react-native-screens', () => {
     targetAndroidPath: 'modules/api/screens',
     sourceAndroidPackage: 'com.swmansion.rnscreens',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
+  });
+});
+
+gulp.task('update-react-native-webview', () => {
+  console.warn(chalk.bold(chalk.yellow(`\n\`react-native-webview\` exposes \`useSharedPool\` property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.\n\nSee commit 0e7d25bd9facba74828a0af971293d30f9ba22fc.\n`)));
+  return updateVendoredNativeModule({
+    argv,
+    name: 'react-native-webview',
+    repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
+    sourceIosPath: 'ios',
+    sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/webview',
+    targetIosPath: 'Api/Components/WebView',
+    targetAndroidPath: 'modules/api/components/webview',
+    sourceAndroidPackage: 'com.reactnativecommunity.webview',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
   });
 });
 
