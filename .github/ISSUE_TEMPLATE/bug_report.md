@@ -1,17 +1,10 @@
-# READ THIS FIRST, PLEASE!
+---
+name: "🐛 Bug Report in Expo SDK"
+about: You want to report a reproducible bug or regression in Expo SDK.
+labels: 'project: sdk'
+---
 
-Hello! Thanks for reporting an issue. Please make sure you're posting this in the right place:
-
-1. If this is an issue with Expo CLI, our command line tool, please post it in the
-  https://github.com/expo/expo-cli repo instead.
-2. If this is a feature request, please vote or post it at https://expo.canny.io instead.
-3. If you are unable to create a reproducible Snack example that demonstrates the bug/issue,
-  please first post in our forums at https://forums.expo.io/ before opening an issue here!
-  (Unless the bug/issue pertains to a standalone, non-ejected build)
-
-Thanks for helping us make Expo better!
-
-
+## 🐛 Bug Report
 
 ### Environment
 
@@ -27,12 +20,6 @@ Thanks for helping us make Expo better!
   Be specific! If the bug cannot be reproduced, your issue may be closed.
 -->
 
-(Write your steps here:)
-
-1.
-2.
-3.
-
 ### Expected Behavior
 
 <!--
@@ -40,8 +27,6 @@ Thanks for helping us make Expo better!
   It’s fine if you’re not sure your understanding is correct.
   Just write down what you thought would happen.
 -->
-
-(Write what you thought would happen.)
 
 ### Actual Behavior
 
@@ -51,8 +36,6 @@ Thanks for helping us make Expo better!
   Describe this section in detail, and attach screenshots if possible.
   Don't just say "it doesn't work"!
 -->
-
-(Write what happened. Add screenshots!)
 
 ### Reproducible Demo
 
@@ -69,8 +52,6 @@ Thanks for helping us make Expo better!
   This is a good guide to creating bug demos: https://stackoverflow.com/help/mcve
   Once you’re done, copy and paste the link to the Snack or a public GitHub repository below:
 -->
-
-(Paste the link to an example project and exact instructions to reproduce the issue.)
 
 <!--
   What happens if you skip this step?
