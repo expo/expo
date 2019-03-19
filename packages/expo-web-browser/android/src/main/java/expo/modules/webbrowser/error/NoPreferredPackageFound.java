@@ -10,6 +10,6 @@ public class NoPreferredPackageFound extends CodedException {
 
   @Override
   public String getCode() {
-    return "PREFFERED_PACKAGE_NOT_FOUND";
+    return "PREFERRED_PACKAGE_NOT_FOUND";
   }
 }
