@@ -23,8 +23,8 @@
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.4",
-    "react": "16.5.0",
-    "react-native": "0.57.1",
+    "react": "16.8.3",
+    "react-native": "0.59.0",
     "react-native-web": "^0.11.0",
     "sinon": "^7.1.1"
   },
