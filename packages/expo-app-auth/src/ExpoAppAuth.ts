@@ -1,3 +1,3 @@
 import { NativeModulesProxy } from '@unimodules/core';
 
-export default NativeModulesProxy.ExpoAppAuth;
+export default NativeModulesProxy.ExpoAppAuth || {};
