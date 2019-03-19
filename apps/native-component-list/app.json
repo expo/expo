@@ -21,7 +21,7 @@
     "packagerOpts": {
       "config": "rn-cli.config.js"
     },
-    "platforms": ["android", "ios", "web"],
+    "platforms": ["android", "ios"],
     "facebookScheme": "fb1201211719949057",
     "facebookAppId": "1201211719949057",
     "facebookDisplayName": "Expo APIs",

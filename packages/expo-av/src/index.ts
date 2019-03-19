@@ -1,3 +1,3 @@
 import * as Audio from './Audio';
-export { Audio };
-export { default as Video } from './Video';
+import * as Video from './Video';
+export { Audio, Video };

@@ -28,6 +28,7 @@ export type FaceFeature = {
   noseBasePosition?: Point;
   yawAngle?: number;
   rollAngle?: number;
+  faceID?: number;
 };
 
 type ValuesOf<T extends any[]> = T[number];
@@ -38,6 +39,13 @@ export type FaceDetectorLandmarks = ValuesOf<typeof ExpoFaceDetector.Landmarks>;
 
 export type FaceDetectorClassifications = ValuesOf<typeof ExpoFaceDetector.Classifications>;
 
+export interface Image {
+  uri: string;
+  width: number;
+  height: number;
+  orientation: number;
+}
+
 export type DetectionOptions = {
   mode?: FaceDetectorMode;
   detectLandmarks?: FaceDetectorLandmarks;
@@ -47,7 +55,7 @@ export type DetectionOptions = {
 export async function detectFacesAsync(
   uri: string,
   options: DetectionOptions = {}
-): Promise<FaceFeature[]> {
+): Promise<{ faces: FaceFeature[], image: Image }> {
   if (!ExpoFaceDetector.detectFaces) {
     throw new UnavailabilityError('expo-face-detector', 'detectFaces');
   }

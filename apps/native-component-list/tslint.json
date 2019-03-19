@@ -1,0 +1,12 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-standard",
+    "tslint-react",
+  ],
+  "rules": {
+    "object-literal-sort-keys": false,
+    "member-ordering": false,
+  }
+}

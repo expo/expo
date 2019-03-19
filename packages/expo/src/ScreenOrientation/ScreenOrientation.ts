@@ -21,6 +21,7 @@ export {
   PlatformOrientationInfo,
   OrientationChangeListener,
   OrientationChangeEvent,
+  WebOrientationLock,
 };
 
 const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);

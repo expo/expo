@@ -1,12 +1,12 @@
 import { EventEmitter } from '@unimodules/core';
 declare const LocationEventEmitter: EventEmitter;
-interface ProviderStatus {
+export interface ProviderStatus {
     locationServicesEnabled: boolean;
     gpsAvailable?: boolean;
     networkAvailable?: boolean;
     passiveAvailable?: boolean;
 }
-interface LocationOptions {
+export interface LocationOptions {
     accuracy?: LocationAccuracy;
     enableHighAccuracy?: boolean;
     timeInterval?: number;
@@ -14,7 +14,7 @@ interface LocationOptions {
     timeout?: number;
     mayShowUserSettingsDialog?: boolean;
 }
-interface LocationData {
+export interface LocationData {
     coords: {
         latitude: number;
         longitude: number;
@@ -25,18 +25,18 @@ interface LocationData {
     };
     timestamp: number;
 }
-interface HeadingData {
+export interface HeadingData {
     trueHeading: number;
     magHeading: number;
     accuracy: number;
 }
-interface GeocodedLocation {
+export interface GeocodedLocation {
     latitude: number;
     longitude: number;
     altitude?: number;
     accuracy?: number;
 }
-interface Address {
+export interface Address {
     city: string;
     street: string;
     region: string;
@@ -51,6 +51,7 @@ interface LocationTaskOptions {
     showsBackgroundLocationIndicator?: boolean;
     deferredUpdatesDistance?: number;
     deferredUpdatesTimeout?: number;
+    deferredUpdatesInterval?: number;
     foregroundService?: {
         notificationTitle: string;
         notificationBody: string;
@@ -90,7 +91,9 @@ export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
 export declare function enableNetworkProviderAsync(): Promise<void>;
 export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
 export declare function getHeadingAsync(): Promise<HeadingData>;
-export declare function watchHeadingAsync(callback: HeadingCallback): Promise<object>;
+export declare function watchHeadingAsync(callback: HeadingCallback): Promise<{
+    remove: () => void;
+}>;
 export declare function geocodeAsync(address: string): Promise<Array<GeocodedLocation>>;
 export declare function reverseGeocodeAsync(location: {
     latitude: number;

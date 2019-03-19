@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionType } from './Permissions.types';
+import { PermissionResponse, PermissionType, PermissionMap, PermissionStatus, PermissionExpiration, PermissionInfo } from './Permissions.types';
+export { PermissionStatus, PermissionResponse, PermissionExpiration, PermissionMap, PermissionInfo, };
 export declare const CAMERA = "camera";
 export declare const CAMERA_ROLL = "cameraRoll";
 export declare const AUDIO_RECORDING = "audioRecording";
