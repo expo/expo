@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 
@@ -52,6 +53,7 @@ buildscript {
 repositories {
   maven { url 'https://maven.fabric.io/public' }
   maven { url "https://jitpack.io" }
+  mavenCentral()
 }
 
 android {
@@ -117,6 +119,7 @@ apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'com.android.support:multidex:1.0.3'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
   testImplementation 'junit:junit:4.12'
 
