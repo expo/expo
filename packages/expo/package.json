@@ -150,13 +150,12 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
-    "@types/react": "^16.7.7",
-    "@types/react-native": "^0.57.17",
-    "@types/react-test-renderer": "^16.0.2",
+    "@types/react": "^16.8.14",
+    "@types/react-native": "^0.57.46",
+    "@types/react-test-renderer": "^16.8.1",
     "expo-module-scripts": "^1.0.0",
-    "react": "16.5.0",
-    "react-native": "^0.57.1",
-    "react-test-renderer": "16.5.0"
+    "react": "16.8.3",
+    "react-native": "0.59.5"
   },
   "gitHead": "354cdc348a81b23f4fe9ad036cc06e1afddd0e01"
 }
