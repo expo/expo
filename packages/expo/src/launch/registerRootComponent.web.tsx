@@ -11,5 +11,6 @@ export default function registerRootComponent<P extends InitialProps>(
   // @ts-ignore: TypeScript says ComponentClass<P> does not satisfy ComponentClass<any>
   const RootComponent = (...props) => <App exp={{}} {...props} />;
   AppRegistry.registerComponent('main', () => RootComponent);
-  AppRegistry.runApplication('main', { rootTag: document.getElementById('main') });
+  const rootTag = document.getElementById('root') || document.getElementById('main');
+  AppRegistry.runApplication('main', { rootTag });
 }

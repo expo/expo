@@ -32,7 +32,8 @@
     "@expo/webpack-config": "^0.1.4",
     "babel-loader": "^8.0.5",
     "expo-yarn-workspaces": "^1.0.0",
-    "serve": "^10.1.2"
+    "serve": "^10.1.2",
+    "webpack-cli": "^3.3.0"
   },
   "browserslist": [
     ">0.2%",
