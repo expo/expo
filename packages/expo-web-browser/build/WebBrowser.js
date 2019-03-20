@@ -7,6 +7,24 @@ export async function getCustomTabsSupportingBrowsersAsync() {
     }
     return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
 }
+export async function warmUpAsync(browserPackage) {
+    if (!ExponentWebBrowser.mayInitWithUrlAsync) {
+        throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
+    }
+    return ExponentWebBrowser.warmUpAsync(browserPackage);
+}
+export async function mayInitWithUrlAsync(url, browserPackage) {
+    if (!ExponentWebBrowser.mayInitWithUrlAsync) {
+        throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
+    }
+    return ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
+}
+export async function coolDownAsync(browserPackage) {
+    if (!ExponentWebBrowser.coolDownAsync) {
+        throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
+    }
+    return ExponentWebBrowser.coolDownAsync(browserPackage);
+}
 export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');

@@ -4,4 +4,6 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 
 @interface EXWebBrowser : UMExportedModule <UMModuleRegistryConsumer>
+
+
 @end

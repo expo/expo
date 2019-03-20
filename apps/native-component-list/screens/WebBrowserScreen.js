@@ -3,6 +3,7 @@ import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker, Platform } fr
 import { WebBrowser } from 'expo';
 import Button from '../components/Button';
 
+const url = 'https://expo.io';
 export default class WebBrowserScreen extends React.Component {
   static navigationOptions = {
     title: 'WebBrowser',
@@ -10,17 +11,24 @@ export default class WebBrowserScreen extends React.Component {
 
   state = {
     showTitle: false,
-    colorText: undefined,
-    packages: undefined,
-    selectedPackage: undefined,
+    controlsColorText: null,
+    packages: null,
+    selectedPackage: null,
+    lastWarmedPackage: null,
     barCollapsing: false,
   };
 
   componentDidMount() {
     Platform.OS === 'android' &&
-      WebBrowser.getCustomTabsSupportingBrowsersAsync().then(result => {
-        this.setState({ packages: result.packages.map(name => ({ label: name, value: name })) });
-      });
+      WebBrowser.getCustomTabsSupportingBrowsersAsync()
+        .then(({ browserPackages }) => browserPackages.map(name => ({ label: name, value: name })))
+        .then(packages => this.setState({ packages }));
+  }
+
+  componentWillUnmount() {
+    if (Platform.OS === 'android') {
+      WebBrowser.coolDownAsync(this.state.lastWarmedPackage);
+    }
   }
 
   barCollapsingSwitchChanged = value => {
@@ -32,43 +40,73 @@ export default class WebBrowserScreen extends React.Component {
     Alert.alert('Result', JSON.stringify(result, null, 2));
   };
 
-  openWebUrlRequested = async () => {
+  handleWarmUpClicked = async () => {
+    const { selectedPackage: lastWarmedPackage } = this.state;
+    this.setState({
+      lastWarmedPackage,
+    });
+    const result = await WebBrowser.warmUpAsync(lastWarmedPackage);
+    Alert.alert('Result', JSON.stringify(result, null, 2));
+  };
+
+  handleMayInitWithUrlClicke = async () => {
+    const { selectedPackage: lastWarmedPackage } = this.state;
+    this.setState({
+      lastWarmedPackage,
+    });
+    const result = await WebBrowser.mayInitWithUrlAsync(url, lastWarmedPackage);
+    Alert.alert('Result', JSON.stringify(result, null, 2));
+  };
+
+  handleCoolDownClicked = async () => {
+    const result = await WebBrowser.coolDownAsync(this.state.selectedPackage);
+    Alert.alert('Result', JSON.stringify(result, null, 2));
+  };
+
+  handleOpenWebUrlClicked = async () => {
     const args = {
       showTitle: this.state.showTitle,
-      toolbarColor: this.state.colorText ? '#' + this.state.colorText : undefined,
-      package: this.state.selectedPackage,
+      toolbarColor: this.state.colorText ? `#${this.state.colorText}` : undefined,
+      controlsColor: this.state.controlsColorText ? `#${this.state.controlsColorText}` : undefined,
+      browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
     };
-    const result = await WebBrowser.openBrowserAsync('https://expo.io/', args);
+    const result = await WebBrowser.openBrowserAsync(url, args);
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 
-  toolbarColorInputChanged = value => this.setState({ colorText: value });
+  handleToolbarColorInputChanged = colorText => this.setState({ colorText });
 
-  packageSelected = value => {
-    this.setState({ selectedPackage: value });
+  handleControlsColorInputChanged = controlsColorText => this.setState({ controlsColorText });
+
+  packageSelected = selectedPackage => {
+    this.setState({ selectedPackage });
   };
 
-  showTitleChanged = value => this.setState({ showTitle: value });
+  handleShowTitleChanged = showTitle => this.setState({ showTitle });
+
+  renderIOSChoices = () =>
+    Platform.OS === 'ios' && (
+      <View style={styles.label}>
+        <Text>Controls color (#rrggbb):</Text>
+        <TextInput
+          style={styles.input}
+          borderBottomColor={'black'}
+          placeholder={'RRGGBB'}
+          onChangeText={this.handleControlsColorInputChanged}
+          value={this.state.controlsColorText}
+        />
+      </View>
+    );
 
   renderAndroidChoices = () =>
     Platform.OS === 'android' && (
       <>
         <View style={styles.label}>
-          <Text>Toolbar color (#rrggbb):</Text>
-          <TextInput
-            style={styles.input}
-            borderBottomColor={'black'}
-            placeholder={'RRGGBB'}
-            onChangeText={this.toolbarColorInputChanged}
-            value={this.state.colorText}
-          />
-        </View>
-        <View style={styles.label}>
           <Text>Show Title</Text>
           <Switch
             style={styles.switch}
-            onValueChange={this.showTitleChanged}
+            onValueChange={this.handleShowTitleChanged}
             value={this.state.showTitle}
           />
         </View>
@@ -89,16 +127,36 @@ export default class WebBrowserScreen extends React.Component {
 
   renderAndroidButtons = () =>
     Platform.OS === 'android' && (
-      <Button
-        style={styles.button}
-        onPress={this.showPackagesAlert}
-        title="Show supporting browsers"
-      />
+      <>
+        <Button style={styles.button} onPress={this.handleWarmUpClicked} title="Warm up." />
+        <Button
+          style={styles.button}
+          onPress={this.handleMayInitWithUrlClicke}
+          title="May init with url."
+        />
+        <Button style={styles.button} onPress={this.handleCoolDownClicked} title="Cool down." />
+        <Button
+          style={styles.button}
+          onPress={this.showPackagesAlert}
+          title="Show supporting browsers."
+        />
+      </>
     );
 
   render() {
     return (
       <View style={styles.container}>
+        <View style={styles.label}>
+          <Text>Toolbar color (#rrggbb):</Text>
+          <TextInput
+            style={styles.input}
+            borderBottomColor="black"
+            placeholder="RRGGBB"
+            onChangeText={this.handleToolbarColorInputChanged}
+            value={this.state.colorText}
+          />
+        </View>
+        {this.renderIOSChoices()}
         {this.renderAndroidChoices()}
         <View style={styles.label}>
           <Text>Bar collapsing</Text>
@@ -108,7 +166,7 @@ export default class WebBrowserScreen extends React.Component {
             value={this.state.barCollapsing}
           />
         </View>
-        <Button style={styles.button} onPress={this.openWebUrlRequested} title="Open web url" />
+        <Button style={styles.button} onPress={this.handleOpenWebUrlClicked} title="Open web url" />
         {this.renderAndroidButtons()}
       </View>
     );
