@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { AppRegistry } from 'react-native';
+
 import withExpoRoot from './withExpoRoot';
 import { InitialProps } from './withExpoRoot.types';
 
