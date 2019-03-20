@@ -188,6 +188,12 @@
   if (asset.imageName) {
     NSArray *components = [asset.imageName componentsSeparatedByString:@"."];
     NSImage *image = [NSImage imageNamed:components.firstObject];
+    if (image == nil) {
+      if (asset.rootDirectory.length > 0 && asset.imageDirectory.length > 0) {
+        NSString *imagePath = [[asset.rootDirectory stringByAppendingPathComponent:asset.imageDirectory] stringByAppendingPathComponent:asset.imageName];
+        image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+      }
+    }
     if (image) {
       NSWindow *window = [NSApp mainWindow];
       CGFloat desiredScaleFactor = [window backingScaleFactor];
