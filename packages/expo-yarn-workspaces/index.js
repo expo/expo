@@ -61,6 +61,9 @@ exports.createReactNativeConfiguration = function createReactNativeConfiguration
     transformer: {
       // Ignore file-relative Babel configurations and apply only the project's
       enableBabelRCLookup: false,
+
+      // Temporarily include the Expo asset plugin; figure out a more general way to include it
+      assetPlugins: ['expo/tools/hashAssetFiles'],
     },
   };
 };
