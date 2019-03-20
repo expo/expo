@@ -69,7 +69,7 @@ export default class KeepAwakeExample extends React.Component {
 ### `KeepAwake.activate(tag?: string)`
 
 Prevents screen from sleeping, until `deactivate` is called.
-If `tag` argument is used, sleep will be prevented until call deactivate with the same `tag` argument. For multiple `tags` used for activation, everyone must be deactivated in order to enable screen sleep.
+If `tag` argument is used, sleep will be prevented until `deactivate` call with the same `tag` argument. When using multiple `tags` for activation you'll have to deactivate every one in order to reenable screen sleep.
 
 #### Arguments
 
