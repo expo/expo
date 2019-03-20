@@ -83,6 +83,11 @@ function _escapeBlob<T>(data: T): T {
 
 const _openExpoSQLiteDatabase = customOpenDatabase(SQLiteDatabase);
 
+function addExecMethod(db: any): WebSQLDatabase {
+  db.exec = db._db.exec;
+  return db;
+}
+
 export function openDatabase(
   name: string,
   version: string = '1.0',
@@ -93,7 +98,9 @@ export function openDatabase(
   if (name === undefined) {
     throw new TypeError(`The database name must not be undefined`);
   }
-  return _openExpoSQLiteDatabase(name, version, description, size, callback);
+  const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
+  const dbWithExec = addExecMethod(db);
+  return dbWithExec;
 }
 
 type WebSQLDatabase = unknown;
