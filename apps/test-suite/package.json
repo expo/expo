@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "async-retry": "^1.1.4",
-    "expo": "^33.0.0-alpha.web.0",
+    "expo": "^33.0.0-alpha.web.1",
     "i18n-js": "^3.0.11",
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",
@@ -32,7 +32,8 @@
     "@expo/webpack-config": "^0.1.4",
     "babel-loader": "^8.0.5",
     "expo-yarn-workspaces": "^1.0.0",
-    "serve": "^10.1.2"
+    "serve": "^10.1.2",
+    "webpack-cli": "^3.3.0"
   },
   "browserslist": [
     ">0.2%",
