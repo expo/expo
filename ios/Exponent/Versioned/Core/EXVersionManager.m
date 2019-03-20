@@ -162,9 +162,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     }
     items[@"dev-hmr"] =  hmrItem;
   }
-  if (devSettings.isJSCSamplingProfilerAvailable && isDevModeEnabled) {
-    items[@"dev-jsc-profiler"] = @{ @"label": @"Start / Stop JS Sampling Profiler", @"isEnabled": @YES };
-  }
+
   id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
   if (perfMonitor) {
     items[@"dev-perf-monitor"] = @{
@@ -192,8 +190,6 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
   } else if ([key isEqualToString:@"dev-hmr"]) {
     devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
-  } else if ([key isEqualToString:@"dev-jsc-profiler"]) {
-    [devSettings toggleJSCSamplingProfiler];
   } else if ([key isEqualToString:@"dev-inspector"]) {
     [devSettings toggleElementInspector];
   } else if ([key isEqualToString:@"dev-perf-monitor"]) {

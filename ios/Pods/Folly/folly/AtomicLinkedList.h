@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class AtomicLinkedList {
    *         after the call.
    */
   bool insertHead(T t) {
-    auto wrapper = folly::make_unique<Wrapper>(std::move(t));
+    auto wrapper = std::make_unique<Wrapper>(std::move(t));
 
     return list_.insertHead(wrapper.release());
   }
@@ -67,6 +67,28 @@ class AtomicLinkedList {
   template <typename F>
   void sweep(F&& func) {
     list_.sweep([&](Wrapper* wrapperPtr) mutable {
+      std::unique_ptr<Wrapper> wrapper(wrapperPtr);
+
+      func(std::move(wrapper->data));
+    });
+  }
+
+  /**
+   * Similar to sweep() but calls func() on elements in LIFO order.
+   *
+   * func() is called for all elements in the list at the moment
+   * reverseSweep() is called.  Unlike sweep() it does not loop to ensure the
+   * list is empty at some point after the last invocation.  This way callers
+   * can reason about the ordering: elements inserted since the last call to
+   * reverseSweep() will be provided in LIFO order.
+   *
+   * Example: if elements are inserted in the order 1-2-3, the callback is
+   * invoked 3-2-1.  If the callback moves elements onto a stack, popping off
+   * the stack will produce the original insertion order 1-2-3.
+   */
+  template <typename F>
+  void reverseSweep(F&& func) {
+    list_.reverseSweep([&](Wrapper* wrapperPtr) mutable {
       std::unique_ptr<Wrapper> wrapper(wrapperPtr);
 
       func(std::move(wrapper->data));

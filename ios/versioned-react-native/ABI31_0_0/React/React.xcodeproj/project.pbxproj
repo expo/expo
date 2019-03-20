@@ -2522,7 +2522,7 @@
 				139D84AC1E273B5600323FB7 /* ScopeGuard.h */,
 			);
 			name = folly;
-			path = "../third-party/folly-2016.10.31.00";
+			path = "../third-party/folly-2018.10.22.00";
 			sourceTree = "<group>";
 		};
 		13B07FE01A69315300A75B9A /* Modules */ = {
