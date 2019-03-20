@@ -38,47 +38,58 @@ type RedirectResult = {
   url: string;
 };
 
+type ServiceActionResult = {
+  servicePackage?: string;
+};
+
+type MayInitWithUrlResult = ServiceActionResult;
+type WarmUpResult = ServiceActionResult;
+type CoolDownResult = ServiceActionResult;
+
 export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults> {
   if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
     throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
   }
-  if (Platform.OS === 'android') {
-    return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
-  } else {
+  if (Platform.OS !== 'android') {
     return emptyCustomTabsPackages;
+  } else {
+    return await ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
   }
 }
 
-export async function warmUpAsync(browserPackage?: string): Promise<void> {
+export async function warmUpAsync(browserPackage?: string): Promise<WarmUpResult> {
   if (!ExponentWebBrowser.warmUpAsync) {
     throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
   }
-  if (Platform.OS === 'android') {
-    return ExponentWebBrowser.warmUpAsync(browserPackage);
+  if (Platform.OS !== 'android') {
+    return {};
   } else {
-    return null;
+    return await ExponentWebBrowser.warmUpAsync(browserPackage);
   }
 }
 
-export async function mayInitWithUrlAsync(url: string, browserPackage?: string): Promise<void> {
+export async function mayInitWithUrlAsync(
+  url: string,
+  browserPackage?: string
+): Promise<MayInitWithUrlResult> {
   if (!ExponentWebBrowser.mayInitWithUrlAsync) {
     throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
   }
-  if (Platform.OS === 'android') {
-    return ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
+  if (Platform.OS !== 'android') {
+    return {};
   } else {
-    return null;
+    return await ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
   }
 }
 
-export async function coolDownAsync(browserPackage?: string): Promise<void> {
+export async function coolDownAsync(browserPackage?: string): Promise<CoolDownResult> {
   if (!ExponentWebBrowser.coolDownAsync) {
     throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
   }
-  if (Platform.OS === 'android') {
-    return ExponentWebBrowser.coolDownAsync(browserPackage);
+  if (Platform.OS !== 'android') {
+    return {};
   } else {
-    return null;
+    return await ExponentWebBrowser.coolDownAsync(browserPackage);
   }
 }
 
@@ -89,7 +100,7 @@ export async function openBrowserAsync(
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
-  return ExponentWebBrowser.openBrowserAsync(url, browserParams);
+  return await ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }
 
 export function dismissBrowser(): void {
