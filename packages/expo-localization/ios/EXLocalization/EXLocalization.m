@@ -36,8 +36,8 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
 
 - (BOOL)isRTL
 {
-  // https://stackoverflow.com/a/11352545/4047926
-  return [NSLocale characterDirectionForLanguage:[NSLocale preferredLanguages][0]];
+  // https://stackoverflow.com/a/14183124/1123156
+  return [NSLocale characterDirectionForLanguage:[NSLocale preferredLanguages][0]] == NSLocaleLanguageDirectionRightToLeft;
 }
 
 @end
