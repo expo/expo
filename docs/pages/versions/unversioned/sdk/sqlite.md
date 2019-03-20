@@ -97,7 +97,7 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
   ``` Js
   const db = SQLite.openDatabase('dbName', version);
 
-  db._db.exec(
+  db.exec(
     [{ sql: 'PRAGMA foreign_keys = ON;', args: [] }],
     false,
     () => console.log('Foreign keys turned on'),
