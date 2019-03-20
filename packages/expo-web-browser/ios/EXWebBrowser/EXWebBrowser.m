@@ -163,6 +163,38 @@ UM_EXPORT_METHOD_AS(dismissAuthSession,
   }
 }
 
+UM_EXPORT_METHOD_AS(warmUpAsync,
+                    warmUpAsyncWithPackage:(NSString*)browserPackage
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
+UM_EXPORT_METHOD_AS(coolDownAsync,
+                    coolDownAsyncWithPackage:(NSString*)browserPackage
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
+UM_EXPORT_METHOD_AS(getCustomTabsSupportingBrowsers,
+                    getCustomTabsSupportingBrowsersWithPackage:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
+UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
+                     warmUpAsyncWithUrl:(NSString*)url
+                     browserPackage:(NSString*)package
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
 /**
  * Helper that is used in openBrowserAsync and openAuthSessionAsync
  */
@@ -210,7 +242,7 @@ UM_EXPORT_METHOD_AS(dismissAuthSession,
   _moduleRegistry = moduleRegistry;
 }
 
-- (UIColor *)convertHexColorString:(NSString *)stringToConvert:(NSString *)stringToConvert {
+- (UIColor *)convertHexColorString:(NSString *)stringToConvert {
   NSString *strippedString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
   NSScanner *scanner = [NSScanner scannerWithString:strippedString];
   unsigned hexNum;

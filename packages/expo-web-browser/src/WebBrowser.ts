@@ -16,10 +16,17 @@ type OpenBrowserParams = {
 type AuthSessionResult = RedirectResult | BrowserResult;
 
 type CustomTabsBrowsersResults = {
-  defaultBrowserPackage: string;
-  preferredBrowserPackage: string;
+  defaultBrowserPackage?: string;
+  preferredBrowserPackage?: string;
   browserPackages: string[];
   servicePackages: string[];
+};
+
+const emptyCustomTabsPackages: CustomTabsBrowsersResults = {
+  defaultBrowserPackage: undefined,
+  preferredBrowserPackage: undefined,
+  browserPackages: [],
+  servicePackages: [],
 };
 
 type BrowserResult = {
@@ -35,28 +42,44 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabs
   if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
     throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
   }
-  return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+  if (Platform.OS === 'android') {
+    return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+  } else {
+    return emptyCustomTabsPackages;
+  }
 }
 
 export async function warmUpAsync(browserPackage?: string) {
   if (!ExponentWebBrowser.warmUpAsync) {
     throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
   }
-  return ExponentWebBrowser.warmUpAsync(browserPackage);
+  if (Platform.OS === 'android') {
+    return ExponentWebBrowser.warmUpAsync(browserPackage);
+  } else {
+    return null;
+  }
 }
 
 export async function mayInitWithUrlAsync(url: string, browserPackage?: string) {
   if (!ExponentWebBrowser.mayInitWithUrlAsync) {
     throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
   }
-  return ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
+  if (Platform.OS === 'android') {
+    return ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
+  } else {
+    return null;
+  }
 }
 
 export async function coolDownAsync(browserPackage?: string) {
   if (!ExponentWebBrowser.coolDownAsync) {
     throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
   }
-  return ExponentWebBrowser.coolDownAsync(browserPackage);
+  if (Platform.OS === 'android') {
+    return ExponentWebBrowser.coolDownAsync(browserPackage);
+  } else {
+    return null;
+  }
 }
 
 export async function openBrowserAsync(
