@@ -1,7 +1,7 @@
 CLANG_CXX_LANGUAGE_STANDARD = c++14
 CONFIGURATION_BUILD_DIR = ${PODS_CONFIGURATION_BUILD_DIR}/React
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/React" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/DoubleConversion" "${PODS_ROOT}/Headers/Public/React" "${PODS_ROOT}/Headers/Public/glog" "${PODS_ROOT}/Headers/Public/yoga" "$(PODS_TARGET_SRCROOT)/ReactCommon" "$(PODS_TARGET_SRCROOT)/ReactCommon" "$(PODS_ROOT)/boost-for-react-native" "$(PODS_ROOT)/DoubleConversion" "$(PODS_ROOT)/Folly"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/React" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/DoubleConversion" "${PODS_ROOT}/Headers/Public/React" "${PODS_ROOT}/Headers/Public/glog" "${PODS_ROOT}/Headers/Public/yoga" "$(PODS_TARGET_SRCROOT)/ReactCommon" "$(PODS_TARGET_SRCROOT)/ReactCommon" "$(PODS_ROOT)/boost-for-react-native" "$(PODS_ROOT)/DoubleConversion" "$(PODS_ROOT)/Folly" "$(PODS_TARGET_SRCROOT)/ReactCommon", "$(PODS_TARGET_SRCROOT)/ReactCommon/jsiexecutor"
 LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/DoubleConversion" "${PODS_CONFIGURATION_BUILD_DIR}/Folly" "${PODS_CONFIGURATION_BUILD_DIR}/glog" "${PODS_CONFIGURATION_BUILD_DIR}/yoga"
 OTHER_LDFLAGS = -l"stdc++" -framework "JavaScriptCore"
 PODS_BUILD_DIR = ${BUILD_DIR}
