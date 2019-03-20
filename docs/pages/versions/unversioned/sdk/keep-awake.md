@@ -77,7 +77,7 @@ If `tag` argument is used, sleep will be prevented until `deactivate` call with 
 
 ### `KeepAwake.deactivate(tag?: string)`
 
-Releases lock of screen sleep prevention on specified `tag`;
+Releases lock of screen sleep prevention on specified `tag`.
 
 #### Arguments
 
