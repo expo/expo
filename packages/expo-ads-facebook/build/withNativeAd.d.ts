@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { NativeAdIconView } from './AdIconView';
 import { NativeAdMediaView } from './AdMediaView';
 import AdsManager from './NativeAdsManager';
@@ -17,6 +18,14 @@ declare type AdProps = {
  * if no ad could be loaded.
  */
 export default function withNativeAd<P>(Component: React.ComponentType<P & AdProps>): React.ComponentType<AdContainerProps<P>>;
+declare type NativeAdViewProps = {
+    adsManager: string;
+    onAdLoaded?: (event: {
+        nativeEvent: NativeAd;
+    }) => void;
+} & React.ComponentProps<typeof View>;
+declare type NativeAdView = React.Component<NativeAdViewProps>;
+declare const NativeAdView: React.ComponentType<any>;
 export declare type AdIconViewContextValue = {
     nativeRef: (component: NativeAdMediaView | null) => void;
 };
@@ -28,9 +37,13 @@ export declare type AdTriggerViewContextValue = {
     unregisterComponent: (component: React.Component) => void;
     onTriggerAd: () => void;
 };
+export declare type AdChoiceViewContextValue = {
+    nativeAdViewRef: React.RefObject<NativeAdView>;
+};
 export declare const AdIconViewContext: React.Context<AdIconViewContextValue | null>;
 export declare const AdMediaViewContext: React.Context<AdMediaViewContextValue | null>;
 export declare const AdTriggerViewContext: React.Context<AdTriggerViewContextValue | null>;
+export declare const AdChoiceViewContext: React.Context<AdChoiceViewContextValue | null>;
 export declare type NativeAd = {
     /**
      * The headline the advertiser entered when they created their ad. This is usually the ad's main

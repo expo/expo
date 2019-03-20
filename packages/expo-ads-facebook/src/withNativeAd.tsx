@@ -17,7 +17,6 @@ type AdContainerProps<P> = {
 type AdContainerState = {
   ad: NativeAd | null;
   canRequestAds: boolean;
-  nativeAdViewTag: number | null;
 };
 
 type AdProps = { nativeAd: NativeAd };
@@ -86,13 +85,14 @@ export default function withNativeAd<P>(
           <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
             <AdIconViewContext.Provider value={this._adIconViewContextValue}>
               <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                {this.state.ad ? (
-                  <Component
-                    {...props}
-                    nativeAd={this.state.ad}
-                    nativeAdViewTag={findNodeHandle(this._nativeAdViewRef.current)}
-                  />
-                ) : null}
+                <AdChoiceViewContext.Provider value={this._adChoiceViewContextValue}>
+                  {this.state.ad ? (
+                    <Component
+                      {...props}
+                      nativeAd={this.state.ad}
+                    />
+                  ) : null}
+                </AdChoiceViewContext.Provider>
               </AdTriggerViewContext.Provider>
             </AdIconViewContext.Provider>
           </AdMediaViewContext.Provider>
@@ -122,6 +122,10 @@ export default function withNativeAd<P>(
           this._setAdNodeHandles({ adMediaViewNodeHandle: null });
         }
       },
+    };
+
+    _adChoiceViewContextValue = {
+      nativeAdViewRef: this._nativeAdViewRef
     };
 
     _adIconViewContextValue = {
@@ -215,9 +219,14 @@ export type AdTriggerViewContextValue = {
   onTriggerAd: () => void;
 };
 
+export type AdChoiceViewContextValue = {
+  nativeAdViewRef: React.RefObject<NativeAdView>;
+};
+
 export const AdIconViewContext = React.createContext<AdIconViewContextValue | null>(null);
 export const AdMediaViewContext = React.createContext<AdMediaViewContextValue | null>(null);
 export const AdTriggerViewContext = React.createContext<AdTriggerViewContextValue | null>(null);
+export const AdChoiceViewContext = React.createContext<AdChoiceViewContextValue | null>(null);
 
 export type NativeAd = {
   /**
