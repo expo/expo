@@ -242,7 +242,7 @@ UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
   _moduleRegistry = moduleRegistry;
 }
 
-- (UIColor *)convertHexColorString:(NSString *)stringToConvert {
++ (UIColor *)convertHexColorString:(NSString *)stringToConvert {
   NSString *strippedString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
   NSScanner *scanner = [NSScanner scannerWithString:strippedString];
   unsigned hexNum;
@@ -250,7 +250,7 @@ UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
   return [EXWebBrowser colorWithRGBHex:hexNum];
 }
 
-- (UIColor *)colorWithRGBHex:(UInt32)hex {
++ (UIColor *)colorWithRGBHex:(UInt32)hex {
   int r = (hex >> 16) & 0xFF;
   int g = (hex >> 8) & 0xFF;
   int b = (hex) & 0xFF;

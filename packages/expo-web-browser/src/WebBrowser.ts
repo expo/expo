@@ -49,7 +49,7 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabs
   }
 }
 
-export async function warmUpAsync(browserPackage?: string) {
+export async function warmUpAsync(browserPackage?: string): Promise<void> {
   if (!ExponentWebBrowser.warmUpAsync) {
     throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
   }
@@ -60,7 +60,7 @@ export async function warmUpAsync(browserPackage?: string) {
   }
 }
 
-export async function mayInitWithUrlAsync(url: string, browserPackage?: string) {
+export async function mayInitWithUrlAsync(url: string, browserPackage?: string): Promise<void> {
   if (!ExponentWebBrowser.mayInitWithUrlAsync) {
     throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
   }
@@ -71,7 +71,7 @@ export async function mayInitWithUrlAsync(url: string, browserPackage?: string) 
   }
 }
 
-export async function coolDownAsync(browserPackage?: string) {
+export async function coolDownAsync(browserPackage?: string): Promise<void> {
   if (!ExponentWebBrowser.coolDownAsync) {
     throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
   }
