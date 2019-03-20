@@ -3,7 +3,7 @@ import React from 'react';
 import { View, findNodeHandle } from 'react-native';
 import { requireNativeViewManager } from '@unimodules/core';
 
-import { AdChoiceViewContext, AdChoiceViewContextValue } from './withNativeAd';
+import { AdOptionsViewContext, AdOptionsViewContextValue } from './withNativeAd';
 
 enum NativeOrientation {
   Horizontal = 0,
@@ -12,10 +12,11 @@ enum NativeOrientation {
 
 type Props = React.ComponentProps<typeof View> & {
   iconSize: number;
+  iconColor?: string;
   orientation: 'horizontal' | 'vertical';
 };
 
-export default class AdChoiceView extends React.Component<Props> {
+export default class AdOptionsView extends React.Component<Props> {
   static defaultProps = {
     iconSize: 23,
     orientation: 'horizontal',
@@ -35,11 +36,11 @@ export default class AdChoiceView extends React.Component<Props> {
         };
 
     return (
-      <AdChoiceViewContext.Consumer>
-        {(contextValue: AdChoiceViewContextValue | null) => {
+      <AdOptionsViewContext.Consumer>
+        {(contextValue: AdOptionsViewContextValue | null) => {
           let adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
           return (
-            <NativeAdChoiceView
+            <NativeAdOptionsView
               {...this.props}
               style={[this.props.style, style]}
               nativeAdViewTag={findNodeHandle(adViewRef.current)}
@@ -51,11 +52,11 @@ export default class AdChoiceView extends React.Component<Props> {
             />
           );
         }}
-      </AdChoiceViewContext.Consumer>
+      </AdOptionsViewContext.Consumer>
     );
   }
 }
 
-// The native AdChoiceView has the same props as regular View
-export type NativeAdChoiceView = React.Component<Props>;
-export const NativeAdChoiceView = requireNativeViewManager('AdChoiceView');
+// The native AdOptionsView has the same props as regular View
+export type NativeAdOptionsView = React.Component<Props>;
+export const NativeAdOptionsView = requireNativeViewManager('AdOptionsView');

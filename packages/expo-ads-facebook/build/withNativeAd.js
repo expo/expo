@@ -37,7 +37,7 @@ export default function withNativeAd(Component) {
                     }
                 },
             };
-            this._adChoiceViewContextValue = {
+            this._adOptionsViewContextValue = {
                 nativeAdViewRef: this._nativeAdViewRef
             };
             this._adIconViewContextValue = {
@@ -98,9 +98,9 @@ export default function withNativeAd(Component) {
           <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
             <AdIconViewContext.Provider value={this._adIconViewContextValue}>
               <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                <AdChoiceViewContext.Provider value={this._adChoiceViewContextValue}>
+                <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
                   {this.state.ad ? (<Component {...props} nativeAd={this.state.ad}/>) : null}
-                </AdChoiceViewContext.Provider>
+                </AdOptionsViewContext.Provider>
               </AdTriggerViewContext.Provider>
             </AdIconViewContext.Provider>
           </AdMediaViewContext.Provider>
@@ -135,7 +135,7 @@ const NativeAdView = requireNativeViewManager('CTKNativeAd');
 export const AdIconViewContext = React.createContext(null);
 export const AdMediaViewContext = React.createContext(null);
 export const AdTriggerViewContext = React.createContext(null);
-export const AdChoiceViewContext = React.createContext(null);
+export const AdOptionsViewContext = React.createContext(null);
 function _areEqualSets(set1, set2) {
     if (set1.size !== set2.size) {
         return false;
