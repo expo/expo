@@ -1,22 +1,16 @@
 package expo.modules.ads.facebook;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.icu.util.Measure;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.facebook.ads.AdChoicesView;
 import com.facebook.ads.AdOptionsView;
 
 import java.lang.ref.WeakReference;
 
 public class AdChoiceWrapperView extends LinearLayout {
-
   private int mIconSize = -1;
+  private AdOptionsView.Orientation mOrientation = null;
+
   private WeakReference<NativeAdView> mNativeAdViewWeakReference;
 
   public AdChoiceWrapperView(Context context) {
@@ -25,56 +19,50 @@ public class AdChoiceWrapperView extends LinearLayout {
 
   public void setNativeAdView(NativeAdView nativeAdView) {
     mNativeAdViewWeakReference = new WeakReference<>(nativeAdView);
-    injectAdChoiceView();
+    maybeSetUpOptionsView();
   }
 
   public void setIconSize(int iconSize) {
     mIconSize = iconSize;
-    injectAdChoiceView();
+    maybeSetUpOptionsView();
   }
 
-  boolean arePropsSet() {
-    return (
-        mNativeAdViewWeakReference != null ||
-        mNativeAdViewWeakReference.get() != null ||
-        mIconSize != -1
-    );
+  public void setOrientation(AdOptionsView.Orientation orientation) {
+    mOrientation = orientation;
+    maybeSetUpOptionsView();
   }
 
-  public void injectAdChoiceView() {
-    if (!arePropsSet()) {
+  private void maybeSetUpOptionsView() {
+    if (mIconSize == -1 ||
+        mOrientation == null ||
+        mNativeAdViewWeakReference == null ||
+        mNativeAdViewWeakReference.get() == null) {
       return;
     }
+
     removeAllViews();
 
     NativeAdView nativeAdView = mNativeAdViewWeakReference.get();
-    AdOptionsView adOptionsView = createAdOptionsViewWithProperIconSize(mIconSize, nativeAdView);
-
-    addView(adOptionsView);
-  }
-
-  private AdOptionsView createAdOptionsViewWithProperIconSize(int iconSize, NativeAdView nativeAdView) {
-    return new AdOptionsView(
+    AdOptionsView adOptionsView = new AdOptionsView(
         getContext(),
         nativeAdView.getNativeAd(),
         nativeAdView,
-        AdOptionsView.Orientation.HORIZONTAL,
-        iconSize
+        mOrientation,
+        mIconSize
     );
+
+    addView(adOptionsView);
   }
 
   @Override
   public void requestLayout() {
     super.requestLayout();
 
-    // The spinner relies on a measure + layout pass happening after it calls requestLayout().
-    // Without this, the widget never actually changes the selection and doesn't call the
-    // appropriate listeners. Since we override onLayout in our ViewGroups, a layout pass never
-    // happens after a call to requestLayout, so we simulate one here.
-    post(measureAndLayout);
+    // Relayout child
+    post(mMeasureAndLayout);
   }
 
-  private final Runnable measureAndLayout = new Runnable() {
+  private final Runnable mMeasureAndLayout = new Runnable() {
     @Override
     public void run() {
       measure(
