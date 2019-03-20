@@ -7,13 +7,15 @@ import com.facebook.ads.AdOptionsView;
 
 import java.lang.ref.WeakReference;
 
-public class AdChoiceWrapperView extends LinearLayout {
+public class AdOptionsWrapperView extends LinearLayout {
   private int mIconSize = -1;
+  private Integer mColor = null;
   private AdOptionsView.Orientation mOrientation = null;
 
-  private WeakReference<NativeAdView> mNativeAdViewWeakReference;
+  private WeakReference<NativeAdView> mNativeAdViewWeakReference = new WeakReference<>(null);
+  private WeakReference<AdOptionsView> mAdOptionsViewWeakReference = new WeakReference<>(null);
 
-  public AdChoiceWrapperView(Context context) {
+  public AdOptionsWrapperView(Context context) {
     super(context);
   }
 
@@ -32,17 +34,32 @@ public class AdChoiceWrapperView extends LinearLayout {
     maybeSetUpOptionsView();
   }
 
+  public void setIconColor(Integer color) {
+    mColor = color;
+    AdOptionsView adOptionsView = mAdOptionsViewWeakReference.get();
+    if (adOptionsView != null && color != null) {
+      adOptionsView.setIconColor(mColor);
+    }
+  }
+
   private void maybeSetUpOptionsView() {
+    NativeAdView nativeAdView = mNativeAdViewWeakReference.get();
+
     if (mIconSize == -1 ||
         mOrientation == null ||
-        mNativeAdViewWeakReference == null ||
-        mNativeAdViewWeakReference.get() == null) {
+        nativeAdView == null) {
       return;
     }
 
     removeAllViews();
 
-    NativeAdView nativeAdView = mNativeAdViewWeakReference.get();
+    AdOptionsView adOptionsView = createNewAdOptionsView(nativeAdView);
+    addView(adOptionsView);
+
+    mAdOptionsViewWeakReference = new WeakReference<>(adOptionsView);
+  }
+
+  private AdOptionsView createNewAdOptionsView(NativeAdView nativeAdView) {
     AdOptionsView adOptionsView = new AdOptionsView(
         getContext(),
         nativeAdView.getNativeAd(),
@@ -51,7 +68,11 @@ public class AdChoiceWrapperView extends LinearLayout {
         mIconSize
     );
 
-    addView(adOptionsView);
+    if (mColor != null) {
+      adOptionsView.setIconColor(mColor);
+    }
+
+    return adOptionsView;
   }
 
   @Override

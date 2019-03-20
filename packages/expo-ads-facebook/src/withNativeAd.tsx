@@ -85,14 +85,14 @@ export default function withNativeAd<P>(
           <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
             <AdIconViewContext.Provider value={this._adIconViewContextValue}>
               <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                <AdChoiceViewContext.Provider value={this._adChoiceViewContextValue}>
+                <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
                   {this.state.ad ? (
                     <Component
                       {...props}
                       nativeAd={this.state.ad}
                     />
                   ) : null}
-                </AdChoiceViewContext.Provider>
+                </AdOptionsViewContext.Provider>
               </AdTriggerViewContext.Provider>
             </AdIconViewContext.Provider>
           </AdMediaViewContext.Provider>
@@ -124,7 +124,7 @@ export default function withNativeAd<P>(
       },
     };
 
-    _adChoiceViewContextValue = {
+    _adOptionsViewContextValue = {
       nativeAdViewRef: this._nativeAdViewRef
     };
 
@@ -219,14 +219,14 @@ export type AdTriggerViewContextValue = {
   onTriggerAd: () => void;
 };
 
-export type AdChoiceViewContextValue = {
+export type AdOptionsViewContextValue = {
   nativeAdViewRef: React.RefObject<NativeAdView>;
 };
 
 export const AdIconViewContext = React.createContext<AdIconViewContextValue | null>(null);
 export const AdMediaViewContext = React.createContext<AdMediaViewContextValue | null>(null);
 export const AdTriggerViewContext = React.createContext<AdTriggerViewContextValue | null>(null);
-export const AdChoiceViewContext = React.createContext<AdChoiceViewContextValue | null>(null);
+export const AdOptionsViewContext = React.createContext<AdOptionsViewContextValue | null>(null);
 
 export type NativeAd = {
   /**

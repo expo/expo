@@ -13,7 +13,7 @@ const {
   AdMediaView,
   AdIconView,
   AdTriggerView,
-  AdChoiceView,
+  AdOptionsView,
 } = FacebookAds;
 
 let adsManager = null;
@@ -49,7 +49,7 @@ class ChangingFullAd extends React.Component {
             onValueChange={() => this.setState({ expanded: !this.state.expanded })}
           />
         </View>
-        <AdChoiceView />
+        <AdOptionsView iconColor="#ff0000" />
         <View style={styles.nativeRow}>
           <AdIconView style={styles.iconView} />
           <View style={styles.nativeColumn}>

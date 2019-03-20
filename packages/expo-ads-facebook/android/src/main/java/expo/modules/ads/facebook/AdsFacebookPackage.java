@@ -30,7 +30,7 @@ public class AdsFacebookPackage extends BasePackage {
         new BannerViewManager(),
         new MediaViewManager(),
         new NativeAdViewManager(),
-        new AdChoiceWrapperViewManager()
+        new AdOptionsWrapperViewManager()
     );
   }
 }
