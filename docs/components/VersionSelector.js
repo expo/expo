@@ -13,7 +13,7 @@ const STYLES_SELECT = css`
   justify-content: center;
   margin: 0;
   height: 48px;
-  padding: 8px 16px 0 28px;
+  padding: 5px 16px 0 28px;
 `;
 
 const STYLES_SELECT_TEXT = css`
