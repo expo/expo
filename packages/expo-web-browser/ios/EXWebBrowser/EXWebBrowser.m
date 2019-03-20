@@ -2,6 +2,7 @@
 
 #import <SafariServices/SafariServices.h>
 #import <EXWebBrowser/EXWebBrowser.h>
+
 #import <UMCore/UMUtilities.h>
 
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
@@ -90,15 +91,19 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
   SFSafariViewController *safariVC = nil;
   if (@available(iOS 11, *)) {
     SFSafariViewControllerConfiguration *config = [[SFSafariViewControllerConfiguration alloc] init];
-    bool enabled = false;
-    NSString *collapseBarKey = @"enableBarCollapsing";
-    if([[arguments allKeys] containsObject:collapseBarKey]) {
-      enabled = [arguments[collapseBarKey] boolValue];
-    }
-    config.barCollapsingEnabled = enabled;
+    config.barCollapsingEnabled = [arguments[@"enableBarCollapsing"] boolValue];
     safariVC = [[SFSafariViewController alloc] initWithURL:url configuration:config];
   } else {
     safariVC = [[SFSafariViewController alloc] initWithURL:url];
+  }
+  
+  NSString *toolbarColorKey = @"toolbarColor";
+  if([[arguments allKeys] containsObject:toolbarColorKey]) {
+    safariVC.preferredBarTintColor = [EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
+  }
+  NSString *controlsColorKey = @"controlsColor";
+  if([[arguments allKeys] containsObject:controlsColorKey]) {
+    safariVC.preferredControlTintColor = [EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
   }
   safariVC.delegate = self;
 
@@ -158,6 +163,38 @@ UM_EXPORT_METHOD_AS(dismissAuthSession,
   }
 }
 
+UM_EXPORT_METHOD_AS(warmUpAsync,
+                    warmUpAsyncWithPackage:(NSString*)browserPackage
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
+UM_EXPORT_METHOD_AS(coolDownAsync,
+                    coolDownAsyncWithPackage:(NSString*)browserPackage
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
+UM_EXPORT_METHOD_AS(getCustomTabsSupportingBrowsers,
+                    getCustomTabsSupportingBrowsersWithPackage:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
+UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
+                     warmUpAsyncWithUrl:(NSString*)url
+                     browserPackage:(NSString*)package
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // stub for jest-expo-mock-generator
+}
+
 /**
  * Helper that is used in openBrowserAsync and openAuthSessionAsync
  */
@@ -203,6 +240,25 @@ UM_EXPORT_METHOD_AS(dismissAuthSession,
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+}
+
++ (UIColor *)convertHexColorString:(NSString *)stringToConvert {
+  NSString *strippedString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
+  NSScanner *scanner = [NSScanner scannerWithString:strippedString];
+  unsigned hexNum;
+  if (![scanner scanHexInt:&hexNum]) return nil;
+  return [EXWebBrowser colorWithRGBHex:hexNum];
+}
+
++ (UIColor *)colorWithRGBHex:(UInt32)hex {
+  int r = (hex >> 16) & 0xFF;
+  int g = (hex >> 8) & 0xFF;
+  int b = (hex) & 0xFF;
+  
+  return [UIColor colorWithRed:r / 255.0f
+                         green:g / 255.0f
+                          blue:b / 255.0f
+                         alpha:1.0f];
 }
 
 @end
