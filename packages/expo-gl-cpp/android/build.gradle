@@ -19,7 +19,8 @@ version = '4.0.0'
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 
-// Custom task for NDK module
+def JSC_REVISION = "236355"
+def JSC_VERSION = "${JSC_REVISION}.1.1"
 
 def distDir = new File("$projectDir/dist")
 
@@ -74,29 +75,31 @@ def getNdkBuildFullPath() {
   return ndkBuildFullPath
 }
 
-task downloadJSCHeaders(type: Download) {
-  // in sync with webkit SVN revision 174650
-  def jscAPIBaseURL = 'https://raw.githubusercontent.com/WebKit/webkit/38b15a3ba3c1b0798f2036f7cea36ffdc096202e/Source/JavaScriptCore/API/'
-  def jscHeaderFiles = ['JavaScript.h', 'JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
-  def output = new File("$buildDir/downloads", 'jsc')
-
-  output.mkdirs()
-  src(jscHeaderFiles.collect { headerName -> "$jscAPIBaseURL$headerName" })
-  onlyIfNewer true
-  overwrite false
-  dest output
+task downloadJSC(type: Download) {
+  src("https://registry.npmjs.org/jsc-android/-/jsc-android-${JSC_VERSION}.tgz")
+  onlyIfNewer(true)
+  overwrite(false)
+  dest(new File("$buildDir/downloads", "jsc-${JSC_VERSION}.tar.gz"))
 }
 
-// Create Android.mk library module based on so files from mvn + include headers fetched from webkit.org
-task prepareJSC(dependsOn: downloadJSCHeaders) {
+// Create Android.mk library module based on jsc from npm
+task prepareJSC(dependsOn: downloadJSC) {
   doLast {
+    def jscTar = tarTree(downloadJSC.dest)
+    def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+    def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+
+    def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
+
     copy {
-      from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
-      from { downloadJSCHeaders.dest }
-      from 'src/main/jni/jsc/Android.mk'
-      include 'jni/**/*.so', '*.h', 'Android.mk'
-      filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}" })
-      into "$buildDir/jsc"
+      from(soFiles)
+      from(headerFiles)
+      from("src/main/jni/jsc/Android.mk")
+
+      filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
+
+      includeEmptyDirs(false)
+      into("$buildDir/jsc")
     }
   }
 }
@@ -128,7 +131,7 @@ task packageNdkLibs(dependsOn: buildNdkLib, type: Copy) {
 
   from "$buildDir/expo-gl-ndk/all"
   exclude '**/libjsc.so'
-  exclude '**/libgnustl_shared.so'
+//  exclude '**/libgnustl_shared.so'
   into distDir.path
 }
 
@@ -167,7 +170,7 @@ android {
     versionName "4.0.0"
 
     ndk {
-      abiFilters 'armeabi-v7a', 'x86'
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86-64'
       moduleName 'expo-gl'
     }
 
@@ -195,8 +198,4 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   compileOnly 'com.facebook.soloader:soloader:0.5.1'
-
-  // it must be `compile` instead of `implementation` or `api`
-  // cause the later dependencies are not accessible by configurations.compile or similar :(
-  compile 'org.webkit:android-jsc:r174650'
 }
