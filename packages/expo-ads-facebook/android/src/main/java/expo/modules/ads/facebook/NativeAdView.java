@@ -3,21 +3,17 @@ package expo.modules.ads.facebook;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdLayout;
 
-import java.lang.ref.WeakReference;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.services.EventEmitter;
+
+import java.lang.ref.WeakReference;
+import java.util.List;
 
 public class NativeAdView extends NativeAdLayout {
   /**
@@ -103,5 +99,4 @@ public class NativeAdView extends NativeAdLayout {
   protected void onLayout(boolean b, int i, int i1, int i2, int i3) {
     // do nothing
   }
-
 }
