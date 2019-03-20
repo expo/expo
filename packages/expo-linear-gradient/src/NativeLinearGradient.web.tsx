@@ -102,7 +102,7 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
       <View
         style={[
           style,
-          backgroundImage != null && {
+          backgroundImage !== null && {
             // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
             backgroundImage,
           },
