@@ -47,7 +47,7 @@ UM_EXPORT_METHOD_AS(activate, activate:(NSString *)tag
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if(![self isActivated]) {
+  if(![self shouldBeActive]) {
     [UMUtilities performSynchronouslyOnMainThread:^{
       [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     }];
@@ -61,7 +61,7 @@ UM_EXPORT_METHOD_AS(deactivate, deactivate:(NSString *)tag
                     reject:(UMPromiseRejectBlock)reject)
 {
   [_activeTags removeObject:tag];
-  if (![self isActivated]) {
+  if (![self shouldBeActive]) {
     [UMUtilities performSynchronouslyOnMainThread:^{
       [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     }];
@@ -78,14 +78,14 @@ UM_EXPORT_METHOD_AS(deactivate, deactivate:(NSString *)tag
 }
 
 - (void)onAppForegrounded {
-  if ([self isActivated]) {
+  if ([self shouldBeActive]) {
     [UMUtilities performSynchronouslyOnMainThread:^{
       [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     }];
   }
 }
 
-- (BOOL) isActivated {
+- (BOOL)shouldBeActive {
   return [_activeTags count] > 0;
 }
 

@@ -18,11 +18,11 @@ import java.util.Set;
 public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule, ModuleRegistryConsumer {
 
   private ModuleRegistry mModuleRegistry;
-  private Set<String> tags = new HashSet<>();
+  private Set<String> mTags = new HashSet<>();
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    this.mModuleRegistry = moduleRegistry;
+    mModuleRegistry = moduleRegistry;
   }
 
   private Activity getCurrentActivity() throws CurrentActivityNotFoundException {
@@ -43,7 +43,7 @@ public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule, M
         activity.runOnUiThread(() -> activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
       }
     }
-    tags.add(tag);
+    mTags.add(tag);
     done.run();
   }
 
@@ -53,13 +53,13 @@ public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule, M
     if (isActivated() && activity != null) {
       activity.runOnUiThread(() -> activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
     }
-    tags.remove(tag);
+    mTags.remove(tag);
     done.run();
   }
 
   @Override
   public boolean isActivated() {
-    return tags.size() > 0;
+    return mTags.size() > 0;
   }
 
   @Override

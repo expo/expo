@@ -30,9 +30,9 @@ export default class KeepAwake extends React.PureComponent {
 }
 
 export function activate(tag?: string) {
-  ExpoKeepAwake.activate(tag ? tag : ExpoKeepAwakeTag);
+  ExpoKeepAwake.activate(tag || ExpoKeepAwakeTag);
 }
 
 export function deactivate(tag?: string) {
-  ExpoKeepAwake.deactivate(tag ? tag : ExpoKeepAwakeTag);
+  ExpoKeepAwake.deactivate(tag || ExpoKeepAwakeTag);
 }
