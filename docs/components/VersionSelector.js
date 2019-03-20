@@ -13,8 +13,7 @@ const STYLES_SELECT = css`
   justify-content: center;
   margin: 0;
   height: 48px;
-  padding: 5px 16px 0 16px;
-  border-left: 1px solid ${Constants.colors.border};
+  padding: 8px 16px 0 28px;
 `;
 
 const STYLES_SELECT_TEXT = css`
@@ -74,7 +73,7 @@ export default class VersionSelector extends React.Component {
     return (
       <div className={STYLES_SELECT} style={this.props.style}>
         <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
-          {this.props.version} <ChevronDownIcon style={{ marginLeft: 8 }} />
+          {this.props.version} <ChevronDownIcon style={{ marginLeft: 2 }} />
         </label>
         {// hidden links to help test-links spidering
         VERSIONS.map(v => (
