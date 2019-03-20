@@ -10,7 +10,7 @@
     "postinstall": "rm -rf node_modules/expo-payments-stripe/examples"
   },
   "dependencies": {
-    "expo": "^33.0.0-alpha.web.0",
+    "expo": "^33.0.0-alpha.web.1",
     "expo-payments-stripe": "file:../../",
     "expokit": "^1.7.1",
     "react": "16.3.1",
