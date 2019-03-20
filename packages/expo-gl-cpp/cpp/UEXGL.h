@@ -2,10 +2,10 @@
 #define __UEXGL_H__
 
 
-#ifdef __ANDROID__
+#ifdef ANDROID
 #include <GLES3/gl3.h>
 #endif
-#ifdef __APPLE__
+#ifdef APPLE
 #include <OpenGLES/ES3/gl.h>
 #endif
 
