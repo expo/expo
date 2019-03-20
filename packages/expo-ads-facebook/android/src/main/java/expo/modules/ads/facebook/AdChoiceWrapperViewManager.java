@@ -1,18 +1,21 @@
 package expo.modules.ads.facebook;
+
 import android.content.Context;
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.interfaces.ExpoProp;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
+
+import com.facebook.ads.AdOptionsView;
+
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.ExpoProp;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.UIManager;
 
 public class AdChoiceWrapperViewManager extends ViewManager<AdChoiceWrapperView> implements ModuleRegistryConsumer {
-
-  ModuleRegistry mModuleRegistry;
+  private ModuleRegistry mModuleRegistry;
 
   @Override
   public String getName() {
-    return "AdChoiceWrapper";
+    return "AdChoiceView";
   }
 
   @Override
@@ -22,12 +25,17 @@ public class AdChoiceWrapperViewManager extends ViewManager<AdChoiceWrapperView>
 
   @Override
   public ViewManagerType getViewManagerType() {
-    return ViewManagerType.GROUP;
+    return ViewManagerType.SIMPLE;
   }
 
   @ExpoProp(name = "iconSize")
   public void setIconSize(final AdChoiceWrapperView view, final int iconSize) {
     view.setIconSize(iconSize);
+  }
+
+  @ExpoProp(name = "orientation")
+  public void setOrientation(final AdChoiceWrapperView view, final int orientation) {
+    view.setOrientation(orientation == 0 ? AdOptionsView.Orientation.HORIZONTAL : AdOptionsView.Orientation.VERTICAL);
   }
 
   @ExpoProp(name = "nativeAdViewTag")
@@ -38,13 +46,7 @@ public class AdChoiceWrapperViewManager extends ViewManager<AdChoiceWrapperView>
     mModuleRegistry.getModule(UIManager.class).addUIBlock(new UIManager.GroupUIBlock() {
       @Override
       public void execute(UIManager.ViewHolder viewHolder) {
-        NativeAdView nativeAdView = null;
-
-        if (nativeAdTag != -1) {
-          nativeAdView = (NativeAdView) viewHolder.get(nativeAdTag);
-        }
-
-        view.setNativeAdView(nativeAdView);
+        view.setNativeAdView((NativeAdView) viewHolder.get(nativeAdTag));
       }
     });
   }
