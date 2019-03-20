@@ -7,6 +7,8 @@ import { InitialProps } from './withExpoRoot.types';
 export default function registerRootComponent<P extends InitialProps>(
   component: React.ComponentClass<P>
 ): void {
+  const App = withExpoRoot(component);
   // @ts-ignore: TypeScript says ComponentClass<P> does not satisfy ComponentClass<any>
-  AppRegistry.registerComponent('main', () => withExpoRoot(component));
+  AppRegistry.registerComponent('main', () => <App exp={{}} />);
+  AppRegistry.runApplication('main', { rootTag: document.getElementById('main') });
 }
