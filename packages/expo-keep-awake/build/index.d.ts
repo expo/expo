@@ -6,5 +6,5 @@ export default class KeepAwake extends React.PureComponent {
     componentWillUnmount(): void;
     render(): null;
 }
-export declare function activate(): void;
-export declare function deactivate(): void;
+export declare function activate(tag?: string): void;
+export declare function deactivate(tag?: string): void;

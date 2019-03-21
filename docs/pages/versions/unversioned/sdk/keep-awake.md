@@ -29,8 +29,9 @@ export default class KeepAwakeExample extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        /* @info As long as this component is mounted, the screen will not turn off from being idle. */ <KeepAwake />/* @end */
-
+        /* @info As long as this component is mounted, the screen will not turn off from being idle.
+        */ <KeepAwake />
+        /* @end */
         <Text>This screen will never sleep!</Text>
       </View>
     );
@@ -56,14 +57,28 @@ export default class KeepAwakeExample extends React.Component {
   }
 
   _activate = () => {
-    /* @info Screen will remain on after called until <strong>KeepAwake.deactivate()</strong> is called. */KeepAwake.activate();/* @end */
-
-  }
+    /* @info Screen will remain on after called until <strong>KeepAwake.deactivate()</strong> is called. */ KeepAwake.activate(); /* @end */
+  };
 
   _deactivate = () => {
-    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */KeepAwake.deactivate();/* @end */
-
-  }
+    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */ KeepAwake.deactivate(); /* @end */
+  };
 }
 ```
 
+### `KeepAwake.activate(tag?: string)`
+
+Prevents screen from sleeping, until `deactivate` is called.
+If `tag` argument is used, sleep will be prevented until `deactivate` call with the same `tag` argument. When using multiple `tags` for activation you'll have to deactivate every one in order to reenable screen sleep.
+
+#### Arguments
+
+- **tag (_string_)** -- **optional** -- Tag to lock screen sleep prevention. If not provided, default one is used.
+
+### `KeepAwake.deactivate(tag?: string)`
+
+Releases lock of screen sleep prevention on specified `tag`.
+
+#### Arguments
+
+- **tag (_string_)** -- **optional** -- Tag to release the lock on screen sleep prevention. If not provided, default one is used.
