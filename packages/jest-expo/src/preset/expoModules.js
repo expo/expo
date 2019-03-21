@@ -758,6 +758,11 @@ module.exports = {
     addListener: { type: 'function', functionType: 'async' },
     removeListeners: { type: 'function', functionType: 'async' },
   },
+  RNCNetInfo: {
+    addListener: { type: 'function', functionType: 'async' },
+    getCurrentConnectivity: { type: 'function', functionType: 'promise' },
+    removeListeners: { type: 'function', functionType: 'async' },
+  },
   RNCUIWebViewManager: {
     goBack: { type: 'function', functionType: 'async' },
     goForward: { type: 'function', functionType: 'async' },
