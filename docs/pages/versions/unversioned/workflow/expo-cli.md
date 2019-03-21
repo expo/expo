@@ -10,7 +10,7 @@ Expo CLI is a command line app that is the main interface between a developer an
 - Building binaries (`apk` and `ipa` files) to be uploaded to the App Store and Play Store
 - Managing Apple Credentials and Google Keystores
 
-It also includes a web-based interface, named Expo Dev Tools, which enables you to use some of the most often used features from a quick-to-use graphical interface. We’ve only scratched the surface of what expo-cli can do so far. Be sure to check out all the possible commands below!
+You may use the CLI in your terminal or use the web based interface (it opens automatically by default, or you can press d from the CLI to open it on demand). The web interface you to use some of the most often used features from a quick-to-use graphical interface. We’ve only scratched the surface of what expo-cli can do so far. Be sure to check out all the possible commands below!
 
 ## Installation
 
