@@ -69,7 +69,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
     unimodule "unimodules-core"
     unimodule "unimodules-constants-interface"
-    compile "net.openid:appauth:0.7.1"
+    implementation "net.openid:appauth:0.7.1"
     api 'de.greenrobot:eventbus:2.4.0'
 
 }

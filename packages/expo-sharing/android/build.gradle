@@ -65,5 +65,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-file-system-interface'
-  compile 'com.android.support:support-v4:26.1.0'
+  implementation 'com.android.support:support-v4:26.1.0'
 }

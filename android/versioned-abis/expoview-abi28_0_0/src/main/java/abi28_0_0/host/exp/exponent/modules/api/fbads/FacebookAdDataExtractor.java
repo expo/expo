@@ -2,12 +2,8 @@ package abi28_0_0.host.exp.exponent.modules.api.fbads;
 
 import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdBase;
-import com.facebook.ads.internal.adapters.i;
-import com.facebook.ads.internal.t.e;
-import com.facebook.ads.internal.t.g;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 
 /**
  * In Expo SDK 29 we've updated Facebook Audience Network library to 4.99.0 in which
@@ -20,25 +16,27 @@ import java.util.HashMap;
  */
 public class FacebookAdDataExtractor {
   public static String getTitle(NativeAd nativeAd) {
-    try {
-      e object1 = (e) extractFieldValue("a", nativeAd.getClass().getSuperclass(), nativeAd);
-      i object2 = (i) extractFieldValue("a", object1.getClass(), object1);
-      HashMap object3 = (HashMap) extractFieldValue("e", object2.getClass(), object2);
-      return (String) object3.get("title");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
+    return null;
+//    try {
+//      e object1 = (e) extractFieldValue("a", nativeAd.getClass().getSuperclass(), nativeAd);
+//      i object2 = (i) extractFieldValue("a", object1.getClass(), object1);
+//      HashMap object3 = (HashMap) extractFieldValue("e", object2.getClass(), object2);
+//      return (String) object3.get("title");
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//      return null;
+//    }
   }
 
   public static String getUrl(NativeAdBase.Image image) {
-    try {
-      g object1 = (g) extractFieldValue("a", image.getClass(), image);
-      return (String) extractFieldValue("a", object1.getClass(), object1);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
+    return null;
+//    try {
+//      g object1 = (g) extractFieldValue("a", image.getClass(), image);
+//      return (String) extractFieldValue("a", object1.getClass(), object1);
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//      return null;
+//    }
   }
 
   private static Object extractFieldValue(String fieldName, Class<?> targetClass, Object target) throws NoSuchFieldException, IllegalAccessException {

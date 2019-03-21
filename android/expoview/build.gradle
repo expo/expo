@@ -46,7 +46,9 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
+    // https://github.com/JakeWharton/butterknife/pull/1478
+    // https://jitpack.io/com/github/TWiStErRob/butterknife/fix1431-SNAPSHOT/build.log
+    classpath 'com.github.TWiStErRob.butterknife:butterknife-gradle-plugin:fix1431-SNAPSHOT'
   }
 }
 
@@ -273,7 +275,7 @@ dependencies {
   api 'de.greenrobot:eventbus:2.4.0'
 
   // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  provided 'com.amplitude:android-sdk:2.9.2'
+  compileOnly 'com.amplitude:android-sdk:2.9.2'
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-gcm:16.1.0'
@@ -304,8 +306,8 @@ dependencies {
   api 'com.google.firebase:firebase-core:16.0.7'
   api 'com.google.firebase:firebase-messaging:17.4.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:8.4.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+  api 'com.jakewharton:butterknife:9.0.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system
