@@ -240,8 +240,22 @@ public class SQLiteModule extends ExportedModule {
     return data;
   }
 
+  private static boolean isPragma(String str) {
+    return startsWithCaseInsensitive(str, "pragma");
+  }
+
+  private static boolean isPragmaReadOnly(String str) {
+    if (!isPragma(str)) {
+      return false;
+    }
+    if (str.matches(".*=.*")) {
+      return false;
+    }
+    return true;
+  }
+
   private static boolean isSelect(String str) {
-    return startsWithCaseInsensitive(str, "select") || startsWithCaseInsensitive(str, "pragma");
+    return startsWithCaseInsensitive(str, "select") || isPragmaReadOnly(str);
   }
 
   private static boolean isInsert(String str) {

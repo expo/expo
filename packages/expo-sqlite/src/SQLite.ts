@@ -84,7 +84,9 @@ function _escapeBlob<T>(data: T): T {
 const _openExpoSQLiteDatabase = customOpenDatabase(SQLiteDatabase);
 
 function addExecMethod(db: any): WebSQLDatabase {
-  db.exec = db._db.exec;
+  db.exec = (queries: InternalQuery[], readOnly: boolean, callback: SQLiteCallback): void) => {
+    db._db.exec(queries, readOnly, callback);
+  }
   return db;
 }
 
