@@ -2,14 +2,21 @@ package org.unimodules.core.interfaces;
 
 import android.content.Context;
 
-import java.util.List;
-
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ViewManager;
 
+import java.util.Collections;
+import java.util.List;
+
 public interface Package {
-  List<InternalModule> createInternalModules(Context context);
-  List<ExportedModule> createExportedModules(Context context);
+
+  default List<? extends InternalModule> createInternalModules(Context context) {
+    return Collections.emptyList();
+  }
+
+  default List<? extends ExportedModule> createExportedModules(Context context) {
+    return Collections.emptyList();
+  }
 
   /**
    * @param context A context which you can use when initializing view managers,
@@ -17,7 +24,11 @@ public interface Package {
    *                are reused between refreshes of the application, so keeping
    *                reference to the context in view managers makes it leak.
    */
-  List<ViewManager> createViewManagers(Context context);
+  default List<? extends ViewManager> createViewManagers(Context context) {
+    return Collections.emptyList();
+  }
 
-  List<SingletonModule> createSingletonModules(Context context);
+  default List<? extends SingletonModule> createSingletonModules(Context context) {
+    return Collections.emptyList();
+  }
 }

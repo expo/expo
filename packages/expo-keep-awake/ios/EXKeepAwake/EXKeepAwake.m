@@ -13,7 +13,13 @@
 @end
 
 @implementation EXKeepAwake {
-  BOOL _active;
+  NSMutableSet *_activeTags;
+}
+
+- (instancetype)init {
+  self = [super init];
+  _activeTags = [NSMutableSet set];
+  return self;
 }
 
 UM_EXPORT_MODULE(ExpoKeepAwake);
@@ -37,23 +43,29 @@ UM_EXPORT_MODULE(ExpoKeepAwake);
   }
 }
 
-UM_EXPORT_METHOD_AS(activate, activate:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(activate, activate:(NSString *)tag
+                    resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  _active = YES;
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-  }];
+  if(![self shouldBeActive]) {
+    [UMUtilities performSynchronouslyOnMainThread:^{
+      [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    }];
+  }
+  [_activeTags addObject:tag];
   resolve(@YES);
 }
 
-UM_EXPORT_METHOD_AS(deactivate, deactivate:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(deactivate, deactivate:(NSString *)tag
+                    resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  _active = NO;
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-  }];
+  [_activeTags removeObject:tag];
+  if (![self shouldBeActive]) {
+    [UMUtilities performSynchronouslyOnMainThread:^{
+      [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    }];
+  }
   resolve(@YES);
 }
 
@@ -66,11 +78,15 @@ UM_EXPORT_METHOD_AS(deactivate, deactivate:(UMPromiseResolveBlock)resolve
 }
 
 - (void)onAppForegrounded {
-  if (_active) {
+  if ([self shouldBeActive]) {
     [UMUtilities performSynchronouslyOnMainThread:^{
       [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     }];
   }
+}
+
+- (BOOL)shouldBeActive {
+  return [_activeTags count] > 0;
 }
 
 @end

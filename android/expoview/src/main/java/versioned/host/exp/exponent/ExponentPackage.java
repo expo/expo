@@ -127,7 +127,7 @@ public class ExponentPackage implements ReactPackage {
       // which are going to be deallocated in a tick, but there's no better solution
       // without a bigger-than-minimal refactor. In SDK32 the only singleton module
       // is TaskService which is safe to initialize more than once.
-      List<SingletonModule> packageSingletonModules = expoPackage.createSingletonModules(context);
+      List<? extends SingletonModule> packageSingletonModules = expoPackage.createSingletonModules(context);
       for (SingletonModule singletonModule : packageSingletonModules) {
         if (!sSingletonModulesClasses.contains(singletonModule.getClass())) {
           sSingletonModules.add(singletonModule);
