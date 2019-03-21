@@ -131,7 +131,7 @@ task packageNdkLibs(dependsOn: buildNdkLib, type: Copy) {
 
   from "$buildDir/expo-gl-ndk/all"
   exclude '**/libjsc.so'
-//  exclude '**/libgnustl_shared.so'
+  exclude '**/libc++_shared.so'
   into distDir.path
 }
 
