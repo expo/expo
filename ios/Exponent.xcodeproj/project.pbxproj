@@ -92,6 +92,7 @@
 		3159BBA621806EA0002D2A81 /* RNSVGRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BBA021806EA0002D2A81 /* RNSVGRenderable.m */; };
 		3159BBA721806EA0002D2A81 /* RNSVGNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BBA121806EA0002D2A81 /* RNSVGNode.m */; };
 		317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */; };
+		317306082242459A006D1BC0 /* RNCNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 317306072242459A006D1BC0 /* RNCNetInfo.m */; };
 		3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */; };
 		318102BA20C15E460061726F /* EXLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74121FF6DADB001C764B /* EXLinkingManager.m */; };
 		31DBC6AC20B5B4EC0049A476 /* EXFileSystemBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31DBC6AB20B5B4EC0049A476 /* EXFileSystemBinding.m */; };
@@ -487,6 +488,8 @@
 		3159BBA521806EA0002D2A81 /* RNSVGRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGRenderable.h; sourceTree = "<group>"; };
 		317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedReactNativeAdapter.m; sourceTree = "<group>"; };
 		317168FB213DA0EF00766458 /* EXScopedReactNativeAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedReactNativeAdapter.h; sourceTree = "<group>"; };
+		317306062242459A006D1BC0 /* RNCNetInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCNetInfo.h; sourceTree = "<group>"; };
+		317306072242459A006D1BC0 /* RNCNetInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCNetInfo.m; sourceTree = "<group>"; };
 		3179683420B5B95B00243B6B /* EXScopedModuleRegistryAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedModuleRegistryAdapter.h; sourceTree = "<group>"; };
 		3179683520B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedModuleRegistryAdapter.m; sourceTree = "<group>"; };
 		31DBC6AB20B5B4EC0049A476 /* EXFileSystemBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFileSystemBinding.m; sourceTree = "<group>"; };
@@ -962,6 +965,15 @@
 				314410D1223BF73A00310599 /* RNCWKWebViewManager.m */,
 			);
 			path = WebView;
+			sourceTree = "<group>";
+		};
+		317306052242459A006D1BC0 /* NetInfo */ = {
+			isa = PBXGroup;
+			children = (
+				317306062242459A006D1BC0 /* RNCNetInfo.h */,
+				317306072242459A006D1BC0 /* RNCNetInfo.m */,
+			);
+			path = NetInfo;
 			sourceTree = "<group>";
 		};
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
@@ -1605,6 +1617,7 @@
 			isa = PBXGroup;
 			children = (
 				BBD0318A200011C9009F0434 /* Cognito */,
+				317306052242459A006D1BC0 /* NetInfo */,
 				BB5BD2FA20AEFCB4007E02FC /* Reanimated */,
 				BB36BC5C2135C98D00AFFD58 /* Screens */,
 				B5FB728D1FF6DADB001C764B /* Components */,
@@ -2526,6 +2539,7 @@
 				314410DE223BF73B00310599 /* RNCUIWebView.m in Sources */,
 				2519CCFC216B292600FA7C80 /* EXUserNotificationCenter.m in Sources */,
 				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
+				317306082242459A006D1BC0 /* RNCNetInfo.m in Sources */,
 				3159BB2621806E0C002D2A81 /* RNSVGClipPath.m in Sources */,
 				3C3C339520E24EC0000F8B92 /* EXSplashScreen.m in Sources */,
 				B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */,

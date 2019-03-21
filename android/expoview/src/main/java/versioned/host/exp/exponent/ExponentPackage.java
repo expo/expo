@@ -46,6 +46,7 @@ import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
+import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
@@ -175,6 +176,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
         nativeModules.add(new RNCWebViewModule(reactContext));
+        nativeModules.add(new NetInfoModule(reactContext));
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 

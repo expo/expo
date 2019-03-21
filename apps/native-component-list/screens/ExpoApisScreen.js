@@ -99,6 +99,7 @@ export default class ExpoApisScreen extends React.Component {
       'Localization',
       'Location',
       'MailComposer',
+      'NetInfo',
       'Notification',
       'Pedometer',
       'Permissions',
