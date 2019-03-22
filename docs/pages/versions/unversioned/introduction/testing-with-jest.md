@@ -2,7 +2,7 @@
 title: Testing with Jest
 ---
 
-Adding Jest to your Expo app has gotten pretty simple, to help with this process, we've even created a [Jest preset](https://github.com/expo/expo/tree/master/packages/jest-expo) for you. Let's get started.
+Jest is the most widely used JavaScript unit testing framework, so you may be even be familiar with it already. This guide explains how to set up Jest in your project, write a snapshot test, write a unit test, and common problems that people encounter when using Jest in React Native.
 
 ## Installation
 
