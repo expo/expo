@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;

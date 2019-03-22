@@ -1,6 +1,6 @@
 package abi28_0_0.host.exp.exponent.modules.api.components.barcodescanner;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import abi28_0_0.com.facebook.react.bridge.ReadableArray;
 import abi28_0_0.com.facebook.react.common.MapBuilder;

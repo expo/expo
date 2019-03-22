@@ -2,7 +2,7 @@
 
 package abi26_0_0.host.exp.exponent.modules.api;
 
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import abi26_0_0.com.facebook.react.bridge.Arguments;
 import abi26_0_0.com.facebook.react.bridge.Promise;

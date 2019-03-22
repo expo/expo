@@ -1,16 +1,16 @@
 package host.exp.exponent.utils;
 
-import android.support.test.uiautomator.Configurator;
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiSelector;
+import androidx.test.uiautomator.Configurator;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiSelector;
 
 import com.azimolabs.conditionwatcher.ConditionWatcher;
 import com.azimolabs.conditionwatcher.Instruction;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 public class ExpoConditionWatcher {
 

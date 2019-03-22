@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.CamcorderProfile;
 import android.os.Build;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 

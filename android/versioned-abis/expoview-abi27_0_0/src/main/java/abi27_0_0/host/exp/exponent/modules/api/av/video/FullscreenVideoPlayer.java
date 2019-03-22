@@ -1,7 +1,7 @@
 package abi27_0_0.host.exp.exponent.modules.api.av.video;
 
 import android.app.Dialog;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.FrameLayout;
 
 import abi27_0_0.com.facebook.react.uimanager.ThemedReactContext;

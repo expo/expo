@@ -1,6 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;

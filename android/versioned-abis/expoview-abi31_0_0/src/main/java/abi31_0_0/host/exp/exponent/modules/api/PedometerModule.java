@@ -4,8 +4,8 @@ package abi31_0_0.host.exp.exponent.modules.api;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import expolib_v1.com.facebook.infer.annotation.Assertions;
 import abi31_0_0.com.facebook.react.bridge.Arguments;

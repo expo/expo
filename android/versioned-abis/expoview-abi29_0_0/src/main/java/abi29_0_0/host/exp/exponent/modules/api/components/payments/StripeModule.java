@@ -5,8 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import abi29_0_0.com.facebook.react.bridge.ActivityEventListener;
@@ -40,12 +40,9 @@ import com.google.android.gms.wallet.WalletConstants;
 import com.stripe.android.BuildConfig;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
-import com.stripe.android.exception.AuthenticationException;
 import com.stripe.android.model.BankAccount;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
-
-import org.json.JSONException;
 
 public class StripeModule extends ReactContextBaseJavaModule {
 

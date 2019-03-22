@@ -14,7 +14,7 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import androidx.fragment.app.DialogFragment;
 
 @SuppressWarnings("ValidFragment")
 public class SupportTimePickerDialogFragment extends DialogFragment {

@@ -1,13 +1,4 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-  }
-}
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
@@ -69,5 +60,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-permissions-interface'
-  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
 }

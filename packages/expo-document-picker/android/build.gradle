@@ -1,13 +1,4 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-  }
-}
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
@@ -65,6 +56,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
 
-  api 'com.android.support:support-annotations:27.1.1'
+  api 'androidx.annotation:annotation:1.0.0-beta01'
   api 'commons-io:commons-io:2.6'
 }

@@ -1,13 +1,4 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-  }
-}
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
@@ -64,6 +55,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  api 'com.android.support:exifinterface:27.1.1'
+  api 'androidx.exifinterface:exifinterface:1.0.0-beta01'
   unimodule "unimodules-permissions-interface"
 }

@@ -8,7 +8,7 @@ import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.io.InputStream;
 import java.text.ParseException;

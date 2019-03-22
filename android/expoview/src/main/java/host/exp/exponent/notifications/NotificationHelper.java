@@ -10,8 +10,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import android.text.format.DateUtils;
 
@@ -26,7 +26,6 @@ import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
-import host.exp.exponent.storage.ExperienceDBObject$Adapter;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.JSONUtils;

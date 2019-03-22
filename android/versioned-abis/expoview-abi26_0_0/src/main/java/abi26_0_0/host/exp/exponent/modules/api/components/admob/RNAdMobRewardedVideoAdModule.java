@@ -2,10 +2,9 @@ package abi26_0_0.host.exp.exponent.modules.api.components.admob;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import abi26_0_0.com.facebook.react.bridge.Arguments;
-import abi26_0_0.com.facebook.react.bridge.Callback;
 import abi26_0_0.com.facebook.react.bridge.Promise;
 import abi26_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi26_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;

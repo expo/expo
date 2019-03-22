@@ -3,8 +3,8 @@
 package abi29_0_0.host.exp.exponent.modules.api;
 
 import android.hardware.fingerprint.FingerprintManager;
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
-import android.support.v4.os.CancellationSignal;
+import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
+import androidx.core.os.CancellationSignal;
 
 import abi29_0_0.com.facebook.react.bridge.Arguments;
 import abi29_0_0.com.facebook.react.bridge.Promise;

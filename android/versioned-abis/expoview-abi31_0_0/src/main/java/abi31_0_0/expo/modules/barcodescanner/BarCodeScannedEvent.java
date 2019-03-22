@@ -1,7 +1,7 @@
 package abi31_0_0.expo.modules.barcodescanner;
 
 import android.os.Bundle;
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import abi31_0_0.expo.core.interfaces.services.EventEmitter;
 import abi31_0_0.expo.interfaces.barcodescanner.BarCodeScannerResult;

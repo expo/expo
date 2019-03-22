@@ -9,7 +9,7 @@ package com.facebook.react.views.scroll;
 
 import android.annotation.TargetApi;
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.util.DisplayMetrics;
 
 import com.facebook.react.bridge.ReadableArray;

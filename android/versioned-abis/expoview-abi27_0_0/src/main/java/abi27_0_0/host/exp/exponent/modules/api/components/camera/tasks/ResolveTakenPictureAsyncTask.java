@@ -6,7 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.util.Base64;
 
 import abi27_0_0.com.facebook.react.bridge.Arguments;
@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import host.exp.exponent.utils.ExpFileUtils;
-import abi27_0_0.host.exp.exponent.modules.api.components.camera.CameraModule;
 import abi27_0_0.host.exp.exponent.modules.api.components.camera.ExpoCameraViewHelper;
 
 public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, WritableMap> {

@@ -1,18 +1,15 @@
 package abi32_0_0.host.exp.exponent.modules.api.screens;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import abi32_0_0.com.facebook.react.ReactRootView;
-import abi32_0_0.com.facebook.react.bridge.ReactContext;
 import abi32_0_0.com.facebook.react.modules.core.ChoreographerCompat;
 import abi32_0_0.com.facebook.react.modules.core.ReactChoreographer;
 

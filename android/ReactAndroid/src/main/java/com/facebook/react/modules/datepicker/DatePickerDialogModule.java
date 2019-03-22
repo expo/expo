@@ -9,8 +9,6 @@ package com.facebook.react.modules.datepicker;
 
 import javax.annotation.Nullable;
 
-import java.util.Map;
-
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.DialogFragment;
@@ -30,6 +28,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * {@link NativeModule} that allows JS to show a native date picker dialog and get called back when
@@ -129,11 +129,11 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
     }
     // We want to support both android.app.Activity and the pre-Honeycomb FragmentActivity
     // (for apps that use it for legacy reasons). This unfortunately leads to some code duplication.
-    if (activity instanceof android.support.v4.app.FragmentActivity) {
-      android.support.v4.app.FragmentManager fragmentManager =
-          ((android.support.v4.app.FragmentActivity) activity).getSupportFragmentManager();
-      android.support.v4.app.DialogFragment oldFragment =
-          (android.support.v4.app.DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+    if (activity instanceof FragmentActivity) {
+      androidx.fragment.app.FragmentManager fragmentManager =
+          ((FragmentActivity) activity).getSupportFragmentManager();
+      androidx.fragment.app.DialogFragment oldFragment =
+          (androidx.fragment.app.DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
       if (oldFragment != null) {
         oldFragment.dismiss();
       }

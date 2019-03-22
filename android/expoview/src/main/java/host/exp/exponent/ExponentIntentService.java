@@ -12,7 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 
@@ -25,7 +25,6 @@ import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.InfoActivity;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.kernel.Kernel;
-import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;

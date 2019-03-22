@@ -1,6 +1,6 @@
 package abi32_0_0.host.exp.exponent.modules.api.av.video;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public abstract class FullscreenVideoPlayerPresentationChangeProgressListener implements FullscreenVideoPlayerPresentationChangeListener {
   @Override

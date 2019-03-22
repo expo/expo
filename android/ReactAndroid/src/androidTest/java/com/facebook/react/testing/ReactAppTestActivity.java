@@ -6,13 +6,10 @@
  */
 package com.facebook.react.testing;
 
-import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;

@@ -1,7 +1,7 @@
 package host.exp.exponent.utils;
 
-import android.support.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
-import android.support.test.internal.util.AndroidRunnerParams;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
+import androidx.test.internal.util.AndroidRunnerParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

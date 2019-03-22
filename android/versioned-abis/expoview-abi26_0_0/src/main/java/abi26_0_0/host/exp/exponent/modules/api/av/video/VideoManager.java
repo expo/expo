@@ -1,6 +1,6 @@
 package abi26_0_0.host.exp.exponent.modules.api.av.video;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import abi26_0_0.com.facebook.react.bridge.Promise;

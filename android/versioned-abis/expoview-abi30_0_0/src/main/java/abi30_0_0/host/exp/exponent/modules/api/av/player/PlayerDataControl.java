@@ -1,6 +1,6 @@
 package abi30_0_0.host.exp.exponent.modules.api.av.player;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.MediaController;
 
 import abi30_0_0.com.facebook.react.bridge.Arguments;

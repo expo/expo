@@ -1,6 +1,6 @@
 package abi28_0_0.host.exp.exponent.modules.api.components.camera.events;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import abi28_0_0.com.facebook.react.bridge.WritableMap;
 import abi28_0_0.com.facebook.react.uimanager.events.Event;

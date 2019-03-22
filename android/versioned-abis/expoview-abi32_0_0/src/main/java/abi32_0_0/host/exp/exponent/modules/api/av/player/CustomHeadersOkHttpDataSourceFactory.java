@@ -1,7 +1,7 @@
 package abi32_0_0.host.exp.exponent.modules.api.av.player;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import expolib_v1.com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource;
 import expolib_v1.com.google.android.exoplayer2.upstream.DataSource;

@@ -1,15 +1,3 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-    classpath 'de.undercouch:gradle-download-task:2.0.0'
-  }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 

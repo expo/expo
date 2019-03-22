@@ -1,8 +1,8 @@
 package host.exp.exponent;
 
 import android.Manifest;
-import android.support.test.espresso.Espresso;
-import android.support.test.rule.GrantPermissionRule;
+import androidx.test.espresso.Espresso;
+import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,12 +15,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import host.exp.exponent.annotations.ExpoAlwaysPassThroughFilter;
-import host.exp.exponent.annotations.ExpoDevModeTest;
 import host.exp.exponent.utils.ExpoTestRunner;
 import host.exp.exponent.utils.LoadingScreenIdlingResource;
 import host.exp.exponent.utils.RetryTestRule;
 import host.exp.exponent.utils.TestReporterRule;
-import host.exp.exponent.utils.TestServerUtils;
 
 @RunWith(ExpoTestRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

@@ -13,15 +13,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.Rect;
-import android.hardware.SensorManager;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.text.TextUtilsCompat;
+
+import androidx.core.view.ViewCompat;
+import androidx.core.text.TextUtilsCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 

@@ -37,7 +37,7 @@ android {
       abiFilters 'armeabi-v7a', 'x86'
     }
     multiDexEnabled true
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -105,20 +105,20 @@ END UNCOMMENT WHEN DISTRIBUTING */
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-  implementation 'com.android.support:multidex:1.0.1'
+  implementation 'androidx.multidex:multidex:2.0.0'
 
   // Our dependencies
-  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
   implementation 'com.facebook.android:facebook-android-sdk:4.37.0'
   implementation('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:9.0.0'
+  implementation 'com.jakewharton:butterknife:10.1.0'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
@@ -154,7 +154,7 @@ dependencies {
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  implementation 'com.android.support:exifinterface:27.1.1'
+  implementation 'androidx.exifinterface:exifinterface:1.0.0-beta01'
   implementation 'com.squareup.okio:okio:1.9.0'
   implementation 'com.facebook.soloader:soloader:0.5.1'
 
@@ -163,19 +163,19 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 
   // Testing
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
-  androidTestImplementation 'com.android.support.test:runner:1.0.1'
-  androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+  androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
+  androidTestImplementation 'androidx.annotation:annotation:1.0.0-beta01'
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
-  androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+  androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0-alpha4'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
 
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:1.10.19'
   testImplementation 'org.robolectric:robolectric:3.8'
-  testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
-  testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
+  testImplementation 'androidx.test:runner:1.1.0-alpha4'
+  testImplementation 'androidx.test:rules:1.1.0-alpha4'
 
   /* UNCOMMENT WHEN DISTRIBUTING
   implementation('host.exp.exponent:expoview:32.0.0@aar') {

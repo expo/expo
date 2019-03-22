@@ -8,7 +8,7 @@
 package com.facebook.react.views.switchview;
 
 import android.content.Context;
-import android.support.v7.widget.SwitchCompat;
+import androidx.appcompat.widget.SwitchCompat;
 
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not

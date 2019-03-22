@@ -8,15 +8,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 
 import abi26_0_0.com.facebook.react.bridge.Arguments;
 import abi26_0_0.com.facebook.react.bridge.Promise;
 import abi26_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi26_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi26_0_0.com.facebook.react.bridge.ReactMethod;
 import abi26_0_0.com.facebook.react.bridge.WritableMap;
 

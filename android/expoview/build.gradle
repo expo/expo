@@ -37,21 +37,6 @@ uploadArchives {
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
-buildscript {
-  repositories {
-    maven { url 'https://maven.fabric.io/public' }
-    maven { url "https://jitpack.io" }
-    mavenCentral()
-    google()
-    jcenter()
-  }
-  dependencies {
-    // https://github.com/JakeWharton/butterknife/pull/1478
-    // https://jitpack.io/com/github/TWiStErRob/butterknife/fix1431-SNAPSHOT/build.log
-    classpath 'com.github.TWiStErRob.butterknife:butterknife-gradle-plugin:fix1431-SNAPSHOT'
-  }
-}
-
 repositories {
   maven { url 'https://maven.fabric.io/public' }
   maven { url "https://jitpack.io" }
@@ -120,7 +105,7 @@ apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
-  api 'com.android.support:multidex:1.0.3'
+  api 'androidx.multidex:multidex:2.0.0'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
   testImplementation 'junit:junit:4.12'
@@ -267,7 +252,7 @@ dependencies {
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api 'com.android.support:appcompat-v7:27.1.1'
+  api 'androidx.appcompat:appcompat:1.0.0-beta01'
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
@@ -302,12 +287,12 @@ dependencies {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
   api 'io.branch.sdk.android:library:2.17.1'
-  api 'com.android.support:exifinterface:27.1.1'
+  api 'androidx.exifinterface:exifinterface:1.0.0-beta01'
   api 'com.google.firebase:firebase-core:16.0.7'
   api 'com.google.firebase:firebase-messaging:17.4.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:9.0.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
+  api 'com.jakewharton:butterknife:10.1.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system

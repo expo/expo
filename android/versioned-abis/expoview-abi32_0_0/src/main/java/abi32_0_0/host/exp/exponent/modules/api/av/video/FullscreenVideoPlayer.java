@@ -2,7 +2,7 @@ package abi32_0_0.host.exp.exponent.modules.api.av.video;
 
 import android.app.Dialog;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;

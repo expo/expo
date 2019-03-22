@@ -3,8 +3,7 @@ package expo.modules.payments.stripe;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
+import androidx.annotation.Nullable;
 
 /**
  * Created by remer on 11/8/17.

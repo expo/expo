@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsClient;
-import android.support.customtabs.CustomTabsIntent;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsClient;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
@@ -22,7 +22,7 @@ import java.util.List;
 
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
-import static android.support.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION;
+import static androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION;
 
 class CustomTabsActivitiesHelper {
 

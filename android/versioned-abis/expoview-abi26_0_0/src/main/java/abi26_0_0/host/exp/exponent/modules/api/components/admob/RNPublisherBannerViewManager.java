@@ -1,6 +1,6 @@
 package abi26_0_0.host.exp.exponent.modules.api.components.admob;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import abi26_0_0.com.facebook.react.bridge.Arguments;
@@ -16,7 +16,6 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 
 import java.util.Map;

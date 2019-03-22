@@ -1,7 +1,6 @@
 package expo.modules.barcodescanner;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
@@ -9,10 +8,8 @@ import org.unimodules.core.interfaces.ExpoProp;
 import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class BarCodeScannerViewManager extends ViewManager<BarCodeScannerView> implements ModuleRegistryConsumer {
   public enum Events {

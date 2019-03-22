@@ -1,6 +1,6 @@
 package abi26_0_0.host.exp.exponent.modules.api.components.camera;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import abi26_0_0.com.facebook.react.bridge.ReadableArray;
 import abi26_0_0.com.facebook.react.common.MapBuilder;

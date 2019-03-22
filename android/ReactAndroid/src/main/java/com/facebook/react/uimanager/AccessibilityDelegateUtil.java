@@ -5,16 +5,15 @@
 
 package com.facebook.react.uimanager;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
-import android.view.accessibility.AccessibilityNodeInfo;
+
 import com.facebook.react.R;
-import com.facebook.react.bridge.ReadableArray;
+
 import java.util.Locale;
 import javax.annotation.Nullable;
 

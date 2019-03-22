@@ -1,6 +1,6 @@
 package expo.modules.haptics.arguments;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public enum HapticsNotificationType implements HapticsVibrationType {
   SUCCESS(

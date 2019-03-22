@@ -5,8 +5,8 @@ package abi26_0_0.host.exp.exponent.modules.api;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import abi26_0_0.com.facebook.infer.annotation.Assertions;
 import abi26_0_0.com.facebook.react.bridge.Arguments;

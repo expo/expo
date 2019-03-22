@@ -1,12 +1,11 @@
 package abi27_0_0.host.exp.exponent.modules.api.components.camera.events;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import abi27_0_0.com.facebook.react.bridge.Arguments;
 import abi27_0_0.com.facebook.react.bridge.WritableMap;
 import abi27_0_0.com.facebook.react.uimanager.events.Event;
 import abi27_0_0.com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.google.android.gms.vision.barcode.Barcode;
 
 import abi27_0_0.host.exp.exponent.modules.api.components.camera.CameraViewManager;
 import abi27_0_0.host.exp.exponent.modules.api.components.camera.utils.ExpoBarCodeDetector;

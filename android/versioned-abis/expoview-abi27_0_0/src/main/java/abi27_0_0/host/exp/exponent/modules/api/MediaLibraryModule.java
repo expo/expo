@@ -3,7 +3,7 @@ package abi27_0_0.host.exp.exponent.modules.api;
 import android.Manifest;
 import android.content.Context;
 import android.os.Environment;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;

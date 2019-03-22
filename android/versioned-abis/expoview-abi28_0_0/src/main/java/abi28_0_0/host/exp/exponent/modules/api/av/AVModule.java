@@ -7,11 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.net.Uri;
 
@@ -20,7 +18,6 @@ import abi28_0_0.com.facebook.react.bridge.Callback;
 import abi28_0_0.com.facebook.react.bridge.LifecycleEventListener;
 import abi28_0_0.com.facebook.react.bridge.Promise;
 import abi28_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi28_0_0.com.facebook.react.bridge.ReactContextBaseJavaModule;
 import abi28_0_0.com.facebook.react.bridge.ReactMethod;
 import abi28_0_0.com.facebook.react.bridge.ReadableMap;
 import abi28_0_0.com.facebook.react.bridge.WritableMap;
@@ -44,7 +41,6 @@ import host.exp.exponent.utils.ScopedContext;
 import host.exp.expoview.Exponent;
 import abi28_0_0.host.exp.exponent.modules.ExpoKernelServiceConsumerBaseModule;
 import abi28_0_0.host.exp.exponent.modules.api.av.player.PlayerData;
-import abi28_0_0.host.exp.exponent.modules.api.av.video.VideoTextureView;
 import abi28_0_0.host.exp.exponent.modules.api.av.video.VideoView;
 import abi28_0_0.host.exp.exponent.modules.api.av.video.VideoViewWrapper;
 

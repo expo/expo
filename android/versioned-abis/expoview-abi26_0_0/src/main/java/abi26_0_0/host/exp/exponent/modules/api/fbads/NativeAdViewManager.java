@@ -1,11 +1,10 @@
 package abi26_0_0.host.exp.exponent.modules.api.fbads;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 
 import com.facebook.ads.NativeAdsManager;
 import abi26_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi26_0_0.com.facebook.react.bridge.ReactMethod;
 import abi26_0_0.com.facebook.react.common.MapBuilder;
 import abi26_0_0.com.facebook.react.uimanager.ThemedReactContext;
 import abi26_0_0.com.facebook.react.uimanager.ViewGroupManager;

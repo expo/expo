@@ -267,7 +267,7 @@ android {
         buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
         buildConfigField 'int', 'EXOPACKAGE_FLAGS', '0'
         testApplicationId "com.facebook.react.tests.gradle"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets.main {
@@ -299,7 +299,7 @@ android {
 dependencies {
     api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
     api 'javax.inject:javax.inject:1'
-    api 'com.android.support:appcompat-v7:27.1.1'
+    api 'androidx.appcompat:appcompat:1.0.0-beta01'
     api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
     api "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
     api 'com.facebook.soloader:soloader:0.5.1'
@@ -322,7 +322,7 @@ dependencies {
     testImplementation "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
     androidTestImplementation fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
-    androidTestImplementation 'com.android.support.test:runner:0.3'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
     androidTestImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 

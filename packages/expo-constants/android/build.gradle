@@ -1,13 +1,4 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-  }
-}
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
@@ -71,5 +62,5 @@ dependencies {
   unimodule 'unimodules-constants-interface'
 
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
-  implementation 'com.android.support:support-annotations:+'
+  implementation 'androidx.annotation:annotation:1.0.0-beta01'
 }

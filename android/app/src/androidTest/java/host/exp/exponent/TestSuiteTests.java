@@ -6,11 +6,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
-import android.support.test.rule.GrantPermissionRule;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.Until;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.espresso.Espresso;
+import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.Until;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,10 +39,10 @@ import host.exp.exponent.utils.TestConfig;
 import host.exp.exponent.utils.TestContacts;
 import host.exp.exponent.utils.TestReporterRule;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static host.exp.exponent.utils.ExponentMatchers.withTestId;
 
 @RunWith(ExpoTestRunner.class)

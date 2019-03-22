@@ -13,7 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.net.ConnectivityManagerCompat;
+import androidx.core.net.ConnectivityManagerCompat;
 import android.telephony.TelephonyManager;
 
 import com.facebook.react.bridge.LifecycleEventListener;

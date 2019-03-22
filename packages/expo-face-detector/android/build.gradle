@@ -1,13 +1,4 @@
-buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-  }
-}
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
@@ -70,7 +61,7 @@ dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-face-detector-interface'
   unimodule 'unimodules-file-system-interface'
-  implementation 'com.android.support:exifinterface:26.0.1'
+  implementation 'androidx.exifinterface:exifinterface:1.0.0-beta01'
   implementation 'com.google.android.gms:play-services-vision:15.0.2'
 }
   

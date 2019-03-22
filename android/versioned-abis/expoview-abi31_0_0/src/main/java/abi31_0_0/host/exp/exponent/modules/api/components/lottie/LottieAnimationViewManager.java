@@ -2,7 +2,7 @@ package abi31_0_0.host.exp.exponent.modules.api.components.lottie;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.util.Log;
 import android.widget.ImageView;
 

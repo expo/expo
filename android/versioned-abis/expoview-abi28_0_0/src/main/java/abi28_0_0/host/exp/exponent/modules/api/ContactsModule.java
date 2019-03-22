@@ -7,7 +7,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import abi28_0_0.com.facebook.react.bridge.Arguments;
