@@ -1,15 +1,13 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
 import {
   Accelerometer,
   Barometer,
+  DeviceMotion,
   Gyroscope,
   Magnetometer,
   MagnetometerUncalibrated,
-  DangerZone,
-} from 'expo';
-const { DeviceMotion } = DangerZone;
+} from 'expo-sensors';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const FAST_INTERVAL = 16;
 const SLOW_INTERVAL = 1000;

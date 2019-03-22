@@ -12,8 +12,8 @@ import com.facebook.ads.NativeAd;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.services.EventEmitter;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class NativeAdView extends ViewGroup {
   /**

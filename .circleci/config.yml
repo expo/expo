@@ -211,6 +211,12 @@ jobs:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo
       - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/@unimodules/core
+      - yarn:
+          command: test --maxWorkers 1
+          working_directory: ~/expo/packages/@unimodules/react-native-adapter
+      - yarn:
           command: build
           working_directory: ~/expo/packages/expo-barcode-scanner
       - yarn:
@@ -242,9 +248,6 @@ jobs:
           working_directory: ~/expo/packages/expo-analytics-amplitude
       - yarn:
           command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-errors
-      - yarn:
-          command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-face-detector
       - yarn:
           command: test --maxWorkers 1
@@ -273,9 +276,6 @@ jobs:
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-random
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-react-native-adapter
       - yarn:
           command: test --maxWorkers 1
           working_directory: ~/expo/packages/expo-secure-store
@@ -497,21 +497,8 @@ jobs:
           keys:
             - docs-site-{{ .Revision }}
       - deploy:
-          command: |
-            touch docs/out/versions/latest/introduction/installation.html && \
-            aws s3 sync docs/out s3://docs.expo.io --delete && \
-            aws s3 cp \
-              --recursive \
-              --metadata-directive REPLACE \
-              --cache-control "public,max-age=31536000,immutable" \
-              s3://docs.expo.io/_next/static/ \
-              s3://docs.expo.io/_next/static/ && \
-            # Temporarily create a redirect for a page that Home links to
-            aws s3 cp \
-              --metadata-directive REPLACE \
-              --website-redirect /versions/latest/introduction/installation/ \
-              s3://docs.expo.io/versions/latest/introduction/installation.html \
-              s3://docs.expo.io/versions/latest/introduction/installation.html
+          command: ./deploy.sh
+          working_directory: docs
 
   test_suite_publish:
     executor: nix

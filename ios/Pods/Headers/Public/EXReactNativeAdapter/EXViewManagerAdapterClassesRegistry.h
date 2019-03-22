@@ -1,1 +1,0 @@
-../../../../../packages/expo-react-native-adapter/ios/EXReactNativeAdapter/EXModuleRegistryAdapter/EXViewManagerAdapterClassesRegistry.h

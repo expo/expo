@@ -13,6 +13,20 @@ import android.view.View;
 import com.google.android.cameraview.CameraView;
 import com.google.android.cameraview.Size;
 
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.interfaces.camera.CameraViewInterface;
+import org.unimodules.interfaces.facedetector.FaceDetector;
+import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
+import org.unimodules.interfaces.permissions.Permissions;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,19 +36,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.barcodescanner.BarCodeScanner;
-import expo.interfaces.barcodescanner.BarCodeScannerProvider;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
-import expo.interfaces.camera.ExpoCameraViewInterface;
-import expo.interfaces.facedetector.FaceDetector;
-import expo.interfaces.facedetector.FaceDetectorProvider;
-import expo.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.BarCodeScannerAsyncTask;
 import expo.modules.camera.tasks.BarCodeScannerAsyncTaskDelegate;
 import expo.modules.camera.tasks.FaceDetectorAsyncTask;
@@ -44,7 +45,7 @@ import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 import expo.modules.camera.utils.FileSystemUtils;
 import expo.modules.camera.utils.ImageDimensions;
 
-public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, ExpoCameraViewInterface {
+public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, CameraViewInterface {
   private static final String MUTE_KEY = "mute";
   private static final String QUALITY_KEY = "quality";
   private static final String FAST_MODE_KEY = "fastMode";
@@ -279,7 +280,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         }
       }
     } else {
-      CameraViewHelper.emitMountErrorEvent(mModuleRegistry.getModule(EventEmitter.class), this,  "Camera permissions not granted - component could not be rendered.");
+      CameraViewHelper.emitMountErrorEvent(mModuleRegistry.getModule(EventEmitter.class), this, "Camera permissions not granted - component could not be rendered.");
     }
   }
 
@@ -303,7 +304,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   private boolean hasCameraPermissions() {
-    int[] permissions = mModuleRegistry.getModule(Permissions.class).getPermissions(new String[]{ Manifest.permission.CAMERA });
+    int[] permissions = mModuleRegistry.getModule(Permissions.class).getPermissions(new String[]{Manifest.permission.CAMERA});
     return permissions.length == 1 && permissions[0] == PackageManager.PERMISSION_GRANTED;
   }
 

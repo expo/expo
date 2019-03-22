@@ -1,6 +1,6 @@
 {
   "name": "EXKeepAwake",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.",
   "description": "Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "preserve_paths": "EXKeepAwake/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

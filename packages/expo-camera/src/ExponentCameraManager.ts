@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 
 const CameraManager: Object =
   NativeModulesProxy.ExponentCameraManager || NativeModulesProxy.ExponentCameraModule;

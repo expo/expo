@@ -1,6 +1,6 @@
 {
   "name": "EXLocalization",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Provides an interface for native user localization information.",
   "description": "Provides an interface for native user localization information.",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "preserve_paths": "EXLocalization/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

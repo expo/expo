@@ -178,7 +178,7 @@ it(`coalesces downloads`, async () => {
 
 describe('web', () => {
   beforeEach(() => {
-    const { Platform } = require('expo-core');
+    const { Platform } = require('@unimodules/core');
     Platform.OS = 'web';
   });
 

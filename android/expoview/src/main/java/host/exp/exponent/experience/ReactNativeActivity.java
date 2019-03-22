@@ -33,7 +33,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import expo.core.interfaces.Package;
+import org.unimodules.core.interfaces.Package;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;

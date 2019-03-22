@@ -1,17 +1,17 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
-#import <EXCore/EXEventEmitter.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
+#import <UMCore/UMEventEmitter.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 
-@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXFileSystemInterface>
+@interface EXFileSystem : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, UMFileSystemInterface>
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
 
-- (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
+- (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 
 - (BOOL)ensureDirExistsWithPath:(NSString *)path;
 - (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;
@@ -29,12 +29,12 @@
 
 + (void)getInfoForFile:(NSURL *)fileUri
            withOptions:(NSDictionary *)optionxs
-              resolver:(EXPromiseResolveBlock)resolve
-              rejecter:(EXPromiseRejectBlock)reject;
+              resolver:(UMPromiseResolveBlock)resolve
+              rejecter:(UMPromiseRejectBlock)reject;
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
-        resolver:(EXPromiseResolveBlock)resolve
-        rejecter:(EXPromiseRejectBlock)reject;
+        resolver:(UMPromiseResolveBlock)resolve
+        rejecter:(UMPromiseRejectBlock)reject;
 
 
 @end

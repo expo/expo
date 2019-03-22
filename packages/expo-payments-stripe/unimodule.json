@@ -1,0 +1,4 @@
+{
+  "name": "expo-payments-stripe",
+  "platforms": ["ios", "android"]
+}

@@ -2,19 +2,19 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '10.0'
 
 def universal_module(library_name)
-  pod(library_name.split('-').collect(&:capitalize).join.gsub('Expo', 'EX'), path: "../../../packages/#{library_name}/ios")
+  pod(library_name.split('-').collect(&:capitalize).join.gsub('Unimodules', 'UM').gsub('Expo', 'EX'), path: "../../../packages/#{library_name}/ios")
 end
 
 react_native_path = "../../../react-native-lab/react-native"
 
 target 'NativeComponentList' do
 
-  universal_module 'expo-core'
-  universal_module 'expo-react-native-adapter'
-  
-  # required by expo-react-native-adapter
-  universal_module 'expo-font-interface'
-  universal_module 'expo-image-loader-interface'
+  pod 'UMCore', path: '../../../packages/@unimodules/core/ios', inhibit_warnings: true
+  pod 'UMReactNativeAdapter', path: '../../../packages/@unimodules/react-native-adapter/ios', inhibit_warnings: true
+
+  # required by @unimodules/react-native-adapter
+  universal_module 'unimodules-font-interface'
+  universal_module 'unimodules-image-loader-interface'
 
   pod 'RNGestureHandler', path: '../../../node_modules/react-native-gesture-handler', inhibit_warnings: true
   pod 'RNReanimated', path: '../../../node_modules/react-native-reanimated', inhibit_warnings: true

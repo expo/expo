@@ -38,10 +38,10 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
-import expo.core.ExportedModule;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ExpoMethod;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ExpoMethod;
 
 public class SecureStoreModule extends ExportedModule {
   private static final String TAG = "ExpoSecureStore";

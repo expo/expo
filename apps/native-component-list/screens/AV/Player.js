@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ScrollView, Slider, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+import Slider from './Slider';
 import Colors from '../../constants/Colors';
 
 export default class Player extends React.Component {
@@ -92,19 +92,24 @@ export default class Player extends React.Component {
     return null;
   };
 
-  _renderAuxiliaryButton = ({ iconName, title, onPress, active }) => (
-    <TouchableOpacity
-      key={title}
-      style={[styles.button, active && styles.activeButton]}
-      disabled={!this.props.isLoaded}
-      onPress={onPress}>
-      <Ionicons
-        name={`ios-${iconName}`}
-        style={[styles.icon, styles.buttonIcon, active && styles.activeButtonText]}
-      />
-      <Text style={[styles.buttonText, active && styles.activeButtonText]}>{title}</Text>
-    </TouchableOpacity>
-  );
+  _renderAuxiliaryButton = ({ disable, iconName, title, onPress, active }) => {
+    if (disable) {
+      return null;
+    }
+    return (
+      <TouchableOpacity
+        key={title}
+        style={[styles.button, active && styles.activeButton]}
+        disabled={!this.props.isLoaded}
+        onPress={onPress}>
+        <Ionicons
+          name={`ios-${iconName}`}
+          style={[styles.icon, styles.buttonIcon, active && styles.activeButtonText]}
+        />
+        <Text style={[styles.buttonText, active && styles.activeButtonText]}>{title}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   render() {
     return (
@@ -155,6 +160,7 @@ export default class Player extends React.Component {
             active: this.props.rate > 1,
           })}
           {this._renderAuxiliaryButton({
+            disable: Platform.OS === 'web',
             iconName: 'stats',
             title: 'Correct pitch',
             onPress: this._toggleShouldCorrectPitch,

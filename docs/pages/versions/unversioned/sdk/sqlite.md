@@ -89,3 +89,16 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
 
 -   **rows._array (_number_)** -- The actual array of rows returned by the query. Can be used directly instead of getting rows through `rows.item()`.
 
+## Executing statements outside of a transaction
+
+  > Please note that you should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions (like eg. `PRAGMA foreign_keys = ON;`).
+
+  ```js
+  const db = SQLite.openDatabase('dbName', version);
+
+  db.exec(
+    [{ sql: 'PRAGMA foreign_keys = ON;', args: [] }],
+    false,
+    () => console.log('Foreign keys turned on'),
+  );
+  ```

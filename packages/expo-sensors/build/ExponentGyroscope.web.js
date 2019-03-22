@@ -1,19 +1,23 @@
-import { SyntheticPlatformEmitter } from 'expo-core';
+import { SyntheticPlatformEmitter } from '@unimodules/core';
 export default {
     get name() {
         return 'ExponentGyroscope';
     },
     async isAvailableAsync() {
-        return typeof DeviceOrientationEvent !== 'undefined';
+        return typeof DeviceMotionEvent !== 'undefined';
     },
-    _handleMotion({ alpha: z, beta: y, gamma: x }) {
-        SyntheticPlatformEmitter.emit('gyroscopeDidUpdate', { x, y, z });
+    _handleMotion({ accelerationIncludingGravity }) {
+        SyntheticPlatformEmitter.emit('gyroscopeDidUpdate', {
+            x: accelerationIncludingGravity.x,
+            y: accelerationIncludingGravity.y,
+            z: accelerationIncludingGravity.z,
+        });
     },
     startObserving() {
-        window.addEventListener('deviceorientation', this._handleMotion);
+        window.addEventListener('devicemotion', this._handleMotion);
     },
     stopObserving() {
-        window.removeEventListener('deviceorientation', this._handleMotion);
+        window.removeEventListener('devicemotion', this._handleMotion);
     },
 };
 //# sourceMappingURL=ExponentGyroscope.web.js.map

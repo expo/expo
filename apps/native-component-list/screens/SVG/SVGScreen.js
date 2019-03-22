@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, FlatList, Text, TouchableHighlight, PixelRatio } from 'react-native';
-import { Entypo } from '@expo/vector-icons';
+import EvilIcons from '@expo/vector-icons/EvilIcons';
 
 import * as examples from './examples';
 
@@ -20,7 +20,7 @@ export default class SVGScreen extends React.Component {
         <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
         <Text style={styles.rowLabel}>{exampleKey}</Text>
         <Text style={styles.rowDecorator}>
-          <Entypo name="chevron-right" size={16} color="#aaaaaa" />
+          <EvilIcons name="chevron-right" size={24} color="#595959" />
         </Text>
       </View>
     </TouchableHighlight>

@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 
 // TODO: Bacon: Maybe add static functions
 export default function NativeAdsManager() {

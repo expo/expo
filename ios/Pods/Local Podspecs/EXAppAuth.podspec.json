@@ -1,8 +1,8 @@
 {
   "name": "EXAppAuth",
-  "version": "3.0.0",
-  "summary": "Provides an interface with the OpenID library AppAuth",
-  "description": "Provides an interface with the OpenID library AppAuth",
+  "version": "4.0.0",
+  "summary": "Expo Unimodule for interfacing with the OpenID library AppAuth",
+  "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://docs.expo.io/versions/latest/sdk/app-auth/",
@@ -16,7 +16,7 @@
   "preserve_paths": "EXAppAuth/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
     "AppAuth": [

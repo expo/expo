@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import { SharedEventEmitter, ModuleBase, utils } from 'expo-firebase-app';
 import invariant from 'invariant';
 import Blob from './Blob';

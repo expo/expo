@@ -55,6 +55,10 @@ is built into Expo so you don't need to install anything.
 
 To configure the way your app handles JS updates, see [Offline Support](../../guides/offline-support).
 
+## Uploading Assets to the CDN
+
+In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the packager being unable to detect them and therefore they will not be uploaded when you publish your project. A great way to ensure your assets will be uploaded is to make use of [pre-loading and caching assets](../../guides/preloading-and-caching-assets/).
+
 ## Limitations
 
 ### Some native configuration can't be updated by publishing

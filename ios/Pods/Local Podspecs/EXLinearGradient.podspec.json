@@ -1,6 +1,6 @@
 {
   "name": "EXLinearGradient",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Provides a React component that renders a gradient view.",
   "description": "Provides a React component that renders a gradient view.",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "preserve_paths": "EXLinearGradient/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

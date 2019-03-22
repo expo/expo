@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import { utils } from 'expo-firebase-app';
 const { stripTrailingSlash } = utils;
 const { ExpoFirebaseStorage } = NativeModulesProxy;

@@ -3,8 +3,8 @@ package expo.modules.camera.events;
 import android.os.Bundle;
 import android.support.v4.util.Pools;
 
-import expo.core.interfaces.services.EventEmitter;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 import expo.modules.camera.CameraViewManager;
 
 public class BarCodeScannedEvent extends EventEmitter.BaseEvent {

@@ -1,12 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXCore/EXInternalModule.h>
-#import <EXConstantsInterface/EXConstantsInterface.h>
+#import <UMCore/UMInternalModule.h>
+#import <UMConstantsInterface/UMConstantsInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXConstantsService : NSObject <EXInternalModule, EXConstantsInterface>
+@interface EXConstantsService : NSObject <UMInternalModule, UMConstantsInterface>
 
 @property (nonatomic, readonly) NSString *appOwnership;
 @property (nonatomic, readonly) NSString *experienceId;

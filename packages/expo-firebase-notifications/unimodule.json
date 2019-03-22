@@ -1,0 +1,4 @@
+{
+  "name": "expo-firebase-notifications",
+  "platforms": ["ios", "android"]
+}

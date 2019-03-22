@@ -27,9 +27,9 @@
 
 #import <objc/message.h>
 
-#import <EXCore/EXModuleRegistry.h>
-#import <EXCore/EXModuleRegistryDelegate.h>
-#import <EXReactNativeAdapter/EXNativeModulesProxy.h>
+#import <UMCore/UMModuleRegistry.h>
+#import <UMCore/UMModuleRegistryDelegate.h>
+#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
@@ -334,14 +334,14 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     [extraModules addObject:[[EXDisabledRedBox alloc] init]];
   }
 
-  EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
+  UMModuleRegistryProvider *moduleRegistryProvider = [[UMModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
 
   Class resolverClass = [EXScopedModuleRegistryDelegate class];
   if (params[@"moduleRegistryDelegateClass"] && params[@"moduleRegistryDelegateClass"] != [NSNull null]) {
     resolverClass = params[@"moduleRegistryDelegateClass"];
   }
 
-  id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
+  id<UMModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
   EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
@@ -369,6 +369,8 @@ void EXRegisterScopedModule(Class moduleClass, ...)
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
       if (moduleServices.count > 1) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegates:moduleServices params:params];
+      } else if (moduleServices.count == 0) {
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:nil params:params];
       } else {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]] params:params];
       }

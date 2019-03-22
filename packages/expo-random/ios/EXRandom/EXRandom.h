@@ -1,8 +1,8 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXModuleRegistry.h>
+#import <UMCore/UMModuleRegistry.h>
 #import <UIKit/UIKit.h>
 
-@interface EXRandom : EXExportedModule
+@interface EXRandom : UMExportedModule
 
 @end

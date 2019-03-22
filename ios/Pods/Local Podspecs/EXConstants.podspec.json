@@ -1,6 +1,6 @@
 {
   "name": "EXConstants",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Provides system information that remains constant throughout the lifetime of your app.",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "license": "MIT",
@@ -16,10 +16,10 @@
   "preserve_paths": "**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ]
   }

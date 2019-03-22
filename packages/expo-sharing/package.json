@@ -1,9 +1,10 @@
 {
   "name": "expo-sharing",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "ExpoSharing standalone module",
   "main": "build/Sharing.js",
   "types": "build/Sharing.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -27,13 +28,11 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sharing",
   "dependencies": {},
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-errors": "^1.0.0",
-    "expo-file-system-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-file-system-interface": "*"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

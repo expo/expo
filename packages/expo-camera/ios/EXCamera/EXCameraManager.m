@@ -2,31 +2,31 @@
 #import <EXCamera/EXCameraManager.h>
 #import <EXCamera/EXCameraUtils.h>
 
-#import <EXCore/EXUIManager.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <UMCore/UMUIManager.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 
 @interface EXCameraManager ()
 
-@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
-@property (nonatomic, weak) id<EXUIManager> uiManager;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<UMUIManager> uiManager;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXCameraManager
 
-EX_EXPORT_MODULE(ExponentCameraManager);
+UM_EXPORT_MODULE(ExponentCameraManager);
 
 - (NSString *)viewName
 {
   return @"ExponentCamera";
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-  _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
 }
 
 - (UIView *)view
@@ -97,7 +97,7 @@ EX_EXPORT_MODULE(ExponentCameraManager);
            };
 }
 
-EX_VIEW_PROPERTY(type, NSNumber *, EXCamera)
+UM_VIEW_PROPERTY(type, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];
   if (view.presetCamera != longValue) {
@@ -106,7 +106,7 @@ EX_VIEW_PROPERTY(type, NSNumber *, EXCamera)
   }
 }
 
-EX_VIEW_PROPERTY(flashMode, NSNumber *, EXCamera)
+UM_VIEW_PROPERTY(flashMode, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];
   if (longValue != view.flashMode) {
@@ -115,17 +115,17 @@ EX_VIEW_PROPERTY(flashMode, NSNumber *, EXCamera)
   }
 }
 
-EX_VIEW_PROPERTY(faceDetectorSettings, NSDictionary *, EXCamera)
+UM_VIEW_PROPERTY(faceDetectorSettings, NSDictionary *, EXCamera)
 {
   [view updateFaceDetectorSettings:value];
 }
 
-EX_VIEW_PROPERTY(barCodeScannerSettings, NSDictionary *, EXCamera)
+UM_VIEW_PROPERTY(barCodeScannerSettings, NSDictionary *, EXCamera)
 {
   [view setBarCodeScannerSettings:value];
 }
 
-EX_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
+UM_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];
   if (longValue != view.autoFocus) {
@@ -134,7 +134,7 @@ EX_VIEW_PROPERTY(autoFocus, NSNumber *, EXCamera)
   }
 }
 
-EX_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
+UM_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
 {
   float floatValue = [value floatValue];
   if (fabsf(view.focusDepth - floatValue) > FLT_EPSILON) {
@@ -143,7 +143,7 @@ EX_VIEW_PROPERTY(focusDepth, NSNumber *, EXCamera)
   }
 }
 
-EX_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
+UM_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
 {
   double doubleValue = [value doubleValue];
   if (fabs(view.zoom - doubleValue) > DBL_EPSILON) {
@@ -152,7 +152,7 @@ EX_VIEW_PROPERTY(zoom, NSNumber *, EXCamera)
   }
 }
 
-EX_VIEW_PROPERTY(whiteBalance, NSNumber *, EXCamera)
+UM_VIEW_PROPERTY(whiteBalance, NSNumber *, EXCamera)
 {
   long longValue = [value longValue];
   if (longValue != view.whiteBalance) {
@@ -161,12 +161,12 @@ EX_VIEW_PROPERTY(whiteBalance, NSNumber *, EXCamera)
   }
 }
 
-EX_VIEW_PROPERTY(pictureSize, NSString *, EXCamera) {
+UM_VIEW_PROPERTY(pictureSize, NSString *, EXCamera) {
   [view setPictureSize:[[self class] pictureSizes][value]];
   [view updatePictureSize];
 }
 
-EX_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
+UM_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
 {
   bool boolValue = [value boolValue];
   if ([view isDetectingFaces] != boolValue) {
@@ -174,7 +174,7 @@ EX_VIEW_PROPERTY(faceDetectorEnabled, NSNumber *, EXCamera)
   }
 }
 
-EX_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
+UM_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
 {
   bool boolValue = [value boolValue];
   if ([view isScanningBarCodes] != boolValue) {
@@ -182,11 +182,11 @@ EX_VIEW_PROPERTY(barCodeScannerEnabled, NSNumber *, EXCamera)
   }
 }
 
-EX_EXPORT_METHOD_AS(takePicture,
+UM_EXPORT_METHOD_AS(takePicture,
                     takePictureWithOptions:(NSDictionary *)options
                     reactTag:(nonnull NSNumber *)reactTag
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_IPHONE_SIMULATOR
   __weak EXCameraManager *weakSelf = self;
@@ -234,11 +234,11 @@ EX_EXPORT_METHOD_AS(takePicture,
 
 }
 
-EX_EXPORT_METHOD_AS(record,
+UM_EXPORT_METHOD_AS(record,
                     recordWithOptions:(NSDictionary *)options
                     reactTag:(nonnull NSNumber *)reactTag
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_RECORDING_FAILED", @"Video recording is not supported on a simulator.", nil);
@@ -254,25 +254,25 @@ EX_EXPORT_METHOD_AS(record,
   } forView:reactTag ofClass:[EXCamera class]];
 }
 
-EX_EXPORT_METHOD_AS(stopRecording,
+UM_EXPORT_METHOD_AS(stopRecording,
                     stopRecordingOfReactTag:(nonnull NSNumber *)reactTag
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   [_uiManager addUIBlock:^(id view) {
     if (view != nil) {
       [view stopRecording];
       resolve(nil);
     } else {
-      EXLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
+      UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:reactTag ofClass:[EXCamera class]];
 }
 
-EX_EXPORT_METHOD_AS(resumePreview,
+UM_EXPORT_METHOD_AS(resumePreview,
                     resumePreview:(nonnull NSNumber *)tag
-                         resolver:(EXPromiseResolveBlock)resolve
-                         rejecter:(EXPromiseRejectBlock)reject)
+                         resolver:(UMPromiseResolveBlock)resolve
+                         rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_SIM_PREVIEW", @"Resuming preview is not supported on simulator.", nil);
@@ -283,15 +283,15 @@ EX_EXPORT_METHOD_AS(resumePreview,
       [view resumePreview];
       resolve(nil);
     } else {
-      EXLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
+      UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:tag ofClass:[EXCamera class]];
 }
 
-EX_EXPORT_METHOD_AS(pausePreview,
+UM_EXPORT_METHOD_AS(pausePreview,
                     pausePreview:(nonnull NSNumber *)tag
-                        resolver:(EXPromiseResolveBlock)resolve
-                         rejecter:(EXPromiseRejectBlock)reject)
+                        resolver:(UMPromiseResolveBlock)resolve
+                         rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_SIM_PREVIEW", @"Pausing preview is not supported on simulator.", nil);
@@ -302,16 +302,16 @@ EX_EXPORT_METHOD_AS(pausePreview,
       [view pausePreview];
       resolve(nil);
     } else {
-      EXLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
+      UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:tag ofClass:[EXCamera class]];
 }
 
-EX_EXPORT_METHOD_AS(getAvailablePictureSizes,
+UM_EXPORT_METHOD_AS(getAvailablePictureSizes,
                      getAvailablePictureSizesWithRatio:(NSString *)ratio
                                                    tag:(nonnull NSNumber *)tag
-                                              resolver:(EXPromiseResolveBlock)resolve
-                                              rejecter:(EXPromiseRejectBlock)reject)
+                                              resolver:(UMPromiseResolveBlock)resolve
+                                              rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve([[[self class] pictureSizes] allKeys]);
 }

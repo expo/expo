@@ -3,10 +3,10 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLErrorDomain.h>
 
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXLocationTaskConsumer.h>
-#import <EXTaskManagerInterface/EXTaskInterface.h>
+#import <UMTaskManagerInterface/UMTaskInterface.h>
 
 @interface EXLocationTaskConsumer ()
 
@@ -21,16 +21,16 @@
   [self reset];
 }
 
-# pragma mark - EXTaskConsumerInterface
+# pragma mark - UMTaskConsumerInterface
 
 - (NSString *)taskType
 {
   return @"location";
 }
 
-- (void)didRegisterTask:(id<EXTaskInterface>)task
+- (void)didRegisterTask:(id<UMTaskInterface>)task
 {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     CLLocationManager *locationManager = [CLLocationManager new];
 
     self->_task = task;
@@ -52,7 +52,7 @@
 
 - (void)setOptions:(NSDictionary *)options
 {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     CLLocationManager *locationManager = self->_locationManager;
     EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
 
@@ -97,7 +97,7 @@
 
 - (void)reset
 {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     [self->_locationManager stopUpdatingLocation];
     [self->_locationManager stopMonitoringSignificantLocationChanges];
     self->_locationManager = nil;

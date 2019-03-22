@@ -9,6 +9,7 @@ export type AudioMode = {
   allowsRecordingIOS: boolean;
   interruptionModeIOS: number;
   playsInSilentModeIOS: boolean;
+  staysActiveInBackground: boolean;
   interruptionModeAndroid: number;
   shouldDuckAndroid: boolean;
   playThroughEarpieceAndroid: boolean;
@@ -36,6 +37,7 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
     'allowsRecordingIOS',
     'interruptionModeIOS',
     'playsInSilentModeIOS',
+    'staysActiveInBackground',
     'interruptionModeAndroid',
     'shouldDuckAndroid',
     'playThroughEarpieceAndroid',
@@ -65,11 +67,12 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
   if (
     typeof mode.allowsRecordingIOS !== 'boolean' ||
     typeof mode.playsInSilentModeIOS !== 'boolean' ||
+    typeof mode.staysActiveInBackground !== 'boolean' ||
     typeof mode.shouldDuckAndroid !== 'boolean' ||
     typeof mode.playThroughEarpieceAndroid !== 'boolean'
   ) {
     throw new Error(
-      '"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", and "shouldDuckAndroid" must be booleans.'
+      '"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.'
     );
   }
   return await ExponentAV.setAudioMode(mode);

@@ -1,18 +1,18 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXModuleRegistry.h>
-#import <EXCore/EXAppLifecycleListener.h>
-#import <EXCore/EXEventEmitterService.h>
-#import <EXCore/EXAppLifecycleService.h>
+#import <UMCore/UMModuleRegistry.h>
+#import <UMCore/UMAppLifecycleListener.h>
+#import <UMCore/UMEventEmitterService.h>
+#import <UMCore/UMAppLifecycleService.h>
 #import <EXSensors/EXBaseSensorModule.h>
 
-@interface EXBaseSensorModule () <EXAppLifecycleListener>
+@interface EXBaseSensorModule () <UMAppLifecycleListener>
 
 @property (nonatomic, weak) id sensorManager;
-@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<EXAppLifecycleService> lifecycleManager;
+@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, assign, getter=isWatching) BOOL watching;
 
 @end
@@ -21,7 +21,7 @@
 
 # pragma mark - EXBaseSensorModule
 
-- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   NSAssert(false, @"You've subclassed EXBaseSensorModule, but didn't override the `getSensorServiceFromModuleRegistry` method.");
   return nil;
@@ -54,9 +54,9 @@
   return nil;
 }
 
-# pragma mark - EXModuleRegistryConsumer
+# pragma mark - UMModuleRegistryConsumer
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if (_moduleRegistry) {
     [_lifecycleManager unregisterAppLifecycleListener:self];
@@ -68,8 +68,8 @@
   _sensorManager = nil;
   
   if (moduleRegistry) {
-    _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
+    _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
     _sensorManager = [self getSensorServiceFromModuleRegistry:moduleRegistry];
   }
   
@@ -78,7 +78,7 @@
   }
 }
 
-# pragma mark - EXEventEmitter
+# pragma mark - UMEventEmitter
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -91,7 +91,7 @@
   [self subscribeToSensorService:_sensorManager withHandler:^(NSDictionary *event) {
     __strong EXBaseSensorModule *strongSelf = weakSelf;
     if (strongSelf) {
-      __strong id<EXEventEmitterService> eventEmitter = strongSelf.eventEmitter;
+      __strong id<UMEventEmitterService> eventEmitter = strongSelf.eventEmitter;
       if (eventEmitter) {
         [eventEmitter sendEventWithName:(NSString *)[strongSelf updateEventName] body:event];
       }
@@ -104,17 +104,17 @@
   [self unsubscribeFromSensorService:_sensorManager];
 }
 
-EX_EXPORT_METHOD_AS(setUpdateInterval, setUpdateInterval:(nonnull NSNumber *)intervalMs resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)rejecter) {
+UM_EXPORT_METHOD_AS(setUpdateInterval, setUpdateInterval:(nonnull NSNumber *)intervalMs resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)rejecter) {
   [self setUpdateInterval:([intervalMs doubleValue] / 1000) onSensorService:_sensorManager];
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(isAvailableAsync, isAvailableAsync:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(isAvailableAsync, isAvailableAsync:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve(@([self isAvailable:_sensorManager]));
 }
 
-# pragma mark - EXAppLifecycleListener
+# pragma mark - UMAppLifecycleListener
 
 - (void)onAppBackgrounded {
   if ([self isWatching]) {

@@ -1,6 +1,6 @@
 {
   "name": "expo-module-template",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -21,7 +21,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-module-template",
   "peerDependencies": {
-    "expo-core": "~3.0.0"
+    "@unimodules/core": "~1.0.0"
   },
-  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

@@ -3,11 +3,11 @@ package expo.modules.barcodescanner;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.interfaces.ExpoProp;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.ExpoProp;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 import java.util.HashMap;
 import java.util.List;

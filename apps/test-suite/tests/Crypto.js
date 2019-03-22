@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import * as Crypto from 'expo-crypto';
 
 const { CryptoEncoding, CryptoDigestAlgorithm } = Crypto;

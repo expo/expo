@@ -1,6 +1,6 @@
 {
   "name": "EXBackgroundFetch",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Expo universal module for BackgroundFetch API",
   "description": "Expo universal module for BackgroundFetch API",
   "license": "MIT",
@@ -16,10 +16,10 @@
   "preserve_paths": "EXBackgroundFetch/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXTaskManagerInterface": [
+    "UMTaskManagerInterface": [
 
     ]
   }

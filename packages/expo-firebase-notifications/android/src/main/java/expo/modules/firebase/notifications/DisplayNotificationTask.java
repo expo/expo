@@ -23,8 +23,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
 import expo.modules.firebase.app.Utils;
 
 public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {

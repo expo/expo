@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, PixelRatio, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-import { Entypo } from '@expo/vector-icons';
+import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { withNavigation } from 'react-navigation';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 
@@ -16,7 +16,7 @@ class ComponentListScreen extends React.Component {
           <ExpoAPIIcon name={exampleName} style={styles.rowIcon} />
           <Text style={styles.rowLabel}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
-            <Entypo name="chevron-right" size={16} color="#aaaaaa" />
+            <EvilIcons name="chevron-right" size={24} color="#595959" />
           </Text>
         </View>
       </TouchableHighlight>

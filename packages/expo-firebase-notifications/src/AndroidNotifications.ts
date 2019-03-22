@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import invariant from 'invariant';
 
 import AndroidChannel from './AndroidChannel';

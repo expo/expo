@@ -1,6 +1,6 @@
 {
   "name": "EXSecureStore",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "description": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "preserve_paths": "EXSecureStore/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

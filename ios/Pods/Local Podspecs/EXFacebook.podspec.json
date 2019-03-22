@@ -1,6 +1,6 @@
 {
   "name": "EXFacebook",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Expo universal module for Facebook SDK",
   "description": "Expo universal module for Facebook SDK",
   "license": "MIT",
@@ -16,10 +16,10 @@
   "preserve_paths": "EXFacebook/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ],
     "FBSDKCoreKit": [

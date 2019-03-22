@@ -1,9 +1,10 @@
 {
   "name": "expo-crypto",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Expo universal module for crypto",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -36,11 +37,10 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-errors": "*"
+    "@unimodules/core": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

@@ -1,5 +1,5 @@
-#import <EXCore/EXExportedModule.h>
+#import <UMCore/UMExportedModule.h>
 
-@interface EXBrightness : EXExportedModule
+@interface EXBrightness : UMExportedModule
 
 @end

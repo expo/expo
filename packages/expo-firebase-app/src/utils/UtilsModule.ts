@@ -1,4 +1,4 @@
-import { NativeModulesProxy, Platform } from 'expo-core';
+import { NativeModulesProxy, Platform } from '@unimodules/core';
 
 import INTERNALS from './internals';
 import ModuleBase from './ModuleBase';

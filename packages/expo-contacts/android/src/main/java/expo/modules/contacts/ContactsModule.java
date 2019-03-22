@@ -16,11 +16,11 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.content.pm.PackageManager;
 
-import expo.core.*;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.permissions.Permissions;
+import org.unimodules.core.*;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.interfaces.permissions.Permissions;
 import expo.modules.contacts.models.DateModel;
 import expo.modules.contacts.models.EmailModel;
 import expo.modules.contacts.models.ExtraNameModel;

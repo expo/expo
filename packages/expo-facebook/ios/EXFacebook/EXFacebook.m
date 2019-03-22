@@ -2,7 +2,7 @@
 
 #import <EXFacebook/EXFacebook.h>
 
-#import <EXConstantsInterface/EXConstantsInterface.h>
+#import <UMConstantsInterface/UMConstantsInterface.h>
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
@@ -27,24 +27,24 @@ NSString * const EXFacebookLoginBehaviorErrorDomain = @"E_FBLOGIN_BEHAVIOR";
 
 @interface EXFacebook ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXFacebook
 
-EX_EXPORT_MODULE(ExponentFacebook)
+UM_EXPORT_MODULE(ExponentFacebook)
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-EX_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
+UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
                     logInWithReadPermissionsWithAppId:(NSString *)appId
                     config:(NSDictionary *)config
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   NSArray *permissions = config[@"permissions"];
   if (!permissions) {
@@ -78,7 +78,7 @@ EX_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
     }
 
     if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
-      id<EXConstantsInterface> constants = [self->_moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+      id<UMConstantsInterface> constants = [self->_moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
 
       if (![constants.appOwnership isEqualToString:@"expo"] && ![[self class] facebookAppIdFromNSBundle]) {
         // standalone: non-web requires native config
@@ -86,7 +86,7 @@ EX_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
                              @"Tried to perform Facebook login with behavior `%@`, but "
                              "no Facebook app id was provided. Specify Facebook app id in app.json "
                              "or switch to `web` behavior.", behavior];
-        reject(EXFacebookLoginBehaviorErrorDomain, message, EXErrorWithMessage(message));
+        reject(EXFacebookLoginBehaviorErrorDomain, message, UMErrorWithMessage(message));
         return;
       }
     }

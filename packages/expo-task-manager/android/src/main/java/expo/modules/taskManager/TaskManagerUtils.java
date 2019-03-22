@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
-import expo.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
 
 public class TaskManagerUtils implements TaskManagerUtilsInterface {
   // Request code number used for pending intents created by this module.

@@ -1,6 +1,6 @@
 {
   "name": "EXSegment",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Expo module that provides access to Segment mobile analytics",
   "description": "Expo module that provides access to Segment mobile analytics",
   "license": "MIT",
@@ -16,10 +16,10 @@
   "preserve_paths": "EXSegment/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ],
     "Analytics": [

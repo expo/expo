@@ -2,8 +2,8 @@ with (import ../nix {});
 
 let
 
-   ndk = androidenv.androidndk_17c.override { fullNDK = true; };
-   ndk_root = "${ndk}/libexec/${ndk.name}";
+   ndk_pkg = androidenv.androidndk_17c.override { fullNDK = true; };
+   ndk = "${ndk_pkg}/libexec/${ndk_pkg.name}";
    sdk_path = if stdenv.isDarwin
      then "/Library/Android/sdk"
      else "/Android/Sdk"; # intentional Capital S
@@ -32,7 +32,7 @@ mkShell rec {
   passthru = { inherit ndk; };
 
   shellHook = ''
-    ${./install-ndk-17c.sh} ${ndk} ${ndk_root}
+    ${./install-ndk-17c.sh} ${ndk}
     yes | ${androidenv.androidsdk_9_0}/bin/sdkmanager --licenses --sdk_root="$ANDROID_SDK_ROOT"
     yes | ${androidenv.androidsdk_9_0}/bin/sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platforms;android-28"
     yes | ${androidenv.androidsdk_9_0}/bin/sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "build-tools;28.0.3"

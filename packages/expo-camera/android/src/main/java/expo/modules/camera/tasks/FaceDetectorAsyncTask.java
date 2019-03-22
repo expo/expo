@@ -5,7 +5,7 @@ import android.util.Log;
 
 import java.util.List;
 
-import expo.interfaces.facedetector.FaceDetector;
+import org.unimodules.interfaces.facedetector.FaceDetector;
 
 public class FaceDetectorAsyncTask extends android.os.AsyncTask<Void, Void, List<Bundle>> {
   private final static String TAG = FaceDetectorAsyncTask.class.getSimpleName();

@@ -1,6 +1,6 @@
 {
   "name": "EXFileSystem",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "summary": "Provides access to the local file system on the device.",
   "description": "Provides access to the local file system on the device.",
   "license": "MIT",
@@ -16,10 +16,10 @@
   "preserve_paths": "EXFileSystem/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXFileSystemInterface": [
+    "UMFileSystemInterface": [
 
     ]
   }

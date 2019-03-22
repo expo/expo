@@ -1,9 +1,10 @@
 {
   "name": "expo-constants",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -31,8 +32,8 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-constants-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-constants-interface": "*"
   },
   "dependencies": {
     "ua-parser-js": "^0.7.19"
@@ -41,5 +42,5 @@
     "expo-module-scripts": "^1.0.0",
     "uuid": "^3.3.2"
   },
-  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

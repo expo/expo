@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 
 const NAMESPACE_PODS = {
   admob: 'Firebase/AdMob',

@@ -1,6 +1,6 @@
 {
   "name": "EXBarCodeScanner",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.",
   "description": "Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "preserve_paths": "EXBarCodeScanner/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

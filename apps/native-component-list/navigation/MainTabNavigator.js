@@ -1,11 +1,9 @@
 import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
-import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
+import { StyleSheet } from 'react-native';
 
 import TabIcon from '../components/TabIcon';
 import { Colors, Layout } from '../constants';
-
+import createTabNavigator from './createTabNavigator';
 import ExpoApisStackNavigator from './ExpoApisStackNavigator';
 import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
 import ReactNativeCoreStackNavigator from './ReactNativeCoreStackNavigator';
@@ -14,11 +12,6 @@ const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: Colors.tabBar,
   },
-});
-
-const createTabNavigator = Platform.select({
-  default: createBottomTabNavigator,
-  android: createMaterialBottomTabNavigator,
 });
 
 ExpoApisStackNavigator.path = 'API';
@@ -60,11 +53,11 @@ const MainTabNavigator = createTabNavigator(
         tabBarIcon: ({ focused }) => {
           const { routeName } = navigation.state;
           if (routeName === 'ReactNativeCore') {
-            return <TabIcon name="group-work" focused={focused} />;
+            return <TabIcon name="react" focused={focused} />;
           } else if (routeName === 'ExpoComponents') {
-            return <TabIcon name="filter" focused={focused} size={25} />;
+            return <TabIcon name="cards-playing-outline" focused={focused} />;
           } else if (routeName === 'ExpoApis') {
-            return <TabIcon name="functions" focused={focused} size={28} />;
+            return <TabIcon name={'exponent-box'} focused={focused} />;
           }
         },
       };

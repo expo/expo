@@ -11,8 +11,8 @@ import abi32_0_0.expo.core.ModuleRegistry;
 import abi32_0_0.expo.core.Promise;
 import abi32_0_0.expo.core.interfaces.ExpoMethod;
 import abi32_0_0.expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.taskManager.TaskServiceInterface;
-import expo.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 public class TaskManagerModule extends ExportedModule implements ModuleRegistryConsumer {
   static String EVENT_NAME = "TaskManager.executeTask";

@@ -1,0 +1,1 @@
+../../../../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsInterface.h

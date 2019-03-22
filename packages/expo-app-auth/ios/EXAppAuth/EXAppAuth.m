@@ -2,8 +2,8 @@
 
 #import <EXAppAuth/EXAppAuth.h>
 #import <AppAuth/AppAuth.h>
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMCore/UMUtilities.h>
 #import <EXAppAuth/EXAppAuth+JSON.h>
 
 static NSString *const EXAppAuthError = @"ERR_APP_AUTH";
@@ -12,8 +12,8 @@ static NSString *const EXAppAuthError = @"ERR_APP_AUTH";
   id<OIDExternalUserAgentSession> session;
 }
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
 
 @end
 
@@ -35,31 +35,31 @@ static EXAppAuth *shared = nil;
 
 #pragma mark - Expo
 
-EX_EXPORT_MODULE(ExpoAppAuth);
+UM_EXPORT_MODULE(ExpoAppAuth);
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
 - (NSDictionary *)constantsToExport
 {
   return @{
-           @"OAuthRedirect": EXNullIfNil([self _getOAuthRedirect]),
-           @"URLSchemes": EXNullIfNil([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]),
+           @"OAuthRedirect": UMNullIfNil([self _getOAuthRedirect]),
+           @"URLSchemes": UMNullIfNil([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]),
            };
 }
 
-EX_EXPORT_METHOD_AS(executeAsync,
+UM_EXPORT_METHOD_AS(executeAsync,
                     executeAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   BOOL isRefresh = [options[@"isRefresh"] boolValue];
   NSDictionary *serviceConfiguration = options[@"serviceConfiguration"];
@@ -109,8 +109,8 @@ EX_EXPORT_METHOD_AS(executeAsync,
 
 - (void)_authorizeWithConfiguration:(OIDServiceConfiguration *)configuration
                             options:(NSDictionary *)options
-                            resolve:(EXPromiseResolveBlock)resolve
-                             reject:(EXPromiseRejectBlock)reject
+                            resolve:(UMPromiseResolveBlock)resolve
+                             reject:(UMPromiseRejectBlock)reject
 {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
@@ -124,7 +124,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
                                             responseType:OIDResponseTypeCode
                                     additionalParameters:additionalParameters];
 
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     __weak typeof(self) weakSelf = self;
 
     OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
@@ -176,8 +176,8 @@ EX_EXPORT_METHOD_AS(executeAsync,
 
 - (void)_refreshWithConfiguration:(OIDServiceConfiguration *)configuration
                           options:(NSDictionary *)options
-                          resolve:(EXPromiseResolveBlock)resolve
-                           reject:(EXPromiseRejectBlock)reject {
+                          resolve:(UMPromiseResolveBlock)resolve
+                           reject:(UMPromiseRejectBlock)reject {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
 
@@ -207,8 +207,8 @@ EX_EXPORT_METHOD_AS(executeAsync,
 
 - (OIDDiscoveryCallback)_getCallback:(NSDictionary *)options
                            isRefresh:(BOOL)isRefresh
-                            resolver:(EXPromiseResolveBlock)resolve
-                            rejecter:(EXPromiseRejectBlock)reject
+                            resolver:(UMPromiseResolveBlock)resolve
+                            rejecter:(UMPromiseRejectBlock)reject
 {
   return ^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
     if (configuration) {
@@ -229,7 +229,7 @@ EX_EXPORT_METHOD_AS(executeAsync,
 #pragma mark - Static
 
 // EX prefix for versioning to work smoothly
-void EXrejectWithError(EXPromiseRejectBlock reject, NSError *error) {
+void EXrejectWithError(UMPromiseRejectBlock reject, NSError *error) {
   NSString *errorMessage = [NSString stringWithFormat:@"%@: %@", EXAppAuthError, error.localizedDescription];
   if (error.localizedFailureReason != nil && ![error.localizedFailureReason isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Reason: %@", errorMessage, error.localizedFailureReason];
   if (error.localizedRecoverySuggestion != nil && ![error.localizedRecoverySuggestion isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Try: %@", errorMessage, error.localizedRecoverySuggestion];

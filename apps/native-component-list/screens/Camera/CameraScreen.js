@@ -61,6 +61,7 @@ export default class CameraScreen extends React.Component {
     faces: [],
     newPhotos: false,
     permissionsGranted: false,
+    permission: null,
     pictureSize: undefined,
     pictureSizes: [],
     pictureSizeId: 0,
@@ -70,7 +71,7 @@ export default class CameraScreen extends React.Component {
 
   async componentWillMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ permissionsGranted: status === 'granted' });
+    this.setState({ permission: status, permissionsGranted: status === 'granted' });
   }
 
   componentDidMount() {
@@ -243,9 +244,16 @@ export default class CameraScreen extends React.Component {
 
   renderNoPermissions = () => (
     <View style={styles.noPermissions}>
-      <Text style={{ color: 'white' }}>
-        Camera permissions not granted - cannot open camera preview.
-      </Text>
+      {this.state.permission && (
+        <View>
+          <Text style={{ color: '#4630ec', fontWeight: 'bold', textAlign: 'center', fontSize: 24 }}>
+            Permission {this.state.permission.toLowerCase()}!
+          </Text>
+          <Text style={{ color: '#595959', textAlign: 'center', fontSize: 20 }}>
+            You'll need to enable the camera permission to continue.
+          </Text>
+        </View>
+      )}
     </View>
   );
 
@@ -397,6 +405,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
+    backgroundColor: '#f8fdff',
   },
   gallery: {
     flex: 1,

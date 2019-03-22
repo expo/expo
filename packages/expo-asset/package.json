@@ -1,9 +1,10 @@
 {
   "name": "expo-asset",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/Asset.js",
   "types": "build/Asset.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -32,7 +33,7 @@
   },
   "unimodulePeerDependencies": {
     "expo-constants": "*",
-    "expo-core": "*",
+    "@unimodules/core": "*",
     "expo-file-system": "*"
   },
   "dependencies": {
@@ -43,5 +44,5 @@
     "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "d87c47ba13c7dde7a5d120caf873c98258a42710"
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

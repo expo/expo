@@ -33,7 +33,6 @@ function removeUnapplicableSections(name, content) {
 }
 
 function removeOptionals(content) {
-  let nextContent = content;
   let regexp = new RegExp(escapeRegExp('<!---') + '.*' + escapeRegExp('--->') + '\n', 'g');
   return content.replace(regexp, '');
 }
@@ -49,14 +48,10 @@ function generateREADME() {
   let description = pkg.description || 'Put a description of your Unimodule here';
 
   // This isn't really accurate, but these all behave the same as far as READMEs go
-  let isInterface =
-    packageName.endsWith('-interface') ||
-    packageName.endsWith('-provider') ||
-    packageName === 'expo-errors';
+  let isInterface = packageName.endsWith('-interface') || packageName.endsWith('-provider');
 
   let isAndroid = fs.existsSync(path.join(process.cwd(), 'android'));
   let isIOS = fs.existsSync(path.join(process.cwd(), 'ios'));
-  let isJsOnly = !isAndroid && !isIOS;
 
   // Search in docs/versions/unversioned/sdk/*.md - can't find it? Ask what it should be and initialize for them
   readme = replaceAll('packageName', packageName, readme);
@@ -141,7 +136,7 @@ function generateREADME() {
 let readme = generateREADME();
 let readmePath = path.join(process.cwd(), 'README.md');
 if (fs.existsSync(readmePath)) {
-  console.log("expo-module-scripts: README.md exists, not updating");
+  console.log('expo-module-scripts: README.md exists, not updating');
 } else {
   fs.writeFileSync(readmePath, readme, { encoding: 'utf8' });
 }

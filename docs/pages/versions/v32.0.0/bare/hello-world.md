@@ -15,12 +15,12 @@ expo init --template bare-minimum
 
 Next, let's get the project running. Go into your project directory and run `react-native run-ios` or `react-native run-android` &mdash; hurray! Your project is working.
 
-## Using @unimodules/core
+## Using react-native-unimodules
 
-Bare template projects come with `@unimodules/core` installed and configured. This package gives you access to some commonly useful APIs, like `Asset`, `Constants`, `FileSystem`, and `Permissions`. You can import these from `@unimodules/core` like so:
+Bare template projects come with `react-native-unimodules` installed and configured. This package gives you access to some commonly useful APIs, like `Asset`, `Constants`, `FileSystem`, and `Permissions`. You can import these from `react-native-unimodules` like so:
 
 ```js
-import { Asset, Constants, FileSystem, Permissions } from '@unimodules/core';
+import { Asset, Constants, FileSystem, Permissions } from 'react-native-unimodules';
 ```
 
 ## Install a Unimodule
@@ -58,25 +58,12 @@ This will not yet work because we haven't linked the native code that powers it.
 
 ### iOS configuration
 
-The iOS side is easiest, so let's do it first. Bare projects are initialized using [Cocoapods](https://cocoapods.org/), a dependency manager for iOS projects. If you don't have Cocoapods installed already, [install it](https://guides.cocoapods.org/using/getting-started.html). Now let's go into `ios/Podfile` and add `pod 'EXWebBrowser', path: '../node_modules/expo-web-browser/ios'` on a new line after `use_unimodules!`. Close the file and run `pod install` in the `ios` directory. Now you can run `react-native run-ios` again from the root of the project and it should work as expected!
+The iOS side is easiest, so let's do it first. Bare projects are initialized using [Cocoapods](https://cocoapods.org/), a dependency manager for iOS projects. If you don't have Cocoapods installed already, [install it](https://guides.cocoapods.org/using/getting-started.html). Now let's run `pod install` in the `ios` directory. Now you can run `react-native run-ios` again from the root of the project and it should work as expected!
 
 ### Android configuration
 
-There's not much context needed beyond what the README says here, just follow the steps below:
+There's not much context needed beyond what the README says here, all you have to do is add the package to the package list in `MainApplication.java`, like so:
 
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':expo-web-browser'
-project(':expo-web-browser').projectDir = new File(rootProject.projectDir, '../node_modules/expo-web-browser/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':expo-web-browser')
-```
-
-3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
 import expo.modules.webbrowser.WebBrowserPackage;
 ```

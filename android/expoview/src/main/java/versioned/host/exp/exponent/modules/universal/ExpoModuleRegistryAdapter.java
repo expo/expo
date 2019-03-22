@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import expo.adapters.react.ModuleRegistryAdapter;
-import expo.adapters.react.ModuleRegistryReadyNotifier;
-import expo.adapters.react.NativeModulesProxy;
-import expo.adapters.react.ReactAdapterPackage;
-import expo.adapters.react.ReactModuleRegistryProvider;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.InternalModule;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ModuleRegistryReadyNotifier;
+import org.unimodules.adapters.react.NativeModulesProxy;
+import org.unimodules.adapters.react.ReactAdapterPackage;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
@@ -88,7 +88,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
     nativeModulesList.add(new NativeModulesProxy(reactApplicationContext, moduleRegistry));
 
-    // Add listener that will notify expo.core.ModuleRegistry when all modules are ready
+    // Add listener that will notify org.unimodules.core.ModuleRegistry when all modules are ready
     nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
 
     return nativeModulesList;

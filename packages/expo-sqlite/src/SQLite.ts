@@ -2,7 +2,7 @@ import './polyfillNextTick';
 
 import zipObject from 'lodash.zipobject';
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
 
 const { ExponentSQLite } = NativeModulesProxy;
@@ -83,6 +83,13 @@ function _escapeBlob<T>(data: T): T {
 
 const _openExpoSQLiteDatabase = customOpenDatabase(SQLiteDatabase);
 
+function addExecMethod(db: any): WebSQLDatabase {
+  db.exec = (queries: InternalQuery[], readOnly: boolean, callback: SQLiteCallback): void) => {
+    db._db.exec(queries, readOnly, callback);
+  }
+  return db;
+}
+
 export function openDatabase(
   name: string,
   version: string = '1.0',
@@ -93,7 +100,9 @@ export function openDatabase(
   if (name === undefined) {
     throw new TypeError(`The database name must not be undefined`);
   }
-  return _openExpoSQLiteDatabase(name, version, description, size, callback);
+  const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
+  const dbWithExec = addExecMethod(db);
+  return dbWithExec;
 }
 
 type WebSQLDatabase = unknown;
