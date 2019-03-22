@@ -45,6 +45,8 @@ import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACH
 public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule, ModuleRegistryConsumer {
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
+  private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
+  private static final String AUDIO_MODE_STAYS_ACTIVE_IN_BACKGROUND = "staysActiveInBackground";
 
   private static final String RECORDING_OPTIONS_KEY = "android";
   private static final String RECORDING_OPTION_EXTENSION_KEY = "extension";
@@ -54,7 +56,6 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private static final String RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY = "numberOfChannels";
   private static final String RECORDING_OPTION_BIT_RATE_KEY = "bitRate";
   private static final String RECORDING_OPTION_MAX_FILE_SIZE_KEY = "maxFileSize";
-  private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
 
   private boolean mShouldRouteThroughEarpiece = false;
 
@@ -76,6 +77,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private AudioInterruptionMode mAudioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS;
   private boolean mShouldDuckAudio = true;
   private boolean mIsDuckingAudio = false;
+  private boolean mStaysActiveInBackground = false;
 
   private int mSoundMapKeyCount = 0;
   // There will never be many PlayerData objects in the map, so HashMap is most efficient.
@@ -150,11 +152,13 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void onHostResume() {
     if (mAppIsPaused) {
       mAppIsPaused = false;
-      for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-        handler.onResume();
-      }
-      if (mShouldRouteThroughEarpiece) {
-        updatePlaySoundThroughEarpiece(true);
+      if (!mStaysActiveInBackground) {
+        for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+          handler.onResume();
+        }
+        if (mShouldRouteThroughEarpiece) {
+          updatePlaySoundThroughEarpiece(true);
+        }
       }
     }
   }
@@ -163,13 +167,15 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void onHostPause() {
     if (!mAppIsPaused) {
       mAppIsPaused = true;
-      for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-        handler.onPause();
-      }
-      abandonAudioFocus();
+      if (!mStaysActiveInBackground) {
+        for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+          handler.onPause();
+        }
+        abandonAudioFocus();
 
-      if (mShouldRouteThroughEarpiece) {
-        updatePlaySoundThroughEarpiece(false);
+        if (mShouldRouteThroughEarpiece) {
+          updatePlaySoundThroughEarpiece(false);
+        }
       }
     }
   }
@@ -323,6 +329,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       default:
         mAudioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS;
     }
+
+    mStaysActiveInBackground = map.getBoolean(AUDIO_MODE_STAYS_ACTIVE_IN_BACKGROUND);
   }
 
   // Unified playback API - Audio

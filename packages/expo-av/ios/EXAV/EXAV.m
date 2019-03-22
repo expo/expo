@@ -183,6 +183,7 @@ UM_EXPORT_MODULE(ExponentAV);
   BOOL playsInSilentMode = ((NSNumber *)mode[@"playsInSilentModeIOS"]).boolValue;
   EXAudioInterruptionMode interruptionMode = ((NSNumber *)mode[@"interruptionModeIOS"]).intValue;
   BOOL allowsRecording = ((NSNumber *)mode[@"allowsRecordingIOS"]).boolValue;
+  BOOL shouldPlayInBackground = ((NSNumber *)mode[@"staysActiveInBackground"]).boolValue;
   
   if (!playsInSilentMode && interruptionMode == EXAudioInterruptionModeDuckOthers) {
     return UMErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and duckOthers == true cannot be set on iOS.");
@@ -208,33 +209,38 @@ UM_EXPORT_MODULE(ExponentAV);
 
 - (NSError *)_updateAudioSessionCategoryForAudioSessionMode:(EXAVAudioSessionMode)audioSessionMode
 {
-  NSError *error;
-  EXAudioInterruptionMode activeInterruptionMode = audioSessionMode == EXAVAudioSessionModeActiveMuted
-    ? EXAudioInterruptionModeMixWithOthers : _audioInterruptionMode;
+  AVAudioSessionCategory requiredAudioCategory;
+  AVAudioSessionCategoryOptions requiredAudioCategoryOptions = 0;
   
   if (!_playsInSilentMode) {
     // _allowsRecording is guaranteed to be false, and _interruptionMode is guaranteed to not be EXAudioInterruptionModeDuckOthers (see above)
     if (_audioInterruptionMode == EXAudioInterruptionModeDoNotMix) {
-      error = [_kernelAudioSessionManagerDelegate setCategory:AVAudioSessionCategorySoloAmbient withOptions:0 forScopedModule:self];
+      requiredAudioCategory = AVAudioSessionCategorySoloAmbient;
     } else {
-      error = [_kernelAudioSessionManagerDelegate setCategory:AVAudioSessionCategoryAmbient withOptions:0 forScopedModule:self];
+      requiredAudioCategory = AVAudioSessionCategoryAmbient;
     }
   } else {
+    EXAudioInterruptionMode activeInterruptionMode = audioSessionMode == EXAVAudioSessionModeActiveMuted ? EXAudioInterruptionModeMixWithOthers : _audioInterruptionMode;
     NSString *category = _allowsAudioRecording ? AVAudioSessionCategoryPlayAndRecord : AVAudioSessionCategoryPlayback;
+    requiredAudioCategory = category;
     switch (activeInterruptionMode) {
       case EXAudioInterruptionModeDoNotMix:
-        error = [_kernelAudioSessionManagerDelegate setCategory:category withOptions:0 forScopedModule:self];
         break;
       case EXAudioInterruptionModeDuckOthers:
-        error = [_kernelAudioSessionManagerDelegate setCategory:category withOptions:AVAudioSessionCategoryOptionDuckOthers forScopedModule:self];
+        requiredAudioCategoryOptions = AVAudioSessionCategoryOptionDuckOthers;
         break;
       case EXAudioInterruptionModeMixWithOthers:
       default:
-        error = [_kernelAudioSessionManagerDelegate setCategory:category withOptions:AVAudioSessionCategoryOptionMixWithOthers forScopedModule:self];
+        requiredAudioCategoryOptions = AVAudioSessionCategoryOptionMixWithOthers;
         break;
     }
   }
-  return error;
+
+  if ([[_kernelAudioSessionManagerDelegate activeCategory] isEqual:requiredAudioCategory] && [_kernelAudioSessionManagerDelegate activeCategoryOptions] == requiredAudioCategoryOptions) {
+    return nil;
+  }
+
+  return [_kernelAudioSessionManagerDelegate setCategory:requiredAudioCategory withOptions:requiredAudioCategoryOptions forScopedModule:self];
 }
 
 - (EXAVAudioSessionMode)_getAudioSessionModeRequired
@@ -264,7 +270,7 @@ UM_EXPORT_MODULE(ExponentAV);
   if (!_audioIsEnabled) {
     return UMErrorWithMessage(@"Expo Audio is disabled, so the audio session could not be activated.");
   }
-  if (_isBackgrounded) {
+  if (_isBackgrounded && ![_kernelAudioSessionManagerDelegate isActiveForScopedModule:self]) {
     return UMErrorWithMessage(@"This experience is currently in the background, so the audio session could not be activated.");
   }
   
