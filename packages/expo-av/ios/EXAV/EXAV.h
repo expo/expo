@@ -28,6 +28,9 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 - (void)scopedModuleDidBackground:(id)scopedModule;
 - (void)scopedModuleDidForeground:(id)scopedModule;
 - (void)scopedModuleWillDeallocate:(id)scopedModule;
+- (BOOL)isActiveForScopedModule:(id)scopedModule;
+- (NSString *)activeCategory;
+- (AVAudioSessionCategoryOptions)activeCategoryOptions;
 - (NSError *)setActive:(BOOL)active forScopedModule:(id)scopedModule;
 - (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forScopedModule:(id)scopedModule;
 

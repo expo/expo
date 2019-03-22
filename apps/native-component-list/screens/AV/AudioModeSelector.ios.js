@@ -11,11 +11,13 @@ export default class AudioModeSelector extends React.Component {
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
       playsInSilentModeIOS: false,
       allowsRecordingIOS: false,
+      staysActiveInBackground: false,
     },
     setMode: {
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
       playsInSilentModeIOS: false,
       allowsRecordingIOS: false,
+      staysActiveInBackground: false,
     },
   };
 
@@ -37,7 +39,8 @@ export default class AudioModeSelector extends React.Component {
   _modesEqual = (modeA, modeB) =>
     modeA.interruptionModeIOS === modeB.interruptionModeIOS &&
     modeA.playsInSilentModeIOS === modeB.playsInSilentModeIOS &&
-    modeA.allowsRecordingIOS === modeB.allowsRecordingIOS;
+    modeA.allowsRecordingIOS === modeB.allowsRecordingIOS &&
+    modeA.staysActiveInBackground === modeB.staysActiveInBackground;
 
   _setMode = interruptionModeIOS => () =>
     this.setState({ modeToSet: { ...this.state.modeToSet, interruptionModeIOS } });
@@ -83,6 +86,12 @@ export default class AudioModeSelector extends React.Component {
         {this._renderToggle({
           title: 'Allows recording',
           valueName: 'allowsRecordingIOS',
+          disabled: !this.state.modeToSet.playsInSilentModeIOS,
+          value: !this.state.modeToSet.playsInSilentModeIOS ? false : undefined,
+        })}
+        {this._renderToggle({
+          title: 'Stay active in background',
+          valueName: 'staysActiveInBackground',
           disabled: !this.state.modeToSet.playsInSilentModeIOS,
           value: !this.state.modeToSet.playsInSilentModeIOS ? false : undefined,
         })}

@@ -79,6 +79,20 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   return nil;
 }
 
+- (BOOL)isActiveForScopedModule:(id)scopedModule {
+  return _activeScopedModule == scopedModule;
+}
+
+- (NSString *)activeCategory
+{
+  return [[AVAudioSession sharedInstance] category];
+}
+
+- (AVAudioSessionCategoryOptions)activeCategoryOptions
+{
+  return [[AVAudioSession sharedInstance] categoryOptions];
+}
+
 - (NSError *)setActive:(BOOL)active forScopedModule:(id)scopedModule {
   NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
   if (!experienceId) {
