@@ -32,6 +32,7 @@ const INTRODUCTION = [
   'Project Lifecycle',
   'Community',
   'Additional Resources',
+  'Testing with Jest',
   'Troubleshooting Proxies',
   'Frequently Asked Questions',
   'Already used React Native?',
