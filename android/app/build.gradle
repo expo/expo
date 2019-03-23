@@ -118,7 +118,7 @@ dependencies {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:8.4.0'
+  implementation 'com.jakewharton:butterknife:9.0.0'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
