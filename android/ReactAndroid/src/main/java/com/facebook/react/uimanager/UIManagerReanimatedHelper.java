@@ -1,11 +1,6 @@
 package com.facebook.react.uimanager;
 
 /**
- * This file is pulled into ReactAndroid manually from react-native-reanimated
- * Make sure it stays up-to-date whenever react-native-reanimated is updated!!!!!!!!
- */
-
-/**
  * This class provides a way to workaround limited visibility of UIViewOperationQueue#getUIViewOperationQueue.
  * We rely on accessing that method to check if operation queue is empty or not. This in turn indicates if
  * we are in a middle of processing batch of operations from JS. In such a case we can rely on the enqueued update
@@ -17,4 +12,3 @@ public class UIManagerReanimatedHelper {
     return uiImplementation.getUIViewOperationQueue().isEmpty();
   }
 }
-
