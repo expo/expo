@@ -2,11 +2,13 @@
 title: Testing with Jest
 ---
 
-Jest is the most widely used JavaScript unit testing framework, so you may be even be familiar with it already. This guide explains how to set up Jest in your project, write a snapshot test, write a unit test, and common problems that people encounter when using Jest in React Native.
+Jest is the most widely used JavaScript unit testing framework, so you may be even be familiar with it already. This guide explains how to set up Jest in your project, write a unit test, write a snapshot test, and common problems that people encounter when using Jest in React Native.
 
 ## Installation
 
-First we need to install jest-expo: `yarn add jest-expo --dev` **or** `npm i jest-expo --save-dev`
+The first thing we'll want to do is install jest-expo, it's a Jest preset that mocks out the native side of the Expo SDK and handles some configuration for you.
+
+To install jest-expo as a development dependency run: `yarn add jest-expo --dev` **or** `npm install jest-expo --save-dev`.
 
 Then we need to add/update `package.json` to include:
 
@@ -20,61 +22,57 @@ Then we need to add/update `package.json` to include:
 }
 ```
 
-Now let's add [enzyme](https://airbnb.io/enzyme/), [enzyme adapter for react < 16](https://airbnb.io/enzyme/#upgrading-from-enzyme-2x-or-react--16) and [react-dom](https://github.com/facebook/react/tree/master/packages/react-dom):
+Now let's add react-test-renderer to our project:
 
-`yarn add react-dom enzyme enzyme-adapter-react-16 --dev` **or** `npm i react-dom enzyme enzyme-adapter-react-16 --save-dev`
-
-With enzyme's adapter for react < 16, we need to have this set up before every test that runs. Jest gives us a way to do that, head back over to `package.json`:
-
-```js
-"jest": {
-  "preset": "jest-expo",
-  "setupFiles": [
-    "<rootDir>/jest.setup.js"
-  ]
-}
-```
-
-Now create the file `jest.setup.js`
-
-```js
-import { configure } from 'enzyme';
-
-import Adapter from 'enzyme-adapter-react-16';
-
-configure({ adapter: new Adapter() });
-```
+`yarn add react-test-renderer --dev` **or** `npm i react-test-renderer --save-dev`
 
 That's it! Now we can start writing Jest tests!
 
-## My First Jest Test
+> **Note**: [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is a library build on top of react-test-renderer that could be helpful in your workflow.
 
-We are going to write a test for `App.js` by creating `App.test.js`, Jest will identify this as a test, and include it in the tests queue. There are other ways to [structure your tests](#structure-your-tests), but we will cover that later in this tutorial.
+## Unit Test
 
-`App.test.js`:
+We are going to write a simple test for `App.js` by creating `App.test.js`. Jest will identify this as a test, and include it in the tests queue. There are other ways to [structure your tests](#structure-your-tests), but we will cover that later in this tutorial.
+
+Our test will be the expected state of the `<App />` to have 1 child element:
+
 ```js
 import React from 'react';
-import { shallow } from 'enzyme';
+import renderer from 'react-test-renderer';
 
 import App from './App';
 
-const shallowApp = shallow(<App />);
-
 describe('<App />', () => {
-  it('renders correctly', () => {
-    expect(shallowApp).toMatchSnapshot();
+  it('has 1 child', () => {
+    const tree = renderer.create(<App />).toJSON();
+    expect(tree.children.length).toBe(1);
   });
 });
 ```
 
-Now run `yarn test` or `npm run test`, if all went well you should see a snapshot created and 1 test passed!
+Now run `yarn test` or `npm run test`, if all went well you should see 1 test passed! Read more on [expect and conditional matchers](https://jestjs.io/docs/en/expect).
 
 > **Node Version**: If you are running node version 11.11, [Jest will throw errors](https://github.com/facebook/jest/issues/8069), please downgrade or upgrade to 11.12+
+
+## Snapshot Test
+
+Now let's add a snapshot test for `App.js`. **What is a snapshot test, and why is it useful?** Snapshot tests are used to make sure the UI stays consistent, especially when a project is working with global styles that are potentially shared across components. Read more about it on Jest's site [snapshot testing](https://jestjs.io/docs/en/snapshot-testing).
+
+Let's add the following within the describe():
+```js
+it('renders correctly', () => {
+  const tree = renderer.create(<App />).toJSON();
+  expect(tree).toMatchSnapshot();
+});
+```
+
+Now run `yarn test` or `npm run test`, if all went well you should see a snapshot created and 2 tests passed!
 
 This was a very simple test, for more information take a look at the following links:
 
 - [Api: Globals](https://jestjs.io/docs/en/api)
 - [Api: Mock Functions](https://jestjs.io/docs/en/mock-function-api)
+- [Api: Expect](https://jestjs.io/docs/en/expect)
 - [Cli Options](https://jestjs.io/docs/en/cli)
 
 ## Code Coverage Reports
@@ -102,7 +100,7 @@ The above additions let's Jest know to collect coverage of all ***.js & .jsx*** 
 
 Now run the test again, you should see **/coverage/** in your app directory! Find the `index.html` file within and double click to open it up in a browser. Not only do we have reporting in our cli, we also have an html version of our code coverage, pretty cool stuff!
 
-> **Note**: You probably don't want to upload the html reporting to git, so please remember to add `coverage/\*\*/*` as a line in `.gitignore`
+> **Standards Note**: You can do what you want, but usually we wouldn't upload this html reporting to git; so add `coverage/\*\*/*` as a line in `.gitignore` to prevent this directory from being tracked.
 
 ## Structure your Tests
 
