@@ -276,11 +276,15 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
   static NSString *const kHTTPContentTypeHeaderKey = @"Content-Type";
   static NSString *const kHTTPContentTypeHeaderValue =
       @"application/x-www-form-urlencoded; charset=UTF-8";
+  static NSString *const kHTTPAcceptHeaderKey = @"Accept";
+  static NSString *const kHTTPAcceptHeaderValue =
+      @"application/json";
 
   NSURL *tokenRequestURL = [self tokenRequestURL];
   NSMutableURLRequest *URLRequest = [[NSURLRequest requestWithURL:tokenRequestURL] mutableCopy];
   URLRequest.HTTPMethod = kHTTPPost;
   [URLRequest setValue:kHTTPContentTypeHeaderValue forHTTPHeaderField:kHTTPContentTypeHeaderKey];
+  [URLRequest setValue:kHTTPAcceptHeaderValue forHTTPHeaderField:kHTTPAcceptHeaderKey];
 
   OIDURLQueryComponent *bodyParameters = [self tokenRequestBody];
   NSMutableDictionary *httpHeaders = [[NSMutableDictionary alloc] init];
