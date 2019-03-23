@@ -85,11 +85,15 @@ commands:
       max_tries:
         type: integer
         default: 1
+      no_output_timeout:
+        type: string
+        default: "10m" # same default of run step
     steps:
       - run:
           name: yarn << parameters.command >> (<< parameters.working_directory >>)
           working_directory: << parameters.working_directory >>
           command: for i in {1..<< parameters.max_tries >>}; do ((i > 1)) && sleep 5; yarn << parameters.command >> && break; done
+          no_output_timeout: << parameters.no_output_timeout >>
   yarn_install:
     parameters:
       working_directory:
@@ -477,6 +481,7 @@ jobs:
       - yarn:
           command: export
           working_directory: docs
+          no_output_timeout: 40m
       - run:
           working_directory: docs
           command: nix run expo.python --command yarn run export-server
