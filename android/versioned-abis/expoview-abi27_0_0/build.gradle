@@ -8,7 +8,7 @@ buildscript {
 
   dependencies {
     classpath 'com.android.tools.build:gradle:3.2.1'
-    classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0'
   }
 }
 
@@ -143,7 +143,7 @@ dependencies {
   api 'com.google.firebase:firebase-core:16.0.1'
   api 'com.google.firebase:firebase-messaging:17.1.0'
   api 'com.google.maps.android:android-maps-utils:0.5+'
-  api 'com.jakewharton:butterknife:8.4.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+  api 'com.jakewharton:butterknife:9.0.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
   implementation project(':expo-gl-cpp')
 }

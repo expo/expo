@@ -46,7 +46,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0'
   }
 }
 
@@ -304,8 +304,8 @@ dependencies {
   api 'com.google.firebase:firebase-core:16.0.7'
   api 'com.google.firebase:firebase-messaging:17.4.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:8.4.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+  api 'com.jakewharton:butterknife:9.0.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system
