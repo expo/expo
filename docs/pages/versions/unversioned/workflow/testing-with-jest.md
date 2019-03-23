@@ -151,7 +151,7 @@ At the end of the day, it's all preference and up to you on how you'd like to st
 
 ## Jest Flows
 
-This is optional, but wanted to talk about different jest test flows. Currently we run the test and that's it, but take a look at the [Cli Options](https://jestjs.io/docs/en/cli). Below are a few script setups to try:
+This is optional, but wanted to talk about different Jest test flows. Currently we run the test and that's it, but take a look at the [CLI Options](https://jestjs.io/docs/en/cli). Below are a few script setups to try:
 
 ```js
 "scripts": {
