@@ -1,13 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.modules.dialog;
 
-import javax.annotation.Nullable;
-import java.util.Map;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -25,6 +23,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 @ReactModule(name = DialogModule.NAME)
 public class DialogModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
@@ -32,7 +32,6 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     /* package */
     public static String FRAGMENT_TAG = "com.facebook.catalyst.react.dialog.DialogModule";
 
-    /* package */
     public static final String NAME = "DialogManagerAndroid";
 
     /* package */
@@ -124,12 +123,12 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
         private void dismissExisting() {
             if (isUsingSupportLibrary()) {
                 SupportAlertFragment oldFragment = (SupportAlertFragment) mSupportFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-                if (oldFragment != null) {
+                if (oldFragment != null && oldFragment.isResumed()) {
                     oldFragment.dismiss();
                 }
             } else {
                 AlertFragment oldFragment = (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-                if (oldFragment != null) {
+                if (oldFragment != null && oldFragment.isResumed()) {
                     oldFragment.dismiss();
                 }
             }
@@ -141,7 +140,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
             AlertFragmentListener actionListener = actionCallback != null ? new AlertFragmentListener(actionCallback) : null;
             if (isUsingSupportLibrary()) {
                 SupportAlertFragment alertFragment = new SupportAlertFragment(actionListener, arguments);
-                if (isInForeground) {
+                if (isInForeground && !mSupportFragmentManager.isStateSaved()) {
                     if (arguments.containsKey(KEY_CANCELABLE)) {
                         alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
                     }
