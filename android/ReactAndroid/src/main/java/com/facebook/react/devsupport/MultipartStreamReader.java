@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.ByteString;
+import expolib_v1.okio.Buffer;
+import expolib_v1.okio.BufferedSource;
+import expolib_v1.okio.ByteString;
 
 /**
  * Utility class to parse the body of a response of type multipart/mixed.

@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 package com.facebook.react.modules.network;
 
 import java.util.ArrayList;
@@ -6,14 +13,14 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
-import okhttp3.Headers;
-import okhttp3.HttpUrl;
+import expolib_v1.okhttp3.Cookie;
+import expolib_v1.okhttp3.CookieJar;
+import expolib_v1.okhttp3.Headers;
+import expolib_v1.okhttp3.HttpUrl;
 
 /**
- * Basic okhttp3 CookieJar container 
- */ 
+ * Basic okhttp3 CookieJar container
+ */
 public class ReactCookieJarContainer implements CookieJarContainer {
 
   @Nullable

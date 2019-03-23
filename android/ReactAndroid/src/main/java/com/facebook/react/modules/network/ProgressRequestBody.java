@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,11 +9,11 @@ package com.facebook.react.modules.network;
 
 import java.io.IOException;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okio.BufferedSink;
-import okio.Okio;
-import okio.Sink;
+import expolib_v1.okhttp3.MediaType;
+import expolib_v1.okhttp3.RequestBody;
+import expolib_v1.okio.BufferedSink;
+import expolib_v1.okio.Okio;
+import expolib_v1.okio.Sink;
 
 public class ProgressRequestBody extends RequestBody {
 

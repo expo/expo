@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ import android.support.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
+import expolib_v1.com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.listener.RequestListener;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -29,18 +29,19 @@ import com.facebook.react.modules.network.ForwardingCookieHandler;
 import com.facebook.react.modules.network.OkHttpClientProvider;
 import com.facebook.soloader.SoLoader;
 
-import okhttp3.JavaNetCookieJar;
-import okhttp3.OkHttpClient;
+import expolib_v1.okhttp3.JavaNetCookieJar;
+import expolib_v1.okhttp3.OkHttpClient;
 
 /**
  * Module to initialize the Fresco library.
  *
  * <p>Does not expose any methods to JavaScript code. For initialization and cleanup only.
  */
-@ReactModule(name = "FrescoModule")
+@ReactModule(name = FrescoModule.NAME, needsEagerInit = true)
 public class FrescoModule extends ReactContextBaseJavaModule implements
     ModuleDataCleaner.Cleanable, LifecycleEventListener {
 
+  public static final String NAME = "FrescoModule";
   private final boolean mClearOnDestroy;
   private @Nullable ImagePipelineConfig mConfig;
 
@@ -114,7 +115,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
 
   @Override
   public String getName() {
-    return "FrescoModule";
+    return NAME;
   }
 
   @Override
