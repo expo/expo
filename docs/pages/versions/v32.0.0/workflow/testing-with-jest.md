@@ -2,7 +2,7 @@
 title: Testing with Jest
 ---
 
-Jest is the most widely used JavaScript unit testing framework, so you may be even be familiar with it already. This guide explains how to set up Jest in your project, write a unit test, write a snapshot test, and common problems that people encounter when using Jest in React Native.
+[Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework, so you may be even be familiar with it already. This guide explains how to set up Jest in your project, write a unit test, write a snapshot test, and common problems that people encounter when using Jest in React Native.
 
 ## Installation
 
@@ -52,13 +52,12 @@ describe('<App />', () => {
 
 Now run `yarn test` or `npm run test`, if all went well you should see 1 test passed! Read more on [expect and conditional matchers](https://jestjs.io/docs/en/expect).
 
-> **Node Version**: If you are running node version 11.11, [Jest will throw errors](https://github.com/facebook/jest/issues/8069), please downgrade or upgrade to 11.12+
-
 ## Snapshot Test
 
 Now let's add a snapshot test for `App.js`. **What is a snapshot test, and why is it useful?** Snapshot tests are used to make sure the UI stays consistent, especially when a project is working with global styles that are potentially shared across components. Read more about it on Jest's site [snapshot testing](https://jestjs.io/docs/en/snapshot-testing).
 
 Let's add the following within the describe():
+
 ```js
 it('renders correctly', () => {
   const tree = renderer.create(<App />).toJSON();
@@ -91,12 +90,11 @@ Let's head back to `package.json` and add the following:
     "!**/node_modules/**",
     "!**/babel.config.js",
     "!**/jest.setup.js"
-  ],
-  "verbose": true
+  ]
 }
 ```
 
-The above additions let's Jest know to collect coverage of all ***.js & .jsx*** file types and not within ***/coverage***, ***/node_modules/*** and our 2 project config files (add/remove more exclusions to this list to match your Expo app needs). With [verbose](https://jestjs.io/docs/en/cli#verbose) set as true.
+The above additions let's Jest know to collect coverage of all **_.js & .jsx_** file types and not within **_/coverage_**, **_/node_modules/_** and our 2 project config files (add/remove more exclusions to this list to match your Expo app needs).
 
 Now run the test again, you should see **/coverage/** in your app directory! Find the `index.html` file within and double click to open it up in a browser. Not only do we have reporting in our cli, we also have an html version of our code coverage, pretty cool stuff!
 
@@ -134,7 +132,7 @@ src/
 ...
 ```
 
-So if we move `__tests__` within `components`, the *button.test.js* import of `<Button />` would now be: `../button`, that's a lot better!
+So if we move `__tests__` within `components`, the _button.test.js_ import of `<Button />` would now be: `../button`, that's a lot better!
 
 Another option for test/file structure:
 
@@ -157,10 +155,10 @@ This is optional, but wanted to talk about different jest test flows. Currently 
 "scripts": {
   ...
   // active development of tests, watch files for changes and re-runs all tests
-  "test": "jest --watchAll --coverage=false",
+  "test": "jest --watch --coverage=false --changedSince=origin/master",
 
   // debug, console.logs and only re-runs the file that was changed
-  "testDebug": "jest -o --watch --coverage=false --verbose=false",
+  "testDebug": "jest -o --watch --coverage=false",
 
   // displays code coverage in cli and updates the code coverage html
   "testFinal": "jest",
