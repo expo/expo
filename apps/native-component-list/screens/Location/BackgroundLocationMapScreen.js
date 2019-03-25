@@ -66,6 +66,8 @@ export default class BackgroundLocationMapScreen extends React.Component {
     await Location.startLocationUpdatesAsync(LOCATION_UPDATES_TASK, {
       accuracy,
       showsBackgroundLocationIndicator: false,
+      deferredUpdatesInterval: 60 * 1000, // 1 minute
+      deferredUpdatesDistance: 100, // 100 meters
     });
     this.setState({ isWatching: true });
   }

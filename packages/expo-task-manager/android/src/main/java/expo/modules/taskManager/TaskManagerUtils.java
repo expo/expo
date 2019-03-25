@@ -31,10 +31,12 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   // Set of job IDs that are scheduled but not started yet.
   private static final List<Integer> sPendingJobIds = new ArrayList<>();
 
+  @Override
   public PendingIntent createTaskIntent(Context context, TaskInterface task) {
     return createTaskIntent(context, task, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
+  @Override
   public void cancelTaskIntent(Context context, String appId, String taskName) {
     PendingIntent pendingIntent = createTaskIntent(context, appId, taskName, PendingIntent.FLAG_NO_CREATE);
 
@@ -43,6 +45,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     }
   }
 
+  @Override
   public void scheduleJob(Context context, JobInfo jobInfo) {
     JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
@@ -60,12 +63,27 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     }
   }
 
+  @Override
   public void scheduleJob(Context context, TaskInterface task, PersistableBundle data) {
-    Integer jobId = sCurrentJobId++;
-    PersistableBundle extras = createExtrasForTask(task, data);
-    JobInfo jobInfo = createJobInfo(context, jobId, extras);
-
+    JobInfo jobInfo = createJobInfo(context, task, data);
     scheduleJob(context, jobInfo);
+  }
+
+  @Override
+  public JobInfo.Builder createJobInfoBuilder(Context context, TaskInterface task, PersistableBundle data) {
+    return new JobInfo.Builder(sCurrentJobId++, new ComponentName(context, TaskJobService.class))
+        .setExtras(createExtrasForTask(task, data));
+  }
+
+  @Override
+  public void cancelScheduledJob(Context context, int jobId) {
+    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+    if (jobScheduler != null) {
+      jobScheduler.cancel(jobId);
+    } else {
+      Log.e(this.getClass().getName(), "Job scheduler not found!");
+    }
   }
 
   private PendingIntent createTaskIntent(Context context, String appId, String taskName, int flags) {
@@ -178,16 +196,15 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
   //region private
 
-  private JobInfo createJobInfo(Context context, int jobId, PersistableBundle extras) {
-    return new JobInfo.Builder(jobId, new ComponentName(context, TaskJobService.class))
-        .setExtras(extras)
+  private JobInfo createJobInfo(Context context, TaskInterface task, PersistableBundle data) {
+    return createJobInfoBuilder(context, task, data)
         .setMinimumLatency(0)
         .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE)
         .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
         .build();
   }
 
-  private PersistableBundle createExtrasForTask(TaskInterface task, PersistableBundle data) {
+  public PersistableBundle createExtrasForTask(TaskInterface task, PersistableBundle data) {
     PersistableBundle extras = new PersistableBundle();
 
     extras.putString("appId", task.getAppId());
