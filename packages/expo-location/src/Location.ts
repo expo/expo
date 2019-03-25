@@ -56,8 +56,12 @@ interface Address {
 };
 
 interface LocationTaskOptions {
-  accuracy?: LocationAccuracy,
-  showsBackgroundLocationIndicator?: boolean,
+  accuracy?: LocationAccuracy;
+  timeInterval?: number; // Android only
+  distanceInterval?: number;
+  deferredUpdatesInterval?: number;
+  deferredUpdatesDistance?: number;
+  showsBackgroundLocationIndicator?: boolean; // iOS only
 };
 
 interface Region {
