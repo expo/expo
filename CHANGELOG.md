@@ -34,6 +34,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added Firebase integration to `expo-analytics-segment` by [@sjchmiela](https://github.com/sjchmiela) ([#3615](https://github.com/expo/expo/pull/3615))
 - add support for new arguments in `WebBrowser.openBrowserAsync` as described in [the documentation](https://docs.expo.io/versions/latest/sdk/webbrowser/) by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
 - add tags support in `KeepAwake.activate` and `KeepAwake.deactivate` by [@mczernek](https://github.com/mczernek) [#3747](https://github.com/expo/expo/pull/3747)
+- added `deferredUpdatesInterval` and `deferredUpdatesDistance` options that defer background location updates by [@tsapeta](https://github.com/tsapeta) ([#3548](https://github.com/expo/expo/pull/3548))
+- added `foregroundService` option to background location (Android Oreo and newer) by [@tsapeta](https://github.com/tsapeta) ([#3837](https://github.com/expo/expo/pull/3837))
 
 ### 🐛 Bug fixes
 
