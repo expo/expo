@@ -59,9 +59,14 @@ interface LocationTaskOptions {
   accuracy?: LocationAccuracy;
   timeInterval?: number; // Android only
   distanceInterval?: number;
-  deferredUpdatesInterval?: number;
-  deferredUpdatesDistance?: number;
   showsBackgroundLocationIndicator?: boolean; // iOS only
+  deferredUpdatesDistance?: number;
+  deferredUpdatesTimeout?: number;
+  foregroundService?: {
+    notificationTitle: string;
+    notificationBody: string;
+    notificationColor?: string;
+  };
 };
 
 interface Region {

@@ -16,10 +16,11 @@ export default class Button extends React.Component {
           onPressIn={this.props.onPressIn}
           onPress={this.props.onPress}
           underlayColor={Colors.highlightColor}>
-          {this.props.loading
+          {this.props.children || (
+            this.props.loading
             ? <ActivityIndicator size="small" color="white" />
             : <Text style={styles.label}>{this.props.title}</Text>
-          }
+          )}
         </TouchableHighlight>
       </View>
     );
