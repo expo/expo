@@ -32,7 +32,7 @@ allprojects {
     
         // * Your other repositories here *
         
-        // * Add a new maven block after other repositores / blocks *
+        // * Add a new maven block after other repositories / blocks *
         maven {
             // expo-camera bundles a custom com.google.android:cameraview
             url "$rootDir/../node_modules/expo-camera/android/maven"
