@@ -41,7 +41,6 @@ const ISSUES_BLACKLIST = ['Overview'];
 
 export default class DocumentationFooter extends React.PureComponent {
   render() {
-    console.log(this.props);
     return (
       <footer className={STYLES_FOOTER}>
         <a
