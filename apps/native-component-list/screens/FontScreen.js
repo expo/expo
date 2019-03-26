@@ -30,6 +30,9 @@ export default class FontScreen extends React.Component {
           <Text style={{ fontFamily: 'space-mono', fontSize: 16 }}>
             Font icons sets and other custom fonts can be loaded from the web
           </Text>
+          <Text style={{ fontFamily: 'Roboto', fontSize: 16 }}>
+            Font icons sets and other custom fonts can be loaded by providing remote uri as well.
+          </Text>
           {Platform.OS === 'ios' ? (
             <Text
               adjustsFontSizeToFit
@@ -40,6 +43,18 @@ export default class FontScreen extends React.Component {
                 fontSize: 420,
               }}>
               Custom font with `adjustsFontSizeToFit` on iOS
+            </Text>
+          ) : null}
+          {Platform.OS === 'ios' ? (
+            <Text
+              adjustsFontSizeToFit
+              style={{
+                flex: 1,
+                height: 32,
+                fontFamily: 'Roboto',
+                fontSize: 420,
+              }}>
+              Custom remote uri font with `adjustsFontSizeToFit` on iOS
             </Text>
           ) : null}
         </View>
