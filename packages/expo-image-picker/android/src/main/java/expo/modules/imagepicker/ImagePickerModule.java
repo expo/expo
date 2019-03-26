@@ -20,10 +20,11 @@ import android.webkit.MimeTypeMap;
 
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.common.RotationOptions;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -211,7 +212,6 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
   private Boolean base64 = false;
   private String mediaTypes = null;
   private Boolean exif = false;
-  private String mExperienceId;
   private WeakReference<Activity> mExperienceActivity;
   private boolean mInitialized = false;
   private Context mContext;
@@ -425,6 +425,15 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
             if (type.contains("png")) {
               compressFormat = Bitmap.CompressFormat.PNG;
               extension = ".png";
+            } else if (type.contains("gif")) {
+              // If we allow editing, the result image won't ever be a GIF as the cropper doesn't support it.
+              // Let's convert to PNG in such case.
+              if (allowsEditing) {
+                extension = ".png";
+                compressFormat = Bitmap.CompressFormat.PNG;
+              } else {
+                extension = ".gif";
+              }
             } else if (!type.contains("jpeg")) {
               System.out.println(TAG + " Image type not supported. Falling back to JPEG instead.");
               extension = ".jpg";
@@ -462,27 +471,43 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
               final DataSource<CloseableReference<CloseableImage>> dataSource
                   = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, getApplication(null));
               final Bitmap.CompressFormat finalCompressFormat = compressFormat;
-              dataSource.subscribe(new BaseBitmapDataSubscriber() {
+              dataSource.subscribe(new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
                 @Override
-                protected void onNewResultImpl(Bitmap bitmap) {
-                  if (bitmap == null) {
-                    onFailureImpl(dataSource);
-                  } else {
-                    // create a cache file for an image picked from gallery
-                    ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
-                    File file = new File(path);
-                    if (quality != null) {
+                protected void onNewResultImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+                  CloseableReference<CloseableImage> closeableImageRef = dataSource.getResult();
+                  if (closeableImageRef == null) {
+                    promise.reject("E_READ_ERR", "Could not open an image from " + uri);
+                    return;
+                  }
+
+                  CloseableImage closeableImage = closeableImageRef.get();
+                  if (closeableImage == null) {
+                    promise.reject("E_READ_ERR", "Could not read an image from " + uri);
+                    return;
+                  }
+
+                  int width = closeableImage.getWidth();
+                  int height = closeableImage.getHeight();
+
+                  ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
+                  File file = new File(path);
+
+                  if (quality != null && closeableImage instanceof CloseableBitmap) {
+                    // We have an image and should compress its quality
+                    Bitmap bitmap = ((CloseableBitmap) closeableImage).getUnderlyingBitmap();
+                    if (bitmap != null) {
                       saveImage(bitmap, finalCompressFormat, file, out);
-                      returnImageResult(exifData, file.toURI().toString(), bitmap.getWidth(), bitmap.getHeight(), out, promise);
-                    } else {
-                      // No modification requested
-                      try {
-                        copyImage(uri, file, out);
-                        returnImageResult(exifData, file.toURI().toString(), bitmap.getWidth(), bitmap.getHeight(), out, promise);
-                      } catch (IOException e) {
-                        promise.reject("E_COPY_ERR", "Could not copy image from " + uri + ": " + e.getMessage(), e);
-                      }
+                      returnImageResult(exifData, file.toURI().toString(), width, height, out, promise);
+                      return;
                     }
+                  }
+
+                  // No modification requested
+                  try {
+                    copyImage(uri, file, out);
+                    returnImageResult(exifData, file.toURI().toString(), width, height, out, promise);
+                  } catch (IOException e) {
+                    promise.reject("E_COPY_ERR", "Could not copy image from " + uri + ": " + e.getMessage(), e);
                   }
                 }
 
