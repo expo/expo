@@ -37,6 +37,7 @@
     "expo-file-system": "*"
   },
   "dependencies": {
+    "blueimp-md5": "^2.10.0",
     "path-browserify": "^1.0.0",
     "url-parse": "^1.4.4"
   },
