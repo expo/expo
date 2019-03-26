@@ -17,7 +17,7 @@ apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion 28
 
   defaultConfig {
     minSdkVersion 19

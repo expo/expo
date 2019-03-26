@@ -5,7 +5,7 @@ group = 'com.google.android'
 version = '1.0.0'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 28
     buildToolsVersion "25.0.3"
 
     defaultConfig {

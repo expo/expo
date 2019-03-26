@@ -41,7 +41,7 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion 28
 
   defaultConfig {
     minSdkVersion 21
