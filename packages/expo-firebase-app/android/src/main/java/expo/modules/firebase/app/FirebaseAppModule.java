@@ -54,7 +54,12 @@ public class FirebaseAppModule extends ExportedModule implements ModuleRegistryC
    * Subclasses can use this method to access catalyst context passed as a constructor
    */
   protected final Context getApplicationContext() {
-    return getCurrentActivity().getApplicationContext();
+    
+    if (this.mContext != null) {
+      return this.mContext.getApplicationContext();
+    }
+    
+    return null;
   }
 
   /**
