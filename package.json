@@ -33,8 +33,7 @@
     "prettier": "^1.16.4"
   },
   "resolutions": {
-    "detox": "^12.0.0",
-    "react-native-gesture-handler": "1.1.0"
+    "detox": "^12.0.0"
   },
   "dependencies": {
     "react-native-unimodules": "~0.2.0"

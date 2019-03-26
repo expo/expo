@@ -11643,7 +11643,7 @@ react-native-dummy@0.2.0:
   resolved "https://registry.yarnpkg.com/react-native-dummy/-/react-native-dummy-0.2.0.tgz#fbf0ff7607506882648f1b07f76e57951b7b8f8a"
   integrity sha512-8efApfdopDKGdxbG8aMmYDXt33aZUoFIU+kRxrsdvVAtV2m121tVFrgV8pHr7M+Y7iuOl80wuxt6Xx8zclCIpQ==
 
-react-native-gesture-handler@1.1.0, react-native-gesture-handler@^1.1.0:
+react-native-gesture-handler@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.1.0.tgz#2a7d545ad2e0ca23adce22b2af441ad360ecccee"
   integrity sha512-E9IKHpmL+sz/iCYkUriTUjBaQBORWV+oheYPQleADkxjo2sYsQfnlyTz4EQYFONkUwJ6WmfTNkYt2/yc5U4Ziw==
@@ -11835,7 +11835,7 @@ react-navigation-tabs@1.0.2:
     react-lifecycles-compat "^3.0.4"
     react-native-tab-view "^1.0.0"
 
-react-navigation@^3.4.0-rc.0:
+react-navigation@^3.4.0-rc.0, react-navigation@^3.5.1:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.6.1.tgz#2b344a00e8e9897a1baaa1990d12334d9ea16986"
   integrity sha512-8G/GcvBFMmqLGh9J2PpO/no13op2TOsUP8+6HIHVbccNwFGqM5AwvAczfpXYJpfEnjFTA6/VtRGcFX2bGk0zmQ==
