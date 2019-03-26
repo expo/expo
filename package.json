@@ -23,6 +23,9 @@
       "react-native-lab/react-native"
     ]
   },
+  "dependencies": {
+    "react-native-unimodules": "~0.2.0"
+  },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
@@ -32,11 +35,5 @@
     "expo-yarn-workspaces": "^1.1.0",
     "prettier": "^1.16.4"
   },
-  "resolutions": {
-    "detox": "^12.0.0",
-    "react-native-gesture-handler": "1.1.0"
-  },
-  "dependencies": {
-    "react-native-unimodules": "~0.2.0"
-  }
+  "resolutions": {}
 }
