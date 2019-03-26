@@ -1,9 +1,12 @@
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { Platform, findNodeHandle } from 'react-native';
+import { Platform, View, findNodeHandle } from 'react-native';
 import { requireNativeViewManager } from '@unimodules/core';
 import AdsManager from './NativeAdsManager';
-const NativeAdLayout = requireNativeViewManager('NativeAdLayout');
+let NativeAdLayout = View;
+if (Platform.OS === 'android') {
+    NativeAdLayout = requireNativeViewManager('NativeAdLayout');
+}
 /**
  * A higher-order function that wraps the given `Component` type and returns a new container
  * component type that passes in an extra `nativeAd` prop to the wrapped component.
