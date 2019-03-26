@@ -153,7 +153,7 @@
     "@types/react-native": "^0.57.17",
     "@types/react-test-renderer": "^16.0.2",
     "expo-module-scripts": "^1.0.0",
-    "react": "16.5.0",
+    "react": "16.8.3",
     "react-native": "^0.59.0",
     "react-test-renderer": "16.5.0"
   },

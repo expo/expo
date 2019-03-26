@@ -24,9 +24,9 @@
     "babel-jest": "^23.6.0",
     "jest": "^23.6.0",
     "json5": "^2.1.0",
-    "react-test-renderer": "^16.5.0"
+    "react-test-renderer": "^16.8.3"
   },
   "devDependencies": {
-    "react": "^16.5.0"
+    "react": "16.8.3"
   }
 }

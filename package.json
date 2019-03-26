@@ -32,9 +32,6 @@
     "expo-yarn-workspaces": "^1.1.0",
     "prettier": "^1.14.2"
   },
-  "resolutions": {
-    "react-native-gesture-handler": "1.1.0"
-  },
   "dependencies": {
     "react-native-unimodules": "~0.2.0"
   }
