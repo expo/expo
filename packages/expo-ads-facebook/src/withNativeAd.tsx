@@ -8,6 +8,8 @@ import { NativeAdIconView } from './AdIconView';
 import { NativeAdMediaView } from './AdMediaView';
 import AdsManager from './NativeAdsManager';
 
+const NativeAdLayout = requireNativeViewManager('NativeAdLayout');
+
 type AdContainerProps<P> = {
   adsManager: AdsManager;
   // TODO: rename this to onAdLoad
@@ -78,25 +80,27 @@ export default function withNativeAd<P>(
       let { adsManager } = this.props;
       let props = this._getForwardedProps();
       return (
-        <NativeAdView
-          ref={this._nativeAdViewRef}
-          adsManager={adsManager.placementId}
-          onAdLoaded={this._handleAdLoaded}>
-          <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
-            <AdIconViewContext.Provider value={this._adIconViewContextValue}>
-              <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
-                  {this.state.ad ? (
-                    <Component
-                      {...props}
-                      nativeAd={this.state.ad}
-                    />
-                  ) : null}
-                </AdOptionsViewContext.Provider>
-              </AdTriggerViewContext.Provider>
-            </AdIconViewContext.Provider>
-          </AdMediaViewContext.Provider>
-        </NativeAdView>
+        <NativeAdLayout>
+          <NativeAdView
+            ref={this._nativeAdViewRef}
+            adsManager={adsManager.placementId}
+            onAdLoaded={this._handleAdLoaded}>
+            <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
+              <AdIconViewContext.Provider value={this._adIconViewContextValue}>
+                <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
+                  <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
+                    {this.state.ad ? (
+                      <Component
+                        {...props}
+                        nativeAd={this.state.ad}
+                      />
+                    ) : null}
+                  </AdOptionsViewContext.Provider>
+                </AdTriggerViewContext.Provider>
+              </AdIconViewContext.Provider>
+            </AdMediaViewContext.Provider>
+          </NativeAdView>
+        </NativeAdLayout>
       );
     }
 

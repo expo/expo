@@ -1,9 +1,11 @@
 package expo.modules.ads.facebook;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.facebook.ads.AdOptionsView;
+import com.facebook.ads.NativeAdLayout;
 
 import java.lang.ref.WeakReference;
 
@@ -63,7 +65,7 @@ public class AdOptionsWrapperView extends LinearLayout {
     AdOptionsView adOptionsView = new AdOptionsView(
         getContext(),
         nativeAdView.getNativeAd(),
-        nativeAdView,
+        getNativeAdLayout(nativeAdView),
         mOrientation,
         mIconSize
     );
@@ -73,6 +75,14 @@ public class AdOptionsWrapperView extends LinearLayout {
     }
 
     return adOptionsView;
+  }
+
+  private NativeAdLayout getNativeAdLayout(NativeAdView nativeAdView) {
+    View currentView = nativeAdView;
+    while (!(currentView instanceof NativeAdLayout)) {
+      currentView = (View) currentView.getParent();
+    }
+    return (NativeAdLayout) currentView;
   }
 
   @Override

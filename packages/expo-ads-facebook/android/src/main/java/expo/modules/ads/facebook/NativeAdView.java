@@ -3,6 +3,7 @@ package expo.modules.ads.facebook;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
@@ -15,7 +16,7 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class NativeAdView extends NativeAdLayout {
+public class NativeAdView extends ViewGroup {
   /**
    * @{NativeAd} received from the ads manager
    **/

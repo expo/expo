@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
@@ -45,7 +46,7 @@ import java.util.List;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 
-public class ScopedContext extends Context {
+public class ScopedContext extends ContextWrapper {
 
   private static final String TAG = ScopedContext.class.getSimpleName();
 
@@ -56,6 +57,7 @@ public class ScopedContext extends Context {
   private ScopedApplicationContext mScopedApplicationContext;
 
   public ScopedContext(final Context context, final String scope) {
+    super(context);
     mContext = context;
     mScope = scope + '-';
 

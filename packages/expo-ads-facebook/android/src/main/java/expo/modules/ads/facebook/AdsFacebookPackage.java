@@ -26,6 +26,7 @@ public class AdsFacebookPackage extends BasePackage {
   @Override
   public List<ViewManager> createViewManagers(Context context) {
     return Arrays.asList(
+        new NativeAdLayoutManager(),
         new AdIconViewManager(),
         new BannerViewManager(),
         new MediaViewManager(),
