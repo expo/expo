@@ -25,11 +25,14 @@ Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-1. Adjust the `android/build.gradle` to add the `maven` block as described below:
+1. Adjust the `android/build.gradle` to add a new `maven` block after all other repositories as described below:
 ```gradle
 allprojects {
     repositories {
+    
         // * Your other repositories here *
+        
+        // * Add a new maven block after other repositories / blocks *
         maven {
             // expo-camera bundles a custom com.google.android:cameraview
             url "$rootDir/../node_modules/expo-camera/android/maven"
