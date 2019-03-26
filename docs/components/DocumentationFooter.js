@@ -17,8 +17,18 @@ const STYLES_FOOTER_LINK = css`
   margin-bottom: 12px;
 `;
 
+// Remove trailing slash and append .md
 function githubUrl(path) {
-  // Remove trailing slash and append .md
+  if (path === '/versions/latest/') {
+    path = '/versions/unversioned/index';
+  } else if (path.match(/v\d+\.\d+\.\d+\/?$/)) {
+    if (path[path.length - 1] === '/') {
+      path = `${path}index`;
+    } else {
+      path = `${path}/index`;
+    }
+  }
+
   let pathAsMarkdown = path.replace(/\/$/, '') + '.md';
   if (pathAsMarkdown.startsWith('/versions/latest')) {
     pathAsMarkdown = pathAsMarkdown.replace('/versions/unversioned');
@@ -31,6 +41,7 @@ const ISSUES_BLACKLIST = ['Overview'];
 
 export default class DocumentationFooter extends React.PureComponent {
   render() {
+    console.log(this.props);
     return (
       <footer className={STYLES_FOOTER}>
         <a
