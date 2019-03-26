@@ -8,9 +8,9 @@
 package com.facebook.react.modules.network;
 
 import com.facebook.react.modules.network.ReactCookieJarContainer;
-import expolib_v1.okhttp3.Cookie;
-import expolib_v1.okhttp3.CookieJar;
-import expolib_v1.okhttp3.HttpUrl;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
 import java.util.List;
 import java.util.ArrayList;
 

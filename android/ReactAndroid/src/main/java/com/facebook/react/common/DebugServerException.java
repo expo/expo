@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

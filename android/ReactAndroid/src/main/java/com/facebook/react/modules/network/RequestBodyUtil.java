@@ -23,13 +23,13 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nullable;
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.RequestBody;
-import expolib_v1.okhttp3.internal.Util;
-import expolib_v1.okio.BufferedSink;
-import expolib_v1.okio.ByteString;
-import expolib_v1.okio.Okio;
-import expolib_v1.okio.Source;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.internal.Util;
+import okio.BufferedSink;
+import okio.ByteString;
+import okio.Okio;
+import okio.Source;
 
 /**
  * Helper class that provides the necessary methods for creating the RequestBody from a file

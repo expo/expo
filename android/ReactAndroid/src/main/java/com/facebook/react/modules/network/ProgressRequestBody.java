@@ -9,11 +9,11 @@ package com.facebook.react.modules.network;
 
 import java.io.IOException;
 
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.RequestBody;
-import expolib_v1.okio.BufferedSink;
-import expolib_v1.okio.Okio;
-import expolib_v1.okio.Sink;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Sink;
 
 public class ProgressRequestBody extends RequestBody {
 

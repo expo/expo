@@ -1,18 +1,17 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
- *
+ * <p>
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.fresco;
 
-import com.facebook.imagepipeline.producers.NetworkFetcher;
-import expolib_v1.com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
 import android.net.Uri;
 import android.os.SystemClock;
 
-import expolib_v1.com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
+import com.facebook.imagepipeline.producers.NetworkFetcher;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
@@ -21,10 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Headers;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Request;
+import okhttp3.CacheControl;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 class ReactOkHttpNetworkFetcher extends OkHttpNetworkFetcher {
 
@@ -44,7 +43,7 @@ class ReactOkHttpNetworkFetcher extends OkHttpNetworkFetcher {
 
   private Map<String, String> getHeaders(ReadableMap readableMap) {
     if (readableMap == null) {
-        return null;
+      return null;
     }
     ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
     Map<String, String> map = new HashMap<>();
@@ -63,18 +62,18 @@ class ReactOkHttpNetworkFetcher extends OkHttpNetworkFetcher {
     Map<String, String> requestHeaders = null;
     if (fetchState.getContext().getImageRequest() instanceof ReactNetworkImageRequest) {
       ReactNetworkImageRequest networkImageRequest = (ReactNetworkImageRequest)
-        fetchState.getContext().getImageRequest();
+          fetchState.getContext().getImageRequest();
       requestHeaders = getHeaders(networkImageRequest.getHeaders());
     }
     if (requestHeaders == null) {
       requestHeaders = Collections.emptyMap();
     }
     final Request request = new Request.Builder()
-      .cacheControl(new CacheControl.Builder().noStore().build())
-      .url(uri.toString())
-      .headers(Headers.of(requestHeaders))
-      .get()
-      .build();
+        .cacheControl(new CacheControl.Builder().noStore().build())
+        .url(uri.toString())
+        .headers(Headers.of(requestHeaders))
+        .get()
+        .build();
 
     fetchWithRequest(fetchState, callback, request);
   }

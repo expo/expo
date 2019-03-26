@@ -29,22 +29,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.CookieJar;
-import expolib_v1.okhttp3.Headers;
-import expolib_v1.okhttp3.Interceptor;
-import expolib_v1.okhttp3.JavaNetCookieJar;
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.MultipartBody;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.RequestBody;
-import expolib_v1.okhttp3.Response;
-import expolib_v1.okhttp3.ResponseBody;
-import expolib_v1.okio.ByteString;
-import expolib_v1.okio.GzipSource;
-import expolib_v1.okio.Okio;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.CookieJar;
+import okhttp3.Headers;
+import okhttp3.Interceptor;
+import okhttp3.JavaNetCookieJar;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.ByteString;
+import okio.GzipSource;
+import okio.Okio;
 
 /**
  * Implements the XMLHttpRequest JavaScript interface.

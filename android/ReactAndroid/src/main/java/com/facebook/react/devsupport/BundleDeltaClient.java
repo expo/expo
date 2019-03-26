@@ -18,9 +18,9 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.Pair;
 import com.facebook.react.bridge.NativeDeltaClient;
-import expolib_v1.okhttp3.Headers;
-import expolib_v1.okio.Buffer;
-import expolib_v1.okio.BufferedSource;
+import okhttp3.Headers;
+import okio.Buffer;
+import okio.BufferedSource;
 
 public abstract class BundleDeltaClient {
 
