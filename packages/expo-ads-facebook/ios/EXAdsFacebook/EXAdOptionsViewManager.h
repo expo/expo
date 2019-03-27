@@ -4,6 +4,6 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <UIKit/UIKit.h>
 
-@interface EXAdOptionsViewManager : UMViewManager
+@interface EXAdOptionsViewManager : UMViewManager <UMModuleRegistryConsumer>
 @end
 
