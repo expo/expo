@@ -28,7 +28,7 @@ Now let's add react-test-renderer to our project:
 
 That's it! Now we can start writing Jest tests!
 
-> **Note**: [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is a library build on top of react-test-renderer that could be helpful in your workflow.
+> **Note**: [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is a library built on top of react-test-renderer that could be helpful in your workflow, but we won't cover it in this guide.
 
 ## Unit Test
 
