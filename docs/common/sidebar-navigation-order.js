@@ -67,7 +67,6 @@ const FUNDAMENTALS = [
   'Debugging',
   'Development Mode',
   'Android Studio Emulator',
-  'Genymotion',
   'Configuration with app.json',
   'Publishing',
   'Release Channels',
