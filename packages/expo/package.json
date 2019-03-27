@@ -134,7 +134,7 @@
     "react-native-screens": "1.0.0-alpha.22",
     "react-native-svg": "8.0.10",
     "react-native-view-shot": "2.5.0",
-    "react-native-webview": "5.3.1",
+    "react-native-webview": "5.4.6",
     "serialize-error": "^2.1.0",
     "unimodules-barcode-scanner-interface": "~1.0.0",
     "unimodules-camera-interface": "~1.0.0",
