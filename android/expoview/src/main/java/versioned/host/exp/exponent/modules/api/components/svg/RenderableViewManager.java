@@ -644,6 +644,16 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
             node.setHref(href);
         }
 
+        @ReactProp(name = "x")
+        public void setX(UseView node, Dynamic x) {
+            node.setX(x);
+        }
+
+        @ReactProp(name = "y")
+        public void setY(UseView node, Dynamic y) {
+            node.setY(y);
+        }
+
         @ReactProp(name = "width")
         public void setWidth(UseView node, Dynamic width) {
             node.setWidth(width);

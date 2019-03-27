@@ -45,13 +45,16 @@ class TextView extends GroupView {
 
     @Override
     public void invalidate() {
+        if (mPath == null) {
+            return;
+        }
         super.invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     @ReactProp(name = "textLength")
     public void setTextLength(Dynamic length) {
-        mTextLength = getLengthFromDynamic(length);
+        mTextLength = SVGLength.from(length);
         invalidate();
     }
 
@@ -69,7 +72,7 @@ class TextView extends GroupView {
 
     @ReactProp(name = "baselineShift")
     public void setBaselineShift(Dynamic baselineShift) {
-        mBaselineShift = getStringFromDynamic(baselineShift);
+        mBaselineShift = SVGLength.toString(baselineShift);
         invalidate();
     }
 
@@ -97,31 +100,31 @@ class TextView extends GroupView {
 
     @ReactProp(name = "rotate")
     public void setRotate(Dynamic rotate) {
-        mRotate = getLengthArrayFromDynamic(rotate);
+        mRotate = SVGLength.arrayFrom(rotate);
         invalidate();
     }
 
     @ReactProp(name = "dx")
     public void setDeltaX(Dynamic deltaX) {
-        mDeltaX = getLengthArrayFromDynamic(deltaX);
+        mDeltaX = SVGLength.arrayFrom(deltaX);
         invalidate();
     }
 
     @ReactProp(name = "dy")
     public void setDeltaY(Dynamic deltaY) {
-        mDeltaY = getLengthArrayFromDynamic(deltaY);
+        mDeltaY = SVGLength.arrayFrom(deltaY);
         invalidate();
     }
 
     @ReactProp(name = "x")
     public void setPositionX(Dynamic positionX) {
-        mPositionX = getLengthArrayFromDynamic(positionX);
+        mPositionX = SVGLength.arrayFrom(positionX);
         invalidate();
     }
 
     @ReactProp(name = "y")
     public void setPositionY(Dynamic positionY) {
-        mPositionY = getLengthArrayFromDynamic(positionY);
+        mPositionY = SVGLength.arrayFrom(positionY);
         invalidate();
     }
 
@@ -137,6 +140,9 @@ class TextView extends GroupView {
 
     @Override
     Path getPath(Canvas canvas, Paint paint) {
+        if (mPath != null) {
+            return mPath;
+        }
         setupGlyphContext(canvas);
         return getGroupPath(canvas, paint);
     }
@@ -186,11 +192,14 @@ class TextView extends GroupView {
     }
 
     Path getGroupPath(Canvas canvas, Paint paint) {
+        if (mPath != null) {
+            return mPath;
+        }
         pushGlyphContext();
-        Path groupPath = super.getPath(canvas, paint);
+        mPath = super.getPath(canvas, paint);
         popGlyphContext();
 
-        return groupPath;
+        return mPath;
     }
 
     @Override
