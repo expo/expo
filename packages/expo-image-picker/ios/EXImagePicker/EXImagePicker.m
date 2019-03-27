@@ -183,6 +183,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
           completionHandler:(void (^)(void))completionHandler
 {
   NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
+  NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
   UIImage *image;
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     image = [info objectForKey:UIImagePickerControllerEditedImage];
@@ -202,6 +203,25 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
     data = UIImagePNGRepresentation(image);
+  } else if ([[imageURL absoluteString] containsString:@"ext=GIF"]) {
+    extension = @".gif";
+    data = [NSMutableData data];
+    CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data, kUTTypeGIF, 1, NULL);
+    if (imageDestination == NULL) {
+      self.reject(@"E_CONV_ERR", @"Failed to create image destination for GIF export.", nil);
+      return;
+    }
+
+    NSMutableDictionary *mutableMetadata = [NSMutableDictionary dictionaryWithDictionary:metadata];
+    if (quality) {
+      mutableMetadata[(__bridge NSString *)kCGImageDestinationLossyCompressionQuality] = quality;
+    }
+    CGImageDestinationAddImage(imageDestination, image.CGImage, (__bridge CFDictionaryRef)mutableMetadata);
+    if (!CGImageDestinationFinalize(imageDestination)) {
+      self.reject(@"E_CONV_ERR", @"Failed to export requested GIF.", nil);
+      return;
+    }
+    CFRelease(imageDestination);
   }
 
   id<UMFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
@@ -235,7 +255,6 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   }
   if ([[self.options objectForKey:@"exif"] boolValue]) {
     // Can easily get metadata only if from camera, else go through `PHAsset`
-    NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
     if (metadata) {
       [self updateResponse:response withMetadata:metadata];
       completionHandler();

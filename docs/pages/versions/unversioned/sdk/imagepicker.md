@@ -42,6 +42,8 @@ Display the system UI for choosing an image or a video from the phone's library.
     -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
     -   **exif (_boolean_)** -- Whether to also include the EXIF data for the image.
 
+**Animated GIFs support** If the selected image is an animated GIF, the result image will be an animated GIF too if and only if `quality` is set to `undefined` and `allowsEditing` is set to `false`. Otherwise compression and/or cropper will pick the first frame of the GIF and return it as the result (on Android the result will be a PNG, on iOS — GIF).
+
 #### Returns
 
 If the user cancelled the picking, returns `{ cancelled: true }`.
