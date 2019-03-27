@@ -184,6 +184,9 @@ class PropHelper {
             https://drafts.csswg.org/css-fonts-3/#propdef-font-size
             https://drafts.csswg.org/css2/fonts.html#propdef-font-size
         */
+        if (length == null) {
+            return offset;
+        }
         SVGLengthUnitType unitType = length.unit;
         double value = length.value;
         double unit = 1;

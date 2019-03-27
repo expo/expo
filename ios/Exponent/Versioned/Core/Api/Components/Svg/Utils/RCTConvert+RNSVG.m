@@ -33,25 +33,6 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
                                   @"userSpaceOnUse": @(kRNSVGUnitsUserSpaceOnUse),
                                   }), kRNSVGUnitsObjectBoundingBox, intValue)
 
-+ (CGFloat*)RNSVGCGFloatArray:(id)json
-{
-    NSArray *arr = [self NSNumberArray:json];
-    NSUInteger count = arr.count;
-
-    CGFloat* array = nil;
-
-    if (count) {
-        // Ideally, these arrays should already use the same memory layout.
-        // In that case we shouldn't need this new malloc.
-        array = malloc(sizeof(CGFloat) * count);
-        for (NSUInteger i = 0; i < count; i++) {
-            array[i] = (CGFloat)[arr[i] doubleValue];
-        }
-    }
-
-    return array;
-}
-
 + (RNSVGBrush *)RNSVGBrush:(id)json
 {
     if ([json isKindOfClass:[NSString class]]) {
@@ -144,6 +125,9 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
 + (CGColorRef)RNSVGCGColor:(id)json offset:(NSUInteger)offset
 {
     NSArray *arr = [self NSArray:json];
+    if (arr.count == offset + 1) {
+        return [self CGColor:[arr objectAtIndex:offset]];
+    }
     if (arr.count < offset + 4) {
         RCTLogError(@"Too few elements in array (expected at least %zd): %@", (ssize_t)(4 + offset), arr);
         return nil;
@@ -151,28 +135,40 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
     return [self CGColor:[arr subarrayWithRange:(NSRange){offset, 4}]];
 }
 
-+ (CGGradientRef)RNSVGCGGradient:(id)json offset:(NSUInteger)offset
++ (CGGradientRef)RNSVGCGGradient:(id)json
 {
     NSArray *arr = [self NSArray:json];
-    if (arr.count < offset) {
-        RCTLogError(@"Too few elements in array (expected at least %zd): %@", (unsigned long)offset, arr);
-        return nil;
+    NSUInteger count = arr.count / 2;
+    NSUInteger values = count * 5;
+    NSUInteger offsetIndex = values - count;
+    CGFloat colorsAndOffsets[values];
+    for (NSUInteger i = 0; i < count; i++) {
+        NSUInteger stopIndex = i * 2;
+        CGFloat offset = (CGFloat)[arr[stopIndex] doubleValue];
+        NSUInteger argb = [self NSUInteger:arr[stopIndex + 1]];
+
+        CGFloat a = ((argb >> 24) & 0xFF) / 255.0;
+        CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
+        CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
+        CGFloat b = (argb & 0xFF) / 255.0;
+
+        NSUInteger colorIndex = i * 4;
+        colorsAndOffsets[colorIndex] = r;
+        colorsAndOffsets[colorIndex + 1] = g;
+        colorsAndOffsets[colorIndex + 2] = b;
+        colorsAndOffsets[colorIndex + 3] = a;
+
+        colorsAndOffsets[offsetIndex + i] = offset;
     }
-    arr = [arr subarrayWithRange:(NSRange){offset, arr.count - offset}];
-    CGFloat* colorsAndOffsets = [self RNSVGCGFloatArray:arr];
-    size_t stops = arr.count / 5;
+
     CGColorSpaceRef rgb = CGColorSpaceCreateDeviceRGB();
-
-
     CGGradientRef gradient = CGGradientCreateWithColorComponents(
                                                                  rgb,
                                                                  colorsAndOffsets,
-                                                                 colorsAndOffsets + stops * 4,
-                                                                 stops
+                                                                 colorsAndOffsets + offsetIndex,
+                                                                 count
                                                                  );
-
     CGColorSpaceRelease(rgb);
-    free(colorsAndOffsets);
     return (CGGradientRef)CFAutorelease(gradient);
 }
 

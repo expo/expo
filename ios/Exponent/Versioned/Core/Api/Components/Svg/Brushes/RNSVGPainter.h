@@ -17,6 +17,8 @@
 
 @property (nonatomic, assign) RNSVGPattern* pattern;
 @property (nonatomic, assign) CGRect paintBounds;
+@property (nonatomic, assign) bool useObjectBoundingBoxForContentUnits;
+@property (nonatomic, assign) CGRect bounds;
 
 - (instancetype)initWithPointsArray:(NSArray<RNSVGLength *> *)pointsArray NS_DESIGNATED_INITIALIZER;
 
