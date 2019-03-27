@@ -56,10 +56,15 @@ RNSVGFontData *RNSVGFontData_Defaults;
     RNSVGFontData *data = [RNSVGFontData alloc];
     CGFloat parentFontSize = parent->fontSize;
     if ([font objectForKey:FONT_SIZE]) {
-        NSString *string = [font objectForKey:FONT_SIZE];
-        data->fontSize = [RNSVGPropHelper fromRelativeWithNSString:string
+        id fontSize = [font objectForKey:FONT_SIZE];
+        if ([fontSize isKindOfClass:NSNumber.class]) {
+            NSNumber* fs = fontSize;
+            data->fontSize = (CGFloat)[fs doubleValue];
+        } else {
+            data->fontSize = [RNSVGPropHelper fromRelativeWithNSString:fontSize
                                                        relative:parentFontSize
                                                        fontSize:parentFontSize];
+        }
     }
     else {
         data->fontSize = parentFontSize;
