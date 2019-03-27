@@ -150,7 +150,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-analytics-amplitude:4.0.0'
   compileOnly 'host.exp.exponent:expo-analytics-segment:4.0.0'
   compileOnly 'host.exp.exponent:expo-app-auth:4.0.0'
-  compileOnly 'host.exp.exponent:expo-av:4.0.0'
+  compileOnly 'host.exp.exponent:expo-av:4.1.0'
   compileOnly 'host.exp.exponent:expo-background-fetch:4.0.0'
   compileOnly 'host.exp.exponent:expo-barcode-scanner:4.0.0'
   compileOnly 'org.unimodules:unimodules-barcode-scanner-interface:1.0.0'

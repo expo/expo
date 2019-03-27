@@ -345,7 +345,7 @@ PODS:
     - AppAuth
     - UMCore
   - EXAppLoaderProvider (4.0.0)
-  - EXAV (4.0.0):
+  - EXAV (4.1.0):
     - UMCore
     - UMPermissionsInterface
   - EXBackgroundFetch (4.0.0):
