@@ -14,7 +14,6 @@ public class NativeAdLayoutManager extends ViewManager<NativeAdLayout>  {
 
   @Override
   public NativeAdLayout createViewInstance(Context context) {
-
     return new NativeAdLayout(context);
   }
 

@@ -49,7 +49,11 @@ class ChangingFullAd extends React.Component {
             onValueChange={() => this.setState({ expanded: !this.state.expanded })}
           />
         </View>
-        <AdOptionsView iconColor="#ff0000" style={{backgroundColor:'white', width: 80, height:40}} />
+        <AdOptionsView iconColor="#ff0000" style={{
+          backgroundColor: 'white',
+          width: 80,
+          height: 40
+        }} />
         <View style={styles.nativeRow}>
           <AdIconView style={styles.iconView} />
           <View style={styles.nativeColumn}>
