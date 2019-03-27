@@ -483,7 +483,7 @@ jobs:
           background: true
       - run:
           working_directory: docs
-          command: yarn run test-links http://localhost:8000
+          command: nix run expo.curl --command yarn run test-links http://localhost:8000
       - save_cache:
           key: docs-site-{{ .Revision }}
           paths:
