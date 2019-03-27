@@ -69,6 +69,7 @@ On Android, the [Proxy Settings](https://play.google.com/store/apps/details?id=c
 There is [future work](https://github.com/facebook/react-native/issues/934) to get network requests showing up in Chrome DevTools.
 
 ## Debugging Redux
+
 [Redux](https://redux.js.org/) is a popular library for managing the state of your app that doesn't belong to any single component, and instead it shared throughout the app. [React Native Debugger](https://github.com/jhen0409/react-native-debugger) is a desktop app that combines [Redux Devtools](https://github.com/zalmoxisus/redux-devtools-extension), [React Devtools](https://github.com/facebook/react-devtools), and Chrome Devtools all in one window. These are the same tools that you would be using on the web to debug your Redux and React apps, but the set up in React Native is a little bit different:
 
 
