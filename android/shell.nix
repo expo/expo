@@ -100,7 +100,8 @@ mkShell rec {
 
   shellHook = ''
     ${./install-ndk-17c.sh} ${ndk} ${ndkRoot}
-    yes | ${sdk}/bin/sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "build-tools;28.0.3"
+    # grep -v = should clean up build logs, see https://stackoverflow.com/a/52464819/1123156
+    yes | ${sdk}/bin/sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "build-tools;28.0.3" | grep -v =
   '' + lib.optionalString stdenv.isLinux ''
     for dep in lib lib64; do
       if [ -L /$dep ] || [ ! -e /$dep ]; then
