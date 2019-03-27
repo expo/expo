@@ -15,8 +15,8 @@
 
 @interface RNSVGSvgView : UIView <RNSVGContainer>
 
-@property (nonatomic, strong) NSString *bbWidth;
-@property (nonatomic, strong) NSString *bbHeight;
+@property (nonatomic, strong) RNSVGLength *bbWidth;
+@property (nonatomic, strong) RNSVGLength *bbHeight;
 @property (nonatomic, assign) CGFloat minX;
 @property (nonatomic, assign) CGFloat minY;
 @property (nonatomic, assign) CGFloat vbWidth;
