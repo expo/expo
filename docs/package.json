@@ -8,7 +8,7 @@
     "export": "yarn run build && next export",
     "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
-    "test-links": "blc --recursive --exclude-external --filter-level 2"
+    "test-links": "./scripts/test-links"
   },
   "dependencies": {
     "@mdx-js/loader": "^0.16.8",
