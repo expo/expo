@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+blc --recursive --exclude-external --filter-level 2 "$@"
