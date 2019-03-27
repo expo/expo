@@ -153,7 +153,7 @@ Create a new empty directory.
 
 -   **options (_object_)** -- A map of options:
 
-    -   **intermediates (_boolean_)** -- If `true`, create any non-existent parent directories when creating the directory at `fileUri`. If `false`, raises an error if any of the intermediate parent directories does not exist. `false` by default.
+    -   **intermediates (_boolean_)** -- If `true`, create any non-existent parent directories when creating the directory at `fileUri`. If `false`, raises an error if any of the intermediate parent directories does not exist or if the child directory already exists. `false` by default.
 
 ### `FileSystem.readDirectoryAsync(fileUri)`
 
