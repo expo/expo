@@ -69,14 +69,15 @@ On Android, the [Proxy Settings](https://play.google.com/store/apps/details?id=c
 There is [future work](https://github.com/facebook/react-native/issues/934) to get network requests showing up in Chrome DevTools.
 
 ## Debugging Redux
-Although not [necessary](https://redux.js.org/faq/general#when-should-i-use-redux), it is a popular practice in the React community to use libraries such as [Redux](https://redux.js.org/) to manage your app state. To debug state changes with Redux in native, [React Native Debugger](https://github.com/jhen0409/react-native-debugger) is one good option. React Native Debugger is a desktop app that combines [Redux Devtools](https://github.com/zalmoxisus/redux-devtools-extension) with Chrome Devtools and [React Devtools](https://github.com/facebook/react-devtools), all in one window. Thus, you get the same three basic tools for debugging React in web, in native as well. A quick guide for setup,
+[Redux](https://redux.js.org/) is a popular library for managing the state of your app that doesn't belong to any single component, and instead it shared throughout the app. [React Native Debugger](https://github.com/jhen0409/react-native-debugger) is a desktop app that combines [Redux Devtools](https://github.com/zalmoxisus/redux-devtools-extension), [React Devtools](https://github.com/facebook/react-devtools), and Chrome Devtools all in one window. These are the same tools that you would be using on the web to debug your Redux and React apps, but the set up in React Native is a little bit different:
 
-1. Download React Native Debugger from the [release page](https://github.com/jhen0409/react-native-debugger/releases).
-2. Click open the Debugger app, ⌘+t to open new window and set port to 19001.
-3. npm start expo app, open Developer menu, enable “Debug JS Remotely.”
+
+1. Download React Native Debugger from the [releases page](https://github.com/jhen0409/react-native-debugger/releases).
+2. Open the app, press `⌘+t`/`ctrl+t` to open new window, then set the port to 19001.
+3. Start your app, open the in-app developer menu, and select “Debug JS Remotely.”
 4. Configure `__REDUX_DEVTOOLS_EXTENSION__` as [shown here](https://github.com/zalmoxisus/redux-devtools-extension#11-basic-store).
 
-Most likely, you’re good to go! If you are experiencing any issues or want to know some further tricks, refer to this [guide](https://medium.com/@tetsuyahasegawa/how-to-integrate-react-native-debugger-to-your-expo-react-native-project-db1d631fad02).
+You're now good to go! If you are experiencing any issues or want to learn more about how to use these tools, refer to this [guide](https://medium.com/@tetsuyahasegawa/how-to-integrate-react-native-debugger-to-your-expo-react-native-project-db1d631fad02).
 
 ## Hot Reloading and Live Reloading
 
