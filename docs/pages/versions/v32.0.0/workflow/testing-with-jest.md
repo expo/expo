@@ -28,7 +28,22 @@ Now let's add react-test-renderer to our project:
 
 That's it! Now we can start writing Jest tests!
 
-> **Note**: [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is a library build on top of react-test-renderer that could be helpful in your workflow.
+> **Note**: [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is a library built on top of react-test-renderer that could be helpful in your workflow, but we won't cover it in this guide.
+
+## Jest Configuration
+
+Jest comes with a lot of configuration options, for more details read [Configuring Jest](https://jestjs.io/docs/en/configuration.html).
+
+We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/en/configuration.html#transformignorepatterns-array-string). Below is a great starting point to make sure any modules you may be using within `/node_modules/` are transpiled when running jest. This should cover the majority of your needs but you can always add to this pattern list as you see fit.
+
+```js
+"jest": {
+  "preset": "jest-expo",
+  "transformIgnorePatterns": [
+    "node_modules/(?!((jest-)?react-native|react-clone-referenced-element|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|sentry-expo|native-base))"
+  ]
+}
+```
 
 ## Unit Test
 
