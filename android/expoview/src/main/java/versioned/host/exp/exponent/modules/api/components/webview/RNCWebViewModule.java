@@ -1,4 +1,3 @@
-
 package versioned.host.exp.exponent.modules.api.components.webview;
 
 import android.Manifest;
@@ -26,6 +25,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
@@ -35,19 +35,36 @@ import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 
+@ReactModule(name = RNCWebViewModule.MODULE_NAME)
 public class RNCWebViewModule extends ReactContextBaseJavaModule implements ActivityEventListener {
-
+  public static final String MODULE_NAME = "RNCWebView";
   private static final int PICKER = 1;
   private static final int PICKER_LEGACY = 3;
-
+  private static final int FILE_DOWNLOAD_PERMISSION_REQUEST = 1;
+  final String DEFAULT_MIME_TYPES = "*/*";
   private ValueCallback<Uri> filePathCallbackLegacy;
   private ValueCallback<Uri[]> filePathCallback;
   private Uri outputFileUri;
-
   private DownloadManager.Request downloadRequest;
-  private static final int FILE_DOWNLOAD_PERMISSION_REQUEST = 1;
-
-  final String DEFAULT_MIME_TYPES = "*/*";
+  private PermissionListener webviewFileDownloaderPermissionListener = new PermissionListener() {
+    @Override
+    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+      switch (requestCode) {
+        case FILE_DOWNLOAD_PERMISSION_REQUEST: {
+          // If request is cancelled, the result arrays are empty.
+          if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (downloadRequest != null) {
+              downloadFile();
+            }
+          } else {
+            Toast.makeText(getCurrentActivity().getApplicationContext(), "Cannot download files as permission was denied. Please provide permission to write to storage, in order to download files.", Toast.LENGTH_LONG).show();
+          }
+          return true;
+        }
+      }
+      return false;
+    }
+  };
 
   public RNCWebViewModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -56,7 +73,7 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
 
   @Override
   public String getName() {
-    return "RNCWebView";
+    return MODULE_NAME;
   }
 
   @ReactMethod
@@ -381,24 +398,4 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
     }
     return (PermissionAwareActivity) activity;
   }
-
-  private PermissionListener webviewFileDownloaderPermissionListener = new PermissionListener() {
-    @Override
-    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-      switch (requestCode) {
-        case FILE_DOWNLOAD_PERMISSION_REQUEST: {
-          // If request is cancelled, the result arrays are empty.
-          if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (downloadRequest != null) {
-              downloadFile();
-            }
-          } else {
-            Toast.makeText(getCurrentActivity().getApplicationContext(), "Cannot download files as permission was denied. Please provide permission to write to storage, in order to download files.", Toast.LENGTH_LONG).show();
-          }
-          return true;
-        }
-      }
-      return false;
-    }
-  };
 }

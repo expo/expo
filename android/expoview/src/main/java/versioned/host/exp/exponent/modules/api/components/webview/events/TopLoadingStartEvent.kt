@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * Event emitted when loading has started
  */
 class TopLoadingStartEvent(viewId: Int, private val mEventData: WritableMap) :
-    Event<TopLoadingStartEvent>(viewId) {
+        Event<TopLoadingStartEvent>(viewId) {
     companion object {
         const val EVENT_NAME = "topLoadingStart"
     }
@@ -20,6 +20,6 @@ class TopLoadingStartEvent(viewId: Int, private val mEventData: WritableMap) :
     override fun getCoalescingKey(): Short = 0
 
     override fun dispatch(rctEventEmitter: RCTEventEmitter) =
-        rctEventEmitter.receiveEvent(viewTag, eventName, mEventData)
+            rctEventEmitter.receiveEvent(viewTag, eventName, mEventData)
 
 }

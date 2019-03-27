@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * Event emitted when loading is completed.
  */
 class TopLoadingFinishEvent(viewId: Int, private val mEventData: WritableMap) :
-    Event<TopLoadingFinishEvent>(viewId) {
+        Event<TopLoadingFinishEvent>(viewId) {
     companion object {
         const val EVENT_NAME = "topLoadingFinish"
     }
@@ -20,5 +20,5 @@ class TopLoadingFinishEvent(viewId: Int, private val mEventData: WritableMap) :
     override fun getCoalescingKey(): Short = 0
 
     override fun dispatch(rctEventEmitter: RCTEventEmitter) =
-        rctEventEmitter.receiveEvent(viewTag, eventName, mEventData)
+            rctEventEmitter.receiveEvent(viewTag, eventName, mEventData)
 }
