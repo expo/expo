@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * Event emitted when there is a loading progress event.
  */
 class TopLoadingProgressEvent(viewId: Int, private val mEventData: WritableMap) :
-    Event<TopLoadingProgressEvent>(viewId) {
+        Event<TopLoadingProgressEvent>(viewId) {
     companion object {
         const val EVENT_NAME = "topLoadingProgress"
     }
@@ -20,5 +20,5 @@ class TopLoadingProgressEvent(viewId: Int, private val mEventData: WritableMap) 
     override fun getCoalescingKey(): Short = 0
 
     override fun dispatch(rctEventEmitter: RCTEventEmitter) =
-        rctEventEmitter.receiveEvent(viewTag, eventName, mEventData)
+            rctEventEmitter.receiveEvent(viewTag, eventName, mEventData)
 }
