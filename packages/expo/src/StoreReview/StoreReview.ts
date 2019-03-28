@@ -50,8 +50,9 @@ export function storeUrl() {
     return manifest.ios.appStoreUrl;
   } else if (Platform.OS === 'android' && manifest.android) {
     return manifest.android.playStoreUrl;
+  } else {
+    return null;
   }
-  throw new Error(`StoreReview.storeUrl() is not supported on ${Platform.OS}`);
 }
 
 /*
