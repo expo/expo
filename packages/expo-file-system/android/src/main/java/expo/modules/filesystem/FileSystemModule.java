@@ -398,6 +398,12 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       ensurePermission(uri, Permission.WRITE);
       if ("file".equals(uri.getScheme())) {
         File file = uriToFile(uri);
+
+        if (file.exists()) {
+          promise.reject("DIRECTORY_ALREADY_EXISTS", "Directory " + uri + " already exists!");
+          return;
+        }
+
         boolean success = options.containsKey("intermediates") && (Boolean) options.get("intermediates") ?
                 file.mkdirs() :
                 file.mkdir();
