@@ -399,11 +399,13 @@ Object of type `Region` includes following fields:
 | `GeofencingRegionState.Inside`  |   1   | Indicates that the device is inside the region. |
 | `GeofencingRegionState.Outside` |   2   | Inverse of inside state.                        |
 
-## Enabling-Emulator-Location 
+## Enabling Emulator Location 
 ### iOS Simulator
 With Simulator open, go to Debug > Location and choose any option besides "None" (obviously).
+
 ![iOS Simulator location](/static/images/ios-simulator-location.png)
 
 ### Android Emulator
 Open Android Studio, and launch your AVD in the emulator. Then, on the options bar for your device, click the icon for "More" and navigate to the "Locations" tab.
+
 ![iOS Simulator location](/static/images/ios-simulator-location.png)
