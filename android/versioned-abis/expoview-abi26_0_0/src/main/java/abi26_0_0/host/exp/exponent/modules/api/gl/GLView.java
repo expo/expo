@@ -86,7 +86,7 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
         public void run() {
           JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder();
           synchronized (jsContext) {
-            mEXGLCtxId = EXGLContextCreate(jsContext.get());
+            mEXGLCtxId = EXGLLegacyContextCreate(jsContext.get());
           }
           EXGLContextSetFlushMethod(mEXGLCtxId, glView);
           mGLViewMap.put(mEXGLCtxId, glView);
@@ -127,7 +127,7 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
     runOnGLThread(new Runnable() {
       @Override
       public void run() {
-        // mEXGLCtxId may be unset if we get here (on the GL thread) before EXGLContextCreate(...) is
+        // mEXGLCtxId may be unset if we get here (on the GL thread) before EXGLLegacyContextCreate(...) is
         // called on the JS thread (see above in the implementation of `onSurfaceTextureAvailable(...)`)
 
         if (mEXGLCtxId > 0) {
