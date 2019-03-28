@@ -18,10 +18,6 @@ type Point = [number, number];
 
 const PI_2 = Math.PI / 2;
 
-function radToDeg(radians: number): number {
-  return (radians * 180.0) / Math.PI;
-}
-
 export default class NativeLinearGradient extends React.PureComponent<Props, State> {
   state = {
     width: undefined,
@@ -60,10 +56,7 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
 
   calculateGradientAngleFromControlPoints = (): number => {
     const [start, end] = this.getControlPoints();
-    const { width = 0, height = 0 } = this.state;
-    const radians = Math.atan2(height * (end[0] - start[0]), width * (end[1] - start[1])) + PI_2;
-    const degrees = radToDeg(radians);
-    return degrees;
+    return Math.atan2((end[0] - start[0]), (end[1] - start[1])) + PI_2;
   };
 
   getWebGradientColorStyle = (): string => {
@@ -88,10 +81,7 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
   };
 
   getBackgroundImage = (): string | null => {
-    if (this.state.width && this.state.height) {
-      return `linear-gradient(${this.calculateGradientAngleFromControlPoints()}deg, ${this.getWebGradientColorStyle()})`;
-    }
-    return null;
+    return `linear-gradient(${this.calculateGradientAngleFromControlPoints()}rad, ${this.getWebGradientColorStyle()})`;
   };
 
   render() {
@@ -102,10 +92,8 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
       <View
         style={[
           style,
-          backgroundImage !== null && {
-            // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
-            backgroundImage,
-          },
+          // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
+          { backgroundImage },
         ]}
         onLayout={this.onLayout}
         {...props}
