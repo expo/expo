@@ -2,7 +2,7 @@
 title: BackgroundFetch
 ---
 
-Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks. This module uses [TaskManager](../task-manager) Native API under the hood.
+Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks only on iOS. This module uses [TaskManager](../task-manager) Native API under the hood.
 In order to use `BackgroundFetch` API in standalone and detached apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration-for-standalone-apps) for more details.
 
 ## Installation
