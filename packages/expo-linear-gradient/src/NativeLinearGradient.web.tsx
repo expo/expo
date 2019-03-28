@@ -37,17 +37,17 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
   getControlPoints = (): Point[] => {
     const { startPoint, endPoint } = this.props;
 
-    let correctedStartPoint: Point = [0.5, 0.0];
+    let correctedStartPoint: Point = [0, 0];
     if (Array.isArray(startPoint)) {
       correctedStartPoint = [
-        startPoint[0] != null ? startPoint[0] : 0.5,
+        startPoint[0] != null ? startPoint[0] : 0.0,
         startPoint[1] != null ? startPoint[1] : 0.0,
       ];
     }
-    let correctedEndPoint: Point = [0.5, 1.0];
+    let correctedEndPoint: Point = [0.0, 1.0];
     if (Array.isArray(endPoint)) {
       correctedEndPoint = [
-        endPoint[0] != null ? endPoint[0] : 0.5,
+        endPoint[0] != null ? endPoint[0] : 0.0,
         endPoint[1] != null ? endPoint[1] : 1.0,
       ];
     }
@@ -56,7 +56,14 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
 
   calculateGradientAngleFromControlPoints = (): number => {
     const [start, end] = this.getControlPoints();
-    return Math.atan2((end[0] - start[0]), (end[1] - start[1])) + PI_2;
+    const { width = 1, height = 1 } = this.state;
+    start[0] *= width;
+    end[0] *= width;
+    start[1] *= height;
+    end[1] *= height;
+    const py = end[1] - start[1];
+    const px = end[0] - start[0];
+    return 90 + (Math.atan2(py, px) * 180) / Math.PI;
   };
 
   getWebGradientColorStyle = (): string => {
@@ -80,8 +87,8 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     return this.props.colors.map(this.convertJSColorToGradientSafeColor);
   };
 
-  getBackgroundImage = (): string | null => {
-    return `linear-gradient(${this.calculateGradientAngleFromControlPoints()}rad, ${this.getWebGradientColorStyle()})`;
+  getBackgroundImage = (): string => {
+    return `linear-gradient(${this.calculateGradientAngleFromControlPoints()}deg, ${this.getWebGradientColorStyle()})`;
   };
 
   render() {
