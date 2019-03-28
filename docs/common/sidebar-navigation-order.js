@@ -68,6 +68,7 @@ const FUNDAMENTALS = [
   'Development Mode',
   'Android Studio Emulator',
   'Configuration with app.json',
+  'Testing with Jest',
   'Publishing',
   'Release Channels',
   'Building Standalone Apps',
