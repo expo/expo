@@ -74,7 +74,11 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 + (NSString *)getExperienceIdFromScopedModule:(id)scopedModule
 {
   if ([scopedModule respondsToSelector:@selector(experienceId)]) {
-    return [scopedModule experienceId];
+    NSString *experienceId = [scopedModule experienceId];
+    if (experienceId) {
+      return experienceId;
+    }
+    return @"BARE";
   }
   return nil;
 }
