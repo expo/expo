@@ -16,7 +16,17 @@ extern "C" {
 JNIEXPORT jint JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
 (JNIEnv *env, jclass clazz, jlong jsCtxPtr) {
-  JSGlobalContextRef jsCtx = (JSGlobalContextRef) (intptr_t) jsCtxPtr;
+  JSGlobalContextRef jsCtx = *(reinterpret_cast<JSGlobalContextRef*>(jsCtxPtr)+1);
+  if (jsCtx) {
+    return UEXGLContextCreate(jsCtx);
+  }
+  return 0;
+}
+
+JNIEXPORT jint JNICALL
+Java_expo_modules_gl_cpp_EXGL_EXGLLegacyContextCreate
+(JNIEnv *env, jclass clazz, jlong jsCtxPtr) {
+  JSGlobalContextRef jsCtx = (JSGlobalContextRef) (intptr_t) (*jsCtxPtr);
   if (jsCtx) {
     return UEXGLContextCreate(jsCtx);
   }

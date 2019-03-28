@@ -83,7 +83,7 @@ public class GLContext {
       public void run() {
         JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder();
         synchronized (jsContext) {
-          mEXGLCtxId = EXGLContextCreate(jsContext.get());
+          mEXGLCtxId = EXGLLegacyContextCreate(jsContext.get());
         }
         EXGLContextSetFlushMethod(mEXGLCtxId, glContext);
         mManager.saveContext(glContext);
@@ -96,7 +96,7 @@ public class GLContext {
     runAsync(new Runnable() {
       @Override
       public void run() {
-        // mEXGLCtxId may be unset if we get here (on the GL thread) before EXGLContextCreate(...) is
+        // mEXGLCtxId may be unset if we get here (on the GL thread) before EXGLLegacyContextCreate(...) is
         // called on the JS thread (see above in the implementation of `initialize(...)`)
 
         if (mEXGLCtxId > 0) {
