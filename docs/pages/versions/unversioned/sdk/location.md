@@ -406,6 +406,6 @@ With Simulator open, go to Debug > Location and choose any option besides "None"
 ![iOS Simulator location](/static/images/ios-simulator-location.png)
 
 ### Android Emulator
-Open Android Studio, and launch your AVD in the emulator. Then, on the options bar for your device, click the icon for "More" and navigate to the "Locations" tab.
+Open Android Studio, and launch your AVD in the emulator. Then, on the options bar for your device, click the icon for "More" and navigate to the "Location" tab.
 
 ![iOS Simulator location](/static/images/ios-simulator-location.png)
