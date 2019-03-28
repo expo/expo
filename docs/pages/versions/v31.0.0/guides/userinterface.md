@@ -6,6 +6,7 @@ The User Interface (UI) is a huge part of any app. If the icon is your front doo
 
 Below (in no particular order) are some of the most popular UI Libraries. Test them all out and see what you like!
 
+* [React Native Paper](https://github.com/callstack/react-native-paper), and their [Docs](https://callstack.github.io/react-native-paper/index.html)
 * [React Native Elements](https://react-native-training.github.io/react-native-elements/), and their [Docs](https://react-native-training.github.io/react-native-elements/docs/getting_started.html)
 * [Native Base](https://nativebase.io/), and their [Docs](https://docs.nativebase.io/)
 * [React Native Material UI](https://github.com/xotahal/react-native-material-ui), and their [Docs](https://github.com/xotahal/react-native-material-ui/blob/master/docs/GettingStarted.md)
