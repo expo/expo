@@ -66,8 +66,6 @@
     plistString = [NSString stringWithFormat:@"%@</plist>",plistString];
     // juggle latin1 back to utf-8!
     NSData *plistdata_latin1 = [plistString dataUsingEncoding:NSISOLatin1StringEncoding];
-    //    plistString = [NSString stringWithUTF8String:[plistdata_latin1 bytes]];
-    //    NSData *plistdata2_latin1 = [plistString dataUsingEncoding:NSISOLatin1StringEncoding];
     NSError *error = nil;
     mobileProvision = [NSPropertyListSerialization propertyListWithData:plistdata_latin1 options:NSPropertyListImmutable format:NULL error:&error];
     if (error) {
@@ -129,36 +127,6 @@
   }
 }
 
-- (EXClientReleaseType) getClientReleaseTypeAsync
-{
-  NSDictionary *mobileProvision = [self getMobileProvision];
-  if (!mobileProvision) {
-    // failure to read other than it simply not existing
-    return EXClientReleaseTypeUnknown;
-  } else if (![mobileProvision count]) {
-#if TARGET_IPHONE_SIMULATOR
-    return EXClientReleaseSimulator;
-#else
-    return EXClientReleaseAppStore;
-#endif
-  } else if ([[mobileProvision objectForKey:@"ProvisionsAllDevices"] boolValue]) {
-    // enterprise distribution contains ProvisionsAllDevices - true
-    return EXClientReleaseEnterprise;
-  } else if ([mobileProvision objectForKey:@"ProvisionedDevices"] && [[mobileProvision objectForKey:@"ProvisionedDevices"] count] > 0) {
-    // development contains UDIDs and get-task-allow is true
-    // ad hoc contains UDIDs and get-task-allow is false
-    NSDictionary *entitlements = [mobileProvision objectForKey:@"Entitlements"];
-    if ([[entitlements objectForKey:@"get-task-allow"] boolValue]) {
-      return EXClientReleaseDev;
-    } else {
-      return EXClientReleaseAdHoc;
-    }
-  } else {
-    // app store contains no UDIDs (if the file exists at all?)
-    return EXClientReleaseAppStore;
-  }
-}
-
 - (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
@@ -178,7 +146,7 @@
 - (NSDictionary *)constantsToExport
 {
   return @{ @"sdkVersions": _sdkVersions,
-            @"IOSClientReleaseType": [self clientReleaseTypeToJS: [self getClientReleaseTypeAsync]] };
+            @"IOSClientReleaseType": [self clientReleaseTypeToJS: [self getClientReleaseType]] };
 }
 
 #pragma mark - RCTEventEmitter methods
