@@ -18,11 +18,8 @@ public class NativeAdLayout extends com.facebook.ads.NativeAdLayout {
   @Override
   public void requestLayout() {
     super.requestLayout();
-
-    // The spinner relies on a measure + layout pass happening after it calls requestLayout().
-    // Without this, the widget never actually changes the selection and doesn't call the
-    // appropriate listeners. Since we override onLayout in our ViewGroups, a layout pass never
-    // happens after a call to requestLayout, so we simulate one here.
+    // We need to override requestLayout because RN is blocking it.
+    // Without this method we can't add child dynamically.
     post(measureAndLayout);
   }
 

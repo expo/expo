@@ -16,12 +16,12 @@ export default class AdOptionsView extends React.Component {
     render() {
         const style = this.shouldAlignHorizontal()
             ? {
-                minWidth: this.props.iconSize * 2,
-                minHeight: this.props.iconSize,
+                width: this.props.iconSize * 2,
+                height: this.props.iconSize,
             }
             : {
-                minWidth: this.props.iconSize,
-                minHeight: this.props.iconSize * 2,
+                width: this.props.iconSize,
+                height: this.props.iconSize * 2,
             };
         return (<AdOptionsViewContext.Consumer>
         {(contextValue) => {
@@ -36,6 +36,7 @@ export default class AdOptionsView extends React.Component {
 AdOptionsView.defaultProps = {
     iconSize: 23,
     orientation: 'horizontal',
+    style: { alignSelf: 'baseline' },
 };
 export const NativeAdOptionsView = requireNativeViewManager('AdOptionsView');
 //# sourceMappingURL=AdOptionsView.js.map

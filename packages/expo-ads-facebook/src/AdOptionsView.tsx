@@ -20,6 +20,7 @@ export default class AdOptionsView extends React.Component<Props> {
   static defaultProps = {
     iconSize: 23,
     orientation: 'horizontal',
+    style: { alignSelf:'baseline' },
   };
 
   shouldAlignHorizontal = () => this.props.orientation === 'horizontal';
@@ -27,12 +28,12 @@ export default class AdOptionsView extends React.Component<Props> {
   render() {
     const style = this.shouldAlignHorizontal()
       ? {
-          minWidth: this.props.iconSize * 2,
-          minHeight: this.props.iconSize,
+          width: this.props.iconSize * 2,
+          height: this.props.iconSize,
         }
       : {
-          minWidth: this.props.iconSize,
-          minHeight: this.props.iconSize * 2,
+          width: this.props.iconSize,
+          height: this.props.iconSize * 2,
         };
 
     return (

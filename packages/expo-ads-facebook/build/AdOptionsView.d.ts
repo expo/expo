@@ -9,6 +9,9 @@ export default class AdOptionsView extends React.Component<Props> {
     static defaultProps: {
         iconSize: number;
         orientation: string;
+        style: {
+            alignSelf: string;
+        };
     };
     shouldAlignHorizontal: () => boolean;
     render(): JSX.Element;

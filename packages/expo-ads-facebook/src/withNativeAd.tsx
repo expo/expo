@@ -8,11 +8,7 @@ import { NativeAdIconView } from './AdIconView';
 import { NativeAdMediaView } from './AdMediaView';
 import AdsManager from './NativeAdsManager';
 
-let NativeAdLayout: React.ComponentType = View as React.ComponentType;
-
-if (Platform.OS === 'android') {
-  NativeAdLayout = requireNativeViewManager('NativeAdLayout');
-}
+let NativeAdLayout: React.ComponentType = requireNativeViewManager('NativeAdLayout');
 
 type AdContainerProps<P> = {
   adsManager: AdsManager;
@@ -83,8 +79,8 @@ export default function withNativeAd<P>(
 
       let { adsManager } = this.props;
       let props = this._getForwardedProps();
-      return (
-        <NativeAdLayout>
+
+      let viewHierarchy = (
           <NativeAdView
             ref={this._nativeAdViewRef}
             adsManager={adsManager.placementId}
@@ -104,8 +100,17 @@ export default function withNativeAd<P>(
               </AdIconViewContext.Provider>
             </AdMediaViewContext.Provider>
           </NativeAdView>
-        </NativeAdLayout>
       );
+
+      if (Platform.OS === 'android') {
+        return (
+          <NativeAdLayout>
+            {viewHierarchy}
+          </NativeAdLayout>
+        );
+      }
+
+      return viewHierarchy;
     }
 
     _getForwardedProps(): P {

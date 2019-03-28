@@ -1,6 +1,7 @@
 package expo.modules.ads.facebook;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -79,8 +80,14 @@ public class AdOptionsWrapperView extends LinearLayout {
 
   private NativeAdLayout getNativeAdLayout(NativeAdView nativeAdView) {
     View currentView = nativeAdView;
-    while (!(currentView instanceof NativeAdLayout)) {
-      currentView = (View) currentView.getParent();
+
+    try {
+      while (!(currentView instanceof NativeAdLayout)) {
+        currentView = (View) currentView.getParent();
+      }
+    } catch (Exception e) {
+      System.out.println();
+      Log.e("AdOptionsView","NativeAdLayout is not an ancestor of nativeAdView!", e);
     }
     return (NativeAdLayout) currentView;
   }

@@ -1,12 +1,9 @@
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { Platform, View, findNodeHandle } from 'react-native';
+import { Platform, findNodeHandle } from 'react-native';
 import { requireNativeViewManager } from '@unimodules/core';
 import AdsManager from './NativeAdsManager';
-let NativeAdLayout = View;
-if (Platform.OS === 'android') {
-    NativeAdLayout = requireNativeViewManager('NativeAdLayout');
-}
+let NativeAdLayout = requireNativeViewManager('NativeAdLayout');
 /**
  * A higher-order function that wraps the given `Component` type and returns a new container
  * component type that passes in an extra `nativeAd` prop to the wrapped component.
@@ -98,8 +95,7 @@ export default function withNativeAd(Component) {
             }
             let { adsManager } = this.props;
             let props = this._getForwardedProps();
-            return (<NativeAdLayout>
-          <NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
+            let viewHierarchy = (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
             <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
               <AdIconViewContext.Provider value={this._adIconViewContextValue}>
                 <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
@@ -109,8 +105,13 @@ export default function withNativeAd(Component) {
                 </AdTriggerViewContext.Provider>
               </AdIconViewContext.Provider>
             </AdMediaViewContext.Provider>
-          </NativeAdView>
-        </NativeAdLayout>);
+          </NativeAdView>);
+            if (Platform.OS === 'android') {
+                return (<NativeAdLayout>
+            {viewHierarchy}
+          </NativeAdLayout>);
+            }
+            return viewHierarchy;
         }
         _getForwardedProps() {
             let { adsManager, onAdLoaded, ...props } = this.props;
