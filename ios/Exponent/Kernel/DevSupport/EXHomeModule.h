@@ -2,6 +2,15 @@
 
 #import "EXScopedEventEmitter.h"
 
+typedef NS_ENUM(NSInteger, EXClientReleaseType) {
+  EXClientReleaseTypeUnknown,
+  EXClientReleaseSimulator,
+  EXClientReleaseEnterprise,
+  EXClientReleaseDev,
+  EXClientReleaseAdHoc,
+  EXClientReleaseAppStore
+};
+
 @class EXHomeModule;
 
 @protocol EXHomeModuleDelegate <NSObject>
