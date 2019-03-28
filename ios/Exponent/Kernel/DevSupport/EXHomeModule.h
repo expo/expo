@@ -51,4 +51,8 @@ typedef NS_ENUM(NSInteger, EXClientReleaseType) {
               onSuccess: (void (^)(NSDictionary *))success
               onFailure: (void (^)(NSString *))failure;
 
++ (EXClientReleaseType)clientReleaseType;
+
++ (NSString *)clientReleaseTypeToString:(EXClientReleaseType)releaseType;
+
 @end

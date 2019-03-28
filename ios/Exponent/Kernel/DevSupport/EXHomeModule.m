@@ -15,8 +15,7 @@
 @property (nonatomic, strong) NSArray * _Nonnull sdkVersions;
 @property (nonatomic, weak) id<EXHomeModuleDelegate> delegate;
 
-// cache this value so we only have to compute it once per instance
-@property (nonatomic, strong) NSDictionary* _Nullable  mobileProvision;
++ (EXClientReleaseType)clientReleaseType;
 
 @end
 
@@ -47,12 +46,13 @@
  
  */
 
--(NSDictionary*)_mobileProvision {
-  if (!_mobileProvision) {
++(NSDictionary*)_mobileProvision {
+  static NSDictionary* mobileProvision = nil;
+  if (!mobileProvision) {
     NSString *provisioningPath = [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"];
     if (!provisioningPath) {
-      _mobileProvision = @{};
-      return _mobileProvision;
+      mobileProvision = @{};
+      return mobileProvision;
     }
     // NSISOLatin1 keeps the binary wrapper from being parsed as unicode and dropped as invalid
     NSString *binaryString = [NSString stringWithContentsOfFile:provisioningPath encoding:NSISOLatin1StringEncoding error:NULL];
@@ -69,19 +69,19 @@
     // juggle latin1 back to utf-8!
     NSData *plistdata_latin1 = [plistString dataUsingEncoding:NSISOLatin1StringEncoding];
     NSError *error = nil;
-    _mobileProvision = [NSPropertyListSerialization propertyListWithData:plistdata_latin1 options:NSPropertyListImmutable format:NULL error:&error];
+    mobileProvision = [NSPropertyListSerialization propertyListWithData:plistdata_latin1 options:NSPropertyListImmutable format:NULL error:&error];
     if (error) {
       NSLog(@"error parsing extracted plist — %@",error);
-      if (_mobileProvision) {
-        _mobileProvision = nil;
+      if (mobileProvision) {
+        mobileProvision = nil;
       }
       return nil;
     }
   }
-  return _mobileProvision;
+  return mobileProvision;
 }
 
-- (EXClientReleaseType)_clientReleaseType {
++ (EXClientReleaseType)clientReleaseType {
   NSDictionary *mobileProvision = [self _mobileProvision];
   if (!mobileProvision) {
     // failure to read other than it simply not existing
@@ -110,7 +110,7 @@
   }
 }
 
-- (NSString *)_clientReleaseTypeToJS:(EXClientReleaseType)releaseType
++ (NSString *)clientReleaseTypeToString:(EXClientReleaseType)releaseType
 {
   switch (releaseType)
   {
@@ -148,7 +148,7 @@
 - (NSDictionary *)constantsToExport
 {
   return @{ @"sdkVersions": _sdkVersions,
-            @"IOSClientReleaseType": [self _clientReleaseTypeToJS: [self _clientReleaseType]] };
+            @"IOSClientReleaseType": [EXHomeModule clientReleaseTypeToString: [EXHomeModule clientReleaseType]] };
 }
 
 #pragma mark - RCTEventEmitter methods
