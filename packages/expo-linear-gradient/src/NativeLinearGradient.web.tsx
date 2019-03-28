@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 type Props = {
   colors: number[];
@@ -103,6 +103,9 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
 }
 
 function hexStringFromProcessedColor(argbColor: number): string {
+  if (argbColor === 0) {
+    return `rgba(0,0,0,0)`;
+  }
   const hexColorString = argbColor.toString(16);
   const withoutAlpha = hexColorString.substring(2);
   const alpha = hexColorString.substring(0, 2);
