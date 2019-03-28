@@ -405,7 +405,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
           promise.resolve(null);
         } else {
           promise.reject("E_DIRECTORY_NOT_CREATED",
-                  "Directory '" + uri + "' could not be created.");
+                  "Directory '" + uri + "' could not be created or already exists.");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + uri +  "'.");
