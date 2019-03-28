@@ -37,6 +37,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -547,6 +548,9 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
 
       OkHttpClient client =
           getOkHttpClientBuilder()
+              .connectTimeout(60, TimeUnit.SECONDS)
+              .readTimeout(60, TimeUnit.SECONDS)
+              .writeTimeout(60, TimeUnit.SECONDS)
               .addNetworkInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
