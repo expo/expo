@@ -32,11 +32,11 @@ On iOS, you'll need to use Apple TestFlight to share your app with others.
 
 You can continue making changes locally without disrupting your users. Any time you **Publish** changes to your app, your new version becomes available immediately to anybody with the link.
 
-We frequently release updates to the [Expo SDK](../../sdk/). Each update includes instructions for how to upgrade your project. If you decide to update to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
+We frequently release updates to the [Expo SDK](../../sdk/overview/). Each update includes instructions for how to upgrade your project. If you decide to update to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 
 ## Deploying to the Apple App Store and Google Play
 
-When you're ready to list your app officially on the Apple App Store and Google Play Store, Expo can generate deployment-ready `.ipa` and `.apk` archives which are ready to submit to Apple and Google. We generate them on our servers, so you still don't need any Apple or Google software. See the documentation about [Distributing Apps](../../distribution/app-stores/).
+When you're ready to list your app officially on the Apple App Store and Google Play Store, Expo can generate deployment-ready `.ipa` and `.apk` archives which are ready to submit to Apple and Google. We generate them on our servers, so you still don't need any Apple or Google software. See the documentation about [Distributing Apps](../../distribution/introduction/).
 
 ## Changing native code
 

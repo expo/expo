@@ -32,7 +32,7 @@ On iOS, you'll need to use Apple TestFlight to share your app with others.
 
 You can continue making changes locally without disrupting your users. Any time you **Publish** changes to your app, your new version becomes available immediately to anybody with the link.
 
-We frequently release updates to the [Expo SDK](../../sdk/). Each update includes instructions for how to upgrade your project. If you decide to update to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
+We frequently release updates to the [Expo SDK](../../sdk/overview/). Each update includes instructions for how to upgrade your project. If you decide to update to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 
 ## Deploying to the Apple App Store and Google Play
 
