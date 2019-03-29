@@ -14,6 +14,7 @@ const MIME_TYPES = {
   woff2: WOFF,
   ttf: 'application/font-truetype',
   eot: 'application/vnd.ms-fontobject',
+  otf: 'application/font-opentype',
   png: 'image/png',
   jpg: JPEG,
   jpeg: JPEG,
@@ -27,7 +28,7 @@ export function getMimeTypeFromSource(url: string): string {
   if (extension in MIME_TYPES) {
     return MIME_TYPES[extension];
   }
-  throw new Error(`No valid MIME type for url: ${url}`);
+  throw new Error(`No valid MIME type (${extension}) for url: ${url}`);
 }
 
 export function isDataUrl(url: string): boolean {
