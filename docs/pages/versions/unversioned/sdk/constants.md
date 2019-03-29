@@ -46,6 +46,14 @@ Gets the user agent string which would be included in requests sent by a web vie
 
 `true` if the app is running on a device, `false` if running in a simulator or emulator.
 
+### `Constants.nativeAppVersion`
+
+The `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set by `android.versionName` in app.json on Android.
+
+### `Constants.nativeBuildVersion`
+
+The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android.
+
 ### `Constants.platform`
 
 - `ios`

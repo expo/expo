@@ -50,9 +50,11 @@ UM_REGISTER_MODULE();
            @"systemFonts": [self systemFontNames],
            @"debugMode": @(isDebugXCodeScheme),
            @"isHeadless": @(NO),
+           @"nativeAppVersion": [self appVersion],
+           @"nativeBuildVersion": [self buildVersion],
            @"platform": @{
                @"ios": @{
-                   @"buildNumber": [self buildNumber],
+                   @"buildNumber": [self buildVersion],
                    @"platform": [[self class] devicePlatform],
                    @"model": [[self class] deviceModel],
                    @"userInterfaceIdiom": [self userInterfaceIdiom],
@@ -62,7 +64,12 @@ UM_REGISTER_MODULE();
            };
 }
 
-- (NSString *)buildNumber
+- (NSString *)appVersion
+{
+  return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+}
+                            
+- (NSString *)buildVersion
 {
   return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 }
