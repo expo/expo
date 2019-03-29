@@ -398,14 +398,14 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       ensurePermission(uri, Permission.WRITE);
       if ("file".equals(uri.getScheme())) {
         File file = uriToFile(uri);
-        boolean success = options.containsKey("intermediates") && (Boolean) options.get("intermediates") ?
-                file.mkdirs() :
-                file.mkdir();
-        if (success) {
+        boolean previouslyCreated = file.isDirectory();
+        boolean setIntermediates = options.containsKey("intermediates") && (Boolean) options.get("intermediates");
+        boolean success = setIntermediates ? file.mkdirs() : file.mkdir();
+        if (success || (setIntermediates && previouslyCreated)) {
           promise.resolve(null);
         } else {
           promise.reject("E_DIRECTORY_NOT_CREATED",
-                  "Directory '" + uri + "' could not be created.");
+                  "Directory '" + uri + "' could not be created or already exists.");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + uri +  "'.");

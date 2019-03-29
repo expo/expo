@@ -251,6 +251,16 @@ export function test(t) {
         }
         t.expect(error).toBeTruthy();
 
+        error = null;
+        try {
+          await FS.makeDirectoryAsync(dir, {
+            intermediates: true,
+          });
+        } catch (e) {
+          error = e;
+        }
+        t.expect(error).toBe(null);
+
         await FS.writeAsStringAsync(path, contents);
 
         t.expect(await FS.readAsStringAsync(path)).toBe(contents);
