@@ -62,7 +62,6 @@ function ensureContext(
     );
   }
   const context =
-    canvas.getContext('webgl2', contextAttributes) ||
     canvas.getContext('webgl', contextAttributes) ||
     canvas.getContext('webgl-experimental', contextAttributes) ||
     canvas.getContext('experimental-webgl', contextAttributes);
