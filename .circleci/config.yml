@@ -479,7 +479,7 @@ jobs:
           working_directory: docs
       - run:
           working_directory: docs
-          command: nix run expo.python --command yarn run export-server
+          command: yarn run export-server
           background: true
       - run:
           working_directory: docs
