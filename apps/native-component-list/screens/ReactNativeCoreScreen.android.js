@@ -50,10 +50,6 @@ export default class ReactNativeCoreScreen extends React.Component {
     }, 3000);
   };
 
-  componentWillUnmount() {
-    this._tabPressedListener.remove();
-  }
-
   componentDidMount() {
     let dataSource = this.state.dataSource.cloneWithRowsAndSections({
       'Vertical ScrollView, RefreshControl': [this._renderRefreshControl],
@@ -450,6 +446,7 @@ class ProgressBarExample extends React.Component {
 
     this.state = {
       progress: props.initialProgress,
+      intervalId: null,
     };
   }
 
@@ -457,14 +454,19 @@ class ProgressBarExample extends React.Component {
     this.progressLoop();
   }
 
+  componentWillUnmount() {
+    clearInterval(this.state.intervalId);
+  }
+
   progressLoop() {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       this.setState({
         progress: this.state.progress === 1 ? 0 : Math.min(1, this.state.progress + 0.01),
       });
 
       this.progressLoop();
     }, 17 * 2);
+    this.setState({ intervalId: timeout });
   }
 
   render() {
