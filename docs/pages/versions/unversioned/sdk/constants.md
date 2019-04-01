@@ -48,11 +48,11 @@ Gets the user agent string which would be included in requests sent by a web vie
 
 ### `Constants.nativeAppVersion`
 
-The `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set by `android.versionName` in app.json on Android.
+The `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set by `version` in app.json on Android at the time the native app was built.
 
 ### `Constants.nativeBuildVersion`
 
-The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android.
+The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built.
 
 ### `Constants.platform`
 
