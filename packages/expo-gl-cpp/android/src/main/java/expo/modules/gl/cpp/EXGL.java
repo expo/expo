@@ -7,8 +7,8 @@ public class EXGL {
   static {
     SoLoader.loadLibrary("expo-gl");
   }
-  public static native int EXGLContextCreate(long jsCtxPtr);
-  public static native int EXGLLegacyContextCreate(long jsCtxPtr);
+  public static native int EXGLContextCreate(long jsCtxPtr); // Legacy function compatible with react-native before version 0.59
+  public static native int EXGLJSCContextCreate(long jsCtxPtr);
   public static native void EXGLContextDestroy(int exglCtxId);
   public static native void EXGLContextFlush(int exglCtxId);
 
