@@ -53,7 +53,7 @@ export default class ReactNativeCoreScreen extends React.Component {
   };
 
   componentDidMount() {
-    let dataSource = this.state.dataSource.cloneWithRowsAndSections({
+    const dataSource = this.state.dataSource.cloneWithRowsAndSections({
       VerticalScrollView: [this._renderRefreshControl],
       DrawerLayoutAndroid: [this._renderDrawerLayout],
       ActivityIndicator: [this._renderActivityIndicator],
@@ -402,28 +402,6 @@ export default class ReactNativeCoreScreen extends React.Component {
         <Text>{sectionTitle}</Text>
       </View>
     );
-  };
-}
-
-class DatePickerExample extends React.Component {
-  state = {
-    date: new Date(),
-    timeZoneOffsetInHours: (-1 * new Date().getTimezoneOffset()) / 60,
-  };
-
-  render() {
-    return (
-      <DatePickerAndroid
-        date={this.state.date}
-        mode="datetime"
-        timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-        onDateChange={this._onDateChange}
-      />
-    );
-  }
-
-  _onDateChange = date => {
-    this.setState({ date });
   };
 }
 
