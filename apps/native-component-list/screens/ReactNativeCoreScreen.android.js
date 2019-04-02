@@ -41,24 +41,26 @@ export default class ReactNativeCoreScreen extends React.Component {
       rowHasChanged: () => false,
       sectionHeaderHasChanged: () => false,
     }),
+    timeoutId: null,
   };
 
-  onRefresh = () => {
+  _onRefresh = () => {
     this.setState({ isRefreshing: true });
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       this.setState({ isRefreshing: false });
     }, 3000);
+    this.setState({ timeoutId: timeout });
   };
 
   componentDidMount() {
     let dataSource = this.state.dataSource.cloneWithRowsAndSections({
-      'Vertical ScrollView, RefreshControl': [this._renderRefreshControl],
+      VerticalScrollView: [this._renderRefreshControl],
       DrawerLayoutAndroid: [this._renderDrawerLayout],
       ActivityIndicator: [this._renderActivityIndicator],
       Alert: [this._renderAlert],
       DatePickerAndroid: [this._renderDatePicker],
       TimerPickerAndroid: [this._renderTimePicker],
-      'Horizontal ScrollView': [this._renderHorizontalScrollView],
+      HorizontalScrollView: [this._renderHorizontalScrollView],
       Modal: [this._renderModal],
       Picker: [this._renderPicker],
       ProgressBar: [this._renderProgressBar],
@@ -72,6 +74,10 @@ export default class ReactNativeCoreScreen extends React.Component {
     });
 
     this.setState({ dataSource });
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.state.timeoutId);
   }
 
   render() {
@@ -446,7 +452,7 @@ class ProgressBarExample extends React.Component {
 
     this.state = {
       progress: props.initialProgress,
-      intervalId: null,
+      timeoutId: null,
     };
   }
 
@@ -455,7 +461,7 @@ class ProgressBarExample extends React.Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.state.intervalId);
+    clearTimeout(this.state.timeoutId);
   }
 
   progressLoop() {
@@ -466,7 +472,7 @@ class ProgressBarExample extends React.Component {
 
       this.progressLoop();
     }, 17 * 2);
-    this.setState({ intervalId: timeout });
+    this.setState({ timeoutId: timeout });
   }
 
   render() {
