@@ -18,34 +18,34 @@ function generateJestPreset() {
   // Derive the Expo Jest preset from the React Native one
   const expoJestPreset = JSON.parse(JSON.stringify(rnJestPreset));
 
-  if (expoJestPreset.haste) {
-    assert(expoJestPreset.haste.hasOwnProperty('hasteImplModulePath'));
-    expoJestPreset.haste.hasteImplModulePath = expoJestPreset.haste.hasteImplModulePath.replace(
-      /^<rootDir>\/node_modules\//,
-      ''
-    );
-  }
+  // if (expoJestPreset.haste) {
+  //   assert(expoJestPreset.haste.hasOwnProperty('hasteImplModulePath'));
+  //   expoJestPreset.haste.hasteImplModulePath = expoJestPreset.haste.hasteImplModulePath.replace(
+  //     /^<rootDir>\/node_modules\//,
+  //     ''
+  //   );
+  // }
 
-  if (!expoJestPreset.moduleNameMapper) {
-    expoJestPreset.moduleNameMapper = {};
-  }
+  // if (!expoJestPreset.moduleNameMapper) {
+  //   expoJestPreset.moduleNameMapper = {};
+  // }
 
-  if (expoJestPreset.modulePathIgnorePatterns) {
-    expoJestPreset.modulePathIgnorePatterns = expoJestPreset.modulePathIgnorePatterns.map(pattern =>
-      pattern.replace(/^<rootDir>\/node_modules\//, '')
-    );
-  }
+  // if (expoJestPreset.modulePathIgnorePatterns) {
+  //   expoJestPreset.modulePathIgnorePatterns = expoJestPreset.modulePathIgnorePatterns.map(pattern =>
+  //     pattern.replace(/^<rootDir>\/node_modules\//, '')
+  //   );
+  // }
 
   if (!expoJestPreset.transform) {
     expoJestPreset.transform = {};
   }
 
-  const defaultBabelPattern = '^.+\\.js$';
-  assert(expoJestPreset.transform.hasOwnProperty(defaultBabelPattern));
-  delete expoJestPreset.transform[defaultBabelPattern];
+  // const defaultBabelPattern = '^.+\\.js$';
+  // assert(expoJestPreset.transform.hasOwnProperty(defaultBabelPattern));
+  // delete expoJestPreset.transform[defaultBabelPattern];
 
-  const babelTsPattern = '^.+\\.(js|ts|tsx)$';
-  expoJestPreset.transform[babelTsPattern] = 'babel-jest';
+  // const babelTsPattern = '^.+\\.(js|ts|tsx)$';
+  // expoJestPreset.transform[babelTsPattern] = 'babel-jest';
 
   const defaultAssetNamePattern = '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
   assert(expoJestPreset.transform.hasOwnProperty(defaultAssetNamePattern));
@@ -63,16 +63,16 @@ function generateJestPreset() {
     'node_modules/(?!((jest-)?react-native|react-clone-referenced-element|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|sentry-expo|native-base))',
   ];
 
-  expoJestPreset.moduleFileExtensions = ['js', 'json', 'jsx', 'node', 'ts', 'tsx'];
+  // expoJestPreset.moduleFileExtensions = ['js', 'json', 'jsx', 'node', 'ts', 'tsx'];
 
-  expoJestPreset.testMatch = ['**/__tests__/**/*.(js|ts|tsx)', '**/?(*.)+(spec|test).(js|ts|tsx)'];
+  // expoJestPreset.testMatch = ['**/__tests__/**/*.(js|ts|tsx)', '**/?(*.)+(spec|test).(js|ts|tsx)'];
 
   if (!expoJestPreset.setupFiles) {
     expoJestPreset.setupFiles = [];
   } else {
-    expoJestPreset.setupFiles = expoJestPreset.setupFiles.map(setupFile =>
-      setupFile.replace(/^<rootDir>\/node_modules\//, '')
-    );
+    // expoJestPreset.setupFiles = expoJestPreset.setupFiles.map(setupFile =>
+    //   setupFile.replace(/^<rootDir>\/node_modules\//, '')
+    // );
   }
   expoJestPreset.setupFiles.push('jest-expo/src/setup.js');
 
