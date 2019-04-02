@@ -12,7 +12,7 @@ import {
   Slider,
   Switch,
   StatusBar,
-  ListView,
+  SectionList,
   ScrollView,
   StyleSheet,
   Text,
@@ -35,47 +35,43 @@ export default class ReactNativeCoreScreen extends React.Component {
     title: 'React Native Core',
   };
 
-  state = {
-    isRefreshing: false,
-    dataSource: new ListView.DataSource({
-      rowHasChanged: () => false,
-      sectionHeaderHasChanged: () => false,
-    }),
-  };
+  constructor() {
+    super();
 
-  onRefresh = () => {
-    this.setState({ isRefreshing: true });
-    setTimeout(() => {
+    this.state = {
+      isRefreshing: false,
+      timeoutId: null,
+      sections: [
+        { title: 'Vertical ScrollView, RefreshControl', data: [this._renderVerticalScrollView] },
+        { title: 'DrawerLayoutAndroid', data: [this._renderDrawerLayout] },
+        { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
+        { title: 'Alert', data: [this._renderAlert] },
+        { title: 'DatePickerAndroid', data: [this._renderDatePicker] },
+        { title: 'TimerPickerAndroid', data: [this._renderTimePicker] },
+        { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
+        { title: 'Modal', data: [this._renderModal] },
+        { title: 'Picker', data: [this._renderPicker] },
+        { title: 'ProgressBar', data: [this._renderProgressBar] },
+        { title: 'Slider', data: [this._renderSlider] },
+        { title: 'StatusBar', data: [this._renderStatusBar] },
+        { title: 'Switch', data: [this._renderSwitch] },
+        { title: 'Text', data: [this._renderText] },
+        { title: 'TextInput', data: [this._renderTextInput] },
+        { title: 'Touchables', data: [this._renderTouchables] },
+        { title: 'WebView', data: [this._renderWebView] },
+      ],
+    };
+  }
+
+  _onRefresh = () => {
+    const timeout = setTimeout(() => {
       this.setState({ isRefreshing: false });
     }, 3000);
+    this.setState({ isRefreshing: true, timeoutId: timeout });
   };
 
   componentWillUnmount() {
-    this._tabPressedListener.remove();
-  }
-
-  componentDidMount() {
-    let dataSource = this.state.dataSource.cloneWithRowsAndSections({
-      'Vertical ScrollView, RefreshControl': [this._renderRefreshControl],
-      DrawerLayoutAndroid: [this._renderDrawerLayout],
-      ActivityIndicator: [this._renderActivityIndicator],
-      Alert: [this._renderAlert],
-      DatePickerAndroid: [this._renderDatePicker],
-      TimerPickerAndroid: [this._renderTimePicker],
-      'Horizontal ScrollView': [this._renderHorizontalScrollView],
-      Modal: [this._renderModal],
-      Picker: [this._renderPicker],
-      ProgressBar: [this._renderProgressBar],
-      Slider: [this._renderSlider],
-      StatusBar: [this._renderStatusBar],
-      Switch: [this._renderSwitch],
-      Text: [this._renderText],
-      TextInput: [this._renderTextInput],
-      Touchables: [this._renderTouchables],
-      WebView: [this._renderWebView],
-    });
-
-    this.setState({ dataSource });
+    clearTimeout(this.state.timeoutId);
   }
 
   render() {
@@ -96,10 +92,7 @@ export default class ReactNativeCoreScreen extends React.Component {
         drawerWidth={300}
         drawerPosition={DrawerLayoutAndroid.positions.Left}
         renderNavigationView={renderNavigationView}>
-        <ListView
-          ref={view => {
-            this._listView = view;
-          }}
+        <SectionList
           removeClippedSubviews={false}
           stickySectionHeadersEnabled
           keyboardShouldPersistTaps="handled"
@@ -109,23 +102,32 @@ export default class ReactNativeCoreScreen extends React.Component {
           }
           contentContainerStyle={{ backgroundColor: '#fff' }}
           renderScrollComponent={props => <NavigationScrollView {...props} />}
-          dataSource={this.state.dataSource}
-          renderRow={this._renderRow}
+          renderItem={this._renderItem}
           renderSectionHeader={this._renderSectionHeader}
+          sections={this.state.sections}
+          keyExtractor={(_, index) => index}
         />
       </DrawerLayoutAndroid>
     );
   }
 
-  _scrollToTop = () => {
-    this._listView.scrollTo({ x: 0, y: 0 });
+  _renderItem = ({ item }) => {
+    return <View>{item()}</View>;
+  };
+
+  _renderSectionHeader = ({ section: { title } }) => {
+    return (
+      <View style={styles.sectionHeader}>
+        <Text>{title}</Text>
+      </View>
+    );
   };
 
   _renderModal = () => {
     return <ModalExample />;
   };
 
-  _renderRefreshControl = () => {
+  _renderVerticalScrollView = () => {
     return (
       <View style={{ padding: 10 }}>
         <Text>
@@ -306,7 +308,7 @@ export default class ReactNativeCoreScreen extends React.Component {
     return (
       <View style={{ padding: 10 }}>
         <Text>
-          All text in React Native on iOS uses the native text component and supports a bunch of
+          All text in React Native on Android uses the native text component and supports a bunch of
           useful properties.
         </Text>
         <Text style={linkStyle} onPress={() => alert('pressed!')}>
@@ -371,57 +373,27 @@ export default class ReactNativeCoreScreen extends React.Component {
 
   _renderWebView = () => {
     return (
-      <WebView
-        style={{ width: Layout.window.width, height: 250 }}
-        source={{
-          html: `
-          <h2>You can always use a WebView if you need to!</h2>
-          <p>
-            <h4>But don't the other components above seem like better building blocks for most of your UI?</h4>
-            <input type="text" placeholder="Disagree? why?"></input>
-            <input type="submit">
-          </p>
-          <p>
-            <a href="https://expo.io">expo.io</a>
-          </p>
-        `,
-        }}
-      />
-    );
-  };
-
-  _renderRow = renderRowFn => {
-    return <View>{renderRowFn && renderRowFn()}</View>;
-  };
-
-  _renderSectionHeader = (_, sectionTitle) => {
-    return (
-      <View style={styles.sectionHeader}>
-        <Text>{sectionTitle}</Text>
+      // A parent view with overflow: 'hidden' ensures that the other components render properly.
+      // See: https://github.com/facebook/react-native/issues/21939
+      <View style={{ overflow: 'hidden' }}>
+        <WebView
+          style={{ width: Layout.window.width, height: 250 }}
+          source={{
+            html: `
+              <h2>You can always use a WebView if you need to!</h2>
+              <p>
+                <h4>But don't the other components above seem like better building blocks for most of your UI?</h4>
+                <input type="text" placeholder="Disagree? why?"></input>
+                <input type="submit">
+              </p>
+              <p>
+                <a href="https://expo.io">expo.io</a>
+              </p>
+          `,
+          }}
+        />
       </View>
     );
-  };
-}
-
-class DatePickerExample extends React.Component {
-  state = {
-    date: new Date(),
-    timeZoneOffsetInHours: (-1 * new Date().getTimezoneOffset()) / 60,
-  };
-
-  render() {
-    return (
-      <DatePickerAndroid
-        date={this.state.date}
-        mode="datetime"
-        timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-        onDateChange={this._onDateChange}
-      />
-    );
-  }
-
-  _onDateChange = date => {
-    this.setState({ date });
   };
 }
 
@@ -450,6 +422,7 @@ class ProgressBarExample extends React.Component {
 
     this.state = {
       progress: props.initialProgress,
+      timeoutId: null,
     };
   }
 
@@ -457,14 +430,19 @@ class ProgressBarExample extends React.Component {
     this.progressLoop();
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.state.timeoutId);
+  }
+
   progressLoop() {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       this.setState({
         progress: this.state.progress === 1 ? 0 : Math.min(1, this.state.progress + 0.01),
       });
 
       this.progressLoop();
     }, 17 * 2);
+    this.setState({ timeoutId: timeout });
   }
 
   render() {
