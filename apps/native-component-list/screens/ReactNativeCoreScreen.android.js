@@ -35,14 +35,38 @@ export default class ReactNativeCoreScreen extends React.Component {
     title: 'React Native Core',
   };
 
-  state = {
-    isRefreshing: false,
-    dataSource: new ListView.DataSource({
+  constructor() {
+    super();
+
+    const dataSource = new ListView.DataSource({
       rowHasChanged: () => false,
       sectionHeaderHasChanged: () => false,
-    }),
-    timeoutId: null,
-  };
+    });
+
+    this.state = {
+      isRefreshing: false,
+      timeoutId: null,
+      dataSource: dataSource.cloneWithRowsAndSections({
+        VerticalScrollView: [this._renderRefreshControl],
+        DrawerLayoutAndroid: [this._renderDrawerLayout],
+        ActivityIndicator: [this._renderActivityIndicator],
+        Alert: [this._renderAlert],
+        DatePickerAndroid: [this._renderDatePicker],
+        TimerPickerAndroid: [this._renderTimePicker],
+        HorizontalScrollView: [this._renderHorizontalScrollView],
+        Modal: [this._renderModal],
+        Picker: [this._renderPicker],
+        ProgressBar: [this._renderProgressBar],
+        Slider: [this._renderSlider],
+        StatusBar: [this._renderStatusBar],
+        Switch: [this._renderSwitch],
+        Text: [this._renderText],
+        TextInput: [this._renderTextInput],
+        Touchables: [this._renderTouchables],
+        WebView: [this._renderWebView],
+      }),
+    };
+  }
 
   _onRefresh = () => {
     this.setState({ isRefreshing: true });
@@ -51,30 +75,6 @@ export default class ReactNativeCoreScreen extends React.Component {
     }, 3000);
     this.setState({ timeoutId: timeout });
   };
-
-  componentDidMount() {
-    const dataSource = this.state.dataSource.cloneWithRowsAndSections({
-      VerticalScrollView: [this._renderRefreshControl],
-      DrawerLayoutAndroid: [this._renderDrawerLayout],
-      ActivityIndicator: [this._renderActivityIndicator],
-      Alert: [this._renderAlert],
-      DatePickerAndroid: [this._renderDatePicker],
-      TimerPickerAndroid: [this._renderTimePicker],
-      HorizontalScrollView: [this._renderHorizontalScrollView],
-      Modal: [this._renderModal],
-      Picker: [this._renderPicker],
-      ProgressBar: [this._renderProgressBar],
-      Slider: [this._renderSlider],
-      StatusBar: [this._renderStatusBar],
-      Switch: [this._renderSwitch],
-      Text: [this._renderText],
-      TextInput: [this._renderTextInput],
-      Touchables: [this._renderTouchables],
-      WebView: [this._renderWebView],
-    });
-
-    this.setState({ dataSource });
-  }
 
   componentWillUnmount() {
     clearTimeout(this.state.timeoutId);
@@ -99,9 +99,6 @@ export default class ReactNativeCoreScreen extends React.Component {
         drawerPosition={DrawerLayoutAndroid.positions.Left}
         renderNavigationView={renderNavigationView}>
         <ListView
-          ref={view => {
-            this._listView = view;
-          }}
           removeClippedSubviews={false}
           stickySectionHeadersEnabled
           keyboardShouldPersistTaps="handled"
@@ -118,10 +115,6 @@ export default class ReactNativeCoreScreen extends React.Component {
       </DrawerLayoutAndroid>
     );
   }
-
-  _scrollToTop = () => {
-    this._listView.scrollTo({ x: 0, y: 0 });
-  };
 
   _renderModal = () => {
     return <ModalExample />;
