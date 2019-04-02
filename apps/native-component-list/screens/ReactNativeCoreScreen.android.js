@@ -373,6 +373,8 @@ export default class ReactNativeCoreScreen extends React.Component {
 
   _renderWebView = () => {
     return (
+      // A parent view with overflow: 'hidden' ensures that the other components render properly.
+      // See: https://github.com/facebook/react-native/issues/21939
       <View style={{ overflow: 'hidden' }}>
         <WebView
           style={{ width: Layout.window.width, height: 250 }}
