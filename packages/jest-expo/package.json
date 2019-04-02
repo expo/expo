@@ -3,9 +3,6 @@
   "version": "32.0.0",
   "license": "MIT",
   "main": "src",
-  "scripts": {
-    "generate": "tools/generate-jest-preset.js"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/expo/jest-expo.git"
@@ -19,11 +16,10 @@
     "jest": "bin/jest.js"
   },
   "dependencies": {
-    "@babel/core": "^7.1.0",
-    "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^24.7.1",
     "jest": "^24.7.1",
     "json5": "^2.1.0",
+    "lodash.isequal": "^4.5.0",
     "react-test-renderer": "^16.8.6"
   },
   "devDependencies": {
