@@ -42,7 +42,17 @@ class ListItem extends React.Component {
 }
 
 export default class MultiSelectList extends React.PureComponent {
-  state = { selected: new Map() };
+  constructor(props) {
+    super(props);
+    const initialValues = this.props.data.map(item => [item.name, false]);
+
+    this.state = {
+      selected: new Map(initialValues),
+      allSelected: false,
+    };
+    this._selectAll = this._selectAll.bind(this);
+    this._runTests = this._runTests.bind(this);
+  }
 
   _keyExtractor = item => item.name;
 
@@ -58,12 +68,27 @@ export default class MultiSelectList extends React.PureComponent {
     <ListItem
       id={item.name}
       onPressItem={this._onPressItem}
-      selected={!!this.state.selected.get(item.name)}
+      selected={this.state.selected.get(item.name)}
       title={item.name}
     />
   );
 
+  _selectAll = () => {
+    this.setState(state => {
+      const selected = new Map(state.selected);
+      for (const key of selected.keys()) {
+        selected.set(key, !state.allSelected);
+      }
+      return { selected, allSelected: !state.allSelected };
+    });
+  };
+
+  _runTests = () => {
+    console.log('Run tests');
+  };
+
   render() {
+    const buttonTitle = this.state.allSelected ? 'Deselect All' : 'Select All';
     return (
       <View style={styles.mainContainer}>
         <FlatList
@@ -75,10 +100,10 @@ export default class MultiSelectList extends React.PureComponent {
         />
         <View style={styles.buttonRow}>
           <View style={styles.buttonContainer}>
-            <Button title="Select All" onPress={() => console.log('Pressed')} />
+            <Button title={buttonTitle} onPress={this._selectAll} />
           </View>
           <View style={styles.buttonContainer}>
-            <Button title="Run Tests" onPress={() => console.log('Pressed')} />
+            <Button title="Run Tests" onPress={this._runTests} />
           </View>
         </View>
       </View>
@@ -103,7 +128,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    paddingBottom: 10,
+    paddingTop: 10,
+    backgroundColor: 'grey',
   },
   buttonContainer: {
     flex: 1,
