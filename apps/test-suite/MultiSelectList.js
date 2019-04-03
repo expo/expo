@@ -7,6 +7,8 @@ import {
   View,
   Text,
   Platform,
+  Button,
+  StatusBar,
   PixelRatio,
 } from 'react-native';
 
@@ -63,25 +65,49 @@ export default class MultiSelectList extends React.PureComponent {
 
   render() {
     return (
-      <FlatList
-        data={this.props.data}
-        extraData={this.state}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
-        style={this.props.style}
-      />
+      <View style={styles.mainContainer}>
+        <FlatList
+          data={this.props.data}
+          extraData={this.state}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+          style={styles.flatList}
+        />
+        <View style={styles.buttonRow}>
+          <View style={styles.buttonContainer}>
+            <Button title="Select All" onPress={() => console.log('Pressed')} />
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button title="Run Tests" onPress={() => console.log('Pressed')} />
+          </View>
+        </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  label: {
-    color: 'black',
+  mainContainer: {
+    flex: 1,
+  },
+  flatList: {
+    marginTop: StatusBar.currentHeight,
   },
   listItem: {
     paddingHorizontal: 10,
     paddingVertical: 14,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#dddddd',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flex: 1,
+    marginLeft: 10,
+    marginRight: 10,
   },
 });

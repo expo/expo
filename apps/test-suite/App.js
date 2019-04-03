@@ -3,7 +3,6 @@
 import React from 'react';
 import {
   Dimensions,
-  StatusBar,
   NativeModules,
   Platform,
   ScrollView,
@@ -465,12 +464,7 @@ export default class App extends React.Component {
 
   render() {
     if (!this.state.runningTest) {
-      return (
-        <MultiSelectList
-          style={{ flex: 1, marginTop: StatusBar.currentHeight }}
-          data={this.tests}
-        />
-      );
+      return <MultiSelectList data={this.tests} />;
     }
 
     if (this.state.testRunnerError) {
