@@ -114,6 +114,8 @@ export default class App extends React.Component {
     this._results = '';
     this._failures = '';
     this._scrollViewRef = null;
+
+    this.runTests = this.runTests.bind(this);
   }
 
   componentDidMount() {
@@ -460,11 +462,15 @@ export default class App extends React.Component {
     }
   };
 
+  runTests(selected) {
+    console.log(selected);
+  }
+
   _renderItem = ({ item }) => <Text>{item.name}</Text>;
 
   render() {
     if (!this.state.runningTest) {
-      return <MultiSelectList data={this.tests} />;
+      return <MultiSelectList data={this.tests} runTests={this.runTests} />;
     }
 
     if (this.state.testRunnerError) {

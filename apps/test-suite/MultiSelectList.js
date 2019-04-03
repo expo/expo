@@ -51,7 +51,7 @@ export default class MultiSelectList extends React.PureComponent {
       allSelected: false,
     };
     this._selectAll = this._selectAll.bind(this);
-    this._runTests = this._runTests.bind(this);
+    this._getSelected = this._getSelected.bind(this);
   }
 
   _keyExtractor = item => item.name;
@@ -83,8 +83,15 @@ export default class MultiSelectList extends React.PureComponent {
     });
   };
 
-  _runTests = () => {
-    console.log('Run tests');
+  _getSelected = () => {
+    const selected = this.state.selected;
+    let selectedTests = [];
+    for (const test of selected.keys()) {
+      if (selected.get(test)) {
+        selectedTests.push(test);
+      }
+    }
+    return selectedTests;
   };
 
   render() {
@@ -103,7 +110,7 @@ export default class MultiSelectList extends React.PureComponent {
             <Button title={buttonTitle} onPress={this._selectAll} />
           </View>
           <View style={styles.buttonContainer}>
-            <Button title="Run Tests" onPress={this._runTests} />
+            <Button title="Run Tests" onPress={() => this.props.runTests(this._getSelected())} />
           </View>
         </View>
       </View>
