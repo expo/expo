@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate appFetcher:self didFinishLoadingManifest:self.manifest bundle:self.bundle];
   } else if (self.appLoader.manifest) {
     // we don't have a bundle but need to finish, so switch to a cache-only AppFetcher
-    EXAppFetcherCacheOnly *newFetcher = [[EXAppFetcherCacheOnly alloc] initWithAppLoader:self.appLoader manifest:self.appLoader.manifest];
+    EXAppFetcherCacheOnly *newFetcher = [[EXAppFetcherCacheOnly alloc] initWithAppLoader:self.appLoader manifest:self.appLoader.cachedManifest];
     [self.delegate appFetcher:self didSwitchToAppFetcher:newFetcher retainingCurrent:YES];
   } else {
     // we have nothing to work with at all
