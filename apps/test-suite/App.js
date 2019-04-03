@@ -15,8 +15,6 @@ import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
 import MultiSelectList from './MultiSelectList';
 
-import * as TestUtils from './TestUtils';
-
 let { ExponentTest } = NativeModules;
 
 function browserSupportsWebGL() {
@@ -33,15 +31,7 @@ function browserSupportsWebGL() {
 
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
-async function getTestModulesAsync() {
-  // The tests don't complete on CircleCI on iOS so we test just that the app launches and runs
-  if (Platform.OS === 'ios') {
-    let isInCI = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
-    if (isInCI) {
-      return [];
-    }
-  }
-
+function getTestModules() {
   if (Platform.OS === 'web') {
     let modules = [
       require('./tests/Import1'),
@@ -115,6 +105,10 @@ export default class App extends React.Component {
     this._results = '';
     this._failures = '';
     this._scrollViewRef = null;
+    this.allModules = getTestModules();
+    this.tests = this.allModules.map(module => {
+      return { name: module.name };
+    });
 
     this._runTests = this._runTests.bind(this);
   }
@@ -128,52 +122,12 @@ export default class App extends React.Component {
 
   static initialState = {
     portalChildShouldBeVisible: false,
-    testRunnerError: null,
     runningTest: false,
     state: Immutable.fromJS({
       suites: [],
       path: ['suites'], // Path to current 'children' List in state
     }),
   };
-
-  tests = [
-    { name: 'Basic1' },
-    { name: 'Basic2' },
-    { name: 'Import1' },
-    { name: 'Import2' },
-    { name: 'Import3' },
-    { name: 'Asset' },
-    { name: 'Audio' },
-    { name: 'Calendar' },
-    { name: 'Constants' },
-    { name: 'Crypto' },
-    { name: 'FileSystem' },
-    { name: 'GLView' },
-    { name: 'GoogleSignIn' },
-    { name: 'Haptics' },
-    { name: 'Localization' },
-    { name: 'Location' },
-    { name: 'Linking' },
-    { name: 'Recording' },
-    { name: 'ScreenOrientation' },
-    { name: 'SecureStore' },
-    { name: 'Segment' },
-    { name: 'Speech' },
-    { name: 'SQLite' },
-    { name: 'Random' },
-    { name: 'Payments' },
-    { name: 'AdMobInterstitial' },
-    { name: 'AdMobBanner' },
-    { name: 'AdMobPublisherBanner' },
-    { name: 'AdMobRewarded' },
-    { name: 'Video' },
-    { name: 'Permissions' },
-    { name: 'MediaLibrary' },
-    { name: 'Notifications' },
-    { name: 'FBNativeAd' },
-    { name: 'FBBannerAd' },
-    { name: 'TaskManager' },
-  ];
 
   setPortalChild = testPortal => this.setState({ testPortal });
   cleanupPortal = () => new Promise(resolve => this.setState({ testPortal: null }, resolve));
@@ -189,8 +143,7 @@ export default class App extends React.Component {
 
     const { jasmineEnv, jasmine } = await this._setupJasmine();
 
-    const allModules = await getTestModulesAsync();
-    const modules = allModules.filter(m => selected.has(m.name));
+    const modules = this.allModules.filter(m => selected.has(m.name));
 
     await Promise.all(
       modules.map(m =>
@@ -468,25 +421,9 @@ export default class App extends React.Component {
     }
   };
 
-  _renderItem = ({ item }) => <Text>{item.name}</Text>;
-
   render() {
     if (!this.state.runningTest) {
       return <MultiSelectList data={this.tests} runTests={this._runTests} />;
-    }
-
-    if (this.state.testRunnerError) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            marginTop: Constants.statusBarHeight || 18,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text style={{ color: 'red' }}>{this.state.testRunnerError}</Text>
-        </View>
-      );
     }
 
     return (
