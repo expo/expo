@@ -51,5 +51,45 @@ extern void UMRegisterSubcontractor(id<UIApplicationDelegate> subcontractorClass
   return NO;
 }
 
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+  SEL selector = @selector(application:performFetchWithCompletionHandler:);
+  NSArray<id<UIApplicationDelegate>> *appDelegates = [self getAppDelegatesImplementingSelector:selector];
+  
+  __block NSUInteger working = [appDelegates count] ;
+  __block UIBackgroundFetchResult fetchResult = UIBackgroundFetchResultNoData;
+  __block NSObject *lock = [NSObject new];
+  
+  void (^handler)(UIBackgroundFetchResult) = ^(UIBackgroundFetchResult result) {
+    @synchronized (lock) {
+      if (result == UIBackgroundFetchResultFailed) {
+        fetchResult = UIBackgroundFetchResultFailed;
+      } else if (fetchResult != UIBackgroundFetchResultFailed && result == UIBackgroundFetchResultNewData) {
+        fetchResult = UIBackgroundFetchResultNewData;
+      }
+      
+      working--;
+      if (working == 0) {
+        completionHandler(fetchResult);
+      }
+    }
+  };
+  
+  for (id<UIApplicationDelegate> subcontractor in appDelegates) {
+    [subcontractor application:application performFetchWithCompletionHandler:handler];
+  }
+}
+
+- (NSArray<id<UIApplicationDelegate>> *) getAppDelegatesImplementingSelector:(SEL) selector {
+  NSMutableArray<id<UIApplicationDelegate>> *appDelegates = [NSMutableArray new];
+  
+  for (id<UIApplicationDelegate> subcontractor in subcontractors) {
+    if ([subcontractor respondsToSelector:selector]) {
+      [appDelegates addObject:subcontractor];
+    }
+  }
+  return appDelegates;
+}
+
 
 @end
