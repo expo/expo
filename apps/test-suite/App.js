@@ -6,6 +6,7 @@ import {
   NativeModules,
   Platform,
   ScrollView,
+  Alert,
   Text,
   View,
 } from 'react-native';
@@ -115,7 +116,7 @@ export default class App extends React.Component {
     this._failures = '';
     this._scrollViewRef = null;
 
-    this.runTests = this.runTests.bind(this);
+    this._runTests = this._runTests.bind(this);
   }
 
   componentDidMount() {
@@ -177,14 +178,19 @@ export default class App extends React.Component {
   setPortalChild = testPortal => this.setState({ testPortal });
   cleanupPortal = () => new Promise(resolve => this.setState({ testPortal: null }, resolve));
 
-  async _runTests() {
+  async _runTests(selected) {
+    if (selected.size === 0) {
+      Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
+      return;
+    }
     // Reset results state
     this.setState(App.initialState);
+    this.setState({ runningTest: true });
 
     const { jasmineEnv, jasmine } = await this._setupJasmine();
 
-    // Load tests, confining to the ones named in the uri
-    const modules = await getTestModulesAsync();
+    const allModules = await getTestModulesAsync();
+    const modules = allModules.filter(m => selected.has(m.name));
 
     await Promise.all(
       modules.map(m =>
@@ -462,15 +468,11 @@ export default class App extends React.Component {
     }
   };
 
-  runTests(selected) {
-    console.log(selected);
-  }
-
   _renderItem = ({ item }) => <Text>{item.name}</Text>;
 
   render() {
     if (!this.state.runningTest) {
-      return <MultiSelectList data={this.tests} runTests={this.runTests} />;
+      return <MultiSelectList data={this.tests} runTests={this._runTests} />;
     }
 
     if (this.state.testRunnerError) {

@@ -91,7 +91,7 @@ export default class MultiSelectList extends React.PureComponent {
         selectedTests.push(test);
       }
     }
-    return selectedTests;
+    return new Set(selectedTests);
   };
 
   render() {
