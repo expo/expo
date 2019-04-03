@@ -536,7 +536,7 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
   sessionConfiguration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
   NSDictionary *headerDict = (NSDictionary *) [options objectForKey:@"headers"];
-  if(headerDict != nil) {
+  if (headerDict != nil) {
     sessionConfiguration.HTTPAdditionalHeaders = headerDict;
   }
   sessionConfiguration.URLCache = nil;
