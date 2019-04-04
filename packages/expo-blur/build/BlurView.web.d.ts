@@ -1,10 +1,6 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { View } from 'react-native';
-declare type Props = {
-    tint: BlurTint;
-} & React.ComponentProps<typeof View>;
-declare type BlurTint = 'light' | 'dark' | 'default';
+import { BlurTint, Props } from './BlurView.types';
 export default class BlurView extends React.Component<Props> {
     static propTypes: {
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
@@ -53,6 +49,18 @@ export default class BlurView extends React.Component<Props> {
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
         tint: PropTypes.Requireable<string>;
     };
+    static defaultProps: {
+        tint: BlurTint;
+        intensity: number;
+    };
+    getBlurStyle: () => {
+        'backdrop-filter': string;
+        '-webkit-backdrop-filter': string;
+        backgroundColor?: undefined;
+    } | {
+        backgroundColor: any;
+        'backdrop-filter'?: undefined;
+        '-webkit-backdrop-filter'?: undefined;
+    };
     render(): JSX.Element;
 }
-export {};
