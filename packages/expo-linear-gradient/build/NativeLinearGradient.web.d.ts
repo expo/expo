@@ -23,7 +23,7 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
     getWebGradientColorStyle: () => string;
     convertJSColorToGradientSafeColor: (color: number, index: number) => string;
     getGradientValues: () => string[];
-    getBackgroundImage: () => string | null;
+    getBackgroundImage: () => string;
     render(): JSX.Element;
 }
 export {};
