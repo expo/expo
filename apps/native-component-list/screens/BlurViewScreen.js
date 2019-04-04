@@ -41,13 +41,23 @@ export default class BlurViewScreen extends React.Component {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Image style={{ width: 180, height: 180 }} source={{ uri }} />
+        {['default', 'light', 'dark'].map(tint => (
+          <View
+            key={tint}
+            style={{
+              padding: 6,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Image style={{ width: 180, height: 180 }} source={{ uri }} />
 
-        <AnimatedBlurView
-          tint="default"
-          intensity={this.state.intensity}
-          style={StyleSheet.absoluteFill}
-        />
+            <AnimatedBlurView
+              tint={tint}
+              intensity={this.state.intensity}
+              style={StyleSheet.absoluteFill}
+            />
+          </View>
+        ))}
       </View>
     );
   }
