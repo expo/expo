@@ -45,18 +45,11 @@ class ListItem extends React.Component {
 export default class SelectScreen extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.allModules = getTestModules();
-    this.tests = this.allModules.map(module => {
-      return { name: module.name };
-    });
-    const initialValues = this.tests.map(item => [item.name, false]);
 
+    this.modules = getTestModules();
     this.state = {
-      selected: new Map(initialValues),
-      allSelected: false,
+      selected: new Set(),
     };
-    this._selectAll = this._selectAll.bind(this);
-    this._getSelected = this._getSelected.bind(this);
   }
 
   static navigationOptions = {
@@ -67,8 +60,9 @@ export default class SelectScreen extends React.PureComponent {
 
   _onPressItem = id => {
     this.setState(state => {
-      const selected = new Map(state.selected);
-      selected.set(id, !selected.get(id)); // toggle
+      const selected = new Set(state.selected);
+      if (selected.has(id)) selected.delete(id);
+      else selected.add(id);
       return { selected };
     });
   };
@@ -77,50 +71,43 @@ export default class SelectScreen extends React.PureComponent {
     <ListItem
       id={item.name}
       onPressItem={this._onPressItem}
-      selected={this.state.selected.get(item.name)}
+      selected={this.state.selected.has(item.name)}
       title={item.name}
     />
   );
 
   _selectAll = () => {
     this.setState(state => {
-      const selected = new Map(state.selected);
-      for (const key of selected.keys()) {
-        selected.set(key, !state.allSelected);
+      if (state.selected.size === this.modules.length) {
+        return { selected: new Set() };
       }
-      return { selected, allSelected: !state.allSelected };
+      return { selected: new Set(this.modules.map(this._keyExtractor)) };
     });
   };
 
   _getSelected = () => {
     const selected = this.state.selected;
-    const set = new Set();
-    for (const test of selected.keys()) {
-      if (selected.get(test)) {
-        set.add(test);
-      }
-    }
-    const selectedModules = this.allModules.filter(m => set.has(m.name));
+    const selectedModules = this.modules.filter(m => selected.has(m.name));
     return selectedModules;
   };
 
   _navigateToTests = () => {
     const selected = this._getSelected();
-    if (selected.size === 0) {
+    if (selected.length === 0) {
       Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
     } else {
-      this.props.navigation.navigate('RunTests', {
-        selected,
-      });
+      this.props.navigation.navigate('RunTests', { selected });
+      this.setState({ selected: new Set() });
     }
   };
 
   render() {
-    const buttonTitle = this.state.allSelected ? 'Deselect All' : 'Select All';
+    const allSelected = this.state.selected.size === this.modules.length;
+    const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
     return (
       <View style={styles.mainContainer}>
         <FlatList
-          data={this.tests}
+          data={this.modules}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
@@ -130,7 +117,7 @@ export default class SelectScreen extends React.PureComponent {
             <Button title={buttonTitle} onPress={this._selectAll} />
           </View>
           <View style={styles.buttonContainer}>
-            <Button title="Run Tests" onPress={() => this._navigateToTests()} />
+            <Button title="Run Tests" onPress={this._navigateToTests} />
           </View>
         </View>
       </View>
