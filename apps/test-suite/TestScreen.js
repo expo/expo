@@ -1,7 +1,15 @@
 'use strict';
 
 import React from 'react';
-import { Dimensions, NativeModules, Platform, ScrollView, Text, View } from 'react-native';
+import {
+  Dimensions,
+  NativeModules,
+  StyleSheet,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { Constants } from 'expo';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
@@ -9,8 +17,6 @@ import Immutable from 'immutable';
 const { ExponentTest } = NativeModules;
 
 export default class TestScreen extends React.Component {
-  // --- Lifecycle -------------------------------------------------------------
-
   constructor(props, context) {
     super(props, context);
     this.state = TestScreen.initialState;
@@ -31,14 +37,13 @@ export default class TestScreen extends React.Component {
     title: 'Test Runner',
   };
 
-  // --- Test running ----------------------------------------------------------
-
   static initialState = {
     portalChildShouldBeVisible: false,
     state: Immutable.fromJS({
       suites: [],
       path: ['suites'], // Path to current 'children' List in state
     }),
+    done: false,
   };
 
   setPortalChild = testPortal => this.setState({ testPortal });
@@ -97,8 +102,9 @@ export default class TestScreen extends React.Component {
   }
 
   // A jasmine reporter that writes results to the console
-  _jasmineConsoleReporter(jasmineEnv) {
+  _jasmineConsoleReporter() {
     const failedSpecs = [];
+    const app = this;
 
     return {
       specDone(result) {
@@ -127,15 +133,14 @@ export default class TestScreen extends React.Component {
         }
       },
 
-      suiteDone(result) {},
-
       jasmineStarted() {
         console.log('--- tests started');
       },
 
       jasmineDone() {
         console.log('--- tests done');
-        console.log('--- send results to runner');
+        console.log('--- sending results to runner');
+        app.setState({ done: true });
         const result = {
           magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
           failed: failedSpecs.length,
@@ -163,7 +168,7 @@ export default class TestScreen extends React.Component {
   }
 
   // A jasmine reporter that writes results to this.state
-  _jasmineSetStateReporter(jasmineEnv) {
+  _jasmineSetStateReporter() {
     const app = this;
     return {
       suiteStarted(jasmineResult) {
@@ -182,7 +187,7 @@ export default class TestScreen extends React.Component {
         }));
       },
 
-      suiteDone(jasmineResult) {
+      suiteDone() {
         app.setState(({ state }) => ({
           state: state
             .updateIn(
@@ -277,11 +282,11 @@ export default class TestScreen extends React.Component {
   };
   _renderSuiteResult = (r, depth) => {
     const titleStyle =
-      depth == 0
+      depth === 0
         ? { marginBottom: 8, fontSize: 16, fontWeight: 'bold' }
         : { marginVertical: 8, fontSize: 16 };
     const containerStyle =
-      depth == 0
+      depth === 0
         ? {
             paddingLeft: 16,
             paddingVertical: 16,
@@ -304,50 +309,38 @@ export default class TestScreen extends React.Component {
       });
     }
   };
-  _renderPortal = () => {
-    const styles = {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      position: 'absolute',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgb(255, 255, 255)',
-      opacity: this.state.portalChildShouldBeVisible ? 0.5 : 0,
-    };
-
-    if (this.state.testPortal) {
-      return (
-        <View style={styles} pointerEvents="none">
-          {this.state.testPortal}
-        </View>
-      );
-    }
-  };
 
   render() {
     return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'stretch',
-          justifyContent: 'center',
-        }}
-        testID="test_suite_container">
+      <View style={styles.scrollViewContainer} testID="test_suite_container">
         <ScrollView
-          style={{
-            flex: 1,
-          }}
-          contentContainerStyle={{
-            padding: 5,
-          }}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
           ref={ref => (this._scrollViewRef = ref)}
           onContentSizeChange={this._onScrollViewContentSizeChange}>
           {this.state.state.get('suites').map(r => this._renderSuiteResult(r, 0))}
+          <Text style={styles.doneMessage}>{this.state.done ? 'All Done!' : null}</Text>
         </ScrollView>
-        {this._renderPortal()}
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  scrollViewContainer: {
+    flex: 1,
+    alignItems: 'stretch',
+    justifyContent: 'center',
+  },
+  scrollViewContent: {
+    padding: 5,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  doneMessage: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+});
