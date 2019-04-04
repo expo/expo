@@ -35,17 +35,15 @@ export default class BlurView extends React.Component {
         this.getBlurStyle = () => {
             const { tint, intensity } = this.props;
             if (isBlurSupported()) {
-                let filter = `blur(${intensity}px)`;
+                let backdropFilter = `blur(${intensity}px)`;
                 if (tint === 'dark') {
-                    filter += ' brightness(50%)';
+                    backdropFilter += ' brightness(50%)';
                 }
                 else if (tint === 'light') {
-                    filter += ' brightness(150%)';
+                    backdropFilter += ' brightness(150%)';
                 }
                 return {
-                    // @ts-ignore
-                    'backdrop-filter': filter,
-                    '-webkit-backdrop-filter': filter,
+                    backdropFilter,
                 };
             }
             else {

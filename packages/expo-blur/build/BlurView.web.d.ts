@@ -54,13 +54,11 @@ export default class BlurView extends React.Component<Props> {
         intensity: number;
     };
     getBlurStyle: () => {
-        'backdrop-filter': string;
-        '-webkit-backdrop-filter': string;
+        backdropFilter: string;
         backgroundColor?: undefined;
     } | {
         backgroundColor: any;
-        'backdrop-filter'?: undefined;
-        '-webkit-backdrop-filter'?: undefined;
+        backdropFilter?: undefined;
     };
     render(): JSX.Element;
 }
