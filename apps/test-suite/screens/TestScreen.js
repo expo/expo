@@ -54,6 +54,7 @@ export default class TestScreen extends React.Component {
   setPortalChild = testPortal => {
     if (this._isMounted) return this.setState({ testPortal });
   };
+
   cleanupPortal = () => {
     return new Promise(resolve => {
       if (this._isMounted) this.setState({ testPortal: null }, resolve);

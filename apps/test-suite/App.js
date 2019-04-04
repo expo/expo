@@ -1,6 +1,6 @@
 import { createStackNavigator, createAppContainer } from 'react-navigation';
-import SelectScreen from './SelectScreen';
-import TestScreen from './TestScreen';
+import SelectScreen from './screens/SelectScreen';
+import TestScreen from './screens/TestScreen';
 
 const MainNavigator = createStackNavigator({
   Select: SelectScreen,
