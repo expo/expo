@@ -31,6 +31,11 @@ export default class TestScreen extends React.Component {
     const { navigation } = this.props;
     const selectedModules = navigation.getParam('selected');
     this._runTests(selectedModules);
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   static navigationOptions = {
@@ -46,8 +51,14 @@ export default class TestScreen extends React.Component {
     done: false,
   };
 
-  setPortalChild = testPortal => this.setState({ testPortal });
-  cleanupPortal = () => new Promise(resolve => this.setState({ testPortal: null }, resolve));
+  setPortalChild = testPortal => {
+    if (this._isMounted) return this.setState({ testPortal });
+  };
+  cleanupPortal = () => {
+    return new Promise(resolve => {
+      if (this._isMounted) this.setState({ testPortal: null }, resolve);
+    });
+  };
 
   async _runTests(modules) {
     // Reset results state
@@ -140,7 +151,7 @@ export default class TestScreen extends React.Component {
       jasmineDone() {
         console.log('--- tests done');
         console.log('--- sending results to runner');
-        app.setState({ done: true });
+        if (app._isMounted) app.setState({ done: true });
         const result = {
           magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
           failed: failedSpecs.length,
@@ -172,51 +183,57 @@ export default class TestScreen extends React.Component {
     const app = this;
     return {
       suiteStarted(jasmineResult) {
-        app.setState(({ state }) => ({
-          state: state
-            .updateIn(state.get('path'), children =>
-              children.push(
-                Immutable.fromJS({
-                  result: jasmineResult,
-                  children: [],
-                  specs: [],
-                })
+        if (app._isMounted) {
+          app.setState(({ state }) => ({
+            state: state
+              .updateIn(state.get('path'), children =>
+                children.push(
+                  Immutable.fromJS({
+                    result: jasmineResult,
+                    children: [],
+                    specs: [],
+                  })
+                )
               )
-            )
-            .update('path', path => path.push(state.getIn(path).size, 'children')),
-        }));
+              .update('path', path => path.push(state.getIn(path).size, 'children')),
+          }));
+        }
       },
 
       suiteDone() {
-        app.setState(({ state }) => ({
-          state: state
-            .updateIn(
+        if (app._isMounted) {
+          app.setState(({ state }) => ({
+            state: state
+              .updateIn(
+                state
+                  .get('path')
+                  .pop()
+                  .pop(),
+                children =>
+                  children.update(children.size - 1, child =>
+                    child.set('result', child.get('result'))
+                  )
+              )
+              .update('path', path => path.pop().pop()),
+          }));
+        }
+      },
+
+      specStarted(jasmineResult) {
+        if (app._isMounted) {
+          app.setState(({ state }) => ({
+            state: state.updateIn(
               state
                 .get('path')
                 .pop()
                 .pop(),
               children =>
                 children.update(children.size - 1, child =>
-                  child.set('result', child.get('result'))
+                  child.update('specs', specs => specs.push(Immutable.fromJS(jasmineResult)))
                 )
-            )
-            .update('path', path => path.pop().pop()),
-        }));
-      },
-
-      specStarted(jasmineResult) {
-        app.setState(({ state }) => ({
-          state: state.updateIn(
-            state
-              .get('path')
-              .pop()
-              .pop(),
-            children =>
-              children.update(children.size - 1, child =>
-                child.update('specs', specs => specs.push(Immutable.fromJS(jasmineResult)))
-              )
-          ),
-        }));
+            ),
+          }));
+        }
       },
 
       specDone(jasmineResult) {
@@ -227,26 +244,25 @@ export default class TestScreen extends React.Component {
             }\`. Call \`cleanupPortal\` before finishing the test.`
           );
         }
-
-        app.setState(({ state }) => ({
-          state: state.updateIn(
-            state
-              .get('path')
-              .pop()
-              .pop(),
-            children =>
-              children.update(children.size - 1, child =>
-                child.update('specs', specs =>
-                  specs.set(specs.size - 1, Immutable.fromJS(jasmineResult))
+        if (app._isMounted) {
+          app.setState(({ state }) => ({
+            state: state.updateIn(
+              state
+                .get('path')
+                .pop()
+                .pop(),
+              children =>
+                children.update(children.size - 1, child =>
+                  child.update('specs', specs =>
+                    specs.set(specs.size - 1, Immutable.fromJS(jasmineResult))
+                  )
                 )
-              )
-          ),
-        }));
+            ),
+          }));
+        }
       },
     };
   }
-
-  // --- Rendering -------------------------------------------------------------
 
   _renderSpecResult = r => {
     const status = r.get('status') || 'running';
@@ -280,6 +296,7 @@ export default class TestScreen extends React.Component {
       </View>
     );
   };
+
   _renderSuiteResult = (r, depth) => {
     const titleStyle =
       depth === 0
@@ -302,6 +319,7 @@ export default class TestScreen extends React.Component {
       </View>
     );
   };
+
   _onScrollViewContentSizeChange = (contentWidth, contentHeight) => {
     if (this._scrollViewRef) {
       this._scrollViewRef.scrollTo({
