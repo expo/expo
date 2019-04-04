@@ -169,7 +169,7 @@ UM_EXPORT_METHOD_AS(executeAsync,
     refreshToken = input.refreshToken;
   }
 
-  [output setValue:EXnullIfEmpty(refreshToken) forKey:@"refreshToken"];
+  [output setValue:@"refreshToken" forKey:EXnullIfEmpty(refreshToken)];
 
   return output;
 }
