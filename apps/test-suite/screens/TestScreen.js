@@ -329,6 +329,12 @@ export default class TestScreen extends React.Component {
     }
   };
 
+  _renderDoneText = () => {
+    if (this.state.done) {
+      return <Text style={styles.doneMessage}>All done!</Text>;
+    }
+  }
+
   render() {
     return (
       <View style={styles.scrollViewContainer} testID="test_suite_container">
@@ -338,7 +344,7 @@ export default class TestScreen extends React.Component {
           ref={ref => (this._scrollViewRef = ref)}
           onContentSizeChange={this._onScrollViewContentSizeChange}>
           {this.state.state.get('suites').map(r => this._renderSuiteResult(r, 0))}
-          <Text style={styles.doneMessage}>{this.state.done ? 'All Done!' : null}</Text>
+          {this._renderDoneText()}
         </ScrollView>
       </View>
     );

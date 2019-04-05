@@ -11,6 +11,8 @@ import {
   Button,
   PixelRatio,
 } from 'react-native';
+import { SafeAreaView } from 'react-navigation';
+import { MaterialIcons } from '@expo/vector-icons';
 import { getTestModules } from '../TestUtils';
 
 class ListItem extends React.Component {
@@ -18,27 +20,31 @@ class ListItem extends React.Component {
     this.props.onPressItem(this.props.id);
   };
 
-  renderLabel() {
-    const textColor = this.props.selected ? 'red' : 'black';
-    return <Text style={{ color: textColor }}>{this.props.title}</Text>;
-  }
+  renderView = () => {
+    const checkBox = this.props.selected ? 'check-box' : 'check-box-outline-blank';
+    return (
+      <View style={styles.listItem}>
+        <MaterialIcons name={checkBox} size={26} />
+        <Text style={styles.label}>{this.props.title}</Text>
+      </View>
+    );
+  };
 
   render() {
-    if (Platform.OS === 'android') {
-      return (
+    return Platform.select({
+      ios: (
+        <TouchableHighlight onPress={this.onPress} underlayColor="gray">
+          {this.renderView()}
+        </TouchableHighlight>
+      ),
+      android: (
         <TouchableNativeFeedback
           onPress={this.onPress}
-          background={TouchableNativeFeedback.Ripple('#FFF')}>
-          <View style={styles.listItem}>{this.renderLabel()}</View>
+          background={TouchableNativeFeedback.Ripple('gray')}>
+          {this.renderView()}
         </TouchableNativeFeedback>
-      );
-    } else {
-      return (
-        <TouchableHighlight style={styles.listItem} underlayColor="#0052AC" onPress={this.onPress}>
-          {this.renderLabel()}
-        </TouchableHighlight>
-      );
-    }
+      ),
+    });
   }
 }
 
@@ -112,14 +118,14 @@ export default class SelectScreen extends React.PureComponent {
           keyExtractor={this._keyExtractor}
           renderItem={this._renderItem}
         />
-        <View style={styles.buttonRow}>
+        <SafeAreaView style={styles.buttonRow}>
           <View style={styles.buttonContainer}>
             <Button title={buttonTitle} onPress={this._selectAll} />
           </View>
           <View style={styles.buttonContainer}>
             <Button title="Run Tests" onPress={this._navigateToTests} />
           </View>
-        </View>
+        </SafeAreaView>
       </View>
     );
   }
@@ -134,18 +140,25 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#dddddd',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  label: {
+    color: 'black',
+    fontSize: 18,
+    marginLeft: 5,
   },
   buttonRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 10,
-    paddingTop: 10,
-    backgroundColor: 'grey',
+    paddingBottom: 12,
+    paddingTop: 12,
+    backgroundColor: '#ECEFF1',
   },
   buttonContainer: {
     flex: 1,
-    marginLeft: 10,
-    marginRight: 10,
+    marginLeft: Platform.OS === 'android' ? 10 : 0,
+    marginRight: Platform.OS === 'android' ? 10 : 0,
   },
 });
