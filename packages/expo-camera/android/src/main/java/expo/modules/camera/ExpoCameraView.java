@@ -8,7 +8,6 @@ import android.media.CamcorderProfile;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.TextureView;
 import android.view.View;
 
 import com.google.android.cameraview.CameraView;
@@ -186,8 +185,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       }
     }
 
-    for (View childView: childrenToBeReordered) {
-      this.bringChildToFront(childView);
+    for (View childView : childrenToBeReordered) {
+      bringChildToFront(childView);
     }
 
     requestLayout();
