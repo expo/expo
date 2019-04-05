@@ -77,6 +77,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     super(themedReactContext, true);
     mModuleRegistry = moduleRegistry;
     initBarCodeScanner();
+    setChildrenDrawingOrderEnabled(true);
 
     mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
 
@@ -162,11 +163,34 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onViewAdded(View child) {
-    if (this.getView() == child || this.getView() == null) return;
-    // remove and readd view to make sure it is in the back.
-    // @TODO figure out why there was a z order issue in the first place and fix accordingly.
-    this.removeView(this.getView());
-    this.addView(this.getView(), 0);
+    // react adds children to containers at the beginning of children list and that moves pre-react added preview to the end of that list
+    // above would cause preview (TextureView that covers all available space) to be rendered at the top of children stack
+    // while we need this preview to be rendered last beneath all other children
+
+    // child is not preview
+    if (this.getView() == child || this.getView() == null) {
+      return;
+    }
+
+    // bring to front all non-preview children
+    List<View> childrenToBeReordered = new ArrayList<>();
+    for (int i = 0; i < this.getChildCount(); i++) {
+      View childView = this.getChildAt(i);
+      if (i == 0 && childView == this.getView()) {
+        // preview is already first in children list - do not reorder anything
+        return;
+      }
+      if (childView != this.getView()) {
+        childrenToBeReordered.add(childView);
+      }
+    }
+
+    for (View childView : childrenToBeReordered) {
+      bringChildToFront(childView);
+    }
+
+    requestLayout();
+    invalidate();
   }
 
   public void takePicture(Map<String, Object> options, final Promise promise, File cacheDirectory) {
