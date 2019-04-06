@@ -40,6 +40,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 @property (nonatomic, assign) EXAudioInterruptionMode audioInterruptionMode;
 @property (nonatomic, assign) BOOL playsInSilentMode;
+@property (nonatomic, assign) BOOL shouldPlayInBackground;
 @property (nonatomic, assign) BOOL allowsAudioRecording;
 
 @property (nonatomic, assign) int soundDictionaryKeyCount;
@@ -72,6 +73,7 @@ UM_EXPORT_MODULE(ExponentAV);
     
     _audioInterruptionMode = EXAudioInterruptionModeMixWithOthers;
     _playsInSilentMode = false;
+    _shouldPlayInBackground = false;
     _allowsAudioRecording = false;
     
     _soundDictionaryKeyCount = 0;
@@ -135,7 +137,9 @@ UM_EXPORT_MODULE(ExponentAV);
 - (void)onAppBackgrounded
 {
   _isBackgrounded = YES;
-  [self _deactivateAudioSession]; // This will pause all players and stop all recordings
+    if (!_shouldPlayInBackground) {
+      [self _deactivateAudioSession]; // This will pause all players and stop all recordings
+    }
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     [exAVObject appDidBackground];
@@ -197,6 +201,7 @@ UM_EXPORT_MODULE(ExponentAV);
     }
     
     _playsInSilentMode = playsInSilentMode;
+    _shouldPlayInBackground = shouldPlayInBackground;
     _audioInterruptionMode = interruptionMode;
     _allowsAudioRecording = allowsRecording;
     
