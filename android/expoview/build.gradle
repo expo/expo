@@ -113,6 +113,7 @@ configurations.all {
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 // Import gradle helpers for unimodules.
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+apply from: "unimodules.gradle.kts"
 // WHEN_VERSIONING_REMOVE_TO_HERE
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
@@ -322,4 +323,5 @@ dependencies {
   compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   compileOnly 'expolib_v1.com.squareup.okio:okio:1.13.0'
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+  compile 'com.squareup:javapoet:1.11.1'
 }

@@ -48,6 +48,7 @@ import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
+import host.exp.exponent.generated.BasePackageList;
 import okhttp3.OkHttpClient;
 
 // Needed for `react-native link`
@@ -72,49 +73,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
   }
 
   public List<Package> getExpoPackages() {
-    return Arrays.<Package>asList(
-        new AVPackage(),
-        new AdMobPackage(),
-        new AdsFacebookPackage(),
-        new AppAuthPackage(),
-        new AmplitudePackage(),
-        new BackgroundFetchPackage(),
-        new BarCodeScannerPackage(),
-        new BrightnessPackage(),
-        new CalendarPackage(),
-        new CameraPackage(),
-        new ConstantsPackage(),
-        new ContactsPackage(),
-        new DocumentPickerPackage(),
-        new FaceDetectorPackage(),
-        new FacebookPackage(),
-        new FileSystemPackage(),
-        new FontLoaderPackage(),
-        new GLPackage(),
-        new GoogleSignInPackage(),
-        new HapticsPackage(),
-        new ImageManipulatorPackage(),
-        new ImagePickerPackage(),
-        new IntentLauncherPackage(),
-        new KeepAwakePackage(),
-        new LinearGradientPackage(),
-        new LocalAuthenticationPackage(),
-        new LocalizationPackage(),
-        new LocationPackage(),
-        new MailComposerPackage(),
-        new MediaLibraryPackage(),
-        new PermissionsPackage(),
-        new PrintPackage(),
-        new SMSPackage(),
-        new SQLitePackage(),
-        new SecureStorePackage(),
-        new SegmentPackage(),
-        new SensorsPackage(),
-        new SharingPackage(),
-        new SpeechPackage(),
-        new TaskManagerPackage(),
-        new WebBrowserPackage()
-    );
+    return new BasePackageList().getPackageList();
   }
 
   @Override

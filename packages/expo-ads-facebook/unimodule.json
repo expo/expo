@@ -1,4 +1,5 @@
 {
   "name": "expo-ads-facebook",
-  "platforms": ["ios", "android"]
+  "platforms": ["ios", "android"],
+  "androidBasePackage": "expo.modules.ads.facebook.AdsFacebookPackage"
 }
