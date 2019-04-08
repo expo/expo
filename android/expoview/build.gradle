@@ -297,7 +297,6 @@ dependencies {
   api('com.airbnb.android:lottie:2.5.5') {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
-  api 'io.branch.sdk.android:library:2.17.1'
   api 'com.android.support:exifinterface:27.1.1'
   api 'com.google.firebase:firebase-core:16.0.1'
   api 'com.google.firebase:firebase-messaging:17.1.0'

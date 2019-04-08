@@ -9,7 +9,6 @@ import com.google.android.gms.analytics.CampaignTrackingReceiver;
 
 import host.exp.exponent.ExpoApplication;
 import host.exp.exponent.analytics.Analytics;
-import io.branch.referral.InstallListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,9 +36,6 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
       EXL.e(TAG, "InstallReferrerReceiver.context.getApplicationContext() not an instance of ExpoApplication");
       return;
     }
-
-    InstallListener listener = new InstallListener();
-    listener.onReceive(context, intent);
 
     NativeModuleDepsProvider.getInstance().inject(InstallReferrerReceiver.class, this);
 
