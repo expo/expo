@@ -105,16 +105,20 @@
 }
 
 + (EXClientReleaseType)clientReleaseType {
-  NSDictionary *mobileProvision = [self _readProvisioningProfilePlist];
-  if (!mobileProvision) {
-    // failure to read other than it simply not existing
-    return EXClientReleaseTypeUnknown;
-  } else if (![mobileProvision count]) {
+  NSString *provisioningPath = [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"];
+  if (!provisioningPath) {
+    // provisioning profile does not exist
 #if TARGET_IPHONE_SIMULATOR
     return EXClientReleaseSimulator;
 #else
     return EXClientReleaseAppStore;
 #endif
+  }
+  
+  NSDictionary *mobileProvision = [self _readProvisioningProfilePlist];
+  if (!mobileProvision) {
+    // failure to read other than it simply not existing
+    return EXClientReleaseTypeUnknown;
   } else if ([[mobileProvision objectForKey:@"ProvisionsAllDevices"] boolValue]) {
     // enterprise distribution contains ProvisionsAllDevices - true
     return EXClientReleaseEnterprise;
