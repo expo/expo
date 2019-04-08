@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { View, StyleSheet, ViewPropTypes } from 'react-native';
+import { View, ViewPropTypes } from 'react-native';
 
-type Props = {
-  tint: BlurTint;
-} & React.ComponentProps<typeof View>;
-type BlurTint = 'light' | 'dark' | 'default';
+import { BlurTint, Props } from './BlurView.types';
+import getBackgroundColor from './getBackgroundColor';
 
 export default class BlurView extends React.Component<Props> {
   static propTypes = {
@@ -13,16 +11,42 @@ export default class BlurView extends React.Component<Props> {
     ...ViewPropTypes,
   };
 
+  static defaultProps = {
+    tint: 'default' as BlurTint,
+    intensity: 50,
+  };
+
   render() {
-    let { tint, style = {}, ...props } = this.props;
+    let { tint, intensity, style = {}, ...props } = this.props;
 
-    let backgroundColor = 'rgba(255,255,255,0.4)';
+    const blurStyle = getBlurStyle({ tint, intensity });
+
+    return <View {...props} style={[style, blurStyle]} />;
+  }
+}
+
+function isBlurSupported(): boolean {
+  // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
+  // TODO: Bacon: Chrome blur seems broken natively
+  return typeof CSS !== 'undefined' && CSS.supports('-webkit-backdrop-filter', 'blur(1px)');
+  // TODO: Bacon: Chrome doesn't work, RNWeb uses webkit on Safari, which works.
+  // || CSS.supports('backdrop-filter', 'blur(1px)')
+}
+
+function getBlurStyle({ intensity, tint }): { [key: string]: string } {
+  if (isBlurSupported()) {
+    let backdropFilter = `blur(${intensity * 0.25}px)`;
     if (tint === 'dark') {
-      backgroundColor = 'rgba(0,0,0,0.5)';
+      backdropFilter += ' brightness(50%)';
     } else if (tint === 'light') {
-      backgroundColor = 'rgba(255,255,255,0.7)';
+      backdropFilter += ' brightness(150%)';
     }
-
-    return <View {...props} style={StyleSheet.flatten([style, { backgroundColor }])} />;
+    return {
+      backdropFilter,
+    };
+  } else {
+    let backgroundColor = getBackgroundColor(intensity, tint);
+    return { backgroundColor };
   }
 }
