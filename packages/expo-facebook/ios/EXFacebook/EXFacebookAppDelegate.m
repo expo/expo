@@ -7,7 +7,7 @@
 
 @implementation EXFacebookAppDelegate
 
-UM_REGISTER_SINGLETON_MODULE(singleton_nameEXFacebookAppDelegate)
+UM_REGISTER_SINGLETON_MODULE(EXFacebookAppDelegate)
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
