@@ -333,7 +333,7 @@ export default class TestScreen extends React.Component {
     if (this.state.done) {
       return <Text style={styles.doneMessage}>All done!</Text>;
     }
-  }
+  };
 
   render() {
     return (

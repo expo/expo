@@ -32,17 +32,17 @@ class ListItem extends React.Component {
 
   render() {
     return Platform.select({
-      ios: (
-        <TouchableHighlight onPress={this.onPress} underlayColor="gray">
-          {this.renderView()}
-        </TouchableHighlight>
-      ),
       android: (
         <TouchableNativeFeedback
           onPress={this.onPress}
           background={TouchableNativeFeedback.Ripple('gray')}>
           {this.renderView()}
         </TouchableNativeFeedback>
+      ),
+      default: (
+        <TouchableHighlight onPress={this.onPress} underlayColor="gray">
+          {this.renderView()}
+        </TouchableHighlight>
       ),
     });
   }
