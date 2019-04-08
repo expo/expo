@@ -22,11 +22,14 @@
     "ABI29_0_0EXFaceDetectorInterface": [
 
     ],
-    "GoogleMobileVision/FaceDetector": [
-      "~> 1.1.0"
+    "Firebase/Core": [
+
     ],
-    "GoogleMobileVision/MVDataOutput": [
-      "~> 1.1.0"
+    "Firebase/MLVision": [
+
+    ],
+    "Firebase/MLVisionFaceModel": [
+
     ]
   }
 }

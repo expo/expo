@@ -1,1 +1,1 @@
-../../../../GoogleMobileVision/Detector/Frameworks/frameworks/GoogleMobileVision.framework/Headers/GMVDetectorConstants.h
+../../../../GoogleMobileVision/Detector/Frameworks/GoogleMobileVision.framework/Headers/GMVDetectorConstants.h

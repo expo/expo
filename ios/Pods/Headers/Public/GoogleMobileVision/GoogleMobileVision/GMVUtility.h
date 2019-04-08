@@ -1,1 +1,1 @@
-../../../../GoogleMobileVision/Detector/Frameworks/frameworks/GoogleMobileVision.framework/Headers/GMVUtility.h
+../../../../GoogleMobileVision/Detector/Frameworks/GoogleMobileVision.framework/Headers/GMVUtility.h

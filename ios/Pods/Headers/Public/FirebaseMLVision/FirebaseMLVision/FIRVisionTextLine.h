@@ -1,0 +1,1 @@
+../../../../FirebaseMLVision/Frameworks/FirebaseMLVision.framework/Headers/FIRVisionTextLine.h

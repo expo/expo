@@ -122,10 +122,13 @@
         "ReactABI27_0_0/Expo": [
 
         ],
-        "GoogleMobileVision/FaceDetector": [
+        "Firebase/Core": [
 
         ],
-        "GoogleMobileVision/MVDataOutput": [
+        "Firebase/MLVision": [
+
+        ],
+        "Firebase/MLVisionFaceModel": [
 
         ]
       },

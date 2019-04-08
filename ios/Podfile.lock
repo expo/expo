@@ -12,11 +12,6 @@ PODS:
   - ABI29_0_0EXConstantsInterface (1.0.0-rc.2):
     - ABI29_0_0EXCore
   - ABI29_0_0EXCore (1.0.0-rc.2)
-  - ABI29_0_0EXFaceDetector (1.0.0-rc.2):
-    - ABI29_0_0EXCore
-    - ABI29_0_0EXFaceDetectorInterface
-    - GoogleMobileVision/FaceDetector (~> 1.1.0)
-    - GoogleMobileVision/MVDataOutput (~> 1.1.0)
   - ABI29_0_0EXFaceDetectorInterface (1.0.0-rc.2):
     - ABI29_0_0EXCore
   - ABI29_0_0EXFileSystem (1.0.0-rc.2):
@@ -70,11 +65,6 @@ PODS:
     - ABI30_0_0EXFileSystemInterface
     - ABI30_0_0EXPermissionsInterface
   - ABI30_0_0EXCore (1.1.0-rc.0)
-  - ABI30_0_0EXFaceDetector (1.0.2-rc.0):
-    - ABI30_0_0EXCore
-    - ABI30_0_0EXFaceDetectorInterface
-    - GoogleMobileVision/FaceDetector (~> 1.1.0)
-    - GoogleMobileVision/MVDataOutput (~> 1.1.0)
   - ABI30_0_0EXFaceDetectorInterface (1.0.2-rc.0):
     - ABI30_0_0EXCore
   - ABI30_0_0EXFileSystem (1.0.2-rc.0):
@@ -150,11 +140,6 @@ PODS:
     - ABI31_0_0EXFileSystemInterface
     - ABI31_0_0EXPermissionsInterface
   - ABI31_0_0EXCore (1.1.0)
-  - ABI31_0_0EXFaceDetector (1.0.2):
-    - ABI31_0_0EXCore
-    - ABI31_0_0EXFaceDetectorInterface
-    - GoogleMobileVision/FaceDetector (~> 1.1.0)
-    - GoogleMobileVision/MVDataOutput (~> 1.1.0)
   - ABI31_0_0EXFaceDetectorInterface (1.0.2):
     - ABI31_0_0EXCore
   - ABI31_0_0EXFileSystem (1.0.2):
@@ -242,11 +227,6 @@ PODS:
   - ABI32_0_0EXCore (1.2.0)
   - ABI32_0_0EXErrors (0.0.1):
     - ABI32_0_0EXCore
-  - ABI32_0_0EXFaceDetector (1.1.0):
-    - ABI32_0_0EXCore
-    - ABI32_0_0EXFaceDetectorInterface
-    - GoogleMobileVision/FaceDetector (~> 1.1.0)
-    - GoogleMobileVision/MVDataOutput (~> 1.1.0)
   - ABI32_0_0EXFaceDetectorInterface (1.1.0):
     - ABI32_0_0EXCore
   - ABI32_0_0EXFileSystem (1.1.0):
@@ -385,8 +365,9 @@ PODS:
     - UMConstantsInterface
     - UMCore
   - EXFaceDetector (4.0.0):
-    - GoogleMobileVision/FaceDetector (~> 1.1.0)
-    - GoogleMobileVision/MVDataOutput (~> 1.1.0)
+    - Firebase/Core
+    - Firebase/MLVision
+    - Firebase/MLVisionFaceModel
     - UMCore
     - UMFaceDetectorInterface
   - EXFileSystem (4.0.0):
@@ -470,6 +451,46 @@ PODS:
     - Bolts (~> 1.9)
   - FBSDKLoginKit (4.40.0):
     - FBSDKCoreKit
+  - Firebase/Core (5.20.1):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (= 5.8.0)
+  - Firebase/CoreOnly (5.20.1):
+    - FirebaseCore (= 5.4.1)
+  - Firebase/MLVision (5.20.1):
+    - Firebase/CoreOnly
+    - FirebaseMLVision (= 0.15.0)
+  - Firebase/MLVisionFaceModel (5.20.1):
+    - Firebase/CoreOnly
+    - FirebaseMLVisionFaceModel (= 0.15.0)
+  - FirebaseAnalytics (5.8.0):
+    - FirebaseCore (~> 5.4)
+    - FirebaseInstanceID (~> 3.8)
+    - GoogleAppMeasurement (= 5.8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - FirebaseCore (5.4.1):
+    - GoogleUtilities/Environment (~> 5.2)
+    - GoogleUtilities/Logger (~> 5.2)
+  - FirebaseInstanceID (3.8.1):
+    - FirebaseCore (~> 5.2)
+    - GoogleUtilities/Environment (~> 5.2)
+    - GoogleUtilities/UserDefaults (~> 5.2)
+  - FirebaseMLCommon (0.15.0):
+    - FirebaseCore (~> 5.4)
+    - FirebaseInstanceID (~> 3.8)
+    - GoogleUtilities/UserDefaults (~> 5.3)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseMLVision (0.15.0):
+    - FirebaseCore (~> 5.4)
+    - FirebaseMLCommon (~> 0.15)
+    - GoogleAPIClientForREST/Core (~> 1.3)
+    - GoogleAPIClientForREST/Vision (~> 1.3)
+    - GoogleMobileVision/Detector (~> 1.4)
+  - FirebaseMLVisionFaceModel (0.15.0):
+    - GoogleMobileVision/FaceDetector (~> 1.4)
   - Folly (2016.10.31.00):
     - boost-for-react-native
     - DoubleConversion
@@ -492,41 +513,76 @@ PODS:
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
   - Google-Mobile-Ads-SDK (7.22.0)
-  - GoogleInterchangeUtilities (1.2.2):
-    - GoogleSymbolUtilities (~> 1.1)
+  - GoogleAPIClientForREST/Core (1.3.8):
+    - GTMSessionFetcher (>= 1.1.7)
+  - GoogleAPIClientForREST/Vision (1.3.8):
+    - GoogleAPIClientForREST/Core
+    - GTMSessionFetcher (>= 1.1.7)
+  - GoogleAppMeasurement (5.8.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
   - GoogleMaps (2.5.0):
     - GoogleMaps/Maps (= 2.5.0)
   - GoogleMaps/Base (2.5.0)
   - GoogleMaps/Maps (2.5.0):
     - GoogleMaps/Base
-  - GoogleMobileVision/Detector (1.1.0):
-    - GoogleInterchangeUtilities (~> 1.2)
-    - GoogleNetworkingUtilities (~> 1.2)
-    - GoogleUtilities (~> 1.3)
-  - GoogleMobileVision/FaceDetector (1.1.0):
-    - GoogleMobileVision/Detector
-  - GoogleMobileVision/MVDataOutput (1.1.0):
-    - GoogleMobileVision/Detector
-  - GoogleNetworkingUtilities (1.2.2):
-    - GoogleSymbolUtilities (~> 1.1)
+  - GoogleMobileVision/Detector (1.5.0):
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.1)
+  - GoogleMobileVision/FaceDetector (1.5.0):
+    - GoogleMobileVision/Detector (~> 1.5)
   - GoogleSignIn (4.4.0):
     - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
     - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
     - GTMSessionFetcher/Core (~> 1.1)
-  - GoogleSymbolUtilities (1.1.2)
   - GoogleToolboxForMac/DebugUtils (2.2.0):
     - GoogleToolboxForMac/Defines (= 2.2.0)
   - GoogleToolboxForMac/Defines (2.2.0)
+  - GoogleToolboxForMac/Logger (2.2.0):
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - "GoogleToolboxForMac/NSData+zlib (2.2.0)":
+    - GoogleToolboxForMac/Defines (= 2.2.0)
   - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.0)":
     - GoogleToolboxForMac/DebugUtils (= 2.2.0)
     - GoogleToolboxForMac/Defines (= 2.2.0)
     - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.0)"
   - "GoogleToolboxForMac/NSString+URLArguments (2.2.0)"
-  - GoogleUtilities (1.3.2):
-    - GoogleSymbolUtilities (~> 1.1)
+  - GoogleUtilities/AppDelegateSwizzler (5.5.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (5.5.0)
+  - GoogleUtilities/Logger (5.5.0):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (5.5.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (5.5.0):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (5.5.0)"
+  - GoogleUtilities/Reachability (5.5.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (5.5.0):
+    - GoogleUtilities/Logger
+  - GTMSessionFetcher (1.2.1):
+    - GTMSessionFetcher/Full (= 1.2.1)
   - GTMSessionFetcher/Core (1.2.1)
+  - GTMSessionFetcher/Full (1.2.1):
+    - GTMSessionFetcher/Core (= 1.2.1)
   - JKBigInteger2 (0.0.5)
-  - lottie-ios (2.5.2)
+  - lottie-ios (2.5.3)
+  - nanopb (0.3.901):
+    - nanopb/decode (= 0.3.901)
+    - nanopb/encode (= 0.3.901)
+  - nanopb/decode (0.3.901)
+  - nanopb/encode (0.3.901)
+  - Protobuf (3.7.0)
   - React (0.57.1):
     - React/Core (= 0.57.1)
   - React/ART (0.57.1):
@@ -612,8 +668,9 @@ PODS:
     - lottie-ios
     - ReactABI26_0_0/Core
   - ReactABI26_0_0/ExpoOptional (0.54.2):
-    - GoogleMobileVision/FaceDetector
-    - GoogleMobileVision/MVDataOutput
+    - Firebase/Core
+    - Firebase/MLVision
+    - Firebase/MLVisionFaceModel
     - ReactABI26_0_0/Expo
   - ReactABI26_0_0/fishhook (0.54.2)
   - ReactABI26_0_0/RCTActionSheet (0.54.2):
@@ -680,8 +737,9 @@ PODS:
     - lottie-ios
     - ReactABI27_0_0/Core
   - ReactABI27_0_0/ExpoOptional (0.55.2):
-    - GoogleMobileVision/FaceDetector
-    - GoogleMobileVision/MVDataOutput
+    - Firebase/Core
+    - Firebase/MLVision
+    - Firebase/MLVisionFaceModel
     - ReactABI27_0_0/Expo
   - ReactABI27_0_0/fishhook (0.55.2)
   - ReactABI27_0_0/RCTActionSheet (0.55.2):
@@ -746,8 +804,9 @@ PODS:
     - lottie-ios
     - ReactABI28_0_0/Core
   - ReactABI28_0_0/ExpoOptional (0.55.4):
-    - GoogleMobileVision/FaceDetector
-    - GoogleMobileVision/MVDataOutput
+    - Firebase/Core
+    - Firebase/MLVision
+    - Firebase/MLVisionFaceModel
     - ReactABI28_0_0/Expo
   - ReactABI28_0_0/fishhook (0.55.4)
   - ReactABI28_0_0/RCTActionSheet (0.55.4):
@@ -803,7 +862,6 @@ PODS:
     - ABI29_0_0EXConstants
     - ABI29_0_0EXConstantsInterface
     - ABI29_0_0EXCore
-    - ABI29_0_0EXFaceDetector
     - ABI29_0_0EXFaceDetectorInterface
     - ABI29_0_0EXFileSystem
     - ABI29_0_0EXFileSystemInterface
@@ -888,7 +946,6 @@ PODS:
     - ABI30_0_0EXConstantsInterface
     - ABI30_0_0EXContacts
     - ABI30_0_0EXCore
-    - ABI30_0_0EXFaceDetector
     - ABI30_0_0EXFaceDetectorInterface
     - ABI30_0_0EXFileSystem
     - ABI30_0_0EXFileSystemInterface
@@ -982,7 +1039,6 @@ PODS:
     - ABI31_0_0EXConstantsInterface
     - ABI31_0_0EXContacts
     - ABI31_0_0EXCore
-    - ABI31_0_0EXFaceDetector
     - ABI31_0_0EXFaceDetectorInterface
     - ABI31_0_0EXFileSystem
     - ABI31_0_0EXFileSystemInterface
@@ -1081,7 +1137,6 @@ PODS:
     - ABI32_0_0EXContacts
     - ABI32_0_0EXCore
     - ABI32_0_0EXErrors
-    - ABI32_0_0EXFaceDetector
     - ABI32_0_0EXFaceDetectorInterface
     - ABI32_0_0EXFileSystem
     - ABI32_0_0EXFileSystemInterface
@@ -1177,7 +1232,6 @@ DEPENDENCIES:
   - ABI29_0_0EXConstants (from `./versioned-react-native/ABI29_0_0/EXConstants`)
   - ABI29_0_0EXConstantsInterface (from `./versioned-react-native/ABI29_0_0/EXConstantsInterface`)
   - ABI29_0_0EXCore (from `./versioned-react-native/ABI29_0_0/EXCore`)
-  - ABI29_0_0EXFaceDetector (from `./versioned-react-native/ABI29_0_0/EXFaceDetector`)
   - ABI29_0_0EXFaceDetectorInterface (from `./versioned-react-native/ABI29_0_0/EXFaceDetectorInterface`)
   - ABI29_0_0EXFileSystem (from `./versioned-react-native/ABI29_0_0/EXFileSystem`)
   - ABI29_0_0EXFileSystemInterface (from `./versioned-react-native/ABI29_0_0/EXFileSystemInterface`)
@@ -1197,7 +1251,6 @@ DEPENDENCIES:
   - ABI30_0_0EXConstantsInterface (from `./versioned-react-native/ABI30_0_0/EXConstantsInterface`)
   - ABI30_0_0EXContacts (from `./versioned-react-native/ABI30_0_0/EXContacts`)
   - ABI30_0_0EXCore (from `./versioned-react-native/ABI30_0_0/EXCore`)
-  - ABI30_0_0EXFaceDetector (from `./versioned-react-native/ABI30_0_0/EXFaceDetector`)
   - ABI30_0_0EXFaceDetectorInterface (from `./versioned-react-native/ABI30_0_0/EXFaceDetectorInterface`)
   - ABI30_0_0EXFileSystem (from `./versioned-react-native/ABI30_0_0/EXFileSystem`)
   - ABI30_0_0EXFileSystemInterface (from `./versioned-react-native/ABI30_0_0/EXFileSystemInterface`)
@@ -1225,7 +1278,6 @@ DEPENDENCIES:
   - ABI31_0_0EXConstantsInterface (from `./versioned-react-native/ABI31_0_0/EXConstantsInterface`)
   - ABI31_0_0EXContacts (from `./versioned-react-native/ABI31_0_0/EXContacts`)
   - ABI31_0_0EXCore (from `./versioned-react-native/ABI31_0_0/EXCore`)
-  - ABI31_0_0EXFaceDetector (from `./versioned-react-native/ABI31_0_0/EXFaceDetector`)
   - ABI31_0_0EXFaceDetectorInterface (from `./versioned-react-native/ABI31_0_0/EXFaceDetectorInterface`)
   - ABI31_0_0EXFileSystem (from `./versioned-react-native/ABI31_0_0/EXFileSystem`)
   - ABI31_0_0EXFileSystemInterface (from `./versioned-react-native/ABI31_0_0/EXFileSystemInterface`)
@@ -1258,7 +1310,6 @@ DEPENDENCIES:
   - ABI32_0_0EXContacts (from `./versioned-react-native/ABI32_0_0/EXContacts`)
   - ABI32_0_0EXCore (from `./versioned-react-native/ABI32_0_0/EXCore`)
   - ABI32_0_0EXErrors (from `./versioned-react-native/ABI32_0_0/EXErrors`)
-  - ABI32_0_0EXFaceDetector (from `./versioned-react-native/ABI32_0_0/EXFaceDetector`)
   - ABI32_0_0EXFaceDetectorInterface (from `./versioned-react-native/ABI32_0_0/EXFaceDetectorInterface`)
   - ABI32_0_0EXFileSystem (from `./versioned-react-native/ABI32_0_0/EXFileSystem`)
   - ABI32_0_0EXFileSystemInterface (from `./versioned-react-native/ABI32_0_0/EXFileSystemInterface`)
@@ -1498,19 +1549,27 @@ SPEC REPOS:
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCore
+    - FirebaseInstanceID
+    - FirebaseMLCommon
+    - FirebaseMLVision
+    - FirebaseMLVisionFaceModel
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
-    - GoogleInterchangeUtilities
+    - GoogleAPIClientForREST
+    - GoogleAppMeasurement
     - GoogleMaps
     - GoogleMobileVision
-    - GoogleNetworkingUtilities
     - GoogleSignIn
-    - GoogleSymbolUtilities
     - GoogleToolboxForMac
     - GoogleUtilities
     - GTMSessionFetcher
     - JKBigInteger2
     - lottie-ios
+    - nanopb
+    - Protobuf
 
 EXTERNAL SOURCES:
   ABI29_0_0EXCamera:
@@ -1523,8 +1582,6 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI29_0_0/EXConstantsInterface"
   ABI29_0_0EXCore:
     :path: "./versioned-react-native/ABI29_0_0/EXCore"
-  ABI29_0_0EXFaceDetector:
-    :path: "./versioned-react-native/ABI29_0_0/EXFaceDetector"
   ABI29_0_0EXFaceDetectorInterface:
     :path: "./versioned-react-native/ABI29_0_0/EXFaceDetectorInterface"
   ABI29_0_0EXFileSystem:
@@ -1563,8 +1620,6 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI30_0_0/EXContacts"
   ABI30_0_0EXCore:
     :path: "./versioned-react-native/ABI30_0_0/EXCore"
-  ABI30_0_0EXFaceDetector:
-    :path: "./versioned-react-native/ABI30_0_0/EXFaceDetector"
   ABI30_0_0EXFaceDetectorInterface:
     :path: "./versioned-react-native/ABI30_0_0/EXFaceDetectorInterface"
   ABI30_0_0EXFileSystem:
@@ -1619,8 +1674,6 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI31_0_0/EXContacts"
   ABI31_0_0EXCore:
     :path: "./versioned-react-native/ABI31_0_0/EXCore"
-  ABI31_0_0EXFaceDetector:
-    :path: "./versioned-react-native/ABI31_0_0/EXFaceDetector"
   ABI31_0_0EXFaceDetectorInterface:
     :path: "./versioned-react-native/ABI31_0_0/EXFaceDetectorInterface"
   ABI31_0_0EXFileSystem:
@@ -1685,8 +1738,6 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI32_0_0/EXCore"
   ABI32_0_0EXErrors:
     :path: "./versioned-react-native/ABI32_0_0/EXErrors"
-  ABI32_0_0EXFaceDetector:
-    :path: "./versioned-react-native/ABI32_0_0/EXFaceDetector"
   ABI32_0_0EXFaceDetectorInterface:
     :path: "./versioned-react-native/ABI32_0_0/EXFaceDetectorInterface"
   ABI32_0_0EXFileSystem:
@@ -1890,7 +1941,6 @@ SPEC CHECKSUMS:
   ABI29_0_0EXConstants: 697a2e0b34c65902d83779159f961fc5a034d120
   ABI29_0_0EXConstantsInterface: b172e223661d284820fbd69831e8697dd5a20aad
   ABI29_0_0EXCore: c28f236ea9a4b6c042ca4fed18f5ae9b9e392745
-  ABI29_0_0EXFaceDetector: 069eb5fa3372953f92ba1af285cdb2d84141475e
   ABI29_0_0EXFaceDetectorInterface: 403e432f6f90ff2a4aeb68dc637fd403ede3f508
   ABI29_0_0EXFileSystem: 08ecbc804825c7e59f6bff59ce2c71d5bd5d96e8
   ABI29_0_0EXFileSystemInterface: 6ca6998d6edd44fdd48d6bf99436c545b36b8ffa
@@ -1910,7 +1960,6 @@ SPEC CHECKSUMS:
   ABI30_0_0EXConstantsInterface: 9563a4955ba899276b6649416f7a05c061195f0c
   ABI30_0_0EXContacts: 738ecbf8162bde434785f3ed31668f8962d3ccde
   ABI30_0_0EXCore: 7fe317d2b305673ef09577ef3ca0dee522f35da2
-  ABI30_0_0EXFaceDetector: b80f41740c508d026d786b8e5df7b48cd0b5827e
   ABI30_0_0EXFaceDetectorInterface: d3456a64920707567cdec7341df67a35999f8095
   ABI30_0_0EXFileSystem: 488d7f621c838e7f15f8ccf1637769294bfe2817
   ABI30_0_0EXFileSystemInterface: 9e4d2694b6e19f62a7de71960231e427a1bed2d6
@@ -1938,7 +1987,6 @@ SPEC CHECKSUMS:
   ABI31_0_0EXConstantsInterface: f930e48fb6ce4af32ff5bf4c36d03a596a85775c
   ABI31_0_0EXContacts: e85573cb21effd39b0803bb10f8589473d847e6a
   ABI31_0_0EXCore: 5d2c6f983d9f1af90557de60c7994d49dd4ec69f
-  ABI31_0_0EXFaceDetector: 13bdf710d3686dc226c64c4e375722d38e661219
   ABI31_0_0EXFaceDetectorInterface: b57ccf605e2b27ea29ac7816ffb66a40244ce936
   ABI31_0_0EXFileSystem: f5280ef75f72395b85102ef16fea8dee704c8391
   ABI31_0_0EXFileSystemInterface: ed4b286d4b22d58df85355168be2ec7c55d94522
@@ -1971,7 +2019,6 @@ SPEC CHECKSUMS:
   ABI32_0_0EXContacts: 1128fb0c6a0853bea1622bbbe6647f7c04ac788f
   ABI32_0_0EXCore: 5c57e18a8655a598c5dc88015839742c821c03e9
   ABI32_0_0EXErrors: 5732173d5dd5b2defa246ed4d9c2f315d1577df8
-  ABI32_0_0EXFaceDetector: 58c0d4a82c5b9011003157655426e15c7058624c
   ABI32_0_0EXFaceDetectorInterface: e66dce67dd60d257ba756d9c1fb90737e888afce
   ABI32_0_0EXFileSystem: f84e73e3669cdb2809f18bf6bcae13b00cd20577
   ABI32_0_0EXFileSystemInterface: 7aec0d4b4ee4f0b5da5310aea718db8ac246bf4e
@@ -2020,7 +2067,7 @@ SPEC CHECKSUMS:
   EXCrypto: 8a6a2143edba5c25687928b0ea4c20257bf292c4
   EXDocumentPicker: c471a1738be543bcb56e106fbb2969fdf1bce36c
   EXFacebook: 54345b7a2ac76dd1e764d40b007361c4e83af427
-  EXFaceDetector: 24c4b79c6796515cccb0cdf320d5e00ec9d17a99
+  EXFaceDetector: 344a6bc0d027a4b0c3c5b4f36ce399fceca535b5
   EXFileSystem: 22a53ba7e31987166aca49778e53cce8181b1ad8
   EXFont: f01cffd265689fe1a353914a5d377f2d7e3804b3
   EXGL: f04f144b09c504a6989376ec53379a9766022e34
@@ -2052,29 +2099,37 @@ SPEC CHECKSUMS:
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
   FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
+  Firebase: 2f5235e62f141cb86181c3af0dfe4509706351ac
+  FirebaseAnalytics: fd72a26bf8dac84cefba2f0864366f718555a5b0
+  FirebaseCore: f1a9a8be1aee4bf71a2fc0f4096df6788bdfda61
+  FirebaseInstanceID: a122b0c258720cf250551bb2bedf48c699f80d90
+  FirebaseMLCommon: 192c49ec584f1fb559747f1da8052441158b04d7
+  FirebaseMLVision: 257d9f1eaac1565f4dac67adf8b76805fa2a9a80
+  FirebaseMLVisionFaceModel: ff73614967036054129a28bdeae31db8bc16cbbc
   Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
   glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
-  GoogleInterchangeUtilities: d5bc4d88d5b661ab72f9d70c58d02ca8c27ad1f7
+  GoogleAPIClientForREST: 5447a194eae517986cafe6421a5330b80b820591
+  GoogleAppMeasurement: 1624046ab1bcc5e170061a56ef5679000b079c8e
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
-  GoogleMobileVision: d344d69c8987ee239c8a47257e2039084682d181
-  GoogleNetworkingUtilities: 3edd3a8161347494f2da60ea0deddc8a472d94cb
+  GoogleMobileVision: a1f93108b3527d67339e2de80e1db76645f9e8b9
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
-  GoogleSymbolUtilities: 631ee17048aa5e9ab133470d768ea997a5ef9b96
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
-  GoogleUtilities: 8bbc733218aad26306f9d4a253823986110e3358
+  GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
-  lottie-ios: 3fef45d3fabe63e3c7c2eb603dd64ddfffc73062
+  lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
-  ReactABI26_0_0: d4d795143f0c4d4178b46b680e08ab15dadeb428
-  ReactABI27_0_0: 116223f1e2d03ff282f020792e5bd8078cb41d20
-  ReactABI28_0_0: f6e3790bb09c4288518be94e257abb08921e43f2
-  ReactABI29_0_0: d06c0c6ceb828ce1dce4b57007bb32c19326dbdb
-  ReactABI30_0_0: 801e156645b710af58dd6ce33df3a828f2be27a1
-  ReactABI31_0_0: 1153bcc4d2a62453ea9105fcf8f56ed6d9566ca0
-  ReactABI32_0_0: 474f19ba214d520d8dfa91a450ab41496486158d
+  ReactABI26_0_0: 2066c54b7f89d861e8f48232c44280723bd483de
+  ReactABI27_0_0: 718f4ab70938b1869351fd72a2176accc8456e22
+  ReactABI28_0_0: d85d3616d75c10c3a9fa18577ba5344e1027638e
+  ReactABI29_0_0: d9cbd0027c7ac8ed84fd4fbc1d47b4cdce60b6b6
+  ReactABI30_0_0: 6fa8d85f4dceb58da6b45e736bea6f79655dbefb
+  ReactABI31_0_0: bc75f426cd115f64a1d88544eb45a32b558ec7da
+  ReactABI32_0_0: b8837fc7fab77004365120b372aaf1bae796ac67
   UMBarCodeScannerInterface: f623227f2f6e8fa5c45fef1cc2b5ae200dd14918
   UMCameraInterface: 2a22ae5a2d4f710d617e3fd2c5c0511019aea1c7
   UMConstantsInterface: 9884d2a4a4563b20d7efbafba421151698dd8991
@@ -2096,6 +2151,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: ce0101a624a69a0a88530ef162d81d176c4e4fe5
+PODFILE CHECKSUM: 6e4e5cdd8a332e6d9251c3e2dce3e627c209d5ec
 
 COCOAPODS: 1.5.3

@@ -95,7 +95,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI30_0_0EXImageLoaderInterface"
     ss.dependency         "ABI30_0_0EXFaceDetectorInterface"
     ss.dependency         "ABI30_0_0EXBarCodeScannerInterface"
-    ss.dependency         "ABI30_0_0EXFaceDetector"
+#    ss.dependency         "ABI30_0_0EXFaceDetector"
     ss.dependency         "EXGL-CPP"
     ss.dependency         "Amplitude-iOS"
     ss.dependency         "Analytics"

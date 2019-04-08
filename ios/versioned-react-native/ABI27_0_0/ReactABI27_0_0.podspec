@@ -88,8 +88,9 @@ Pod::Spec.new do |s|
 
   s.subspec "ExpoOptional" do |ss|
     ss.dependency         "ReactABI27_0_0/Expo"
-    ss.dependency "GoogleMobileVision/FaceDetector"
-    ss.dependency "GoogleMobileVision/MVDataOutput"
+    ss.dependency         "Firebase/Core"
+    ss.dependency         "Firebase/MLVision"
+    ss.dependency         "Firebase/MLVisionFaceModel"
     ss.source_files     = "Expo/Optional/**/*.{h,m}"
   end
 

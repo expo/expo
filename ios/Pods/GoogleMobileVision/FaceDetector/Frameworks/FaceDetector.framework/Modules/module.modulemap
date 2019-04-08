@@ -1,0 +1,4 @@
+framework module FaceDetector {
+  export *
+  module * { export *}
+  link framework "Accelerate"}

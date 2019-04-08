@@ -1,0 +1,1 @@
+../../../../FirebaseMLCommon/Frameworks/FirebaseMLCommon.framework/Headers/FIRModelDownloadConditions.h
