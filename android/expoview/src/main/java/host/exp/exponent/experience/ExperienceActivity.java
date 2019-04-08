@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
@@ -28,6 +27,7 @@ import com.facebook.soloader.SoLoader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.interfaces.Package;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
@@ -37,7 +37,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import org.unimodules.core.interfaces.Package;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
@@ -78,6 +77,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // Experience must pick its own modules in ExponentPackage
     return null;
   }
+
   public List<ReactPackage> reactPackages() {
     return null;
   }
