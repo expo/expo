@@ -2,15 +2,6 @@
 
 #import "EXScopedEventEmitter.h"
 
-typedef NS_ENUM(NSInteger, EXClientReleaseType) {
-  EXClientReleaseTypeUnknown,
-  EXClientReleaseSimulator,
-  EXClientReleaseEnterprise,
-  EXClientReleaseDev,
-  EXClientReleaseAdHoc,
-  EXClientReleaseAppStore
-};
-
 @class EXHomeModule;
 
 @protocol EXHomeModuleDelegate <NSObject>
@@ -50,9 +41,5 @@ typedef NS_ENUM(NSInteger, EXClientReleaseType) {
                    body: (NSDictionary *)eventBody
               onSuccess: (void (^)(NSDictionary *))success
               onFailure: (void (^)(NSString *))failure;
-
-+ (EXClientReleaseType)clientReleaseType;
-
-+ (NSString *)clientReleaseTypeToString:(EXClientReleaseType)releaseType;
 
 @end

@@ -6,6 +6,7 @@
 #import "EXSession.h"
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
+#import "EXProvisioningProfile.h"
 
 #import <React/RCTUtils.h>
 
@@ -97,7 +98,7 @@ NSTimeInterval const EXFileDownloaderDefaultTimeoutInterval = 60;
     clientEnvironment = @"EXPO_SIMULATOR";
 #endif
   }
-  NSString * clientReleaseType= [EXHomeModule clientReleaseTypeToString:[EXHomeModule clientReleaseType]];
+  NSString * clientReleaseType= [EXProvisioningProfile clientReleaseTypeToString:[EXProvisioningProfile clientReleaseType]];
   
   [request setValue:releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
