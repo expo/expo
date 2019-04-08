@@ -2,23 +2,11 @@
 
 #import <UMCore/UMAppDelegateWrapper.h>
 #import <EXGoogleSignIn/EXGoogleSignInDelegate.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
 @implementation EXGoogleSignInDelegate
 
-void UMRegisterSubcontractor(Class);
-
-+ (void)load {
-  UMRegisterSubcontractor([self sharedInstance]);
-}
-
-+ (id)sharedInstance {
-  static EXGoogleSignInDelegate *sharedInstance = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
-  });
-  return sharedInstance;
-}
+UM_REGISTER_SINGLETON_MODULE(singleton_nameEXGoogleSignInDelegate)
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {

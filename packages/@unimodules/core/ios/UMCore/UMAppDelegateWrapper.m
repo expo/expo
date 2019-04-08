@@ -2,17 +2,11 @@
 
 #import <UMCore/UMAppDelegateWrapper.h>
 #import <Foundation/FoundationErrors.h>
+#import <UMCore/UMModuleRegistryProvider.h>
 
 static NSMutableArray<id<UIApplicationDelegate>> *subcontractors;
+static NSMutableDictionary<NSString*,NSArray<id<UIApplicationDelegate>>*> *subcontractorsForSelector;
 static dispatch_once_t onceToken;
-
-extern void UMRegisterSubcontractor(id<UIApplicationDelegate> subcontractorClass)
-{
-  dispatch_once(&onceToken, ^{
-    subcontractors = [[NSMutableArray alloc] init];
-  });
-  [subcontractors addObject:subcontractorClass];
-}
 
 @implementation UMAppDelegateWrapper
 
@@ -21,12 +15,11 @@ extern void UMRegisterSubcontractor(id<UIApplicationDelegate> subcontractorClass
   BOOL answer = NO;
   
   SEL selector = @selector(application:didFinishLaunchingWithOptions:);
+   NSArray<id<UIApplicationDelegate>> *subcontractorsArray = [self getSubcontractorsImplementingSelector:selector];
   
-  for(id<UIApplicationDelegate> subcontractor in subcontractors) {
+  for(id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
     BOOL subcontractorAnswer = NO;
-    if ([subcontractor respondsToSelector:selector]) {
       subcontractorAnswer = [subcontractor application:application didFinishLaunchingWithOptions:launchOptions];
-    }
     answer  = answer || subcontractorAnswer;
   }
   
@@ -37,11 +30,9 @@ extern void UMRegisterSubcontractor(id<UIApplicationDelegate> subcontractorClass
 {
   
   SEL selector = @selector(application:openURL:options:);
+  NSArray<id<UIApplicationDelegate>> *subcontractorsArray = [self getSubcontractorsImplementingSelector:selector];
   
-  for(id<UIApplicationDelegate> subcontractor in subcontractors) {
-    if (![subcontractor respondsToSelector:selector]) {
-      continue;
-    }
+  for(id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
     BOOL subcontractorAnswer = [subcontractor application:app openURL:url options:options];
     if (subcontractorAnswer) {
       return YES;
@@ -54,9 +45,9 @@ extern void UMRegisterSubcontractor(id<UIApplicationDelegate> subcontractorClass
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
   SEL selector = @selector(application:performFetchWithCompletionHandler:);
-  NSArray<id<UIApplicationDelegate>> *appDelegates = [self getAppDelegatesImplementingSelector:selector];
+  NSArray<id<UIApplicationDelegate>> *subcontractorsArray = [self getSubcontractorsImplementingSelector:selector];
   
-  __block NSUInteger working = [appDelegates count] ;
+  __block NSUInteger working = [subcontractorsArray count] ;
   __block UIBackgroundFetchResult fetchResult = UIBackgroundFetchResultNoData;
   __block NSObject *lock = [NSObject new];
   
@@ -75,20 +66,48 @@ extern void UMRegisterSubcontractor(id<UIApplicationDelegate> subcontractorClass
     }
   };
   
-  for (id<UIApplicationDelegate> subcontractor in appDelegates) {
+  for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
     [subcontractor application:application performFetchWithCompletionHandler:handler];
   }
 }
 
-- (NSArray<id<UIApplicationDelegate>> *) getAppDelegatesImplementingSelector:(SEL) selector {
-  NSMutableArray<id<UIApplicationDelegate>> *appDelegates = [NSMutableArray new];
+- (void) initSubcontractorsOnce {
+  dispatch_once(&onceToken, ^{
+    subcontractors = [[NSMutableArray alloc] init];
+    subcontractorsForSelector = [NSMutableDictionary new];
+    
+    NSArray<UMSingletonModule*> * singletonModules = [[[UMModuleRegistryProvider singletonModules] allObjects] mutableCopy];
+    
+    for (UMSingletonModule *singletonModule in singletonModules) {
+      if ([singletonModule conformsToProtocol:@protocol(UIApplicationDelegate)]) {
+        id<UIApplicationDelegate> subcontractor = singletonModule;
+        [subcontractors addObject:subcontractor];
+      }
+    }
+  });
+}
+
+- (NSArray<id<UIApplicationDelegate>> *) getSubcontractorsImplementingSelector:(SEL) selector {
+  
+  [self initSubcontractorsOnce];
+  
+  NSString *selectorKey = NSStringFromSelector(selector);
+  
+  if ([subcontractorsForSelector objectForKey:selectorKey] != nil) {
+    return [subcontractorsForSelector objectForKey:selectorKey];
+  }
+  
+  NSMutableArray<id<UIApplicationDelegate>> *result = [NSMutableArray new];
   
   for (id<UIApplicationDelegate> subcontractor in subcontractors) {
     if ([subcontractor respondsToSelector:selector]) {
-      [appDelegates addObject:subcontractor];
+      [result addObject:subcontractor];
     }
   }
-  return appDelegates;
+  
+  [subcontractorsForSelector setObject:result forKey:selectorKey];
+  
+  return result;
 }
 
 

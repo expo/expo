@@ -7,20 +7,7 @@
 
 @implementation EXFacebookAppDelegate
 
-void UMRegisterSubcontractor(Class);
-
-+ (void)load {
-  UMRegisterSubcontractor([self sharedInstance]);
-}
-
-+ (id)sharedInstance {
-  static EXFacebookAppDelegate *sharedInstance = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
-  });
-  return sharedInstance;
-}
+UM_REGISTER_SINGLETON_MODULE(singleton_nameEXFacebookAppDelegate)
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {

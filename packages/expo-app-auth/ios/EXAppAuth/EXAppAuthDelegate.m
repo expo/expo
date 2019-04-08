@@ -5,20 +5,7 @@
 
 @implementation EXAppAuthDelegate
 
-void UMRegisterSubcontractor(Class);
-
-+ (void)load {
-  UMRegisterSubcontractor([self sharedInstance]);
-}
-
-+ (id)sharedInstance {
-  static EXAppAuthDelegate *sharedInstance = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
-  });
-  return sharedInstance;
-}
+UM_REGISTER_SINGLETON_MODULE(EXAppAuthDelegate)
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
