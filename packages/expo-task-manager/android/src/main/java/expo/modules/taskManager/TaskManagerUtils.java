@@ -200,7 +200,6 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     return createJobInfoBuilder(context, task, data)
         .setMinimumLatency(0)
         .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE)
-        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
         .build();
   }
 
