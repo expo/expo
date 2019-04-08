@@ -7,6 +7,7 @@ import {
   View,
   Text,
   Platform,
+  Linking,
   Alert,
   Button,
   PixelRatio,
@@ -54,6 +55,19 @@ export default class SelectScreen extends React.PureComponent {
     this.state = {
       selected: new Set(),
     };
+  }
+
+  componentDidMount() {
+    Linking.getInitialURL()
+      .then(url => {
+        if (url && url.indexOf('/all') > -1) {
+          // Test all available modules
+          this.props.navigation.navigate('RunTests', {
+            selected: this.modules,
+          });
+        }
+      })
+      .catch(err => console.error('Failed to load initial URL', err));
   }
 
   static navigationOptions = {
