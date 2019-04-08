@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="32.0.0" status="integration" publication="20190219110626"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="32.0.0" status="integration" publication="20190408115147"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -179,7 +179,6 @@
     <dependency org="com.airbnb.android" name="lottie" rev="2.5.5" conf="api-&gt;default">
       <exclude org="com.android.support" module="appcompat-v7"/>
     </dependency>
-    <dependency org="io.branch.sdk.android" name="library" rev="2.17.1" conf="api-&gt;default"/>
     <dependency org="com.android.support" name="exifinterface" rev="27.1.1" conf="api-&gt;default"/>
     <dependency org="com.google.firebase" name="firebase-core" rev="16.0.1" conf="api-&gt;default"/>
     <dependency org="com.google.firebase" name="firebase-messaging" rev="17.1.0" conf="api-&gt;default"/>
