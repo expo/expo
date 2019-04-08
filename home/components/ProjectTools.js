@@ -6,6 +6,8 @@ import React from 'react';
 import { AppState, Clipboard, Platform, View } from 'react-native';
 import { Constants } from 'expo';
 
+import Environment from '../utils/Environment';
+
 import QRCodeButton from './QRCodeButton';
 import OpenFromClipboardButton from './OpenFromClipboardButton';
 
@@ -65,10 +67,11 @@ export default class ProjectTools extends React.Component {
 
   render() {
     let { clipboardContents, displayOpenClipboardButton } = this.state;
+    const shouldDisplayQRCodeButton = Constants.isDevice && !Environment.IsIOSRestrictedBuild;
 
     return (
       <View style={{ marginBottom: 15 }}>
-        {Platform.OS === 'android' && Constants.isDevice ? (
+        {shouldDisplayQRCodeButton ? (
           <QRCodeButton fullWidthBorder={!displayOpenClipboardButton} />
         ) : null}
         <OpenFromClipboardButton

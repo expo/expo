@@ -25,6 +25,7 @@ import QRCodeScreen from '../screens/QRCodeScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
+import Environment from '../utils/Environment';
 
 import Colors from '../constants/Colors';
 import defaultNavigationOptions from './defaultNavigationOptions';
@@ -150,7 +151,7 @@ if (Platform.OS === 'android') {
     ProfileStack,
   };
 } else {
-  if (Constants.isDevice) {
+  if (Environment.IsIOSRestrictedBuild) {
     TabRoutes = {
       ProjectsStack,
       DiagnosticsStack,
@@ -168,7 +169,7 @@ if (Platform.OS === 'android') {
 const TabNavigator =
   Platform.OS === 'ios'
     ? createBottomTabNavigator(TabRoutes, {
-        initialRouteName: 'ProfileStack',
+        initialRouteName: Environment.IsIOSRestrictedBuild ? 'ProfileStack' : 'ProjectsStack',
         navigationOptions: {
           header: null,
         },
