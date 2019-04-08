@@ -2,28 +2,25 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
 
-type Props = {
-  tint: BlurTint;
-} & React.ComponentProps<typeof View>;
-type BlurTint = 'light' | 'dark' | 'default';
+import { BlurTint, Props } from './BlurView.types';
+import getBackgroundColor from './getBackgroundColor';
 
 export default class BlurView extends React.Component<Props> {
   static propTypes = {
-    tint: PropTypes.oneOf(['light', 'default', 'dark']),
     ...ViewPropTypes,
+    tint: PropTypes.oneOf(['light', 'default', 'dark'] as BlurTint[]).isRequired,
+    intensity: PropTypes.number.isRequired,
+  };
+
+  static defaultProps = {
+    tint: 'default' as BlurTint,
+    intensity: 100,
   };
 
   render() {
-    let { tint, ...props } = this.props;
+    let { tint, intensity, ...props } = this.props;
 
-    let backgroundColor;
-    if (tint === 'dark') {
-      backgroundColor = 'rgba(0,0,0,0.5)';
-    } else if (tint === 'light') {
-      backgroundColor = 'rgba(255,255,255,0.7)';
-    } else {
-      backgroundColor = 'rgba(255,255,255,0.4)';
-    }
+    let backgroundColor = getBackgroundColor(intensity, tint);
 
     return <View {...props} style={[this.props.style, { backgroundColor }]} />;
   }
