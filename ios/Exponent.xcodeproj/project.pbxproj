@@ -16,6 +16,7 @@
 		0779EE2820977C9E00C2D71B /* AIRDummyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0779EE2420977C9E00C2D71B /* AIRDummyView.m */; };
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
 		08FCA2B1B8F4B2420E552303 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC01B7874B93745E639DFA6 /* libPods-Tests.a */; };
+		0C66FDDE225B469000BBA356 /* EXAppDelegateSingletonModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C66FDDD225B469000BBA356 /* EXAppDelegateSingletonModule.m */; };
 		19065BE72006015D007706D6 /* EXFileSystemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19065BE62006015D007706D6 /* EXFileSystemManager.m */; };
 		19382BA91EC2EACC001ED4A1 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXBranchManager.m */; };
 		19A04FA4209119B300D6EFE9 /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 19A04F9E209119B200D6EFE9 /* BranchEvent+RNBranch.m */; };
@@ -336,6 +337,8 @@
 		0779EE2520977C9E00C2D71B /* AIRGoogleMapOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapOverlay.h; sourceTree = "<group>"; };
 		0799CFD821839B470039E97C /* EXSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSession.h; sourceTree = "<group>"; };
 		0799CFD921839B520039E97C /* EXSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSession.m; sourceTree = "<group>"; };
+		0C66FDDC225B469000BBA356 /* EXAppDelegateSingletonModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppDelegateSingletonModule.h; sourceTree = "<group>"; };
+		0C66FDDD225B469000BBA356 /* EXAppDelegateSingletonModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppDelegateSingletonModule.m; sourceTree = "<group>"; };
 		13E8F108A9CD2612A9EB2573 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		19065BE52006015D007706D6 /* EXFileSystemManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXFileSystemManager.h; sourceTree = "<group>"; };
 		19065BE62006015D007706D6 /* EXFileSystemManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFileSystemManager.m; sourceTree = "<group>"; };
@@ -1358,6 +1361,8 @@
 			children = (
 				B56C65C3204768F2002B2424 /* EXAppDelegate.h */,
 				B56C65C2204768F2002B2424 /* EXAppDelegate.m */,
+				0C66FDDC225B469000BBA356 /* EXAppDelegateSingletonModule.h */,
+				0C66FDDD225B469000BBA356 /* EXAppDelegateSingletonModule.m */,
 				B56C65C0204768F2002B2424 /* EXRootViewController.h */,
 				B56C65C1204768F2002B2424 /* EXRootViewController.m */,
 				B56C65C5204768F2002B2424 /* EXHomeAppManager.h */,
@@ -2502,6 +2507,7 @@
 				3159BB9121806E76002D2A81 /* RNSVGEllipseManager.m in Sources */,
 				BB5BD32B20AEFCB4007E02FC /* REANodesManager.m in Sources */,
 				BB50E88F20B9C0D3003C752D /* RNPanHandler.m in Sources */,
+				0C66FDDE225B469000BBA356 /* EXAppDelegateSingletonModule.m in Sources */,
 				B5FB74B61FF6DADC001C764B /* EXViewShot.m in Sources */,
 				3159BB9E21806E76002D2A81 /* RNSVGSvgViewManager.m in Sources */,
 				78343619205B8C5F00DD28C3 /* AIRMapCalloutManager.m in Sources */,
