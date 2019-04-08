@@ -33,14 +33,12 @@ class ListItem extends React.Component {
   render() {
     return Platform.select({
       android: (
-        <TouchableNativeFeedback
-          onPress={this.onPress}
-          background={TouchableNativeFeedback.Ripple('gray')}>
+        <TouchableNativeFeedback onPress={this.onPress}>
           {this.renderView()}
         </TouchableNativeFeedback>
       ),
       default: (
-        <TouchableHighlight onPress={this.onPress} underlayColor="gray">
+        <TouchableHighlight onPress={this.onPress} underlayColor="lightgray">
           {this.renderView()}
         </TouchableHighlight>
       ),
