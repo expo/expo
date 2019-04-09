@@ -81,7 +81,7 @@ export default class CameraExample extends React.Component {
 
 ### Comprehensive Example
 
-Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@community/camerja](https://expo.io/@community/camerja).
+Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@documentation/camerja](https://expo.io/@documentation/camerja).
 
 ## API
 
