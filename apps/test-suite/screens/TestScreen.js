@@ -23,8 +23,6 @@ export default class TestScreen extends React.Component {
     this._results = '';
     this._failures = '';
     this._scrollViewRef = null;
-
-    this._runTests = this._runTests.bind(this);
   }
 
   componentDidMount() {
@@ -61,7 +59,7 @@ export default class TestScreen extends React.Component {
     });
   };
 
-  async _runTests(modules) {
+  _runTests = async modules => {
     // Reset results state
     this.setState(TestScreen.initialState);
 
@@ -77,7 +75,7 @@ export default class TestScreen extends React.Component {
     );
 
     jasmineEnv.execute();
-  }
+  };
 
   async _setupJasmine() {
     // Init

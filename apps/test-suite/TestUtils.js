@@ -72,14 +72,12 @@ export function getTestModules() {
     require('./tests/FBBannerAd'),
     require('./tests/TaskManager'),
   ];
+  if (Platform.OS === 'android') modules.push(require('./tests/JSC'));
   if (Constants.isDevice) {
     modules.push(require('./tests/Brightness'));
     modules.push(require('./tests/BarCodeScanner'));
-    if (Platform.OS === 'android') {
-      modules.push(require('./tests/JSC'));
-      // The Camera tests are flaky on iOS, i.e. they fail randomly
-      modules.push(require('./tests/Camera'));
-    }
+    // The Camera tests are flaky on iOS, i.e. they fail randomly
+    if (Platform.OS === 'android') modules.push(require('./tests/Camera'));
   }
   return modules;
 }
@@ -89,7 +87,7 @@ export async function acceptPermissionsAndRunCommandAsync(fn) {
     return await fn();
   }
 
-  let results = await Promise.all([
+  const results = await Promise.all([
     ExponentTest.action({
       selectorType: 'text',
       selectorValue: 'Allow',

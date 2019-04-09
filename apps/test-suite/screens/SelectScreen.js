@@ -60,6 +60,7 @@ export default class SelectScreen extends React.PureComponent {
   componentDidMount() {
     Linking.getInitialURL()
       .then(url => {
+        // TODO: Use Expo Linking library once parseURL is implemented for web
         if (url && url.indexOf('/all') > -1) {
           // Test all available modules
           this.props.navigation.navigate('RunTests', {
