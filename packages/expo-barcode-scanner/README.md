@@ -25,7 +25,19 @@ Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
+1. Append the following lines to `android/settings.gradle`:
+
+```gradle
+include ':expo-barcode-scanner'
+project(':expo-barcode-scanner').projectDir = new File(rootProject.projectDir, '../node_modules/expo-barcode-scanner/android')
+```
+
+2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
+```gradle
+api project(':expo-barcode-scanner')
+```
+
+3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
 ```java
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 ```
