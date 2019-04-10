@@ -9,6 +9,7 @@ import LinearGradient from './screens/LinearGradient';
 import ImageManipulator from './screens/ImageManipulator';
 import ViewShot from './screens/ViewShot';
 import Font from './screens/Font';
+import SVG from './screens/SVG/examples.js';
 
 export default createBrowserApp(
   createSwitchNavigator({
@@ -19,5 +20,6 @@ export default createBrowserApp(
     ImageManipulator,
     ViewShot,
     Font,
+    ...SVG,
   })
 );

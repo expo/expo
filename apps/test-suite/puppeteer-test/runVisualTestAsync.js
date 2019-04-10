@@ -38,19 +38,18 @@ async function visuallyTestElementsOnPageAsync(page, pageName) {
 
 async function runVisualTestOnPagesAsync(url, pagesToTest) {
   return new Promise(async (resolve, reject) => {
-    const failed = await Promise.all(
-      pagesToTest.map(async pageName => {
-        const pageUrl = `${url}/${pageName}`;
-        const page = await getPageAsync(reject);
+    let failed = [];
 
-        await page.goto(pageUrl, {
-          waitUntil: 'networkidle2',
-        });
+    for (const pageName of pagesToTest) {
+      const pageUrl = `${url}/${pageName}`;
+      const page = await getPageAsync(reject);
 
-        const failed = await visuallyTestElementsOnPageAsync(page, pageName);
-        return failed;
-      })
-    );
+      await page.goto(pageUrl, {
+        waitUntil: 'networkidle2',
+      });
+
+      failed.push(await visuallyTestElementsOnPageAsync(page, pageName));
+    }
 
     if (failed.filter(results => results.length).length) {
       reject(new Error());
