@@ -5,3 +5,5 @@ npm-debug.*
 *.p12
 *.key
 *.mobileprovision
+web-build/
+web-report/
