@@ -26,8 +26,8 @@ export default class TestScreen extends React.Component {
   }
 
   componentDidMount() {
-    const { navigation } = this.props;
-    const selectedModules = navigation.getParam('selected');
+    const { navigation, selected } = this.props;
+    const selectedModules = selected || navigation.getParam('selected');
     this._runTests(selectedModules);
     this._isMounted = true;
   }
