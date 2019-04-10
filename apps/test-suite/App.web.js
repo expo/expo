@@ -7,6 +7,8 @@ import App from './App.js';
 import BlurView from './screens/BlurView';
 import LinearGradient from './screens/LinearGradient';
 import ImageManipulator from './screens/ImageManipulator';
+import ViewShot from './screens/ViewShot';
+import Font from './screens/Font';
 
 export default createBrowserApp(
   createSwitchNavigator({
@@ -15,5 +17,7 @@ export default createBrowserApp(
     LinearGradient,
     BlurView,
     ImageManipulator,
+    ViewShot,
+    Font,
   })
 );
