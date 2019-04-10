@@ -38,26 +38,41 @@ async function visuallyTestElementsOnPageAsync(page, pageName) {
 }
 
 async function runVisualTestOnPagesAsync(url, pagesToTest) {
-  let failed = [];
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
-  for (const pageName of pagesToTest) {
-    const pageUrl = `${url}/${pageName}`;
-    const page = await getPageAsync(browser, error => {
-      throw error;
-    });
 
-    await page.goto(pageUrl, {
-      waitUntil: 'networkidle2',
-    });
-    failed.push(await visuallyTestElementsOnPageAsync(page, pageName));
-  }
+  console.log();
+  let failed = await Promise.all(
+    pagesToTest.map(async pageName => {
+      console.time(pageName);
+      const pageUrl = `${url}/${pageName}`;
+      const page = await getPageAsync(browser, error => {
+        throw error;
+      });
+
+      await page.goto(pageUrl, {
+        waitUntil: 'networkidle2',
+      });
+      const fails = await visuallyTestElementsOnPageAsync(page, pageName);
+      await page.close();
+      console.timeEnd(pageName);
+      console.log();
+      return fails;
+    })
+  );
+
+  let actuallyFailed = failed.filter(results => results.length);
 
   await browser.close();
 
-  if (failed.filter(results => results.length).length) {
+  for (const failedSuite of actuallyFailed) {
+    for (const failedTest of failedSuite) {
+      console.log(chalk.red(failedTest.message));
+    }
+  }
+  if (actuallyFailed.length) {
     throw new Error();
   }
 }

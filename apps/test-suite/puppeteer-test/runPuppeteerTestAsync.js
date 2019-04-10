@@ -1,3 +1,4 @@
+const puppeteer = require('puppeteer');
 const { getPageAsync } = require('./PuppeteerUtils');
 
 // 3. Parse a JSHandle into: { value: any, type: string }
@@ -6,7 +7,12 @@ function parseHandle(jsHandle) {
 }
 
 module.exports = async function runPuppeteerAsync(url) {
-  const page = await getPageAsync(error => {
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
+  const page = await getPageAsync(browser, error => {
     throw error;
   });
 

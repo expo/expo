@@ -8,11 +8,39 @@ const runVisualTestAsync = require('./runVisualTestAsync');
 async function main(args) {
   let server;
   try {
+    console.time('Start Webpack');
     const serverInfo = await startProjectAsync(webpackConfig);
     server = serverInfo.server;
     const { url } = serverInfo;
+    console.timeEnd('Start Webpack');
+    console.time('Unit Test');
     await runPuppeteerTestAsync(url);
-    await runVisualTestAsync(url, ['BlurView', 'LinearGradient']);
+    console.timeEnd('Unit Test');
+    console.time('Visual Test');
+    await runVisualTestAsync(url, [
+      'Svg',
+      'Rect',
+      'Circle',
+      'Ellipse',
+      'Line',
+      'Polygon',
+      'Polyline',
+      'Path',
+      'Text',
+      'TextStroke',
+      'Stroking',
+      'G',
+      'Gradients',
+      'Clipping',
+      'Image',
+      'Reusable',
+      'Font',
+      'ImageManipulator',
+      'ViewShot',
+      'BlurView',
+      'LinearGradient',
+    ]);
+    console.timeEnd('Visual Test');
     process.exit(0);
   } catch (error) {
     console.error(error.message);

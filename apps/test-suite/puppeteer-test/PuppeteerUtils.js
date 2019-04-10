@@ -1,4 +1,4 @@
-async function newPageAsync(browser, onError) {
+async function getPageAsync(browser, onError) {
   const page = await browser.newPage();
 
   async function exitOnErrorAsync(msg) {
@@ -16,10 +16,10 @@ async function newPageAsync(browser, onError) {
   return page;
 }
 
-async function screenshotElementsAsync(page, opts = {}) {
-  const selector = opts.selector;
-
-  if (!selector) throw Error('Please provide a selector.');
+async function screenshotElementsAsync(page, { selector }) {
+  if (!selector) {
+    throw Error('Please provide a selector.');
+  }
 
   const rects = await page.evaluate(selector => {
     return [...document.querySelectorAll(selector)].map(element => {
@@ -51,13 +51,7 @@ async function screenshotElementsAsync(page, opts = {}) {
   );
 }
 
-async function getPageAsync(browser, reject) {
-  const page = await newPageAsync(browser, reject);
-  return page;
-}
-
 module.exports = {
-  newPageAsync,
   screenshotElementsAsync,
   getPageAsync,
 };

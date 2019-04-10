@@ -39,7 +39,7 @@ module.exports = async function startProjectAsync(webpackConfig) {
 
   const port = await freeportAsync(8080);
 
-  const host = 'localhost';
+  const host = '0.0.0.0';
 
   try {
     const server = new WebpackDevServer(webpack(config), options);
