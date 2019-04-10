@@ -24,7 +24,6 @@ export default class App extends React.Component {
           this.attemptPhoto();
         }}>
         <LinearGradient
-          accessibilityLabel="target-000"
           colors={['red', 'orange', 'cyan']}
           locations={[0.1, 0.5, 0.8]}
           start={[0, 1]}
