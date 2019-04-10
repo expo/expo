@@ -5,33 +5,19 @@
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMCore/UMUtilities.h>
 #import <EXAppAuth/EXAppAuth+JSON.h>
+#import <EXAppAuth/EXAppAuthSessionsManager.h>
 
 static NSString *const EXAppAuthError = @"ERR_APP_AUTH";
 
-@interface EXAppAuth() {
-  id<OIDExternalUserAgentSession> session;
-}
+@interface EXAppAuth ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
+@property (nonatomic, weak) id<EXAppAuthSessionsManagerInterface> sessionsManager;
 
 @end
 
 @implementation EXAppAuth
-
-static EXAppAuth *shared = nil;
-
-+ (nonnull instancetype)instance {
-  return shared;
-}
-
-- (id)init {
-  self = [super init];
-  if (self != nil) {
-    shared = self;
-  }
-  return self;
-}
 
 #pragma mark - Expo
 
@@ -45,6 +31,7 @@ UM_EXPORT_MODULE(ExpoAppAuth);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+  _sessionsManager = [moduleRegistry getSingletonModuleForName:@"AppAuthSessionsManager"];
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
@@ -125,14 +112,10 @@ UM_EXPORT_METHOD_AS(executeAsync,
                                     additionalParameters:additionalParameters];
 
   [UMUtilities performSynchronouslyOnMainThread:^{
-    __weak typeof(self) weakSelf = self;
-
+    __block id<OIDExternalUserAgentSession> session;
+    __weak id<EXAppAuthSessionsManagerInterface> sessionsManager = self->_sessionsManager;
     OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
-      typeof(self) strongSelf = weakSelf;
-      if (strongSelf != nil) {
-        // Destroy the current session
-        strongSelf->session = nil;
-      }
+      [sessionsManager unregisterSession:session];
       if (authState) {
         NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:authState.lastTokenResponse request:options];
         resolve(tokenResponse);
@@ -151,9 +134,10 @@ UM_EXPORT_METHOD_AS(executeAsync,
     } else {
       presentingViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     }
-    self->session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
-                                                   presentingViewController:presentingViewController
-                                                                   callback:callback];
+    session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
+                                             presentingViewController:presentingViewController
+                                                             callback:callback];
+    [self->_sessionsManager registerSession:session];
   }];
 }
 
@@ -218,12 +202,6 @@ UM_EXPORT_METHOD_AS(executeAsync,
       EXrejectWithError(reject, error);
     }
   };
-}
-
-#pragma mark - Public
-
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
-  return [session resumeExternalUserAgentFlowWithURL:url];
 }
 
 #pragma mark - Static
