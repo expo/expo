@@ -43,7 +43,7 @@ class LinearGradientRotated extends Component {
 }
 
 class GradientUnits extends Component {
-  static title = 'Compare gradientUnits="userSpaceOnUse" width default';
+  static title = 'Compare gradientUnits=userSpaceOnUse width default';
   render() {
     return (
       <View

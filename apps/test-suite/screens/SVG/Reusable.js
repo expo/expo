@@ -89,7 +89,7 @@ class DefsExample extends Component {
 }
 
 class SymbolExample extends Component {
-  static title = 'Symbol example, reuse elements with viewBox prop';
+  static title = 'Symbol example reuse elements with viewBox prop';
   render() {
     return (
       <Svg height="150" width="110">

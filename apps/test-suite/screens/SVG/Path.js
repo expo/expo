@@ -42,7 +42,7 @@ class UnclosedPath extends Component {
 
 class BezierCurve extends Component {
   static title =
-    'The following example creates a quadratic Bézier curve, where A and C are the start and end points, B is the control point';
+    'The following example creates a quadratic Bezier curve where A and C are the start and end points B is the control point';
   render() {
     return (
       <Svg height="200" width="225">

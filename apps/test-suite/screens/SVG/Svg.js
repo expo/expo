@@ -29,7 +29,7 @@ class SvgExample extends Component {
 }
 
 class SvgOpacity extends Component {
-  static title = 'SVG with `opacity` prop';
+  static title = 'SVG with opacity prop';
   render() {
     return (
       <Svg height="100" width="100" opacity="0.2">
@@ -41,7 +41,7 @@ class SvgOpacity extends Component {
 }
 
 class SvgViewbox extends Component {
-  static title = 'SVG with `viewBox="40 20 100 40" and preserveAspectRatio="none"`';
+  static title = 'SVG with viewBox and preserveAspectRatio set to none';
   render() {
     return (
       <Svg height="100" width="100" viewBox="40 20 100 40" preserveAspectRatio="none">

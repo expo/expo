@@ -27,7 +27,7 @@ class FourSidePolygon extends Component {
 }
 
 class StarPolygon extends Component {
-  static title = 'Use the <Polygon /> element to create a star';
+  static title = 'Use the Polygon element to create a star';
   render() {
     return (
       <Svg height="105" width="105">
@@ -45,7 +45,7 @@ class StarPolygon extends Component {
 }
 
 class EvenOddPolygon extends Component {
-  static title = 'Change the fill-rule property to "evenodd"';
+  static title = 'Change the fill-rule property to evenodd';
   render() {
     return (
       <Svg height="105" width="105">

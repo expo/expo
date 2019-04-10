@@ -16,7 +16,7 @@ class LineExample extends Component {
 }
 
 class LineWithStrokeLinecap extends Component {
-  static title = 'Line';
+  static title = 'Line with stroke line cap';
 
   render() {
     return (

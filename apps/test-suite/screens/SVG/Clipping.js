@@ -45,7 +45,7 @@ class ClipPathElement extends Component {
 }
 
 class ClipRule extends Component {
-  static title = 'Clip a group with clipRule="evenodd"';
+  static title = 'Clip a group with clipRule=evenodd';
   render() {
     return (
       <Svg height={200} width={200}>

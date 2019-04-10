@@ -1,16 +1,22 @@
 const { getPageAsync } = require('./PuppeteerUtils');
 
+// 3. Parse a JSHandle into: { value: any, type: string }
+function parseHandle(jsHandle) {
+  return jsHandle.executionContext().evaluate(obj => ({ value: obj, type: typeof obj }), jsHandle);
+}
+
 module.exports = async function runPuppeteerAsync(url) {
-  return new Promise(async (resolve, reject) => {
-    const page = await getPageAsync(reject);
+  const page = await getPageAsync(error => {
+    throw error;
+  });
 
-    // 3. Parse a JSHandle into: { value: any, type: string }
-    function parseHandle(jsHandle) {
-      return jsHandle
-        .executionContext()
-        .evaluate(obj => ({ value: obj, type: typeof obj }), jsHandle);
-    }
+  await page.goto(url, {
+    timeout: 3000000,
+  });
 
+  console.log('Start observing test-suite');
+
+  return new Promise((resolve, reject) => {
     // 1. Observe all console logs on the page
     page.on('console', async msg => {
       // 2. Filter the results into a list of objects
@@ -35,10 +41,5 @@ module.exports = async function runPuppeteerAsync(url) {
         }
       }
     });
-
-    await page.goto(url, {
-      timeout: 3000000,
-    });
-    console.log('Start observing test-suite');
   });
 };

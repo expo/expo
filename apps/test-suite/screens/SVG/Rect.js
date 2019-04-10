@@ -24,7 +24,7 @@ class RectExample extends Component {
 }
 
 class RectStrokeFill extends Component {
-  static title = '`stroke` and `fill` Rect';
+  static title = 'stroke and fill Rect';
   render() {
     return (
       <Svg width="100" height="100">
@@ -66,7 +66,7 @@ class RoundedRect extends Component {
 }
 
 class EllipseRect extends Component {
-  static title = 'Rect with different `rx` and `ry`';
+  static title = 'Rect with different rx and ry';
   render() {
     return (
       <Svg width="100" height="100">
@@ -87,7 +87,7 @@ class EllipseRect extends Component {
 }
 
 class RoundOverflowRect extends Component {
-  static title = 'Rect with `rx` or `ry` overflowed';
+  static title = 'Rect with rx or ry overflowed';
   render() {
     return (
       <Svg width="100" height="100">

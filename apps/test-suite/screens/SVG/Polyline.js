@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 const { Polyline } = Svg;
 class PolylineExample extends Component {
   static title =
-    'The <Polyline> element is used to create any shape that consists of only straight lines';
+    'The Polyline element is used to create any shape that consists of only straight lines';
   render() {
     return (
       <Svg height="100" width="100">

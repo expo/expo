@@ -36,7 +36,7 @@ class PileEllipses extends Component {
 }
 
 class CombinedEllipses extends Component {
-  static title = 'The following example combines two ellipses (one yellow and one white)';
+  static title = 'The following example combines two ellipses one yellow and one white';
   render() {
     return (
       <Svg height="100" width="200">

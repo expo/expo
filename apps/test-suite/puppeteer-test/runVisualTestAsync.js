@@ -5,7 +5,7 @@ const { compareImagesAsync } = require('./ImageUtils');
 
 async function visuallyTestElementsOnPageAsync(page, pageName) {
   return new Promise(async (resolve, reject) => {
-    const outputFolder = 'snapshots'; // path.dirname(parentModule());
+    const outputFolder = 'snapshots/' + pageName;
     const elements = await screenshotElementsAsync(page, {
       selector: `[aria-label^='target-']`,
     });
@@ -37,26 +37,22 @@ async function visuallyTestElementsOnPageAsync(page, pageName) {
 }
 
 async function runVisualTestOnPagesAsync(url, pagesToTest) {
-  return new Promise(async (resolve, reject) => {
-    let failed = [];
+  let failed = [];
+  for (const pageName of pagesToTest) {
+    const pageUrl = `${url}/${pageName}`;
+    const page = await getPageAsync(error => {
+      throw error;
+    });
 
-    for (const pageName of pagesToTest) {
-      const pageUrl = `${url}/${pageName}`;
-      const page = await getPageAsync(reject);
+    await page.goto(pageUrl, {
+      waitUntil: 'networkidle2',
+    });
+    failed.push(await visuallyTestElementsOnPageAsync(page, pageName));
+  }
 
-      await page.goto(pageUrl, {
-        waitUntil: 'networkidle2',
-      });
-
-      failed.push(await visuallyTestElementsOnPageAsync(page, pageName));
-    }
-
-    if (failed.filter(results => results.length).length) {
-      reject(new Error());
-    } else {
-      resolve();
-    }
-  });
+  if (failed.filter(results => results.length).length) {
+    throw new Error();
+  }
 }
 
 module.exports = runVisualTestOnPagesAsync;

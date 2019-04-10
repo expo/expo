@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 const { Path, Rect, G, Defs, Stop, RadialGradient, Polyline, ClipPath, Circle, Text } = Svg;
 
 class StrokeExample extends Component {
-  static title = 'The stroke property defines the color of a line, text or outline of an element';
+  static title = 'The stroke property defines the color of a line text or outline of an element';
   render() {
     return (
       <Svg height="80" width="225">
@@ -52,7 +52,7 @@ class StrokeDasharray extends Component {
 
 class StrokeDashoffset extends Component {
   static title =
-    'the strokeDashoffset attribute specifies the distance into the dash pattern to start the dash.';
+    'the strokeDashoffset attribute specifies the distance into the dash pattern to start the dash';
   render() {
     return (
       <Svg height="80" width="200">
@@ -85,7 +85,7 @@ class StrokeDashoffset extends Component {
 }
 
 class StrokePattern extends Component {
-  static title = 'Advanced stroke example.';
+  static title = 'Advanced stroke example';
   render() {
     return (
       <Svg height="80" width="200">

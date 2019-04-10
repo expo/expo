@@ -4,7 +4,7 @@ const freeportAsync = require('freeport-async');
 
 function listenToServerAsync(host, port, server) {
   return new Promise((resolve, reject) => {
-    server.listen(port, host, async error => {
+    server.listen(port, host, error => {
       if (error) {
         reject(error);
       } else {
@@ -38,13 +38,16 @@ module.exports = async function startProjectAsync(webpackConfig) {
   };
 
   const port = await freeportAsync(8080);
+
   const host = 'localhost';
+
   try {
     const server = new WebpackDevServer(webpack(config), options);
     await listenToServerAsync(host, port, server);
     console.log('WebpackDevServer listening at localhost:', port);
 
     const url = `http://${host}:${port}`;
+
     return { server, url };
   } catch (error) {
     throw new Error('WebpackDevServer failed to start: ' + error.message);
