@@ -1,26 +1,8 @@
-const puppeteer = require('puppeteer');
+const { getPageAsync } = require('./PuppeteerUtils');
 
 module.exports = async function runPuppeteerAsync(url) {
   return new Promise(async (resolve, reject) => {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-    const page = await browser.newPage();
-
-    async function exitOnErrorAsync(msg) {
-      await browser.close();
-      reject(new Error('Page threw an error: ' + msg));
-    }
-    page.on('pageerror', async msg => {
-      console.error('pageerror', msg);
-      exitOnErrorAsync(msg);
-    });
-
-    page.on('error', async msg => {
-      console.error('error', msg);
-      exitOnErrorAsync(msg);
-    });
+    const page = await getPageAsync(reject);
 
     // 3. Parse a JSHandle into: { value: any, type: string }
     function parseHandle(jsHandle) {
@@ -44,9 +26,6 @@ module.exports = async function runPuppeteerAsync(url) {
         })[0];
         // 6. Print this for Circle CI debugging if the tests fail
         console.log(results);
-
-        // 7. Close the browser and the webpack server
-        await browser.close();
 
         // 8. If there were any errors, then kill the process with non-zero for CI
         if (results.failed === 0) {

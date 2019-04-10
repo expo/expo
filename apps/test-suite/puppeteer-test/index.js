@@ -3,13 +3,16 @@ const process = require('process');
 const webpackConfig = require('@expo/webpack-config');
 const startProjectAsync = require('./startProjectAsync');
 const runPuppeteerTestAsync = require('./runPuppeteerTestAsync');
+const runVisualTestAsync = require('./runVisualTestAsync');
 
 async function main(args) {
   let server;
   try {
     const serverInfo = await startProjectAsync(webpackConfig);
     server = serverInfo.server;
-    await runPuppeteerTestAsync(serverInfo.url);
+    const { url } = serverInfo;
+    await runPuppeteerTestAsync(url);
+    await runVisualTestAsync(url, ['BlurView', 'LinearGradient']);
     process.exit(0);
   } catch (error) {
     console.error(error.message);

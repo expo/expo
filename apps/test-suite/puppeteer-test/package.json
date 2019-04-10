@@ -13,6 +13,10 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "chalk": "^2.4.2",
+    "fs-extra": "^7.0.1",
+    "node-resemble-js": "^0.2.0",
+    "parent-module": "^1.0.1",
     "puppeteer": "^1.11.0",
     "webpack": "4.24.0",
     "webpack-dev-server": "^3.2.0"
