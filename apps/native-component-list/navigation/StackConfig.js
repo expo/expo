@@ -2,17 +2,9 @@ import { Platform, StyleSheet } from 'react-native';
 import { Colors } from '../constants';
 
 const styles = StyleSheet.create({
-  header: Platform.select({
-    web: {
-      borderBottomWidth: 1,
-      borderBottomColor: '#d1d1d1',
-      backgroundColor: Colors.headerBackground,
-      height: 50,
-    },
-    default: {
-      backgroundColor: Colors.headerBackground,
-    },
-  }),
+  header: {
+    backgroundColor: Colors.headerBackground,
+  },
   headerTitle: {
     color: Colors.headerTitle,
   },

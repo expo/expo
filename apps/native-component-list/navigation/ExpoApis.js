@@ -55,8 +55,10 @@ const MediaLibraryScreens = optionalRequire(() =>
   require('../screens/MediaLibrary/MediaLibraryScreens')
 );
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
+const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
 
 const optionalScreens = {
+  Accelerometer,
   ActionSheet,
   AppAuth,
   Audio,
