@@ -22,10 +22,6 @@
 #import <GoogleSignIn/GoogleSignIn.h>
 #endif
 
-#if __has_include(<ABI32_0_0GoogleSignIn/ABI32_0_0GoogleSignIn.h>)
-#import <GoogleSignIn/GoogleSignIn.h>
-#endif
-
 #if __has_include(<EXFacebook/EXFacebook.h>)
 #import <EXFacebook/EXFacebook.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -101,13 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
   if ([[GIDSignIn sharedInstance] handleURL:url
-                          sourceApplication:sourceApplication
-                                 annotation:annotation]) {
-    return YES;
-  }
-#endif
-#if __has_include(<ABI32_0_0GoogleSignIn/ABI32_0_0GoogleSignIn.h>)
-  if ([[ABI32_0_0GIDSignIn sharedInstance] handleURL:url
                           sourceApplication:sourceApplication
                                  annotation:annotation]) {
     return YES;
