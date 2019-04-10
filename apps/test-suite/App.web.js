@@ -6,6 +6,7 @@ import { createSwitchNavigator } from 'react-navigation';
 import App from './App.js';
 import BlurView from './screens/BlurView';
 import LinearGradient from './screens/LinearGradient';
+import ImageManipulator from './screens/ImageManipulator';
 
 export default createBrowserApp(
   createSwitchNavigator({
@@ -13,5 +14,6 @@ export default createBrowserApp(
     App: { screen: () => <App exp={{}} /> },
     LinearGradient,
     BlurView,
+    ImageManipulator,
   })
 );
