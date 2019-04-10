@@ -86,7 +86,7 @@ async function runPuppeteerAsync() {
     }
   });
 
-  await page.goto(`http://localhost:${port}`, {
+  await page.goto(`http://localhost:${port}/all`, {
     timeout: 3000000,
   });
   console.log('Start observing test-suite');

@@ -4,6 +4,8 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import * as TestUtils from '../TestUtils';
 
+export const name = 'Calendar';
+
 async function createTestCalendarAsync(patch = {}) {
   return await Calendar.createCalendarAsync({
     title: 'Expo test-suite calendar',

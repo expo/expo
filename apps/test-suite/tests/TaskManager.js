@@ -5,6 +5,8 @@ import * as TestUtils from '../TestUtils';
 const DEFINED_TASK_NAME = 'defined task';
 const UNDEFINED_TASK_NAME = 'undefined task';
 
+export const name = 'TaskManager';
+
 export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
