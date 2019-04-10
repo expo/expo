@@ -23,6 +23,7 @@ export default class AdOptionsView extends React.Component {
                 width: this.props.iconSize,
                 height: this.props.iconSize * 2,
             };
+        // style: { alignSelf:'baseline' }
         return (<AdOptionsViewContext.Consumer>
         {(contextValue) => {
             let adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
@@ -36,7 +37,6 @@ export default class AdOptionsView extends React.Component {
 AdOptionsView.defaultProps = {
     iconSize: 23,
     orientation: 'horizontal',
-    style: { alignSelf: 'baseline' },
 };
 export const NativeAdOptionsView = requireNativeViewManager('AdOptionsView');
 //# sourceMappingURL=AdOptionsView.js.map
