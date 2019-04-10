@@ -78,7 +78,6 @@ export function test(t) {
         const handler = ({ url }) => {
           t.expect(url).toEqual(Linking.makeUrl('++message=Redirected automatically by timer'));
           handlerCalled = true;
-          WebBrowser.dismissBrowser();
         };
         Linking.addEventListener('url', handler);
         await WebBrowser.openBrowserAsync(`${redirectingBackendUrl}${Linking.makeUrl('++')}`);
