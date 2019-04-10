@@ -1,6 +1,8 @@
 import { LinearGradient } from 'expo';
 import React from 'react';
-import { Text, ScrollView, View, Image } from 'react-native';
+import { Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import MonoText from '../components/MonoText';
 
 function incrementColor(color, step) {
   const intColor = parseInt(color.substr(1), 16);
@@ -40,86 +42,125 @@ export default class LinearGradientScreen extends React.Component {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          alignItems: 'center',
+          alignItems: 'stretch',
           paddingVertical: 10,
         }}>
         <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
         <LocationsTest locations={[location, 1.0 - location]} />
         <ControlPointTest start={[position, 0]} />
-        <SnapshotTest />
+        {Platform.OS !== 'web' && <SnapshotTest />}
       </ScrollView>
     );
   }
 }
 
-const SnapshotTest = () => (
-  <View>
-    <View style={{ flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-evenly' }}>
-      <LinearGradient
-        colors={['white', 'red']}
-        start={[0.5, 0.5]}
-        end={[1, 1]}
-        style={{
-          width: 100,
-          height: 200,
-          borderWidth: 1,
-          marginVertical: 20,
-          borderColor: 'black',
-        }}
-      />
-      <Image
-        source={require('../assets/images/confusing_gradient.png')}
-        style={{ width: 100, height: 200, marginVertical: 20 }}
-      />
-    </View>
-    <Text style={{ marginHorizontal: 20 }}>The gradients above should look the same.</Text>
-  </View>
-);
+class Container extends React.Component {
+  render() {
+    const { title, children } = this.props;
 
-const ControlPointTest = ({ start = [0.5, 0], end = [0, 1] }) => {
-  const startInfo = `start={[${start.map(point => +point.toFixed(2)).join(', ')}]}`;
-  const endInfo = `end={[${end.map(point => +point.toFixed(2)).join(', ')}]}`;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.containerTitle}>{title}</Text>
+        {children}
+      </View>
+    );
+  }
+}
 
-  return (
-    <View>
-      <LinearGradient
-        start={start}
-        end={end}
-        locations={[0.5, 0.5]}
-        colors={['blue', 'lime']}
-        style={{ width: 200, height: 200 }}
-      />
-      {[startInfo, endInfo].map((pointInfo, index) => (
-        <Text style={{}} key={'--' + index}>
-          {pointInfo}
-        </Text>
-      ))}
-    </View>
-  );
-};
-const ColorsTest = ({ colors }) => {
-  return (
-    <View>
-      <LinearGradient colors={colors} style={{ width: 200, height: 200 }} />
-      {colors.map((color, index) => (
-        <Text style={{ color }} key={'color-' + index}>
-          {color}
-        </Text>
-      ))}
-    </View>
-  );
-};
+class SnapshotTest extends React.Component {
+  render() {
+    return (
+      <Container title="Snapshot">
+        <View
+          style={{ flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-evenly' }}>
+          <LinearGradient
+            colors={['white', 'red']}
+            start={[0.5, 0.5]}
+            end={[1, 1]}
+            style={{
+              width: 100,
+              height: 200,
+              borderWidth: 1,
+              marginVertical: 20,
+              borderColor: 'black',
+            }}
+          />
+          <Image
+            source={require('../assets/images/confusing_gradient.png')}
+            style={{ width: 100, height: 200, marginVertical: 20 }}
+          />
+        </View>
+        <Text style={{ marginHorizontal: 20 }}>The gradients above should look the same.</Text>
+      </Container>
+    );
+  }
+}
 
-const LocationsTest = ({ locations }) => {
-  const locationsInfo = locations.map(location => +location.toFixed(2)).join(', ');
-  return (
-    <View>
-      <LinearGradient
-        colors={['red', 'blue']}
-        locations={locations}
-        style={{ width: 200, height: 200 }}
-      />
-      <Text style={{}}>{`locations={[${locationsInfo}]}`}</Text>
-    </View>
-  );
-};
+class ControlPointTest extends React.Component {
+  render() {
+    const { start = [0.5, 0], end = [0, 1] } = this.props;
+    const startInfo = `start={[${start.map(point => +point.toFixed(2)).join(', ')}]}`;
+    const endInfo = `end={[${end.map(point => +point.toFixed(2)).join(', ')}]}`;
+
+    return (
+      <Container title="Control Points">
+        <View>
+          {[startInfo, endInfo].map((pointInfo, index) => (
+            <MonoText style={{}} key={'--' + index}>
+              {pointInfo}
+            </MonoText>
+          ))}
+        </View>
+        <LinearGradient
+          start={start}
+          end={end}
+          locations={[0.5, 0.5]}
+          colors={['blue', 'lime']}
+          style={{ flex: 1, height: 200 }}
+        />
+      </Container>
+    );
+  }
+}
+
+class ColorsTest extends React.Component {
+  render() {
+    const { colors } = this.props;
+    const info = colors.map(value => `"${value}"`).join(', ');
+    return (
+      <Container title="Colors">
+        <MonoText style={{}}>{`colors={[${info}]}`}</MonoText>
+        <LinearGradient colors={colors} style={{ flex: 1, height: 200 }} />
+      </Container>
+    );
+  }
+}
+
+class LocationsTest extends React.Component {
+  render() {
+    const { locations } = this.props;
+    const locationsInfo = locations.map(location => +location.toFixed(2)).join(', ');
+    return (
+      <Container title="Locations">
+        <MonoText style={{}}>{`locations={[${locationsInfo}]}`}</MonoText>
+        <LinearGradient
+          colors={['red', 'blue']}
+          locations={locations}
+          style={{ flex: 1, height: 200 }}
+        />
+      </Container>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 8,
+  },
+  containerTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+});
