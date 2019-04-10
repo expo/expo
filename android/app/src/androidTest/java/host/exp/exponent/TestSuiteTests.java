@@ -135,7 +135,7 @@ public class TestSuiteTests extends BaseTestClass {
 
   @Rule
   public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS, Manifest.permission.ACCESS_COARSE_LOCATION
-      , Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_CONTACTS);
+      , Manifest.permission.ACCESS_FINE_LOCATION);
 
   @Test
   @ExpoTestSuiteTest
