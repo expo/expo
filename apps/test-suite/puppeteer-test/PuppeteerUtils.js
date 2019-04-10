@@ -1,5 +1,3 @@
-const puppeteer = require('puppeteer');
-
 async function newPageAsync(browser, onError) {
   const page = await browser.newPage();
 
@@ -53,11 +51,7 @@ async function screenshotElementsAsync(page, opts = {}) {
   );
 }
 
-async function getPageAsync(reject) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+async function getPageAsync(browser, reject) {
   const page = await newPageAsync(browser, reject);
   return page;
 }

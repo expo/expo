@@ -2,6 +2,7 @@ const chalk = require('chalk');
 const fs = require('fs-extra');
 const { getPageAsync, screenshotElementsAsync } = require('./PuppeteerUtils');
 const { compareImagesAsync } = require('./ImageUtils');
+const puppeteer = require('puppeteer');
 
 async function visuallyTestElementsOnPageAsync(page, pageName) {
   return new Promise(async (resolve, reject) => {
@@ -38,9 +39,13 @@ async function visuallyTestElementsOnPageAsync(page, pageName) {
 
 async function runVisualTestOnPagesAsync(url, pagesToTest) {
   let failed = [];
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
   for (const pageName of pagesToTest) {
     const pageUrl = `${url}/${pageName}`;
-    const page = await getPageAsync(error => {
+    const page = await getPageAsync(browser, error => {
       throw error;
     });
 
@@ -49,6 +54,8 @@ async function runVisualTestOnPagesAsync(url, pagesToTest) {
     });
     failed.push(await visuallyTestElementsOnPageAsync(page, pageName));
   }
+
+  await browser.close();
 
   if (failed.filter(results => results.length).length) {
     throw new Error();
