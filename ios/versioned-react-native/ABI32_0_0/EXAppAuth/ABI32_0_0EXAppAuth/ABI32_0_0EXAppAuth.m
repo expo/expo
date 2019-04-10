@@ -97,13 +97,13 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
   NSURL *authorizationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"authorizationEndpoint"]];
   NSURL *tokenEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"tokenEndpoint"]];
   NSURL *registrationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"registrationEndpoint"]];
-  
+
   OIDServiceConfiguration *configuration =
   [[OIDServiceConfiguration alloc]
    initWithAuthorizationEndpoint:authorizationEndpoint
    tokenEndpoint:tokenEndpoint
    registrationEndpoint:registrationEndpoint];
-  
+
   return configuration;
 }
 
@@ -123,10 +123,10 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
                                              redirectURL:redirectURL
                                             responseType:OIDResponseTypeCode
                                     additionalParameters:additionalParameters];
-  
+
   [ABI32_0_0EXUtilities performSynchronouslyOnMainThread:^{
     __weak typeof(self) weakSelf = self;
-    
+
     OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
       typeof(self) strongSelf = weakSelf;
       if (strongSelf != nil) {
@@ -162,16 +162,15 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
 {
   NSDictionary *tokenResponse = [ABI32_0_0EXAppAuth tokenResponseNativeToJSON:input];
   NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary:tokenResponse];
-  
+
   NSString *refreshToken;
   if (!input.refreshToken) {
     refreshToken = request[@"refreshToken"];
   } else {
     refreshToken = input.accessToken;
   }
-  
-  [output setValue:@"refreshToken" forKey:ABI32_0_0EXnullIfEmpty(refreshToken)];
-  
+
+  output[@"refreshToken"] = ABI32_0_0EXnullIfEmpty(refreshToken);
   return output;
 }
 
@@ -181,7 +180,7 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
                            reject:(ABI32_0_0EXPromiseRejectBlock)reject {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
-  
+
   OIDTokenRequest *tokenRefreshRequest =
   [[OIDTokenRequest alloc] initWithConfiguration:configuration
                                        grantType:@"refresh_token"
@@ -193,7 +192,7 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
                                     refreshToken:options[@"refreshToken"]
                                     codeVerifier:nil
                             additionalParameters:additionalParameters];
-  
+
   OIDTokenCallback callback = ^(OIDTokenResponse *_Nullable response, NSError *_Nullable error) {
     if (response) {
       NSDictionary *tokenResponse = [ABI32_0_0EXAppAuth _tokenResponseNativeToJSON:response request:options];
@@ -234,10 +233,9 @@ void ABI32_0_0EXrejectWithError(ABI32_0_0EXPromiseRejectBlock reject, NSError *e
   NSString *errorMessage = [NSString stringWithFormat:@"%@: %@", ABI32_0_0EXAppAuthError, error.localizedDescription];
   if (error.localizedFailureReason != nil && ![error.localizedFailureReason isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Reason: %@", errorMessage, error.localizedFailureReason];
   if (error.localizedRecoverySuggestion != nil && ![error.localizedRecoverySuggestion isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Try: %@", errorMessage, error.localizedRecoverySuggestion];
-  
+
   NSString *errorCode = [NSString stringWithFormat:@"%ld", error.code];
   reject(errorCode, errorMessage, error);
 }
 
 @end
-

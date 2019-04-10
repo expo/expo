@@ -1,6 +1,8 @@
 import { Asset, Permissions, MediaLibrary } from 'expo';
 import { Platform } from 'react-native';
 
+export const name = 'MediaLibrary';
+
 const FILES = [
   require('../assets/icons/app.png'),
   require('../assets/icons/loading.png'),

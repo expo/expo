@@ -6,7 +6,7 @@ import { PublisherBanner } from 'expo';
 
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
-export const name = 'PublisherBanner';
+export const name = 'AdMobPublisherBanner';
 
 const validAdUnitID = 'ca-app-pub-3940256099942544/6300978111';
 const invalidAdUnitID = 'id';

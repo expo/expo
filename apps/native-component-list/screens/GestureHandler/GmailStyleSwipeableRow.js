@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
-import { RectButton, Swipeable } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
+import React, { Component } from 'react';
+import { Animated, StyleSheet } from 'react-native';
+import { RectButton, Swipeable } from 'react-native-gesture-handler';
 
 const AnimatedIcon = Animated.createAnimatedComponent(MaterialIcons);
 

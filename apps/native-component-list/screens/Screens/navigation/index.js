@@ -1,20 +1,6 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  Button,
-  View,
-  TextInput,
-  Animated,
-  Image,
-  requireNativeComponent,
-} from 'react-native';
+import { Animated, Button, Image, StyleSheet, TextInput, View } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
-// import { createStackNavigator } from './react-navigation/react-navigation';
-
-export const LifecycleAwareView = requireNativeComponent(
-  'RNSLifecycleAwareView',
-  null
-);
 
 const IMGS = [
   require('./img/dawid-zawila-628275-unsplash.jpg'),
