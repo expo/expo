@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import expolib_v1.okio.ByteString;
+import okio.ByteString;
 
 import static org.mockito.Mockito.*;
 import org.robolectric.RobolectricTestRunner;

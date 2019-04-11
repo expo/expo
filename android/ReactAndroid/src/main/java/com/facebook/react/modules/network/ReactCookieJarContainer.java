@@ -13,10 +13,10 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import expolib_v1.okhttp3.Cookie;
-import expolib_v1.okhttp3.CookieJar;
-import expolib_v1.okhttp3.Headers;
-import expolib_v1.okhttp3.HttpUrl;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
 
 /**
  * Basic okhttp3 CookieJar container

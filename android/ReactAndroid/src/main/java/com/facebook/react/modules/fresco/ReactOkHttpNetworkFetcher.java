@@ -8,11 +8,11 @@
 package com.facebook.react.modules.fresco;
 
 import com.facebook.imagepipeline.producers.NetworkFetcher;
-import expolib_v1.com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
 import android.net.Uri;
 import android.os.SystemClock;
 
-import expolib_v1.com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
@@ -21,10 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Headers;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Request;
+import okhttp3.CacheControl;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 class ReactOkHttpNetworkFetcher extends OkHttpNetworkFetcher {
 

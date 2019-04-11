@@ -40,10 +40,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.RequestBody;
-import expolib_v1.okhttp3.ResponseBody;
-import expolib_v1.okio.ByteString;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import okio.ByteString;
 
 @ReactModule(name = BlobModule.NAME)
 public class BlobModule extends ReactContextBaseJavaModule {

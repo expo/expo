@@ -31,12 +31,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
-import expolib_v1.okhttp3.WebSocket;
-import expolib_v1.okhttp3.WebSocketListener;
-import expolib_v1.okio.ByteString;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 @ReactModule(name = WebSocketModule.NAME, hasConstants = false)
 public final class WebSocketModule extends ReactContextBaseJavaModule {
