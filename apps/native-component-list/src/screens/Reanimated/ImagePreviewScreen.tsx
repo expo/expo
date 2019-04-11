@@ -352,7 +352,7 @@ class Viewer extends React.Component<{ source: string }> {
           <Animated.View>
             <PanGestureHandler
               ref={this.panRef}
-              avgTouches={true}
+              avgTouches
               simultaneousHandlers={this.pinchRef}
               onGestureEvent={this._onPanEvent}
               onHandlerStateChange={this._onPanEvent}

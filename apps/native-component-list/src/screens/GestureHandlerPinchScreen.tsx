@@ -99,7 +99,7 @@ class PinchableBox extends React.Component {
         minDist={10}
         minPointers={2}
         maxPointers={2}
-        avgTouches={true}
+        avgTouches
       >
         <Animated.View style={styles.wrapper}>
           <RotationGestureHandler

@@ -162,7 +162,7 @@ export default class Player extends React.Component<Props, State> {
               })
             }
           />
-          <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit={true} numberOfLines={1}>
+          <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
             {_formatTime(this.props.positionMillis / 1000)} /{' '}
             {_formatTime(this.props.durationMillis / 1000)}
           </Text>

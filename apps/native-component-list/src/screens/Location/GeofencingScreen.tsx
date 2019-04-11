@@ -152,7 +152,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
           style={styles.mapView}
           initialRegion={this.state.initialRegion}
           onPress={this.onMapPress}
-          showsUserLocation={true}
+          showsUserLocation
         >
           {this.renderRegions()}
         </MapView>

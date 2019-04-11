@@ -222,7 +222,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
           ref={this.mapViewRef}
           style={styles.mapView}
           initialRegion={this.state.initialRegion}
-          showsUserLocation={true}
+          showsUserLocation
         >
           {this.renderPolyline()}
         </MapView>

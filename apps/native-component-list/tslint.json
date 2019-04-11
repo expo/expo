@@ -21,6 +21,7 @@
     "max-line-length": [true, {"limit": 120}],
     "no-var-requires": false,
     "no-empty": false,
-    "jsx-no-lambda": false
+    "jsx-no-lambda": false,
+    "jsx-boolean-value": ["never"]
   }
 }

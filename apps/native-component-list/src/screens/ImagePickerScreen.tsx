@@ -118,8 +118,8 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
               source={{ uri: selection.uri }}
               style={{ width: 300, height: 300 }}
               resizeMode="contain"
-              shouldPlay={true}
-              isLooping={true}
+              shouldPlay
+              isLooping
             />
           ) : (
             <Image

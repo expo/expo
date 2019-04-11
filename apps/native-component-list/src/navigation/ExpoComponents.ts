@@ -8,7 +8,7 @@ import Gif from '../screens/GifScreen';
 import LinearGradient from '../screens/LinearGradientScreen';
 import Maps from '../screens/MapsScreen';
 import Video from '../screens/AV/VideoScreen';
-// import WebView from '../screens/WebViewScreen';
+import WebView from '../screens/WebViewScreen';
 
 function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
@@ -57,7 +57,7 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   Maps,
   Video,
   Screens: ScreensScreens,
-  // WebView,
+  WebView,
 };
 
 interface ScreensObjectType {

@@ -8,7 +8,7 @@ export default class AdMobScreen extends React.Component {
     title: 'AdMob',
   };
 
-  constructor(props: any) {
+  constructor(props: object) {
     super(props);
     AdMobRewarded.setTestDeviceID('EMULATOR');
     AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/1033173712');

@@ -55,46 +55,46 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
         />
         <ShowActionSheetButton
           title="Title"
-          withTitle={true}
+          withTitle
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         <ShowActionSheetButton
           title="Title & Message"
-          withTitle={true}
-          withMessage={true}
+          withTitle
+          withMessage
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         {this._renderSectionHeader('Android-Only Options')}
         <ShowActionSheetButton
           title="Icons"
-          withIcons={true}
+          withIcons
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         <ShowActionSheetButton
           title="Title, Message, & Icons"
-          withTitle={true}
-          withMessage={true}
-          withIcons={true}
+          withTitle
+          withMessage
+          withIcons
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         <ShowActionSheetButton
           title="Use Separators"
-          withTitle={true}
-          withIcons={true}
-          withSeparators={true}
+          withTitle
+          withIcons
+          withSeparators
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         <ShowActionSheetButton
           title="Custom Styles"
-          withTitle={true}
-          withMessage={true}
-          withIcons={true}
-          withCustomStyles={true}
+          withTitle
+          withMessage
+          withIcons
+          withCustomStyles
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />

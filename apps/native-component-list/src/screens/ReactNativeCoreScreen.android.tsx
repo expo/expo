@@ -109,7 +109,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
       >
         <SectionList
           removeClippedSubviews={false}
-          stickySectionHeadersEnabled={true}
+          stickySectionHeadersEnabled
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           refreshControl={
@@ -257,7 +257,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     };
 
     return (
-      <ScrollView pagingEnabled={true} directionalLockEnabled={true} horizontal={true}>
+      <ScrollView pagingEnabled directionalLockEnabled horizontal>
         <Image
           source={require('../../assets/images/example1.jpg')}
           style={imageStyle}
@@ -589,7 +589,7 @@ class TextInputExample extends React.Component {
           keyboardAppearance="dark"
           value={this.state.secureTextValue}
           onChangeText={updateSecureTextValue}
-          secureTextEntry={true}
+          secureTextEntry
           style={textInputStyle}
         />
       </View>

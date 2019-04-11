@@ -216,7 +216,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
     if (refreshing) {
       return (
         <View style={styles.footer}>
-          <ActivityIndicator animating={true} />
+          <ActivityIndicator animating />
         </View>
       );
     }

@@ -49,7 +49,7 @@ export default class AccelerometerScreen extends React.Component<
 
         Animated.spring(this.state.items[index].position, {
           toValue: {
-            x: (+x.toFixed(1) * perspective * nIndex) / COUNT,
+            x: (Number(x.toFixed(1)) * perspective * nIndex) / COUNT,
             y: (-y.toFixed(1) * perspective * nIndex) / COUNT,
           },
           friction: 7,

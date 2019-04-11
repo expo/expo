@@ -33,7 +33,7 @@ export default class FontScreen extends React.Component {
           </Text>
           {Platform.OS === 'ios' && (
             <Text
-              adjustsFontSizeToFit={true}
+              adjustsFontSizeToFit
               style={{
                 flex: 1,
                 height: 32,

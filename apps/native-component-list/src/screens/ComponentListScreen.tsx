@@ -55,7 +55,7 @@ class ComponentListScreen extends React.Component<NavigationScreenProps & Props>
         ref={view => {
           this._listView = view!;
         }}
-        stickySectionHeadersEnabled={true}
+        stickySectionHeadersEnabled
         removeClippedSubviews={false}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"

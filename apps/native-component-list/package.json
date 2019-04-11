@@ -6,7 +6,7 @@
   "private": true,
   "main": "__generated__/AppEntry.js",
   "scripts": {
-    "postinstall": "echo 1 #expo-yarn-workspaces postinstall",
+    "postinstall": "expo-yarn-workspaces postinstall",
     "web:publish": "netlify deploy --dir web-build",
     "web:serve": "serve ./web-build",
     "tsc": "tsc --noEmit --watch -p ./tsconfig.json",
@@ -46,8 +46,7 @@
     "three": "^0.88.0",
     "url": "^0.11.0",
     "uuid": "^3.1.0",
-    "victory-native": "^30.4.0",
-    "yarn": "^1.15.2"
+    "victory-native": "^30.4.0"
   },
   "devDependencies": {
     "@types/i18n-js": "^3.0.1",
@@ -56,6 +55,7 @@
     "@types/react-native-platform-touchable": "^1.1.0",
     "@types/react-native-vector-icons": "^6.4.0",
     "@types/react-navigation": "^3.0.5",
+    "@types/react-navigation-material-bottom-tabs": "^0.3.1",
     "@types/three": "^0.93.28",
     "@types/victory": "^31.0.14",
     "babel-preset-expo": "^5.1.0",
