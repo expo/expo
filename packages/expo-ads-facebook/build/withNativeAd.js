@@ -3,6 +3,7 @@ import React from 'react';
 import { Platform, findNodeHandle } from 'react-native';
 import { requireNativeViewManager } from '@unimodules/core';
 import AdsManager from './NativeAdsManager';
+let NativeAdLayout = requireNativeViewManager('NativeAdLayout');
 /**
  * A higher-order function that wraps the given `Component` type and returns a new container
  * component type that passes in an extra `nativeAd` prop to the wrapped component.
@@ -36,6 +37,9 @@ export default function withNativeAd(Component) {
                         this._setAdNodeHandles({ adMediaViewNodeHandle: null });
                     }
                 },
+            };
+            this._adOptionsViewContextValue = {
+                nativeAdViewRef: this._nativeAdViewRef
             };
             this._adIconViewContextValue = {
                 nativeRef: (component) => {
@@ -91,15 +95,23 @@ export default function withNativeAd(Component) {
             }
             let { adsManager } = this.props;
             let props = this._getForwardedProps();
-            return (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
-          <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
-            <AdIconViewContext.Provider value={this._adIconViewContextValue}>
-              <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                {this.state.ad ? <Component {...props} nativeAd={this.state.ad}/> : null}
-              </AdTriggerViewContext.Provider>
-            </AdIconViewContext.Provider>
-          </AdMediaViewContext.Provider>
-        </NativeAdView>);
+            let viewHierarchy = (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
+            <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
+              <AdIconViewContext.Provider value={this._adIconViewContextValue}>
+                <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
+                  <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
+                    {this.state.ad ? (<Component {...props} nativeAd={this.state.ad}/>) : null}
+                  </AdOptionsViewContext.Provider>
+                </AdTriggerViewContext.Provider>
+              </AdIconViewContext.Provider>
+            </AdMediaViewContext.Provider>
+          </NativeAdView>);
+            if (Platform.OS === 'android') {
+                return (<NativeAdLayout>
+            {viewHierarchy}
+          </NativeAdLayout>);
+            }
+            return viewHierarchy;
         }
         _getForwardedProps() {
             let { adsManager, onAdLoaded, ...props } = this.props;
@@ -130,6 +142,7 @@ const NativeAdView = requireNativeViewManager('CTKNativeAd');
 export const AdIconViewContext = React.createContext(null);
 export const AdMediaViewContext = React.createContext(null);
 export const AdTriggerViewContext = React.createContext(null);
+export const AdOptionsViewContext = React.createContext(null);
 function _areEqualSets(set1, set2) {
     if (set1.size !== set2.size) {
         return false;
