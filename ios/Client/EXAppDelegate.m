@@ -14,19 +14,11 @@
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 
-#if __has_include(<EXAppAuth/EXAppAuth.h>)
-#import <EXAppAuth/EXAppAuth.h>
-#endif
-
-#if __has_include(<ABI32_0_0EXAppAuth/ABI32_0_0EXAppAuth.h>)
-#import <ABI32_0_0EXAppAuth/ABI32_0_0EXAppAuth.h>
+#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
+#import <EXAppAuth/EXAppAuthSessionsManager.h>
 #endif
 
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
-#import <GoogleSignIn/GoogleSignIn.h>
-#endif
-
-#if __has_include(<ABI32_0_0GoogleSignIn/ABI32_0_0GoogleSignIn.h>)
 #import <GoogleSignIn/GoogleSignIn.h>
 #endif
 
@@ -98,27 +90,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
   id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
   NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
+  if ([(EXAppAuthSessionsManager *)[UMModuleRegistryProvider getSingletonModuleForClass:EXAppAuthSessionsManager.class] application:app openURL:url options:options]) {
+    return YES;
+  }
+#endif
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
   if ([[GIDSignIn sharedInstance] handleURL:url
                           sourceApplication:sourceApplication
                                  annotation:annotation]) {
-    return YES;
-  }
-#endif
-#if __has_include(<ABI32_0_0GoogleSignIn/ABI32_0_0GoogleSignIn.h>)
-  if ([[ABI32_0_0GIDSignIn sharedInstance] handleURL:url
-                          sourceApplication:sourceApplication
-                                 annotation:annotation]) {
-    return YES;
-  }
-#endif
-#if __has_include(<EXAppAuth/EXAppAuth.h>)
-  if ([[EXAppAuth instance] application:app openURL:url options:options]) {
-    return YES;
-  }
-#endif
-#if __has_include(<ABI32_0_0EXAppAuth/ABI32_0_0EXAppAuth.h>)
-  if ([[ABI32_0_0EXAppAuth instance] application:app openURL:url options:options]) {
     return YES;
   }
 #endif
