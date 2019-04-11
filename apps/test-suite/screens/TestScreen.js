@@ -46,6 +46,7 @@ export default class TestScreen extends React.Component {
       suites: [],
       path: ['suites'], // Path to current 'children' List in state
     }),
+    testPortal: null,
     done: false,
   };
 
@@ -319,17 +320,37 @@ export default class TestScreen extends React.Component {
     );
   };
 
-  _onScrollViewContentSizeChange = (contentWidth, contentHeight) => {
+  _onScrollViewContentSizeChange = () => {
     if (this._scrollViewRef) {
-      this._scrollViewRef.scrollTo({
-        y: Math.max(0, contentHeight - Dimensions.get('window').height) + Constants.statusBarHeight,
-      });
+      this._scrollViewRef.scrollToEnd();
     }
   };
 
   _renderDoneText = () => {
     if (this.state.done) {
       return <Text style={styles.doneMessage}>All done!</Text>;
+    }
+  };
+
+  _renderPortal = () => {
+    const styles = {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      position: 'absolute',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgb(255, 255, 255)',
+      opacity: this.state.portalChildShouldBeVisible ? 0.5 : 0,
+    };
+
+    if (this.state.testPortal) {
+      return (
+        <View style={styles} pointerEvents="none">
+          {this.state.testPortal}
+        </View>
+      );
     }
   };
 
@@ -344,6 +365,7 @@ export default class TestScreen extends React.Component {
           {this.state.state.get('suites').map(r => this._renderSuiteResult(r, 0))}
           {this._renderDoneText()}
         </ScrollView>
+        {this._renderPortal()}
       </View>
     );
   }
