@@ -6,8 +6,8 @@
 
 #import <UMCore/UMModuleRegistryProvider.h>
 
-#if __has_include(<EXAppAuth/EXAppAuth.h>)
-#import <EXAppAuth/EXAppAuth.h>
+#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
+#import <EXAppAuth/EXAppAuthSessionsManager.h>
 #endif
 
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
@@ -91,8 +91,8 @@
     return YES;
   }
 #endif
-#if __has_include(<EXAppAuth/EXAppAuth.h>)
-  if ([[EXAppAuth instance] application:app openURL:url options:options]) {
+#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
+  if ([(EXAppAuthSessionsManager *)[UMModuleRegistryProvider getSingletonModuleForClass:EXAppAuthSessionsManager.class] application:app openURL:url options:options]) {
     return YES;
   }
 #endif

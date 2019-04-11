@@ -5,33 +5,19 @@
 #import <ABI32_0_0EXCore/ABI32_0_0EXUtilitiesInterface.h>
 #import <ABI32_0_0EXCore/ABI32_0_0EXUtilities.h>
 #import <ABI32_0_0EXAppAuth/ABI32_0_0EXAppAuth+JSON.h>
+#import <EXAppAuth/EXAppAuthSessionsManager.h>
 
 static NSString *const ABI32_0_0EXAppAuthError = @"ERR_APP_AUTH";
 
-@interface ABI32_0_0EXAppAuth() {
-  id<OIDExternalUserAgentSession> session;
-}
+@interface ABI32_0_0EXAppAuth ()
 
 @property (nonatomic, weak) ABI32_0_0EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXAppAuthSessionsManagerInterface> sessionsManager;
 @property (nonatomic, weak) id<ABI32_0_0EXUtilitiesInterface> utilities;
 
 @end
 
 @implementation ABI32_0_0EXAppAuth
-
-static ABI32_0_0EXAppAuth *shared = nil;
-
-+ (nonnull instancetype)instance {
-  return shared;
-}
-
-- (id)init {
-  self = [super init];
-  if (self != nil) {
-    shared = self;
-  }
-  return self;
-}
 
 #pragma mark - Expo
 
@@ -45,6 +31,7 @@ ABI32_0_0EX_EXPORT_MODULE(ExpoAppAuth);
 - (void)setModuleRegistry:(ABI32_0_0EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+  _sessionsManager = [moduleRegistry getSingletonModuleForName:@"AppAuthSessionsManager"];
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI32_0_0EXUtilitiesInterface)];
 }
 
@@ -125,14 +112,10 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
                                     additionalParameters:additionalParameters];
 
   [ABI32_0_0EXUtilities performSynchronouslyOnMainThread:^{
-    __weak typeof(self) weakSelf = self;
-
+    __block id<OIDExternalUserAgentSession> session;
+    __weak id<EXAppAuthSessionsManagerInterface> sessionsManager = self->_sessionsManager;
     OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
-      typeof(self) strongSelf = weakSelf;
-      if (strongSelf != nil) {
-        // Destroy the current session
-        strongSelf->session = nil;
-      }
+      [sessionsManager unregisterSession:session];
       if (authState) {
         NSDictionary *tokenResponse = [ABI32_0_0EXAppAuth _tokenResponseNativeToJSON:authState.lastTokenResponse request:options];
         resolve(tokenResponse);
@@ -152,9 +135,10 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
       presentingViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     }
 
-    self->session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
-                                                   presentingViewController:presentingViewController
-                                                                   callback:callback];
+    session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
+                                             presentingViewController:presentingViewController
+                                                             callback:callback];
+    [self->_sessionsManager registerSession:session];
   }];
 }
 
@@ -218,12 +202,6 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
       ABI32_0_0EXrejectWithError(reject, error);
     }
   };
-}
-
-#pragma mark - Public
-
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
-  return [session resumeExternalUserAgentFlowWithURL:url];
 }
 
 #pragma mark - Static
