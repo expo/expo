@@ -47,6 +47,7 @@ import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
 import okhttp3.OkHttpClient;
 
@@ -113,6 +114,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new SharingPackage(),
         new SpeechPackage(),
         new TaskManagerPackage(),
+        new VideoThumbnailsPackage(),
         new WebBrowserPackage()
     );
   }

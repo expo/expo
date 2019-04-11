@@ -462,6 +462,9 @@ PODS:
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
+  - EXVideoThumbnails (1.0.0):
+    - UMCore
+    - UMFileSystemInterface
   - EXWebBrowser (4.0.0):
     - UMCore
   - Fabric (1.9.0)
@@ -1340,6 +1343,7 @@ DEPENDENCIES:
   - EXSpeech (from `../packages/expo-speech/ios`)
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
+  - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - Fabric (~> 1.6)
   - FBAudienceNetwork (= 5.1.1)
@@ -1829,6 +1833,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-sqlite/ios"
   EXTaskManager:
     :path: "../packages/expo-task-manager/ios"
+  EXVideoThumbnails:
+    :path: "../packages/expo-video-thumbnails/ios"
   EXWebBrowser:
     :path: "../packages/expo-web-browser/ios"
   Folly:
@@ -2055,6 +2061,7 @@ SPEC CHECKSUMS:
   EXSpeech: 393adb0f37972bb8095a99da0e4a455c73366e13
   EXSQLite: 6de0e07822d8c3ee03e89491f7de2f12b2208f8a
   EXTaskManager: 24c66563e0a7a9a1a686dfe960bd131c94339071
+  EXVideoThumbnails: 849e77e53c3c03eaf05b46cc80aa343067bc7508
   EXWebBrowser: 80d1c7fc02cc459528b9e04863c8837f242bc3b4
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
@@ -2104,6 +2111,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: 370dae8a35119f70875849e47f09064387002650
+PODFILE CHECKSUM: ce0101a624a69a0a88530ef162d81d176c4e4fe5
 
 COCOAPODS: 1.5.3
