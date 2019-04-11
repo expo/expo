@@ -65,7 +65,8 @@ export default class AccelerometerScreen extends React.Component<
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Text
           style={{
             zIndex: 1,
@@ -76,7 +77,8 @@ export default class AccelerometerScreen extends React.Component<
             left: 24,
             right: 24,
             textAlign: 'center',
-          }}>
+          }}
+        >
           {`The stack should move against the orientation of the device.
           If you lift the bottom of the phone up, the stack should translate down towards the bottom of the screen.
           The balls all line up when the phone is in "display up" mode.`}

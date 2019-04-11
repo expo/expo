@@ -31,7 +31,7 @@ class PanExample extends React.Component {
       onPanResponderRelease: this._handlePanResponderEnd,
       onPanResponderTerminate: this._handlePanResponderEnd,
     });
-  };
+  }
 
   _previousLeft = 0;
 
@@ -44,21 +44,21 @@ class PanExample extends React.Component {
       x: this._previousLeft + gestureState.dx,
       y: this._previousTop + gestureState.dy,
     });
-  };
+  }
 
   _handlePanResponderGrant = () => {
-    this.root!.setNativeProps({
+    this.root.setNativeProps({
       opacity: 0.5,
     });
-  };
+  }
 
   _handlePanResponderEnd = (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-    this.root!.setNativeProps({
+    this.root.setNativeProps({
       opacity: 1,
     });
     this._previousLeft += gestureState.dx;
     this._previousTop += gestureState.dy;
-  };
+  }
 
   render() {
     return (
@@ -68,7 +68,8 @@ class PanExample extends React.Component {
             this.root = ele;
           }}
           x={this.state.x}
-          y={this.state.y}>
+          y={this.state.y}
+        >
           <Path
             d="M50,5L20,99L95,39L5,39L80,99z"
             stroke={'black'}
@@ -101,18 +102,22 @@ const icon = (
       strokeWidth="1"
       strokeLinecap="round"
       strokeLinejoin="round"
-      d={`M6.2,9.4
-          c0,0,0-0.1,0-0.2c0-0.2,0.1-0.3,0.1-0.4c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0h0.1v0.7V10 M8.1,8.8c0,0,0-0.1,0-0.2
-	c0-0.2,0.1-0.3,0.1-0.4c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0h0.1v1.9 M10.1,7.5v-2c0,0,0-0.1,0-0.2c0-0.2,0.1-0.3,0.1-0.4
-	c0.2-0.4,0.5-0.6,0.9-0.7c0.4,0,0.7,0.2,0.9,0.7C12,5,12,5.2,12,5.4c0,0.1,0,0.1,0,0.2v6c1.4-1.8,2.4-1.8,2.8,0.1
-	c-1.7,1.5-2.9,3.7-3.4,6.4l-5.8,0c-0.2-0.6-0.5-1.4-0.7-2.5c-0.3-1-0.5-2.5-0.6-4.5l0-0.8c0-0.1,0-0.1,0-0.2c0-0.2,0.1-0.3,0.1-0.4
-	c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0l0.1,0v0.5c0,0,0,0,0,0l0,1.1l0,0.2 M6.2,10.9l0-0.4`}
+      // tslint:disable max-line-length
+      d={`
+M6.2,9.4
+c0,0,0-0.1,0-0.2c0-0.2,0.1-0.3,0.1-0.4c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0h0.1v0.7V10 M8.1,8.8c0,0,0-0.1,0-0.2
+c0-0.2,0.1-0.3,0.1-0.4c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0h0.1v1.9 M10.1,7.5v-2c0,0,0-0.1,0-0.2c0-0.2,0.1-0.3,0.1-0.4
+c0.2-0.4,0.5-0.6,0.9-0.7c0.4,0,0.7,0.2,0.9,0.7C12,5,12,5.2,12,5.4c0,0.1,0,0.1,0,0.2v6c1.4-1.8,2.4-1.8,2.8,0.1
+c-1.7,1.5-2.9,3.7-3.4,6.4l-5.8,0c-0.2-0.6-0.5-1.4-0.7-2.5c-0.3-1-0.5-2.5-0.6-4.5l0-0.8c0-0.1,0-0.1,0-0.2c0-0.2,0.1-0.3,0.1-0.4
+c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0l0.1,0v0.5c0,0,0,0,0,0l0,1.1l0,0.2 M6.2,10.9l0-0.4
+      `}
+      // tslint:enable max-line-length
     />
   </Svg>
 );
 
 const PanResponder: Example = {
-  icon: icon,
+  icon,
   samples: [PanExample],
   scroll: false,
 };

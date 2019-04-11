@@ -10,11 +10,11 @@ export default class KeepAwakeScreen extends React.Component {
 
   _activate = () => {
     KeepAwake.activate();
-  };
+  }
 
   _deactivate = () => {
     KeepAwake.deactivate();
-  };
+  }
 
   render() {
     return (

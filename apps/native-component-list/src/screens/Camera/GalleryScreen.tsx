@@ -7,8 +7,8 @@ import Photo from './Photo';
 const PHOTOS_DIR = FileSystem.documentDirectory + 'photos';
 
 interface State {
-  photos: string[],
-  selected: string[],
+  photos: string[];
+  selected: string[];
 }
 
 export default class GalleryScreen extends React.Component<TouchableOpacityProps, State> {
@@ -20,7 +20,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
   componentDidMount = async () => {
     const photos = await FileSystem.readDirectoryAsync(PHOTOS_DIR);
     this.setState({ photos });
-  };
+  }
 
   toggleSelection = (uri: string, isSelected: boolean) => {
     let selected = this.state.selected;
@@ -30,7 +30,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
       selected = selected.filter(item => item !== uri);
     }
     this.setState({ selected });
-  };
+  }
 
   saveToGallery = async () => {
     const photos = this.state.selected;
@@ -47,11 +47,11 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
       });
 
       await Promise.all(promises);
-      alert("Successfully saved photos to user's gallery!");
+      alert('Successfully saved photos to user\'s gallery!');
     } else {
       alert('No photos to save!');
     }
-  };
+  }
 
   renderPhoto = (fileName: string) => (
     <Photo
@@ -59,7 +59,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
       uri={`${PHOTOS_DIR}/${fileName}`}
       onSelectionToggle={this.toggleSelection}
     />
-  );
+  )
 
   render() {
     return (

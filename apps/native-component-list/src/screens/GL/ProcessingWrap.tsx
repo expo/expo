@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleProp, ViewStyle} from 'react-native';
+import { View, StyleProp, ViewStyle } from 'react-native';
 import { ProcessingView } from 'expo-processing';
 
 import { Colors } from '../../constants';
@@ -18,7 +18,8 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(title: string, 
           backgroundColor: Colors.tintColor,
         },
         props.style,
-      ]}>
+      ]}
+    >
       <ProcessingView style={{ flex: 1 }} sketch={sketch} />
     </View>
   );

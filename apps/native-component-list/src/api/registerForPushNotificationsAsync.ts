@@ -10,9 +10,10 @@ export default async function registerForPushNotificationsAsync() {
   // to receive remote notificartions.
 
   // Get the token that uniquely identifies this device
-  let token = await Notifications.getExpoPushTokenAsync();
+  const token = await Notifications.getExpoPushTokenAsync();
 
   // Log it so we can easily copy it if we need to work with it
+  // tslint:disable-next-line no-console
   console.log(`Got this device's push token: ${token}`);
 
   await Notifications.createCategoryAsync('welcome', [
@@ -31,10 +32,10 @@ export default async function registerForPushNotificationsAsync() {
   ]);
 
   // POST the token to the Expo push server
-  let response = await fetch(PUSH_ENDPOINT, {
+  const response = await fetch(PUSH_ENDPOINT, {
     method: 'POST',
     headers: {
-      Accept: 'application/json',
+      'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify([
@@ -48,18 +49,20 @@ export default async function registerForPushNotificationsAsync() {
     ]),
   });
 
-  let result = await response.json();
+  const result = await response.json();
   if (result.errors) {
-    for (let error of result.errors) {
+    for (const error of result.errors) {
+      // tslint:disable-next-line no-console
       console.warn(`API error sending push notification:`, error);
     }
   }
 
-  let receipts = result.data;
+  const receipts = result.data;
   if (receipts) {
-    let receipt = receipts[0];
+    const receipt = receipts[0];
     if (receipt.status === 'error') {
       if (receipt.details) {
+        // tslint:disable-next-line no-console
         console.warn(
           `Expo push service reported an error sending a notification: ${
             receipt.details.error
@@ -67,6 +70,7 @@ export default async function registerForPushNotificationsAsync() {
         );
       }
       if (receipt.__debug) {
+        // tslint:disable-next-line no-console
         console.warn(receipt.__debug);
       }
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, StyleProp, ViewStyle} from 'react-native';
+import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 
 export default class HeadingText extends React.Component<{ style?: StyleProp<ViewStyle> }> {
   render() {

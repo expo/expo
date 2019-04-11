@@ -14,15 +14,13 @@ import { NavigationScreenProps } from 'react-navigation';
 
 import MonoText from '../../components/MonoText';
 
-interface Props {}
-
 interface State {
   includeSmartAlbums: boolean;
   albums: MediaLibrary.Album[];
 }
 
 export default class MediaAlbumsScreen extends React.Component<
-  Props & NavigationScreenProps,
+  NavigationScreenProps,
   State
 > {
   static navigationOptions = {
@@ -38,7 +36,7 @@ export default class MediaAlbumsScreen extends React.Component<
     this.fetchAlbums();
   }
 
-  componentDidUpdate(_: Props, lastState: State) {
+  componentDidUpdate(_: {}, lastState: State) {
     if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
       this.fetchAlbums();
     }
@@ -55,7 +53,7 @@ export default class MediaAlbumsScreen extends React.Component<
 
   openAlbum = (album: MediaLibrary.Album) => {
     this.props.navigation.navigate('MediaLibrary', { album });
-  };
+  }
 
   renderItem: ListRenderItem<MediaLibrary.Album> = ({ item }) => {
     return (
@@ -67,7 +65,7 @@ export default class MediaAlbumsScreen extends React.Component<
         <MonoText>{JSON.stringify(item, null, 2)}</MonoText>
       </TouchableOpacity>
     );
-  };
+  }
 
   renderContent() {
     const { albums } = this.state;
@@ -76,7 +74,7 @@ export default class MediaAlbumsScreen extends React.Component<
       return (
         <View style={styles.noAlbums}>
           <Text>
-            {"You don't have any media albums! You can create one from asset details screen."}
+            {'You don\'t have any media albums! You can create one from asset details screen.'}
           </Text>
         </View>
       );

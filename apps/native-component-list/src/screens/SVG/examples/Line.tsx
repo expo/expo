@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import { Svg } from 'expo';
 import React from 'react';
 import Example from './Example';
@@ -51,8 +52,8 @@ const icon = (
 );
 
 const Line: Example = {
-  icon: icon,
+  icon,
   samples: [LineExample, LineWithStrokeLinecap],
-}
+};
 
-export default LineExample;
+export default Line;

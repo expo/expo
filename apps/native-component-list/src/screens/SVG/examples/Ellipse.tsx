@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { Svg } from 'expo';
 import Example from './Example';
@@ -53,7 +54,7 @@ const icon = (
 );
 
 const Ellipse: Example = {
-  icon: icon,
+  icon,
   samples: [EllipseExample, PileEllipses, CombinedEllipses],
 };
 

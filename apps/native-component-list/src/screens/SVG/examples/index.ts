@@ -16,8 +16,9 @@ import Svg from './Svg';
 import Text from './Text';
 import TouchEvents from './TouchEvents';
 import VictoryNative from './VictoryNative';
+import Example from './Example';
 
-export {
+const examples: { [key: string]: Example } = {
   Svg,
   Rect,
   Circle,
@@ -37,3 +38,5 @@ export {
   PanResponder,
   VictoryNative,
 };
+
+export default examples;

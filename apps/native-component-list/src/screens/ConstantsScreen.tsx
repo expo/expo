@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { Constants } from 'expo';
@@ -6,7 +7,7 @@ import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
 interface State {
-  value?: string;
+  value?: string | (() => void);
   error?: Error;
 }
 
@@ -27,6 +28,7 @@ class ExpoConstant extends React.Component<{ value?: any, name: string }, State>
       try {
         value = await this.props.value();
       } catch (error) {
+        // tslint:disable-next-line no-console
         console.error(error);
         this.setState({ error: error.message });
       }
@@ -40,10 +42,10 @@ class ExpoConstant extends React.Component<{ value?: any, name: string }, State>
   }
 
   render() {
-    let { value, error } = this.state;
+    const { value, error } = this.state;
     const { name } = this.props;
 
-    if (value == null || typeof value === 'function') {
+    if (!value || typeof value === 'function') {
       return null;
     }
 
@@ -56,7 +58,7 @@ class ExpoConstant extends React.Component<{ value?: any, name: string }, State>
   }
 }
 
-export default class ConstantsScreen extends React.Component {
+export default class ConstantsScreen extends React.PureComponent {
   static navigationOptions = {
     title: 'Constants',
   };

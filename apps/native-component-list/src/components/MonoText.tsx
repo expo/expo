@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
 
-const MonoText: React.SFC<{
+const MonoText: React.FunctionComponent<{
   containerStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<ViewStyle>;
 }> = ({ children, containerStyle, textStyle }) => (

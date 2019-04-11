@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import {
   ScrollView,
@@ -51,7 +52,7 @@ abstract class SensorBlock<M extends object> extends React.Component<
   checkAvailability = async () => {
     const isAvailable = await this.getSensor().isAvailableAsync();
     this.setState({ isAvailable });
-  };
+  }
 
   componentWillUnmount() {
     this._unsubscribe();
@@ -67,26 +68,26 @@ abstract class SensorBlock<M extends object> extends React.Component<
     } else {
       this._subscribe();
     }
-  };
+  }
 
   _slow = () => {
     this.getSensor().setUpdateInterval(SLOW_INTERVAL);
-  };
+  }
 
   _fast = () => {
     this.getSensor().setUpdateInterval(FAST_INTERVAL);
-  };
+  }
 
   _subscribe = () => {
-    this._subscription = this.getSensor().addListener(data => {
+    this._subscription = this.getSensor().addListener((data: any) => {
       this.setState({ data });
     });
-  };
+  }
 
   _unsubscribe = () => {
     this._subscription && this._subscription.remove();
     this._subscription = undefined;
-  };
+  }
 
   render() {
     if (this.state.isAvailable !== true) {
@@ -123,7 +124,7 @@ abstract class ThreeAxisSensorBlock extends SensorBlock<
       x: {round(this.state.data.x)} y: {round(this.state.data.y)} z:{' '}
       {round(this.state.data.z)}
     </Text>
-  );
+  )
 }
 
 class GyroscopeSensor extends ThreeAxisSensorBlock {
@@ -156,7 +157,7 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
     <Text>
       {name}: x: {round(x)} y: {round(y)} z: {round(z)}
     </Text>
-  );
+  )
   renderABGBlock = (
     name: string,
     {
@@ -168,7 +169,7 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
     <Text>
       {name}: α: {round(alpha)} β: {round(beta)} γ: {round(gamma)}
     </Text>
-  );
+  )
   renderData = () => (
     <View>
       {this.renderXYZBlock('Acceleration', this.state.data.acceleration)}
@@ -180,7 +181,7 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
       {this.renderABGBlock('Rotation rate', this.state.data.rotationRate)}
       <Text>Orientation: {this.state.data.orientation}</Text>
     </View>
-  );
+  )
 }
 
 class BarometerSensor extends SensorBlock<Sensors.BarometerMeasurement> {
@@ -191,7 +192,7 @@ class BarometerSensor extends SensorBlock<Sensors.BarometerMeasurement> {
       <Text>Pressure: {this.state.data.pressure}</Text>
       <Text>Relative Altitude: {this.state.data.relativeAltitude}</Text>
     </View>
-  );
+  )
 }
 
 function round(n?: number) {

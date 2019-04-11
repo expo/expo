@@ -2,21 +2,21 @@ import React from 'react';
 import { StyleSheet, ScrollView, Text, View } from 'react-native';
 import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
 
-import * as examples from './examples';
+import examples from './examples';
 
 export default class SVGExampleScreen extends React.Component<NavigationScreenProps> {
   static navigationOptions: NavigationScreenConfig<{}> = ({ navigation }) => {
     return {
       title: navigation.getParam('title', 'An SVG Example'),
     };
-  };
+  }
 
-  renderSample = (Sample, index: number) => (
+  renderSample = (Sample: React.ComponentType & { title: string }, index: number) => (
     <View style={styles.example} key={`sample-${index}`}>
       <Text style={styles.sampleTitle}>{Sample.title}</Text>
       <Sample />
     </View>
-  );
+  )
 
   renderNoExample = () => <Text>No example found.</Text>;
 
@@ -27,7 +27,7 @@ export default class SVGExampleScreen extends React.Component<NavigationScreenPr
     }
     const { samples } = example;
     return samples.map(this.renderSample);
-  };
+  }
 
   render() {
     return (

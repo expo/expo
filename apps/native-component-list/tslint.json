@@ -3,10 +3,24 @@
   "extends": [
     "tslint:recommended",
     "tslint-config-standard",
-    "tslint-react",
+    "tslint-react"
   ],
   "rules": {
     "object-literal-sort-keys": false,
     "member-ordering": false,
+    "semicolon": [true, "always"],
+    "ordered-imports": false,
+    "trailing-comma": true,
+    "member-access": false,
+    "interface-name": false,
+    "space-before-function-paren": false,
+    "quotemark": [true, "single", "jsx-double"],
+    "jsx-no-multiline-js": false,
+    "arrow-parens": false,
+    "no-floating-promises": false,
+    "max-line-length": [true, {"limit": 120}],
+    "no-var-requires": false,
+    "no-empty": false,
+    "jsx-no-lambda": false
   }
 }

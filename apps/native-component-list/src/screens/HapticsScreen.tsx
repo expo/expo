@@ -1,11 +1,6 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
-import {
-  SectionList,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { SectionList, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { Haptics } from 'expo';
 
 import Button from '../components/Button';
@@ -58,18 +53,19 @@ export default class HapticsScreen extends React.Component {
     title: 'Haptics Feedback',
   };
 
-  renderItem = ({ item, section: { method } }: { item: { accessor: string, value: any }, section: { method: Function }}) => (
-    <Item method={method} type={item} />
-  );
-
-  renderSectionHeader = ({
+  renderItem = ({
+    item,
     section: { method },
   }: {
-    section: { method: Function };
-  }) => <Header title={method.name} />;
+    item: { accessor: string; value: any };
+    section: { method: (type: string) => void };
+  }) => <Item method={method} type={item} />
 
-  keyExtractor = ({ accessor, value }: { accessor: string; value: any }) =>
-    `key-${accessor}-${value}`;
+  renderSectionHeader = ({ section: { method } }: { section: { method: () => void } }) => (
+    <Header title={method.name} />
+  )
+
+  keyExtractor = ({ accessor, value }: { accessor: string; value: any }) => `key-${accessor}-${value}`;
 
   render() {
     return (
@@ -86,7 +82,7 @@ export default class HapticsScreen extends React.Component {
   }
 }
 
-class Item extends React.Component<{ method: Function, type: { accessor: string, value: any } }> {
+class Item extends React.Component<{ method: (type: string) => void; type: { accessor: string; value: any } }> {
   get code() {
     const {
       method,
@@ -109,25 +105,23 @@ class Item extends React.Component<{ method: Function, type: { accessor: string,
   }
 }
 
-const Header: React.SFC<{ title: string }> = ({ title }) => (
+const Header: React.FunctionComponent<{ title: string }> = ({ title }) => (
   <View style={styles.headerContainer}>
     <Text style={styles.headerText}>{title}</Text>
   </View>
 );
 
 class HapticButton extends React.Component<{
-  method: Function;
+  method: (type: string) => void;
   type: string;
   style: ViewStyle;
 }> {
   onPress = () => {
     const { method, type } = this.props;
     method(type);
-  };
+  }
   render() {
-    return (
-      <Button onPress={this.onPress} style={this.props.style} title="Run" />
-    );
+    return <Button onPress={this.onPress} style={this.props.style} title="Run" />;
   }
 }
 

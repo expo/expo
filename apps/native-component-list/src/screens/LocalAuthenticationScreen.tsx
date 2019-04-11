@@ -32,7 +32,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
   authenticate = async () => {
     this.setState({ waiting: true });
     try {
-      let result = await LocalAuthentication.authenticateAsync(
+      const result = await LocalAuthentication.authenticateAsync(
         'This message only shows up on iOS'
       );
       if (result.success) {
@@ -43,7 +43,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
     } finally {
       this.setState({ waiting: false });
     }
-  };
+  }
 
   checkAuthenticationsTypes = async () => {
     const result = await LocalAuthentication.supportedAuthenticationTypesAsync();
@@ -66,7 +66,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
         ? `Available types: ${stringResult}`
         : 'No available authentication types!'
     );
-  };
+  }
 
   render() {
     const { hasHardware, isEnrolled } = this.state;

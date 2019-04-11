@@ -41,7 +41,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     return {
       coords: restCoords,
       ...restPosition
-    }
+    };
   }
 
   _findSingleLocationWithPolyfill = () => {
@@ -51,20 +51,23 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
         this.setState({ singleLocation: this._cleanPosition(location), searching: false });
       },
       err => {
+        // tslint:disable-next-line no-console
         console.log({ err });
         this.setState({ searching: false });
       },
       { enableHighAccuracy: true }
     );
-  };
+  }
 
   _startWatchingLocationWithPolyfill = () => {
-    let watchId = navigator.geolocation.watchPosition(
+    const watchId = navigator.geolocation.watchPosition(
       location => {
+        // tslint:disable-next-line no-console
         console.log(`Got location: ${JSON.stringify(location.coords)}`);
         this.setState({ watchLocation: this._cleanPosition(location) });
       },
       err => {
+        // tslint:disable-next-line no-console
         console.log({ err });
       },
       {
@@ -75,14 +78,14 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
       }
     );
 
-    let subscription = {
+    const subscription = {
       remove() {
         navigator.geolocation.clearWatch(watchId);
       },
     };
 
     this.setState({ subscription });
-  };
+  }
 
   _findSingleLocation = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -92,14 +95,14 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
 
     try {
       this.setState({ searching: true });
-      let result = await Location.getCurrentPositionAsync({
+      const result = await Location.getCurrentPositionAsync({
         enableHighAccuracy: true,
       });
       this.setState({ singleLocation: result });
     } finally {
       this.setState({ searching: false });
     }
-  };
+  }
 
   _startWatchingLocation = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -107,25 +110,26 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
       return;
     }
 
-    let subscription = await Location.watchPositionAsync(
+    const subscription = await Location.watchPositionAsync(
       {
         enableHighAccuracy: true,
         timeInterval: 1000,
         distanceInterval: 1,
       },
       location => {
+        // tslint:disable-next-line no-console
         console.log(`Got location: ${JSON.stringify(location.coords)}`);
         this.setState({ watchLocation: location });
       }
     );
 
     this.setState({ subscription });
-  };
+  }
 
   _stopWatchingLocation = async () => {
     this.state.subscription!.remove();
     this.setState({ subscription: undefined, watchLocation: undefined });
-  };
+  }
 
   _getSingleHeading = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -135,7 +139,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
 
     const heading = await Location.getHeadingAsync();
     this.setState({ singleHeading: heading });
-  };
+  }
 
   _startWatchingHeading = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -143,36 +147,37 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
       return;
     }
 
-    let subscription = await Location.watchHeadingAsync(heading => {
+    const subscription = await Location.watchHeadingAsync(heading => {
       this.setState({ watchHeading: heading });
     });
     this.setState({ headingSubscription: subscription });
-  };
+  }
 
   _stopWatchingHeading = async () => {
     this.state.headingSubscription!.remove();
     this.setState({ headingSubscription: undefined, watchHeading: undefined });
-  };
+  }
 
   _checkProviderStatus = async () => {
     this.setState({
       checkingProviderStatus: true,
     });
     const status = await Location.getProviderStatusAsync();
+    // tslint:disable-next-line no-console
     console.log(JSON.stringify(status));
     this.setState({
       providerStatus: status,
       checkingProviderStatus: false,
     });
-  };
+  }
 
   _goToBackgroundLocationMap = () => {
     this.props.navigation.navigate('BackgroundLocationMap');
-  };
+  }
 
   _goToGeofencingMap = () => {
     this.props.navigation.navigate('Geofencing');
-  };
+  }
 
   _renderPolyfillSwitch = () => {
     return (
@@ -184,7 +189,8 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
           justifyContent: 'center',
           marginVertical: 10,
           paddingRight: 30,
-        }}>
+        }}
+      >
         <Switch
           style={{ marginHorizontal: 10 }}
           onValueChange={polyfill => {
@@ -195,7 +201,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
         <Text style={{ fontSize: 12 }}>Use navigator.geolocation polyfill</Text>
       </View>
     );
-  };
+  }
 
   renderSingleLocation = () => {
     if (this.state.searching) {
@@ -229,7 +235,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
         title="Find my location once"
       />
     );
-  };
+  }
 
   renderProviderStatus = () => {
     if (this.state.checkingProviderStatus) {
@@ -252,7 +258,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     }
 
     return <ListButton onPress={this._checkProviderStatus} title="Check provider status" />;
-  };
+  }
 
   renderWatchLocation = () => {
     if (this.state.watchLocation) {
@@ -287,7 +293,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
         title="Watch my location"
       />
     );
-  };
+  }
 
   renderWatchCompass = () => {
     if (this.state.watchHeading) {
@@ -303,7 +309,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     }
 
     return <ListButton onPress={this._startWatchingHeading} title="Watch my heading (compass)" />;
-  };
+  }
 
   renderSingleCompass = () => {
     if (this.state.singleHeading) {
@@ -320,7 +326,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     return (
       <ListButton onPress={this._getSingleHeading} title="Find my heading (compass) heading" />
     );
-  };
+  }
 
   renderLocationMapButton() {
     return (

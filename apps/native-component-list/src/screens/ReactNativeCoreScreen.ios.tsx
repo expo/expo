@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import {
   ActionSheetIOS,
@@ -49,26 +50,26 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
   _listView?: ListView;
 
   componentDidMount() {
-    let dataSource = this.state.dataSource.cloneWithRowsAndSections({
+    const dataSource = this.state.dataSource.cloneWithRowsAndSections({
       'Vertical ScrollView, RefreshControl': [this._renderRefreshControl],
-      ActionSheetIOS: [this._renderActionSheet],
-      ActivityIndicator: [this._renderActivityIndicator],
-      Alert: [this._renderAlert],
-      DatePickerIOS: [this._renderDatePicker],
+      'ActionSheetIOS': [this._renderActionSheet],
+      'ActivityIndicator': [this._renderActivityIndicator],
+      'Alert': [this._renderAlert],
+      'DatePickerIOS': [this._renderDatePicker],
       'Horizontal ScrollView': [this._renderHorizontalScrollView],
-      MaskView: [this._renderMaskView],
-      Modal: [this._renderModal],
-      Picker: [this._renderPicker],
-      ProgressView: [this._renderProgressView],
-      SegmentedControl: [this._renderSegmentedControl],
-      Slider: [this._renderSlider],
-      StatusBar: [this._renderStatusBar],
-      Switch: [this._renderSwitch],
-      Text: [this._renderText],
-      TextInput: [this._renderTextInput],
-      Touchables: [this._renderTouchables],
+      'MaskView': [this._renderMaskView],
+      'Modal': [this._renderModal],
+      'Picker': [this._renderPicker],
+      'ProgressView': [this._renderProgressView],
+      'SegmentedControl': [this._renderSegmentedControl],
+      'Slider': [this._renderSlider],
+      'StatusBar': [this._renderStatusBar],
+      'Switch': [this._renderSwitch],
+      'Text': [this._renderText],
+      'TextInput': [this._renderTextInput],
+      'Touchables': [this._renderTouchables],
       // 'View': [this._renderView],
-      WebView: [this._renderWebView],
+      'WebView': [this._renderWebView],
     });
 
     this.setState({ dataSource });
@@ -100,11 +101,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     setTimeout(() => {
       this.setState({ isRefreshing: false });
     }, 3000);
-  };
+  }
 
   _scrollToTop = () => {
     this._listView!.scrollTo({ x: 0, y: 0 });
-  };
+  }
 
   _renderMaskView = () => {
     return (
@@ -117,11 +118,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </Button>
       </View>
     );
-  };
+  }
 
   _renderModal = () => {
     return <ModalExample />;
-  };
+  }
 
   _renderRefreshControl = () => {
     return (
@@ -132,7 +133,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </Text>
       </View>
     );
-  };
+  }
 
   _renderActionSheet = () => {
     const showActionSheet = () => {
@@ -143,6 +144,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
           destructiveButtonIndex: 2,
         },
         buttonIndex => {
+          // tslint:disable-next-line no-console
           console.log({ buttonIndex });
         }
       );
@@ -171,7 +173,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Button onPress={showShareSheet}>Share sheet</Button>
       </View>
     );
-  };
+  }
 
   _renderActivityIndicator = () => {
     const Spacer = () => <View style={{ marginRight: 10 }} />;
@@ -190,10 +192,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <ActivityIndicator size="large" animating={false} hidesWhenStopped={false} />
       </View>
     );
-  };
+  }
 
   _renderAlert = () => {
     const showPrompt = () => {
+      // tslint:disable-next-line no-console
       AlertIOS.prompt('Enter a value', undefined, text => console.log(`You entered ${text}`));
     };
 
@@ -201,13 +204,16 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
       Alert.alert('Alert Title', 'My Alert Msg', [
         {
           text: 'Ask me later',
+          // tslint:disable-next-line no-console
           onPress: () => console.log('Ask me later pressed'),
         },
         {
           text: 'Cancel',
+          // tslint:disable-next-line no-console
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
+        // tslint:disable-next-line no-console
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
     };
@@ -217,7 +223,8 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         style={{
           flexDirection: Layout.isSmallDevice ? 'column' : 'row',
           padding: 10,
-        }}>
+        }}
+      >
         <Button onPress={showPrompt}>Prompt for a value</Button>
 
         {Layout.isSmallDevice && <View style={{ marginBottom: 10 }} />}
@@ -225,11 +232,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Button onPress={showAlert}>Give me some options</Button>
       </View>
     );
-  };
+  }
 
   _renderDatePicker = () => {
     return <DatePickerExample />;
-  };
+  }
 
   _renderHorizontalScrollView = () => {
     const imageStyle = {
@@ -238,7 +245,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     };
 
     return (
-      <ScrollView pagingEnabled directionalLockEnabled horizontal>
+      <ScrollView pagingEnabled={true} directionalLockEnabled={true} horizontal={true}>
         <Image
           source={require('../../assets/images/example1.jpg')}
           style={imageStyle}
@@ -256,11 +263,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         />
       </ScrollView>
     );
-  };
+  }
 
   _renderPicker = () => {
     return <PickerExample />;
-  };
+  }
 
   _renderProgressView = () => {
     return (
@@ -271,11 +278,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <ProgressViewExample progressTintColor="yellow" initialProgress={0.8} />
       </View>
     );
-  };
+  }
 
   _renderSegmentedControl = () => {
     return <SegmentedControlExample />;
-  };
+  }
 
   _renderSlider = () => {
     return (
@@ -283,7 +290,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <SliderExample />
       </View>
     );
-  };
+  }
 
   _renderStatusBar = () => {
     const randomAnimation = () => {
@@ -305,11 +312,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Button onPress={show}>Show</Button>
       </View>
     );
-  };
+  }
 
   _renderSwitch = () => {
     return <SwitchExample />;
-  };
+  }
 
   _renderText = () => {
     const linkStyle = { color: Colors.tintColor, marginVertical: 3 };
@@ -328,11 +335,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </Text>
       </View>
     );
-  };
+  }
 
   _renderTextInput = () => {
     return <TextInputExample />;
-  };
+  }
 
   _renderTouchables = () => {
     const buttonStyle = {
@@ -352,7 +359,8 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <TouchableHighlight
           underlayColor="rgba(1, 1, 255, 0.9)"
           style={buttonStyle}
-          onPress={() => {}}>
+          onPress={() => {}}
+        >
           <Text style={buttonText}>Highlight!</Text>
         </TouchableHighlight>
 
@@ -365,7 +373,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </TouchableBounce>
       </View>
     );
-  };
+  }
 
   // _renderView = () => {
   //   // Don't know what to put here
@@ -394,11 +402,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         }}
       />
     );
-  };
+  }
 
   _renderRow = (renderRowFn?: () => JSX.Element) => {
     return <View>{renderRowFn && renderRowFn()}</View>;
-  };
+  }
 
   _renderSectionHeader = (sectionData: any, sectionTitle: string | number) => {
     return (
@@ -406,7 +414,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Text>{sectionTitle}</Text>
       </View>
     );
-  };
+  }
 }
 
 class DatePickerExample extends React.Component {
@@ -428,7 +436,7 @@ class DatePickerExample extends React.Component {
 
   _onDateChange = (date: Date) => {
     this.setState({ date });
-  };
+  }
 }
 
 class PickerExample extends React.Component {
@@ -440,9 +448,10 @@ class PickerExample extends React.Component {
     return (
       // @ts-ignore
       <Picker
-        st
+        st={true}
         selectedValue={this.state.language}
-        onValueChange={lang => this.setState({ language: lang })}>
+        onValueChange={lang => this.setState({ language: lang })}
+      >
         <Picker.Item label="Java" value="java" />
         <Picker.Item label="JavaScript" value="js" />
         <Picker.Item label="Objective C" value="objc" />
@@ -451,7 +460,6 @@ class PickerExample extends React.Component {
     );
   }
 }
-
 
 interface ProgressViewExampleProps {
   progressTintColor?: string;
@@ -594,7 +602,7 @@ class TextInputExample extends React.Component {
   };
 
   render() {
-    let textInputStyle = {
+    const textInputStyle = {
       width: Layout.window.width - 20,
       borderRadius: 2,
       borderWidth: 1,
@@ -621,7 +629,7 @@ class TextInputExample extends React.Component {
           keyboardAppearance="dark"
           value={this.state.secureTextValue}
           onChangeText={updateSecureTextValue}
-          secureTextEntry
+          secureTextEntry={true}
           style={textInputStyle}
         />
       </View>
@@ -635,7 +643,7 @@ const Button: React.FunctionComponent<TouchableOpacityProps> = (props) => {
       <Text style={styles.buttonText}>{props.children}</Text>
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

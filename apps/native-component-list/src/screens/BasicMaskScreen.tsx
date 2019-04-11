@@ -19,7 +19,7 @@ export default class BasicMaskScreen extends React.Component<{}, State> {
   _animatedTextValue?: Animated.Value;
   _animatedScaleValue?: Animated.Value;
 
-  _interval?: NodeJS.Timeout;
+  _interval?: number;
 
   componentWillMount() {
     this._animatedTextValue = new Animated.Value(0);
@@ -80,7 +80,8 @@ export default class BasicMaskScreen extends React.Component<{}, State> {
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'transparent',
-              }}>
+              }}
+            >
               <Image
                 style={{ width }}
                 resizeMode="contain"
@@ -100,11 +101,13 @@ export default class BasicMaskScreen extends React.Component<{}, State> {
                       }),
                     },
                   ],
-                }}>
+                }}
+              >
                 {this.state.text}
               </Animated.Text>
             </View>
-          }>
+          }
+        >
           <Image style={{ width, height }} source={require('../../assets/images/example3.jpg')} />
         </AnimatedMaskView>
       </View>

@@ -35,10 +35,11 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
           '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
       });
     } catch ({ message }) {
+      // tslint:disable-next-line no-console
       console.error('Demo: Error: init: ' + message);
     }
     this._syncUserWithStateAsync();
-  };
+  }
 
   _syncUserWithStateAsync = async () => {
     /*
@@ -60,7 +61,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } else {
       this.setState({ user: undefined });
     }
-  };
+  }
 
   get buttonTitle() {
     return this.state.user ? 'Sign-Out of Google' : 'Sign-In with Google';
@@ -84,35 +85,39 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } else {
       this._signInAsync();
     }
-  };
+  }
 
   _signOutAsync = async () => {
     try {
       // await GoogleSignIn.disconnectAsync();
       await GoogleSignIn.signOutAsync();
+      // tslint:disable-next-line no-console
       console.log('Log out successful');
     } catch ({ message }) {
+      // tslint:disable-next-line no-console
       console.error('Demo: Error: logout: ' + message);
     } finally {
       this.setState({ user: undefined });
     }
-  };
+  }
 
   _signInAsync = async () => {
     try {
       await GoogleSignIn.askForPlayServicesAsync();
       const { type, user } = await GoogleSignIn.signInAsync();
+      // tslint:disable-next-line no-console
       console.log({ type, user });
       if (type === 'success') {
         this._syncUserWithStateAsync();
       }
     } catch ({ message }) {
+      // tslint:disable-next-line no-console
       console.error('login: Error:' + message);
     }
-  };
+  }
 }
 
-const GoogleProfile: React.SFC<{
+const GoogleProfile: React.FunctionComponent<{
   photoURL: string;
   displayName: string;
   email: string;

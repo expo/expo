@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { Svg } from 'expo';
 import Example from './Example';
@@ -120,8 +121,8 @@ const icon = (
 );
 
 const Rect: Example = {
-  icon: icon,
+  icon,
   samples: [RectExample, RectStrokeFill, RoundedRect, EllipseRect, RoundOverflowRect],
-}
+};
 
 export default Rect;

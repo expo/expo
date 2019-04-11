@@ -23,11 +23,11 @@ const locationAccuracyStates: { [key in Location.Accuracy]: Location.Accuracy } 
 };
 
 interface State {
-  accuracy: Location.Accuracy,
+  accuracy: Location.Accuracy;
   isTracking: boolean;
-  savedLocations: [],
-  geofencingRegions: [],
-  initialRegion?: any,
+  savedLocations: [];
+  geofencingRegions: [];
+  initialRegion?: any;
   showsBackgroundLocationIndicator: boolean;
   error?: string;
 }
@@ -50,13 +50,13 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
   eventSubscription?: EventSubscription;
 
   didFocus = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (status !== 'granted') {
       AppState.addEventListener('change', this.handleAppStateChange);
       this.setState({
-        error:
-          'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
+        // tslint:disable-next-line max-line-length
+        error: 'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
       });
       return;
     } else {
@@ -91,7 +91,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
         longitudeDelta: 0.002,
       },
     });
-  };
+  }
 
   handleAppStateChange = (nextAppState: string) => {
     if (nextAppState !== 'active') {
@@ -104,7 +104,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
     }
 
     this.didFocus();
-  };
+  }
 
   componentWillUnmount() {
     if (this.eventSubscription) {
@@ -128,6 +128,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
 
     if (!this.state.isTracking) {
       alert(
+        // tslint:disable-next-line max-line-length
         'Now you can send app to the background, go somewhere and come back here! You can even terminate the app and it will be woken up when the new significant location change comes out.'
       );
     }
@@ -142,7 +143,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
   clearLocations = async () => {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
     this.setState({ savedLocations: [] });
-  };
+  }
 
   toggleTracking = async () => {
     await AsyncStorage.removeItem(STORAGE_KEY);
@@ -153,7 +154,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
       await this.startLocationUpdates();
     }
     this.setState({ savedLocations: [] });
-  };
+  }
 
   onAccuracyChange = () => {
     const accuracy = locationAccuracyStates[this.state.accuracy];
@@ -164,7 +165,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
       // Restart background task with the new accuracy.
       this.startLocationUpdates(accuracy);
     }
-  };
+  }
 
   toggleLocationIndicator = async () => {
     const showsBackgroundLocationIndicator = !this.state.showsBackgroundLocationIndicator;
@@ -174,7 +175,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
         await this.startLocationUpdates();
       }
     });
-  };
+  }
 
   onCenterMap = async () => {
     const { coords } = await Location.getCurrentPositionAsync();
@@ -188,7 +189,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
         longitudeDelta: 0.002,
       });
     }
-  };
+  }
 
   renderPolyline() {
     const { savedLocations } = this.state;
@@ -221,7 +222,8 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
           ref={this.mapViewRef}
           style={styles.mapView}
           initialRegion={this.state.initialRegion}
-          showsUserLocation>
+          showsUserLocation={true}
+        >
           {this.renderPolyline()}
         </MapView>
         <View style={styles.buttons} pointerEvents="box-none">
@@ -279,6 +281,7 @@ TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }: an
       longitude: coords.longitude,
     }));
 
+    // tslint:disable-next-line no-console
     console.log(`Received new locations at ${new Date()}:`, locations);
 
     savedLocations.push(...newLocations);

@@ -11,6 +11,7 @@ export default class ExpoComponentsScreen extends React.Component {
   };
 
   render() {
+    // @ts-ignore
     return <ComponentListScreen apis={this._getApis()} tabName="ExpoComponents" />;
   }
 
@@ -46,5 +47,5 @@ export default class ExpoComponentsScreen extends React.Component {
         }
         return 0;
       });
-  };
+  }
 }

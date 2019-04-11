@@ -17,7 +17,7 @@ interface RowProps {
   deleteReminder: (remidnerId: string) => void;
 }
 
-const ReminderRow: React.SFC<RowProps> = ({ reminder, getReminder, updateReminder, deleteReminder }) => (
+const ReminderRow: React.FunctionComponent<RowProps> = ({ reminder, getReminder, updateReminder, deleteReminder }) => (
   <View style={styles.reminderRow}>
     <Text style={styles.reminderName}>{reminder.title}</Text>
     <Text style={styles.reminderData}>{JSON.stringify(reminder)}</Text>
@@ -40,7 +40,10 @@ interface State {
   reminders: Calendar.Reminder[];
 }
 
-export default class RemindersScreen extends React.Component<NavigationScreenProps<{ calendar: Calendar.Calendar }>, State> {
+export default class RemindersScreen extends React.Component<
+  NavigationScreenProps<{ calendar: Calendar.Calendar }>,
+  State
+> {
   static navigationOptions = {
     title: 'Reminders',
   };
@@ -59,7 +62,7 @@ export default class RemindersScreen extends React.Component<NavigationScreenPro
   _findReminders = async (id: string) => {
     const reminders = await Calendar.getRemindersAsync([id], null, new Date(), new Date());
     this.setState({ reminders });
-  };
+  }
 
   _addReminder = async () => {
     const { calendar } = this.props.navigation.state.params!;
@@ -83,7 +86,7 @@ export default class RemindersScreen extends React.Component<NavigationScreenPro
     } catch (e) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
-  };
+  }
 
   _getReminder = async (reminder: Calendar.Reminder) => {
     try {
@@ -95,7 +98,7 @@ export default class RemindersScreen extends React.Component<NavigationScreenPro
     } catch (e) {
       Alert.alert('Error finding reminder', e.message);
     }
-  };
+  }
 
   _updateReminder = async (reminder: Calendar.Reminder) => {
     const { calendar } = this.props.navigation.state.params!;
@@ -114,7 +117,7 @@ export default class RemindersScreen extends React.Component<NavigationScreenPro
     } catch (e) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
-  };
+  }
 
   _deleteReminder = async (reminderId: string) => {
     try {
@@ -125,7 +128,7 @@ export default class RemindersScreen extends React.Component<NavigationScreenPro
     } catch (e) {
       Alert.alert('Reminder not deleted successfully', e.message);
     }
-  };
+  }
 
   render() {
     if (this.state.reminders.length) {

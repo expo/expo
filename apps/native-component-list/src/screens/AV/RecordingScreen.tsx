@@ -23,9 +23,9 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
     this.state.recordingUri ? (
       <React.Fragment>
         <HeadingText>Last recording</HeadingText>
-        <Player source={{ uri: this.state.recordingUri! }} />
+        <Player source={{ uri: this.state.recordingUri }} />
       </React.Fragment>
-    ) : null;
+    ) : null
 
   render() {
     return (

@@ -55,7 +55,7 @@ export default class BranchScreen extends React.Component {
     } else {
       Alert.alert('Share canceled');
     }
-  };
+  }
 
   render() {
     if (Constants.appOwnership !== 'standalone') {

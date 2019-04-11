@@ -30,7 +30,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     const url = 'http://ipv4.download.thinkbroadband.com/256KB.zip';
     await FileSystem.downloadAsync(url, FileSystem.documentDirectory + '256KB.zip');
     alert('Download complete!');
-  };
+  }
 
   _startDownloading = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
@@ -51,12 +51,13 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         alert('Download complete!');
       }
     } catch (e) {
+      // tslint:disable-next-line no-console
       console.log(e);
     }
-  };
+  }
 
   _pause = async () => {
-    if (this.download == null) {
+    if (!this.download) {
       alert('Initiate a download first!');
       return;
     }
@@ -65,9 +66,10 @@ export default class FileSystemScreen extends React.Component<{}, State> {
       await AsyncStorage.setItem('pausedDownload', JSON.stringify(downloadSnapshot));
       alert('Download paused...');
     } catch (e) {
+      // tslint:disable-next-line no-console
       console.log(e);
     }
-  };
+  }
 
   _resume = async () => {
     try {
@@ -80,9 +82,10 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         this._fetchDownload();
       }
     } catch (e) {
+      // tslint:disable-next-line no-console
       console.log(e);
     }
-  };
+  }
 
   _fetchDownload = async () => {
     try {
@@ -112,22 +115,24 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         return;
       }
     } catch (e) {
+      // tslint:disable-next-line no-console
       console.log(e);
     }
-  };
+  }
 
   _getInfo = async () => {
-    if (this.download == null) {
+    if (!this.download) {
       alert('Initiate a download first!');
       return;
     }
     try {
-      let info = await FileSystem.getInfoAsync(this.download._fileUri);
+      const info = await FileSystem.getInfoAsync(this.download._fileUri);
       Alert.alert('File Info:', JSON.stringify(info), [{ text: 'OK', onPress: () => {} }]);
     } catch (e) {
+      // tslint:disable-next-line no-console
       console.log(e);
     }
-  };
+  }
 
   _readAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -138,7 +143,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  };
+  }
 
   _getInfoAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -149,7 +154,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  };
+  }
 
   _copyAndReadAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -162,7 +167,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  };
+  }
 
   render() {
     let progress = null;

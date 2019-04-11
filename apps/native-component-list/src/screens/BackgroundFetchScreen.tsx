@@ -35,13 +35,13 @@ export default class BackgroundFetchScreen extends React.Component<{}, State> {
   didFocus = () => {
     this.refreshLastFetchDateAsync();
     this.checkStatusAsync();
-  };
+  }
 
   handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (nextAppState === 'active') {
       this.refreshLastFetchDateAsync();
     }
-  };
+  }
 
   async refreshLastFetchDateAsync() {
     const lastFetchDateStr = await AsyncStorage.getItem(LAST_FETCH_DATE_KEY);
@@ -69,7 +69,7 @@ export default class BackgroundFetchScreen extends React.Component<{}, State> {
       });
     }
     this.setState({ isRegistered: !this.state.isRegistered });
-  };
+  }
 
   renderText() {
     if (!this.state.fetchDate) {
@@ -115,6 +115,7 @@ export default class BackgroundFetchScreen extends React.Component<{}, State> {
 TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   const now = Date.now();
 
+  // tslint:disable-next-line no-console
   console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`);
   await AsyncStorage.setItem(LAST_FETCH_DATE_KEY, now.toString());
 

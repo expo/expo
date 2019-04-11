@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import Icon from '@expo/vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const icon = (name: string) => <Icon key={name} name={name} size={24} />;
+const icon = (name: string) => <MaterialCommunityIcons key={name} name={name} size={24} />;
 
 interface Props {
   title: string;
@@ -53,11 +53,11 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
       : null;
     const titleTextStyle = withCustomStyles
       ? {
-          fontSize: 24,
-          textAlign: 'center',
-          fontWeight: '700',
-          color: 'orange',
-        }
+        fontSize: 24,
+        textAlign: 'center',
+        fontWeight: '700',
+        color: 'orange',
+      }
       : null;
     const messageTextStyle = withCustomStyles
       ? { fontSize: 12, color: 'purple', textAlign: 'right' }
@@ -82,13 +82,13 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
         onSelection(buttonIndex);
       }
     );
-  };
+  }
 
   render() {
     const { title } = this.props;
     return (
       <View style={{ margin: 6 }}>
-        <Icon.Button
+        <MaterialCommunityIcons.Button
           name="code-tags"
           backgroundColor="#3e3e3e"
           onPress={this._showActionSheet}
@@ -101,7 +101,7 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
           >
             {title}
           </Text>
-        </Icon.Button>
+        </MaterialCommunityIcons.Button>
       </View>
     );
   }

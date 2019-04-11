@@ -13,7 +13,7 @@ export default class ContactsListItem extends React.PureComponent<{
 }> {
   onPress = () => {
     this.props.onPress && this.props.onPress(this.props.contactId);
-  };
+  }
   render() {
     const { name, subtitle, isMe } = this.props;
     return (

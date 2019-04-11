@@ -14,16 +14,19 @@ const styles = StyleSheet.create({
   },
 });
 
+// @ts-ignore
 ExpoApisStackNavigator.path = 'API';
 ExpoApisStackNavigator.navigationOptions = {
   title: 'Expo API',
 };
 
+// @ts-ignore
 ExpoComponentsStackNavigator.path = 'Components';
 ExpoComponentsStackNavigator.navigationOptions = {
   title: 'Expo Components',
 };
 
+// @ts-ignore
 ReactNativeCoreStackNavigator.path = 'ReactNative';
 ReactNativeCoreStackNavigator.navigationOptions = {
   title: 'React Native Core',
@@ -51,6 +54,7 @@ const MainTabNavigator = createTabNavigator(
         header: null,
         tabBarLabel,
         tabBarIcon: ({ focused }: { focused: boolean }) => {
+          // tslint:disable-next-line: no-shadowed-variable
           const { routeName } = navigation.state;
           switch (routeName) {
             case 'ReactNativeCore':
@@ -64,6 +68,7 @@ const MainTabNavigator = createTabNavigator(
         },
       };
     },
+    // @ts-ignore
     resetOnBlur: true,
     /* Below applies to material bottom tab navigator */
     activeTintColor: Colors.tabIconSelected,
@@ -83,6 +88,7 @@ const MainTabNavigator = createTabNavigator(
   }
 );
 
+// @ts-ignore
 MainTabNavigator.path = '';
 MainTabNavigator.navigationOptions = {
   title: 'Native Component List',

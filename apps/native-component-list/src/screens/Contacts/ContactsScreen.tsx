@@ -11,11 +11,11 @@ import * as ContactUtils from './ContactUtils';
 const CONTACT_PAGE_SIZE = 500;
 
 interface State {
-  contacts: Contacts.Contact[],
-  hasPreviousPage: boolean,
-  hasNextPage: boolean,
-  permission?: boolean,
-  refreshing: boolean,
+  contacts: Contacts.Contact[];
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  permission?: boolean;
+  refreshing: boolean;
 }
 
 export default class ContactsScreen extends React.Component<NavigationScreenProps, State> {
@@ -27,7 +27,8 @@ export default class ContactsScreen extends React.Component<NavigationScreenProp
           IconComponent={Ionicons}
           OverflowIcon={<Ionicons name="ios-more" size={23} color="blue" />}
           iconSize={23}
-          color="blue">
+          color="blue"
+        >
           <HeaderButtons.Item
             title="add"
             iconName="md-add"
@@ -44,7 +45,7 @@ export default class ContactsScreen extends React.Component<NavigationScreenProp
         </HeaderButtons>
       ),
     };
-  };
+  }
 
   _rawContacts: { [contactId: string]: Contacts.Contact } = {};
   readonly state: State = {
@@ -57,12 +58,12 @@ export default class ContactsScreen extends React.Component<NavigationScreenProp
   componentDidFocus = async () => {
     await this.checkPermissionAsync();
     await this.loadAsync();
-  };
+  }
 
   checkPermissionAsync = async () => {
     const { status } = await Permissions.askAsync(Permissions.CONTACTS);
     this.setState({ permission: status === 'granted' });
-  };
+  }
 
   loadAsync = async ({ distanceFromEnd }: { distanceFromEnd?: number } = {}, restart = false) => {
     if (!this.state.permission || this.state.refreshing) {
@@ -96,12 +97,13 @@ export default class ContactsScreen extends React.Component<NavigationScreenProp
       hasNextPage,
       refreshing: false,
     });
-  };
+  }
 
   onPressItem = async (id: string) => {
+    // tslint:disable-next-line no-console
     console.log('onPress', id);
     this.props.navigation.navigate('ContactDetail', { id });
-  };
+  }
 
   render() {
     const { contacts, permission } = this.state;

@@ -17,7 +17,7 @@ interface Props extends TouchableHighlightProps {
   buttonStyle?: ViewStyle;
 }
 
-const Button: React.SFC<Props> = ({
+const Button: React.FunctionComponent<Props> = ({
   disabled,
   loading,
   title,

@@ -8,10 +8,10 @@ import Button from '../../components/Button';
 const GEOFENCING_TASK = 'geofencing';
 
 interface GeofencingRegion {
-  identifier: string,
-  latitude: number,
-  longitude: number,
-  radius: number,
+  identifier: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
 }
 
 interface State {
@@ -68,7 +68,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
         longitudeDelta: 0.002,
       },
     });
-  };
+  }
 
   toggleGeofencing = async () => {
     if (this.state.isGeofencing) {
@@ -78,7 +78,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
       await Location.startGeofencingAsync(GEOFENCING_TASK, this.state.geofencingRegions);
     }
     this.setState({ isGeofencing: !this.state.isGeofencing });
-  };
+  }
 
   centerMap = async () => {
     const { coords } = await Location.getCurrentPositionAsync();
@@ -92,7 +92,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
         longitudeDelta: 0.002,
       });
     }
-  };
+  }
 
   onMapPress = async ({ nativeEvent: { coordinate } }: MapEvent) => {
     const geofencingRegions = [...this.state.geofencingRegions];
@@ -109,7 +109,7 @@ export default class GeofencingScreen extends React.Component<{}, State> {
       // update existing geofencing task
       await Location.startGeofencingAsync(GEOFENCING_TASK, geofencingRegions);
     }
-  };
+  }
 
   renderRegions() {
     const { geofencingRegions } = this.state;
@@ -140,7 +140,9 @@ export default class GeofencingScreen extends React.Component<{}, State> {
             <Text style={styles.headingText}>
               {this.state.isGeofencing
                 ? 'You will be receiving notifications when the device enters or exits from selected regions.'
-                : 'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'}
+                // tslint:disable-next-line: max-line-length
+                : 'Click `Start geofencing` to start getting geofencing notifications. Tap on the map to select geofencing regions.'
+              }
             </Text>
           </BlurView>
         </View>
@@ -150,7 +152,8 @@ export default class GeofencingScreen extends React.Component<{}, State> {
           style={styles.mapView}
           initialRegion={this.state.initialRegion}
           onPress={this.onMapPress}
-          showsUserLocation>
+          showsUserLocation={true}
+        >
           {this.renderRegions()}
         </MapView>
         <View style={styles.buttons}>
@@ -178,6 +181,7 @@ async function getSavedRegions(): Promise<GeofencingRegion[]> {
 TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }: { data: any }) => {
   const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
 
+  // tslint:disable-next-line no-console
   console.log(`${stateString} region ${region.identifier}`);
 
   await Notifications.presentLocalNotificationAsync({

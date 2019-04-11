@@ -51,7 +51,7 @@ const EXAMPLES = [
   {}
 );
 
-const ExamplePicker: React.SFC<{
+const ExamplePicker: React.FunctionComponent<{
   value: string;
   onChange: (value: string) => void;
 }> = ({ value, onChange }) => (
@@ -66,7 +66,7 @@ const ExamplePicker: React.SFC<{
   </Picker>
 );
 
-const PlayerControls: React.SFC<{
+const PlayerControls: React.FunctionComponent<{
   onPlayPress: () => void;
   onResetPress: () => void;
   onProgressChange: (value: number) => void;
@@ -167,7 +167,7 @@ export default class LottieScreen extends React.Component<{}, State> {
         if (finished) this.forceUpdate();
       });
     }
-  };
+  }
 
   onResetPress = () => {
     if (this.state.config.imperative && this.anim) {
@@ -183,11 +183,11 @@ export default class LottieScreen extends React.Component<{}, State> {
         }
       });
     }
-  };
+  }
 
   setAnim = (anim: any) => {
     this.anim = anim;
-  };
+  }
 
   render() {
     return (

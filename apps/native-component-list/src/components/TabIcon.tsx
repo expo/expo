@@ -1,12 +1,13 @@
-import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import React from 'react';
 import { Platform } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { Colors } from '../constants';
 
 interface Props {
   name: string;
   focused?: boolean;
+  size?: number;
 }
 
 export default class TabIcon extends React.PureComponent<Props> {
@@ -18,6 +19,6 @@ export default class TabIcon extends React.PureComponent<Props> {
       ios: size,
       default: size - 2,
     });
-    return <Icon name={name} size={platformSize} color={color} />;
+    return <MaterialCommunityIcons name={name} size={platformSize} color={color} />;
   }
 }

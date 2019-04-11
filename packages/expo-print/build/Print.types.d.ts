@@ -3,7 +3,7 @@ export interface PrintOptions {
     html?: string;
     printerUrl?: string;
     markupFormatterIOS?: string;
-    orientation?: OrientationType;
+    orientation?: string;
 }
 export interface Printer {
     name: string;

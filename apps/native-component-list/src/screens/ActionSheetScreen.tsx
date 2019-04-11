@@ -4,15 +4,15 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import ShowActionSheetButton from '../components/ShowActionSheetButton';
 
-export default class ActionSheetScreen extends React.Component {
-  render() {
-    return (
-      <ActionSheetProvider>
-        <App />
-      </ActionSheetProvider>
-    );
-  }
-}
+const ActionSheetScreen = () => (
+  <ActionSheetProvider>
+    {/*
+    // @ts-ignore */}
+    <App />
+  </ActionSheetProvider>
+);
+
+export default ActionSheetScreen;
 
 interface State {
   selectedIndex?: number;
@@ -29,7 +29,7 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
 
   _updateSelectionText = (selectedIndex: number) => {
     this.setState({ selectedIndex });
-  };
+  }
 
   _renderSelectionText() {
     const { selectedIndex } = this.state;
@@ -55,46 +55,46 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
         />
         <ShowActionSheetButton
           title="Title"
-          withTitle
+          withTitle={true}
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         <ShowActionSheetButton
           title="Title & Message"
-          withTitle
-          withMessage
+          withTitle={true}
+          withMessage={true}
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         {this._renderSectionHeader('Android-Only Options')}
         <ShowActionSheetButton
           title="Icons"
-          withIcons
+          withIcons={true}
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         <ShowActionSheetButton
           title="Title, Message, & Icons"
-          withTitle
-          withMessage
-          withIcons
+          withTitle={true}
+          withMessage={true}
+          withIcons={true}
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         <ShowActionSheetButton
           title="Use Separators"
-          withTitle
-          withIcons
-          withSeparators
+          withTitle={true}
+          withIcons={true}
+          withSeparators={true}
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />
         <ShowActionSheetButton
           title="Custom Styles"
-          withTitle
-          withMessage
-          withIcons
-          withCustomStyles
+          withTitle={true}
+          withMessage={true}
+          withIcons={true}
+          withCustomStyles={true}
           onSelection={this._updateSelectionText}
           showActionSheetWithOptions={showActionSheetWithOptions}
         />

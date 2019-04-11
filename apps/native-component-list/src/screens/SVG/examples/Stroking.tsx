@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { Svg } from 'expo';
 import Example from './Example';
@@ -77,7 +78,8 @@ class StrokeDashoffset extends React.Component {
           y="40"
           textAnchor="middle"
           strokeDasharray="100"
-          strokeDashoffset="60">
+          strokeDashoffset="60"
+        >
           STROKE
         </Text>
       </Svg>
@@ -135,8 +137,8 @@ const icon = (
 );
 
 const Stroking: Example = {
-  icon: icon,
+  icon,
   samples: [StrokeExample, StrokeLinecap, StrokeDasharray, StrokeDashoffset, StrokePattern],
-}
+};
 
 export default Stroking;

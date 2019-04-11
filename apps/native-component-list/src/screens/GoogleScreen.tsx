@@ -48,6 +48,7 @@ export default class GoogleLoginScreen extends React.Component {
             {
               text: 'OK!',
               onPress: () => {
+                // tslint:disable-next-line no-console
                 console.log({ result });
               },
             },
@@ -57,5 +58,5 @@ export default class GoogleLoginScreen extends React.Component {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK :(', onPress: () => {} }]);
     }
-  };
+  }
 }

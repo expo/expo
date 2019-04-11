@@ -14,12 +14,14 @@ const StorageKey = '@Storage:Key';
 async function signInAsync() {
   const authState = await AppAuth.authAsync(config);
   await cacheAuthAsync(authState);
+  // tslint:disable-next-line no-console
   console.log('signInAsync', authState);
   return authState;
 }
 
 async function refreshAuthAsync({ refreshToken }: { refreshToken: string }) {
   const authState = await AppAuth.refreshAsync(config, refreshToken);
+  // tslint:disable-next-line no-console
   console.log('refresh', authState);
   await cacheAuthAsync(authState);
   return authState;
@@ -28,6 +30,7 @@ async function refreshAuthAsync({ refreshToken }: { refreshToken: string }) {
 async function getCachedAuthAsync() {
   const value = await AsyncStorage.getItem(StorageKey);
   const authState = JSON.parse(value!);
+  // tslint:disable-next-line no-console
   console.log('getCachedAuthAsync', authState);
   if (authState) {
     if (checkIfTokenExpired(authState)) {
@@ -39,7 +42,7 @@ async function getCachedAuthAsync() {
 }
 
 async function cacheAuthAsync(authState: object) {
-  return await AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
+  return AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
 }
 
 function checkIfTokenExpired({ accessTokenExpirationDate }: { accessTokenExpirationDate: string }) {
@@ -82,7 +85,7 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
     } catch ({ message }) {
       alert(message);
     }
-  };
+  }
 
   _toggleAuthAsync = async () => {
     try {
@@ -96,7 +99,7 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
     } catch ({ message }) {
       alert(message);
     }
-  };
+  }
 
   get hasAuth() {
     return this.state.authState;

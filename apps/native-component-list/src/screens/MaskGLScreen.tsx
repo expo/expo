@@ -88,6 +88,7 @@ export default class MaskGLScreen extends React.Component<Props> {
 
         // Clear
         gl.clearColor(0, 0, 1, 1);
+        // tslint:disable-next-line: no-bitwise
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // Bind buffer, program and position attribute for use
@@ -100,9 +101,9 @@ export default class MaskGLScreen extends React.Component<Props> {
         const speed = this.props.speed || 1;
         const a = 0.48 * Math.sin(0.001 * speed * Date.now()) + 0.5;
         const verts = new Float32Array([
-          -a, -a,  a, -a,
-          -a,  a, -a,  a,
-           a, -a,  a,  a,
+          -a, -a, a, -a,
+          -a, a, -a, a,
+          a, -a, a, a,
         ]);
         gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
         gl.drawArrays(gl.TRIANGLES, 0, verts.length / 2);
@@ -116,5 +117,5 @@ export default class MaskGLScreen extends React.Component<Props> {
       }
     };
     animate();
-  };
+  }
 }

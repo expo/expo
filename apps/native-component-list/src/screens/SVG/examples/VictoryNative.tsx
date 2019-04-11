@@ -58,7 +58,8 @@ class VictoryChartExample extends React.Component {
             fontSize={15}
             fontFamily={Font.processFontFamily('space-mono')!}
             x={25}
-            y={15}>
+            y={15}
+          >
             drawn with victory-native
           </Svg.Text>
         </Svg>
@@ -70,8 +71,8 @@ class VictoryChartExample extends React.Component {
 const icon = <Text>VN</Text>;
 
 const VictoryNative: Example = {
-  icon: icon,
+  icon,
   samples: [VictoryChartExample],
-}
+};
 
 export default VictoryNative;

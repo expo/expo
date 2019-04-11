@@ -29,7 +29,7 @@ export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
       });
       this.setState({ snapshot });
     }
-  };
+  }
 
   onContextCreate = async (gl: GL.ExpoWebGLRenderingContext) => {
     const scene = new THREE.Scene();
@@ -68,7 +68,7 @@ export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
       gl.endFrameEXP();
     };
     animate();
-  };
+  }
 
   render() {
     const { snapshot } = this.state;

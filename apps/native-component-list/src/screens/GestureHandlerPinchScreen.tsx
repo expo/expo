@@ -75,21 +75,21 @@ class PinchableBox extends React.Component {
       this._rotate.setOffset(this._lastRotate);
       this._rotate.setValue(0);
     }
-  };
+  }
   _onPinchHandlerStateChange = (event: PinchGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastScale *= event.nativeEvent.scale;
       this._baseScale.setValue(this._lastScale);
       this._pinchScale.setValue(1);
     }
-  };
+  }
   _onTiltGestureStateChange = (event: PanGestureHandlerStateChangeEvent) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       this._lastTilt += event.nativeEvent.translationY;
       this._tilt.setOffset(this._lastTilt);
       this._tilt.setValue(0);
     }
-  };
+  }
   render() {
     return (
       <PanGestureHandler
@@ -99,19 +99,22 @@ class PinchableBox extends React.Component {
         minDist={10}
         minPointers={2}
         maxPointers={2}
-        avgTouches>
+        avgTouches={true}
+      >
         <Animated.View style={styles.wrapper}>
           <RotationGestureHandler
             ref={this.rotationRef}
             simultaneousHandlers={this.pinchRef}
             onGestureEvent={this._onRotateGestureEvent}
-            onHandlerStateChange={this._onRotateHandlerStateChange}>
+            onHandlerStateChange={this._onRotateHandlerStateChange}
+          >
             <Animated.View style={styles.wrapper}>
               <PinchGestureHandler
                 ref={this.pinchRef}
                 simultaneousHandlers={this.rotationRef}
                 onGestureEvent={this._onPinchGestureEvent}
-                onHandlerStateChange={this._onPinchHandlerStateChange}>
+                onHandlerStateChange={this._onPinchHandlerStateChange}
+              >
                 <Animated.View style={styles.container} collapsable={false}>
                   <Animated.Image
                     style={[
@@ -137,20 +140,18 @@ class PinchableBox extends React.Component {
   }
 }
 
-export default class GestureHandlerPinchScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Pinch and Rotate',
-  };
+const GestureHandlerPinchScreen = () => (
+  <View style={{ flex: 1 }}>
+    <PinchableBox />
+    <PinchableBox />
+  </View>
+);
 
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <PinchableBox />
-        <PinchableBox />
-      </View>
-    );
-  }
-}
+GestureHandlerPinchScreen.navigationOptions = {
+  title: 'Pinch and Rotate',
+};
+
+export default GestureHandlerPinchScreen;
 
 const styles = StyleSheet.create({
   container: {

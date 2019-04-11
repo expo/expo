@@ -6,7 +6,8 @@ import { Colors } from '../../constants';
 
 export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
   title: string,
-  onContextCreate: (gl: GL.ExpoWebGLRenderingContext) => Promise<{ onTick?: (gl: GL.ExpoWebGLRenderingContext) => void } | void>
+  onContextCreate:
+    (gl: GL.ExpoWebGLRenderingContext) => Promise<{ onTick?: (gl: GL.ExpoWebGLRenderingContext) => void } | void>
 ): React.ComponentType<P> & { title: string } =>
   class extends React.Component<P> {
     static title = title;
@@ -30,7 +31,8 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
               backgroundColor: Colors.tintColor,
             },
             this.props.style,
-          ]}>
+          ]}
+        >
           <GL.GLView style={{ flex: 1 }} onContextCreate={this._onContextCreate} />
         </View>
       );
@@ -47,5 +49,5 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
         }
       };
       animate();
-    };
+    }
   };

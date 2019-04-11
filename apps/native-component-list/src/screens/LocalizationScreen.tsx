@@ -42,14 +42,14 @@ export default class LocalizationScreen extends React.Component<{}, State> {
     const preferredLocales = Localization.locales;
     const currentLocale = Localization.locale;
     this.setState({ preferredLocales, currentLocale });
-  };
+  }
 
   queryCurrencyCodes = async () => {
     if (this.state.isoCurrencyCodes.length === 0) {
       const isoCurrencyCodes = Localization.isoCurrencyCodes;
       this.setState({ isoCurrencyCodes });
     }
-  };
+  }
 
   prettyFormatCurrency = () => {
     let buffer = '';
@@ -72,12 +72,12 @@ export default class LocalizationScreen extends React.Component<{}, State> {
         currentColumn++;
       }
     }
-  };
+  }
 
   changeLocale = (locale: string) => {
     i18n.locale = locale;
     this.setState({ locale });
-  };
+  }
 
   render() {
     return (

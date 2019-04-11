@@ -40,9 +40,9 @@ class Renderer extends THREE.WebGLRenderer {
   }
 }
 
-const loadAsync = (res: Asset) => {
-  let nextRes: Asset | string = res;
-  if (typeof res === 'object' && res !== null && res.downloadAsync) {
+const loadAsync = (res?: Asset | string) => {
+  let nextRes: Asset | string | undefined = res;
+  if (res && typeof res === 'object' && res.downloadAsync) {
     nextRes = res.localUri || res.uri;
   }
   return new THREE.TextureLoader().load(nextRes as string);

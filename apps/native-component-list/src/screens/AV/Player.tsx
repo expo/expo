@@ -64,20 +64,20 @@ export default class Player extends React.Component<Props, State> {
   _playFromPosition = (position: number) =>
     this.props
       .setPositionAsync(position)
-      .then(() => this.setState({ userIsDraggingSlider: false }));
+      .then(() => this.setState({ userIsDraggingSlider: false }))
 
   _toggleLooping = () => this.props.setIsLoopingAsync(!this.props.isLooping);
 
   _toggleIsMuted = () => this.props.setIsMutedAsync(!this.props.isMuted);
 
   _toggleSlowRate = () =>
-    this.props.setRateAsync(this.props.rate < 1 ? 1 : 0.5, this.props.shouldCorrectPitch);
+    this.props.setRateAsync(this.props.rate < 1 ? 1 : 0.5, this.props.shouldCorrectPitch)
 
   _toggleFastRate = () =>
-    this.props.setRateAsync(this.props.rate > 1 ? 1 : 2, this.props.shouldCorrectPitch);
+    this.props.setRateAsync(this.props.rate > 1 ? 1 : 2, this.props.shouldCorrectPitch)
 
   _toggleShouldCorrectPitch = () =>
-    this.props.setRateAsync(this.props.rate, !this.props.shouldCorrectPitch);
+    this.props.setRateAsync(this.props.rate, !this.props.shouldCorrectPitch)
 
   _renderPlayPauseButton = () => {
     let onPress = this._pause;
@@ -93,7 +93,7 @@ export default class Player extends React.Component<Props, State> {
         <Ionicons name={iconName} style={[styles.icon, styles.playPauseIcon]} />
       </TouchableOpacity>
     );
-  };
+  }
 
   _maybeRenderErrorOverlay = () => {
     if (this.props.errorMessage) {
@@ -104,7 +104,7 @@ export default class Player extends React.Component<Props, State> {
       );
     }
     return null;
-  };
+  }
 
   _renderAuxiliaryButton = ({
     disable,
@@ -127,7 +127,8 @@ export default class Player extends React.Component<Props, State> {
         key={title}
         style={[styles.button, active && styles.activeButton]}
         disabled={!this.props.isLoaded}
-        onPress={onPress}>
+        onPress={onPress}
+      >
         <Ionicons
           name={`ios-${iconName}`}
           style={[styles.icon, styles.buttonIcon, active && styles.activeButtonText]}
@@ -135,7 +136,7 @@ export default class Player extends React.Component<Props, State> {
         <Text style={[styles.buttonText, active && styles.activeButtonText]}>{title}</Text>
       </TouchableOpacity>
     );
-  };
+  }
 
   render() {
     return (
@@ -161,7 +162,7 @@ export default class Player extends React.Component<Props, State> {
               })
             }
           />
-          <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit numberOfLines={1}>
+          <Text style={{ width: 100, textAlign: 'right' }} adjustsFontSizeToFit={true} numberOfLines={1}>
             {_formatTime(this.props.positionMillis / 1000)} /{' '}
             {_formatTime(this.props.durationMillis / 1000)}
           </Text>
@@ -219,11 +220,11 @@ const _formatTime = (duration: number) => {
   return `${paddedMins}:${paddedSecs}`;
 };
 
-const _leftPad = (string: string, padWith: string, expectedMinimumSize: number): string => {
-  if (string.length >= expectedMinimumSize) {
-    return string;
+const _leftPad = (s: string, padWith: string, expectedMinimumSize: number): string => {
+  if (s.length >= expectedMinimumSize) {
+    return s;
   }
-  return _leftPad(`${padWith}${string}`, padWith, expectedMinimumSize);
+  return _leftPad(`${padWith}${s}`, padWith, expectedMinimumSize);
 };
 
 const styles = StyleSheet.create({

@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import {
   Text,
@@ -21,7 +22,7 @@ class MainScreen extends React.Component<NavigationScreenProps> {
     title: '📱 React Native Screens Examples',
   };
   render() {
-    const data = Object.keys(SCREENS)
+    const data = Object.keys(SCREENS);
     return (
       <FlatList<string>
         style={styles.list}

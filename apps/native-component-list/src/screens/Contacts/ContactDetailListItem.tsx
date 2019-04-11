@@ -13,14 +13,15 @@ interface Props {
 export default class ContactDetailListItem extends React.PureComponent<Props> {
   onPress = () => {
     this.props.onPress && this.props.onPress(this.props);
-  };
+  }
   render() {
     const { label, value, onPress } = this.props;
     return (
       <TouchableHighlight
         disabled={!onPress}
         underlayColor={Colors.listItemTouchableHighlight}
-        onPress={this.onPress}>
+        onPress={this.onPress}
+      >
         <View style={styles.container}>
           <View style={{ maxWidth: '80%' }}>
             <Text style={styles.title}>{label}</Text>

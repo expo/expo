@@ -13,6 +13,7 @@ import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
 import ProcessingWrap from './ProcessingWrap';
 
 const THREE = require('three');
+// @ts-ignore
 global.THREE = THREE;
 require('three/examples/js/shaders/CopyShader');
 require('three/examples/js/shaders/DigitalGlitch');
@@ -26,13 +27,14 @@ require('three/examples/js/postprocessing/FilmPass');
 interface Screens {
   [key: string]: {
     screen: React.ComponentType & { title: string }
-  }
+  };
 }
 
 const GLScreens: Screens = {
   ClearToBlue: {
     screen: GLWrap('Clear to blue', async gl => {
       gl.clearColor(0, 0, 1, 1);
+      // tslint:disable-next-line: no-bitwise
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.endFrameEXP();
     }),
@@ -93,9 +95,9 @@ const GLScreens: Screens = {
       (async () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const asset = Asset.fromModule(require('../../../assets/images/nikki-small-purple.png'));
-        await asset.downloadAsync();
-        gl.texSubImage2D(gl.TEXTURE_2D, 0, 32, 32, gl.RGBA, gl.UNSIGNED_BYTE, asset as any);
+        const imageAsset = Asset.fromModule(require('../../../assets/images/nikki-small-purple.png'));
+        await imageAsset.downloadAsync();
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 32, 32, gl.RGBA, gl.UNSIGNED_BYTE, imageAsset as any);
         // Use below to test using a `TypedArray` parameter
         //         gl.texSubImage2D(
         //           gl.TEXTURE_2D, 0, 32, 32, 2, 2, gl.RGBA, gl.UNSIGNED_BYTE,
@@ -110,6 +112,7 @@ const GLScreens: Screens = {
       return {
         onTick() {
           gl.clearColor(0, 0, 1, 1);
+          // tslint:disable-next-line: no-bitwise
           gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
           gl.drawArrays(gl.TRIANGLES, 0, verts.length / 2);
           gl.endFrameEXP();
@@ -515,7 +518,7 @@ const GLScreens: Screens = {
 
       const particleVBOs = new Array(particleVAOs.length);
 
-      for (var i = 0; i < particleVAOs.length; ++i) {
+      for (let i = 0; i < particleVAOs.length; ++i) {
         particleVBOs[i] = new Array(NUM_LOCATIONS);
         // Set up input
         gl.bindVertexArray(particleVAOs[i]!);

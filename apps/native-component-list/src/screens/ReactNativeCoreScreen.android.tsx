@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 
 import {
@@ -79,7 +80,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
       this.setState({ isRefreshing: false });
     }, 3000);
     this.setState({ isRefreshing: true, timeoutId: timeout });
-  };
+  }
 
   componentWillUnmount() {
     clearTimeout(this.state.timeoutId);
@@ -93,7 +94,8 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           backgroundColor: '#fff',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Text>DrawerLayoutAndroid</Text>
       </View>
     );
@@ -103,10 +105,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         drawerWidth={300}
         // @ts-ignore
         drawerPosition={DrawerLayoutAndroid.positions.Left}
-        renderNavigationView={renderNavigationView}>
+        renderNavigationView={renderNavigationView}
+      >
         <SectionList
           removeClippedSubviews={false}
-          stickySectionHeadersEnabled
+          stickySectionHeadersEnabled={true}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           refreshControl={
@@ -125,7 +128,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
 
   _renderItem = ({ item }: any) => {
     return <View>{item()}</View>;
-  };
+  }
 
   _renderSectionHeader = ({ section: { title } }: any) => {
     return (
@@ -137,7 +140,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
 
   _renderModal = () => {
     return <ModalExample />;
-  };
+  }
 
   _renderVerticalScrollView = () => {
     return (
@@ -148,7 +151,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         </Text>
       </View>
     );
-  };
+  }
 
   _renderDrawerLayout = () => {
     return (
@@ -156,7 +159,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Text>Swipe from the left of the screen to see the drawer.</Text>
       </View>
     );
-  };
+  }
 
   _renderActivityIndicator = () => {
     const Spacer = () => <View style={{ marginRight: 10 }} />;
@@ -171,20 +174,23 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <ActivityIndicator size="large" color="#888" />
       </View>
     );
-  };
+  }
 
   _renderAlert = () => {
     const showAlert = () => {
       Alert.alert('Alert Title', 'My Alert Msg', [
         {
           text: 'Ask me later',
+          // tslint:disable-next-line no-console
           onPress: () => console.log('Ask me later pressed'),
         },
         {
           text: 'Cancel',
+          // tslint:disable-next-line no-console
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
+        // tslint:disable-next-line no-console
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
     };
@@ -194,7 +200,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Button onPress={showAlert}>Give me some options</Button>
       </View>
     );
-  };
+  }
 
   _renderDatePicker = () => {
     const showDatePicker = async () => {
@@ -208,6 +214,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           // Selected year, month (0-11), day
         }
       } catch ({ code, message }) {
+        // tslint:disable-next-line no-console
         console.warn('Cannot open date picker', message);
       }
     };
@@ -217,7 +224,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Button onPress={showDatePicker}>Show date picker</Button>
       </View>
     );
-  };
+  }
 
   _renderTimePicker = () => {
     const showTimePicker = async () => {
@@ -231,6 +238,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           // Selected hour (0-23), minute (0-59)
         }
       } catch ({ code, message }) {
+        // tslint:disable-next-line no-console
         console.warn('Cannot open time picker', message);
       }
     };
@@ -240,7 +248,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Button onPress={showTimePicker}>Show time picker</Button>
       </View>
     );
-  };
+  }
 
   _renderHorizontalScrollView = () => {
     const imageStyle = {
@@ -249,7 +257,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     };
 
     return (
-      <ScrollView pagingEnabled directionalLockEnabled horizontal>
+      <ScrollView pagingEnabled={true} directionalLockEnabled={true} horizontal={true}>
         <Image
           source={require('../../assets/images/example1.jpg')}
           style={imageStyle}
@@ -267,11 +275,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         />
       </ScrollView>
     );
-  };
+  }
 
   _renderPicker = () => {
     return <PickerExample />;
-  };
+  }
 
   _renderProgressBar = () => {
     return (
@@ -282,11 +290,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <ProgressBarExample progressTintColor="yellow" initialProgress={0.8} />
       </View>
     );
-  };
+  }
 
   _renderSlider = () => {
     return <SliderExample />;
-  };
+  }
 
   _renderStatusBar = () => {
     const randomAnimation = () => {
@@ -308,11 +316,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         <Button onPress={show}>Show</Button>
       </View>
     );
-  };
+  }
 
   _renderSwitch = () => {
     return <SwitchExample />;
-  };
+  }
 
   _renderText = () => {
     const linkStyle = { color: Colors.tintColor, marginVertical: 3 };
@@ -331,11 +339,11 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         </Text>
       </View>
     );
-  };
+  }
 
   _renderTextInput = () => {
     return <TextInputExample />;
-  };
+  }
 
   _renderTouchables = () => {
     const buttonStyle = {
@@ -356,7 +364,8 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           <TouchableHighlight
             underlayColor="rgba(1, 1, 255, 0.9)"
             style={buttonStyle}
-            onPress={() => {}}>
+            onPress={() => {}}
+          >
             <Text style={buttonText}>Highlight!</Text>
           </TouchableHighlight>
 
@@ -369,7 +378,8 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           <TouchableNativeFeedback
             background={TouchableNativeFeedback.Ripple('#fff', false)}
             onPress={() => {}}
-            delayPressIn={0}>
+            delayPressIn={0}
+          >
             <View style={buttonStyle}>
               <Text style={buttonText}>Native feedback!</Text>
             </View>
@@ -381,7 +391,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         </View>
       </View>
     );
-  };
+  }
 
   _renderWebView = () => {
     return (
@@ -406,7 +416,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
         />
       </View>
     );
-  };
+  }
 }
 
 class PickerExample extends React.Component {
@@ -418,7 +428,8 @@ class PickerExample extends React.Component {
     return (
       <Picker
         selectedValue={this.state.language}
-        onValueChange={lang => this.setState({ language: lang })}>
+        onValueChange={lang => this.setState({ language: lang })}
+      >
         <Picker.Item label="Java" value="java" />
         <Picker.Item label="JavaScript" value="js" />
         <Picker.Item label="Objective C" value="objc" />
@@ -551,7 +562,7 @@ class TextInputExample extends React.Component {
   };
 
   render() {
-    let textInputStyle = {
+    const textInputStyle = {
       width: Layout.window.width - 20,
       borderRadius: 2,
       borderWidth: 1,
@@ -578,7 +589,7 @@ class TextInputExample extends React.Component {
           keyboardAppearance="dark"
           value={this.state.secureTextValue}
           onChangeText={updateSecureTextValue}
-          secureTextEntry
+          secureTextEntry={true}
           style={textInputStyle}
         />
       </View>

@@ -6,9 +6,11 @@
   "private": true,
   "main": "__generated__/AppEntry.js",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall",
+    "postinstall": "echo 1 #expo-yarn-workspaces postinstall",
     "web:publish": "netlify deploy --dir web-build",
-    "web:serve": "serve ./web-build"
+    "web:serve": "serve ./web-build",
+    "tsc": "tsc --noEmit --watch -p ./tsconfig.json",
+    "lint": "tslint -c tslint.json -p ./tsconfig.json"
   },
   "powertools": {
     "group": "client"
@@ -18,14 +20,12 @@
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
     "detox": "^12.0.0",
-    "eslint": "^5.15.3",
     "expo": "^33.0.0-alpha.web.1",
     "expo-cli": "^2.13.0",
     "expo-processing": "~2.0.0",
     "expo-three": "^3.0.0-alpha.6",
     "fbemitter": "^2.1.1",
     "gl-mat4": "^1.1.4",
-    "global": "^4.3.2",
     "hsv2rgb": "^1.1.0",
     "i18n-js": "^3.1.0",
     "path": "^0.12.7",
@@ -47,21 +47,24 @@
     "url": "^0.11.0",
     "uuid": "^3.1.0",
     "victory-native": "^30.4.0",
-    "yarn": "^1.13.0"
+    "yarn": "^1.15.2"
   },
   "devDependencies": {
+    "@types/i18n-js": "^3.0.1",
     "@types/pixi.js": "^4.8.6",
-    "@types/react": "^16.8.8",
+    "@types/react": "^16.8.13",
+    "@types/react-native-platform-touchable": "^1.1.0",
+    "@types/react-native-vector-icons": "^6.4.0",
     "@types/react-navigation": "^3.0.5",
     "@types/three": "^0.93.28",
     "@types/victory": "^31.0.14",
     "babel-preset-expo": "^5.1.0",
     "expo-yarn-workspaces": "^1.0.0",
     "serve": "^10.1.2",
-    "tslint": "^5.14.0",
+    "tslint": "^5.15.0",
     "tslint-config-standard": "^8.0.1",
-    "tslint-react": "^3.6.0",
-    "typescript": "^3.3.3333"
+    "tslint-react": "^4.0.0",
+    "typescript": "^3.4.2"
   },
   "browserslist": [
     ">0.2%",

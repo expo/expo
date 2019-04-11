@@ -23,6 +23,7 @@ export default class ScreenOrientationScreen extends React.Component<
 
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(
+      // tslint:disable-next-line no-shadowed-variable
       ({ orientationInfo, orientationLock }) => {
         this.setState({
           orientation: orientationInfo.orientation,
@@ -33,6 +34,7 @@ export default class ScreenOrientationScreen extends React.Component<
 
     const [orientation, orientationLock] = await Promise.all([
       ScreenOrientation.getOrientationAsync().then(
+        // tslint:disable-next-line no-shadowed-variable
         ({ orientation }) => orientation
       ),
       ScreenOrientation.getOrientationLockAsync(),
@@ -44,11 +46,11 @@ export default class ScreenOrientationScreen extends React.Component<
     });
   }
 
-  updateOrientationAsync = async ({ orientationInfo, orientationLock }) => {
+  updateOrientationAsync = async () => {
     this.setState({
       orientation: (await ScreenOrientation.getOrientationAsync()).orientation,
     });
-  };
+  }
 
   componentWillUnmount() {
     if (this.listener) {
@@ -56,18 +58,20 @@ export default class ScreenOrientationScreen extends React.Component<
     }
   }
 
-  lock = async orientation => {
+  lock = async (orientation: ScreenOrientation.OrientationLock) => {
     if (Platform.OS === 'web') {
       // most web browsers require fullscreen in order to change screen orientation
       await document.documentElement.requestFullscreen();
     }
 
-    await ScreenOrientation.lockAsync(orientation).catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
+    await ScreenOrientation.lockAsync(orientation)
+      // tslint:disable-next-line no-console
+      .catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
 
     if (Platform.OS === 'web') {
       await document.exitFullscreen();
     }
-  };
+  }
 
   lockPlatformExample = async () => {
     if (Platform.OS === 'web') {
@@ -87,18 +91,22 @@ export default class ScreenOrientationScreen extends React.Component<
     if (Platform.OS === 'web') {
       await document.exitFullscreen();
     }
-  };
+  }
 
   doesSupport = async () => {
     const result = await ScreenOrientation.supportsOrientationLockAsync(
       ScreenOrientation.OrientationLock.PORTRAIT_DOWN
-    ).catch(console.warn);
+    )
+      // tslint:disable-next-line no-console
+      .catch(console.warn);
     alert(`Orientation.PORTRAIT_DOWN supported: ${JSON.stringify(result)}`);
-  };
+  }
 
   unlock = async () => {
-    await ScreenOrientation.unlockAsync().catch(console.warn);
-  };
+    await ScreenOrientation.unlockAsync()
+      // tslint:disable-next-line no-console
+      .catch(console.warn);
+  }
 
   render() {
     const { orientation, orientationLock } = this.state;
@@ -106,11 +114,12 @@ export default class ScreenOrientationScreen extends React.Component<
       <ScrollView style={{ padding: 10 }}>
         {orientation && <Text>Orientation: {orientation}</Text>}
         {orientationLock && <Text>OrientationLock: {orientationLock}</Text>}
-        {Object.keys(ScreenOrientation.Orientation).map(orientation => (
+        {}
+        {Object.keys(ScreenOrientation.Orientation).map(o => (
           <ListButton
-            key={orientation}
-            onPress={() => this.lock(orientation)}
-            title={orientation}
+            key={o}
+            onPress={() => this.lock(o as ScreenOrientation.OrientationLock)}
+            title={o}
           />
         ))}
         <ListButton

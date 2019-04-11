@@ -5,7 +5,7 @@ import { ImagePicker, Permissions, Video } from 'expo';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
-async function requestPermissionAsync(permission: string) {
+async function requestPermissionAsync(permission: Permissions.PermissionType) {
   // Image Picker doesn't need permissions in the web
   if (Platform.OS === 'web') {
     return true;
@@ -15,7 +15,7 @@ async function requestPermissionAsync(permission: string) {
 }
 
 interface State {
-  selection?: ImagePicker.ImagePickerResult
+  selection?: ImagePicker.ImagePickerResult;
 }
 
 export default class ImagePickerScreen extends React.Component<{}, State> {
@@ -36,11 +36,11 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
     } else {
       this.setState({ selection: result });
     }
-  };
+  }
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
     await requestPermissionAsync(Permissions.CAMERA_ROLL);
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes,
       allowsEditing,
     });
@@ -49,7 +49,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
     } else {
       this.setState({ selection: result });
     }
-  };
+  }
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
@@ -114,12 +114,12 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
           }}
         >
           {selection.type === 'video' ? (
-            <Video
+            <Video.VideoPlayback
               source={{ uri: selection.uri }}
               style={{ width: 300, height: 300 }}
               resizeMode="contain"
-              shouldPlay
-              isLooping
+              shouldPlay={true}
+              isLooping={true}
             />
           ) : (
             <Image
@@ -131,5 +131,5 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
         <MonoText>{JSON.stringify(selection, null, 2)}</MonoText>
       </View>
     );
-  };
+  }
 }

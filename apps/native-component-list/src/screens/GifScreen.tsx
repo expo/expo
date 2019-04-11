@@ -14,7 +14,8 @@ export default class GifScreen extends React.Component {
           padding: 10,
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Image
           source={{ uri: 'http://d23dyxeqlo5psv.cloudfront.net/cat.gif' }}
           style={{ height: 140, width: 200 }}

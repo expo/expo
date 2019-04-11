@@ -69,7 +69,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
         </View>
       ),
     };
-  };
+  }
 
   readonly state: State = {
     assets: [],
@@ -80,7 +80,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
 
   isLoadingAssets = false;
 
-  libraryChangeSubscription?: { remove: Function };
+  libraryChangeSubscription?: { remove: () => void };
 
   componentDidFocus = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -93,7 +93,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
     this.libraryChangeSubscription = MediaLibrary.addListener(() => {
       this.loadMoreAssets([]);
     });
-  };
+  }
 
   componentWillUnmount() {
     this.libraryChangeSubscription!.remove();
@@ -147,25 +147,25 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
         this.loadMoreAssets();
       }
     );
-  };
+  }
 
   toggleMediaType = () => {
     const mediaType = mediaTypeStates[this.state.mediaType];
     this.setState({ mediaType });
     this.refresh(false);
-  };
+  }
 
   toggleSortBy = () => {
     const sortBy = sortByStates[this.state.sortBy];
     this.setState({ sortBy });
     this.refresh(false);
-  };
+  }
 
   keyExtractor = (item: MediaLibrary.Asset) => item.id;
 
   onEndReached = () => {
     this.loadMoreAssets();
-  };
+  }
 
   onCellPress = (asset: MediaLibrary.Asset) => {
     this.props.navigation.navigate('MediaDetails', {
@@ -173,7 +173,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
       album: this.getAlbum(),
       onGoBack: this.refresh,
     });
-  };
+  }
 
   renderRowItem: ListRenderItem<MediaLibrary.Asset> = ({ item }) => {
     return (
@@ -183,7 +183,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
         onPress={this.onCellPress}
       />
     );
-  };
+  }
 
   renderHeader = () => {
     const album = this.getAlbum();
@@ -208,7 +208,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
         </View>
       </View>
     );
-  };
+  }
 
   renderFooter = () => {
     const { assets, refreshing, mediaType } = this.state;
@@ -216,7 +216,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
     if (refreshing) {
       return (
         <View style={styles.footer}>
-          <ActivityIndicator animating />
+          <ActivityIndicator animating={true} />
         </View>
       );
     }
@@ -228,7 +228,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
       );
     }
     return null;
-  };
+  }
 
   renderContent() {
     const { assets, permission, refreshing } = this.state;

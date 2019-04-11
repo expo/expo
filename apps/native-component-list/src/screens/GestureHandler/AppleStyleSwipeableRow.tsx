@@ -19,12 +19,13 @@ export default class AppleStyleSwipeableRow extends Component {
             {
               transform: [{ translateX: trans }],
             },
-          ]}>
+          ]}
+        >
           Archive
         </Animated.Text>
       </RectButton>
     );
-  };
+  }
   renderRightAction = (text: string, color: string, x: number, progress: Animated.Value) => {
     const trans = progress.interpolate({
       inputRange: [0, 1],
@@ -41,20 +42,20 @@ export default class AppleStyleSwipeableRow extends Component {
         </RectButton>
       </Animated.View>
     );
-  };
+  }
   renderRightActions = (progress: Animated.Value) => (
     <View style={{ width: 192, flexDirection: 'row' }}>
       {this.renderRightAction('More', '#C8C7CD', 192, progress)}
       {this.renderRightAction('Flag', '#ffab00', 128, progress)}
       {this.renderRightAction('More', '#dd2c00', 64, progress)}
     </View>
-  );
+  )
   updateRef = (ref: Swipeable) => {
     this._swipeableRow = ref;
-  };
+  }
   close = () => {
     this._swipeableRow!.close();
-  };
+  }
   render() {
     const { children } = this.props;
     return (
@@ -64,7 +65,8 @@ export default class AppleStyleSwipeableRow extends Component {
         leftThreshold={30}
         rightThreshold={40}
         renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
+        renderRightActions={this.renderRightActions}
+      >
         {children}
       </Swipeable>
     );

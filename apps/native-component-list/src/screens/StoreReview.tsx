@@ -14,9 +14,7 @@ class StoreReviewScreen extends React.Component {
   onRequestReview = () => StoreReview.requestReview();
 
   get isSupportedText() {
-    return StoreReview.isSupported()
-      ? 'is supported! :D'
-      : 'is not supported! D:';
+    return StoreReview.isSupported() ? 'is supported! :D' : 'is not supported! D:';
   }
 
   get storeUrl() {
@@ -24,7 +22,9 @@ class StoreReviewScreen extends React.Component {
     if (storeUrl) {
       return `On iOS <10.3, or Android devices pressing this button will open ${storeUrl}.`;
     } else {
-      return `You will need to add ios.appStoreUrl, and android.playStoreUrl to your app.json in order to use this feature.`;
+      return (
+      'You will need to add ios.appStoreUrl, and android.playStoreUrl to your app.json in order to use this feature.'
+      );
     }
   }
 
@@ -33,9 +33,7 @@ class StoreReviewScreen extends React.Component {
       <View style={styles.container}>
         <View>
           <View style={styles.textContainer}>
-            <Text style={styles.isSupportedText}>
-              Native Store Review {this.isSupportedText}
-            </Text>
+            <Text style={styles.isSupportedText}>Native Store Review {this.isSupportedText}</Text>
             <Text style={styles.storeUrlText}>{this.storeUrl}</Text>
           </View>
 

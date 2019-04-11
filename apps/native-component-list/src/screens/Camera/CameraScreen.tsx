@@ -112,12 +112,13 @@ export default class CameraScreen extends React.Component<{}, State> {
     }
     try {
       FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos').catch(e => {
+        // tslint:disable-next-line no-console
         console.log(e, 'Directory exists');
       });
     } catch (error) {}
   }
 
-  getRatios = async () => await this.camera!.getSupportedRatiosAsync();
+  getRatios = async () => this.camera!.getSupportedRatiosAsync();
 
   toggleView = () => this.setState({ showGallery: !this.state.showGallery, newPhotos: false });
 
@@ -147,8 +148,9 @@ export default class CameraScreen extends React.Component<{}, State> {
     if (this.camera) {
       this.camera.takePictureAsync({ onPictureSaved: this.onPictureSaved });
     }
-  };
+  }
 
+  // tslint:disable-next-line no-console
   handleMountError = ({ message }: { message: string }) => console.error(message);
 
   onPictureSaved = async (photo: Picture) => {
@@ -161,13 +163,13 @@ export default class CameraScreen extends React.Component<{}, State> {
       });
     }
     this.setState({ newPhotos: true });
-  };
+  }
 
   onBarCodeScanned = (code: { type: string; data: string }) => {
     this.setState({ barcodeScanning: !this.state.barcodeScanning }, () =>
       Alert.alert(`Barcode found: ${code.data}`)
     );
-  };
+  }
 
   onFacesDetected = ({ faces }: { faces: any }) => this.setState({ faces });
 
@@ -183,7 +185,7 @@ export default class CameraScreen extends React.Component<{}, State> {
       }
       this.setState({ pictureSizes, pictureSizeId, pictureSize: pictureSizes[pictureSizeId] });
     }
-  };
+  }
 
   previousPictureSize = () => this.changePictureSize(1);
   nextPictureSize = () => this.changePictureSize(-1);
@@ -197,10 +199,10 @@ export default class CameraScreen extends React.Component<{}, State> {
       newId = length - 1;
     }
     this.setState({ pictureSize: this.state.pictureSizes[newId], pictureSizeId: newId });
-  };
+  }
 
   renderGallery() {
-    return <GalleryScreen photos={photos} onPress={this.toggleView} />;
+    return <GalleryScreen onPress={this.toggleView} />;
   }
 
   renderFace({ bounds, faceID, rollAngle, yawAngle }: FaceDetector.FaceFeature) {
@@ -219,7 +221,8 @@ export default class CameraScreen extends React.Component<{}, State> {
               { rotateY: `${yawAngle!.toFixed(0)}deg` },
             ],
           },
-        ]}>
+        ]}
+      >
         <Text style={styles.faceText}>ID: {faceID}</Text>
         <Text style={styles.faceText}>rollAngle: {rollAngle!.toFixed(0)}</Text>
         <Text style={styles.faceText}>yawAngle: {yawAngle!.toFixed(0)}</Text>
@@ -261,13 +264,13 @@ export default class CameraScreen extends React.Component<{}, State> {
     <View style={styles.facesContainer} pointerEvents="none">
       {this.state.faces.map(this.renderFace)}
     </View>
-  );
+  )
 
   renderLandmarks = () => (
     <View style={styles.facesContainer} pointerEvents="none">
       {this.state.faces.map(this.renderLandmarksOfFace)}
     </View>
-  );
+  )
 
   renderNoPermissions = () => (
     <View style={styles.noPermissions}>
@@ -282,7 +285,7 @@ export default class CameraScreen extends React.Component<{}, State> {
         </View>
       )}
     </View>
-  );
+  )
 
   renderTopBar = () => (
     <View style={styles.topBar}>
@@ -300,12 +303,13 @@ export default class CameraScreen extends React.Component<{}, State> {
           style={[
             styles.autoFocusLabel,
             { color: this.state.autoFocus === 'on' ? 'white' : '#6b6b6b' },
-          ]}>
+          ]}
+        >
           AF
         </Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 
   renderBottomBar = () => (
     <View style={styles.bottomBar}>
@@ -324,7 +328,7 @@ export default class CameraScreen extends React.Component<{}, State> {
         </View>
       </TouchableOpacity>
     </View>
-  );
+  )
 
   renderMoreOptions = () => (
     <View style={styles.options}>
@@ -360,7 +364,7 @@ export default class CameraScreen extends React.Component<{}, State> {
         </View>
       </View>
     </View>
-  );
+  )
 
   renderCamera = () => (
     <View style={{ flex: 1 }}>
@@ -383,7 +387,8 @@ export default class CameraScreen extends React.Component<{}, State> {
             BarCodeScanner.Constants.BarCodeType.pdf417,
           ],
         }}
-        onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
+        onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}
+      >
         {this.renderTopBar()}
         {this.renderBottomBar()}
       </Camera>
@@ -391,7 +396,7 @@ export default class CameraScreen extends React.Component<{}, State> {
       {this.state.faceDetecting && this.renderLandmarks()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>
-  );
+  )
 
   render() {
     const cameraScreenContent = this.state.permissionsGranted

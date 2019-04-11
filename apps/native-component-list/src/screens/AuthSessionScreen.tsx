@@ -59,8 +59,8 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
   }
 
   _handlePressAsync = async () => {
-    let redirectUrl = AuthSession.getRedirectUrl();
-    let authUrl =
+    const redirectUrl = AuthSession.getRedirectUrl();
+    const authUrl =
       `${auth0Domain}/authorize` +
       toQueryString({
         client_id: auth0ClientId,
@@ -69,9 +69,9 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
         redirect_uri: redirectUrl,
       });
 
-    let result = await AuthSession.startAsync({ authUrl });
+    const result = await AuthSession.startAsync({ authUrl });
     this.setState({ result });
-  };
+  }
 }
 
 const styles = StyleSheet.create({

@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { Svg } from 'expo';
 import Example from './Example';
@@ -56,7 +57,8 @@ class TextStroke extends React.Component {
           fontSize="30"
           fontWeight="bold"
           x="100"
-          y="40">
+          y="40"
+        >
           <TSpan textAnchor="middle">{['STROKE TEXT']}</TSpan>
         </Svg.Text>
       </Svg>
@@ -85,7 +87,8 @@ class TextFill extends React.Component {
           fontStyle="italic"
           x="100"
           y="40"
-          textAnchor="middle">
+          textAnchor="middle"
+        >
           FILL TEXT
         </Svg.Text>
       </Svg>
@@ -169,15 +172,16 @@ const icon = (
       textAnchor="middle"
       fill="none"
       stroke="blue"
-      strokeWidth="1">
+      strokeWidth="1"
+    >
       字
     </Svg.Text>
   </Svg>
 );
 
 const Text: Example = {
-  icon: icon,
+  icon,
   samples: [TextExample, TextRotate, TextStroke, TextFill, TextPathExample, TSpanExample],
-}
+};
 
 export default Text;

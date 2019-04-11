@@ -10,11 +10,11 @@ import Maps from '../screens/MapsScreen';
 import Video from '../screens/AV/VideoScreen';
 // import WebView from '../screens/WebViewScreen';
 
-function optionalRequire(requirer) {
+function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
   } catch (e) {
-    return null;
+    return;
   }
 }
 
@@ -25,7 +25,9 @@ const FacebookAds = optionalRequire(() =>
   require('../screens/FacebookAdsScreen')
 );
 const GL = optionalRequire(() => require('../screens/GL/GLScreen'));
-const GLScreens = optionalRequire(() => require('../screens/GL/GLScreens'));
+const GLScreens = optionalRequire(
+  () => require('../screens/GL/GLScreens')
+) as unknown as { [key: string]: React.ComponentType };
 const Lottie = optionalRequire(() => require('../screens/LottieScreen'));
 const ImagePreview = optionalRequire(() =>
   require('../screens/Reanimated/ImagePreviewScreen')
@@ -35,7 +37,7 @@ const SVGExample = optionalRequire(() =>
 );
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 
-const optionalScreens = {
+const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   AdMob,
   BarCodeScanner,
   BlurView,
@@ -58,9 +60,14 @@ const optionalScreens = {
   // WebView,
 };
 
-export const Screens = Object.keys(optionalScreens).reduce((acc, key) => {
-  if (optionalScreens[key]) {
-    acc[key] = optionalScreens[key];
-  }
-  return acc;
-}, {});
+interface ScreensObjectType {
+  [key: string]: React.ComponentType;
+}
+
+export const Screens = Object.entries(optionalScreens)
+  .reduce<ScreensObjectType>((acc, [key, screen]) => {
+    if (screen) {
+      acc[key] = screen;
+    }
+    return acc;
+  }, {});

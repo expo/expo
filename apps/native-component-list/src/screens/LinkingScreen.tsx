@@ -1,6 +1,7 @@
-import { Linking } from 'expo';
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Linking } from 'expo';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
@@ -10,7 +11,7 @@ class TextInputButton extends React.Component<
   { text: string },
   { text: string; parsed: string; canOpen: boolean }
 > {
-  constructor(props) {
+  constructor(props: { text: string }) {
     super(props);
 
     this.state = {
@@ -26,14 +27,14 @@ class TextInputButton extends React.Component<
 
   onChangeText = async (text: string) => {
     let parsedTextResult = '';
-    let canOpenURL = await Linking.canOpenURL(text);
+    const canOpenURL = await Linking.canOpenURL(text);
     if (canOpenURL) {
       const parsedText = await Linking.parse(text);
       parsedTextResult = JSON.stringify(parsedText, null, 2);
     }
 
     this.setState({ text, parsed: parsedTextResult, canOpen: canOpenURL });
-  };
+  }
 
   handleClick = async () => {
     const { text } = this.state;
@@ -44,13 +45,15 @@ class TextInputButton extends React.Component<
         Linking.openURL(text);
       } else {
         const message = `Don't know how to open URI: ${text}`;
+        // tslint:disable-next-line no-console
         console.log(message);
         alert(message);
       }
     } catch ({ message }) {
+      // tslint:disable-next-line no-console
       console.error(message);
     }
-  };
+  }
 
   render() {
     const { text, parsed, canOpen } = this.state;
@@ -96,15 +99,16 @@ export default class LinkingScreen extends React.Component<{}, State> {
     Linking.removeEventListener('url', this.onEvent);
   }
 
-  onEvent = ({ url, nativeEvent }) => {
+  onEvent = ({ url, nativeEvent }: any) => {
     const { data, origin, source } = nativeEvent;
+    // tslint:disable-next-line no-console
     console.log('onEvent:', { url, data, origin, source });
-  };
+  }
 
   setupAsync = async () => {
     const initialUrl = await Linking.getInitialURL();
     this.setState({ initialUrl });
-  };
+  }
 
   render() {
     return (

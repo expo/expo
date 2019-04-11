@@ -43,11 +43,11 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
   componentDidFocus = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ isPermissionsGranted: status === 'granted' });
-  };
+  }
 
   toggleAlertingAboutResult = () => {
     this.setState({ alerting: !this.state.alerting });
-  };
+  }
 
   toggleScreenOrientationState = () => {
     if (this.canChangeOrientation) {
@@ -56,7 +56,7 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
       ScreenOrientation.allowAsync(ScreenOrientation.OrientationLock.ALL);
     }
     this.canChangeOrientation = !this.canChangeOrientation;
-  };
+  }
 
   setCanvasDimensions = (e: any) => {
     this.setState({
@@ -64,7 +64,7 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
       canvasHeight: e.nativeEvent.layout.height,
       haveDimensions: true,
     });
-  };
+  }
 
   render() {
     if (!this.state.isPermissionsGranted) {
@@ -76,10 +76,10 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
       );
     }
 
-    let circles = [];
+    const circles = [];
 
     if (this.state.cornerPoints) {
-      for (let point of this.state.cornerPoints) {
+      for (const point of this.state.cornerPoints) {
         circles.push(
           <Svg.Circle
             cx={point.x}
@@ -151,7 +151,7 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
         this.state.type === BarCodeScanner.Constants.Type.back
           ? BarCodeScanner.Constants.Type.front
           : BarCodeScanner.Constants.Type.back,
-    });
+    })
 
   handleBarCodeScanned = (data: any) => {
     if (this.state.alerting) {
@@ -160,7 +160,7 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
       });
     }
     this.setState({ cornerPoints: data.cornerPoints, boundingBox: data.bounds });
-  };
+  }
 }
 
 const styles = StyleSheet.create({

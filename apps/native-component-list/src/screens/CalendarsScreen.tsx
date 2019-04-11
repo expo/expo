@@ -75,7 +75,7 @@ export default class CalendarsScreen extends React.Component<NavigationScreenPro
       haveCalendarPermissions: granted,
     });
     return granted;
-  };
+  }
 
   _askForReminderPermissions = async () => {
     if (Platform.OS === 'android') return true;
@@ -85,7 +85,7 @@ export default class CalendarsScreen extends React.Component<NavigationScreenPro
       haveReminderPermissions: granted,
     });
     return granted;
-  };
+  }
 
   _findCalendars = async () => {
     const calendarGranted = await this._askForCalendarPermissions();
@@ -96,7 +96,7 @@ export default class CalendarsScreen extends React.Component<NavigationScreenPro
         (Platform.OS === 'ios' ? await Calendar.getCalendarsAsync('reminder') : []) as any[];
       this.setState({ calendars: [...eventCalendars, ...reminderCalendars] });
     }
-  };
+  }
 
   _addCalendar = async () => {
     const newCalendar = {
@@ -110,17 +110,17 @@ export default class CalendarsScreen extends React.Component<NavigationScreenPro
       source:
         Platform.OS === 'android'
           ? {
-              name: this.state.calendars.find(
-                cal => cal.accessLevel == Calendar.CalendarAccessLevel.OWNER
+            name: this.state.calendars.find(
+                cal => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
               ).source.name,
-              isLocalAccount: true,
-            }
+            isLocalAccount: true,
+          }
           : undefined,
       name: 'coolNewCalendar',
       accessLevel: Calendar.CalendarAccessLevel.OWNER,
       ownerAccount:
         Platform.OS === 'android'
-          ? this.state.calendars.find(cal => cal.accessLevel == Calendar.CalendarAccessLevel.OWNER)
+          ? this.state.calendars.find(cal => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER)
               .ownerAccount
           : undefined,
     };
@@ -131,7 +131,7 @@ export default class CalendarsScreen extends React.Component<NavigationScreenPro
     } catch (e) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
-  };
+  }
 
   _updateCalendar = async (calendarId: string) => {
     const newCalendar = {
@@ -144,7 +144,7 @@ export default class CalendarsScreen extends React.Component<NavigationScreenPro
     } catch (e) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
-  };
+  }
 
   _deleteCalendar = async (calendar: any) => {
     Alert.alert(`Are you sure you want to delete ${calendar.title}?`, 'This cannot be undone.', [
@@ -165,7 +165,7 @@ export default class CalendarsScreen extends React.Component<NavigationScreenPro
         },
       },
     ]);
-  };
+  }
 
   render() {
     if (this.state.calendars.length) {

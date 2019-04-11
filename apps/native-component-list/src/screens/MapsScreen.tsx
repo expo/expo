@@ -72,7 +72,7 @@ export default class MapsScreen extends React.Component<{}, State> {
         <Text style={{ fontSize: 18 }}>Use Google maps</Text>
       </View>
     );
-  };
+  }
 
   _renderJumpToCoordButton = () => {
     return (
@@ -87,7 +87,7 @@ export default class MapsScreen extends React.Component<{}, State> {
         />
       </View>
     );
-  };
+  }
 
   _animateToRandomViewingAngle = () => {
     if (this._mapView) {
@@ -95,7 +95,7 @@ export default class MapsScreen extends React.Component<{}, State> {
         pitch: getRandomFloat(0, 90),
       });
     }
-  };
+  }
 
   _animateToRandomCoord = () => {
     if (this._mapView) {
@@ -110,5 +110,5 @@ export default class MapsScreen extends React.Component<{}, State> {
         },
       });
     }
-  };
+  }
 }

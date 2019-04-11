@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { Svg } from 'expo';
 import Example from './Example';
@@ -108,7 +109,8 @@ class TextClipping extends React.Component {
           stroke="blue"
           strokeWidth="1"
           textAnchor="middle"
-          clipPath="url(#clip)">
+          clipPath="url(#clip)"
+        >
           NOT THE FACE
         </Text>
       </Svg>
@@ -136,7 +138,7 @@ const icon = (
 );
 
 const Clipping: Example = {
-  icon: icon,
+  icon,
   samples: [ClipPathElement, ClipRule, TextClipping],
 };
 

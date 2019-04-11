@@ -1,7 +1,8 @@
-import React from 'react';
-
-import { Text, ScrollView, View, Image } from 'react-native';
 import { LinearGradient } from 'expo';
+import React from 'react';
+import { Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import MonoText from '../components/MonoText';
 
 function incrementColor(color: string, step: number) {
   const intColor = parseInt(color.substr(1), 16);
@@ -9,24 +10,18 @@ function incrementColor(color: string, step: number) {
   return `#${'0'.repeat(6 - newIntColor.length)}${newIntColor}`;
 }
 
-interface State {
-  count: number;
-  colorTop: string;
-  colorBottom: string;
-}
-
-export default class LinearGradientScreen extends React.Component<{}, State> {
+export default class LinearGradientScreen extends React.Component {
   static navigationOptions = {
     title: 'LinearGradient',
   };
 
-  readonly state: State = {
+  state = {
     count: 0,
     colorTop: '#000000',
     colorBottom: '#cccccc',
   };
 
-  _interval?: NodeJS.Timeout;
+  _interval?: number;
 
   componentDidMount() {
     this._interval = setInterval(() => {
@@ -39,7 +34,7 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
   }
 
   componentWillUnmount() {
-    clearInterval(this._interval!);
+    clearInterval(this._interval);
   }
 
   render() {
@@ -51,7 +46,8 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
         contentContainerStyle={{
           alignItems: 'stretch',
           paddingVertical: 10,
-        }}>
+        }}
+      >
         <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
         <LocationsTest locations={[location, 1.0 - location]} />
         <ControlPointTest start={[position, 0]} />
@@ -61,104 +57,90 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
   }
 }
 
-class Container extends React.Component {
-  render() {
-    const { title, children } = this.props;
+const Container: React.FunctionComponent<{ title: string }> = ({ title, children }) => (
+  <View style={styles.container}>
+    <Text style={styles.containerTitle}>{title}</Text>
+    {children}
+  </View>
+);
 
-    return (
-      <View style={styles.container}>
-        <Text style={styles.containerTitle}>{title}</Text>
-        {children}
+const SnapshotTest = () => (
+  <Container title="Snapshot">
+    <View style={{ flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-evenly' }}>
+      <LinearGradient
+        colors={['white', 'red']}
+        start={[0.5, 0.5]}
+        end={[1, 1]}
+        style={{
+          width: 100,
+          height: 200,
+          borderWidth: 1,
+          marginVertical: 20,
+          borderColor: 'black',
+        }}
+      />
+      <Image
+        source={require('../../assets/images/confusing_gradient.png')}
+        style={{ width: 100, height: 200, marginVertical: 20 }}
+      />
+    </View>
+    <Text style={{ marginHorizontal: 20 }}>The gradients above should look the same.</Text>
+  </Container>
+);
+
+const ControlPointTest: React.FunctionComponent<{
+  start?: [number, number];
+  end?: [number, number];
+}> = ({
+  start = [0.5, 0],
+  end = [0, 1],
+}) => {
+  const startInfo = `start={[${start.map(point => +point.toFixed(2)).join(', ')}]}`;
+  const endInfo = `end={[${end.map(point => +point.toFixed(2)).join(', ')}]}`;
+
+  return (
+    <Container title="Control Points">
+      <View>
+        {[startInfo, endInfo].map((pointInfo, index) => (
+          <MonoText key={'--' + index}>
+            {pointInfo}
+          </MonoText>
+        ))}
       </View>
-    );
-  }
-}
+      <LinearGradient
+        start={start}
+        end={end}
+        locations={[0.5, 0.5]}
+        colors={['blue', 'lime']}
+        style={{ flex: 1, height: 200 }}
+      />
+    </Container>
+  );
+};
 
-class SnapshotTest extends React.Component {
-  render() {
-    return (
-      <Container title="Snapshot">
-        <View
-          style={{ flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-evenly' }}>
-          <LinearGradient
-            colors={['white', 'red']}
-            start={[0.5, 0.5]}
-            end={[1, 1]}
-            style={{
-              width: 100,
-              height: 200,
-              borderWidth: 1,
-              marginVertical: 20,
-              borderColor: 'black',
-            }}
-          />
-          <Image
-            source={require('../assets/images/confusing_gradient.png')}
-            style={{ width: 100, height: 200, marginVertical: 20 }}
-          />
-        </View>
-        <Text style={{ marginHorizontal: 20 }}>The gradients above should look the same.</Text>
-      </Container>
-    );
-  }
-}
+const ColorsTest = ({ colors }: { colors: string[] }) => {
+  const info = colors.map(value => `"${value}"`).join(', ');
+  return (
+    <Container title="Colors">
+      <MonoText>{`colors={[${info}]}`}</MonoText>
+      <LinearGradient colors={colors} style={{ flex: 1, height: 200 }} />
+    </Container>
+  );
+};
 
-class ControlPointTest extends React.Component {
-  render() {
-    const { start = [0.5, 0], end = [0, 1] } = this.props;
-    const startInfo = `start={[${start.map(point => +point.toFixed(2)).join(', ')}]}`;
-    const endInfo = `end={[${end.map(point => +point.toFixed(2)).join(', ')}]}`;
-
-    return (
-      <Container title="Control Points">
-        <View>
-          {[startInfo, endInfo].map((pointInfo, index) => (
-            <MonoText style={{}} key={'--' + index}>
-              {pointInfo}
-            </MonoText>
-          ))}
-        </View>
-        <LinearGradient
-          start={start}
-          end={end}
-          locations={[0.5, 0.5]}
-          colors={['blue', 'lime']}
-          style={{ flex: 1, height: 200 }}
-        />
-      </Container>
-    );
-  }
-}
-
-class ColorsTest extends React.Component {
-  render() {
-    const { colors } = this.props;
-    const info = colors.map(value => `"${value}"`).join(', ');
-    return (
-      <Container title="Colors">
-        <MonoText style={{}}>{`colors={[${info}]}`}</MonoText>
-        <LinearGradient colors={colors} style={{ flex: 1, height: 200 }} />
-      </Container>
-    );
-  }
-}
-
-class LocationsTest extends React.Component {
-  render() {
-    const { locations } = this.props;
-    const locationsInfo = locations.map(location => +location.toFixed(2)).join(', ');
-    return (
-      <Container title="Locations">
-        <MonoText style={{}}>{`locations={[${locationsInfo}]}`}</MonoText>
-        <LinearGradient
-          colors={['red', 'blue']}
-          locations={locations}
-          style={{ flex: 1, height: 200 }}
-        />
-      </Container>
-    );
-  }
-}
+const LocationsTest: React.FunctionComponent<{ locations: number[] }> = ({ locations }) => {
+  const locationsInfo = locations.map(location => +location.toFixed(2)).join(', ');
+  return (
+    <Container title="Locations">
+      <MonoText>{`locations={[${locationsInfo}]}`}</MonoText>
+      <LinearGradient
+        colors={['red', 'blue']}
+        locations={locations}
+        style={{ flex: 1, height: 200 }}
+      />
+    </Container>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

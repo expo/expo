@@ -30,7 +30,8 @@ export default class ListButton extends React.Component<Props> {
           style={style}
           disabled={this.props.disabled}
           onPress={this.props.onPress}
-          underlayColor="#dddddd">
+          underlayColor="#dddddd"
+        >
           <Text style={labelStyles}>{this.props.title}</Text>
         </TouchableHighlight>
       </View>

@@ -11,7 +11,7 @@ const EXPO_ALBUM_NAME = 'Expo';
 
 export default class MediaDetailsScreen extends React.Component<
   NavigationScreenProps<{
-    onGoBack?: Function;
+    onGoBack?: () => void;
     asset: MediaLibrary.Asset;
     album: MediaLibrary.Album;
   }>
@@ -45,7 +45,7 @@ export default class MediaDetailsScreen extends React.Component<
 
     await MediaLibrary.deleteAssetsAsync([asset]);
     this.goBack();
-  };
+  }
 
   addToAlbum = async () => {
     const { asset } = this.props.navigation.state.params!;
@@ -58,7 +58,7 @@ export default class MediaDetailsScreen extends React.Component<
     }
 
     alert('Successfully added asset to Expo album!');
-  };
+  }
 
   removeFromAlbum = async () => {
     const { asset, album } = this.props.navigation.state.params!;
@@ -67,7 +67,7 @@ export default class MediaDetailsScreen extends React.Component<
       await MediaLibrary.removeAssetsFromAlbumAsync(asset.id, album.id);
       this.goBack();
     }
-  };
+  }
 
   renderAsset(asset: MediaLibrary.Asset) {
     const aspectRatio = asset.height ? asset.width / asset.height : 1;

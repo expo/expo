@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { Svg } from 'expo';
 import Example from './Example';
@@ -76,8 +77,8 @@ const icon = (
 );
 
 const Polyline: Example = {
-  icon: icon,
+  icon,
   samples: [PolylineExample, StraightLines, PolylineFill, PolylineFillStroke],
-}
+};
 
 export default Polyline;

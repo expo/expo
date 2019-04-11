@@ -35,13 +35,14 @@ export default class ExpoApisScreen extends React.Component {
   }
 
   _handleNotification = (notification: {
-    data: object;
+    data: object | string;
     origin: string;
     remote: boolean;
     actionId: string;
     userText?: string;
   }) => {
-    let { data, origin, remote, actionId, userText } = notification;
+    let { data } = notification;
+    const { origin, remote, actionId, userText } = notification;
     if (typeof data === 'string') {
       data = JSON.parse(data);
     }
@@ -73,9 +74,10 @@ export default class ExpoApisScreen extends React.Component {
     // if after backgrounding the app and then clicking on a notification
     // to foreground the app
     setTimeout(() => alert(message), 1000);
-  };
+  }
 
   render() {
+    // @ts-ignore
     return <ComponentListScreen apis={this._getApis()} tabName="ExpoApis" />;
   }
 
@@ -137,5 +139,5 @@ export default class ExpoApisScreen extends React.Component {
         }
         return 0;
       });
-  };
+  }
 }

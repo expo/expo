@@ -1,5 +1,6 @@
 import { Platform, StyleSheet } from 'react-native';
 import { Colors } from '../constants';
+import { StackNavigatorConfig } from 'react-navigation';
 
 const styles = StyleSheet.create({
   header: {
@@ -20,7 +21,7 @@ const platformNavigationOptions = Platform.select({
   },
 });
 
-const StackConfig = {
+const StackConfig: StackNavigatorConfig = {
   cardStyle: styles.card,
   headerTransitionPreset: 'uikit',
   defaultNavigationOptions: () => ({

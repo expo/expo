@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { DangerZone } from 'expo';
@@ -73,11 +74,11 @@ function scaleFriction(value: any, rest: any, delta: any) {
   const MAX_VALUE = 0.5;
   const res = multiply(value, delta);
   const howFar = abs(sub(rest, value));
-  const friction = max(
+  const f = max(
     1,
     min(MAX_FRICTION, add(1, multiply(howFar, (MAX_FRICTION - 1) / MAX_VALUE)))
   );
-  return cond(lessThan(0, howFar), multiply(value, add(1, divide(add(delta, -1), friction))), res);
+  return cond(lessThan(0, howFar), multiply(value, add(1, divide(add(delta, -1), f))), res);
 }
 
 function runTiming(clock: any, value: any, dest: any, startStopClock = true) {
@@ -186,7 +187,7 @@ function bouncy(
   gestureActive: any,
   lowerBound: any,
   upperBound: any,
-  friction: any
+  frictionFunc: any
 ) {
   const timingClock = new Clock();
   const decayClock = new Clock();
@@ -209,7 +210,7 @@ function bouncy(
     [
       stopClock(timingClock),
       stopClock(decayClock),
-      add(value, divide(gestureDiv, friction(outOfBounds))),
+      add(value, divide(gestureDiv, frictionFunc(outOfBounds))),
     ],
     cond(
       or(clockRunning(timingClock), isOutOfBounds),
@@ -346,14 +347,16 @@ class Viewer extends React.Component<{ source: string }> {
           ref={this.pinchRef}
           simultaneousHandlers={this.panRef}
           onGestureEvent={this._onPinchEvent}
-          onHandlerStateChange={this._onPinchEvent}>
+          onHandlerStateChange={this._onPinchEvent}
+        >
           <Animated.View>
             <PanGestureHandler
               ref={this.panRef}
-              avgTouches
+              avgTouches={true}
               simultaneousHandlers={this.pinchRef}
               onGestureEvent={this._onPanEvent}
-              onHandlerStateChange={this._onPanEvent}>
+              onHandlerStateChange={this._onPanEvent}
+            >
               <Animated.Image
                 style={[
                   styles.image,

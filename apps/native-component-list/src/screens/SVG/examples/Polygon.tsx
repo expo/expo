@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { Svg } from 'expo';
 import Example from './Example';
@@ -77,8 +78,8 @@ const icon = (
 );
 
 const Polygon: Example = {
-  icon: icon,
+  icon,
   samples: [PolygonExample, FourSidePolygon, StarPolygon, EvenOddPolygon],
-}
+};
 
 export default Polygon;

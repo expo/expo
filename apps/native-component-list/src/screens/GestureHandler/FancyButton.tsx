@@ -16,9 +16,9 @@ interface FBState {
 export default class FancyButton extends Component<
   {
     style?: StyleProp<ViewStyle>;
-    onLongPress?: Function;
-    onSingleTap?: Function;
-    onDoubleTap?: Function;
+    onLongPress?: () => void;
+    onSingleTap?: () => void;
+    onDoubleTap?: () => void;
   },
   FBState
 > {
@@ -32,13 +32,14 @@ export default class FancyButton extends Component<
         <TapGestureHandler
           numberOfTaps={1}
           waitFor={this.doubleTapRef}
-          onHandlerStateChange={this._onSingleTapEvent}>
+          onHandlerStateChange={this._onSingleTapEvent}
+        >
           <TapGestureHandler
             numberOfTaps={2}
             ref={this.doubleTapRef}
-            onHandlerStateChange={this._onDoubleTapEvent}>
-            <View
-              style={[styles.button, this.props.style, { opacity: this._isPressed() ? 0.5 : 1 }]}>
+            onHandlerStateChange={this._onDoubleTapEvent}
+          >
+            <View style={[styles.button, this.props.style, { opacity: this._isPressed() ? 0.5 : 1 }]}>
               {this.props.children}
             </View>
           </TapGestureHandler>
@@ -56,33 +57,33 @@ export default class FancyButton extends Component<
     } else {
       return false;
     }
-  };
+  }
 
   _onLongPressEvent = (event: LongPressGestureHandlerStateChangeEvent) => {
-    let { state } = event.nativeEvent;
+    const { state } = event.nativeEvent;
     this.setState({ longPress: state });
 
     if (state === State.ACTIVE) {
       this.props.onLongPress && this.props.onLongPress();
     }
-  };
+  }
 
   _onSingleTapEvent = (event: TapGestureHandlerStateChangeEvent) => {
-    let { state } = event.nativeEvent;
+    const { state } = event.nativeEvent;
     this.setState({ singleTap: state });
 
     if (state === State.ACTIVE) {
       this.props.onSingleTap && this.props.onSingleTap();
     }
-  };
+  }
 
   _onDoubleTapEvent = (event: TapGestureHandlerStateChangeEvent) => {
-    let { state } = event.nativeEvent;
+    const { state } = event.nativeEvent;
 
     if (state === State.ACTIVE) {
       this.props.onDoubleTap && this.props.onDoubleTap();
     }
-  };
+  }
 }
 
 const styles = StyleSheet.create({

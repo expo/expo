@@ -11,7 +11,7 @@ export default class MediaLibraryCell extends React.Component<{
   onPress = () => {
     const { asset } = this.props;
     this.props.onPress(asset);
-  };
+  }
 
   getAssetData(asset: MediaLibrary.Asset) {
     switch (asset.mediaType) {

@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import { FacebookAds } from 'expo';
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
@@ -118,14 +119,19 @@ export default class App extends React.Component {
   showFullScreenAd = () => {
     InterstitialAdManager.showAd('629712900716487_662948944059549')
       .then(didClick => {
+        // tslint:disable-next-line no-console
         console.log(didClick);
       })
       .catch(err => {
+        // tslint:disable-next-line no-console
         console.log(err);
       });
-  };
+  }
 
+  // tslint:disable-next-line no-console
   onBannerAdPress = () => console.log('Ad clicked!');
+
+  // tslint:disable-next-line no-console
   onBannerAdError = (event: Error) => console.log('Ad error :(', (event as any).nativeEvent);
 
   render() {

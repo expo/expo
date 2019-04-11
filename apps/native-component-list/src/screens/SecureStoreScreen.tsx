@@ -17,6 +17,7 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
 
   _setValue = async (value: string, key: string) => {
     try {
+      // tslint:disable-next-line: no-console
       console.log('securestore: ' + SecureStore);
       await SecureStore.setItemAsync(key, value, {});
       Alert.alert(
@@ -27,7 +28,7 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  };
+  }
 
   _getValue = async (key: string) => {
     try {
@@ -38,7 +39,7 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  };
+  }
 
   _deleteValue = async (key: string) => {
     try {
@@ -49,7 +50,7 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  };
+  }
 
   render() {
     return (
@@ -74,11 +75,7 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
           }}
           placeholder="Enter a value to store (ex. pw123!)"
           value={this.state.value}
-          onChangeText={text =>
-            this.setState({
-              value: text,
-            })
-          }
+          onChangeText={value => this.setState({ value })}
         />
         <TextInput
           style={{
@@ -95,33 +92,23 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
           }}
           placeholder="Enter a key for the value (ex. password)"
           value={this.state.key}
-          onChangeText={text =>
-            this.setState({
-              key: text,
-            })
-          }
+          onChangeText={key => this.setState({ key })}
         />
         {this.state.value && this.state.key && (
           <ListButton
-            onPress={() => {
-              this._setValue(this.state.value!, this.state.key!);
-            }}
+            onPress={() => this._setValue(this.state.value!, this.state.key!)}
             title="Store value with key"
           />
         )}
         {this.state.key && (
           <ListButton
-            onPress={() => {
-              this._getValue(this.state.key!);
-            }}
+            onPress={() => this._getValue(this.state.key!)}
             title="Get value with key"
           />
         )}
         {this.state.key && (
           <ListButton
-            onPress={() => {
-              this._deleteValue(this.state.key!);
-            }}
+            onPress={() => this._deleteValue(this.state.key!)}
             title="Delete value with key"
           />
         )}

@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import { Svg } from 'expo';
 import Example from './Example';
@@ -13,7 +14,7 @@ class GExample extends React.Component<{}, State> {
 
   readonly state: State = {
     fill: 'purple',
-  }
+  };
 
   _unmounted?: boolean;
 
@@ -25,11 +26,11 @@ class GExample extends React.Component<{}, State> {
         });
       }
     }, 2000);
-  };
+  }
 
   componentWillUnmount = () => {
     this._unmounted = true;
-  };
+  }
 
   render() {
     return (
@@ -89,8 +90,8 @@ const icon = (
 );
 
 const G: Example = {
-  icon: icon,
+  icon,
   samples: [GExample, GTransform],
-}
+};
 
 export default G;

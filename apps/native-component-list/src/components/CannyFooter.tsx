@@ -10,7 +10,7 @@ const cannyUrl = `https://expo.canny.io/feature-requests`;
 export default class CannyFooter extends React.Component<{ style?: StyleProp<ViewStyle> }> {
   onPress = () => {
     Linking.openURL(cannyUrl);
-  };
+  }
 
   render() {
     return (

@@ -26,7 +26,7 @@ export default class AppleStyleSwipeableRow extends Component {
         />
       </RectButton>
     );
-  };
+  }
   renderRightActions = (progress: Animated.Value, dragX: Animated.Value) => {
     const scale = dragX.interpolate({
       inputRange: [-80, 0],
@@ -43,13 +43,13 @@ export default class AppleStyleSwipeableRow extends Component {
         />
       </RectButton>
     );
-  };
+  }
   updateRef = (ref: Swipeable) => {
     this._swipeableRow = ref;
-  };
+  }
   close = () => {
     this._swipeableRow!.close();
-  };
+  }
   render() {
     const { children } = this.props;
     return (
@@ -59,7 +59,8 @@ export default class AppleStyleSwipeableRow extends Component {
         leftThreshold={80}
         rightThreshold={40}
         renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
+        renderRightActions={this.renderRightActions}
+      >
         {children}
       </Swipeable>
     );

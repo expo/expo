@@ -4,14 +4,14 @@ import { Image, Text, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 
 import Colors from '../../constants/Colors';
 
 export default class Avatar extends React.PureComponent<{
-  image: string | Function;
-  onPress: Function;
+  image: (() => void) | string | any;
+  onPress: () => void;
   name: string;
   style: StyleProp<ViewStyle>;
 }> {
   get image(): JSX.Element {
     const { image } = this.props;
-    let source = image;
+    const source = image;
     if (typeof image === 'string') {
       return <Image style={styles.image} source={{ uri: image }} />;
     } else if (typeof image === 'function') {
@@ -51,7 +51,8 @@ export default class Avatar extends React.PureComponent<{
         disabled={!onPress}
         onPress={this.onPress}
         accessibilityTraits="image"
-        style={[styles.container, style]}>
+        style={[styles.container, style]}
+      >
         {this.contents}
       </TouchableOpacity>
     );

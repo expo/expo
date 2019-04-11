@@ -1,7 +1,7 @@
 import { Contacts } from 'expo';
 
 export function parseDate({ year, month, day }: { year: number; month: number; day: number }) {
-  let nYear = year || new Date().getFullYear();
+  const nYear = year || new Date().getFullYear();
   // TODO: Evan: add support for calendars: https://github.com/moment/moment/issues/1454
   const date = new Date(nYear, month, day, 0, 0);
   return date;
@@ -20,7 +20,7 @@ export function parseAddress({
   region: string;
   street: string;
 }) {
-  const address = [street, city, region, postalCode, country].filter(item => item != '').join(', ');
+  const address = [street, city, region, postalCode, country].filter(item => item !== '').join(', ');
   return address;
 }
 
@@ -104,6 +104,7 @@ export async function deleteGroupWithNameAsync(groupName: string) {
       Contacts.removeGroupAsync(group.id!);
     }
   } catch ({ message }) {
+    // tslint:disable-next-line no-console
     console.error(message);
   }
 }
@@ -117,6 +118,7 @@ export async function removeAllChildrenFromGroupWithNameAsync(groupName: string)
       contacts.map(contact => Contacts.removeContactFromGroupAsync(contact.id, groupId!))
     );
   } catch ({ message }) {
+    // tslint:disable-next-line no-console
     console.error(message);
   }
 }

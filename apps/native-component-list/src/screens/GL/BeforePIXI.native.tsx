@@ -1,4 +1,4 @@
-import { Image, Dimensions } from 'react-native';
+// tslint:disable max-classes-per-file
 
 class DOMNode {
   nodeName: string;
@@ -45,11 +45,11 @@ class DOMElement extends DOMNode {
     };
   }
 
-  addEventListener(eventName: string, listener: Function) {
+  addEventListener(eventName: string, listener: () => void) {
     // this.emitter.addListener(eventName, listener);
   }
 
-  removeEventListener(eventName: string, listener: Function) {
+  removeEventListener(eventName: string, listener: () => void) {
     // this.emitter.removeListener(eventName, listener);
   }
 
@@ -109,10 +109,10 @@ process.browser = true;
 // @ts-ignore
 window.emitter = window.emitter || {}; // new EventEmitter();
 window.addEventListener =
-  window.addEventListener || ((eventName: string, listener: Function) => {});
+  window.addEventListener || ((eventName: string, listener: () => void) => {});
 
 window.removeEventListener =
-  window.removeEventListener || ((eventName: string, listener: Function) => {});
+  window.removeEventListener || ((eventName: string, listener: () => void) => {});
 
 // @ts-ignore
 window.document = new DOMDocument();
@@ -123,10 +123,11 @@ window.document.body = new DOMElement('body');
 // @ts-ignore
 window.location = 'data:'; // <- Not sure about this... or anything for that matter ¯\_(ツ)_/¯
 
+// This could be made better, but I'm not sure if it'll matter for PIXI
 // @ts-ignore
-global.userAgent = global.navigator.userAgent = 'iPhone'; // <- This could be made better, but I'm not sure if it'll matter for PIXI
+global.userAgent = global.navigator.userAgent = 'iPhone';
 
-class HTMLImageElement {
+class HTMLImageElement2 {
   align: string;
   alt: null;
   border: null;
@@ -154,7 +155,7 @@ class HTMLImageElement {
 }
 
 // @ts-ignore
-global.HTMLImageElement = global.Image = HTMLImageElement;
+global.HTMLImageElement = global.Image = HTMLImageElement2;
 
 // @ts-ignore
 global.performance = null;

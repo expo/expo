@@ -12,6 +12,7 @@ import RootNavigation from './src/navigation/RootNavigation';
 // workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
   useScreens();
+  // @ts-ignore
   SafeAreaView.setStatusBarHeight(0);
 }
 
@@ -34,14 +35,18 @@ export default class App extends React.Component<{}, State> {
       await Promise.all([
         Asset.loadAsync(iconRequires),
         Asset.loadAsync(StackAssets),
+        // @ts-ignore
         Font.loadAsync(Ionicons.font),
+        // @ts-ignore
         Font.loadAsync(Entypo.font),
+        // @ts-ignore
         Font.loadAsync(MaterialIcons.font),
         Font.loadAsync({
           'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
         }),
       ]);
     } catch (e) {
+      // tslint:disable-next-line no-console
       console.log({ e });
     } finally {
       this.setState({ appIsReady: true });

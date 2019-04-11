@@ -1,5 +1,5 @@
 import React from 'react';
-import { Video, Asset } from 'expo';
+import { AV, Asset } from 'expo';
 
 import Player from './Player';
 import { StyleProp, ViewStyle } from 'react-native';
@@ -14,7 +14,7 @@ interface State {
   rate: number;
   shouldCorrectPitch: boolean;
   useNativeControls: boolean;
-  resizeMode: Video.ResizeMode;
+  resizeMode: AV.Video.ResizeMode;
 }
 
 export default class VideoPlayer extends React.Component<
@@ -23,12 +23,12 @@ export default class VideoPlayer extends React.Component<
     source?:
       | number
       | {
-          uri: string;
-          overrideFileExtensionAndroid?: string;
-          headers?: {
-            [fieldName: string]: string;
-          };
-        }
+        uri: string;
+        overrideFileExtensionAndroid?: string;
+        headers?: {
+          [fieldName: string]: string;
+        };
+      }
       | Asset;
   },
   State
@@ -42,39 +42,39 @@ export default class VideoPlayer extends React.Component<
     rate: 1,
     shouldCorrectPitch: false,
     useNativeControls: false,
-    resizeMode: Video.ResizeMode.CONTAIN,
+    resizeMode: AV.Video.ResizeMode.CONTAIN,
   };
 
-  _video?: Video.VideoPlayback;
+  _video?: AV.Video.VideoPlayback;
 
   _handleError = (errorMessage: string) => this.setState({ errorMessage });
 
-  _handleVideoMount = (ref: Video.VideoPlayback) => (this._video = ref);
+  _handleVideoMount = (ref: AV.Video.VideoPlayback) => (this._video = ref);
 
   _updateStateToStatus = (status: any) => this.setState(status);
 
-  _playAsync = async () => await this._video!.playAsync();
+  _playAsync = async () => this._video!.playAsync();
 
-  _pauseAsync = async () => await this._video!.pauseAsync();
+  _pauseAsync = async () => this._video!.pauseAsync();
 
-  _setPositionAsync = async (position: number) => await this._video!.setPositionAsync(position);
+  _setPositionAsync = async (position: number) => this._video!.setPositionAsync(position);
 
-  _setIsLoopingAsync = async (isLooping: boolean) => await this._video!.setIsLoopingAsync(isLooping);
+  _setIsLoopingAsync = async (isLooping: boolean) => this._video!.setIsLoopingAsync(isLooping);
 
-  _setIsMutedAsync = async (isMuted: boolean) => await this._video!.setIsMutedAsync(isMuted);
+  _setIsMutedAsync = async (isMuted: boolean) => this._video!.setIsMutedAsync(isMuted);
 
   _setRateAsync = async (rate: number, shouldCorrectPitch: boolean) =>
-    await this._video!.setRateAsync(rate, shouldCorrectPitch);
+    this._video!.setRateAsync(rate, shouldCorrectPitch)
 
   _toggleNativeControls = () =>
-    this.setState(({ useNativeControls }) => ({ useNativeControls: !useNativeControls }));
+    this.setState(({ useNativeControls }) => ({ useNativeControls: !useNativeControls }))
 
-  _resizeModeSetter = (resizeMode: Video.ResizeMode) => () => this.setState({ resizeMode });
+  _resizeModeSetter = (resizeMode: AV.Video.ResizeMode) => () => this.setState({ resizeMode });
 
   _openFullscreen = () => this._video!.presentFullscreenPlayer();
 
   _renderVideo = () => (
-    <Video.VideoPlayback
+    <AV.Video.VideoPlayback
       useNativeControls={this.state.useNativeControls}
       ref={this._handleVideoMount}
       source={this.props.source}
@@ -84,7 +84,7 @@ export default class VideoPlayer extends React.Component<
       progressUpdateIntervalMillis={100}
       onPlaybackStatusUpdate={this._updateStateToStatus}
     />
-  );
+  )
 
   render() {
     return (
@@ -107,20 +107,20 @@ export default class VideoPlayer extends React.Component<
           {
             iconName: 'move',
             title: 'Resize mode – stretch',
-            onPress: this._resizeModeSetter(Video.ResizeMode.STRETCH),
-            active: this.state.resizeMode === Video.ResizeMode.STRETCH,
+            onPress: this._resizeModeSetter(AV.Video.ResizeMode.STRETCH),
+            active: this.state.resizeMode === AV.Video.ResizeMode.STRETCH,
           },
           {
             iconName: 'log-in',
             title: 'Resize mode – contain',
-            onPress: this._resizeModeSetter(Video.ResizeMode.CONTAIN),
-            active: this.state.resizeMode === Video.ResizeMode.CONTAIN,
+            onPress: this._resizeModeSetter(AV.Video.ResizeMode.CONTAIN),
+            active: this.state.resizeMode === AV.Video.ResizeMode.CONTAIN,
           },
           {
             iconName: 'qr-scanner',
             title: 'Resize mode – cover',
-            onPress: this._resizeModeSetter(Video.ResizeMode.COVER),
-            active: this.state.resizeMode === Video.ResizeMode.COVER,
+            onPress: this._resizeModeSetter(AV.Video.ResizeMode.COVER),
+            active: this.state.resizeMode === AV.Video.ResizeMode.COVER,
           },
           {
             iconName: 'resize',

@@ -28,7 +28,7 @@ export default class DocumentPickerScreen extends React.Component<{}, State> {
         Alert.alert('Document picked', JSON.stringify(result, null, 2));
       }, 100);
     }
-  };
+  }
 
   _renderDocument() {
     if (!this.state.document) {
@@ -60,7 +60,8 @@ export default class DocumentPickerScreen extends React.Component<{}, State> {
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'row',
-          }}>
+          }}
+        >
           <Text>Copy to cache</Text>
           <Switch
             value={this.state.copyToCache}

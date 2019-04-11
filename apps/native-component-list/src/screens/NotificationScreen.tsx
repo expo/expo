@@ -86,7 +86,7 @@ export default class NotificationScreen extends React.Component {
       }
     }
     return permission;
-  };
+  }
 
   _obtainRemoteNotifPermissionsAsync = async () => {
     let permission = await Permissions.getAsync(Permissions.NOTIFICATIONS);
@@ -99,7 +99,7 @@ export default class NotificationScreen extends React.Component {
       }
     }
     return permission;
-  };
+  }
 
   _presentLocalNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
@@ -113,7 +113,7 @@ export default class NotificationScreen extends React.Component {
         sound: true,
       },
     });
-  };
+  }
 
   _scheduleLocalNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
@@ -133,7 +133,7 @@ export default class NotificationScreen extends React.Component {
         time: new Date().getTime() + 10000,
       }
     );
-  };
+  }
 
   _createCategoryAsync = () =>
     Notifications.createCategoryAsync('message', [
@@ -153,7 +153,7 @@ export default class NotificationScreen extends React.Component {
           placeholder: 'Response',
         },
       },
-    ]);
+    ])
 
   _deleteCategoryAsync = () => Notifications.deleteCategoryAsync('message');
 
@@ -173,7 +173,7 @@ export default class NotificationScreen extends React.Component {
         time: new Date().getTime() + 10000,
       }
     );
-  };
+  }
 
   _scheduleLocalNotificationAndCancelAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
@@ -190,11 +190,11 @@ export default class NotificationScreen extends React.Component {
       }
     );
     await Notifications.cancelScheduledNotificationAsync(notificationId);
-  };
+  }
 
   _scheduleLegacyNotificationAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
-    return await Notifications.scheduleLocalNotificationAsync(
+    return Notifications.scheduleLocalNotificationAsync(
       {
         title: 'Repeating notification',
         body: `I repeat every minute starting from ${new Date().toLocaleTimeString()}`,
@@ -211,29 +211,29 @@ export default class NotificationScreen extends React.Component {
         repeat: 'minute',
       }
     );
-  };
+  }
 
   _scheduleAndCancelLegacyNotificationAsync = async () => {
     const notificationId = await this._scheduleLegacyNotificationAsync();
     await Notifications.cancelScheduledNotificationAsync(notificationId);
-  };
+  }
 
   _incrementIconBadgeNumberAsync = async () => {
-    let currentNumber = await Notifications.getBadgeNumberAsync();
+    const currentNumber = await Notifications.getBadgeNumberAsync();
     await Notifications.setBadgeNumberAsync(currentNumber + 1);
-    let actualNumber = await Notifications.getBadgeNumberAsync();
+    const actualNumber = await Notifications.getBadgeNumberAsync();
     Alert.alert(`Set the badge number to ${actualNumber}`);
-  };
+  }
 
   _clearIconBadgeAsync = async () => {
     await Notifications.setBadgeNumberAsync(0);
     Alert.alert(`Cleared the badge`);
-  };
+  }
 
   _sendNotificationAsync = async () => {
     const permission = await this._obtainRemoteNotifPermissionsAsync();
     if (permission.status === 'granted') {
       registerForPushNotificationsAsync();
     }
-  };
+  }
 }

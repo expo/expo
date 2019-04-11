@@ -104,6 +104,7 @@ class GLCameraScreen extends React.Component<{}, State> {
 
       // Clear
       gl.clearColor(0, 0, 1, 1);
+      // tslint:disable-next-line: no-bitwise
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
       // Bind texture if created
@@ -116,7 +117,7 @@ class GLCameraScreen extends React.Component<{}, State> {
       gl.endFrameEXP();
     };
     loop();
-  };
+  }
 
   toggleFacing = () => {
     this.setState({
@@ -125,19 +126,19 @@ class GLCameraScreen extends React.Component<{}, State> {
           ? Camera.Constants.Type.front
           : Camera.Constants.Type.back,
     });
-  };
+  }
 
   zoomOut = () => {
     this.setState({
       zoom: this.state.zoom - 0.1 < 0 ? 0 : this.state.zoom - 0.1,
     });
-  };
+  }
 
   zoomIn = () => {
     this.setState({
       zoom: this.state.zoom + 0.1 > 1 ? 1 : this.state.zoom + 0.1,
     });
-  };
+  }
 
   render() {
     return (

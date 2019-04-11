@@ -19,11 +19,12 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "typeRoots": [
-      "./typings"
+      "types",
     ],
     "paths": {
       "@expo/vector-icons": ["react-native-vector-icons"]
     }
   },
-  "include": ["./src", "./App.tsx"]
+  "include": ["App.tsx", "src/**/*", "types/**/*"],
+  "exclude": ["node_modules"]
 }

@@ -31,9 +31,10 @@ export default class SharingScreen extends React.Component {
         dialogTitle: 'Is it a snake or a hat?',
       });
     } catch (e) {
+      // tslint:disable-next-line no-console
       console.error(e);
     }
-  };
+  }
 
   render() {
     return (

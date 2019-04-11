@@ -1,35 +1,65 @@
 import React from 'react';
 import { ScrollView, Platform } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
+import NetInfo, { ConnectionInfo } from '@react-native-community/netinfo';
 
 import Colors from '../constants/Colors';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
-export default class NetInfoScreen extends React.Component {
+interface ConnectionEvent {
+  time: Date;
+  key: number;
+}
+
+interface ConnectedChangeEvent extends ConnectionEvent {
+  isConnected: boolean;
+}
+
+interface ConnectionChangeEvent extends ConnectionEvent {
+  connectionInfo: ConnectionInfo;
+}
+
+interface Subscription {
+  remove: () => void;
+}
+
+interface State {
+  connectionInfo?: ConnectionInfo;
+  isConnectionExpensive?: boolean;
+  isConnectedChangeEvents: ConnectedChangeEvent[];
+  connectionChangeEvents: ConnectionChangeEvent[];
+}
+
+export default class NetInfoScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'NetInfo',
   };
 
-  state = {
-    connectionInfo: null,
-    isConnectionExpensive: null,
+  readonly state: State = {
     isConnectedChangeEvents: [],
     connectionChangeEvents: [],
   };
+
+  _eventCounter: number = 0;
+  _subscription?: Subscription;
+  _isConnectedSubscription?: Subscription;
 
   componentDidMount() {
     this._eventCounter = 0;
 
     NetInfo.getConnectionInfo()
       .then(connectionInfo => this.setState({ connectionInfo }))
+      // tslint:disable-next-line no-console
       .catch(console.warn);
     this._ensureIsConnectionExpensiveIsUpToDate();
-    this._subscription = NetInfo.addEventListener('connectionChange', this._handleConnectionChange);
+    this._subscription = NetInfo.addEventListener(
+      'connectionChange',
+      this._handleConnectionChange
+    ) as unknown as Subscription;
     this._isConnectedSubscription = NetInfo.isConnected.addEventListener(
       'connectionChange',
       this._handleIsConnectedChange
-    );
+    ) as unknown as Subscription;
   }
 
   componentWillUnmount() {
@@ -42,7 +72,7 @@ export default class NetInfoScreen extends React.Component {
     }
   }
 
-  _handleConnectionChange = connectionInfo => {
+  _handleConnectionChange = (connectionInfo: ConnectionInfo) => {
     this._ensureIsConnectionExpensiveIsUpToDate();
     this.setState(({ connectionChangeEvents }) => ({
       connectionInfo,
@@ -51,21 +81,22 @@ export default class NetInfoScreen extends React.Component {
         ...connectionChangeEvents,
       ],
     }));
-  };
+  }
 
   _ensureIsConnectionExpensiveIsUpToDate = () =>
     Platform.OS === 'android' &&
     NetInfo.isConnectionExpensive()
       .then(isConnectionExpensive => this.setState({ isConnectionExpensive }))
-      .catch(console.warn);
+      // tslint:disable-next-line no-console
+      .catch(console.warn)
 
-  _handleIsConnectedChange = isConnected =>
+  _handleIsConnectedChange = (isConnected: boolean) =>
     this.setState(({ isConnectedChangeEvents }) => ({
       isConnectedChangeEvents: [
         { isConnected, time: new Date(), key: this._eventCounter++ },
         ...isConnectedChangeEvents,
       ],
-    }));
+    }))
 
   _maybeRenderIsConnectionExpensive = () =>
     Platform.OS === 'android' ? (
@@ -73,16 +104,17 @@ export default class NetInfoScreen extends React.Component {
         <HeadingText>NetInfo.isConnectionExpensive()</HeadingText>
         <MonoText>{JSON.stringify(this.state.isConnectionExpensive, null, 2)}</MonoText>
       </>
-    ) : null;
+    ) : null
 
-  _renderEvents = events =>
-    events.map(event => <MonoText key={event.key}>{JSON.stringify(event, null, 2)}</MonoText>);
+  _renderEvents = (events: ConnectionEvent[]) =>
+    events.map(event => <MonoText key={event.key}>{JSON.stringify(event, null, 2)}</MonoText>)
 
   render() {
     return (
       <ScrollView
         style={{ flex: 1, backgroundColor: Colors.greyBackground }}
-        contentContainerStyle={{ padding: 10 }}>
+        contentContainerStyle={{ padding: 10 }}
+      >
         <HeadingText>NetInfo.getConnectionInfo()</HeadingText>
         <MonoText>{JSON.stringify(this.state.connectionInfo, null, 2)}</MonoText>
         {this._maybeRenderIsConnectionExpensive()}

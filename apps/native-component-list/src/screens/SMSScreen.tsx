@@ -40,7 +40,7 @@ export default class SMSScreen extends React.Component<{}, State> {
       this.setState({ error: e.message });
       setTimeout(() => this.setState({ error: undefined }), 10000);
     }
-  };
+  }
 
   render() {
     return (

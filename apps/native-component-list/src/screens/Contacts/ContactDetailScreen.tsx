@@ -1,3 +1,4 @@
+// tslint:disable max-classes-per-file
 import React from 'react';
 import {
   ActionSheetIOS,
@@ -21,8 +22,8 @@ import * as ContactUtils from './ContactUtils';
 
 const isIos = Platform.OS === 'ios';
 
-async function getPermissionAsync(permission: string) {
-  let { status } = await Permissions.askAsync(permission);
+async function getPermissionAsync(permission: Permissions.PermissionType) {
+  const { status } = await Permissions.askAsync(permission);
   if (status !== 'granted') {
     Linking.openURL('app-settings:');
     return false;
@@ -44,7 +45,8 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         IconComponent={Ionicons}
         OverflowIcon={<Ionicons name="ios-more" size={23} color="blue" />}
         iconSize={23}
-        color="blue">
+        color="blue"
+      >
         <HeaderButtons.Item
           title="share"
           iconName="md-share"
@@ -66,7 +68,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         )}
       </HeaderButtons>
     ),
-  });
+  })
 
   readonly state: State = {};
 
@@ -78,7 +80,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
   checkPermissionAsync = async () => {
     const permission = await getPermissionAsync(Permissions.CONTACTS);
     this.setState({ permission });
-  };
+  }
 
   get id() {
     const { params = {} } = this.props.navigation.state;
@@ -90,9 +92,10 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
       await Contacts.removeContactAsync(this.id);
       this.props.navigation.goBack();
     } catch ({ message }) {
+      // tslint:disable-next-line no-console
       console.error(message);
     }
-  };
+  }
 
   loadAsync = async () => {
     if (!this.state.permission) {
@@ -105,8 +108,9 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
       contact,
       refreshing: false,
     });
+    // tslint:disable-next-line no-console
     console.log(contact);
-  };
+  }
 
   get jobTitle() {
     const { contact } = this.state;
@@ -151,7 +155,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
   }> {
     const { contact } = this.state;
 
-    let items = [];
+    const items = [];
     for (const key of Object.keys(contact || {})) {
       const value = (contact as any)[key];
       if (Array.isArray(value) && value.length > 0) {
@@ -181,6 +185,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
                 onPress: () => {
                   const webUrl = item.url.indexOf('://') === -1 ? 'http://' + item.url : item.url;
 
+                  // tslint:disable-next-line no-console
                   console.log('open', item.url, webUrl);
                   Linking.openURL(webUrl);
                 },
@@ -252,7 +257,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
       },
       { name: 'Cancel' },
     ];
-    let cancelButtonIndex = sheetOptions.length - 1;
+    const cancelButtonIndex = sheetOptions.length - 1;
 
     ActionSheetIOS.showActionSheetWithOptions(
       {
@@ -262,6 +267,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
       buttonIndex => {
         if (buttonIndex !== cancelButtonIndex) {
           const { action } = sheetOptions[buttonIndex];
+          // tslint:disable-next-line no-console
           console.log(buttonIndex, sheetOptions[buttonIndex]);
           if (action) {
             action();
@@ -270,14 +276,14 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         // Do something here depending on the button index selected
       }
     );
-  };
+  }
 
   _takePhoto = async () => {
     const permission = await getPermissionAsync(Permissions.CAMERA);
     if (!permission) {
       return;
     }
-    let result = await ImagePicker.launchCameraAsync({
+    const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
     });
@@ -285,7 +291,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
     if (!result.cancelled) {
       this._setNewPhoto(result.uri);
     }
-  };
+  }
 
   _setNewPhoto = async (uri: string) => {
     // console.log(this.id, this.state.contact, uri);
@@ -295,18 +301,19 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         [Contacts.Fields.Image]: uri,
       } as any);
     } catch ({ message }) {
+      // tslint:disable-next-line no-console
       console.error(message);
     }
 
     this.loadAsync();
-  };
+  }
 
   _selectPhoto = async () => {
     const permission = await getPermissionAsync(Permissions.CAMERA_ROLL);
     if (!permission) {
       return;
     }
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
     });
@@ -314,11 +321,11 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
     if (!result.cancelled) {
       this._setNewPhoto(result.uri);
     }
-  };
+  }
 
   onPressItem = () => {
     Alert.alert('item pressed');
-  };
+  }
 
   renderListHeaderComponent = () => {
     const { contact } = this.state;
@@ -330,7 +337,8 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
           flex: 1,
           alignItems: 'stretch',
           backgroundColor: Colors.greyBackground,
-        }}>
+        }}
+      >
         <View style={{ alignItems: 'center', marginBottom: 8 }}>
           <ContactsAvatar
             style={styles.image}
@@ -353,7 +361,7 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         </View>
       </View>
     );
-  };
+  }
 
   renderListFooterComponent = () => (
     <Text
@@ -365,10 +373,11 @@ export default class ContactDetailScreen extends React.Component<NavigationScree
         justifyContent: 'center',
         alignItems: 'center',
         color: 'red',
-      }}>
+      }}
+    >
       Delete Contact
     </Text>
-  );
+  )
 
   render() {
     const { contact, permission } = this.state;
@@ -423,7 +432,7 @@ class LinkedButton extends React.PureComponent<{
 
   onPress = () => {
     Linking.openURL(`${this.props.format}:${this.props.uri}`);
-  };
+  }
 
   render() {
     const SIZE = 40;
@@ -432,7 +441,8 @@ class LinkedButton extends React.PureComponent<{
     return (
       <TouchableOpacity
         disabled={!this.enabled}
-        onPress={this.onPress}>
+        onPress={this.onPress}
+      >
         <View
           style={{
             width: SIZE,
@@ -444,7 +454,8 @@ class LinkedButton extends React.PureComponent<{
             backgroundColor,
             justifyContent: 'center',
             alignItems: 'center',
-          }}>
+          }}
+        >
           <Ionicons name={`ios-${icon}`} size={20} color={color} />
         </View>
         <Text style={{ fontSize: 10, color: backgroundColor, textAlign: 'center' }}>{text}</Text>

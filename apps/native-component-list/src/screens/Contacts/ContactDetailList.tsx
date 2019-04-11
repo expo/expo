@@ -12,7 +12,7 @@ export default class ContactDetailList extends React.Component<{
   renderItem = ({ item = {} }) => (
     // @ts-ignore
     <ContactDetailListItem key={item.id} contactId={item.id} {...item} />
-  );
+  )
 
   render() {
     const { data, style, ...props } = this.props;
@@ -27,7 +27,8 @@ export default class ContactDetailList extends React.Component<{
               paddingHorizontal: 16,
               backgroundColor: Colors.greyBackground,
               color: Colors.tintColor,
-            }}>
+            }}
+          >
             {title}
           </Text>
         )}

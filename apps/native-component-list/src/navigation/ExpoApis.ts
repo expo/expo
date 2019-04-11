@@ -1,3 +1,5 @@
+import React from 'react';
+
 import ActionSheet from '../screens/ActionSheetScreen';
 import AppAuth from '../screens/AppAuthScreen';
 import Audio from '../screens/AV/AudioScreen';
@@ -37,11 +39,11 @@ import TextToSpeech from '../screens/TextToSpeechScreen';
 import ViewShot from '../screens/ViewShotScreen';
 import WebBrowser from '../screens/WebBrowserScreen';
 
-function optionalRequire(requirer) {
+function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
   } catch (e) {
-    return null;
+    return;
   }
 }
 
@@ -67,7 +69,11 @@ const MediaLibraryScreens = optionalRequire(() =>
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
 
-const optionalScreens = {
+const optionalScreens: {
+  [key: string]:
+    | React.ComponentType
+    | undefined
+} = {
   Accelerometer,
   ActionSheet,
   AppAuth,
@@ -83,10 +89,14 @@ const optionalScreens = {
   Google,
   GoogleSignIn,
   Haptics,
+  // @ts-ignore
   Calendars,
   Constants,
+  // @ts-ignore
   Contacts,
+  // @ts-ignore
   ContactDetail,
+  // @ts-ignore
   Events,
   Geocoding,
   ImageManipulator,
@@ -104,6 +114,7 @@ const optionalScreens = {
   Permissions,
   Print,
   Recording,
+  // @ts-ignore
   Reminders,
   ScreenOrientation,
   SecureStore,
@@ -117,9 +128,14 @@ const optionalScreens = {
   ViewShot,
 };
 
-export const Screens = Object.keys(optionalScreens).reduce((acc, key) => {
-  if (optionalScreens[key]) {
-    acc[key] = optionalScreens[key];
-  }
-  return acc;
-}, {});
+interface ScreensObjectType {
+  [key: string]: React.ComponentType;
+}
+
+export const Screens = Object.entries(optionalScreens)
+  .reduce<ScreensObjectType>((acc, [key, screen]) => {
+    if (screen) {
+      acc[key] = screen;
+    }
+    return acc;
+  }, {});

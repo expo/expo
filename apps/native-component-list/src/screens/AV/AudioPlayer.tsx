@@ -1,20 +1,22 @@
 import React from 'react';
-import { Audio, Asset } from 'expo';
+import { StyleProp, ViewStyle } from 'react-native';
+import { AV, Asset } from 'expo';
 
 import Player from './Player';
 
 type PlaybackSource =
   | number
   | {
-      uri: string;
-      overrideFileExtensionAndroid?: string;
-      headers?: {
-        [fieldName: string]: string;
-      };
-    }
+    uri: string;
+    overrideFileExtensionAndroid?: string;
+    headers?: {
+      [fieldName: string]: string;
+    };
+  }
   | Asset;
 
 interface Props {
+  style?: StyleProp<ViewStyle>;
   source: PlaybackSource;
 }
 
@@ -40,7 +42,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     shouldCorrectPitch: false,
   };
 
-  _sound?: Audio.Sound;
+  _sound?: AV.Audio.Sound;
 
   componentDidMount() {
     this._loadSoundAsync(this.props.source);
@@ -53,7 +55,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
   }
 
   _loadSoundAsync = async (source: PlaybackSource) => {
-    const soundObject = new Audio.Sound();
+    const soundObject = new AV.Audio.Sound();
     try {
       await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 100 });
       soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
@@ -63,32 +65,33 @@ export default class AudioPlayer extends React.Component<Props, State> {
     } catch (error) {
       this.setState({ errorMessage: error.message });
     }
-  };
+  }
 
   _updateStateToStatus = (status: any) => this.setState(status);
 
-  _playAsync = async () => await this._sound!.playAsync();
+  _playAsync = async () => this._sound!.playAsync();
 
-  _pauseAsync = async () => await this._sound!.pauseAsync();
+  _pauseAsync = async () => this._sound!.pauseAsync();
 
-  _setPositionAsync = async (position: number) => await this._sound!.setPositionAsync(position);
+  _setPositionAsync = async (position: number) => this._sound!.setPositionAsync(position);
 
-  _setIsLoopingAsync = async (isLooping: boolean) => await this._sound!.setIsLoopingAsync(isLooping);
+  _setIsLoopingAsync = async (isLooping: boolean) => this._sound!.setIsLoopingAsync(isLooping);
 
-  _setIsMutedAsync = async (isMuted: boolean) => await this._sound!.setIsMutedAsync(isMuted);
+  _setIsMutedAsync = async (isMuted: boolean) => this._sound!.setIsMutedAsync(isMuted);
 
   _setRateAsync = async (
     rate: number,
     shouldCorrectPitch: boolean,
-    pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low
+    pitchCorrectionQuality = AV.Audio.PitchCorrectionQuality.Low
   ) => {
     await this._sound!.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
-  };
+  }
 
   render() {
     return (
       <Player
         {...this.state}
+        style={this.props.style}
         playAsync={this._playAsync}
         pauseAsync={this._pauseAsync}
         setPositionAsync={this._setPositionAsync}

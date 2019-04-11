@@ -29,7 +29,7 @@ export default class Photo extends React.Component<
     this.setState({ selected: !this.state.selected }, () =>
       this.props.onSelectionToggle(this.props.uri, this.state.selected)
     );
-  };
+  }
 
   render() {
     const { uri } = this.props;
@@ -37,7 +37,8 @@ export default class Photo extends React.Component<
       <TouchableOpacity
         style={styles.pictureWrapper}
         onPress={this.toggleSelection}
-        activeOpacity={1}>
+        activeOpacity={1}
+      >
         <Image style={styles.picture} source={{ uri }} />
         {this.state.selected && <Ionicons name="md-checkmark-circle" size={30} color="#4630EB" />}
       </TouchableOpacity>

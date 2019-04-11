@@ -17,7 +17,8 @@ export default class FontScreen extends React.Component {
             flexDirection: 'row',
             justifyContent: 'space-between',
             flex: 1,
-          }}>
+          }}
+        >
           <MaterialIcons name="airplay" size={25} />
           <MaterialIcons name="airport-shuttle" size={25} />
           <MaterialIcons name="alarm" size={25} />
@@ -32,13 +33,14 @@ export default class FontScreen extends React.Component {
           </Text>
           {Platform.OS === 'ios' && (
             <Text
-              adjustsFontSizeToFit
+              adjustsFontSizeToFit={true}
               style={{
                 flex: 1,
                 height: 32,
                 fontFamily: 'space-mono',
                 fontSize: 420,
-              }}>
+              }}
+            >
               Custom font with `adjustsFontSizeToFit` on iOS
             </Text>
           )}

@@ -116,6 +116,7 @@ const glPromise = GLView.createContextAsync().then(async gl => {
   gl.uniform1i(gl.getUniformLocation(program, 'inputImageTexture'), 1);
 
   gl.clearColor(0, 0, 0, 1);
+  // tslint:disable-next-line: no-bitwise
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   return gl;
@@ -160,7 +161,7 @@ export default class GLHeadlessRenderingScreen extends React.PureComponent<{}, S
 
     // delete previous snapshot
     if (this.state.snapshot) {
-      FileSystem.deleteAsync(this.state.snapshot!.uri as string, { idempotent: true });
+      FileSystem.deleteAsync(this.state.snapshot.uri as string, { idempotent: true });
     }
 
     this.setState({ snapshot });
@@ -171,7 +172,7 @@ export default class GLHeadlessRenderingScreen extends React.PureComponent<{}, S
     this.setState({ contrast }, () => {
       this.draw();
     });
-  };
+  }
 
   render() {
     const { contrast, snapshot } = this.state;

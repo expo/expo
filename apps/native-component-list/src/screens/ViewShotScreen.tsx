@@ -31,31 +31,33 @@ export default class ViewShotScreen extends React.Component<{}, State> {
 
   handleRef = (ref: View) => {
     this.view = ref;
-  };
+  }
 
   handlePress = async () => {
     try {
-      const image = await takeSnapshotAsync(this.view, {
+      const image = await takeSnapshotAsync(this.view!, {
         format: 'png',
         quality: 0.5,
         result: 'data-uri',
       });
       this.setState({ image });
     } catch (e) {
+      // tslint:disable-next-line: no-console
       console.error(e);
     }
-  };
+  }
 
   handleScreenCapturePress = async () => {
     if (Platform.OS === 'web') {
       try {
-        const screenUri = await takeSnapshotAsync(undefined, {
+        const screenUri = await takeSnapshotAsync(undefined as unknown as number, {
           format: 'jpg',
           quality: 0.8,
           result: 'data-uri',
         });
         this.setState({ screenUri });
       } catch (e) {
+        // tslint:disable-next-line: no-console
         console.error(e);
       }
       return;
@@ -65,7 +67,7 @@ export default class ViewShotScreen extends React.Component<{}, State> {
       quality: 0.8,
     });
     this.setState({ screenUri: uri });
-  };
+  }
 
   render() {
     const imageSource = { uri: this.state.image };

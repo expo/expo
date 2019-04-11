@@ -15,7 +15,7 @@ import Colors from '../constants/Colors';
 
 interface State {
   ready: boolean;
-  image?: Asset;
+  image?: Asset | ImageManipulator.ImageResult;
   original?: Asset;
 }
 
@@ -109,12 +109,12 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
     return (
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: this.state.image.localUri || this.state.image.uri }}
+          source={{ uri: (this.state.image! as Asset).localUri || this.state.image!.uri }}
           style={styles.image}
         />
       </View>
     );
-  };
+  }
 
   _pickPhoto = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -130,25 +130,25 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
       return;
     }
     this.setState({ image: result });
-  };
+  }
 
   _rotate = async (deg: number) => {
     await this._manipulate([{ rotate: deg }], {
       format: ImageManipulator.SaveFormat.PNG,
     });
-  };
+  }
 
   _resize = async (size: { width?: number; height?: number }) => {
     await this._manipulate([{ resize: size }]);
-  };
+  }
 
   _flip = async (flip: ImageManipulator.FlipType) => {
     await this._manipulate([{ flip }]);
-  };
+  }
 
   _compress = async (compress: number) => {
     await this._manipulate([], { compress });
-  };
+  }
 
   _crop = async () => {
     await this._manipulate([
@@ -156,12 +156,12 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
         crop: {
           originX: 0,
           originY: 0,
-          width: this.state.image.width / 2,
-          height: this.state.image.height,
+          width: this.state.image!.width! / 2,
+          height: this.state.image!.height!,
         },
       },
     ]);
-  };
+  }
 
   _combo = async () => {
     await this._manipulate([
@@ -169,30 +169,30 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
       { flip: ImageManipulator.FlipType.Vertical },
       {
         crop: {
-          originX: this.state.image.width / 4,
-          originY: this.state.image.height / 4,
-          width: this.state.image.width / 2,
-          height: this.state.image.width / 2,
+          originX: this.state.image!.width! / 4,
+          originY: this.state.image!.height! / 4,
+          width: this.state.image!.width! / 2,
+          height: this.state.image!.width! / 2,
         },
       },
     ]);
-  };
+  }
 
   _reset = () => {
     this.setState({ image: this.state.original });
-  };
+  }
 
   _manipulate = async (actions: ImageManipulator.Action[], saveOptions?: ImageManipulator.SaveOptions) => {
     const manipResult = await ImageManipulator.manipulateAsync(
-      this.state.image.localUri || this.state.image.uri,
+      (this.state.image! as Asset).localUri || this.state.image!.uri,
       actions,
       saveOptions
     );
     this.setState({ image: manipResult });
-  };
+  }
 }
 
-const Button: React.SFC<TouchableOpacityProps> = ({ onPress, style, children }) => (
+const Button: React.FunctionComponent<TouchableOpacityProps> = ({ onPress, style, children }) => (
   <TouchableOpacity
     onPress={onPress}
     style={[styles.button, style]}

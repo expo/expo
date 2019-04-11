@@ -1,5 +1,5 @@
 import React from 'react';
-import { Audio, Permissions } from 'expo';
+import { AV, Permissions } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import {
   ScrollView,
@@ -15,7 +15,7 @@ import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
 
 interface State {
-  options?: Audio.RecordingOptions;
+  options?: AV.Audio.RecordingOptions;
   canRecord: boolean;
   durationMillis: number;
   isRecording: boolean;
@@ -32,7 +32,7 @@ export default class Recorder extends React.Component<
     isRecording: false,
   };
 
-  _recorder?: Audio.Recording;
+  _recorder?: AV.Audio.Recording;
 
   componentWillUnmount() {
     if (this._recorder) {
@@ -40,8 +40,8 @@ export default class Recorder extends React.Component<
     }
   }
 
-  _prepare = (options: Audio.RecordingOptions) => async () => {
-    const recordingObject = new Audio.Recording();
+  _prepare = (options: AV.Audio.RecordingOptions) => async () => {
+    const recordingObject = new AV.Audio.Recording();
     try {
       await Permissions.askAsync(Permissions.AUDIO_RECORDING);
       await recordingObject.prepareToRecordAsync(options);
@@ -52,9 +52,9 @@ export default class Recorder extends React.Component<
     } catch (error) {
       this.setState({ errorMessage: error.message });
     }
-  };
+  }
 
-  _updateStateToStatus = (status: Audio.RecordingStatus) => this.setState(status);
+  _updateStateToStatus = (status: AV.Audio.RecordingStatus) => this.setState(status);
 
   _record = () => this._recorder!.startAsync();
 
@@ -64,7 +64,7 @@ export default class Recorder extends React.Component<
     } else {
       this._recorder!.startAsync();
     }
-  };
+  }
 
   _stopAndUnload = async () => {
     await this._recorder!.stopAndUnloadAsync();
@@ -73,7 +73,7 @@ export default class Recorder extends React.Component<
     }
     this._recorder = undefined;
     this.setState({ options: undefined, durationMillis: 0 });
-  };
+  }
 
   _maybeRenderErrorOverlay = () => {
     if (this.state.errorMessage) {
@@ -84,15 +84,15 @@ export default class Recorder extends React.Component<
       );
     }
     return null;
-  };
+  }
 
-  _renderPrepareButton = (title: string, options: Audio.RecordingOptions) => (
+  _renderPrepareButton = (title: string, options: AV.Audio.RecordingOptions) => (
     <Button
       disabled={!!this.state.options}
       onPress={this._prepare(options)}
       title={`${this.state.options === options ? '✓ ' : ''}${title}`}
     />
-  );
+  )
 
   _renderRecorderButtons = () => {
     if (!this.state.isRecording && this.state.durationMillis === 0) {
@@ -104,7 +104,8 @@ export default class Recorder extends React.Component<
             styles.bigRoundButton,
             { backgroundColor: 'gray' },
             this.state.canRecord && { backgroundColor: 'red' },
-          ]}>
+          ]}
+        >
           <Ionicons name="ios-mic" style={[styles.bigIcon, { color: 'white' }]} />
         </TouchableOpacity>
       );
@@ -114,7 +115,8 @@ export default class Recorder extends React.Component<
       <View>
         <TouchableOpacity
           onPress={this._togglePause}
-          style={[styles.bigRoundButton, { borderColor: 'red', borderWidth: 5 }]}>
+          style={[styles.bigRoundButton, { borderColor: 'red', borderWidth: 5 }]}
+        >
           <Ionicons
             name={`ios-${this.state.isRecording ? 'pause' : 'mic'}`}
             style={[styles.bigIcon, { color: 'red' }]}
@@ -132,19 +134,20 @@ export default class Recorder extends React.Component<
               borderColor: 'white',
               borderWidth: 4,
             },
-          ]}>
+          ]}
+        >
           <Ionicons name="ios-square" style={[styles.smallIcon, { color: 'white' }]} />
         </TouchableOpacity>
       </View>
     );
-  };
+  }
 
   render() {
     return (
       <View style={this.props.style}>
         <View style={styles.container}>
-          {this._renderPrepareButton('High quality', Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY)}
-          {this._renderPrepareButton('Low quality', Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY)}
+          {this._renderPrepareButton('High quality', AV.Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY)}
+          {this._renderPrepareButton('Low quality', AV.Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY)}
         </View>
         <View style={styles.centerer}>
           {this._renderRecorderButtons()}
@@ -167,11 +170,11 @@ const _formatTime = (duration: number) => {
   return `${paddedMins}:${paddedSecs}`;
 };
 
-const _leftPad = (string: string, padWith: string, expectedMinimumSize: number): string => {
-  if (string.length >= expectedMinimumSize) {
-    return string;
+const _leftPad = (s: string, padWith: string, expectedMinimumSize: number): string => {
+  if (s.length >= expectedMinimumSize) {
+    return s;
   }
-  return _leftPad(`${padWith}${string}`, padWith, expectedMinimumSize);
+  return _leftPad(`${padWith}${s}`, padWith, expectedMinimumSize);
 };
 
 const styles = StyleSheet.create({

@@ -140,5 +140,5 @@ export default class BasicScene extends React.Component {
       requestAnimationFrame(frame);
     };
     frame();
-  };
+  }
 }

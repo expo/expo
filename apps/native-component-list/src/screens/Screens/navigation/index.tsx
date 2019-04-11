@@ -9,7 +9,6 @@ import {
   requireNativeComponent,
 } from 'react-native';
 import { createStackNavigator, NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
-// import { createStackNavigator } from './react-navigation/react-navigation';
 
 export const LifecycleAwareView = requireNativeComponent('RNSLifecycleAwareView');
 
@@ -38,7 +37,7 @@ class DetailsScreen extends React.Component<NavigationScreenProps> {
     return {
       title: 'Details screen #' + navigation.getParam('index', '0'),
     };
-  };
+  }
   animvalue = new Animated.Value(0);
   rotation = this.animvalue.interpolate({
     inputRange: [0, 1],

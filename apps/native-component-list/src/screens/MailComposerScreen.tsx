@@ -32,5 +32,5 @@ export default class MailComposerScreen extends React.Component {
     } catch (e) {
       Alert.alert('Something went wrong: ', e.message);
     }
-  };
+  }
 }

@@ -16,7 +16,7 @@ export default class TaskManagerScreen extends React.Component<NavigationScreenP
     title: 'TaskManager',
   };
 
-  readonly state: State = {}
+  readonly state: State = {};
 
   componentDidMount() {
     this.updateRegisteredTasks();
@@ -25,17 +25,17 @@ export default class TaskManagerScreen extends React.Component<NavigationScreenP
   updateRegisteredTasks = async () => {
     const tasks = await TaskManager.getRegisteredTasksAsync();
     this.setState({ tasks });
-  };
+  }
 
-  unregisterTask = async taskName => {
+  unregisterTask = async (taskName: string) => {
     await TaskManager.unregisterTaskAsync(taskName);
     await this.updateRegisteredTasks();
-  };
+  }
 
   unregisterAllTasks = async () => {
     await TaskManager.unregisterAllTasksAsync();
     await this.updateRegisteredTasks();
-  };
+  }
 
   renderButtons() {
     const { tasks } = this.state;
@@ -73,9 +73,7 @@ export default class TaskManagerScreen extends React.Component<NavigationScreenP
           style={styles.button}
           buttonStyle={{ backgroundColor: 'green' }}
           title="Go to background location screen"
-          onPress={() =>
-            this.props.navigation.navigate('BackgroundLocationMap')
-          }
+          onPress={() => this.props.navigation.navigate('BackgroundLocationMap')}
         />
         <Button
           style={styles.button}

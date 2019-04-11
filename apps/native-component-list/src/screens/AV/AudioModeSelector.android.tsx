@@ -9,6 +9,7 @@ interface Mode {
   interruptionModeAndroid: number;
   shouldDuckAndroid: boolean;
   playThroughEarpieceAndroid: boolean;
+  staysActiveInBackground: boolean;
 }
 
 interface State {
@@ -45,16 +46,16 @@ export default class AudioModeSelector extends React.Component<{}, State> {
     } catch (error) {
       alert(error.message);
     }
-  };
+  }
 
   _modesEqual = (modeA: Mode, modeB: Mode) =>
     modeA.interruptionModeAndroid === modeB.interruptionModeAndroid &&
     modeA.playThroughEarpieceAndroid === modeB.playThroughEarpieceAndroid &&
     modeA.shouldDuckAndroid === modeB.shouldDuckAndroid &&
-    modeA.staysActiveInBackground === modeB.staysActiveInBackground;
+    modeA.staysActiveInBackground === modeB.staysActiveInBackground
 
   _setMode = (interruptionModeAndroid: number) => () =>
-    this.setState({ modeToSet: { ...this.state.modeToSet, interruptionModeAndroid } });
+    this.setState({ modeToSet: { ...this.state.modeToSet, interruptionModeAndroid } })
 
   _renderToggle = ({
     title,
@@ -64,7 +65,11 @@ export default class AudioModeSelector extends React.Component<{}, State> {
   }: {
     title: string;
     disabled?: boolean;
-    valueName: 'interruptionModeAndroid' | 'shouldDuckAndroid' | 'playThroughEarpieceAndroid';
+    valueName:
+     | 'interruptionModeAndroid'
+     | 'shouldDuckAndroid'
+     | 'playThroughEarpieceAndroid'
+     | 'staysActiveInBackground';
     value?: boolean;
   }) => (
     <View
@@ -75,7 +80,8 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         paddingVertical: 5,
         borderBottomWidth: 1.0 / PixelRatio.get(),
         borderBottomColor: '#cccccc',
-      }}>
+      }}
+    >
       <Text style={{ flex: 1, fontSize: 16 }}>{title}</Text>
       <Switch
         disabled={disabled}
@@ -87,7 +93,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         }
       />
     </View>
-  );
+  )
 
   _renderModeSelector = ({
     title,
@@ -103,7 +109,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
       title={`${this.state.modeToSet.interruptionModeAndroid === value ? '✓ ' : ''}${title}`}
       onPress={this._setMode(value)}
     />
-  );
+  )
 
   render() {
     return (

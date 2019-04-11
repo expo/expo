@@ -13,7 +13,7 @@ interface ButtonProps extends TouchableOpacityProps {
   title: string;
 }
 
-const Button: React.SFC<ButtonProps> = ({ title, disabled, onPress }) => (
+const Button: React.FunctionComponent<ButtonProps> = ({ title, disabled, onPress }) => (
   <TouchableOpacity disabled={disabled} onPress={onPress}>
     <View style={[button.button, disabled && button.disabled]}>
       <Text style={button.text}>{title}</Text>
@@ -50,30 +50,31 @@ export default class PermissionsScreen extends React.Component<{}, State> {
     permissionsFunction: 'askAsync',
   };
 
-  invokePermissionsFunction = async (...types: string[]) => {
+  invokePermissionsFunction = async (...types: Permissions.PermissionType[]) => {
     const result = await Permissions[this.state.permissionsFunction](...types);
     alert(JSON.stringify(result, null, 2));
-  };
+  }
 
   renderSinglePermissionsButtons() {
-    return [
-      'CAMERA',
-      'AUDIO_RECORDING',
-      'LOCATION',
-      'USER_FACING_NOTIFICATIONS',
-      'NOTIFICATIONS',
-      'CONTACTS',
-      'SYSTEM_BRIGHTNESS',
-      'CAMERA_ROLL',
-      'CALENDAR',
-      'REMINDERS',
-    ].map(permissionType => (
+    const permissions: Array<[string, Permissions.PermissionType]> = [
+      ['CAMERA', Permissions.CAMERA],
+      ['AUDIO_RECORDING', Permissions.AUDIO_RECORDING],
+      ['LOCATION', Permissions.LOCATION],
+      ['USER_FACING_NOTIFICATIONS', Permissions.USER_FACING_NOTIFICATIONS],
+      ['NOTIFICATIONS', Permissions.NOTIFICATIONS],
+      ['CONTACTS', Permissions.CONTACTS],
+      ['SYSTEM_BRIGHTNESS', Permissions.SYSTEM_BRIGHTNESS],
+      ['CAMERA_ROLL', Permissions.CAMERA_ROLL],
+      ['CALENDAR', Permissions.CALENDAR],
+      ['REMINDERS', Permissions.REMINDERS],
+    ];
+    return permissions.map(([permissionName, permissionType]) => (
       <View key={permissionType} style={styles.button}>
         <Button
           onPress={() =>
-            this.invokePermissionsFunction(Permissions[permissionType])
+            this.invokePermissionsFunction(permissionType)
           }
-          title={`Permissions.${permissionType}`}
+          title={`Permissions.${permissionName}`}
         />
       </View>
     ));
@@ -119,7 +120,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
             <Button
               onPress={() =>
                 this.invokePermissionsFunction(
-                  ...[
+                  ...([
                     Permissions.CAMERA,
                     Permissions.AUDIO_RECORDING,
                     Permissions.LOCATION,
@@ -130,13 +131,13 @@ export default class PermissionsScreen extends React.Component<{}, State> {
                     Permissions.CAMERA_ROLL,
                     Permissions.CALENDAR,
                     Permissions.REMINDERS,
-                  ].filter(n => n && typeof n !== 'boolean')
+                  ] as Permissions.PermissionType[])
                 )
               }
               title={
                 'Ask for Permissions: ' +
-                'CAMERA, AUDIO_RECORDING, LOCATION,' +
-                'USER_FACING_NOTIFICATIONS, NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS'
+                'CAMERA, AUDIO_RECORDING, LOCATION, USER_FACING_NOTIFICATIONS, ' +
+                'NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS'
               }
             />
           </View>

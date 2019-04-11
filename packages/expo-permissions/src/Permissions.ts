@@ -15,6 +15,7 @@ export {
   PermissionExpiration,
   PermissionMap,
   PermissionInfo,
+  PermissionType,
 };
 
 export const CAMERA = 'camera';
