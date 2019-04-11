@@ -41,7 +41,7 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion 27
 
   defaultConfig {
     minSdkVersion 21
@@ -64,4 +64,5 @@ dependencies {
   compileOnly('com.facebook.react:react-native:+') {
     exclude group: 'com.android.support'
   }
+  implementation 'com.github.bumptech.glide:glide:4.9.0'
 }
