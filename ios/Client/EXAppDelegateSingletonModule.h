@@ -2,10 +2,11 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <UMCore/UMSingletonModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXAppDelegateSingletonModule : NSObject <UIApplicationDelegate>
+@interface EXAppDelegateSingletonModule : UMSingletonModule <UIApplicationDelegate>
 
 @end
 

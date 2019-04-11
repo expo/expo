@@ -10,6 +10,18 @@ static dispatch_once_t onceToken;
 
 @implementation UMAppDelegateWrapper
 
+- (void)forwardInvocation:(NSInvocation *)invocation {
+  
+  SEL selector = [invocation selector];
+  NSString * selectorName = NSStringFromSelector(selector);
+  
+  if ([[self getSubcontractorsImplementingSelector:selector] count] != 0) {
+    [NSException raise:@"METHOD NOT IMPLEMENTED" format:@"Currently we do not support %@ method in unimodule AppDelegate", selectorName];
+  }
+  
+  [super forwardInvocation:invocation];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
   BOOL answer = NO;
@@ -24,6 +36,16 @@ static dispatch_once_t onceToken;
   }
   
   return answer;
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+  SEL selector = @selector(applicationWillEnterForeground:);
+  NSArray<id<UIApplicationDelegate>> *subcontractorsArray = [self getSubcontractorsImplementingSelector:selector];
+  
+  for(id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
+    [subcontractor applicationWillEnterForeground:application];
+  }
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
@@ -203,6 +225,5 @@ static dispatch_once_t onceToken;
   
   return result;
 }
-
 
 @end

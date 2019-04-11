@@ -49,10 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
   }
   [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
 
-  BOOL answer = YES; // only example (default answer could be NO)
-  BOOL superAnswer = [super application:application didFinishLaunchingWithOptions:launchOptions];
-  answer = answer || superAnswer;
-  return answer;
+ [super application:application didFinishLaunchingWithOptions:launchOptions];
+
+  return YES;
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
