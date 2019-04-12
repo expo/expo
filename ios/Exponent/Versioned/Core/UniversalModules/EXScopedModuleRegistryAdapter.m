@@ -9,6 +9,7 @@
 #import "EXScopedFileSystemModule.h"
 #import "EXUnversioned.h"
 #import "EXScopedFilePermissionModule.h"
+#import "EXScopedSecureStore.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -40,6 +41,9 @@
 
   EXScopedFilePermissionModule *filePermissionModule = [[EXScopedFilePermissionModule alloc] init];
   [moduleRegistry registerInternalModule:filePermissionModule];
+
+  EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:secureStoreModule];
 
   NSArray<id<RCTBridgeModule>> *bridgeModules = [self extraModulesForModuleRegistry:moduleRegistry];
   return [bridgeModules arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];

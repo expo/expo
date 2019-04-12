@@ -31,6 +31,7 @@
 		25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */; };
 		25742BF121774212003E7453 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BEF21774212003E7453 /* EXNotifications.m */; };
 		2596F06B22201A9500DEEFF9 /* EXScopedFileSystemModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */; };
+		31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A592260B2F600662769 /* EXScopedSecureStore.m */; };
 		313D418020C84E9000FC913D /* EXModuleRegistryBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */; };
 		314410DB223BF73B00310599 /* RNCWKWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D1223BF73A00310599 /* RNCWKWebViewManager.m */; };
 		314410DC223BF73B00310599 /* RNCWKProcessPoolManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D2223BF73A00310599 /* RNCWKProcessPoolManager.m */; };
@@ -368,6 +369,8 @@
 		25742BEF21774212003E7453 /* EXNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNotifications.m; sourceTree = "<group>"; };
 		2596F06922201A9400DEEFF9 /* EXScopedFileSystemModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedFileSystemModule.h; sourceTree = "<group>"; };
 		2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedFileSystemModule.m; sourceTree = "<group>"; };
+		31361A582260B2F600662769 /* EXScopedSecureStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedSecureStore.h; sourceTree = "<group>"; };
+		31361A592260B2F600662769 /* EXScopedSecureStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedSecureStore.m; sourceTree = "<group>"; };
 		313D417E20C84E8200FC913D /* EXModuleRegistryBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXModuleRegistryBinding.h; sourceTree = "<group>"; };
 		313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXModuleRegistryBinding.m; sourceTree = "<group>"; };
 		314410D1223BF73A00310599 /* RNCWKWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCWKWebViewManager.m; sourceTree = "<group>"; };
@@ -1015,6 +1018,8 @@
 				31E44FBE20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m */,
 				317168FB213DA0EF00766458 /* EXScopedReactNativeAdapter.h */,
 				317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */,
+				31361A582260B2F600662769 /* EXScopedSecureStore.h */,
+				31361A592260B2F600662769 /* EXScopedSecureStore.m */,
 			);
 			path = UniversalModules;
 			sourceTree = "<group>";
@@ -2555,6 +2560,7 @@
 				B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */,
 				7834361A205B8C5F00DD28C3 /* AIRMapCircleManager.m in Sources */,
 				31DBC6AC20B5B4EC0049A476 /* EXFileSystemBinding.m in Sources */,
+				31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */,
 				B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */,
 				7834361B205B8C5F00DD28C3 /* AIRMapPolylineRenderer.m in Sources */,
 				B5FB74DE1FF6DADC001C764B /* EXVersionManager.m in Sources */,
