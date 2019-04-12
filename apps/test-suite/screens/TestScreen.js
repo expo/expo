@@ -166,11 +166,11 @@ export default class TestScreen extends React.Component {
         }
 
         if (ExponentTest) {
-          // Native logs are truncated so log just the failures for now
           ExponentTest.completed(
             JSON.stringify({
               failed: failedSpecs.length,
               failures: this._failures,
+              results: this._results,
             })
           );
         }

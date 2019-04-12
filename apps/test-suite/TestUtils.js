@@ -41,17 +41,12 @@ export function getTestModules() {
     require('./tests/Import3'),
     require('./tests/Asset'),
     require('./tests/Audio'),
-    require('./tests/Calendar'),
     require('./tests/Constants'),
-    require('./tests/Contacts'),
     require('./tests/Crypto'),
     require('./tests/FileSystem'),
     require('./tests/GLView'),
-    require('./tests/GoogleSignIn'),
     require('./tests/Haptics'),
     require('./tests/Localization'),
-    require('./tests/Location'),
-    require('./tests/Linking'),
     require('./tests/Recording'),
     require('./tests/ScreenOrientation'),
     require('./tests/SecureStore'),
@@ -61,20 +56,32 @@ export function getTestModules() {
     require('./tests/Random'),
     require('./tests/Payments'),
     require('./tests/AdMobInterstitial'),
-    require('./tests/AdMobBanner'),
-    require('./tests/AdMobPublisherBanner'),
-    require('./tests/AdMobRewarded'),
-    require('./tests/Video'),
-    require('./tests/Permissions'),
-    require('./tests/MediaLibrary'),
-    require('./tests/Notifications'),
-    require('./tests/FBNativeAd'),
-    require('./tests/FBBannerAd'),
-    require('./tests/TaskManager'),
   ];
+  if (!ExponentTest.isInCI) {
+    // Requires interaction (sign in popup)
+    modules.push(require('./tests/GoogleSignIn'));
+    // Popup to request device's location which uses Google's location service
+    modules.push(require('./tests/Location'));
+    // Fails to redirect because of malformed URL
+    modules.push(require('./tests/Linking'));
+    // Requires permission
+    modules.push(require('./tests/Calendar'));
+    modules.push(require('./tests/Contacts'));
+    modules.push(require('./tests/Permissions'));
+    modules.push(require('./tests/MediaLibrary'));
+    modules.push(require('./tests/Notifications'));
+    if (Constants.isDevice) modules.push(require('./tests/Brightness'));
+    // Crashes app when mounting component
+    modules.push(require('./tests/AdMobBanner'));
+    modules.push(require('./tests/AdMobPublisherBanner'));
+    modules.push(require('./tests/AdMobRewarded'));
+    modules.push(require('./tests/Video'));
+    modules.push(require('./tests/FBBannerAd'));
+    modules.push(require('./tests/FBNativeAd'));
+    modules.push(require('./tests/TaskManager'));
+  }
   if (Platform.OS === 'android') modules.push(require('./tests/JSC'));
   if (Constants.isDevice) {
-    modules.push(require('./tests/Brightness'));
     modules.push(require('./tests/BarCodeScanner'));
     // The Camera tests are flaky on iOS, i.e. they fail randomly
     if (Platform.OS === 'android') modules.push(require('./tests/Camera'));
