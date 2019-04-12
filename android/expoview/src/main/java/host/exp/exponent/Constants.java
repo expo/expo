@@ -65,6 +65,7 @@ public class Constants {
 
   static {
     Set<String> abiVersions = new HashSet<>();
+    abiVersions.add("UNVERSIONED");
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // ADD ABI VERSIONS HERE DO NOT MODIFY
