@@ -11,12 +11,12 @@
 @property NSMutableSet<id<UMInternalModule>> *internalModulesSet;
 @property NSMapTable<Protocol *, id<UMInternalModule>> *internalModules;
 @property NSMapTable<Protocol *, NSMutableArray<id<UMInternalModule>> *> *internalModulesPreResolution;
-@property NSMutableDictionary<Class, UMExportedModule *> *exportedModulesByClass;
+@property NSMapTable<Class, UMExportedModule *> *exportedModulesByClass;
 @property NSMutableDictionary<const NSString *, UMExportedModule *> *exportedModules;
 @property NSMutableDictionary<const NSString *, UMViewManager *> *viewManagerModules;
 @property NSMutableDictionary<const NSString *, id> *singletonModules;
 
-@property NSMutableSet<id<UMModuleRegistryConsumer>> *registryConsumers;
+@property NSPointerArray *registryConsumers;
 
 @end
 
@@ -28,11 +28,11 @@
 {
   if (self = [super init]) {
     _internalModulesPreResolution = [NSMapTable weakToStrongObjectsMapTable];
-    _exportedModulesByClass = [NSMutableDictionary dictionary];
+    _exportedModulesByClass = [NSMapTable weakToWeakObjectsMapTable];
     _exportedModules = [NSMutableDictionary dictionary];
     _viewManagerModules = [NSMutableDictionary dictionary];
     _singletonModules = [NSMutableDictionary dictionary];
-    _registryConsumers = [NSMutableSet set];
+    _registryConsumers = [NSPointerArray weakObjectsPointerArray];
   }
   return self;
 }
@@ -134,7 +134,7 @@
   }
 
   _exportedModules[exportedModuleName] = exportedModule;
-  [_exportedModulesByClass setObject:exportedModule forKey:(id<NSCopying>)[exportedModule class]];
+  [_exportedModulesByClass setObject:exportedModule forKey:[exportedModule class]];
   [self maybeAddRegistryConsumer:exportedModule];
 }
 
@@ -170,7 +170,7 @@
 
 - (void)addRegistryConsumer:(id<UMModuleRegistryConsumer>)registryConsumer
 {
-  [_registryConsumers addObject:registryConsumer];
+  [_registryConsumers addPointer:(__bridge void * _Nullable)(registryConsumer)];
 }
 
 # pragma mark - Registry API
