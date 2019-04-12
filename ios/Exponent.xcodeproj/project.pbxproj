@@ -100,6 +100,9 @@
 		31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47D20B8451B0082B09F /* EXSensorManager.m */; };
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		3C3C339520E24EC0000F8B92 /* EXSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */; };
+		70151752225F776200692B3F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 70151751225F776200692B3F /* GoogleService-Info.plist */; };
+		70151753225F776200692B3F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 70151751225F776200692B3F /* GoogleService-Info.plist */; };
+		70151754225F776200692B3F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 70151751225F776200692B3F /* GoogleService-Info.plist */; };
 		783435D3205B8BEE00DD28C3 /* AIRGoogleMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 783435AE205B8BE900DD28C3 /* AIRGoogleMapPolylineManager.m */; };
 		783435D4205B8BEE00DD28C3 /* AIRGoogleMapCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 783435AF205B8BE900DD28C3 /* AIRGoogleMapCircle.m */; };
 		783435D5205B8BEE00DD28C3 /* AIRGoogleMapPolyline.m in Sources */ = {isa = PBXBuildFile; fileRef = 783435B0205B8BE900DD28C3 /* AIRGoogleMapPolyline.m */; };
@@ -504,6 +507,7 @@
 		3C3C339320E24E7D000F8B92 /* EXSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreen.h; sourceTree = "<group>"; };
 		3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreen.m; sourceTree = "<group>"; };
 		4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70151751225F776200692B3F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		783435AD205B8BE800DD28C3 /* AIRGoogleMapCallout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapCallout.h; sourceTree = "<group>"; };
 		783435AE205B8BE900DD28C3 /* AIRGoogleMapPolylineManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapPolylineManager.m; sourceTree = "<group>"; };
 		783435AF205B8BE900DD28C3 /* AIRGoogleMapCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapCircle.m; sourceTree = "<group>"; };
@@ -1176,6 +1180,7 @@
 		78CEE2B71ACD07D70095B124 = {
 			isa = PBXGroup;
 			children = (
+				70151751225F776200692B3F /* GoogleService-Info.plist */,
 				B56C65BF20476834002B2424 /* Client */,
 				78CEE2C21ACD07D70095B124 /* Exponent */,
 				B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */,
@@ -2139,6 +2144,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -2159,6 +2165,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70151752225F776200692B3F /* GoogleService-Info.plist in Resources */,
 				B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */,
 				B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */,
 				B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */,
@@ -2178,6 +2185,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70151754225F776200692B3F /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2186,6 +2194,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */,
+				70151753225F776200692B3F /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
