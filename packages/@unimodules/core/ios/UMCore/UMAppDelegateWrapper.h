@@ -3,8 +3,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSMutableSet<Class> *UMModuleClasses;
-
 @interface UMAppDelegateWrapper : UIResponder <UIApplicationDelegate>
 
 @end

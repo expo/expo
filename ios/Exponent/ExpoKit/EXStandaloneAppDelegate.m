@@ -3,25 +3,7 @@
 #import "ExpoKit.h"
 #import "EXViewController.h"
 #import "EXStandaloneAppDelegate.h"
-
 #import <UMCore/UMModuleRegistryProvider.h>
-
-#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
-#import <EXAppAuth/EXAppAuthSessionsManager.h>
-#endif
-
-#if __has_include(<GoogleSignIn/GoogleSignIn.h>)
-#import <GoogleSignIn/GoogleSignIn.h>
-#endif
-
-#if __has_include(<EXTaskManager/EXTaskService.h>)
-#import <EXTaskManager/EXTaskService.h>
-#endif
-
-#if __has_include(<EXFacebook/EXFacebook.h>)
-#import <EXFacebook/EXFacebook.h>
-#import <FBSDKCoreKit/FBSDKCoreKit.h>
-#endif
 
 @interface EXStandaloneAppDelegate ()
 
@@ -35,19 +17,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#if __has_include(<EXFacebook/EXFacebook.h>)
-  if ([EXFacebook facebookAppIdFromNSBundle]) {
-    [[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];
-  }
-#endif
   if ([application applicationState] != UIApplicationStateBackground) {
     // App launched in foreground
     [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
   }
-#if __has_include(<EXTaskManager/EXTaskService.h>)
-  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
-#endif
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 

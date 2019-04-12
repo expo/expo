@@ -14,19 +14,6 @@
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 
-#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
-#import <EXAppAuth/EXAppAuthSessionsManager.h>
-#endif
-
-#if __has_include(<GoogleSignIn/GoogleSignIn.h>)
-#import <GoogleSignIn/GoogleSignIn.h>
-#endif
-
-#if __has_include(<EXFacebook/EXFacebook.h>)
-#import <EXFacebook/EXFacebook.h>
-#import <FBSDKCoreKit/FBSDKCoreKit.h>
-#endif
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ExpoKit (Crashlytics) <CrashlyticsDelegate>
@@ -47,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
     // App launched in foreground
     [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
   }
-  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
 
  [super application:application didFinishLaunchingWithOptions:launchOptions];
 
@@ -75,6 +61,13 @@ NS_ASSUME_NONNULL_BEGIN
   _window.rootViewController = _rootViewController;
 
   [_window makeKeyAndVisible];
+}
+
+// TODO: Remove once SDK31 is phased out
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
+{
+  [super application:application didRegisterUserNotificationSettings:notificationSettings];
+  [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
 }
 
 @end
