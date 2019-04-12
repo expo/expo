@@ -5,6 +5,7 @@
 
 @interface EXConstantsBinding ()
 
+@property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, strong) NSDictionary *unversionedConstants;
 
 @end
@@ -15,7 +16,8 @@
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId]) {
+  if (self = [super init]) {
+    _experienceId = experienceId;
     _unversionedConstants = params[@"constants"];
     if (_unversionedConstants && _unversionedConstants[@"appOwnership"]) {
       _appOwnership = _unversionedConstants[@"appOwnership"];
@@ -27,7 +29,7 @@
 - (NSDictionary *)constants
 {
   NSMutableDictionary *constants = [[super constants] mutableCopy];
-  
+
   [constants setValue:[self expoClientVersion] forKey:@"expoVersion"];
 
   BOOL isDetached = NO;

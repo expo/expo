@@ -9,9 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXConstantsService : NSObject <UMInternalModule, UMConstantsInterface>
 
 @property (nonatomic, readonly) NSString *appOwnership;
-@property (nonatomic, readonly) NSString *experienceId;
 
-- (NSString *)buildNumber;
+- (NSString *)buildVersion;
 - (CGFloat)statusBarHeight;
 - (NSString *)iosVersion;
 - (NSString *)userInterfaceIdiom;
