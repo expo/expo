@@ -2,6 +2,13 @@
 #import "EXScopedFilePermissionModule.h"
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMConstantsInterface/UMConstantsInterface.h>
+#import "EXEnvironment.h"
+
+@interface EXFilePermissionModule (Protected)
+
+- (UMFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path;
+
+@end
 
 @implementation EXScopedFilePermissionModule
 
@@ -15,8 +22,7 @@
 }
 
 - (BOOL)shouldForbidAccessToExternalDirectories {
-  id<UMConstantsInterface> constantsModule = [[self moduleRegistry] getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
-  return [@"expo" isEqualToString:constantsModule.appOwnership];
+  return ![EXEnvironment sharedEnvironment].isDetached;
 }
 
 @end
