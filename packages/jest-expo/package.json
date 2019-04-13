@@ -21,8 +21,8 @@
   "dependencies": {
     "@babel/core": "^7.1.0",
     "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^23.6.0",
-    "jest": "^23.6.0",
+    "babel-jest": "^24.7.1",
+    "jest": "^24.7.1",
     "json5": "^2.1.0",
     "react-test-renderer": "^16.8.6"
   },
