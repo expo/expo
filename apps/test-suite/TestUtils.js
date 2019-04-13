@@ -56,6 +56,12 @@ export function getTestModules() {
     require('./tests/Random'),
     require('./tests/Payments'),
     require('./tests/AdMobInterstitial'),
+    require('./tests/AdMobBanner'),
+    require('./tests/AdMobPublisherBanner'),
+    require('./tests/AdMobRewarded'),
+    require('./tests/FBBannerAd'),
+    require('./tests/FBNativeAd'),
+    require('./tests/TaskManager'),
   ];
   if (!ExponentTest.isInCI) {
     // Requires interaction (sign in popup)
@@ -72,19 +78,13 @@ export function getTestModules() {
     modules.push(require('./tests/Notifications'));
     if (Constants.isDevice) modules.push(require('./tests/Brightness'));
     // Crashes app when mounting component
-    modules.push(require('./tests/AdMobBanner'));
-    modules.push(require('./tests/AdMobPublisherBanner'));
-    modules.push(require('./tests/AdMobRewarded'));
     modules.push(require('./tests/Video'));
-    modules.push(require('./tests/FBBannerAd'));
-    modules.push(require('./tests/FBNativeAd'));
-    modules.push(require('./tests/TaskManager'));
+    // The Camera tests are flaky on iOS, i.e. they fail randomly
+    if (Constants.isDevice && Platform.OS === 'android') modules.push(require('./tests/Camera'));
   }
   if (Platform.OS === 'android') modules.push(require('./tests/JSC'));
   if (Constants.isDevice) {
     modules.push(require('./tests/BarCodeScanner'));
-    // The Camera tests are flaky on iOS, i.e. they fail randomly
-    if (Platform.OS === 'android') modules.push(require('./tests/Camera'));
   }
   return modules;
 }
