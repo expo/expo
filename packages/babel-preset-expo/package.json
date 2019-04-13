@@ -39,10 +39,10 @@
     "@babel/plugin-proposal-decorators": "^7.1.0",
     "@babel/preset-env": "^7.3.1",
     "babel-plugin-module-resolver": "^3.1.1",
-    "babel-plugin-react-native-web": "^0.9.6",
-    "metro-react-native-babel-preset": "^0.49.0"
+    "babel-plugin-react-native-web": "^0.11.2",
+    "metro-react-native-babel-preset": "^0.51.1"
   },
   "devDependencies": {
-    "jest": "^23.6.0"
+    "jest": "^24.7.1"
   }
 }
