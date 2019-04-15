@@ -1,5 +1,6 @@
 'use strict';
 
+import { CameraRoll } from 'react-native';
 import { FileSystem as FS, Asset } from 'expo';
 
 export const name = 'FileSystem';
@@ -11,15 +12,12 @@ export function test(t) {
       try {
         await run();
       } catch (e) {
-        // Uncomment to log error message.
-        // const func = run.toString().match(/[A-Za-z]+\(/)[0].slice(0, -1);
-        // console.log(`${func}: ${e.message}`);
         error = e;
       }
       t.expect(error).toBeTruthy();
     };
 
-    /*t.it(
+    t.it(
       'delete(idempotent) -> !exists -> download(md5, uri) -> exists ' + '-> delete -> !exists',
       async () => {
         const localUri = FS.documentDirectory + 'download1.png';
@@ -36,11 +34,7 @@ export function test(t) {
         await FS.deleteAsync(localUri, { idempotent: true });
         await assertExists(false);
 
-        const {
-          md5,
-          uri,
-          headers,
-        } = await FS.downloadAsync(
+        const { md5, headers } = await FS.downloadAsync(
           'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
           localUri,
           { md5: true }
@@ -53,7 +47,7 @@ export function test(t) {
         await assertExists(false);
       },
       9000
-    );*/
+    );
 
     t.it('Can read/write Base64', async () => {
       const asset = await Asset.fromModule(require('../assets/icons/app.png'));
@@ -95,15 +89,12 @@ export function test(t) {
       t.expect(error.message).toMatch(/not.*found/);
     });
 
-    /*t.it(
+    t.it(
       'download(md5, uri) -> read -> delete -> !exists -> read[error]',
       async () => {
         const localUri = FS.documentDirectory + 'download1.txt';
 
-        const {
-          md5,
-          uri,
-        } = await FS.downloadAsync(
+        const { md5 } = await FS.downloadAsync(
           'https://s3-us-west-1.amazonaws.com/test-suite-data/text-file.txt',
           localUri,
           { md5: true }
@@ -124,7 +115,7 @@ export function test(t) {
         t.expect(error).toBeTruthy();
       },
       9000
-    );*/
+    );
 
     t.it('delete(idempotent) -> !exists -> write -> read -> write -> read', async () => {
       const localUri = FS.documentDirectory + 'write1.txt';
@@ -394,7 +385,7 @@ export function test(t) {
       await FS.readDirectoryAsync(FS.cacheDirectory);
     });
 
-    /*t.it('can copy from `CameraRoll`, verify hash, other methods restricted', async () => {
+    t.it('can copy from `CameraRoll`, verify hash, other methods restricted', async () => {
       await Promise.all(
         (await CameraRoll.getPhotos({
           first: 1,
@@ -425,7 +416,7 @@ export function test(t) {
           t.expect(origInfo.size).toEqual(copyInfo.size);
         })
       );
-    });*/
+    });
 
     t.it(
       'download(network failure)',
@@ -446,11 +437,7 @@ export function test(t) {
 
         let error;
         try {
-          const { md5, uri } = await FS.downloadAsync(
-            'https://nonexistent-subdomain.expo.io',
-            localUri,
-            { md5: true }
-          );
+          await FS.downloadAsync('https://nonexistent-subdomain.expo.io', localUri, { md5: true });
         } catch (e) {
           error = e;
         }
@@ -478,7 +465,7 @@ export function test(t) {
         await FS.deleteAsync(localUri, { idempotent: true });
         await assertExists(false);
 
-        const { md5, uri, status } = await FS.downloadAsync('https://expo.io/404', localUri, {
+        const { status } = await FS.downloadAsync('https://expo.io/404', localUri, {
           md5: true,
         });
         await assertExists(true);
