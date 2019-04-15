@@ -34,13 +34,13 @@ Expo APIs that create files generally operate within these directories. This inc
 
 Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://facebook.github.io/react-native/docs/cameraroll.html#getphotos) from React Native.
 
-- **`FileSystem.EncodingTypes`**
+- **`FileSystem.EncodingType`**
 
 These constants can be used to define how data is read / written.
 
-- **FileSystem.EncodingTypes.UTF8** -- Standard readable format.
+- **FileSystem.EncodingType.UTF8** -- Standard readable format.
 
-- **FileSystem.EncodingTypes.Base64** -- Binary, radix-64 representation.
+- **FileSystem.EncodingType.Base64** -- Binary, radix-64 representation.
 
 ### `FileSystem.getInfoAsync(fileUri, options)`
 
@@ -82,11 +82,11 @@ Read the entire contents of a file as a string. Binary will be returned in raw f
 
 - **options (_object_)** -- Optional props that define how a file must be read.
 
-  - **encoding (_EncodingType_)** -- The encoding format to use when reading the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`.
+  - **encoding (_EncodingType_)** -- The encoding format to use when reading the file. Options: `FileSystem.EncodingType.UTF8`, `FileSystem.EncodingType.Base64`. Default is `FileSystem.EncodingType.UTF8`.
 
-  - **length (_number_)** -- Optional number of bytes to read. This option is only used when `encoding: FileSystem.EncodingTypes.Base64` and `position` is defined.
+  - **length (_number_)** -- Optional number of bytes to read. This option is only used when `encoding: FileSystem.EncodingType.Base64` and `position` is defined.
 
-  - **position (_number_)** -- Optional number of bytes to skip. This option is only used when `encoding: FileSystem.EncodingTypes.Base64` and `length` is defined.
+  - **position (_number_)** -- Optional number of bytes to skip. This option is only used when `encoding: FileSystem.EncodingType.Base64` and `length` is defined.
 
 #### Returns
 
@@ -104,7 +104,7 @@ Write the entire contents of a file as a string.
 
 - **options (_object_)** -- Optional props that define how a file must be written.
 
-  - **encoding (_string_)** -- The encoding format to use when writing the file. Options: `FileSystem.EncodingTypes.UTF8`, `FileSystem.EncodingTypes.Base64`. Default is `FileSystem.EncodingTypes.UTF8`
+  - **encoding (_string_)** -- The encoding format to use when writing the file. Options: `FileSystem.EncodingType.UTF8`, `FileSystem.EncodingType.Base64`. Default is `FileSystem.EncodingType.UTF8`
 
 ### `FileSystem.deleteAsync(fileUri, options)`
 
