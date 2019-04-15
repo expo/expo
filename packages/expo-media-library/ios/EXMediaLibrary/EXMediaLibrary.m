@@ -19,7 +19,6 @@ NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 
 @interface EXMediaLibrary ()
 
-@property (nonatomic, weak) id<EXPermissionsScopedModuleDelegate> kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
 @property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;

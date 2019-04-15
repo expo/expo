@@ -32,6 +32,8 @@
 		2596F06B22201A9500DEEFF9 /* EXScopedFileSystemModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */; };
 		31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A592260B2F600662769 /* EXScopedSecureStore.m */; };
 		31361A5D2260B9A400662769 /* EXScopedAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A5C2260B9A400662769 /* EXScopedAmplitude.m */; };
+		31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A602261C65A00662769 /* EXPermissionsManager.m */; };
+		31361A642261C6CB00662769 /* EXScopedPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 31361A632261C6CB00662769 /* EXScopedPermissions.m */; };
 		313D418020C84E9000FC913D /* EXModuleRegistryBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */; };
 		314410DB223BF73B00310599 /* RNCWKWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D1223BF73A00310599 /* RNCWKWebViewManager.m */; };
 		314410DC223BF73B00310599 /* RNCWKProcessPoolManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D2223BF73A00310599 /* RNCWKProcessPoolManager.m */; };
@@ -370,6 +372,10 @@
 		31361A592260B2F600662769 /* EXScopedSecureStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedSecureStore.m; sourceTree = "<group>"; };
 		31361A5B2260B9A400662769 /* EXScopedAmplitude.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedAmplitude.h; sourceTree = "<group>"; };
 		31361A5C2260B9A400662769 /* EXScopedAmplitude.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedAmplitude.m; sourceTree = "<group>"; };
+		31361A5F2261C65A00662769 /* EXPermissionsManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPermissionsManager.h; sourceTree = "<group>"; };
+		31361A602261C65A00662769 /* EXPermissionsManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXPermissionsManager.m; sourceTree = "<group>"; };
+		31361A622261C6CB00662769 /* EXScopedPermissions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedPermissions.h; sourceTree = "<group>"; };
+		31361A632261C6CB00662769 /* EXScopedPermissions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedPermissions.m; sourceTree = "<group>"; };
 		313D417E20C84E8200FC913D /* EXModuleRegistryBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXModuleRegistryBinding.h; sourceTree = "<group>"; };
 		313D417F20C84E9000FC913D /* EXModuleRegistryBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXModuleRegistryBinding.m; sourceTree = "<group>"; };
 		314410D1223BF73A00310599 /* RNCWKWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCWKWebViewManager.m; sourceTree = "<group>"; };
@@ -967,6 +973,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		31361A5E2261C64100662769 /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				31361A5F2261C65A00662769 /* EXPermissionsManager.h */,
+				31361A602261C65A00662769 /* EXPermissionsManager.m */,
+				31361A622261C6CB00662769 /* EXScopedPermissions.h */,
+				31361A632261C6CB00662769 /* EXScopedPermissions.m */,
+			);
+			path = Permissions;
+			sourceTree = "<group>";
+		};
 		314410BF223BF50E00310599 /* WebView */ = {
 			isa = PBXGroup;
 			children = (
@@ -996,6 +1013,7 @@
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
+				31361A5E2261C64100662769 /* Permissions */,
 				255747E7222D515400D91513 /* EXScopedFileSystem */,
 				B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */,
 				B5FB73791FF6DADB001C764B /* EXConstantsBinding.m */,
@@ -2495,6 +2513,7 @@
 				313D418020C84E9000FC913D /* EXModuleRegistryBinding.m in Sources */,
 				B5D0D677204F4C0400DDFC99 /* EXFileDownloader.m in Sources */,
 				783435D8205B8BEE00DD28C3 /* AIRGoogleMapPolygon.m in Sources */,
+				31361A642261C6CB00662769 /* EXScopedPermissions.m in Sources */,
 				B5D52379205746E300F36C66 /* EXButtonView.m in Sources */,
 				3159BB5F21806E55002D2A81 /* RNSVGPercentageConverter.m in Sources */,
 				B5FB74A11FF6DADC001C764B /* EXConstantsBinding.m in Sources */,
@@ -2557,6 +2576,7 @@
 				7834361A205B8C5F00DD28C3 /* AIRMapCircleManager.m in Sources */,
 				31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */,
 				B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */,
+				31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */,
 				7834361B205B8C5F00DD28C3 /* AIRMapPolylineRenderer.m in Sources */,
 				B5FB74DE1FF6DADC001C764B /* EXVersionManager.m in Sources */,
 				3159BB2721806E0C002D2A81 /* RNSVGSvgView.m in Sources */,

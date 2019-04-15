@@ -10,6 +10,7 @@
 #import "EXScopedFilePermissionModule.h"
 #import "EXScopedSecureStore.h"
 #import "EXScopedAmplitude.h"
+#import "EXScopedPermissions.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -44,6 +45,10 @@
 
   EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:amplitudeModule];
+
+  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:permissionsModule];
+  [moduleRegistry registerInternalModule:permissionsModule];
 
   return moduleRegistry;
 }
