@@ -17,7 +17,7 @@ static dispatch_once_t onceToken;
 
   NSArray<id<UIApplicationDelegate>> *delegatesToBeCalled = [self getSubcontractorsImplementingSelector:selector];
 #if DEBUG
-  if ([delegatesToBeCalled anyObject]) {
+  if ([delegatesToBeCalled count] > 0) {
     [NSException raise:@"Method not implemented in UIApplicationDelegate" format:@"Some universal modules: %@ have registered for `%@` UIApplicationDelegate's callback, however, neither your AppDelegate nor %@ can handle this method. You'll need to either implement this method in your AppDelegate or submit a pull request to handle it in %@.", delegatesToBeCalled, selectorName, NSStringFromClass([self class]), NSStringFromClass([self class])];
   }
 #endif
@@ -35,7 +35,7 @@ static dispatch_once_t onceToken;
   for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
     BOOL subcontractorAnswer = NO;
       subcontractorAnswer = [subcontractor application:application didFinishLaunchingWithOptions:launchOptions];
-    answer  = answer || subcontractorAnswer;
+    answer |= subcontractorAnswer;
   }
   
   return answer;
@@ -84,8 +84,8 @@ static dispatch_once_t onceToken;
         fetchResult = UIBackgroundFetchResultNewData;
       }
       
-      working--;
-      if (working == 0) {
+      subcontractorsLeft--;
+      if (subcontractorsLeft == 0) {
         completionHandler(fetchResult);
       }
     }
@@ -110,8 +110,8 @@ static dispatch_once_t onceToken;
       
       [mergedParams addObjectsFromArray:param];
       
-      working--;
-      if (working == 0) {
+      subcontractorsLeft--;
+      if (subcontractorsLeft == 0) {
         restorationHandler(mergedParams);
       }
     }
@@ -175,8 +175,8 @@ static dispatch_once_t onceToken;
         fetchResult = UIBackgroundFetchResultNewData;
       }
       
-      working--;
-      if (working == 0) {
+      subcontractorsLeft--;
+      if (subcontractorsLeft == 0) {
         completionHandler(fetchResult);
       }
     }
@@ -208,7 +208,7 @@ static dispatch_once_t onceToken;
 
 - (NSArray<id<UIApplicationDelegate>> *)getSubcontractorsImplementingSelector:(SEL)selector {
   
-  [self initSubcontractorsOnce];
+  [self ensureSubcontractorsAreInitialized];
   
   NSString *selectorKey = NSStringFromSelector(selector);
   
