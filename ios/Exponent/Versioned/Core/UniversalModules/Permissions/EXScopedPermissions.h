@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedPermissions : EXPermissions
 
+- (instancetype)initWithExperienceId:(NSString *)experienceId;
+
 @end
 
 NS_ASSUME_NONNULL_END

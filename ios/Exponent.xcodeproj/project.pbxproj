@@ -1579,6 +1579,8 @@
 				B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */,
 				B5AC39A31E95A90B00540AA7 /* EXUserNotificationManager.h */,
 				B5AC39A41E95A90B00540AA7 /* EXUserNotificationManager.m */,
+				31E6D47C20B844FA0082B09F /* EXSensorManager.h */,
+				31E6D47D20B8451B0082B09F /* EXSensorManager.m */,
 				B57180FE1F0FF41600315A66 /* EXScreenOrientationManager.h */,
 				B57180FF1F0FF41600315A66 /* EXScreenOrientationManager.m */,
 				07295CD720559E6200ED42D4 /* EXUpdatesManager.h */,
@@ -1586,8 +1588,6 @@
 				F167C439209C7EE600F01382 /* EXUtilService.h */,
 				F167C43A209C7EE600F01382 /* EXUtilService.m */,
 				78D8252B2051213D00CBD9D9 /* Notifications */,
-				31E6D47C20B844FA0082B09F /* EXSensorManager.h */,
-				31E6D47D20B8451B0082B09F /* EXSensorManager.m */,
 			);
 			path = Services;
 			sourceTree = "<group>";
