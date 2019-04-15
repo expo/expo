@@ -53,6 +53,7 @@ Sentry.config('your Public DSN goes here').install();
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
+            "url": "your sentry url here",
             "organization": "your organization's short name here",
             "project": "your project name here",
             "authToken": "your auth token here"
