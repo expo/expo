@@ -169,15 +169,9 @@ platform :android do
     UI.success("Run successful")
   end
 
-  lane :devicefarm do |branch: git_branch|
-    UI.error("Release channel can't be blank") if branch.to_s.empty?
-    # replace all the uppercase letters with lowercased equivalents
-    lowercased_branch = branch.downcase
-    # replace all the invalid characters with _
-    escaped_branch = lowercased_branch.gsub(/[^a-z\d_.-]/, '_')	
-    # strip non-letters and non-digits from the beginning of the string
-    channel = escaped_branch.gsub(/\A[_\W]+/, '')
-
+  lane :devicefarm do
+    commit_info = last_git_commit
+    channel = commit_info[:commit_hash] 
     ENV["TEST_SUITE_URI"] = "exp://exp.host/@exponent_ci_bot/test-suite/--/all?release-channel=#{channel}"
     ENV["TEST_CONFIG"] = {
       includeModules:  '.*',
