@@ -68,6 +68,17 @@
         <receiver
             android:name="host.exp.exponent.notifications.ScheduledNotificationReceiver"
             android:exported="false"/>
+
+        <receiver
+            android:name="versioned.host.exp.exponent.modules.api.notifications.ScheduleTriggerReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+                <action android:name="android.intent.action.TIME_CHANGED"/>
+            </intent-filter>
+        </receiver>
+
         <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
 
         <provider
