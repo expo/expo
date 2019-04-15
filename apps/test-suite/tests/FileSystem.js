@@ -61,7 +61,7 @@ export function test(t) {
 
       for (let startingPosition = 0; startingPosition < 3; startingPosition++) {
         const options = {
-          encoding: FS.EncodingTypes.Base64,
+          encoding: FS.EncodingType.Base64,
           position: startingPosition,
           length: startingPosition + 1,
         };
@@ -73,9 +73,9 @@ export function test(t) {
 
         const localUri = FS.documentDirectory + 'b64.png';
 
-        await FS.writeAsStringAsync(localUri, b64, { encoding: FS.EncodingTypes.Base64 });
+        await FS.writeAsStringAsync(localUri, b64, { encoding: FS.EncodingType.Base64 });
 
-        t.expect(await FS.readAsStringAsync(localUri, { encoding: FS.EncodingTypes.Base64 })).toBe(
+        t.expect(await FS.readAsStringAsync(localUri, { encoding: FS.EncodingType.Base64 })).toBe(
           b64
         );
       }
