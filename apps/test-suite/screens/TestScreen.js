@@ -47,6 +47,7 @@ export default class TestScreen extends React.Component {
       path: ['suites'], // Path to current 'children' List in state
     }),
     testPortal: null,
+    numFailed: 0,
     done: false,
   };
 
@@ -151,7 +152,9 @@ export default class TestScreen extends React.Component {
       jasmineDone() {
         console.log('--- tests done');
         console.log('--- sending results to runner');
-        if (app._isMounted) app.setState({ done: true });
+        if (app._isMounted) {
+          app.setState({ done: true, numFailed: failedSpecs.length });
+        }
         const result = {
           magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
           failed: failedSpecs.length,
@@ -328,7 +331,11 @@ export default class TestScreen extends React.Component {
 
   _renderDoneText = () => {
     if (this.state.done) {
-      return <Text style={styles.doneMessage}>All done!</Text>;
+      return (
+        <Text style={styles.doneMessage}>
+          All done! {this.state.numFailed} {this.state.numFailed === 1 ? 'test' : 'tests'} failed.
+        </Text>
+      );
     }
   };
 
