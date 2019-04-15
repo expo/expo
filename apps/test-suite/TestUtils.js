@@ -34,8 +34,7 @@ export function getTestModules() {
   }
 
   const modules = [
-    require('./tests/Basic1'),
-    require('./tests/Basic2'),
+    require('./tests/Basic'),
     require('./tests/Import1'),
     require('./tests/Import2'),
     require('./tests/Import3'),
