@@ -61,14 +61,13 @@ export function getTestModules() {
     require('./tests/AdMobRewarded'),
     require('./tests/FBBannerAd'),
     require('./tests/FBNativeAd'),
-    require('./tests/TaskManager'),
   ];
   if (!ExponentTest.isInCI) {
     // Requires interaction (sign in popup)
     modules.push(require('./tests/GoogleSignIn'));
     // Popup to request device's location which uses Google's location service
     modules.push(require('./tests/Location'));
-    // Fails to redirect because of malformed URL
+    // Fails to redirect because of malformed URL in published version with release channel parameter
     modules.push(require('./tests/Linking'));
     // Requires permission
     modules.push(require('./tests/Calendar'));
@@ -79,6 +78,9 @@ export function getTestModules() {
     if (Constants.isDevice) modules.push(require('./tests/Brightness'));
     // Crashes app when mounting component
     modules.push(require('./tests/Video'));
+    // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
+    // 'java.util.Map org.unimodules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
+    modules.push(require('./tests/TaskManager'));
     // The Camera tests are flaky on iOS, i.e. they fail randomly
     if (Constants.isDevice && Platform.OS === 'android') modules.push(require('./tests/Camera'));
   }
