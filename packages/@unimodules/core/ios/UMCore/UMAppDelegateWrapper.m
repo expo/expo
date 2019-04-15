@@ -192,7 +192,7 @@ static dispatch_once_t onceToken;
     subcontractors = [[NSMutableArray alloc] init];
     subcontractorsForSelector = [NSMutableDictionary new];
     
-    NSArray<UMSingletonModule*> * singletonModules = [[[UMModuleRegistryProvider singletonModules] allObjects] mutableCopy];
+    NSArray<UMSingletonModule*> * singletonModules = [[UMModuleRegistryProvider singletonModules] allObjects];
     
     for (UMSingletonModule *singletonModule in singletonModules) {
       if ([singletonModule conformsToProtocol:@protocol(UIApplicationDelegate)]) {
