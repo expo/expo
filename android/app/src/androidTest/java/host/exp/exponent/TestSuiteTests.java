@@ -118,7 +118,12 @@ public class TestSuiteTests extends BaseTestClass {
       JSONObject object = new JSONObject(result);
 
       int numFailed = object.getInt("failed");
-      testReporterRule.logTestInfo(object.getString("results"));
+      if (object.has("results")) {
+        testReporterRule.logTestInfo(object.getString("results"));
+      }
+      if (object.has("failures")) {
+        testReporterRule.logTestInfo(object.getString("failures"));
+      }
 
       if (numFailed > 0) {
         throw new AssertionError(numFailed + " JS test(s) failed");
@@ -134,8 +139,12 @@ public class TestSuiteTests extends BaseTestClass {
   public RuleChain chain = RuleChain.outerRule(testReporterRule).around(new RetryTestRule(2));
 
   @Rule
-  public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS, Manifest.permission.ACCESS_COARSE_LOCATION
-      , Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_CONTACTS);
+  public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
+    Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS,
+    Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
+  );
 
   @Test
   @ExpoTestSuiteTest
