@@ -130,7 +130,7 @@
 {
   const NSString *exportedModuleName = [[exportedModule class] exportedModuleName];
   if (_exportedModules[exportedModuleName]) {
-    UMLogWarn(@"Expo module %@ overrides %@ as the module exported as %@.", exportedModule, _exportedModules[exportedModuleName], exportedModuleName);
+    UMLogInfo(@"Universal module %@ overrides %@ as the module exported as %@.", exportedModule, _exportedModules[exportedModuleName], exportedModuleName);
   }
 
   _exportedModules[exportedModuleName] = exportedModule;
@@ -142,7 +142,7 @@
 {
   const NSString *exportedModuleName = [[viewManager class] exportedModuleName];
   if (_viewManagerModules[exportedModuleName]) {
-    UMLogWarn(@"Expo view manager %@ overrides %@ as the module exported as %@.", viewManager, _viewManagerModules[exportedModuleName], exportedModuleName);
+    UMLogInfo(@"Universal view manager %@ overrides %@ as the module exported as %@.", viewManager, _viewManagerModules[exportedModuleName], exportedModuleName);
   }
 
   _viewManagerModules[exportedModuleName] = viewManager;
