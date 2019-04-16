@@ -2,11 +2,11 @@
 
 import { CameraRoll } from 'react-native';
 import { Permissions, FileSystem as FS, Asset } from 'expo';
-import { acceptPermissionsAndRunCommandAsync } from '../TestUtils';
+import * as TestUtils from '../TestUtils';
 
 export const name = 'FileSystem';
 
-export function test(t) {
+export async function test(t) {
   t.describe('FileSystem', () => {
     const throws = async run => {
       let error = null;
@@ -17,6 +17,11 @@ export function test(t) {
       }
       t.expect(error).toBeTruthy();
     };
+    t.beforeAll(async () => {
+      await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
+        return Permissions.askAsync(Permissions.CAMERA_ROLL);
+      });
+    });
 
     t.it(
       'delete(idempotent) -> !exists -> download(md5, uri) -> exists ' + '-> delete -> !exists',
@@ -387,9 +392,6 @@ export function test(t) {
     });
 
     t.it('can copy from `CameraRoll`, verify hash, other methods restricted', async () => {
-      await acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.CAMERA_ROLL);
-      });
       await Promise.all(
         (await CameraRoll.getPhotos({
           first: 1,
