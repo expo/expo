@@ -9,15 +9,7 @@
     "test:web": "node puppeteer-test/index.js",
     "test:web:ci": "cd puppeteer-test && yarn && cd .. && node puppeteer-test/index.js .",
     "web": "webpack-dev-server -d --open --config webpack.ci.js --env.development=true",
-    "web:serve": "serve ./web-build",
-    "storybook": "start-storybook --host 10.0.0.211 --port 50713",
-    "build-storybook": "build-storybook",
-    "loki": "loki",
-    "pretest:web:visual-regressions:ci": "npm run test:web:visual-regressions:update",
-    "test:web:visual-regressions": "yarn loki test --configurationFilter chrome.laptop --port 50713",
-    "test:web:visual-regressions:ci": "build-storybook && loki --requireReference --reactUri file:./storybook-static",
-    "test:web:visual-regressions:update": "LOKI_FILE=`cd ../.. && echo \\`pwd\\`/\\`npm pack\\`` && npm install $LOKI_FILE --no-save --no-package-lock && rm $LOKI_FILE",
-    "test:web:visual-regressions:approve": "yarn loki approve --configurationFilter chrome.laptop --port 50713"
+    "web:serve": "serve ./web-build"
   },
   "author": "",
   "license": "MIT",
@@ -37,34 +29,16 @@
     "sinon": "^7.1.1"
   },
   "devDependencies": {
-    "webpack": "^4.8.1",
     "@expo/webpack-config": "^0.1.4",
     "babel-loader": "^8.0.5",
     "expo-yarn-workspaces": "^1.0.0",
     "serve": "^10.1.2",
-    "webpack-cli": "^3.3.0",
-    "@storybook/react": "^5.0.8",
-    "@storybook/addon-options": "^3.4.3",
-    "@storybook/addon-actions": "^5.0.8",
-    "@storybook/addon-links": "^5.0.8",
-    "@storybook/addons": "^5.0.8",
-    "@babel/core": "^7.4.3"
+    "webpack-cli": "^3.3.0"
   },
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "loki": {
-    "chromeSelector": ".wrapper > *, #root > *",
-    "diffingEngine": "looks-same",
-    "configurations": {
-      "chrome.laptop": {
-        "target": "chrome.docker",
-        "width": 1366,
-        "height": 768
-      }
-    }
-  }
+  ]
 }
