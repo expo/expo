@@ -67,6 +67,26 @@ export function test(t) {
       }
     });
 
+    t.describe('of Permissions.AUDIO_RECORDING', () => {
+      t.it('has proper shape', async () => {
+        const result = await Permissions.getAsync(Permissions.AUDIO_RECORDING);
+        const keys = Object.keys(result);
+        const permissionsKeys = Object.keys(result.permissions);
+
+        // check top-level
+        t.expect(keys).toContain('status');
+        t.expect(keys).toContain('expires');
+        t.expect(keys).toContain('permissions');
+
+        // check component level
+        t.expect(permissionsKeys).toContain(Permissions.AUDIO_RECORDING);
+
+        const recordingPermissions = Object.keys(result.permissions[Permissions.AUDIO_RECORDING]);
+        t.expect(recordingPermissions).toContain('status');
+        t.expect(recordingPermissions).toContain('expires');
+      });
+    });
+
     t.describe('of [Permissions.CAMERA, Permissions.CALENDAR]', () => {
       t.it('has proper shape', async () => {
         const result = await Permissions.getAsync(Permissions.CAMERA, Permissions.CALENDAR);
