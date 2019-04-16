@@ -1,9 +1,3 @@
-/* eslint-disable react/prop-types */
-
-/**
- * @flow
- */
-
 import AppText from './AppText';
 import insertBetween from './insertBetween';
 import React from 'react';
@@ -58,20 +52,20 @@ const styles = StyleSheet.create({
   code: {
     fontFamily: 'monospace, monospace',
     fontSize: '1rem',
-    lineHeight: '1.3125em'
+    lineHeight: '1.3125em',
   },
   example: {
-    marginBottom: 'calc(1.5 * 1.3125rem)'
+    marginBottom: 'calc(1.5 * 1.3125rem)',
   },
   title: {
-    fontSize: '1rem'
+    fontSize: '1rem',
   },
   text: {
     alignItems: 'stretch',
     display: 'flex',
     flexDirection: 'column',
     fontSize: '1rem',
-    lineHeight: '1.3125em'
+    lineHeight: '1.3125em',
   },
   label: {
     backgroundColor: '#ddd',
@@ -79,34 +73,34 @@ const styles = StyleSheet.create({
     color: '#555',
     marginRight: '0.5rem',
     paddingVertical: '0.125rem',
-    paddingHorizontal: '0.5rem'
+    paddingHorizontal: '0.5rem',
   },
   propName: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   webLabel: {
     backgroundColor: '#bdebff',
-    color: '#025268'
+    color: '#025268',
   },
   description: {
-    marginTop: 'calc(0.5 * 1.3125rem)'
+    marginTop: 'calc(0.5 * 1.3125rem)',
   },
   renderBox: {
     borderColor: '#E6ECF0',
     borderWidth: 1,
     padding: '1.3125rem',
-    marginTop: '1.3125rem'
+    marginTop: '1.3125rem',
   },
   exampleText: {
     color: '#AAB8C2',
     fontSize: '0.8rem',
     fontWeight: 'bold',
     marginBottom: 'calc(0.5 * 1.3125rem)',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
   },
   verticalDivider: {
-    height: '1rem'
-  }
+    height: '1rem',
+  },
 });
 
 export default DocItem;

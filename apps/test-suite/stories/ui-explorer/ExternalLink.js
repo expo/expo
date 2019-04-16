@@ -1,9 +1,3 @@
-/* eslint-disable react/prop-types */
-
-/**
- * @flow
- */
-
 import AppText from './AppText';
 import React from 'react';
 

@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 import { createElement, StyleSheet } from 'react-native';
 
 const Code = props => createElement('code', { ...props, style: [styles.code, props.style] });
@@ -13,6 +9,6 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace, monospace',
     fontSize: '1rem',
     lineHeight: '1.3125em',
-    whiteSpace: 'pre'
-  }
+    whiteSpace: 'pre',
+  },
 });

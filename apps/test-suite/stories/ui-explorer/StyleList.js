@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import AppText from './AppText';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -20,18 +18,18 @@ const StyleList = ({ stylePropTypes }) => (
 const styles = StyleSheet.create({
   code: {
     fontFamily: 'monospace, monospace',
-    lineHeight: '1.3125em'
+    lineHeight: '1.3125em',
   },
   item: {
     fontSize: '0.85rem',
     marginLeft: 20,
-    marginBottom: '0.5rem'
+    marginBottom: '0.5rem',
   },
   name: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   title: {
-    fontSize: '2rem'
+    fontSize: '2rem',
   },
   label: {
     borderRadius: '1rem',
@@ -39,8 +37,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: '0.5rem',
     marginRight: '0.5rem',
     backgroundColor: '#bdebff',
-    color: '#025268'
-  }
+    color: '#025268',
+  },
 });
 
 export default StyleList;

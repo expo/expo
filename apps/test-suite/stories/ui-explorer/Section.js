@@ -1,9 +1,3 @@
-/* eslint-disable react/prop-types */
-
-/**
- * @flow
- */
-
 import AppText from './AppText';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -25,8 +19,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: '1.3125rem',
     marginBottom: '1.3125rem',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });
 
 export default Section;

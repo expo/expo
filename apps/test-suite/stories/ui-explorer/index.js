@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 import AppText from './AppText';
 import Code from './Code';
 import DocItem from './DocItem';
@@ -22,5 +18,5 @@ export {
   Section,
   storiesOf,
   StyleList,
-  TextList
+  TextList,
 };

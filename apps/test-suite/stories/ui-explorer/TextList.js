@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import AppText from './AppText';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -19,7 +17,7 @@ const styles = StyleSheet.create({
   item: {
     position: 'relative',
     paddingLeft: 20,
-    marginBottom: '0.5rem'
+    marginBottom: '0.5rem',
   },
   bullet: {
     position: 'absolute',
@@ -29,8 +27,8 @@ const styles = StyleSheet.create({
     height: 4,
     width: 4,
     backgroundColor: 'black',
-    borderRadius: 50
-  }
+    borderRadius: 50,
+  },
 });
 
 export default TextList;
