@@ -130,6 +130,7 @@ gulp.task('update-react-native-svg', () => {
     targetAndroidPath: 'modules/api/components/svg',
     sourceAndroidPackage: 'com.horcrux.svg',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.svg',
+    installableInManagedApps: true,
   });
 });
 
@@ -147,6 +148,7 @@ gulp.task('update-react-native-gesture-handler', () => {
     targetAndroidPath: 'modules/api/components/gesturehandler/react',
     sourceAndroidPackage: 'com.swmansion.gesturehandler.react',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler.react',
+    installableInManagedApps: true,
   });
 });
 
@@ -161,6 +163,7 @@ gulp.task('update-react-native-gesture-handler-lib', () => {
     targetAndroidPath: 'modules/api/components/gesturehandler',
     sourceAndroidPackage: 'com.swmansion.gesturehandler',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+    installableInManagedApps: true,
     skipCleanup: true,
   });
 });
@@ -176,6 +179,7 @@ gulp.task('update-amazon-cognito-identity-js', () => {
     targetAndroidPath: 'modules/api/cognito',
     sourceAndroidPackage: 'com.amazonaws',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.cognito',
+    installableInManagedApps: false,
   });
 });
 
@@ -191,6 +195,7 @@ gulp.task('update-react-native-maps', async () => {
       targetAndroidPath: '',
       sourceAndroidPackage: '',
       targetAndroidPackage: '',
+      installableInManagedApps: true,
     });
   }
   return updateVendoredNativeModule({
@@ -203,6 +208,7 @@ gulp.task('update-react-native-maps', async () => {
     targetAndroidPath: 'modules/api/components/maps',
     sourceAndroidPackage: 'com.airbnb.android.react.maps',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
+    installableInManagedApps: true,
   });
 });
 
@@ -218,6 +224,7 @@ gulp.task('update-tipsi-stripe', () => {
     targetAndroidPath: 'modules/api/components/tipsi',
     sourceAndroidPackage: 'com.gettipsi.stripe.StripeReactPackage',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.tipsi',
+    installableInManagedApps: false,
   });
 });
 
@@ -232,6 +239,7 @@ gulp.task('update-react-native-admob', () => {
     targetAndroidPath: 'modules/api/components/admob',
     sourceAndroidPackage: 'com.sbugert.rnadmob',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.admob',
+    installableInManagedApps: false,
   });
 });
 
@@ -248,13 +256,14 @@ gulp.task('update-react-native-view-shot', () => {
     targetAndroidPath: 'modules/api',
     sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.viewshot',
+    installableInManagedApps: true,
   });
 });
 
 gulp.task('update-react-native-lottie', () => {
   return updateVendoredNativeModule({
     argv,
-    name: 'react-native-lottie',
+    name: 'lottie-react-native',
     repoUrl: 'https://github.com/expo/lottie-react-native.git',
     sourceIosPath: 'src/ios/LottieReactNative',
     iosPrefix: 'LRN',
@@ -264,6 +273,7 @@ gulp.task('update-react-native-lottie', () => {
     targetAndroidPath: 'modules/api/components/lottie',
     sourceAndroidPackage: 'com.airbnb.android.react.lottie',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.lottie',
+    installableInManagedApps: true,
   });
 });
 
@@ -278,6 +288,7 @@ gulp.task('update-react-native-fbads', () => {
     targetAndroidPath: 'modules/api/fbads',
     sourceAndroidPackage: 'io.callstack.react.fbads',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.fbads',
+    installableInManagedApps: false,
   });
 });
 
@@ -292,6 +303,7 @@ gulp.task('update-react-native-branch', () => {
     targetAndroidPath: 'modules/api/standalone/branch',
     sourceAndroidPackage: 'io.branch.rnbranch',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.standalone.branch',
+    installableInManagedApps: false,
     recursive: false,
   });
 });
@@ -308,6 +320,7 @@ gulp.task('update-react-native-reanimated', () => {
     targetAndroidPath: 'modules/api/reanimated',
     sourceAndroidPackage: 'com.swmansion.reanimated',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.reanimated',
+    installableInManagedApps: true,
   });
 });
 
@@ -322,6 +335,7 @@ gulp.task('update-react-native-screens', () => {
     targetAndroidPath: 'modules/api/screens',
     sourceAndroidPackage: 'com.swmansion.rnscreens',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
+    installableInManagedApps: true,
   });
 });
 
@@ -337,6 +351,7 @@ gulp.task('update-react-native-webview', () => {
     targetAndroidPath: 'modules/api/components/webview',
     sourceAndroidPackage: 'com.reactnativecommunity.webview',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+    installableInManagedApps: true,
   });
 });
 
@@ -351,6 +366,7 @@ gulp.task('update-react-native-netinfo', () => {
     targetAndroidPath: 'modules/api/netinfo',
     sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
+    installableInManagedApps: true,
   });
 });
 
