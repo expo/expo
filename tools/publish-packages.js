@@ -4,6 +4,7 @@ const os = require('os');
 const path = require('path');
 const chalk = require('chalk');
 const fs = require('fs-extra');
+const JsonFile = require('@expo/json-file').default;
 const shell = require('shelljs');
 const semver = require('semver');
 const inquirer = require('inquirer');
@@ -398,7 +399,11 @@ async function _preparePublishAsync({ libName, dir }, allConfigs, options) {
   };
 }
 
-async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, packageJson }, allConfigs, options) {
+async function _bumpVersionsAsync(
+  { libName, dir, newVersion, shouldPublish, packageJson, isNativeModule, config },
+  allConfigs,
+  options
+) {
   if (!shouldPublish) {
     return;
   }
@@ -468,6 +473,19 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
         `in ${chalk.magenta('android/build.gradle')}`
       );
     }
+  }
+
+  if (isNativeModule && (config.android.includeInExpoClient || config.ios.includeInExpoClient)) {
+    await JsonFile.setAsync(
+      path.join(ROOT_DIR, 'packages/expo/bundledNativeModules.json'),
+      libName,
+      `~${newVersion}`
+    );
+    console.log(
+      chalk.yellow('>'),
+      `Updated package version in`,
+      chalk.magenta('packages/expo/bundledNativeModules.json')
+    );
   }
 
   console.log(chalk.yellow('>'), `Updated package version in ${chalk.magenta('package.json')}`);

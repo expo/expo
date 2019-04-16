@@ -6,6 +6,7 @@
   "license": "Copyright 2013-present 650 Industries",
   "dependencies": {
     "@ccheever/crayon": "^5.0.0",
+    "@expo/json-file": "^8.0.0",
     "@exponent/spawn-async": "^1.2.8",
     "appc-aar-tools": "^1.1.4",
     "chalk": "^2.3.0",
