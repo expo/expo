@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo';
 import React from 'react';
 import { View } from 'react-native';
 
-import UIExplorer, { AppText, Description, DocItem, Section, storiesOf } from '../../ui-explorer';
+import UIExplorer, { AppText, Description, DocItem, Section, storiesOf } from '../ui-explorer';
 
 const Screen = () => (
   <View>

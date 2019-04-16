@@ -1,5 +1,5 @@
 const path = require('path');
-const webpackConfig = require('@expo/webpack-config/webpack/webpack.common');
+const webpackConfig = require('./webpack.config.expo');
 const merge = require('webpack-merge');
 
 module.exports = function({ mode, config }, argv) {
@@ -7,6 +7,5 @@ module.exports = function({ mode, config }, argv) {
     { [config.mode]: true, projectRoot: path.resolve(__dirname, '../') },
     argv
   );
-
   return merge(expoConfig, config);
 };

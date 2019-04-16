@@ -11,10 +11,8 @@ import UIExplorer, {
   storiesOf,
 } from '../ui-explorer';
 
-const image = {
-  uri:
-    'https://www.tesla.com/tesla_theme/assets/img/_vehicle_redesign/roadster_and_semi/roadster/hero-portrait@2.jpg',
-};
+import image from '../../assets/roadster.jpg';
+
 const Screen = () => (
   <View>
     <UIExplorer title="Blur View">
