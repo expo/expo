@@ -3,7 +3,7 @@ import Code from './Code';
 import DocItem from './DocItem';
 import ExternalLink from './ExternalLink';
 import Section from './Section';
-import { storiesOf } from '@storybook/react';
+import { storiesOf } from './storiesOf';
 import StyleList from './StyleList';
 import TextList from './TextList';
 import UIExplorer, { Description } from './UIExplorer';

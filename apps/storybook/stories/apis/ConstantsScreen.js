@@ -1,12 +1,6 @@
 import React from 'react';
-import UIExplorer, {
-  AppText,
-  Code,
-  Description,
-  DocItem,
-  Section,
-  storiesOf,
-} from '../../ui-explorer';
+
+import UIExplorer, { AppText, Description, DocItem, Section, storiesOf } from '../ui-explorer';
 
 const api = [
   {

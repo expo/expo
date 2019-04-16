@@ -3,3 +3,6 @@ node_modules/*
 
 /web-build/
 /web-stats.json
+
+# storybook
+storybook-static

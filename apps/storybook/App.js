@@ -1,2 +1,3 @@
-// TODO: Bacon: Native support
+import './.storybook/config';
+
 export default () => null;

@@ -1,6 +1,6 @@
 import { BlurView } from 'expo';
 import React from 'react';
-import { View, Image, StyleSheet, Text } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import UIExplorer, {
   AppText,
@@ -9,7 +9,7 @@ import UIExplorer, {
   DocItem,
   Section,
   storiesOf,
-} from '../../ui-explorer';
+} from '../ui-explorer';
 
 const image = {
   uri:
