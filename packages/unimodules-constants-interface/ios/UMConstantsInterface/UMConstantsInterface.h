@@ -2,8 +2,6 @@
 
 @protocol UMConstantsInterface
 
-@property (nonatomic, readonly) NSString *appOwnership;
-
 - (NSDictionary *)constants;
 
 - (NSString *)buildVersion;

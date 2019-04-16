@@ -5,14 +5,13 @@
 
 @interface EXConstantsBinding ()
 
+@property (nonatomic, strong) NSString *appOwnership;
 @property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, strong) NSDictionary *unversionedConstants;
 
 @end
 
 @implementation EXConstantsBinding : EXConstantsService
-
-@synthesize appOwnership = _appOwnership;
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
 {

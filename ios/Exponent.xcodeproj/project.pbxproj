@@ -40,6 +40,8 @@
 		314410DD223BF73B00310599 /* RNCWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D4223BF73A00310599 /* RNCWKWebView.m */; };
 		314410DE223BF73B00310599 /* RNCUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D6223BF73B00310599 /* RNCUIWebView.m */; };
 		314410DF223BF73B00310599 /* RNCUIWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D8223BF73B00310599 /* RNCUIWebViewManager.m */; };
+		31571B2A2265DC9700358D65 /* EXScopedSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B292265DC9700358D65 /* EXScopedSegment.m */; };
+		31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */; };
 		3159BB0421806DAD002D2A81 /* RNSVGPainterBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BAFC21806DAD002D2A81 /* RNSVGPainterBrush.m */; };
 		3159BB0521806DAD002D2A81 /* RNSVGBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BB0021806DAD002D2A81 /* RNSVGBrush.m */; };
 		3159BB0621806DAD002D2A81 /* RNSVGPainter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3159BB0121806DAD002D2A81 /* RNSVGPainter.m */; };
@@ -388,6 +390,10 @@
 		314410D8223BF73B00310599 /* RNCUIWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCUIWebViewManager.m; sourceTree = "<group>"; };
 		314410D9223BF73B00310599 /* RNCWKWebViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCWKWebViewManager.h; sourceTree = "<group>"; };
 		314410DA223BF73B00310599 /* RNCUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCUIWebView.h; sourceTree = "<group>"; };
+		31571B282265DC9700358D65 /* EXScopedSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedSegment.h; sourceTree = "<group>"; };
+		31571B292265DC9700358D65 /* EXScopedSegment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedSegment.m; sourceTree = "<group>"; };
+		31571B2B2265DD5800358D65 /* EXScopedLocalAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedLocalAuthentication.h; sourceTree = "<group>"; };
+		31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedLocalAuthentication.m; sourceTree = "<group>"; };
 		3159BAFB21806DAD002D2A81 /* RNSVGBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGBrush.h; sourceTree = "<group>"; };
 		3159BAFC21806DAD002D2A81 /* RNSVGPainterBrush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGPainterBrush.m; sourceTree = "<group>"; };
 		3159BAFD21806DAD002D2A81 /* RNSVGPainterBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGPainterBrush.h; sourceTree = "<group>"; };
@@ -1033,6 +1039,10 @@
 				31361A592260B2F600662769 /* EXScopedSecureStore.m */,
 				31361A5B2260B9A400662769 /* EXScopedAmplitude.h */,
 				31361A5C2260B9A400662769 /* EXScopedAmplitude.m */,
+				31571B282265DC9700358D65 /* EXScopedSegment.h */,
+				31571B292265DC9700358D65 /* EXScopedSegment.m */,
+				31571B2B2265DD5800358D65 /* EXScopedLocalAuthentication.h */,
+				31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */,
 			);
 			path = UniversalModules;
 			sourceTree = "<group>";
@@ -2483,6 +2493,7 @@
 				B5AC39AC1E95A90B00540AA7 /* EXKernelDevMotionHandler.m in Sources */,
 				BB5BD32620AEFCB4007E02FC /* REATransformNode.m in Sources */,
 				B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */,
+				31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */,
 				783435DB205B8BEE00DD28C3 /* AIRGoogleMapUrlTile.m in Sources */,
 				3159BB2821806E0C002D2A81 /* RNSVGRadialGradient.m in Sources */,
 				78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */,
@@ -2545,6 +2556,7 @@
 				B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */,
 				B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */,
 				6AF6CA2C22687D8B00FB11C1 /* REAAllTransitions.m in Sources */,
+				31571B2A2265DC9700358D65 /* EXScopedSegment.m in Sources */,
 				78343615205B8C5F00DD28C3 /* AIRMapCircle.m in Sources */,
 				3159BB2421806E0C002D2A81 /* RNSVGMask.m in Sources */,
 				3159BB4B21806E3D002D2A81 /* RNSVGGlyphContext.m in Sources */,
