@@ -29,9 +29,6 @@ const Screen = () => (
         name="Importing the module"
         example={{
           code: `// in managed apps:
-import { BlurView } from 'expo';
-
-// in bare apps:
 import { BlurView } from 'expo-blur';`,
         }}
       />

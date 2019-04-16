@@ -14,9 +14,6 @@ const Screen = () => (
         name="Importing the module"
         example={{
           code: `// in managed apps:
-import { LinearGradient } from 'expo';
-
-// in bare apps:
 import { LinearGradient } from 'expo-linear-gradient';`,
         }}
       />
