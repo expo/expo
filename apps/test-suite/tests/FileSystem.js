@@ -1,7 +1,7 @@
 'use strict';
 
 import { CameraRoll } from 'react-native';
-import { FileSystem as FS, Asset } from 'expo';
+import { Permissions, FileSystem as FS, Asset } from 'expo';
 
 export const name = 'FileSystem';
 
@@ -386,36 +386,39 @@ export function test(t) {
     });
 
     t.it('can copy from `CameraRoll`, verify hash, other methods restricted', async () => {
-      await Promise.all(
-        (await CameraRoll.getPhotos({
-          first: 1,
-        })).edges.map(async ({ node: { image: { uri: cameraRollUri } } }) => {
-          const destinationUri = FS.documentDirectory + 'photo.jpg';
+      const permission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (permission.status === 'granted') {
+        await Promise.all(
+          (await CameraRoll.getPhotos({
+            first: 1,
+          })).edges.map(async ({ node: { image: { uri: cameraRollUri } } }) => {
+            const destinationUri = FS.documentDirectory + 'photo.jpg';
 
-          await throws(() => FS.readAsStringAsync(cameraRollUri));
-          await throws(() => FS.writeAsStringAsync(cameraRollUri));
-          await throws(() => FS.deleteAsync(cameraRollUri));
-          await throws(() => FS.moveAsync({ from: cameraRollUri, to: destinationUri }));
-          await throws(() => FS.copyAsync({ from: destinationUri, to: cameraRollUri }));
-          await throws(() => FS.makeDirectoryAsync(cameraRollUri));
-          await throws(() => FS.readDirectoryAsync(cameraRollUri));
-          await throws(() => FS.downloadAsync('http://www.google.com', cameraRollUri));
+            await throws(() => FS.readAsStringAsync(cameraRollUri));
+            await throws(() => FS.writeAsStringAsync(cameraRollUri));
+            await throws(() => FS.deleteAsync(cameraRollUri));
+            await throws(() => FS.moveAsync({ from: cameraRollUri, to: destinationUri }));
+            await throws(() => FS.copyAsync({ from: destinationUri, to: cameraRollUri }));
+            await throws(() => FS.makeDirectoryAsync(cameraRollUri));
+            await throws(() => FS.readDirectoryAsync(cameraRollUri));
+            await throws(() => FS.downloadAsync('http://www.google.com', cameraRollUri));
 
-          await FS.copyAsync({ from: cameraRollUri, to: destinationUri });
+            await FS.copyAsync({ from: cameraRollUri, to: destinationUri });
 
-          const origInfo = await FS.getInfoAsync(cameraRollUri, {
-            size: true,
-            md5: true,
-          });
-          const copyInfo = await FS.getInfoAsync(destinationUri, {
-            size: true,
-            md5: true,
-          });
+            const origInfo = await FS.getInfoAsync(cameraRollUri, {
+              size: true,
+              md5: true,
+            });
+            const copyInfo = await FS.getInfoAsync(destinationUri, {
+              size: true,
+              md5: true,
+            });
 
-          t.expect(origInfo.md5).toEqual(copyInfo.md5);
-          t.expect(origInfo.size).toEqual(copyInfo.size);
-        })
-      );
+            t.expect(origInfo.md5).toEqual(copyInfo.md5);
+            t.expect(origInfo.size).toEqual(copyInfo.size);
+          })
+        );
+      }
     });
 
     t.it(

@@ -1,16 +1,7 @@
 'use strict';
 
 import React from 'react';
-import {
-  Dimensions,
-  NativeModules,
-  StyleSheet,
-  Platform,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
-import { Constants } from 'expo';
+import { NativeModules, StyleSheet, Platform, ScrollView, Text, View } from 'react-native';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
 
