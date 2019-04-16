@@ -77,11 +77,7 @@ const ConstantsScreen = () => (
       <DocItem
         name="Importing the module"
         example={{
-          code: `// in managed apps:
-import { Constants } from 'expo';
-
-// in bare apps:
-import Constants from 'expo-constants';`,
+          code: `import Constants from 'expo-constants';`,
         }}
       />
 

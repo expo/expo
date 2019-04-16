@@ -13,8 +13,7 @@ const Screen = () => (
       <DocItem
         name="Importing the module"
         example={{
-          code: `// in managed apps:
-import { LinearGradient } from 'expo-linear-gradient';`,
+          code: `import { LinearGradient } from 'expo-linear-gradient';`,
         }}
       />
       <Section title="Props">

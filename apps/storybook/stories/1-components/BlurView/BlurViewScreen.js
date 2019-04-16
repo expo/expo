@@ -28,8 +28,7 @@ const Screen = () => (
       <DocItem
         name="Importing the module"
         example={{
-          code: `// in managed apps:
-import { BlurView } from 'expo-blur';`,
+          code: `import { BlurView } from 'expo-blur';`,
         }}
       />
       <Section title="Props">
