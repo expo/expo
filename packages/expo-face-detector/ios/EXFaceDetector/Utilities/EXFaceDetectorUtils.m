@@ -8,6 +8,7 @@
 
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <EXFaceDetector/EXFaceDetectorPointTransformCalculator.h>
+#import "Firebase.h"
 
 NSString *const EXGMVDataOutputWidthKey = @"Width";
 NSString *const EXGMVDataOutputHeightKey = @"Height";
@@ -18,16 +19,16 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
 {
   return @{
            @"Mode" : @{
-               @"fast" : @(EXFaceDetectionFastMode),
-               @"accurate" : @(EXFaceDetectionAccurateMode)
+               @"fast" : @(FIRVisionFaceDetectorPerformanceModeFast),
+               @"accurate" : @(FIRVisionFaceDetectorPerformanceModeAccurate)
                },
            @"Landmarks" : @{
-               @"all" : @(EXFaceDetectAllLandmarks),
-               @"none" : @(EXFaceDetectNoLandmarks)
+               @"all" : @(FIRVisionFaceDetectorLandmarkModeAll),
+               @"none" : @(FIRVisionFaceDetectorLandmarkModeNone)
                },
            @"Classifications" : @{
-               @"all" : @(EXFaceRunAllClassifications),
-               @"none" : @(EXFaceRunNoClassifications)
+               @"all" : @(FIRVisionFaceDetectorClassificationModeAll),
+               @"none" : @(FIRVisionFaceDetectorClassificationModeAll)
                }
            };
 }
@@ -46,7 +47,7 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
 // whereas on iPhone 5S the scale is too big (~0.7, while it should be ~0.4) and the offset
 // moves the face points away. This workaround (using screen + orientation + video resolution
 // to calculate proper scale) has been proven to work all three devices.
-+ (CGAffineTransform)transformFromDeviceOutput:(GMVDataOutput *)dataOutput withInterfaceOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation
++ (CGAffineTransform)transformFromDeviceOutput:(AVCaptureVideoDataOutput *)dataOutput withInterfaceOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation
 {
   UIScreen *mainScreen = [UIScreen mainScreen];
   BOOL interfaceIsLandscape = interfaceVideoOrientation == AVCaptureVideoOrientationLandscapeLeft || interfaceVideoOrientation == AVCaptureVideoOrientationLandscapeRight;
@@ -59,7 +60,7 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
   return dataOutputTransform;
 }
 
-+ (CGAffineTransform)transformFromDeviceOutput:(GMVDataOutput *)dataOutput toInterfaceVideoOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation
++ (CGAffineTransform)transformFromDeviceOutput:(AVCaptureVideoDataOutput *)dataOutput toInterfaceVideoOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation
 {
   UIDeviceOrientation currentDeviceOrientation = [[UIDevice currentDevice] orientation];
   AVCaptureVideoOrientation deviceVideoOrientation = [self videoOrientationForDeviceOrientation:currentDeviceOrientation];
@@ -90,6 +91,62 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
     default:
       return AVCaptureVideoOrientationPortrait;
   }
+}
+
+# pragma mark - Image conversions
+
++ (UIImage *)convertBufferToUIImage:(CMSampleBufferRef)sampleBuffer previewSize:(CGSize)previewSize mirrored:(BOOL)mirrored
+{
+  CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+  CIImage *ciImage = [CIImage imageWithCVPixelBuffer:imageBuffer];
+  // set correct orientation
+  __block UIInterfaceOrientation orientation;
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    orientation = [[UIApplication sharedApplication] statusBarOrientation];
+  });
+  UIInterfaceOrientation curOrientation = orientation;
+  int orientationToApply = 1;
+  if (curOrientation == UIInterfaceOrientationLandscapeLeft){
+    orientationToApply =  mirrored ? kCGImagePropertyOrientationUpMirrored : kCGImagePropertyOrientationDown;
+  } else if (curOrientation == UIInterfaceOrientationLandscapeRight){
+    orientationToApply = mirrored ? kCGImagePropertyOrientationDownMirrored : kCGImagePropertyOrientationUp;
+  } else if (curOrientation == UIInterfaceOrientationPortrait){
+    orientationToApply = mirrored ? kCGImagePropertyOrientationLeftMirrored : kCGImagePropertyOrientationRight;
+  } else if (curOrientation == UIInterfaceOrientationPortraitUpsideDown){
+    orientationToApply = mirrored ? kCGImagePropertyOrientationRightMirrored : kCGImagePropertyOrientationLeft;
+  }
+  ciImage = [ciImage imageByApplyingOrientation:orientationToApply];
+  
+  // scale down CIImage
+  float bufferWidth = CVPixelBufferGetWidth(imageBuffer);
+  float bufferHeight = CVPixelBufferGetHeight(imageBuffer);
+  float bufferSmallerDim = MIN(bufferWidth, bufferHeight);
+  
+  float scale = 400 / bufferSmallerDim;
+  
+  CIFilter* scaleFilter = [CIFilter filterWithName:@"CILanczosScaleTransform"];
+  [scaleFilter setValue:ciImage forKey:kCIInputImageKey];
+  [scaleFilter setValue:@(scale) forKey:kCIInputScaleKey];
+  [scaleFilter setValue:@(1) forKey:kCIInputAspectRatioKey];
+  ciImage = scaleFilter.outputImage;
+  
+  // convert to UIImage and crop to preview aspect ratio
+  NSDictionary *contextOptions = @{kCIContextUseSoftwareRenderer : @(false)};
+  CIContext *temporaryContext = [CIContext contextWithOptions:contextOptions];
+  CGImageRef videoImage;
+  CGRect boundingRect;
+  if (curOrientation == UIInterfaceOrientationLandscapeLeft || curOrientation == UIInterfaceOrientationLandscapeRight) {
+    boundingRect = CGRectMake(0, 0, bufferWidth*scale, bufferHeight*scale);
+  } else {
+    boundingRect = CGRectMake(0, 0, bufferHeight*scale, bufferWidth*scale);
+  }
+  videoImage = [temporaryContext createCGImage:ciImage fromRect:boundingRect];
+  CGRect croppedSize = AVMakeRectWithAspectRatioInsideRect(previewSize, boundingRect);
+  CGImageRef croppedCGImage = CGImageCreateWithImageInRect(videoImage, croppedSize);
+  UIImage *image = [[UIImage alloc] initWithCGImage:croppedCGImage];
+  CGImageRelease(videoImage);
+  CGImageRelease(croppedCGImage);
+  return image;
 }
 
 @end

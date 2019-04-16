@@ -13,6 +13,7 @@
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
+#import "Firebase.h"
 
 #if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
 #import <EXAppAuth/EXAppAuthSessionsManager.h>
@@ -34,6 +35,12 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation EXAppDelegate
+
+- (instancetype)init {
+  self = [super init];
+  [FIRApp configure];
+  return self;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {

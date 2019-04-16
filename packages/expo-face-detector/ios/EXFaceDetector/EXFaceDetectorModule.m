@@ -8,9 +8,11 @@
 
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceEncoder.h>
+#import <EXFaceDetector/EXFaceDetector.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <UMCore/UMModuleRegistry.h>
+#import "Firebase.h"
 
 static const NSString *kModeOptionName = @"mode";
 static const NSString *kDetectLandmarksOptionName = @"detectLandmarks";
@@ -34,6 +36,7 @@ static NSDictionary *defaultDetectorOptions = nil;
     _moduleRegistry = moduleRegistry;
     fileManager = [NSFileManager defaultManager];
   }
+  [FIRApp configure];
   return self;
 }
 
@@ -72,56 +75,56 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
   }
   
   @try {
-    GMVDetector *detector = [[self class] detectorForOptions:options];
-
+    
     // This check was failing, probably because of some race condition
     // see note at https://developer.apple.com/documentation/foundation/nsfilemanager/1415645-fileexistsatpath?language=objc
-//    if (![fileManager fileExistsAtPath:path]) {
-//      reject(@"E_FACE_DETECTION_FAILED", [NSString stringWithFormat:@"The file does not exist. Given path: `%@`.", path], nil);
-//      return;
-//    }
-
-    UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
-
-    NSDictionary *detectionOptions = [[self class] detectionOptionsForImage:image];
-    NSArray<GMVFaceFeature *> *faces = [detector featuresInImage:image options:detectionOptions];
-    EXFaceEncoder *faceEncoder = [[EXFaceEncoder alloc] init];
-    NSMutableArray<NSDictionary *> *encodedFaces = [NSMutableArray arrayWithCapacity:[faces count]];
-    [faces enumerateObjectsUsingBlock:^(GMVFaceFeature * _Nonnull face, NSUInteger _idx, BOOL * _Nonnull _stop) {
-      [encodedFaces addObject:[faceEncoder encode:face]];
-    }];
+    //    if (![fileManager fileExistsAtPath:path]) {
+    //      reject(@"E_FACE_DETECTION_FAILED", [NSString stringWithFormat:@"The file does not exist. Given path: `%@`.", path], nil);
+    //      return;
+    //    }
     
-    resolve(@{
-              @"faces" : encodedFaces,
-              @"image" : @{
-                  @"uri" : options[@"uri"],
-                  @"width" : @(image.size.width),
-                  @"height" : @(image.size.height),
-                  @"orientation" : @([EXFaceDetectorModule exifOrientationFor:image.imageOrientation])
-                  }
-              });
+    UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
+    
+    NSDictionary *detectionOptions = [[self class] detectionOptionsForImage:image];
+    
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    
+    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: detectionOptions];
+    [detector detectFromImage:image facesTransform:transform completionListener:^(NSArray<NSDictionary *> * _Nonnull faces, NSError * _Nonnull error) {
+      if (error != nil) {
+        reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
+      } else if (faces != nil) {
+        resolve(@{
+                  @"faces" : faces,
+                  @"image" : @{
+                      @"uri" : options[@"uri"],
+                      @"width" : @(image.size.width),
+                      @"height" : @(image.size.height),
+                      @"orientation" : @([EXFaceDetectorModule exifOrientationFor:image.imageOrientation])
+                      }
+                  });
+      }}];
   } @catch (NSException *exception) {
     reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
   }
 }
 
-+ (GMVDetector *)detectorForOptions:(NSDictionary *)options
++ (FIRVisionFaceDetector *)detectorForOptions:(NSDictionary *)options
 {
-  NSMutableDictionary *parsedOptions = [[NSMutableDictionary alloc] initWithDictionary:[self getDefaultDetectorOptions]];
+  FIRVisionFaceDetectorOptions *faceDetectionOptions = [[FIRVisionFaceDetectorOptions alloc] init];
   
   if (options[kDetectLandmarksOptionName]) {
-    [parsedOptions setObject:options[kDetectLandmarksOptionName] forKey:GMVDetectorFaceLandmarkType];
+    faceDetectionOptions.landmarkMode = options[kDetectLandmarksOptionName];
   }
   
   if (options[kModeOptionName]) {
-    [parsedOptions setObject:options[kModeOptionName] forKey:GMVDetectorFaceMode];
+    faceDetectionOptions.performanceMode = options[kModeOptionName];
   }
   
   if (options[kRunClassificationsOptionName]) {
-    [parsedOptions setObject:options[kRunClassificationsOptionName] forKey:GMVDetectorFaceClassificationType];
+    faceDetectionOptions.classificationMode = options[kRunClassificationsOptionName];
   }
-
-  return [GMVDetector detectorOfType:GMVDetectorTypeFace options:parsedOptions];
+  return [[FIRVision vision] faceDetectorWithOptions:faceDetectionOptions];
 }
 
 # pragma mark: - Detector default options getter and initializer

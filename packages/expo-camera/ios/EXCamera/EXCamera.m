@@ -474,6 +474,12 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   }
 }
 
+- (void) setPresetCamera:(NSInteger)presetCamera
+{
+  _presetCamera = presetCamera;
+  [self.faceDetectorManager updateMirrored:_presetCamera!=1];
+}
+
 - (void)stopRecording
 {
   [_movieFileOutput stopRecording];
@@ -528,7 +534,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     }]];
     
     if (self.faceDetectorManager) {
-      [self.faceDetectorManager maybeStartFaceDetectionOnSession:self.session withPreviewLayer:self.previewLayer];
+      [self.faceDetectorManager maybeStartFaceDetectionOnSession:self.session withPreviewLayer:self.previewLayer mirrored:self.presetCamera!=1];
     }
     if (self.barCodeScanner) {
       [self.barCodeScanner maybeStartBarCodeScanning];
@@ -756,7 +762,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   // If face detection has been running prior to recording to file
   // we reenable it here (see comment in -record).
   if (_faceDetectorManager) {
-    [_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer];
+    [_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer mirrored:self.presetCamera==1];
   }
 
   if (_session.sessionPreset != _pictureSize) {

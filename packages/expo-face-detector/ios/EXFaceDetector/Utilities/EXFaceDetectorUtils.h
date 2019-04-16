@@ -10,22 +10,7 @@
 #import <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <GoogleMVDataOutput/GoogleMVDataOutput.h>
-
-typedef NS_ENUM(NSInteger, EXFaceDetectionMode) {
-  EXFaceDetectionFastMode = GMVDetectorFaceFastMode,
-  EXFaceDetectionAccurateMode = GMVDetectorFaceAccurateMode
-};
-
-typedef NS_ENUM(NSInteger, EXFaceDetectionLandmarks) {
-  EXFaceDetectAllLandmarks = GMVDetectorFaceLandmarkAll,
-  EXFaceDetectNoLandmarks = GMVDetectorFaceLandmarkNone
-};
-
-typedef NS_ENUM(NSInteger, EXFaceDetectionClassifications) {
-  EXFaceRunAllClassifications = GMVDetectorFaceClassificationAll,
-  EXFaceRunNoClassifications = GMVDetectorFaceClassificationNone
-};
+#import "Firebase.h"
 
 @interface EXFaceDetectorUtils : NSObject
 
@@ -33,6 +18,8 @@ typedef NS_ENUM(NSInteger, EXFaceDetectionClassifications) {
 
 + (AVCaptureVideoOrientation)videoOrientationForDeviceOrientation:(UIDeviceOrientation)orientation;
 
-+ (CGAffineTransform)transformFromDeviceOutput:(GMVDataOutput *)dataOutput toInterfaceVideoOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation;
++ (CGAffineTransform)transformFromDeviceOutput:(AVCaptureVideoDataOutput *)dataOutput toInterfaceVideoOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation;
+
++ (UIImage *)convertBufferToUIImage:(CMSampleBufferRef)sampleBuffer previewSize:(CGSize)previewSize mirrored:(BOOL)mirrored;
 
 @end

@@ -9,23 +9,28 @@
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceDetectorManager.h>
+#import <EXFaceDetector/EXFaceDetector.h>
 #import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
+#import "Firebase.h"
 
 static const NSString *modeKeyPath = @"mode";
 static const NSString *detectLandmarksKeyPath = @"detectLandmarks";
 static const NSString *runClassificationsKeyPath = @"runClassifications";
 
-@interface EXFaceDetectorManager() <GMVDataOutputDelegate>
+@interface EXFaceDetectorManager() <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (assign, nonatomic) long previousFacesCount;
-@property (nonatomic, strong) GMVDataOutput *dataOutput;
 @property (nonatomic, weak) AVCaptureSession *session;
+@property BOOL mirroredImageSession;
 @property (nonatomic, weak) dispatch_queue_t sessionQueue;
-@property (nonatomic, assign, getter=isConnected) BOOL connected;
 @property (nonatomic, copy, nullable) void (^onFacesDetected)(NSArray<NSDictionary *> *);
 @property (nonatomic, weak) AVCaptureVideoPreviewLayer *previewLayer;
-@property (nonatomic, assign, getter=isDetectingFaces) BOOL faceDetecting;
+@property (nonatomic, assign, getter=isDetectingFaceEnabled) BOOL faceDetectionEnabled;
+@property (nonatomic, assign, getter=isFaceDetecionRunning) BOOL faceDetectionRunning;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id> *faceDetectorOptions;
+@property (readwrite) BOOL firebaseInitialized;
+@property (readwrite) NSInteger lastFrameCapturedTimeMilis;
+@property (nonatomic, copy) NSDate *startDetect;
 
 @end
 
@@ -36,8 +41,11 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 - (instancetype)init
 {
   if (self = [super init]) {
+    _lastFrameCapturedTimeMilis = 0;
     _previousFacesCount = -1;
     _faceDetectorOptions = [[NSMutableDictionary alloc] initWithDictionary:[[self class] _getDefaultFaceDetectorOptions]];
+    _firebaseInitialized = NO;
+    _startDetect = [NSDate new];
   }
   return self;
 }
@@ -56,20 +64,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   // If the data output is already initialized, we toggle its connections instead of adding/removing the output from camera session.
   // It allows us to smoothly toggle face detection without interrupting preview and reconfiguring camera session.
   
-  if ([self isDetectingFaces] != newFaceDetecting) {
-    _faceDetecting = newFaceDetecting;
+  if ([self isDetectingFaceEnabled] != newFaceDetecting) {
+    _faceDetectionEnabled = newFaceDetecting;
     __weak EXFaceDetectorManager *weakSelf = self;
     [self _runBlockIfQueueIsPresent:^{
       __strong EXFaceDetectorManager *strongSelf = weakSelf;
       if (strongSelf) {
-        if ([strongSelf isDetectingFaces]) {
-          if (strongSelf.dataOutput) {
-            [strongSelf _setConnectionsEnabled:true];
-          } else {
+        if ([strongSelf isDetectingFaceEnabled]) {
+          if (![strongSelf isFaceDetecionRunning]) {
             [strongSelf tryEnablingFaceDetection];
           }
-        } else {
-          [strongSelf _setConnectionsEnabled:false];
         }
       }
     }];
@@ -83,11 +87,22 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   [self _updateOptionSettingForKey:GMVDetectorFaceClassificationType withJSONValue:settings[runClassificationsKeyPath]];
 }
 
+- (void)updateMirrored:(BOOL)mirrored
+{
+  self.mirroredImageSession = mirrored;
+}
+
 # pragma mark - Public API
 
 - (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer
 {
+  [self maybeStartFaceDetectionOnSession:session withPreviewLayer:previewLayer mirrored:NO];
+}
+
+- (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer mirrored:(BOOL)mirrored
+{
   _session = session;
+  _mirroredImageSession = mirrored;
   _previewLayer = previewLayer;
   [self tryEnablingFaceDetection];
 }
@@ -97,23 +112,23 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   if (!_session) {
     return;
   }
-  
+  [self initializeFirebase];
   [_session beginConfiguration];
   
-  if ([self isDetectingFaces]) {
+  if ([self isDetectingFaceEnabled]) {
     @try {
-      GMVDetector *faceDetector = [GMVDetector detectorOfType:GMVDetectorTypeFace options:_faceDetectorOptions];
-      GMVDataOutput *dataOutput = [[GMVMultiDataOutput alloc] initWithDetector:faceDetector];
-      [dataOutput setDataDelegate:self];
+      AVCaptureVideoDataOutput* output = [[AVCaptureVideoDataOutput alloc] init];
+      output.alwaysDiscardsLateVideoFrames = YES;
+      [output setSampleBufferDelegate:self queue:_sessionQueue];
       
-      if ([_session canAddOutput:dataOutput]) {
-        [_session addOutput:dataOutput];
-        _dataOutput = dataOutput;
-        _connected = true;
-      }
-      
-      _previousFacesCount = -1;
+      [self setFaceDetectionRunning:YES];
       [self _notifyOfFaces:nil];
+      
+      if([_session canAddOutput:output]) {
+        [_session addOutput:output];
+      } else {
+        UMLogError(@"Unable to add output to camera session! Face detection aborted!");
+      }
     } @catch (NSException *exception) {
       UMLogWarn(@"%@", [exception description]);
     }
@@ -124,22 +139,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)stopFaceDetection
 {
+  [self setFaceDetectionRunning:NO];
   if (!_session) {
     return;
   }
   
   [_session beginConfiguration];
   
-  if ([_session.outputs containsObject:_dataOutput]) {
-    [_session removeOutput:_dataOutput];
-    [_dataOutput cleanup];
-    _dataOutput = nil;
-    _connected = false;
-  }
-  
   [_session commitConfiguration];
   
-  if ([self isDetectingFaces]) {
+  if ([self isDetectingFaceEnabled]) {
     _previousFacesCount = -1;
     [self _notifyOfFaces:nil];
   }
@@ -147,13 +156,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 # pragma mark Private API
 
-- (void)_setConnectionsEnabled:(BOOL)enabled
-{
-  if (!_dataOutput) {
-    return;
-  }
-  for (AVCaptureConnection *connection in _dataOutput.connections) {
-    connection.enabled = enabled;
+- (void)initializeFirebase {
+  if(!_firebaseInitialized) {
+    _firebaseInitialized = YES;
   }
 }
 
@@ -207,34 +212,38 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   }
 }
 
-#pragma mark - GMVDataOutputDelegate
-
-- (void)dataOutput:(GMVDataOutput *)dataOutput didFinishedDetection:(NSArray<__kindof GMVFeature *> *)results
-{
-  // Calling dataOutput:didFinishedDetection with dataOutput that in videoSettings has no information about
-  // width or height started happen after refactor: moving face detection logic from EXCameraManager to EXFaceDetectorManager.
-  // I suppose no information is provided because data output is already disconnected from the input and it has no
-  // information about the source. Let's reset the information then.
-  if (!_connected) {
-    [self _notifyOfFaces:nil];
-    return;
+- (FIRVisionFaceDetectorOptions*) mapOptions:(NSDictionary*)options {
+  FIRVisionFaceDetectorOptions* result = [FIRVisionFaceDetectorOptions new];
+  if([options objectForKey:@"performanceMode"]) {
+    result.performanceMode = (FIRVisionFaceDetectorPerformanceMode) options[@"performanceMode"];
   }
+  if([options objectForKey:@"landmarkMode"]) {
+    result.landmarkMode = (FIRVisionFaceDetectorLandmarkMode) options[@"landmarkMode"];
+  }
+  if([options objectForKey:@"classificationMode"]) {
+    result.classificationMode = (FIRVisionFaceDetectorClassificationMode) options[@"classificationMode"];
+  }
+  return result;
+}
+
+- (void)captureOutput:(AVCaptureVideoDataOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+  UIImage* image = [EXFaceDetectorUtils convertBufferToUIImage:sampleBuffer previewSize:_previewLayer.bounds.size mirrored:self.mirroredImageSession];
+  float scaleX = _previewLayer.bounds.size.width / image.size.width;
+  float scaleY = _previewLayer.bounds.size.height / image.size.height;
   
-  AVCaptureVideoOrientation interfaceVideoOrientation = _previewLayer.connection.videoOrientation;
-  CGAffineTransform transform = [EXFaceDetectorUtils transformFromDeviceOutput:dataOutput toInterfaceVideoOrientation:interfaceVideoOrientation];
-  
-  EXFaceEncoder *faceEncoder = [[EXFaceEncoder alloc] initWithTransform:transform];
-  
-  NSMutableArray<NSDictionary *> *encodedFaces = [NSMutableArray arrayWithCapacity:[results count]];
-  
-  [results enumerateObjectsUsingBlock:^(GMVFeature * _Nonnull feature, NSUInteger _idx, BOOL * _Nonnull _stop) {
-    if([feature isKindOfClass:[GMVFaceFeature class]]) {
-      GMVFaceFeature *face = (GMVFaceFeature *)feature;
-      [encodedFaces addObject:[faceEncoder encode:face]];
-    }
-  }];
-  
-  [self _notifyOfFaces:encodedFaces];
+  NSDate* currentTime = [NSDate new];
+  NSTimeInterval timePassed = [currentTime timeIntervalSinceDate:self.startDetect];
+  CGAffineTransform transform = CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleY);
+  if(timePassed > 0.5) {
+    _startDetect = currentTime;
+    [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromImage:image facesTransform:transform completionListener:^(NSArray<NSDictionary *> * _Nonnull faces, NSError * _Nonnull error) {
+      if(error != nil) {
+        [self _notifyOfFaces:nil];
+      } else {
+        [self _notifyOfFaces:faces];
+      }
+    }];
+  }
 }
 
 # pragma mark - Default options
@@ -251,11 +260,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 + (void)_initDefaultFaceDetectorOptions
 {
   defaultFaceDetectorOptions = @{
-                                 GMVDetectorFaceTrackingEnabled : @(YES),
-                                 GMVDetectorFaceMode : @(GMVDetectorFaceFastMode),
-                                 GMVDetectorFaceLandmarkType : @(GMVDetectorFaceLandmarkNone),
-                                 GMVDetectorFaceClassificationType : @(GMVDetectorFaceClassificationNone),
-                                 GMVDetectorFaceMinSize : @(0.15)
+                                 @"performanceMode" : @(FIRVisionFaceDetectorPerformanceModeFast),
+                                 @"landmarkMode" : @(FIRVisionFaceDetectorLandmarkModeNone),
+                                 @"classificationMode" : @(FIRVisionFaceDetectorClassificationModeNone)
                                  };
 }
 
