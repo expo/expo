@@ -312,7 +312,7 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       - yarn:
-          command: test:web:visual-regressions:ci
+          command: build-storybook
           working_directory: ~/expo/apps/storybook
 
   babel_preset:
