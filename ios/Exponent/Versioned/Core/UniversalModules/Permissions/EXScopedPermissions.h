@@ -3,6 +3,8 @@
 #import <UIKit/UIKit.h>
 #import <EXPermissions/EXPermissions.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol EXPermissionsScopedModuleDelegate
 
 - (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId;
@@ -10,8 +12,6 @@
 - (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
 
 @end
-
-NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedPermissions : EXPermissions
 
