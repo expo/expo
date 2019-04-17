@@ -5,14 +5,14 @@
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "storybook": "start-storybook --host 10.0.0.211 --port 50713",
-    "build-storybook": "build-storybook",
+    "start": "start-storybook --port 50713",
+    "build": "build-storybook",
     "loki": "loki",
-    "pretest:loki:ci": "npm run test:loki:update",
-    "test:loki": "yarn loki test --configurationFilter chrome.laptop --port 50713",
-    "test:loki:ci": "build-storybook && loki --requireReference --reactUri file:./storybook-static",
-    "test:loki:update": "LOKI_FILE=`cd ../.. && echo \\`pwd\\`/\\`npm pack\\`` && npm install $LOKI_FILE --no-save --no-package-lock && rm $LOKI_FILE",
-    "test:loki:approve": "yarn loki approve --configurationFilter chrome.laptop --port 50713"
+    "preloki:ci": "npm run test:loki:update",
+    "loki:ci": "build-storybook && loki --requireReference --reactUri file:./storybook-static",
+    "loki:start": "yarn loki test --configurationFilter chrome.laptop --port 50713",
+    "loki:update": "LOKI_FILE=`cd ../.. && echo \\`pwd\\`/\\`npm pack\\`` && npm install $LOKI_FILE --no-save --no-package-lock && rm $LOKI_FILE",
+    "loki:approve": "yarn loki approve --configurationFilter chrome.laptop --port 50713"
   },
   "author": "Expo",
   "license": "MIT",
