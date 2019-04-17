@@ -168,6 +168,7 @@ workflows:
           requires:
             - test_suite_publish
       - shell_app_sim_base_ios
+      - shell_app_base_android
       - client_android_approve_google_play:
           type: approval
           requires:
@@ -183,7 +184,6 @@ workflows:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-  #     - shell_app_base_android_new # tarball built and uploaded from universe/server/turtle
 
   client_shell_app:
     jobs:
@@ -421,6 +421,22 @@ jobs:
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
           command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+
+  shell_app_base_android:
+    executor: android
+    steps:
+      - setup
+      - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
+      - run:
+          name: "Skip job if tarball has already been uploaded"
+          command: aws s3 ls $S3_URI && circleci step halt
+      - decrypt_secrets_if_possible
+      - yarn_install:
+          working_directory: ~/expo/tools-public
+      - yarn_install:
+          working_directory: ~/expo/tools
+      - run: ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
+      - run: aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
 
   android_test_suite:
     executor: android
