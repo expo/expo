@@ -10,7 +10,7 @@
 #include "ABI32_0_0Yoga.h"
 
 namespace facebook {
-namespace yoga {
+namespace ABI32_0_0yoga {
 
 void ABI32_0_0YGNodeToString(
     std::string* str,
@@ -18,5 +18,5 @@ void ABI32_0_0YGNodeToString(
     ABI32_0_0YGPrintOptions options,
     uint32_t level);
 
-} // namespace yoga
+} // namespace ABI32_0_0yoga
 } // namespace facebook
