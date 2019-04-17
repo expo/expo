@@ -59,9 +59,10 @@ export function getTestModules() {
     require('./tests/AdMobPublisherBanner'),
     require('./tests/AdMobRewarded'),
     require('./tests/FBBannerAd'),
-    require('./tests/FBNativeAd'),
   ];
   if (!ExponentTest.isInCI) {
+    // Invalid placementId in CI (all tests fail)
+    modules.push(require('./tests/FBNativeAd'));
     // Requires interaction (sign in popup)
     modules.push(require('./tests/GoogleSignIn'));
     // Popup to request device's location which uses Google's location service
