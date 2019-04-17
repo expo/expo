@@ -982,6 +982,9 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/^YG/${versionPrefix}YG/g`,
     },
     {
+      pattern: `s/yoga/${versionPrefix}yoga/g`,
+    },
+    {
       paths: 'Components',
       pattern: `s/\\([^+]\\)AIR/\\1${versionPrefix}AIR/g`,
     },
