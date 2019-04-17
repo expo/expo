@@ -33,6 +33,15 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
            };
 }
 
+# pragma marg - encoder helpers
+
++ (angleTransformer)angleTransformerFromTransform:(CGAffineTransform)transform
+{
+  return ^(float angle) {
+    return (float)(angle - (atan2(transform.b, transform.a) * (180 / M_PI)));
+  };
+}
+
 # pragma mark - GMVDataOutput transformations
 
 + (CGAffineTransform)transformFromDeviceVideoOrientation:(AVCaptureVideoOrientation)deviceVideoOrientation toInterfaceVideoOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation videoWidth:(NSNumber *)width videoHeight:(NSNumber *)height
@@ -64,15 +73,16 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
 {
   UIDeviceOrientation currentDeviceOrientation = [[UIDevice currentDevice] orientation];
   AVCaptureVideoOrientation deviceVideoOrientation = [self videoOrientationForDeviceOrientation:currentDeviceOrientation];
-  
+
   NSNumber *videoWidth = dataOutput.videoSettings[EXGMVDataOutputWidthKey];
   NSNumber *videoHeight = dataOutput.videoSettings[EXGMVDataOutputHeightKey];
-  
+
   CGAffineTransform interfaceTransform = [self transformFromDeviceVideoOrientation:deviceVideoOrientation toInterfaceVideoOrientation:interfaceVideoOrientation videoWidth:videoWidth videoHeight:videoHeight];
-  
+
   CGAffineTransform dataOutputTransform = [self transformFromDeviceOutput:dataOutput withInterfaceOrientation:interfaceVideoOrientation];
-  
-  return CGAffineTransformConcat(interfaceTransform, dataOutputTransform);
+
+//  return CGAffineTransformConcat(interfaceTransform, dataOutputTransform);
+  return interfaceTransform;
 }
 
 # pragma mark - Enum conversion
@@ -146,6 +156,14 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
   UIImage *image = [[UIImage alloc] initWithCGImage:croppedCGImage];
   CGImageRelease(videoImage);
   CGImageRelease(croppedCGImage);
+  return image;
+}
+
++ (UIImage *)convertBufferToUIImage:(CMSampleBufferRef)sampleBuffer
+{
+  CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+  CIImage *ciImage = [CIImage imageWithCVPixelBuffer:imageBuffer];
+  UIImage *image = [[UIImage alloc] initWithCIImage:ciImage];
   return image;
 }
 

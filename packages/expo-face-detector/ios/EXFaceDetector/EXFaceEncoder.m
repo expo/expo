@@ -7,6 +7,7 @@
 //
 
 #import <EXFaceDetector/EXFaceEncoder.h>
+#import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import "Firebase.h"
 
 #define cDefaultFloatComparisonEpsilon 0.0001
@@ -18,8 +19,8 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
 @interface EXFaceEncoder()
 
 @property (assign, nonatomic) BOOL swapWidthAndHeight;
-@property (assign, nonatomic) CGAffineTransform transform;
-@property (assign, nonatomic) CGFloat rollAngleDegreesFromTransform;
+@property CGAffineTransform transform;
+@property angleTransformer angleTransformer;
 
 @end
 
@@ -30,13 +31,18 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
   return [self initWithTransform:CGAffineTransformIdentity];
 }
 
-- (instancetype)initWithTransform:(CGAffineTransform)transform
+- (instancetype)initWithTransform:(CGAffineTransform)pointTransformer
+{
+  angleTransformer transformer = ^(float angle) {return angle;};
+  return [self initWithTransform:pointTransformer withRotationTransform:transformer];
+}
+
+- (instancetype)initWithTransform:(CGAffineTransform)transform withRotationTransform:(angleTransformer)rotationTransform
 {
   self = [super init];
   if (self) {
     _transform = transform;
-    _rollAngleDegreesFromTransform = [self radianAngleToDegrees:[self rollAngleFromTransform:_transform]];
-    _swapWidthAndHeight = cModEqualFloats(_rollAngleDegreesFromTransform + 360, 180, 90);
+    _angleTransformer = rotationTransform;
   }
   return self;
 }
@@ -48,8 +54,8 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
   NSDictionary *initialDictionary = @{
                                       @"bounds" : @{
                                           @"size" : @{
-                                              @"width" : @(_swapWidthAndHeight ? bounds.size.height : bounds.size.width),
-                                              @"height" : @(_swapWidthAndHeight ? bounds.size.width : bounds.size.height)
+                                              @"width" : @(bounds.size.width),
+                                              @"height" : @(bounds.size.height)
                                               },
                                           @"origin" : @{
                                               @"x" : @(bounds.origin.x),
@@ -110,7 +116,8 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
   }
   
   [self putAFloat:face.headEulerAngleY forKey:@"yawAngle" toDictionary:encodedFace ifValueIsValid:face.hasHeadEulerAngleY];
-  [self putAFloat:-(face.headEulerAngleZ - _rollAngleDegreesFromTransform) forKey:@"rollAngle" toDictionary:encodedFace ifValueIsValid:face.hasHeadEulerAngleZ];
+  
+  [self putAFloat:self.angleTransformer(face.headEulerAngleZ) forKey:@"rollAngle" toDictionary:encodedFace ifValueIsValid:face.hasHeadEulerAngleZ];
   
   return encodedFace;
 }

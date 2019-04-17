@@ -7,7 +7,6 @@
 //
 
 #import <EXFaceDetector/EXFaceDetectorModule.h>
-#import <EXFaceDetector/EXFaceEncoder.h>
 #import <EXFaceDetector/EXFaceDetector.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
@@ -87,10 +86,8 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
     
     NSDictionary *detectionOptions = [[self class] detectionOptionsForImage:image];
     
-    CGAffineTransform transform = CGAffineTransformIdentity;
-    
     EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: detectionOptions];
-    [detector detectFromImage:image facesTransform:transform completionListener:^(NSArray<NSDictionary *> * _Nonnull faces, NSError * _Nonnull error) {
+    [detector detectFromImage:image completionListener:^(NSArray<NSDictionary *> * _Nonnull faces, NSError * _Nonnull error) {
       if (error != nil) {
         reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
       } else if (faces != nil) {

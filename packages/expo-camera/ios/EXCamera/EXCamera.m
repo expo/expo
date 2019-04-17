@@ -534,6 +534,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     }]];
     
     if (self.faceDetectorManager) {
+      AVCaptureConnection *connection = [_stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
+      [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
       [self.faceDetectorManager maybeStartFaceDetectionOnSession:self.session withPreviewLayer:self.previewLayer mirrored:self.presetCamera!=1];
     }
     if (self.barCodeScanner) {
@@ -762,6 +764,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   // If face detection has been running prior to recording to file
   // we reenable it here (see comment in -record).
   if (_faceDetectorManager) {
+    AVCaptureConnection *connection = [_stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
+    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
     [_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer mirrored:self.presetCamera==1];
   }
 

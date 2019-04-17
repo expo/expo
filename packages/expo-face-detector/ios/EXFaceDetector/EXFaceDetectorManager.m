@@ -10,6 +10,7 @@
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceDetectorManager.h>
 #import <EXFaceDetector/EXFaceDetector.h>
+#import <EXFaceDetector/EXFaceDetectorPointTransformCalculator.h>
 #import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
 #import "Firebase.h"
 
@@ -31,6 +32,8 @@ static const NSString *runClassificationsKeyPath = @"runClassifications";
 @property (readwrite) BOOL firebaseInitialized;
 @property (readwrite) NSInteger lastFrameCapturedTimeMilis;
 @property (nonatomic, copy) NSDate *startDetect;
+@property (atomic) BOOL faceDetectionProcessing;
+@property EXFaceEncoder* encoder;
 
 @end
 
@@ -41,6 +44,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 - (instancetype)init
 {
   if (self = [super init]) {
+    _faceDetectionProcessing = NO;
     _lastFrameCapturedTimeMilis = 0;
     _previousFacesCount = -1;
     _faceDetectorOptions = [[NSMutableDictionary alloc] initWithDictionary:[[self class] _getDefaultFaceDetectorOptions]];
@@ -122,7 +126,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       [output setSampleBufferDelegate:self queue:_sessionQueue];
       
       [self setFaceDetectionRunning:YES];
-      [self _notifyOfFaces:nil];
+      [self _notifyOfFaces:nil withEncoder:nil];
       
       if([_session canAddOutput:output]) {
         [_session addOutput:output];
@@ -150,7 +154,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   
   if ([self isDetectingFaceEnabled]) {
     _previousFacesCount = -1;
-    [self _notifyOfFaces:nil];
+    [self _notifyOfFaces:nil withEncoder:nil];
   }
 }
 
@@ -168,9 +172,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   [self tryEnablingFaceDetection];
 }
 
-- (void)_notifyOfFaces:(NSArray<NSDictionary *> *)faces
+- (void)_notifyOfFaces:(NSArray<FIRVisionFace *> *)faces withEncoder:(EXFaceEncoder*)encoder
 {
-  NSArray<NSDictionary *> *reportableFaces = faces == nil ? @[] : faces;
+  NSArray<FIRVisionFace *> *nonEmptyFaces = faces == nil ? @[] : faces;
+  NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
+  
+  for(FIRVisionFace* face in nonEmptyFaces)
+  {
+    [reportableFaces addObject:[encoder encode:face]];
+  }
+  
   // Send event when there are faces that have been detected ([faces count] > 0)
   // or if the listener may think that there are still faces in the video (_prevCount > 0)
   // or if we really want the event to be sent, eg. to reset listener info (_prevCount == -1).
@@ -227,23 +238,90 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 }
 
 - (void)captureOutput:(AVCaptureVideoDataOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-  UIImage* image = [EXFaceDetectorUtils convertBufferToUIImage:sampleBuffer previewSize:_previewLayer.bounds.size mirrored:self.mirroredImageSession];
-  float scaleX = _previewLayer.bounds.size.width / image.size.width;
-  float scaleY = _previewLayer.bounds.size.height / image.size.height;
-  
-  NSDate* currentTime = [NSDate new];
-  NSTimeInterval timePassed = [currentTime timeIntervalSinceDate:self.startDetect];
-  CGAffineTransform transform = CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleY);
-  if(timePassed > 0.5) {
-    _startDetect = currentTime;
-    [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromImage:image facesTransform:transform completionListener:^(NSArray<NSDictionary *> * _Nonnull faces, NSError * _Nonnull error) {
-      if(error != nil) {
-        [self _notifyOfFaces:nil];
-      } else {
-        [self _notifyOfFaces:faces];
-      }
-    }];
+//  float width =  [(NSNumber *)output.videoSettings[@"Width"] floatValue];
+//  float height =  [(NSNumber *)output.videoSettings[@"Height"] floatValue];
+//  float scaleX = _previewLayer.bounds.size.width / width;
+//  float scaleY = _previewLayer.bounds.size.height / height;
+  if(self.faceDetectionProcessing)
+  {
+    return;
   }
+  
+  self.faceDetectionProcessing = YES;
+  NSDate* currentTime = [NSDate new];
+//  NSTimeInterval timePassed = [currentTime timeIntervalSinceDate:self.startDetect];
+//  CGAffineTransform orientationTransform = [EXFaceDetectorUtils transformFromDeviceOutput:output toInterfaceVideoOrientation:connection.videoOrientation];
+//  CGAffineTransform transform = CGAffineTransformScale(orientationTransform, scaleX, scaleY);
+  
+  AVCaptureDevicePosition devicePosition = self.mirroredImageSession ? AVCaptureDevicePositionFront : AVCaptureDevicePositionBack;
+  
+  UIImage* image = [EXFaceDetectorUtils convertBufferToUIImage:sampleBuffer];
+  CGImageRef imageRef = image.CGImage;
+  CGImageRelease(imageRef);
+  
+  FIRVisionDetectorImageOrientation orientation;
+  UIDeviceOrientation deviceOrientation = UIDevice.currentDevice.orientation;
+  switch (deviceOrientation) {
+    case UIDeviceOrientationPortrait:
+      if (devicePosition == AVCaptureDevicePositionFront) {
+        orientation = FIRVisionDetectorImageOrientationLeftTop;
+      } else {
+        orientation = FIRVisionDetectorImageOrientationRightTop;
+      }
+      break;
+    case UIDeviceOrientationLandscapeLeft:
+      if (devicePosition == AVCaptureDevicePositionFront) {
+        orientation = FIRVisionDetectorImageOrientationBottomLeft;
+      } else {
+        orientation = FIRVisionDetectorImageOrientationTopLeft;
+      }
+      break;
+    case UIDeviceOrientationPortraitUpsideDown:
+      if (devicePosition == AVCaptureDevicePositionFront) {
+        orientation = FIRVisionDetectorImageOrientationRightBottom;
+      } else {
+        orientation = FIRVisionDetectorImageOrientationLeftBottom;
+      }
+      break;
+    case UIDeviceOrientationLandscapeRight:
+      if (devicePosition == AVCaptureDevicePositionFront) {
+        orientation = FIRVisionDetectorImageOrientationTopRight;
+      } else {
+        orientation = FIRVisionDetectorImageOrientationBottomRight;
+      }
+      break;
+    default:
+      orientation = FIRVisionDetectorImageOrientationLeftBottom;
+      break;
+  }
+  
+  float outputHeight = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
+  float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];;
+  float scaleX = _previewLayer.bounds.size.width / outputHeight;
+  float scaleY = _previewLayer.bounds.size.height / outputWidth;
+  
+  FIRVisionImageMetadata *metadata = [[FIRVisionImageMetadata alloc] init];
+  metadata.orientation = orientation;
+  
+  CGAffineTransform scaleTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleY);
+  CGAffineTransform pointTransform;
+  angleTransformer angleTransform = ^(float angle) { return -angle; };;
+  if(!_mirroredImageSession) {
+    pointTransform = CGAffineTransformRotate(CGAffineTransformTranslate(CGAffineTransformIdentity, _previewLayer.bounds.size.width, 0), M_PI_2);
+  } else {
+    pointTransform = CGAffineTransformMake(0, 1, 1, 0, 0, 0);
+  }
+  pointTransform = CGAffineTransformConcat(scaleTransform, pointTransform);
+  
+    _startDetect = currentTime;
+    [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromBuffer:sampleBuffer metadata:metadata completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
+      if(error != nil) {
+        [self _notifyOfFaces:nil withEncoder:nil];
+      } else {
+        [self _notifyOfFaces:faces withEncoder:[[EXFaceEncoder alloc] initWithTransform:pointTransform withRotationTransform:angleTransform]];
+      }
+      self.faceDetectionProcessing = NO;
+    }];
 }
 
 # pragma mark - Default options
