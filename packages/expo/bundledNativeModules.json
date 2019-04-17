@@ -68,5 +68,5 @@
   "unimodules-image-loader-interface": "~1.0.0",
   "unimodules-permissions-interface": "~1.0.0",
   "unimodules-sensors-interface": "~1.0.0",
-  "unimodules-task-manager-interface": "1.0.0"
+  "unimodules-task-manager-interface": "~1.0.0"
 }
