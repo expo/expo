@@ -337,6 +337,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     }
   }
   
+  // If x or y row contains -1, it means in our case we made symetry by y or x axis, se we need to add whole screen width/height to get back to range.
   BOOL translateX = rotationTransformation.a == -1 || rotationTransformation.c == -1;
   BOOL translateY = rotationTransformation.b == -1 || rotationTransformation.d == -1;
   CGAffineTransform translationTransformation = CGAffineTransformTranslate(CGAffineTransformIdentity, translateX ? previewWidth : 0, translateY ? previewHeight : 0);
@@ -351,6 +352,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   float xOffset = -((outputWidth * scaleFactor) - previewWidth) / 2;
   float yOffset = -((outputHeight * scaleFactor) - previewHeight) / 2;
   
+  // This is actually multipling rotation matrix by crop translations point.
   float xTranslation = (rotationTransformation.a + rotationTransformation.c) * xOffset;
   float yTranslation = (rotationTransformation.b + rotationTransformation.d) * yOffset;
   
