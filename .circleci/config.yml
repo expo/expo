@@ -164,10 +164,9 @@ workflows:
       - client_android
       - client_ios
       - test_suite_publish
-      # TODO: fix devicefarm running tests
-      #- android_test_suite:
-      #   requires:
-      #     - test_suite_publish
+      - android_test_suite:
+          requires:
+            - test_suite_publish
       - shell_app_sim_base_ios
       - client_android_approve_google_play:
           type: approval

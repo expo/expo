@@ -2,7 +2,6 @@
 
 import { Platform } from 'react-native';
 import { Audio, Permissions } from 'expo';
-import { flatten, filter, takeRight, map } from 'lodash';
 
 import * as TestUtils from '../TestUtils';
 import { retryForStatus, waitFor } from './helpers';
@@ -58,6 +57,7 @@ export async function test(t) {
         shouldDuckAndroid: true,
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
+        staysActiveInBackground: true,
         playThroughEarpieceAndroid: false,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,

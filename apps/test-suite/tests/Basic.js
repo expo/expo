@@ -1,17 +1,15 @@
 'use strict';
 
-export const name = 'Basic1';
+export const name = 'Basic';
 
 export function test(t) {
-  t.describe('Basic1', () => {
+  t.describe('Basic', () => {
     t.it('waits 0.5 seconds and passes', async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
       t.expect(true).toBe(true);
     });
-
-    t.it('waits 1 second and fails', async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      t.expect(true).toBe(false);
+    t.it('2 + 2 is 4?', () => {
+      t.expect(2 + 2).toBe(4);
     });
   });
 }

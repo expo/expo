@@ -12,7 +12,7 @@ export function test(t) {
         }
         originalConsoleWarn(...args);
       };
-      const { Constants } = require('expo').default;
+      const { Constants } = require('expo');
       t.expect(Constants.expoVersion).toBeDefined();
       console.warn = originalConsoleWarn;
     });
