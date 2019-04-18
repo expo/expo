@@ -31,9 +31,15 @@ export default {
 
   // react-native-reanimated
   get Animated() {
+    console.warn(
+      'Animated is no longer in DangerZone, you can now import it directly from the expo package.'
+    );
     return require('react-native-reanimated').default;
   },
   get Easing() {
+    console.warn(
+      'Easing is no longer in DangerZone, you can now import it directly from the expo package.'
+    );
     return require('react-native-reanimated').Easing;
   },
 

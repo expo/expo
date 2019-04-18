@@ -94,6 +94,7 @@ export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { default as Linking } from './Linking/Linking';
 export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';
+export { default as Animated, Easing, Transitioning, Transition } from './Animated';
 export { ScreenOrientation };
 export { SecureStore };
 export { StoreReview };
