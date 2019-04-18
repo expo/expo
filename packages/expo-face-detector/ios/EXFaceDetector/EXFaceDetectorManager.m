@@ -323,6 +323,12 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   if(deviceOrientation == UIDeviceOrientationLandscapeRight) {
     pointTransform = CGAffineTransformMake(-1, 0, 0, -1, _previewLayer.bounds.size.width, _previewLayer.bounds.size.height);
   }
+  if(_mirroredImageSession && deviceOrientation == UIDeviceOrientationLandscapeLeft) {
+    pointTransform = CGAffineTransformMake(1, 0, 0, -1, 0, _previewLayer.bounds.size.height);
+  }
+  if(_mirroredImageSession && deviceOrientation == UIDeviceOrientationLandscapeRight) {
+    pointTransform = CGAffineTransformMake(-1, 0, 0, 1, _previewLayer.bounds.size.width, 0);
+  }
   CGAffineTransform scaleTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleFactor, scaleFactor);
   angleTransformer angleTransform = ^(float angle) { return -angle; };
   
@@ -333,14 +339,14 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   float xTranslation = -((outputWidth * scaleFactor) - previewWidth) / 2;
   float yTranslation = -((outputHeight * scaleFactor) - previewHeight) / 2;
   
-  if((!_mirroredImageSession && (deviceOrientation == UIDeviceOrientationPortraitUpsideDown || deviceOrientation == UIDeviceOrientationLandscapeRight))) {
+  if((!_mirroredImageSession && (deviceOrientation == UIDeviceOrientationPortraitUpsideDown || deviceOrientation == UIDeviceOrientationLandscapeRight))
+     || (_mirroredImageSession && (deviceOrientation == UIDeviceOrientationLandscapeLeft))
+     ) {
     xTranslation = -xTranslation;
     yTranslation = -yTranslation;
   }
-  
   if(!_mirroredImageSession && UIDeviceOrientationIsPortrait(deviceOrientation)) {
     xTranslation = -xTranslation;
-//    yTranslation = -yTranslation;
   }
   
   pointTransform = CGAffineTransformConcat(pointTransform, CGAffineTransformMakeTranslation(xTranslation, yTranslation));
