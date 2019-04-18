@@ -258,30 +258,30 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   AVCaptureDevicePosition devicePosition = self.mirroredImageSession ? AVCaptureDevicePositionFront : AVCaptureDevicePositionBack;
   
   FIRVisionDetectorImageOrientation orientation;
-  UIDeviceOrientation deviceOrientation = UIDevice.currentDevice.orientation;
-  switch (deviceOrientation) {
-    case UIDeviceOrientationPortrait:
+  UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation]; // TODO: Change that to value passed from ViewController
+  switch (interfaceOrientation) {
+    case UIInterfaceOrientationPortrait:
       if (devicePosition == AVCaptureDevicePositionFront) {
         orientation = FIRVisionDetectorImageOrientationLeftTop;
       } else {
         orientation = FIRVisionDetectorImageOrientationRightTop;
       }
       break;
-    case UIDeviceOrientationLandscapeLeft:
+    case UIInterfaceOrientationLandscapeRight:
       if (devicePosition == AVCaptureDevicePositionFront) {
         orientation = FIRVisionDetectorImageOrientationBottomLeft;
       } else {
         orientation = FIRVisionDetectorImageOrientationTopLeft;
       }
       break;
-    case UIDeviceOrientationPortraitUpsideDown:
+    case UIInterfaceOrientationPortraitUpsideDown:
       if (devicePosition == AVCaptureDevicePositionFront) {
         orientation = FIRVisionDetectorImageOrientationRightBottom;
       } else {
         orientation = FIRVisionDetectorImageOrientationLeftBottom;
       }
       break;
-    case UIDeviceOrientationLandscapeRight:
+    case UIInterfaceOrientationLandscapeLeft:
       if (devicePosition == AVCaptureDevicePositionFront) {
         orientation = FIRVisionDetectorImageOrientationTopRight;
       } else {
@@ -295,7 +295,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   
   float outputHeight = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
   float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
-  if(UIDeviceOrientationIsPortrait(deviceOrientation)) {
+  if(UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
     outputHeight = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
     outputWidth = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
   }
@@ -308,55 +308,60 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   
   float scaleFactor = MAX(widthFactor, heightFactor);
   
+  CGAffineTransform rotationTransformation = CGAffineTransformIdentity;
+  
+  switch (interfaceOrientation) {
+    case (UIInterfaceOrientationLandscapeRight):
+      rotationTransformation = CGAffineTransformMake(1, 0, 0, 1, 0, 0); // Identity matrix
+      break;
+    case (UIInterfaceOrientationPortrait):
+      rotationTransformation = CGAffineTransformMake(0, 1, -1, 0, 0, 0); // 90 deg. rotation matrix
+      break;
+    case (UIInterfaceOrientationLandscapeLeft):
+      rotationTransformation = CGAffineTransformMake(-1, 0, 0, -1, 0, 0); // 180 deg. rotation matrix
+      break;
+    case (UIInterfaceOrientationPortraitUpsideDown):
+      rotationTransformation = CGAffineTransformMake(0, -1, 1, 0, 0, 0); // -90 deg. rotation matrix
+      break;
+    default:
+      break;
+  }
+  
+  if(_mirroredImageSession) {
+    if(UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+      // x symetry
+      rotationTransformation = CGAffineTransformConcat(rotationTransformation, CGAffineTransformMake(1, 0, 0, -1, 0, 0));
+    } else {
+      // y symetry
+      rotationTransformation = CGAffineTransformConcat(rotationTransformation, CGAffineTransformMake(-1, 0, 0, 1, 0, 0));
+    }
+  }
+  
+  BOOL translateX = rotationTransformation.a == -1 || rotationTransformation.c == -1;
+  BOOL translateY = rotationTransformation.b == -1 || rotationTransformation.d == -1;
+  CGAffineTransform translationTransformation = CGAffineTransformTranslate(CGAffineTransformIdentity, translateX ? previewWidth : 0, translateY ? previewHeight : 0);
+  CGAffineTransform wholePreviewTransformation = CGAffineTransformConcat(rotationTransformation, translationTransformation);
+  CGAffineTransform finalTranslation = CGAffineTransformScale(wholePreviewTransformation, scaleFactor, scaleFactor);
+  
   FIRVisionImageMetadata *metadata = [[FIRVisionImageMetadata alloc] init];
   metadata.orientation = orientation;
   
-  CGAffineTransform pointTransform;
-  if(!_mirroredImageSession) {
-    pointTransform = CGAffineTransformRotate(CGAffineTransformTranslate(CGAffineTransformIdentity, _previewLayer.bounds.size.width, 0), M_PI_2);
-  } else {
-    pointTransform = CGAffineTransformMake(0, 1, 1, 0, 0, 0);
-  }
-  if(deviceOrientation == UIDeviceOrientationLandscapeLeft) {
-    pointTransform = CGAffineTransformIdentity;
-  }
-  if(deviceOrientation == UIDeviceOrientationLandscapeRight) {
-    pointTransform = CGAffineTransformMake(-1, 0, 0, -1, _previewLayer.bounds.size.width, _previewLayer.bounds.size.height);
-  }
-  if(_mirroredImageSession && deviceOrientation == UIDeviceOrientationLandscapeLeft) {
-    pointTransform = CGAffineTransformMake(1, 0, 0, -1, 0, _previewLayer.bounds.size.height);
-  }
-  if(_mirroredImageSession && deviceOrientation == UIDeviceOrientationLandscapeRight) {
-    pointTransform = CGAffineTransformMake(-1, 0, 0, 1, _previewLayer.bounds.size.width, 0);
-  }
-  CGAffineTransform scaleTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleFactor, scaleFactor);
   angleTransformer angleTransform = ^(float angle) { return -angle; };
   
-  pointTransform = CGAffineTransformConcat(scaleTransform, pointTransform);
+  float xOffset = -((outputWidth * scaleFactor) - previewWidth) / 2;
+  float yOffset = -((outputHeight * scaleFactor) - previewHeight) / 2;
   
-  // Add translation with regard to scaling and cropping
+  float xTranslation = (rotationTransformation.a + rotationTransformation.c) * xOffset;
+  float yTranslation = (rotationTransformation.b + rotationTransformation.d) * yOffset;
   
-  float xTranslation = -((outputWidth * scaleFactor) - previewWidth) / 2;
-  float yTranslation = -((outputHeight * scaleFactor) - previewHeight) / 2;
-  
-  if((!_mirroredImageSession && (deviceOrientation == UIDeviceOrientationPortraitUpsideDown || deviceOrientation == UIDeviceOrientationLandscapeRight))
-     || (_mirroredImageSession && (deviceOrientation == UIDeviceOrientationLandscapeLeft))
-     ) {
-    xTranslation = -xTranslation;
-    yTranslation = -yTranslation;
-  }
-  if(!_mirroredImageSession && UIDeviceOrientationIsPortrait(deviceOrientation)) {
-    xTranslation = -xTranslation;
-  }
-  
-  pointTransform = CGAffineTransformConcat(pointTransform, CGAffineTransformMakeTranslation(xTranslation, yTranslation));
+  finalTranslation = CGAffineTransformConcat(finalTranslation, CGAffineTransformMakeTranslation(xTranslation, yTranslation));
   
   _startDetect = currentTime;
   [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromBuffer:sampleBuffer metadata:metadata completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
     if(error != nil) {
       [self _notifyOfFaces:nil withEncoder:nil];
     } else {
-      [self _notifyOfFaces:faces withEncoder:[[EXFaceEncoder alloc] initWithTransform:pointTransform withRotationTransform:angleTransform]];
+      [self _notifyOfFaces:faces withEncoder:[[EXFaceEncoder alloc] initWithTransform:finalTranslation withRotationTransform:angleTransform]];
     }
     self.faceDetectionProcessing = NO;
   }];
