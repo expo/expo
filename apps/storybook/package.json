@@ -1,0 +1,58 @@
+{
+  "name": "storybook",
+  "version": "1.0.0",
+  "description": "Storybook for the Expo SDK",
+  "main": "__generated__/AppEntry.js",
+  "scripts": {
+    "postinstall": "expo-yarn-workspaces postinstall",
+    "start": "start-storybook --port 50713",
+    "build": "build-storybook",
+    "loki": "loki",
+    "preloki:ci": "npm run test:loki:update",
+    "loki:ci": "build-storybook && loki --requireReference --reactUri file:./storybook-static",
+    "loki:start": "yarn loki test --configurationFilter chrome.laptop --port 50713",
+    "loki:update": "LOKI_FILE=`cd ../.. && echo \\`pwd\\`/\\`npm pack\\`` && npm install $LOKI_FILE --no-save --no-package-lock && rm $LOKI_FILE",
+    "loki:approve": "yarn loki approve --configurationFilter chrome.laptop --port 50713"
+  },
+  "author": "Expo",
+  "license": "MIT",
+  "powertools": {
+    "group": "client"
+  },
+  "dependencies": {
+    "expo": "^33.0.0-alpha.web.1",
+    "react": "16.5.0",
+    "react-native": "0.57.1",
+    "react-native-web": "^0.11.0"
+  },
+  "devDependencies": {
+    "webpack": "^4.8.1",
+    "@expo/webpack-config": "^0.1.4",
+    "babel-loader": "^8.0.5",
+    "expo-yarn-workspaces": "^1.0.0",
+    "webpack-cli": "^3.3.0",
+    "@storybook/react": "^5.0.8",
+    "@storybook/addon-options": "^3.4.3",
+    "@storybook/addon-actions": "^5.0.8",
+    "@storybook/addon-links": "^5.0.8",
+    "@storybook/addons": "^5.0.8",
+    "@babel/core": "^7.4.3"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "loki": {
+    "chromeSelector": ".wrapper > *, #root > *",
+    "diffingEngine": "looks-same",
+    "configurations": {
+      "chrome.laptop": {
+        "target": "chrome.docker",
+        "width": 1366,
+        "height": 768
+      }
+    }
+  }
+}

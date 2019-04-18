@@ -212,54 +212,6 @@ gulp.task('update-react-native-maps', async () => {
   });
 });
 
-gulp.task('update-tipsi-stripe', () => {
-  throw new Error('Not working yet, need to update updateVendoredNativeModule to support Optional');
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-tipsi-stripe',
-    repoUrl: 'https://github.com/jeff-da/tipsi-stripe',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Components/tipsi',
-    sourceAndroidPath: 'android/src/main/java/com/gettipsi/',
-    targetAndroidPath: 'modules/api/components/tipsi',
-    sourceAndroidPackage: 'com.gettipsi.stripe.StripeReactPackage',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.tipsi',
-    installableInManagedApps: false,
-  });
-});
-
-gulp.task('update-react-native-admob', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-admob',
-    repoUrl: 'https://github.com/expo/react-native-admob',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Components/admob',
-    sourceAndroidPath: 'android/src/main/java/com/sbugert/rnadmob/',
-    targetAndroidPath: 'modules/api/components/admob',
-    sourceAndroidPackage: 'com.sbugert.rnadmob',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.admob',
-    installableInManagedApps: false,
-  });
-});
-
-gulp.task('update-react-native-view-shot', () => {
-  console.warn('Heads up, iOS uses EX- instead of RN- symbol prefix');
-  return updateVendoredNativeModule({
-    argv,
-    skipCleanup: true,
-    name: 'react-native-view-shot',
-    repoUrl: 'https://github.com/gre/react-native-view-shot.git',
-    sourceIosPath: 'ios',
-    sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
-    targetIosPath: 'Api',
-    targetAndroidPath: 'modules/api',
-    sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.viewshot',
-    installableInManagedApps: true,
-  });
-});
-
 gulp.task('update-react-native-lottie', () => {
   return updateVendoredNativeModule({
     argv,
@@ -274,37 +226,6 @@ gulp.task('update-react-native-lottie', () => {
     sourceAndroidPackage: 'com.airbnb.android.react.lottie',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.lottie',
     installableInManagedApps: true,
-  });
-});
-
-gulp.task('update-react-native-fbads', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-fbads',
-    repoUrl: 'https://github.com/callstack-io/react-native-fbads.git',
-    sourceIosPath: 'src/ios',
-    targetIosPath: 'Api/FBAds',
-    sourceAndroidPath: 'src/android/src/main/java/io/callstack/react/fbads',
-    targetAndroidPath: 'modules/api/fbads',
-    sourceAndroidPackage: 'io.callstack.react.fbads',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.fbads',
-    installableInManagedApps: false,
-  });
-});
-
-gulp.task('update-react-native-branch', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-branch',
-    repoUrl: 'https://github.com/BranchMetrics/react-native-branch-deep-linking.git',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Standalone/Branch',
-    sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-    targetAndroidPath: 'modules/api/standalone/branch',
-    sourceAndroidPackage: 'io.branch.rnbranch',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.standalone.branch',
-    installableInManagedApps: false,
-    recursive: false,
   });
 });
 

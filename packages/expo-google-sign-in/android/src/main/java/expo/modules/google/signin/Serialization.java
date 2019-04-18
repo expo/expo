@@ -49,7 +49,6 @@ public class Serialization {
         user.putString("photoURL", photoUrl != null ? photoUrl.toString() : null);
         user.putString("serverAuthCode", acct.getServerAuthCode());
         user.putBundle("auth", auth);
-        user.putString("serverAuthCode", acct.getServerAuthCode());
          // TODO: Bacon: If google ever surfaces this value, we should add it for parity with iOS
         user.putString("domain", null);
 
