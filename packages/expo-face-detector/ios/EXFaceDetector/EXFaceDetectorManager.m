@@ -295,6 +295,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
   float scaleX = _previewLayer.bounds.size.width / outputHeight;
   float scaleY = _previewLayer.bounds.size.height / outputWidth;
+
+  float outputBigger = MAX(outputHeight, outputWidth);
+  float outputSmaller = MIN(outputHeight, outputWidth);
+  float previewBigger = MAX(_previewLayer.bounds.size.width, _previewLayer.bounds.size.height);
+  float previewSmaller = MIN(_previewLayer.bounds.size.width, _previewLayer.bounds.size.height);
+  
+  float biggerFactor = previewBigger / outputBigger;
+  float smallerFactor = previewSmaller / outputSmaller;
+  
+  float scaleFactor = MAX(biggerFactor, smallerFactor);
   
   FIRVisionImageMetadata *metadata = [[FIRVisionImageMetadata alloc] init];
   metadata.orientation = orientation;
@@ -315,7 +325,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   if(deviceOrientation == UIDeviceOrientationLandscapeRight) {
     pointTransform = CGAffineTransformMake(-1, 0, 0, -1, _previewLayer.bounds.size.width, _previewLayer.bounds.size.height);
   }
-  CGAffineTransform scaleTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleY);
+  CGAffineTransform scaleTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleFactor, scaleFactor);
   angleTransformer angleTransform = ^(float angle) { return -angle; };
   
   pointTransform = CGAffineTransformConcat(scaleTransform, pointTransform);
