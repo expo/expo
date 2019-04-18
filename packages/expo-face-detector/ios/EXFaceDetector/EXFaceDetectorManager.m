@@ -255,10 +255,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   
   AVCaptureDevicePosition devicePosition = self.mirroredImageSession ? AVCaptureDevicePositionFront : AVCaptureDevicePositionBack;
   
-  UIImage* image = [EXFaceDetectorUtils convertBufferToUIImage:sampleBuffer];
-  CGImageRef imageRef = image.CGImage;
-  CGImageRelease(imageRef);
-  
   FIRVisionDetectorImageOrientation orientation;
   UIDeviceOrientation deviceOrientation = UIDevice.currentDevice.orientation;
   switch (deviceOrientation) {
@@ -291,26 +287,37 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       }
       break;
     default:
-      orientation = FIRVisionDetectorImageOrientationLeftBottom;
+      orientation = FIRVisionDetectorImageOrientationRightTop;
       break;
   }
   
   float outputHeight = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
-  float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];;
+  float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
   float scaleX = _previewLayer.bounds.size.width / outputHeight;
   float scaleY = _previewLayer.bounds.size.height / outputWidth;
   
   FIRVisionImageMetadata *metadata = [[FIRVisionImageMetadata alloc] init];
   metadata.orientation = orientation;
   
-  CGAffineTransform scaleTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleY);
   CGAffineTransform pointTransform;
-  angleTransformer angleTransform = ^(float angle) { return -angle; };;
   if(!_mirroredImageSession) {
     pointTransform = CGAffineTransformRotate(CGAffineTransformTranslate(CGAffineTransformIdentity, _previewLayer.bounds.size.width, 0), M_PI_2);
   } else {
     pointTransform = CGAffineTransformMake(0, 1, 1, 0, 0, 0);
   }
+  if(deviceOrientation == UIDeviceOrientationLandscapeLeft || deviceOrientation == UIDeviceOrientationLandscapeRight) {
+      scaleX =_previewLayer.bounds.size.width / outputWidth;
+      scaleY = _previewLayer.bounds.size.height / outputHeight;
+  }
+  if(deviceOrientation == UIDeviceOrientationLandscapeLeft) {
+    pointTransform = CGAffineTransformIdentity;
+  }
+  if(deviceOrientation == UIDeviceOrientationLandscapeRight) {
+    pointTransform = CGAffineTransformMake(-1, 0, 0, -1, _previewLayer.bounds.size.width, _previewLayer.bounds.size.height);
+  }
+  CGAffineTransform scaleTransform = CGAffineTransformScale(CGAffineTransformIdentity, scaleX, scaleY);
+  angleTransformer angleTransform = ^(float angle) { return -angle; };
+  
   pointTransform = CGAffineTransformConcat(scaleTransform, pointTransform);
   
     _startDetect = currentTime;
