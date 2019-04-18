@@ -39,7 +39,6 @@ export function getTestModules() {
     require('./tests/Import2'),
     require('./tests/Import3'),
     require('./tests/Asset'),
-    require('./tests/Audio'),
     require('./tests/Constants'),
     require('./tests/Crypto'),
     require('./tests/FileSystem'),
@@ -81,6 +80,8 @@ export function getTestModules() {
     // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
     // 'java.util.Map org.unimodules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
     modules.push(require('./tests/TaskManager'));
+    // Audio tests are flaky in CI due to asynchronous fetching of resources
+    modules.push(require('./tests/Audio'));
     // The Camera tests are flaky on iOS, i.e. they fail randomly
     if (Constants.isDevice && Platform.OS === 'android') modules.push(require('./tests/Camera'));
   }
