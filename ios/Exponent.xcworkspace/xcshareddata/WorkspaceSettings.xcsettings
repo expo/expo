@@ -4,5 +4,7 @@
 <dict>
 	<key>BuildSystemType</key>
 	<string>Original</string>
+	<key>IDEWorkspaceSharedSettings_AutocreateContextsIfNeeded</key>
+	<false/>
 </dict>
 </plist>
