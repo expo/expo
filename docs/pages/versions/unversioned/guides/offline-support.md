@@ -6,7 +6,7 @@ Your app will encounter circumstances where the internet connection is sub-par o
 
 ## Load JS updates in the background
 
-When you [publish](../../workflow/publishing/) an update to your app, your users will receieve the new version of your JS over the air. The new version will download either next time the app starts, or next time you call [Updates.reload()](../../sdk/updates/). This behavior also applies the very first time the user opens your app.
+When you [publish](../../workflow/publishing/) an update to your app, your users will receive the new version of your JS over the air. The new version will download either next time the app starts, or next time you call [Updates.reload()](../../sdk/updates/). This behavior also applies the very first time the user opens your app.
 
 Expo offers multiple behaviors for how it should download your JS. It can either block the UI with a [splash screen](../splash-screens/) or [AppLoading component](../../sdk/app-loading/) until the new JS is downloaded, or it can immediately show an old version of your JS and download the update in the background. The former option is better if your users must have the latest version at all times; the latter option is better if you have a bad internet connection and need to show something right away.
 
