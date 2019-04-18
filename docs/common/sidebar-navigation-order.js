@@ -44,10 +44,10 @@ const GUIDES = [
   'Preloading & Caching Assets',
   'Icons',
   'Custom Fonts',
-  'Splash Screens',
   'Using Custom Fonts',
   'Routing & Navigation',
   'Configuring StatusBar',
+  'Create a Splash Screen',
   'Offline Support',
   'Configuring OTA Updates',
   'Push Notifications',
@@ -57,9 +57,10 @@ const GUIDES = [
   'Using TypeScript',
   'Using Modern JavaScript',
   'Using ClojureScript',
-  'Using Firebase: Web SDK',
+  'Using Firebase',
   'Using GraphQL',
   'Using Sentry',
+  'Crafting Educational Materials',
 ];
 
 const FUNDAMENTALS = [
