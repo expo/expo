@@ -29,12 +29,13 @@ const GLScreens = optionalRequire(
   () => require('../screens/GL/GLScreens')
 ) as unknown as { [key: string]: React.ComponentType };
 const Lottie = optionalRequire(() => require('../screens/LottieScreen'));
-const ImagePreview = optionalRequire(() =>
-  require('../screens/Reanimated/ImagePreviewScreen')
+const ReanimatedImagePreview = optionalRequire(() =>
+  require('../screens/Reanimated/ReanimatedImagePreviewScreen')
 );
-const SVGExample = optionalRequire(() =>
-  require('../screens/SVG/SVGExampleScreen')
+const ReanimatedProgress = optionalRequire(() =>
+  require('../screens/Reanimated/ReanimatedProgressScreen')
 );
+const SVGExample = optionalRequire(() => require('../screens/SVG/SVGExampleScreen'));
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
 
 const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
@@ -47,7 +48,8 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,
-  ImagePreview,
+  ReanimatedImagePreview,
+  ReanimatedProgress,
   Gif,
   FacebookAds,
   SVG,

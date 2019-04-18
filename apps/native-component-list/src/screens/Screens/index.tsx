@@ -1,12 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import {
-  Text,
-  View,
-  FlatList,
-  StyleSheet,
-  TouchableHighlight,
-} from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableHighlight } from 'react-native';
 import { createStackNavigator, createSwitchNavigator, NavigationScreenProps } from 'react-navigation';
 
 import Container from './container';
