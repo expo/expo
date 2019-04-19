@@ -24,10 +24,10 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
 }
 
 JNIEXPORT jint JNICALL
-Java_expo_modules_gl_cpp_EXGL_EXGLJSCContextCreate
+Java_expo_modules_gl_cpp_EXGL_EXGLContextCreateV2
 (JNIEnv *env, jclass clazz, jlong jsCtxPtr) {
-  // In react-native 0.59 jsCtxPtr is pointing to runtime object (in case of jsc it's JSCRuntime class)
-  // implementing JSI interface. Real jsc context ref is extracted by offset from that object.
+  // In react-native 0.59 jsCtxPtr is pointing to runtime object (in case of JSC it's JSCRuntime class)
+  // implementing JSI interface. Real JSC context ref is extracted by offset from that object.
   // WARNING: This is temporary solution that may break with new react-native releases.
   JSGlobalContextRef jsCtx = *(reinterpret_cast<JSGlobalContextRef*>(jsCtxPtr)+1);
   if (jsCtx) {

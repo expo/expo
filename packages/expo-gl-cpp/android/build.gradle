@@ -176,7 +176,7 @@ android {
 
     sourceSets.main {
       jni.srcDirs = []
-      jniLibs.srcDir "$buildDir/expo-gl-ndk/exported"
+      jniLibs.srcDir "$distDir"
     }
   }
   lintOptions {
