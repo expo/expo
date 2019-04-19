@@ -76,9 +76,8 @@ pushd expoview/libs/ReactAndroid-temp
 # Update the manifest. This is used for deduping in the build process
 sed -i '' "s/com\.facebook\.react/$ABI_VERSION\.com\.facebook\.react/g" AndroidManifest.xml
 
-# Can't rename libgnustl_shared so remove. We share the copy from ReactAndroid.
-rm jni/armeabi-v7a/libgnustl_shared.so
-rm jni/x86/libgnustl_shared.so
+# Can't rename libc++_shared so remove. We share the copy from ReactAndroid.
+rm -rf jni/*/libc++_shared.so
 
 # Zip into aar
 set +e
