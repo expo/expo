@@ -52,7 +52,6 @@ android {
 
   sourceSets.main {
     jni.srcDirs = []
-    jniLibs.srcDir "${project(':expo-gl-cpp').projectDir}/dist"
   }
 
   lintOptions {
@@ -73,7 +72,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 }
 
 dependencies {
-  unimodule 'unimodules-core'
   unimodule 'expo-gl-cpp'
+  unimodule 'unimodules-core'
   unimodule 'unimodules-camera-interface'
 }
