@@ -10,7 +10,7 @@
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceDetectorManager.h>
 #import <EXFaceDetector/EXFaceDetector.h>
-#import <EXFaceDetector/EXFaceDetectorPointTransformCalculator.h>
+#import <EXFaceDetector/CSBufferOrientationCalculator.h>
 #import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
 #import "Firebase.h"
 
@@ -255,118 +255,76 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   
   // TODO: Move creating translation matrix to the place where detection is initialized. No need to do it so many times!
   
-  AVCaptureDevicePosition devicePosition = self.mirroredImageSession ? AVCaptureDevicePositionFront : AVCaptureDevicePositionBack;
-  
-  FIRVisionDetectorImageOrientation orientation;
   UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation]; // TODO: Change that to value passed from ViewController
-  switch (interfaceOrientation) {
-    case UIInterfaceOrientationPortrait:
-      if (devicePosition == AVCaptureDevicePositionFront) {
-        orientation = FIRVisionDetectorImageOrientationLeftTop;
-      } else {
-        orientation = FIRVisionDetectorImageOrientationRightTop;
-      }
-      break;
-    case UIInterfaceOrientationLandscapeRight:
-      if (devicePosition == AVCaptureDevicePositionFront) {
-        orientation = FIRVisionDetectorImageOrientationBottomLeft;
-      } else {
-        orientation = FIRVisionDetectorImageOrientationTopLeft;
-      }
-      break;
-    case UIInterfaceOrientationPortraitUpsideDown:
-      if (devicePosition == AVCaptureDevicePositionFront) {
-        orientation = FIRVisionDetectorImageOrientationRightBottom;
-      } else {
-        orientation = FIRVisionDetectorImageOrientationLeftBottom;
-      }
-      break;
-    case UIInterfaceOrientationLandscapeLeft:
-      if (devicePosition == AVCaptureDevicePositionFront) {
-        orientation = FIRVisionDetectorImageOrientationTopRight;
-      } else {
-        orientation = FIRVisionDetectorImageOrientationBottomRight;
-      }
-      break;
-    default:
-      orientation = FIRVisionDetectorImageOrientationRightTop;
-      break;
-  }
   
   float outputHeight = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
   float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
-  if(UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+  if(UIInterfaceOrientationIsPortrait(interfaceOrientation)) { // We need to inverse width and height in portrait
     outputHeight = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
     outputWidth = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
   }
-  
   float previewWidth =_previewLayer.bounds.size.width;
   float previewHeight = _previewLayer.bounds.size.height;
   
-  float widthFactor = previewWidth / outputWidth;
-  float heightFactor = previewHeight / outputHeight;
-  
-  float scaleFactor = MAX(widthFactor, heightFactor);
-  
-  CGAffineTransform rotationTransformation = CGAffineTransformIdentity;
-  
-  switch (interfaceOrientation) {
-    case (UIInterfaceOrientationLandscapeRight):
-      rotationTransformation = CGAffineTransformMake(1, 0, 0, 1, 0, 0); // Identity matrix
-      break;
-    case (UIInterfaceOrientationPortrait):
-      rotationTransformation = CGAffineTransformMake(0, 1, -1, 0, 0, 0); // 90 deg. rotation matrix
-      break;
-    case (UIInterfaceOrientationLandscapeLeft):
-      rotationTransformation = CGAffineTransformMake(-1, 0, 0, -1, 0, 0); // 180 deg. rotation matrix
-      break;
-    case (UIInterfaceOrientationPortraitUpsideDown):
-      rotationTransformation = CGAffineTransformMake(0, -1, 1, 0, 0, 0); // -90 deg. rotation matrix
-      break;
-    default:
-      break;
-  }
-  
-  if(_mirroredImageSession) {
-    if(UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-      // x symetry
-      rotationTransformation = CGAffineTransformConcat(rotationTransformation, CGAffineTransformMake(1, 0, 0, -1, 0, 0));
-    } else {
-      // y symetry
-      rotationTransformation = CGAffineTransformConcat(rotationTransformation, CGAffineTransformMake(-1, 0, 0, 1, 0, 0));
-    }
-  }
-  
-  // If x or y row contains -1, it means in our case we made symetry by y or x axis, se we need to add whole screen width/height to get back to range.
-  BOOL translateX = rotationTransformation.a == -1 || rotationTransformation.c == -1;
-  BOOL translateY = rotationTransformation.b == -1 || rotationTransformation.d == -1;
-  CGAffineTransform translationTransformation = CGAffineTransformTranslate(CGAffineTransformIdentity, translateX ? previewWidth : 0, translateY ? previewHeight : 0);
-  CGAffineTransform wholePreviewTransformation = CGAffineTransformConcat(rotationTransformation, translationTransformation);
-  CGAffineTransform finalTranslation = CGAffineTransformScale(wholePreviewTransformation, scaleFactor, scaleFactor);
-  
-  FIRVisionImageMetadata *metadata = [[FIRVisionImageMetadata alloc] init];
-  metadata.orientation = orientation;
-  
   angleTransformer angleTransform = ^(float angle) { return -angle; };
   
-  float xOffset = -((outputWidth * scaleFactor) - previewWidth) / 2;
-  float yOffset = -((outputHeight * scaleFactor) - previewHeight) / 2;
+  CGAffineTransform transformation = [CSBufferOrientationCalculator pointTransformForInterfaceOrientation:interfaceOrientation
+                                                                                           forBufferWidth:outputWidth andBufferHeight:outputHeight
+                                                                                            andVideoWidth:previewWidth andVideoHeight:previewHeight andMirrored:_mirroredImageSession];
   
-  // This is actually multipling rotation matrix by crop translations point.
-  float xTranslation = (rotationTransformation.a + rotationTransformation.c) * xOffset;
-  float yTranslation = (rotationTransformation.b + rotationTransformation.d) * yOffset;
-  
-  finalTranslation = CGAffineTransformConcat(finalTranslation, CGAffineTransformMakeTranslation(xTranslation, yTranslation));
+  FIRVisionImageMetadata* metadata = [EXFaceDetectorManager metadataForInterfaceOrientation:interfaceOrientation andMirrored:_mirroredImageSession];
   
   _startDetect = currentTime;
   [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromBuffer:sampleBuffer metadata:metadata completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
     if(error != nil) {
       [self _notifyOfFaces:nil withEncoder:nil];
     } else {
-      [self _notifyOfFaces:faces withEncoder:[[EXFaceEncoder alloc] initWithTransform:finalTranslation withRotationTransform:angleTransform]];
+      [self _notifyOfFaces:faces withEncoder:[[EXFaceEncoder alloc] initWithTransform:transformation withRotationTransform:angleTransform]];
     }
     self.faceDetectionProcessing = NO;
   }];
+}
+
++(FIRVisionImageMetadata*)metadataForInterfaceOrientation:(UIInterfaceOrientation)orientation andMirrored:(BOOL)mirrored
+{
+  FIRVisionDetectorImageOrientation imageOrientation;
+  switch (orientation) {
+    case UIInterfaceOrientationPortrait:
+      if (mirrored) {
+        imageOrientation = FIRVisionDetectorImageOrientationLeftTop;
+      } else {
+        imageOrientation = FIRVisionDetectorImageOrientationRightTop;
+      }
+      break;
+    case UIInterfaceOrientationLandscapeRight:
+      if (mirrored) {
+        imageOrientation = FIRVisionDetectorImageOrientationBottomLeft;
+      } else {
+        imageOrientation = FIRVisionDetectorImageOrientationTopLeft;
+      }
+      break;
+    case UIInterfaceOrientationPortraitUpsideDown:
+      if (mirrored) {
+        imageOrientation = FIRVisionDetectorImageOrientationRightBottom;
+      } else {
+        imageOrientation = FIRVisionDetectorImageOrientationLeftBottom;
+      }
+      break;
+    case UIInterfaceOrientationLandscapeLeft:
+      if (mirrored) {
+        imageOrientation = FIRVisionDetectorImageOrientationTopRight;
+      } else {
+        imageOrientation = FIRVisionDetectorImageOrientationBottomRight;
+      }
+      break;
+    default:
+      imageOrientation = FIRVisionDetectorImageOrientationRightTop;
+      break;
+  }
+  
+  FIRVisionImageMetadata* metadata = [[FIRVisionImageMetadata alloc] init];
+  metadata.orientation = imageOrientation;
+  return metadata;
 }
 
 # pragma mark - Default options
@@ -384,7 +342,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
   defaultFaceDetectorOptions = @{
                                  @"performanceMode" : @(FIRVisionFaceDetectorPerformanceModeFast),
-                                 @"landmarkMode" : @(FIRVisionFaceDetectorLandmarkModeNone),
+                                 @"landmarkMode" : @(FIRVisionFaceDetectorLandmarkModeAll),
                                  @"classificationMode" : @(FIRVisionFaceDetectorClassificationModeNone)
                                  };
 }

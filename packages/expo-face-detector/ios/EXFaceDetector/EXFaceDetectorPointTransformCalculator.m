@@ -6,7 +6,7 @@
 //  Copyright © 2017 650 Industries. All rights reserved.
 //
 
-#import <EXFaceDetector/EXFaceDetectorPointTransformCalculator.h>
+#import <EXFaceDetector/CSBufferOrientationCalculator.h>
 
 #define cDefaultFloatComparisonEpsilon 0.0001
 #define cModEqualFloatsWithEpsilon(dividend, divisor, modulo, epsilon) \
@@ -81,7 +81,7 @@ typedef NS_ENUM(NSInteger, EXTranslationEnum) {
   EXTranslateYXNegative
 };
 
-@interface EXFaceDetectorPointTransformCalculator()
+@interface CSBufferOrientationCalculator()
 
 @property (assign, nonatomic) AVCaptureVideoOrientation fromOrientation;
 @property (assign, nonatomic) AVCaptureVideoOrientation toOrientation;
@@ -90,7 +90,7 @@ typedef NS_ENUM(NSInteger, EXTranslationEnum) {
 
 @end
 
-@implementation EXFaceDetectorPointTransformCalculator
+@implementation CSBufferOrientationCalculator
 
 - (instancetype)initToTransformFromOrientation:(AVCaptureVideoOrientation)fromOrientation toOrientation:(AVCaptureVideoOrientation)toOrientation forVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight
 {

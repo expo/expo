@@ -8,9 +8,9 @@
 #import "EXFaceDetector.h"
 #import "Firebase.h"
 
-static const NSString *kModeOptionName = @"mode";
-static const NSString *kDetectLandmarksOptionName = @"detectLandmarks";
-static const NSString *kRunClassificationsOptionName = @"runClassifications";
+static const NSString *kModeOptionName = @"performanceMode";
+static const NSString *kDetectLandmarksOptionName = @"landmarkMode";
+static const NSString *kRunClassificationsOptionName = @"classificationMode";
 
 @implementation EXFaceDetector
 
@@ -22,7 +22,7 @@ FIRVisionFaceDetector* detector;
   return self;
 }
 
--(void) detectFromImage:(UIImage*)image facesTransform:(CGAffineTransform)transform completionListener:(void(^)(NSArray<NSDictionary *> *faces, NSError *error))completion {
+-(void) detectFromImage:(UIImage*)image completionListener:(void(^)(NSArray<FIRVisionFace*>* faces, NSError* error)) completion {
   if(image != nil) {
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
     [self detectFromFIRImage:visionImage completionListener:completion];

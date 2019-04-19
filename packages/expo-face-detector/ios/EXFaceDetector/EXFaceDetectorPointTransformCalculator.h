@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface EXFaceDetectorPointTransformCalculator : NSObject
+@interface CSBufferOrientationCalculator : NSObject
+
++ (CGAffineTransform)transformForInterfaceOrientation:(UIInterfaceOrientation)orientation forVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight;
 
 - (instancetype)initToTransformFromOrientation:(AVCaptureVideoOrientation)orientation toOrientation:(AVCaptureVideoOrientation)toOrientation forVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight;
 

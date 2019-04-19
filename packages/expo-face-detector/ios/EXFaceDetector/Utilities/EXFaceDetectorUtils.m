@@ -7,7 +7,7 @@
 //
 
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
-#import <EXFaceDetector/EXFaceDetectorPointTransformCalculator.h>
+#import <EXFaceDetector/CSBufferOrientationCalculator.h>
 #import "Firebase.h"
 
 NSString *const EXGMVDataOutputWidthKey = @"Width";
