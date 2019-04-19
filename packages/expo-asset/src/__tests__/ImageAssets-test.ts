@@ -61,7 +61,7 @@ describe('getImageInfoAsync', () => {
     expect(mockImage.onerror).toBeDefined();
 
     let mockErrorEvent = { type: 'error' } as any;
-    mockImage.onerror(mockErrorEvent);
+    mockImage.onerror!(mockErrorEvent);
 
     // TODO: change this to a proper Error
     await expect(infoPromise).rejects.toBe(mockErrorEvent);
