@@ -23,6 +23,7 @@ static const NSString *runClassificationsKeyPath = @"runClassifications";
 @property (assign, nonatomic) long previousFacesCount;
 @property (nonatomic, weak) AVCaptureSession *session;
 @property BOOL mirroredImageSession;
+@property UIInterfaceOrientation interfaceOrientation;
 @property (nonatomic, weak) dispatch_queue_t sessionQueue;
 @property (nonatomic, copy, nullable) void (^onFacesDetected)(NSArray<NSDictionary *> *);
 @property (nonatomic, weak) AVCaptureVideoPreviewLayer *previewLayer;
@@ -50,6 +51,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _faceDetectorOptions = [[NSMutableDictionary alloc] initWithDictionary:[[self class] _getDefaultFaceDetectorOptions]];
     _firebaseInitialized = NO;
     _startDetect = [NSDate new];
+    _interfaceOrientation = UIInterfaceOrientationUnknown;
   }
   return self;
 }
@@ -108,6 +110,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   _session = session;
   _mirroredImageSession = mirrored;
   _previewLayer = previewLayer;
+  
   [self tryEnablingFaceDetection];
 }
 
@@ -238,28 +241,23 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 }
 
 - (void)captureOutput:(AVCaptureVideoDataOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-  //  float width =  [(NSNumber *)output.videoSettings[@"Width"] floatValue];
-  //  float height =  [(NSNumber *)output.videoSettings[@"Height"] floatValue];
-  //  float scaleX = _previewLayer.bounds.size.width / width;
-  //  float scaleY = _previewLayer.bounds.size.height / height;
   if(self.faceDetectionProcessing)
   {
     return;
   }
   
   self.faceDetectionProcessing = YES;
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+  });
+  
   NSDate* currentTime = [NSDate new];
   //  NSTimeInterval timePassed = [currentTime timeIntervalSinceDate:self.startDetect];
-  //  CGAffineTransform orientationTransform = [EXFaceDetectorUtils transformFromDeviceOutput:output toInterfaceVideoOrientation:connection.videoOrientation];
-  //  CGAffineTransform transform = CGAffineTransformScale(orientationTransform, scaleX, scaleY);
-  
-  // TODO: Move creating translation matrix to the place where detection is initialized. No need to do it so many times!
-  
-  UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation]; // TODO: Change that to value passed from ViewController
   
   float outputHeight = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
   float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
-  if(UIInterfaceOrientationIsPortrait(interfaceOrientation)) { // We need to inverse width and height in portrait
+  if(UIInterfaceOrientationIsPortrait(_interfaceOrientation)) { // We need to inverse width and height in portrait
     outputHeight = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
     outputWidth = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
   }
@@ -268,11 +266,11 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   
   angleTransformer angleTransform = ^(float angle) { return -angle; };
   
-  CGAffineTransform transformation = [CSBufferOrientationCalculator pointTransformForInterfaceOrientation:interfaceOrientation
+  CGAffineTransform transformation = [CSBufferOrientationCalculator pointTransformForInterfaceOrientation:_interfaceOrientation
                                                                                            forBufferWidth:outputWidth andBufferHeight:outputHeight
                                                                                             andVideoWidth:previewWidth andVideoHeight:previewHeight andMirrored:_mirroredImageSession];
   
-  FIRVisionImageMetadata* metadata = [EXFaceDetectorManager metadataForInterfaceOrientation:interfaceOrientation andMirrored:_mirroredImageSession];
+  FIRVisionImageMetadata* metadata = [EXFaceDetectorManager metadataForInterfaceOrientation:_interfaceOrientation andMirrored:_mirroredImageSession];
   
   _startDetect = currentTime;
   [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromBuffer:sampleBuffer metadata:metadata completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
