@@ -157,9 +157,12 @@ dependencies {
   // expo-payments-stripe
   implementation 'com.stripe:stripe-android:8.1.0'
   implementation 'com.github.tipsi:CreditCardEntry:1.5.0'
-  implementation project(':expo-gl-cpp')
-  implementation project(':expo-print')
+
+  // expo-location
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
+
+  implementation project(':expo-gl-cpp')
+  implementation project(':expo-print')
 }
