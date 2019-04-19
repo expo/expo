@@ -17,7 +17,7 @@ repositories {
 }
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion 28
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
