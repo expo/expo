@@ -194,7 +194,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 }
 
 dependencies {
-  compileOnly 'com.facebook.soloader:soloader:0.5.1'
+  compileOnly 'com.facebook.soloader:soloader:+'
 
   // it must be `compile` instead of `implementation` or `api`
   // cause the later dependencies are not accessible by configurations.compile or similar :(
