@@ -16,8 +16,12 @@ repositories {
   maven { url 'https://maven.fabric.io/public' }
 }
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 android {
-  compileSdkVersion 28
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -26,8 +30,8 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
     versionCode 106
@@ -108,11 +112,11 @@ dependencies {
   implementation 'com.android.support:multidex:1.0.1'
 
   // Our dependencies
-  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation "com.android.support:appcompat-v7:$supportLibVersion"
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation "com.android.support:appcompat-v7:$supportLibVersion"
   implementation 'com.facebook.android:facebook-android-sdk:4.37.0'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
