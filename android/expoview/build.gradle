@@ -100,7 +100,11 @@ task generateDynamicMacros(type: Exec) {
     commandLine '../../tools-public/generate-dynamic-macros-android.sh'
   }
 }
-preBuild.dependsOn generateDynamicMacros
+
+// Automatically generate dynamic macros once the task graph is ready. It ensures this task to be executed before all other tasks.
+gradle.taskGraph.whenReady {
+  generateDynamicMacros.execute()
+}
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 configurations.all {
