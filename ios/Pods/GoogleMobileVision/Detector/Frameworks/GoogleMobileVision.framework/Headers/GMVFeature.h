@@ -872,3 +872,41 @@
 @property(atomic, assign, readonly) float score;
 
 @end
+
+/**
+ * Describes an object detected in a frame from a camera stream. Its properties provide details
+ * about the object.
+ */
+@interface GMVObjectFeature : GMVFeature
+
+/**
+ * Machine-generated identifier (thus MID) corresponding to the entity's Google Knowledge Graph
+ * entry. For example: "/g/11g0srrsqr".
+ *
+ * Note the globally unique MID values remain unchanged across different languages, so you
+ * can use this value to tie entities together from different languages. To inspect the MID
+ * value, refer to the Google Knowledge Graph API documentation.
+ * https://developers.google.com/knowledge-graph/reference/rest/v1/
+ */
+@property(atomic, copy, readonly) NSString *MID;
+
+/**
+ * Description of the label associated to the object, i.e. human readable string in American
+ * English. For example: "Fashion good".
+ *
+ * Note: this is not fit for display purposes, as it is not localized. Use the MID and query the
+ * Knowledge Graph to get a localized description of the label.
+ */
+@property(atomic, copy, readonly) NSString *labelDescription;
+
+/**
+ * Indicates whether an object feature has a probability score.
+ */
+@property(atomic, assign, readonly) BOOL hasScore;
+
+/**
+ * The probability score.
+ */
+@property(atomic, assign, readonly) float score;
+
+@end

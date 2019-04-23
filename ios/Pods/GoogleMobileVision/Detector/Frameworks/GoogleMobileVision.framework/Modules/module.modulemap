@@ -1,11 +1,12 @@
 framework module GoogleMobileVision {
   umbrella header "GoogleMobileVision.h"
   export *
-  module * { export *}
+  module * { export * }
   link "sqlite3"
   link "z"
   link framework "AVFoundation"
   link framework "AddressBook"
+  link framework "CoreFoundation"
   link framework "CoreGraphics"
   link framework "CoreMedia"
   link framework "CoreVideo"
@@ -13,4 +14,5 @@ framework module GoogleMobileVision {
   link framework "LocalAuthentication"
   link framework "QuartzCore"
   link framework "Security"
-  link framework "UIKit"}
+  link framework "UIKit"
+}
