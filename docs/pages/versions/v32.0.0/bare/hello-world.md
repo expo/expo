@@ -10,7 +10,7 @@ npm i -g expo-cli
 # If you don't have react-native-cli yet, get it
 npm i -g react-native-cli
 # This is a shortcut to skip the UI for picking the template
-expo init --template bare-minimum
+expo init --template expo-template-bare-minimum
 ```
 
 Next, let's get the project running. Go into your project directory and run `react-native run-ios` or `react-native run-android` &mdash; hurray! Your project is working.
