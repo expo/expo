@@ -23,7 +23,6 @@ export default class AdOptionsView extends React.Component {
                 width: this.props.iconSize,
                 height: this.props.iconSize * 2,
             };
-        // style: { alignSelf:'baseline' }
         return (<AdOptionsViewContext.Consumer>
         {(contextValue) => {
             let adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);

@@ -1,4 +1,3 @@
-// tslint:disable max-classes-per-file
 import React from 'react';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { Linking } from 'expo';
@@ -45,12 +44,10 @@ class TextInputButton extends React.Component<
         Linking.openURL(text);
       } else {
         const message = `Don't know how to open URI: ${text}`;
-        // tslint:disable-next-line no-console
         console.log(message);
         alert(message);
       }
     } catch ({ message }) {
-      // tslint:disable-next-line no-console
       console.error(message);
     }
   }
@@ -101,7 +98,6 @@ export default class LinkingScreen extends React.Component<{}, State> {
 
   onEvent = ({ url, nativeEvent }: any) => {
     const { data, origin, source } = nativeEvent;
-    // tslint:disable-next-line no-console
     console.log('onEvent:', { url, data, origin, source });
   }
 

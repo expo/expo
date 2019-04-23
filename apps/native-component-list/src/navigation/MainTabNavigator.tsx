@@ -54,7 +54,6 @@ const MainTabNavigator = createTabNavigator(
         header: null,
         tabBarLabel,
         tabBarIcon: ({ focused }: { focused: boolean }) => {
-          // tslint:disable-next-line: no-shadowed-variable
           const { routeName } = navigation.state;
           switch (routeName) {
             case 'ReactNativeCore':

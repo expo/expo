@@ -2,7 +2,6 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View, StyleProp, ViewStyle } from 'react-native';
 
 const googleIcon = {
-  // tslint:disable-next-line max-line-length
   uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/200px-Google_%22G%22_Logo.svg.png',
 };
 

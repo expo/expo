@@ -9,8 +9,7 @@
     "postinstall": "expo-yarn-workspaces postinstall",
     "web:publish": "netlify deploy --dir web-build",
     "web:serve": "serve ./web-build",
-    "tsc": "tsc --noEmit --watch -p ./tsconfig.json",
-    "lint": "tslint -c tslint.json -p ./tsconfig.json"
+    "tsc": "tsc --noEmit --watch -p ./tsconfig.json"
   },
   "powertools": {
     "group": "client"
@@ -19,7 +18,6 @@
     "@expo/react-native-action-sheet": "^2.0.1",
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
-    "detox": "^12.0.0",
     "expo": "^33.0.0-alpha.web.1",
     "expo-cli": "^2.13.0",
     "expo-processing": "~2.0.0",
@@ -59,11 +57,9 @@
     "@types/three": "^0.93.28",
     "@types/victory": "^31.0.14",
     "babel-preset-expo": "^5.1.0",
+    "expo-module-scripts": "^1.0.0",
     "expo-yarn-workspaces": "^1.0.0",
     "serve": "^10.1.2",
-    "tslint": "^5.15.0",
-    "tslint-config-standard": "^8.0.1",
-    "tslint-react": "^4.0.0",
     "typescript": "^3.4.2"
   },
   "browserslist": [

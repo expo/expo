@@ -88,7 +88,6 @@ export default class MaskGLScreen extends React.Component<Props> {
 
         // Clear
         gl.clearColor(0, 0, 1, 1);
-        // tslint:disable-next-line: no-bitwise
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         // Bind buffer, program and position attribute for use

@@ -48,7 +48,6 @@ export default class GoogleLoginScreen extends React.Component {
             {
               text: 'OK!',
               onPress: () => {
-                // tslint:disable-next-line no-console
                 console.log({ result });
               },
             },

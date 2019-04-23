@@ -1,4 +1,3 @@
-// tslint:disable max-classes-per-file
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { Constants } from 'expo';
@@ -28,7 +27,6 @@ class ExpoConstant extends React.Component<{ value?: any, name: string }, State>
       try {
         value = await this.props.value();
       } catch (error) {
-        // tslint:disable-next-line no-console
         console.error(error);
         this.setState({ error: error.message });
       }

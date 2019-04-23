@@ -51,7 +51,6 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         alert('Download complete!');
       }
     } catch (e) {
-      // tslint:disable-next-line no-console
       console.log(e);
     }
   }
@@ -66,7 +65,6 @@ export default class FileSystemScreen extends React.Component<{}, State> {
       await AsyncStorage.setItem('pausedDownload', JSON.stringify(downloadSnapshot));
       alert('Download paused...');
     } catch (e) {
-      // tslint:disable-next-line no-console
       console.log(e);
     }
   }
@@ -82,7 +80,6 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         this._fetchDownload();
       }
     } catch (e) {
-      // tslint:disable-next-line no-console
       console.log(e);
     }
   }
@@ -115,7 +112,6 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         return;
       }
     } catch (e) {
-      // tslint:disable-next-line no-console
       console.log(e);
     }
   }
@@ -129,7 +125,6 @@ export default class FileSystemScreen extends React.Component<{}, State> {
       const info = await FileSystem.getInfoAsync(this.download._fileUri);
       Alert.alert('File Info:', JSON.stringify(info), [{ text: 'OK', onPress: () => {} }]);
     } catch (e) {
-      // tslint:disable-next-line no-console
       console.log(e);
     }
   }

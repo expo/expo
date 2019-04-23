@@ -1,4 +1,3 @@
-// tslint:disable max-classes-per-file
 import React from 'react';
 
 import {
@@ -181,16 +180,13 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
       Alert.alert('Alert Title', 'My Alert Msg', [
         {
           text: 'Ask me later',
-          // tslint:disable-next-line no-console
           onPress: () => console.log('Ask me later pressed'),
         },
         {
           text: 'Cancel',
-          // tslint:disable-next-line no-console
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        // tslint:disable-next-line no-console
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
     };
@@ -214,7 +210,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           // Selected year, month (0-11), day
         }
       } catch ({ code, message }) {
-        // tslint:disable-next-line no-console
         console.warn('Cannot open date picker', message);
       }
     };
@@ -238,7 +233,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           // Selected hour (0-23), minute (0-59)
         }
       } catch ({ code, message }) {
-        // tslint:disable-next-line no-console
         console.warn('Cannot open time picker', message);
       }
     };

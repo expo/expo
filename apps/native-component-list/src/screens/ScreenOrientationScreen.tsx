@@ -23,7 +23,6 @@ export default class ScreenOrientationScreen extends React.Component<
 
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(
-      // tslint:disable-next-line no-shadowed-variable
       ({ orientationInfo, orientationLock }) => {
         this.setState({
           orientation: orientationInfo.orientation,
@@ -34,7 +33,6 @@ export default class ScreenOrientationScreen extends React.Component<
 
     const [orientation, orientationLock] = await Promise.all([
       ScreenOrientation.getOrientationAsync().then(
-        // tslint:disable-next-line no-shadowed-variable
         ({ orientation }) => orientation
       ),
       ScreenOrientation.getOrientationLockAsync(),
@@ -65,7 +63,6 @@ export default class ScreenOrientationScreen extends React.Component<
     }
 
     await ScreenOrientation.lockAsync(orientation)
-      // tslint:disable-next-line no-console
       .catch(console.warn); // on iPhoneX PortraitUpsideDown would be rejected
 
     if (Platform.OS === 'web') {
@@ -97,14 +94,12 @@ export default class ScreenOrientationScreen extends React.Component<
     const result = await ScreenOrientation.supportsOrientationLockAsync(
       ScreenOrientation.OrientationLock.PORTRAIT_DOWN
     )
-      // tslint:disable-next-line no-console
       .catch(console.warn);
     alert(`Orientation.PORTRAIT_DOWN supported: ${JSON.stringify(result)}`);
   }
 
   unlock = async () => {
     await ScreenOrientation.unlockAsync()
-      // tslint:disable-next-line no-console
       .catch(console.warn);
   }
 

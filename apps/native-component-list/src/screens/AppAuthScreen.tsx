@@ -14,14 +14,12 @@ const StorageKey = '@Storage:Key';
 async function signInAsync() {
   const authState = await AppAuth.authAsync(config);
   await cacheAuthAsync(authState);
-  // tslint:disable-next-line no-console
   console.log('signInAsync', authState);
   return authState;
 }
 
 async function refreshAuthAsync({ refreshToken }: { refreshToken: string }) {
   const authState = await AppAuth.refreshAsync(config, refreshToken);
-  // tslint:disable-next-line no-console
   console.log('refresh', authState);
   await cacheAuthAsync(authState);
   return authState;
@@ -30,7 +28,6 @@ async function refreshAuthAsync({ refreshToken }: { refreshToken: string }) {
 async function getCachedAuthAsync() {
   const value = await AsyncStorage.getItem(StorageKey);
   const authState = JSON.parse(value!);
-  // tslint:disable-next-line no-console
   console.log('getCachedAuthAsync', authState);
   if (authState) {
     if (checkIfTokenExpired(authState)) {

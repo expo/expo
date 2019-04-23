@@ -8,6 +8,5 @@ declare var _android: typeof android;
 declare var _web: typeof web;
 
 export * from './ReactNativeCoreScreen.ios';
-// tslint:disable-next-line no-duplicate-imports
 import { default as d } from './ReactNativeCoreScreen.ios';
 export default d;

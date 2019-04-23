@@ -51,7 +51,6 @@ export default class FacebookLoginScreen extends React.Component {
           {
             text: 'OK!',
             onPress: () => {
-              // tslint:disable-next-line: no-console
               console.log({ type, token });
             },
           },

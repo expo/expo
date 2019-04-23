@@ -49,7 +49,6 @@ export default class NetInfoScreen extends React.Component<{}, State> {
 
     NetInfo.getConnectionInfo()
       .then(connectionInfo => this.setState({ connectionInfo }))
-      // tslint:disable-next-line no-console
       .catch(console.warn);
     this._ensureIsConnectionExpensiveIsUpToDate();
     this._subscription = NetInfo.addEventListener(
@@ -87,7 +86,6 @@ export default class NetInfoScreen extends React.Component<{}, State> {
     Platform.OS === 'android' &&
     NetInfo.isConnectionExpensive()
       .then(isConnectionExpensive => this.setState({ isConnectionExpensive }))
-      // tslint:disable-next-line no-console
       .catch(console.warn)
 
   _handleIsConnectedChange = (isConnected: boolean) =>

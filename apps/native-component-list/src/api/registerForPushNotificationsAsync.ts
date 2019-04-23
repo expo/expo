@@ -13,7 +13,6 @@ export default async function registerForPushNotificationsAsync() {
   const token = await Notifications.getExpoPushTokenAsync();
 
   // Log it so we can easily copy it if we need to work with it
-  // tslint:disable-next-line no-console
   console.log(`Got this device's push token: ${token}`);
 
   await Notifications.createCategoryAsync('welcome', [
@@ -52,7 +51,6 @@ export default async function registerForPushNotificationsAsync() {
   const result = await response.json();
   if (result.errors) {
     for (const error of result.errors) {
-      // tslint:disable-next-line no-console
       console.warn(`API error sending push notification:`, error);
     }
   }
@@ -62,7 +60,6 @@ export default async function registerForPushNotificationsAsync() {
     const receipt = receipts[0];
     if (receipt.status === 'error') {
       if (receipt.details) {
-        // tslint:disable-next-line no-console
         console.warn(
           `Expo push service reported an error sending a notification: ${
             receipt.details.error
@@ -70,7 +67,6 @@ export default async function registerForPushNotificationsAsync() {
         );
       }
       if (receipt.__debug) {
-        // tslint:disable-next-line no-console
         console.warn(receipt.__debug);
       }
     }

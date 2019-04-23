@@ -1,4 +1,3 @@
-// tslint:disable max-classes-per-file
 import React from 'react';
 import { SectionList, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { Haptics } from 'expo';

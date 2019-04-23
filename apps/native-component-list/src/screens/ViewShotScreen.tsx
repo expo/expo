@@ -42,7 +42,6 @@ export default class ViewShotScreen extends React.Component<{}, State> {
       });
       this.setState({ image });
     } catch (e) {
-      // tslint:disable-next-line: no-console
       console.error(e);
     }
   }
@@ -57,7 +56,6 @@ export default class ViewShotScreen extends React.Component<{}, State> {
         });
         this.setState({ screenUri });
       } catch (e) {
-        // tslint:disable-next-line: no-console
         console.error(e);
       }
       return;

@@ -17,7 +17,6 @@ export default class SecureStoreScreen extends React.Component<{}, State> {
 
   _setValue = async (value: string, key: string) => {
     try {
-      // tslint:disable-next-line: no-console
       console.log('securestore: ' + SecureStore);
       await SecureStore.setItemAsync(key, value, {});
       Alert.alert(

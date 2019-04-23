@@ -46,7 +46,6 @@ export default class App extends React.Component<{}, State> {
         }),
       ]);
     } catch (e) {
-      // tslint:disable-next-line no-console
       console.log({ e });
     } finally {
       this.setState({ appIsReady: true });

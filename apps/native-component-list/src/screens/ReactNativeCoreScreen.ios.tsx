@@ -1,4 +1,3 @@
-// tslint:disable max-classes-per-file
 import React from 'react';
 import {
   ActionSheetIOS,
@@ -144,7 +143,6 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
           destructiveButtonIndex: 2,
         },
         buttonIndex => {
-          // tslint:disable-next-line no-console
           console.log({ buttonIndex });
         }
       );
@@ -196,7 +194,6 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
 
   _renderAlert = () => {
     const showPrompt = () => {
-      // tslint:disable-next-line no-console
       AlertIOS.prompt('Enter a value', undefined, text => console.log(`You entered ${text}`));
     };
 
@@ -204,16 +201,13 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
       Alert.alert('Alert Title', 'My Alert Msg', [
         {
           text: 'Ask me later',
-          // tslint:disable-next-line no-console
           onPress: () => console.log('Ask me later pressed'),
         },
         {
           text: 'Cancel',
-          // tslint:disable-next-line no-console
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        // tslint:disable-next-line no-console
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
     };
