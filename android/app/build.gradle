@@ -160,7 +160,7 @@ dependencies {
   }
   implementation 'com.android.support:exifinterface:27.1.1'
   implementation 'com.squareup.okio:okio:1.9.0'
-  implementation 'com.facebook.soloader:soloader:0.5.1'
+  implementation 'com.facebook.soloader:soloader:0.6.0'
 
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
