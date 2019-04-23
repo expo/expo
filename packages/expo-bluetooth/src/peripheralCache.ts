@@ -44,7 +44,7 @@ export function updateStateWithPeripheral(peripheral: Peripheral) {
   };
 }
 
-export function updateAdvertismentDataStore(peripheralId: string, advertisementData: any) {
+export function updateAdvertisementDataStore(peripheralId: string, advertisementData: any) {
   const { [peripheralId]: current = {}, ...others } = _advertisements;
   _advertisements = {
     ...others,
