@@ -429,7 +429,7 @@ jobs:
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
       - run:
           name: "Skip job if tarball has already been uploaded"
-          command: (aws s3 ls $S3_URI && circleci step halt) || exit 0
+          command: (aws s3 ls $S3_URI && circleci-cli step halt) || exit 0
       - decrypt_secrets_if_possible
       - yarn_install:
           working_directory: ~/expo/tools-public
