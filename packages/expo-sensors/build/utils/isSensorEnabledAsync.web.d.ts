@@ -1,0 +1,5 @@
+declare type SensorEventName = 'deviceorientation' | 'devicemotion';
+export declare function guardSensorEventEnabledAsync(eventName: SensorEventName, timeout?: number): Promise<boolean>;
+export declare function guardEventEnabledAsync(eventName: string, timeout?: number): Promise<boolean>;
+export declare function isSensorEnabledAsync(eventName: SensorEventName, timeout?: number): Promise<boolean>;
+export default isSensorEnabledAsync;

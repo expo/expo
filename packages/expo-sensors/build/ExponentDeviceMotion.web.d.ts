@@ -3,7 +3,7 @@ declare const _default: {
     readonly Gravity: number;
     isAvailableAsync(): Promise<boolean>;
     _handleMotion(motion: any): void;
-    startObserving(): void;
+    startObserving(): Promise<void>;
     stopObserving(): void;
 };
 export default _default;
