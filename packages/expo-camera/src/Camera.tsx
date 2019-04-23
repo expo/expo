@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
 import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
+import { FaceDetector } from 'expo';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
 
@@ -265,6 +266,9 @@ export default class Camera extends React.Component<Props> {
         onMountError={this._onMountError}
         onBarCodeScanned={onBarCodeScanned}
         onFacesDetected={onFacesDetected}
+        faceDetectorSettings={{
+          detectLandmarks: FaceDetector.Constants.Landmarks.all,
+        }}
         onPictureSaved={_onPictureSaved}
       />
     );

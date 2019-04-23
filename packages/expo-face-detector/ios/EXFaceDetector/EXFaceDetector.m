@@ -8,15 +8,11 @@
 #import "EXFaceDetector.h"
 #import "Firebase.h"
 
-static const NSString *kModeOptionName = @"performanceMode";
-static const NSString *kDetectLandmarksOptionName = @"landmarkMode";
-static const NSString *kRunClassificationsOptionName = @"classificationMode";
-
 @implementation EXFaceDetector
 
 FIRVisionFaceDetector* detector;
 
--(instancetype) initWithOptions:(NSDictionary*)options {
+-(instancetype) initWithOptions:(FIRVisionFaceDetectorOptions*)options {
   self = [super init];
   detector = [EXFaceDetector detectorForOptions:options];
   return self;
@@ -55,21 +51,8 @@ FIRVisionFaceDetector* detector;
   }
 }
 
-+ (FIRVisionFaceDetector *)detectorForOptions:(NSDictionary *)options
++ (FIRVisionFaceDetector *)detectorForOptions:(FIRVisionFaceDetectorOptions *)options
 {
-  FIRVisionFaceDetectorOptions *faceDetectionOptions = [[FIRVisionFaceDetectorOptions alloc] init];
-  
-  if (options[kDetectLandmarksOptionName]) {
-    faceDetectionOptions.landmarkMode = options[kDetectLandmarksOptionName];
-  }
-  
-  if (options[kModeOptionName]) {
-    faceDetectionOptions.performanceMode = options[kModeOptionName];
-  }
-  
-  if (options[kRunClassificationsOptionName]) {
-    faceDetectionOptions.classificationMode = options[kRunClassificationsOptionName];
-  }
-  return [[FIRVision vision] faceDetectorWithOptions:faceDetectionOptions];
+  return [[FIRVision vision] faceDetectorWithOptions:options];
 }
 @end

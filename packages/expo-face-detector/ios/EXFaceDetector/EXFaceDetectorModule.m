@@ -13,10 +13,6 @@
 #import <UMCore/UMModuleRegistry.h>
 #import "Firebase.h"
 
-static const NSString *kModeOptionName = @"mode";
-static const NSString *kDetectLandmarksOptionName = @"detectLandmarks";
-static const NSString *kRunClassificationsOptionName = @"runClassifications";
-
 @interface EXFaceDetectorModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
@@ -86,7 +82,7 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
     
     NSDictionary *detectionOptions = [[self class] detectionOptionsForImage:image];
     
-    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: detectionOptions];
+    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:detectionOptions]];
     [detector detectFromImage:image completionListener:^(NSArray<NSDictionary *> * _Nonnull faces, NSError * _Nonnull error) {
       if (error != nil) {
         reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
@@ -104,24 +100,6 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
   } @catch (NSException *exception) {
     reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
   }
-}
-
-+ (FIRVisionFaceDetector *)detectorForOptions:(NSDictionary *)options
-{
-  FIRVisionFaceDetectorOptions *faceDetectionOptions = [[FIRVisionFaceDetectorOptions alloc] init];
-  
-  if (options[kDetectLandmarksOptionName]) {
-    faceDetectionOptions.landmarkMode = options[kDetectLandmarksOptionName];
-  }
-  
-  if (options[kModeOptionName]) {
-    faceDetectionOptions.performanceMode = options[kModeOptionName];
-  }
-  
-  if (options[kRunClassificationsOptionName]) {
-    faceDetectionOptions.classificationMode = options[kRunClassificationsOptionName];
-  }
-  return [[FIRVision vision] faceDetectorWithOptions:faceDetectionOptions];
 }
 
 # pragma mark: - Detector default options getter and initializer

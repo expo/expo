@@ -14,9 +14,7 @@
 #import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
 #import "Firebase.h"
 
-static const NSString *modeKeyPath = @"mode";
-static const NSString *detectLandmarksKeyPath = @"detectLandmarks";
-static const NSString *runClassificationsKeyPath = @"runClassifications";
+static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMillis";
 
 @interface EXFaceDetectorManager() <AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -29,27 +27,32 @@ static const NSString *runClassificationsKeyPath = @"runClassifications";
 @property (nonatomic, weak) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic, assign, getter=isDetectingFaceEnabled) BOOL faceDetectionEnabled;
 @property (nonatomic, assign, getter=isFaceDetecionRunning) BOOL faceDetectionRunning;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, id> *faceDetectorOptions;
+@property (nonatomic, strong) FIRVisionFaceDetectorOptions* faceDetectorOptions;
 @property (readwrite) BOOL firebaseInitialized;
 @property (readwrite) NSInteger lastFrameCapturedTimeMilis;
 @property (nonatomic, copy) NSDate *startDetect;
 @property (atomic) BOOL faceDetectionProcessing;
+@property NSInteger timeIntervalMillis;
 @property EXFaceEncoder* encoder;
 
 @end
 
 @implementation EXFaceDetectorManager
 
-static NSDictionary *defaultFaceDetectorOptions = nil;
-
 - (instancetype)init
+{
+  return [self initWithOptions:[EXFaceDetectorUtils defaultFaceDetectorOptions]];
+}
+
+- (instancetype)initWithOptions:(NSDictionary*)options
 {
   if (self = [super init]) {
     _faceDetectionProcessing = NO;
     _lastFrameCapturedTimeMilis = 0;
     _previousFacesCount = -1;
-    _faceDetectorOptions = [[NSMutableDictionary alloc] initWithDictionary:[[self class] _getDefaultFaceDetectorOptions]];
+    _faceDetectorOptions = [EXFaceDetectorUtils mapOptions:options];
     _firebaseInitialized = NO;
+    _timeIntervalMillis = 0;
     _startDetect = [NSDate new];
     _interfaceOrientation = UIInterfaceOrientationUnknown;
   }
@@ -88,9 +91,16 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 
 - (void)updateSettings:(NSDictionary *)settings
 {
-  [self _updateOptionSettingForKey:GMVDetectorFaceMode withJSONValue:settings[modeKeyPath]];
-  [self _updateOptionSettingForKey:GMVDetectorFaceLandmarkType withJSONValue:settings[detectLandmarksKeyPath]];
-  [self _updateOptionSettingForKey:GMVDetectorFaceClassificationType withJSONValue:settings[runClassificationsKeyPath]];
+  FIRVisionFaceDetectorOptions* newOptions = [EXFaceDetectorUtils newOptions:self.faceDetectorOptions withValues:settings];
+  if(![EXFaceDetectorUtils areOptionsEqual:newOptions to:self.faceDetectorOptions])
+  {
+    self.faceDetectorOptions = newOptions;
+    [self _resetFaceDetector];
+  }
+  if([settings objectForKey:kMinDetectionIntervalMillis])
+  {
+    self.timeIntervalMillis = [settings[kMinDetectionIntervalMillis] longValue];
+  }
 }
 
 - (void)updateMirrored:(BOOL)mirrored
@@ -206,19 +216,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   return [(NSNumber *)[_faceDetectorOptions valueForKey:key] longValue];
 }
 
-- (void)_updateOptionSettingForKey:(NSString *)key withJSONValue:(NSNumber *)value
-{
-  long requestedValue = [value longValue];
-  long currentValue = [self _getLongOptionValueForKey:key];
-  
-  if (requestedValue != currentValue) {
-    [_faceDetectorOptions setValue:@(requestedValue) forKey:key];
-    [self _runBlockIfQueueIsPresent:^{
-      [self _resetFaceDetector];
-    }];
-  }
-}
-
 - (void)_runBlockIfQueueIsPresent:(void (^)(void))block
 {
   if (_sessionQueue) {
@@ -226,61 +223,52 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   }
 }
 
-- (FIRVisionFaceDetectorOptions*) mapOptions:(NSDictionary*)options {
-  FIRVisionFaceDetectorOptions* result = [FIRVisionFaceDetectorOptions new];
-  if([options objectForKey:@"performanceMode"]) {
-    result.performanceMode = (FIRVisionFaceDetectorPerformanceMode) options[@"performanceMode"];
-  }
-  if([options objectForKey:@"landmarkMode"]) {
-    result.landmarkMode = (FIRVisionFaceDetectorLandmarkMode) options[@"landmarkMode"];
-  }
-  if([options objectForKey:@"classificationMode"]) {
-    result.classificationMode = (FIRVisionFaceDetectorClassificationMode) options[@"classificationMode"];
-  }
-  return result;
-}
-
 - (void)captureOutput:(AVCaptureVideoDataOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-  if(self.faceDetectionProcessing)
-  {
-    return;
-  }
-  
-  self.faceDetectionProcessing = YES;
   
   dispatch_async(dispatch_get_main_queue(), ^{
     self.interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
   });
   
   NSDate* currentTime = [NSDate new];
-  //  NSTimeInterval timePassed = [currentTime timeIntervalSinceDate:self.startDetect];
-  
-  float outputHeight = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
-  float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
-  if(UIInterfaceOrientationIsPortrait(_interfaceOrientation)) { // We need to inverse width and height in portrait
-    outputHeight = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
-    outputWidth = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
-  }
-  float previewWidth =_previewLayer.bounds.size.width;
-  float previewHeight = _previewLayer.bounds.size.height;
-  
-  angleTransformer angleTransform = ^(float angle) { return -angle; };
-  
-  CGAffineTransform transformation = [CSBufferOrientationCalculator pointTransformForInterfaceOrientation:_interfaceOrientation
-                                                                                           forBufferWidth:outputWidth andBufferHeight:outputHeight
-                                                                                            andVideoWidth:previewWidth andVideoHeight:previewHeight andMirrored:_mirroredImageSession];
-  
-  FIRVisionImageMetadata* metadata = [EXFaceDetectorManager metadataForInterfaceOrientation:_interfaceOrientation andMirrored:_mirroredImageSession];
-  
-  _startDetect = currentTime;
-  [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromBuffer:sampleBuffer metadata:metadata completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
-    if(error != nil) {
-      [self _notifyOfFaces:nil withEncoder:nil];
-    } else {
-      [self _notifyOfFaces:faces withEncoder:[[EXFaceEncoder alloc] initWithTransform:transformation withRotationTransform:angleTransform]];
+  double timePassedMillis = [currentTime timeIntervalSinceDate:self.startDetect] * 1000;
+  if(timePassedMillis > self.timeIntervalMillis) {
+   
+    if(self.faceDetectionProcessing)
+    {
+      return;
     }
-    self.faceDetectionProcessing = NO;
-  }];
+    
+    self.startDetect = currentTime;
+    // This flag is used to drop frames when previous were not processed on time.
+    self.faceDetectionProcessing = YES;
+    
+    float outputHeight = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
+    float outputWidth = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
+    if(UIInterfaceOrientationIsPortrait(_interfaceOrientation)) { // We need to inverse width and height in portrait
+      outputHeight = [(NSNumber *)output.videoSettings[@"Width"] floatValue];
+      outputWidth = [(NSNumber *)output.videoSettings[@"Height"] floatValue];
+    }
+    float previewWidth =_previewLayer.bounds.size.width;
+    float previewHeight = _previewLayer.bounds.size.height;
+    
+    angleTransformer angleTransform = ^(float angle) { return -angle; };
+    
+    CGAffineTransform transformation = [CSBufferOrientationCalculator pointTransformForInterfaceOrientation:_interfaceOrientation
+                                                                                             forBufferWidth:outputWidth andBufferHeight:outputHeight
+                                                                                              andVideoWidth:previewWidth andVideoHeight:previewHeight andMirrored:_mirroredImageSession];
+    
+    FIRVisionImageMetadata* metadata = [EXFaceDetectorManager metadataForInterfaceOrientation:_interfaceOrientation andMirrored:_mirroredImageSession];
+    
+    _startDetect = currentTime;
+    [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromBuffer:sampleBuffer metadata:metadata completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
+      if(error != nil) {
+        [self _notifyOfFaces:nil withEncoder:nil];
+      } else {
+        [self _notifyOfFaces:faces withEncoder:[[EXFaceEncoder alloc] initWithTransform:transformation withRotationTransform:angleTransform]];
+      }
+      self.faceDetectionProcessing = NO;
+    }];
+  }
 }
 
 +(FIRVisionImageMetadata*)metadataForInterfaceOrientation:(UIInterfaceOrientation)orientation andMirrored:(BOOL)mirrored
@@ -323,26 +311,6 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   FIRVisionImageMetadata* metadata = [[FIRVisionImageMetadata alloc] init];
   metadata.orientation = imageOrientation;
   return metadata;
-}
-
-# pragma mark - Default options
-
-+ (NSDictionary *)_getDefaultFaceDetectorOptions
-{
-  if (defaultFaceDetectorOptions == nil) {
-    [self _initDefaultFaceDetectorOptions];
-  }
-  
-  return defaultFaceDetectorOptions;
-}
-
-+ (void)_initDefaultFaceDetectorOptions
-{
-  defaultFaceDetectorOptions = @{
-                                 @"performanceMode" : @(FIRVisionFaceDetectorPerformanceModeFast),
-                                 @"landmarkMode" : @(FIRVisionFaceDetectorLandmarkModeAll),
-                                 @"classificationMode" : @(FIRVisionFaceDetectorClassificationModeNone)
-                                 };
 }
 
 @end
