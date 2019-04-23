@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-errors';
+import { CodedError } from '@unimodules/core';
 import qs from 'qs';
 function _removePort(url) {
     return url.replace(/(?=([a-zA-Z0-9+.-]+:\/\/)?[^/]):\d+/, '');

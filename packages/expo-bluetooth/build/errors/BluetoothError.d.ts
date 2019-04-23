@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-errors';
+import { CodedError } from '@unimodules/core';
 import { NativeError } from '../Bluetooth.types';
 export default class BluetoothError extends CodedError implements NativeError {
     log(): void;
