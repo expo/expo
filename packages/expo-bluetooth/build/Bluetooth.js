@@ -52,35 +52,34 @@ export async function observeCentralStateAsync(callback) {
     setTimeout(() => callback(central.state));
     return addHandlerForKey(EVENTS.CENTRAL_STATE_CHANGED, ({ central = {} }) => callback(central.state));
 }
+async function _createStableConnectionAsync(peripheralUUID, timeout, options = {}) {
+    let timeoutTag;
+    if (timeout) {
+        timeoutTag = setTimeout(() => {
+            disconnectAsync(peripheralUUID);
+            throw new BluetoothError({
+                message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${timeout}ms`,
+                code: 'ERR_BLE_TIMEOUT',
+            });
+        }, timeout);
+    }
+    try {
+        const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options || {});
+        clearTimeout(timeoutTag);
+        return result;
+    }
+    catch (error) {
+        clearTimeout(timeoutTag);
+        throw error;
+    }
+}
 export async function connectAsync(peripheralUUID, { timeout, onDisconnect }, options = {}) {
     invariantAvailability('connectPeripheralAsync');
     invariantUUID(peripheralUUID);
     if (onDisconnect) {
         addHandlerForID(EVENTS.PERIPHERAL_DISCONNECTED, peripheralUUID, onDisconnect);
     }
-    let timeoutTag;
-    return new Promise(async (resolve, reject) => {
-        if (timeout) {
-            timeoutTag = setTimeout(() => {
-                disconnectAsync(peripheralUUID);
-                reject(new BluetoothError({
-                    message: `Failed to connect to peripheral: ${peripheralUUID} in under: ${timeout}ms`,
-                    code: 'ERR_BLE_TIMEOUT',
-                }));
-            }, timeout);
-        }
-        try {
-            const result = await ExpoBluetooth.connectPeripheralAsync(peripheralUUID, options || {});
-            clearTimeout(timeoutTag);
-            resolve(result);
-            return;
-        }
-        catch (error) {
-            clearTimeout(timeoutTag);
-            reject(error);
-            return;
-        }
-    });
+    return await _createStableConnectionAsync(peripheralUUID, timeout, options);
 }
 /** This method will also cancel pending connections */
 export async function disconnectAsync(peripheralUUID) {

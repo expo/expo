@@ -24,11 +24,14 @@
   },
   "peerDependencies": {
     "expo": "~32.0.0",
-    "expo-core": "~2.0.0",
     "expo-constants-interface": "~2.0.0",
+    "expo-core": "~2.0.0",
     "expo-permissions-interface": "~2.0.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
+  },
+  "dependencies": {
+    "@unimodules/core": "^1.0.0"
   }
 }
