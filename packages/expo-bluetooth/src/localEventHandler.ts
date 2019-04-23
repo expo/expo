@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from 'expo-core';
+import { EventEmitter, Subscription } from '@unimodules/core';
 
 import { Central, Peripheral } from './Bluetooth.types';
 import { getPeripherals } from './peripheralCache';

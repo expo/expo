@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-core';
+import { Subscription } from '@unimodules/core';
 import { Central, Peripheral } from './Bluetooth.types';
 export declare function firePeripheralObservers(): void;
 export declare function fireSingleEventHandlers(event: string, { central, peripheral, error, }: {

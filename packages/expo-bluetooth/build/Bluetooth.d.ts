@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-core';
+import { Subscription } from '@unimodules/core';
 import { Base64, CancelScanningCallback, Central, CentralManagerOptions, CharacteristicProperty, ConnectionOptions, Characteristic, Descriptor, PeripheralConnectionOption, Service, Peripheral, RSSI, ScanOptions, StateUpdatedCallback, UUID, WriteCharacteristicOptions, ReadCharacteristicOptions } from './Bluetooth.types';
 import { AndroidGATTError } from './errors';
 /**

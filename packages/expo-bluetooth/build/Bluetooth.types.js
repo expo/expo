@@ -124,7 +124,7 @@ export var CharacteristicProperty;
     /** Permits indications of the characteristic value. */
     CharacteristicProperty["Indicate"] = "indicate";
     /** Permits signed writes of the characteristic value */
-    CharacteristicProperty["AutheticateSignedWrites"] = "autheticateSignedWrites";
+    CharacteristicProperty["AuthenticateSignedWrites"] = "authenticateSignedWrites";
     /* If set, additional characteristic properties are defined in the characteristic extended properties descriptor.
      * Not allowed for local characteristics.
      */

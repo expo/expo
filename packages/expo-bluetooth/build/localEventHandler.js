@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-core';
+import { EventEmitter } from '@unimodules/core';
 import { getPeripherals } from './peripheralCache';
 import ExpoBluetooth from './ExpoBluetooth/ExpoBluetooth';
 const eventEmitter = new EventEmitter(ExpoBluetooth);

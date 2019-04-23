@@ -1,5 +1,5 @@
 import { CharacteristicProperty, } from './Bluetooth.types';
-import { AndroidGATTError, BluetoothError, invariant, invariantAvailability, invariantUUID } from './errors';
+import { AndroidGATTError, BluetoothError, invariant, invariantAvailability, invariantUUID, } from './errors';
 import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './localEventHandler';
 import { clearPeripherals, getPeripherals, updateStateWithPeripheral } from './peripheralCache';
@@ -226,7 +226,10 @@ export async function loadPeripheralAsync({ id }, skipConnecting = false) {
     const peripheralId = peripheralIdFromId(id);
     const peripheral = getPeripherals()[peripheralId];
     if (!peripheral) {
-        throw new BluetoothError({ code: 'ERR_BLE_LOADING', message: 'Not a peripheral ' + peripheralId });
+        throw new BluetoothError({
+            code: 'ERR_BLE_LOADING',
+            message: 'Not a peripheral ' + peripheralId,
+        });
     }
     if (peripheral.state !== 'connected') {
         if (!skipConnecting) {

@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-core';
+import { Subscription } from '@unimodules/core';
 
 import { Central, Peripheral, Priority, UUID, MTU } from './Bluetooth.types';
 import { addHandlerForKey } from './localEventHandler';

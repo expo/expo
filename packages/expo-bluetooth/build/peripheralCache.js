@@ -32,7 +32,7 @@ export function updateStateWithPeripheral(peripheral) {
         },
     };
 }
-export function updateAdvertismentDataStore(peripheralId, advertisementData) {
+export function updateAdvertisementDataStore(peripheralId, advertisementData) {
     const { [peripheralId]: current = {}, ...others } = _advertisements;
     _advertisements = {
         ...others,

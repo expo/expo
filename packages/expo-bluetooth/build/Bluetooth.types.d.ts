@@ -116,7 +116,7 @@ export declare enum CharacteristicProperty {
     /** Permits indications of the characteristic value. */
     Indicate = "indicate",
     /** Permits signed writes of the characteristic value */
-    AutheticateSignedWrites = "autheticateSignedWrites",
+    AuthenticateSignedWrites = "authenticateSignedWrites",
     ExtendedProperties = "extendedProperties",
     /** If set, only trusted devices can enable notifications of the characteristic value. */
     NotifyEncryptionRequired = "notifyEncryptionRequired",
@@ -150,7 +150,7 @@ export declare type EventData = {
     central?: Central | null;
     descriptor?: Descriptor | null;
     service?: Service | null;
-    advertisementData?: AdvertismentData | null;
+    advertisementData?: AdvertisementData | null;
     RSSI?: RSSI;
     error?: NativeError | null;
 };
@@ -173,7 +173,7 @@ export interface Service extends BluetoothElement {
     includedServices: Service[];
     characteristics: Characteristic[];
 }
-export interface AdvertismentData {
+export interface AdvertisementData {
     manufacturerData: Base64 | null;
     serviceData: {
         [uuid: string]: Base64;
@@ -186,7 +186,7 @@ export interface AdvertismentData {
     overflowServiceUUIDs: UUID[] | null;
 }
 export interface Peripheral extends BluetoothElement {
-    advertisementData?: AdvertismentData;
+    advertisementData?: AdvertisementData;
     name: string | null;
     RSSI: RSSI | null;
     state: PeripheralState;
