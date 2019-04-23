@@ -37,9 +37,9 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo-core": "~3.0.1",
-    "expo-firebase-app": "~2.0.0",
+    "@unimodules/core": "~1.0.0",
+    "expo-firebase-app": "~3.0.0",
     "jest-expo": "^32.0.0"
   },
-  "gitHead": "9132f99f2ceb431006060c7f89d0928cc2053897"
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

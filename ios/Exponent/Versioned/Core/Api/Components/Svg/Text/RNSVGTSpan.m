@@ -17,13 +17,14 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 @implementation RNSVGTSpan
 {
     CGFloat startOffset;
-    CGPathRef _cache;
     CGFloat _pathLength;
     RNSVGTextPath *textPath;
     NSArray *lengths;
     NSArray *lines;
     NSUInteger lineCount;
     BOOL isClosed;
+    NSMutableArray *emoji;
+    NSMutableArray *emojiTransform;
 }
 
 - (id)init
@@ -33,6 +34,9 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     if (RNSVGTSpan_separators == nil) {
         RNSVGTSpan_separators = [NSCharacterSet whitespaceCharacterSet];
     }
+
+    emoji = [NSMutableArray arrayWithCapacity:0];
+    emojiTransform = [NSMutableArray arrayWithCapacity:0];
 
     return self;
 }
@@ -49,6 +53,21 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 - (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
     if (self.content) {
+        if (self.path) {
+            NSUInteger count = [emoji count];
+            RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
+            CGFloat fontSize = [gc getFontSize];
+            for (NSUInteger i = 0; i < count; i++) {
+                UILabel *label = [emoji objectAtIndex:i];
+                NSValue *transformValue = [emojiTransform objectAtIndex:i];
+                CGAffineTransform transform = [transformValue CGAffineTransformValue];
+                CGContextConcatCTM(context, transform);
+                CGContextTranslateCTM(context, 0, -fontSize);
+                [label.layer renderInContext:context];
+                CGContextTranslateCTM(context, 0, fontSize);
+                CGContextConcatCTM(context, CGAffineTransformInvert(transform));
+            }
+        }
         [self renderPathTo:context rect:rect];
     } else {
         [self clip:context];
@@ -56,22 +75,11 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     }
 }
 
-- (void)releaseCachedPath
-{
-    CGPathRelease(_cache);
-    _cache = nil;
-    self.path = nil;
-}
-
-- (void)dealloc
-{
-    CGPathRelease(_cache);
-}
-
 - (CGPathRef)getPath:(CGContextRef)context
 {
-    if (_cache) {
-        return _cache;
+    CGPathRef path = self.path;
+    if (path) {
+        return path;
     }
 
     NSString *text = self.content;
@@ -83,9 +91,9 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 
     [self pushGlyphContext];
 
-    CGPathRef path = [self getLinePath:text context:context];
+    path = [self getLinePath:text context:context];
 
-    _cache = CGPathRetain(CFAutorelease(CGPathCreateCopy(path)));
+    self.path = CGPathRetain(path);
 
     [self popGlyphContext];
 
@@ -670,6 +678,9 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
         }
     }
 
+    [emoji removeAllObjects];
+    [emojiTransform removeAllObjects];
+
     CFArrayRef runs = CTLineGetGlyphRuns(line);
     CFIndex runEnd = CFArrayGetCount(runs);
     for (CFIndex r = 0; r < runEnd; r++) {
@@ -764,8 +775,10 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 
                 //  Glyphs whose midpoint-on-the-path are off the path are not rendered.
                 if (midPoint > endOfRendering) {
+                    CGPathRelease(glyphPath);
                     continue;
                 } else if (midPoint < startOfRendering) {
+                    CGPathRelease(glyphPath);
                     continue;
                 }
 
@@ -839,6 +852,9 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
                 [label.layer renderInContext:context];
                 CGContextTranslateCTM(context, 0, fontSize);
                 CGContextConcatCTM(context, CGAffineTransformInvert(transform));
+
+                [emoji addObject:label];
+                [emojiTransform addObject:[NSValue valueWithCGAffineTransform:transform]];
             } else {
                 transform = CGAffineTransformScale(transform, 1.0, -1.0);
                 CGPathAddPath(path, &transform, glyphPath);

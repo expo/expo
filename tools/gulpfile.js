@@ -5,6 +5,7 @@ const { resolve } = require('path');
 const shell = require('gulp-shell');
 const argv = require('minimist')(process.argv.slice(2));
 const { Modules } = require('xdl');
+const chalk = require('chalk');
 
 const { saveKernelBundlesAsync } = require('./bundle-tasks');
 const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
@@ -94,7 +95,7 @@ gulp.task(
 );
 gulp.task(
   'android-copy-universal-modules',
-  gulp.series(...Modules.getVersionableModulesForPlatform('android').map(
+  gulp.series(...Modules.getVersionableModulesForPlatform('android', argv.abi || 'UNVERSIONED').map(
     module => shell.task([
       `./android-copy-universal-module.sh ${argv.abi} ../packages/${module.libName}/${module.subdirectory}`
     ])
@@ -205,51 +206,6 @@ gulp.task('update-react-native-maps', async () => {
   });
 });
 
-gulp.task('update-tipsi-stripe', () => {
-  throw new Error('Not working yet, need to update updateVendoredNativeModule to support Optional');
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-tipsi-stripe',
-    repoUrl: 'https://github.com/jeff-da/tipsi-stripe',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Components/tipsi',
-    sourceAndroidPath: 'android/src/main/java/com/gettipsi/',
-    targetAndroidPath: 'modules/api/components/tipsi',
-    sourceAndroidPackage: 'com.gettipsi.stripe.StripeReactPackage',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.tipsi',
-  });
-});
-
-gulp.task('update-react-native-admob', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-admob',
-    repoUrl: 'https://github.com/expo/react-native-admob',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Components/admob',
-    sourceAndroidPath: 'android/src/main/java/com/sbugert/rnadmob/',
-    targetAndroidPath: 'modules/api/components/admob',
-    sourceAndroidPackage: 'com.sbugert.rnadmob',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.admob',
-  });
-});
-
-gulp.task('update-react-native-view-shot', () => {
-  console.warn('Heads up, iOS uses EX- instead of RN- symbol prefix');
-  return updateVendoredNativeModule({
-    argv,
-    skipCleanup: true,
-    name: 'react-native-view-shot',
-    repoUrl: 'https://github.com/gre/react-native-view-shot.git',
-    sourceIosPath: 'ios',
-    sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
-    targetIosPath: 'Api',
-    targetAndroidPath: 'modules/api',
-    sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.viewshot',
-  });
-});
-
 gulp.task('update-react-native-lottie', () => {
   return updateVendoredNativeModule({
     argv,
@@ -263,35 +219,6 @@ gulp.task('update-react-native-lottie', () => {
     targetAndroidPath: 'modules/api/components/lottie',
     sourceAndroidPackage: 'com.airbnb.android.react.lottie',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.lottie',
-  });
-});
-
-gulp.task('update-react-native-fbads', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-fbads',
-    repoUrl: 'https://github.com/callstack-io/react-native-fbads.git',
-    sourceIosPath: 'src/ios',
-    targetIosPath: 'Api/FBAds',
-    sourceAndroidPath: 'src/android/src/main/java/io/callstack/react/fbads',
-    targetAndroidPath: 'modules/api/fbads',
-    sourceAndroidPackage: 'io.callstack.react.fbads',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.fbads',
-  });
-});
-
-gulp.task('update-react-native-branch', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-branch',
-    repoUrl: 'https://github.com/BranchMetrics/react-native-branch-deep-linking.git',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Standalone/Branch',
-    sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-    targetAndroidPath: 'modules/api/standalone/branch',
-    sourceAndroidPackage: 'io.branch.rnbranch',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.standalone.branch',
-    recursive: false,
   });
 });
 
@@ -321,6 +248,35 @@ gulp.task('update-react-native-screens', () => {
     targetAndroidPath: 'modules/api/screens',
     sourceAndroidPackage: 'com.swmansion.rnscreens',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
+  });
+});
+
+gulp.task('update-react-native-webview', () => {
+  console.warn(chalk.bold(chalk.yellow(`\n\`react-native-webview\` exposes \`useSharedPool\` property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.\n\nSee commit 0e7d25bd9facba74828a0af971293d30f9ba22fc.\n`)));
+  return updateVendoredNativeModule({
+    argv,
+    name: 'react-native-webview',
+    repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
+    sourceIosPath: 'ios',
+    sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/webview',
+    targetIosPath: 'Api/Components/WebView',
+    targetAndroidPath: 'modules/api/components/webview',
+    sourceAndroidPackage: 'com.reactnativecommunity.webview',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+  });
+});
+
+gulp.task('update-react-native-netinfo', () => {
+  return updateVendoredNativeModule({
+    argv,
+    name: 'react-native-netinfo',
+    repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
+    sourceIosPath: 'ios',
+    sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/netinfo',
+    targetIosPath: 'Api/NetInfo',
+    targetAndroidPath: 'modules/api/netinfo',
+    sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
   });
 });
 

@@ -44,20 +44,23 @@ const GUIDES = [
   'Preloading & Caching Assets',
   'Icons',
   'Custom Fonts',
-  'Splash Screens',
   'Using Custom Fonts',
   'Routing & Navigation',
   'Configuring StatusBar',
+  'Create a Splash Screen',
   'Offline Support',
   'Configuring OTA Updates',
   'Push Notifications',
   'Using FCM for Push Notifications',
   'Notification Channels',
+  'Testing with Jest',
+  'Using TypeScript',
   'Using Modern JavaScript',
   'Using ClojureScript',
-  'Using Firebase: Web SDK',
+  'Using Firebase',
   'Using GraphQL',
   'Using Sentry',
+  'Crafting Educational Materials',
 ];
 
 const FUNDAMENTALS = [
@@ -67,7 +70,6 @@ const FUNDAMENTALS = [
   'Debugging',
   'Development Mode',
   'Android Studio Emulator',
-  'Genymotion',
   'Configuration with app.json',
   'Publishing',
   'Release Channels',
@@ -103,7 +105,8 @@ const EXPOKIT = [
 ];
 
 const ESSENTIALS = [
-  'Hello World'
+  'Hello World',
+  'Unimodules Full List'
 ];
 
 const REACT_NATIVE = [

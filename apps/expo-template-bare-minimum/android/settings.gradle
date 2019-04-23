@@ -1,6 +1,0 @@
-apply from: "../node_modules/@unimodules/core/settings.gradle"
-useUnimodules.apply()
-
-rootProject.name = 'HelloWorld'
-
-include ':app'

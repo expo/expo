@@ -9,9 +9,9 @@ import com.facebook.react.ReactPackage;
 
 import java.util.List;
 
-import expo.adapters.react.ReactModuleRegistryProvider;
-import expo.core.interfaces.Package;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
 import host.exp.exponent.Constants;
 import host.exp.expoview.ExpoViewBuildConfig;
 import versioned.host.exp.exponent.ExponentPackageDelegate;

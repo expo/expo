@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-core';
+import { EventEmitter } from '@unimodules/core';
 declare const LocationEventEmitter: EventEmitter;
 interface ProviderStatus {
     locationServicesEnabled: boolean;
@@ -46,7 +46,16 @@ interface Address {
 }
 interface LocationTaskOptions {
     accuracy?: LocationAccuracy;
+    timeInterval?: number;
+    distanceInterval?: number;
     showsBackgroundLocationIndicator?: boolean;
+    deferredUpdatesDistance?: number;
+    deferredUpdatesTimeout?: number;
+    foregroundService?: {
+        notificationTitle: string;
+        notificationBody: string;
+        notificationColor?: string;
+    };
 }
 interface Region {
     identifier?: string;

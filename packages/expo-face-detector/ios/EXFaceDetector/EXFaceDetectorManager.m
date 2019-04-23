@@ -9,7 +9,7 @@
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceDetectorManager.h>
-#import <EXFaceDetectorInterface/EXFaceDetectorManager.h>
+#import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
 
 static const NSString *modeKeyPath = @"mode";
 static const NSString *detectLandmarksKeyPath = @"detectLandmarks";
@@ -115,7 +115,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       _previousFacesCount = -1;
       [self _notifyOfFaces:nil];
     } @catch (NSException *exception) {
-      EXLogWarn(@"%@", [exception description]);
+      UMLogWarn(@"%@", [exception description]);
     }
   }
   

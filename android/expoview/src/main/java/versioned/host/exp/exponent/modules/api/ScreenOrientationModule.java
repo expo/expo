@@ -14,7 +14,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 
-import expo.errors.InvalidArgumentException;
+import org.unimodules.core.errors.InvalidArgumentException;
 
 import javax.annotation.Nullable;
 

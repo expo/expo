@@ -6,13 +6,13 @@ import android.os.Handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.taskManager.TaskServiceInterface;
-import expo.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 public class TaskManagerModule extends ExportedModule implements ModuleRegistryConsumer {
   static String EVENT_NAME = "TaskManager.executeTask";

@@ -12,12 +12,12 @@ import android.util.Log;
 
 import java.util.Map;
 
-import expo.core.interfaces.LifecycleEventListener;
-import expo.interfaces.taskManager.TaskConsumer;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskExecutionCallback;
-import expo.interfaces.taskManager.TaskInterface;
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.interfaces.taskManager.TaskConsumer;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private static final String TAG = BackgroundFetchTaskConsumer.class.getSimpleName();

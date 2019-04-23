@@ -11,12 +11,12 @@ import android.support.v4.os.CancellationSignal;
 import java.util.ArrayList;
 import java.util.List;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.UIManager;
 
 public class LocalAuthenticationModule extends ExportedModule implements ModuleRegistryConsumer {
   private final FingerprintManagerCompat mFingerprintManager;

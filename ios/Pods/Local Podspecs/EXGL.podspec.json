@@ -1,6 +1,6 @@
 {
   "name": "EXGL",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "summary": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "license": "MIT",
@@ -16,13 +16,13 @@
   "preserve_paths": "**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXFileSystemInterface": [
+    "UMFileSystemInterface": [
 
     ],
-    "EXCameraInterface": [
+    "UMCameraInterface": [
 
     ],
     "EXGL-CPP": [

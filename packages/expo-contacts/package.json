@@ -1,9 +1,10 @@
 {
   "name": "expo-contacts",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Provides access to the phone's system contacts.",
   "main": "build/Contacts.js",
   "types": "build/Contacts.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -31,7 +32,7 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "expo-core": "*"
+    "@unimodules/core": "*"
   },
   "dependencies": {
     "uuid-js": "^0.7.5"
@@ -39,5 +40,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

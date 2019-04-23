@@ -1,8 +1,10 @@
 import { Calendar } from 'expo';
 import { Platform } from 'react-native';
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 
 import * as TestUtils from '../TestUtils';
+
+export const name = 'Calendar';
 
 async function createTestCalendarAsync(patch = {}) {
   return await Calendar.createCalendarAsync({

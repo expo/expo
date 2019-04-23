@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXTaskManager/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
-  s.dependency 'EXConstantsInterface'
-  s.dependency 'EXTaskManagerInterface'
+  s.dependency 'UMCore'
+  s.dependency 'UMConstantsInterface'
+  s.dependency 'UMTaskManagerInterface'
 end

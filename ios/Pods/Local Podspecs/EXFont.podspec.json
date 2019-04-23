@@ -1,6 +1,6 @@
 {
   "name": "EXFont",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "summary": "Load fonts at runtime and use them in React Native components.",
   "description": "Load fonts at runtime and use them in React Native components.",
   "license": "MIT",
@@ -16,10 +16,10 @@
   "preserve_paths": "EXFont/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXFontInterface": [
+    "UMFontInterface": [
 
     ]
   }

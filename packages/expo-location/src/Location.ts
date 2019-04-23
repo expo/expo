@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from 'expo-core';
+import { EventEmitter, Platform } from '@unimodules/core';
 import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';
@@ -56,8 +56,17 @@ interface Address {
 };
 
 interface LocationTaskOptions {
-  accuracy?: LocationAccuracy,
-  showsBackgroundLocationIndicator?: boolean,
+  accuracy?: LocationAccuracy;
+  timeInterval?: number; // Android only
+  distanceInterval?: number;
+  showsBackgroundLocationIndicator?: boolean; // iOS only
+  deferredUpdatesDistance?: number;
+  deferredUpdatesTimeout?: number;
+  foregroundService?: {
+    notificationTitle: string;
+    notificationBody: string;
+    notificationColor?: string;
+  };
 };
 
 interface Region {

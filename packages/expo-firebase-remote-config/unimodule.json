@@ -1,0 +1,4 @@
+{
+  "name": "expo-firebase-remote-config",
+  "platforms": ["ios", "android"]
+}

@@ -1,9 +1,10 @@
 {
   "name": "expo-facebook",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Expo universal module for Facebook SDK",
   "main": "build/Facebook.js",
   "types": "build/Facebook.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -32,5 +33,6 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
-  }
+  },
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

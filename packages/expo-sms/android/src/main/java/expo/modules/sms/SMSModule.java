@@ -7,22 +7,23 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.UIManager;
 
 public class SMSModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener {
   private static final String TAG = "ExpoSMS";
   private static final String ERROR_TAG = "E_SMS";
 
   private ModuleRegistry mModuleRegistry;
-  private Promise mPromise;
+  private Promise mPendingPromise;
   private boolean mSMSComposerOpened = false;
 
   SMSModule(Context context) {
@@ -51,24 +52,13 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
 
   @ExpoMethod
   public void sendSMSAsync(final ArrayList<String> addresses, final String message, final Promise promise) {
-    if (!getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY) &&
-        !getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY_CDMA)) {
-      promise.reject(ERROR_TAG + "_UNAVAILABLE", "SMS service not available");
-      return;
-    }
-
-    if (mPromise != null) {
+    if (mPendingPromise != null) {
       promise.reject(ERROR_TAG + "_SENDING_IN_PROGRESS", "Different SMS sending in progress. Await the old request and then try again.");
       return;
     }
 
-    final StringBuilder addressesBuilder = new StringBuilder(addresses.get(0));
-    for (int idx = 1; idx < addresses.size(); idx++) {
-      addressesBuilder.append(';').append(addresses.get(idx));
-    }
-
     final Intent SMSIntent = new Intent(Intent.ACTION_SENDTO);
-    final String smsTo = addressesBuilder.toString();
+    final String smsTo = constructRecipients(addresses);
     SMSIntent.setData(Uri.parse("smsto:" + smsTo));
     SMSIntent.putExtra("exit_on_sent", true);
     SMSIntent.putExtra("compose_mode", true);
@@ -80,7 +70,7 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
       return;
     }
 
-    mPromise = promise;
+    mPendingPromise = promise;
 
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
     activityProvider.getCurrentActivity().startActivity(SMSIntent);
@@ -99,14 +89,14 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
 
   @Override
   public void onHostResume() {
-    if (mSMSComposerOpened && mPromise != null) {
+    if (mSMSComposerOpened && mPendingPromise != null) {
       // the only way to check the status of the message is to query the device's SMS database
       // but this requires READ_SMS permission, which Google is heavily restricting beginning Jan 2019
       // so we just resolve with an unknown value
       Bundle result = new Bundle();
       result.putString("result", "unknown");
-      mPromise.resolve(result);
-      mPromise = null;
+      mPendingPromise.resolve(result);
+      mPendingPromise = null;
     }
     mSMSComposerOpened = false;
   }
@@ -120,4 +110,16 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
   public void onHostDestroy() {
     // do nothing
   }
+
+  private String constructRecipients(List<String> addresses) {
+    if (addresses.size() > 0) {
+      final StringBuilder addressesBuilder = new StringBuilder(addresses.get(0));
+      for (String address : addresses) {
+        addressesBuilder.append(';').append(address);
+      }
+      return addressesBuilder.toString();
+    }
+    return "";
+  }
+
 }

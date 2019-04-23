@@ -1,38 +1,50 @@
 import React from 'react';
 import { EventEmitter } from 'fbemitter';
 import { NavigationEvents } from 'react-navigation';
-import { AsyncStorage, StyleSheet, Text, View } from 'react-native';
-import { BlurView, Location, MapView, TaskManager } from 'expo';
+import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
+import { Location, MapView, Permissions, TaskManager } from 'expo';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
 
-const STORAGE_KEY = 'ncl-locations';
+const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';
 
 const locationEventsEmitter = new EventEmitter();
 
-export default class BackgroundLocationMapScreen extends React.Component {
+export default class BackgroundLocationScreen extends React.Component {
   static navigationOptions = {
-    title: 'Location Map',
+    title: 'Background location',
   };
 
   mapViewRef = React.createRef();
 
   state = {
     accuracy: Location.Accuracy.High,
-    isWatching: false,
-    isGeofencing: false,
+    isTracking: false,
+    showsBackgroundLocationIndicator: false,
     savedLocations: [],
-    geofencingRegions: [],
     initialRegion: null,
+    error: null,
   };
 
   didFocus = async () => {
-    await Location.requestPermissionsAsync();
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+    if (status !== 'granted') {
+      AppState.addEventListener('change', this.handleAppStateChange);
+      this.setState({
+        error:
+          'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
+      });
+      return;
+    } else {
+      this.setState({ error: null });
+    }
 
     const { coords } = await Location.getCurrentPositionAsync();
-    const isWatching = await Location.hasStartedLocationUpdatesAsync(LOCATION_UPDATES_TASK);
+    const isTracking = await Location.hasStartedLocationUpdatesAsync(LOCATION_UPDATES_TASK);
     const task = (await TaskManager.getRegisteredTasksAsync()).find(
       ({ taskName }) => taskName === LOCATION_UPDATES_TASK
     );
@@ -43,9 +55,14 @@ export default class BackgroundLocationMapScreen extends React.Component {
       this.setState({ savedLocations: locations });
     });
 
+    if (!isTracking) {
+      alert('Click `Start tracking` to start getting location updates.');
+    }
+
     this.setState({
       accuracy,
-      isWatching,
+      isTracking,
+      showsBackgroundLocationIndicator: task && task.options.showsBackgroundLocationIndicator,
       savedLocations,
       initialRegion: {
         latitude: coords.latitude,
@@ -56,29 +73,61 @@ export default class BackgroundLocationMapScreen extends React.Component {
     });
   };
 
+  handleAppStateChange = nextAppState => {
+    if (nextAppState !== 'active') {
+      return;
+    }
+
+    if (this.state.initialRegion) {
+      AppState.removeEventListener('change', this.handleAppStateChange);
+      return;
+    }
+
+    this.didFocus();
+  };
+
   componentWillUnmount() {
     if (this.eventSubscription) {
       this.eventSubscription.remove();
     }
+    AppState.removeEventListener('change', this.handleAppStateChange);
   }
 
   async startLocationUpdates(accuracy = this.state.accuracy) {
     await Location.startLocationUpdatesAsync(LOCATION_UPDATES_TASK, {
       accuracy,
-      showsBackgroundLocationIndicator: false,
+      showsBackgroundLocationIndicator: this.state.showsBackgroundLocationIndicator,
+      deferredUpdatesInterval: 60 * 1000, // 1 minute
+      deferredUpdatesDistance: 100, // 100 meters
+      foregroundService: {
+        notificationTitle: 'expo-location-demo',
+        notificationBody: 'Background location is running...',
+        notificationColor: Colors.tintColor,
+      },
     });
-    this.setState({ isWatching: true });
+
+    if (!this.state.isTracking) {
+      alert(
+        'Now you can send app to the background, go somewhere and come back here! You can even terminate the app and it will be woken up when the new significant location change comes out.'
+      );
+    }
+    this.setState({ isTracking: true });
   }
 
   async stopLocationUpdates() {
     await Location.stopLocationUpdatesAsync(LOCATION_UPDATES_TASK);
-    this.setState({ isWatching: false });
+    this.setState({ isTracking: false });
   }
 
-  toggleWatching = async () => {
+  clearLocations = async () => {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    this.setState({ savedLocations: [] });
+  };
+
+  toggleTracking = async () => {
     await AsyncStorage.removeItem(STORAGE_KEY);
 
-    if (this.state.isWatching) {
+    if (this.state.isTracking) {
       await this.stopLocationUpdates();
     } else {
       await this.startLocationUpdates();
@@ -92,10 +141,20 @@ export default class BackgroundLocationMapScreen extends React.Component {
 
     this.setState({ accuracy });
 
-    if (this.state.isWatching) {
+    if (this.state.isTracking) {
       // Restart background task with the new accuracy.
       this.startLocationUpdates(accuracy);
     }
+  };
+
+  toggleLocationIndicator = async () => {
+    const showsBackgroundLocationIndicator = !this.state.showsBackgroundLocationIndicator;
+
+    this.setState({ showsBackgroundLocationIndicator }, async () => {
+      if (this.state.isTracking) {
+        await this.startLocationUpdates();
+      }
+    });
   };
 
   onCenterMap = async () => {
@@ -128,23 +187,16 @@ export default class BackgroundLocationMapScreen extends React.Component {
   }
 
   render() {
+    if (this.state.error) {
+      return <Text style={styles.errorText}>{this.state.error}</Text>;
+    }
+
     if (!this.state.initialRegion) {
       return <NavigationEvents onDidFocus={this.didFocus} />;
     }
 
     return (
       <View style={styles.screen}>
-        <View style={styles.heading}>
-          <BlurView tint="light" intensity={70} style={styles.blurView}>
-            <Text style={styles.headingText}>
-              { this.state.isWatching
-                ? 'Now you can send app to the background, go somewhere and come back here! You can even terminate the app and it will be woken up when the new significant location change comes out.'
-                : 'Click `Start watching` to start getting location updates.'
-              }
-            </Text>
-          </BlurView>
-        </View>
-
         <MapView
           ref={this.mapViewRef}
           style={styles.mapView}
@@ -152,20 +204,38 @@ export default class BackgroundLocationMapScreen extends React.Component {
           showsUserLocation>
           {this.renderPolyline()}
         </MapView>
-        <View style={styles.buttons}>
-          <View style={styles.leftButtons}>
+        <View style={styles.buttons} pointerEvents="box-none">
+          <View style={styles.topButtons}>
+            <View style={styles.buttonsColumn}>
+              {Platform.OS === 'android' ? null : (
+                <Button style={styles.button} onPress={this.toggleLocationIndicator}>
+                  <Text>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
+                  <Text> background </Text>
+                  <FontAwesome name="location-arrow" size={20} color="white" />
+                  <Text> indicator</Text>
+                </Button>
+              )}
+              <Button
+                title={`Accuracy: ${Location.Accuracy[this.state.accuracy]}`}
+                style={styles.button}
+                onPress={this.onAccuracyChange}
+              />
+            </View>
+            <View style={styles.buttonsColumn}>
+              <Button style={styles.button} onPress={this.onCenterMap}>
+                <MaterialIcons name="my-location" size={20} color="white" />
+              </Button>
+            </View>
+          </View>
+
+          <View style={styles.bottomButtons}>
+            <Button title="Clear locations" style={styles.button} onPress={this.clearLocations} />
             <Button
-              buttonStyle={styles.button}
-              title={this.state.isWatching ? 'Stop watching' : 'Start watching'}
-              onPress={this.toggleWatching}
-            />
-            <Button
-              buttonStyle={styles.button}
-              title={`Accuracy: ${Location.Accuracy[this.state.accuracy]}`}
-              onPress={this.onAccuracyChange}
+              title={this.state.isTracking ? 'Stop tracking' : 'Start tracking'}
+              style={styles.button}
+              onPress={this.toggleTracking}
             />
           </View>
-          <Button buttonStyle={styles.button} title="Center" onPress={this.onCenterMap} />
         </View>
       </View>
     );
@@ -182,14 +252,14 @@ async function getSavedLocations() {
 }
 
 TaskManager.defineTask(LOCATION_UPDATES_TASK, async ({ data: { locations } }) => {
-  console.log('Received new locations:', locations);
-
   if (locations && locations.length > 0) {
     const savedLocations = await getSavedLocations();
     const newLocations = locations.map(({ coords }) => ({
       latitude: coords.latitude,
       longitude: coords.longitude,
     }));
+
+    console.log(`Received new locations at ${new Date()}:`, locations);
 
     savedLocations.push(...newLocations);
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(savedLocations));
@@ -202,39 +272,40 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  heading: {
-    backgroundColor: 'rgba(255, 255, 0, 0.1)',
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    left: 0,
-    zIndex: 2,
-  },
-  blurView: {
-    flex: 1,
-    padding: 5,
-  },
-  headingText: {
-    textAlign: 'center',
-  },
   mapView: {
     flex: 1,
   },
   buttons: {
-    flexDirection: 'row',
+    flex: 1,
+    flexDirection: 'column',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
     padding: 10,
     position: 'absolute',
+    top: 0,
     right: 0,
     bottom: 0,
     left: 0,
   },
-  leftButtons: {
+  topButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  bottomButtons: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  buttonsColumn: {
+    flexDirection: 'column',
     alignItems: 'flex-start',
   },
   button: {
-    padding: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     marginVertical: 5,
+  },
+  errorText: {
+    fontSize: 15,
+    color: 'rgba(0,0,0,0.7)',
+    margin: 20,
   },
 });

@@ -7,8 +7,8 @@
 
 + (void)getInfoForFile:(NSURL *)fileUri
            withOptions:(NSDictionary *)options
-              resolver:(EXPromiseResolveBlock)resolve
-              rejecter:(EXPromiseRejectBlock)reject
+              resolver:(UMPromiseResolveBlock)resolve
+              rejecter:(UMPromiseRejectBlock)reject
 {
   PHFetchResult<PHAsset *> *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[fileUri] options:nil];
   if (fetchResult.count > 0) {
@@ -36,8 +36,8 @@
 
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
-        resolver:(EXPromiseResolveBlock)resolve
-        rejecter:(EXPromiseRejectBlock)reject
+        resolver:(UMPromiseResolveBlock)resolve
+        rejecter:(UMPromiseRejectBlock)reject
 {
   NSString *toPath = [to.path stringByStandardizingPath];
   

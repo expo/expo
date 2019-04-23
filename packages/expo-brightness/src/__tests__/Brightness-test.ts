@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import { mockPlatformAndroid, mockPlatformIOS, unmockAllProperties } from 'jest-expo';
 
 import * as Brightness from '../Brightness';

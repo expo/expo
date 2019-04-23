@@ -14,15 +14,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.barcodescanner.BarCodeScanner;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
-import expo.interfaces.imageloader.ImageLoader;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.interfaces.imageloader.ImageLoader;
 
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_BACK;
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_FRONT;
@@ -100,7 +100,7 @@ public class BarCodeScannerModule extends ExportedModule implements ModuleRegist
     }
 
     final ImageLoader imageLoader = mModuleRegistry.getModule(ImageLoader.class);
-    imageLoader.loadImageFromURL(url, new ImageLoader.ResultListener() {
+    imageLoader.loadImageForDisplayFromURL(url, new ImageLoader.ResultListener() {
       @Override
       public void onSuccess(@NonNull Bitmap bitmap) {
         BarCodeScanner scanner = mBarCodeScannerProvider.createBarCodeDetectorWithContext(getContext());

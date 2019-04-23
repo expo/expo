@@ -22,7 +22,7 @@ import java.util.Map;
 
 import abi32_0_0.expo.adapters.react.ReactModuleRegistryProvider;
 import abi32_0_0.expo.core.interfaces.Package;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.SingletonModule;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;

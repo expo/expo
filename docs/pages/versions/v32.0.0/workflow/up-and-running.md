@@ -67,6 +67,6 @@ You have created a new Expo project, made a change, and seen it update.
 ### Next Steps
 
 - The [Additional Resources](../../introduction/additional-resources/#additional-resources) has a bunch of useful resources for learning.
-- Read about the [Expo SDK](../../sdk/) to learn about some useful APIs we provide out of the box.
+- Read about the [Expo SDK](../../sdk/overview/) to learn about some useful APIs we provide out of the box.
 - Read some of our other guides, such as how to implement [Push Notifications](../../guides/push-notifications/#push-notifications), how we can take care of [Assets](../../guides/assets/#all-about-assets) for you, or how to build [Standalone Apps](../../distribution/building-standalone-apps/#building-standalone-apps) you can submit to Apple or Google.
 - Join us on Slack to get your questions answered.

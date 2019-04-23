@@ -113,6 +113,10 @@ The following exists are known to us and will be resolved shortly.
 
 - iOS splash screen status bar is white in standalone apps but dark in Expo client. It should be dark in standalone apps by default too, and also it should be customizable.
 
+### iOS Caching
+
+Splash Screens on iOS standalone apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However,the caching sometimes can persist for a day or two so be patient if the aforementioned steps were unable to resolve the issue.
+
 ### Migrating from the `loading` API
 
 The `loading` API is deprecated as of SDK 22 and has a strictly worse user experience, so we recommend you change over to `splash` as soon as you have time - the `loading` API will be removed in favor of `splash` in SDK 25.

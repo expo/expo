@@ -38,6 +38,8 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
         self.opacity = 1;
         self.transforms = CGAffineTransformIdentity;
         self.invTransform = CGAffineTransformIdentity;
+        _merging = false;
+        _dirty = false;
     }
     return self;
 }
@@ -62,6 +64,10 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 
 - (void)invalidate
 {
+    if (_dirty || _merging) {
+        return;
+    }
+    _dirty = true;
     id<RNSVGContainer> container = (id<RNSVGContainer>)self.superview;
     [container invalidate];
     [self clearPath];
@@ -72,9 +78,34 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 
 - (void)clearPath
 {
-    if (_path) {
-        CGPathRelease(_path);
-        _path = nil;
+    CGPathRelease(_path);
+    self.path = nil;
+}
+
+- (void)clearChildCache
+{
+    [self clearPath];
+    for (__kindof RNSVGNode *node in self.subviews) {
+        if ([node isKindOfClass:[RNSVGNode class]]) {
+            [node clearChildCache];
+        }
+    }
+}
+
+- (void)clearParentCache
+{
+    RNSVGNode* node = self;
+    while (node != nil) {
+        UIView* parent = [node superview];
+
+        if (![parent isKindOfClass:[RNSVGNode class]]) {
+            return;
+        }
+        node = (RNSVGNode*)parent;
+        if (!node.path) {
+            return;
+        }
+        [node clearPath];
     }
 }
 
@@ -239,6 +270,7 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 
 - (void)renderTo:(CGContextRef)context rect:(CGRect)rect
 {
+    self.dirty = false;
     // abstract
 }
 
@@ -251,6 +283,9 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 {
     if (self.clipPath) {
         _clipNode = (RNSVGClipPath*)[self.svgView getDefinedClipPath:self.clipPath];
+        if (_cachedClipPath) {
+            CGPathRelease(_cachedClipPath);
+        }
         _cachedClipPath = CGPathRetain([_clipNode getPath:context]);
         if (_clipMask) {
             CGImageRelease(_clipMask);
@@ -496,6 +531,7 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
 
 - (void)parseReference
 {
+    self.dirty = false;
     if (self.name) {
         typeof(self) __weak weakSelf = self;
         [self.svgView defineTemplate:weakSelf templateName:self.name];
@@ -511,21 +547,12 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
     }
 }
 
-- (void)releaseCachedPath
-{
-    [self clearPath];
-    [self traverseSubviews:^BOOL(__kindof RNSVGNode *node) {
-        if ([node isKindOfClass:[RNSVGNode class]]) {
-            [node releaseCachedPath];
-        }
-        return YES;
-    }];
-}
-
 - (void)dealloc
 {
     CGPathRelease(_cachedClipPath);
+    CGPathRelease(_strokePath);
     CGImageRelease(_clipMask);
+    CGPathRelease(_path);
     _clipMask = nil;
 }
 

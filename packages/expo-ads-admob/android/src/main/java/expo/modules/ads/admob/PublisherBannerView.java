@@ -12,7 +12,7 @@ import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 
-import expo.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class PublisherBannerView extends FrameLayout implements AppEventListener {
   private String testDeviceID = null;

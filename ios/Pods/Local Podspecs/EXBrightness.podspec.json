@@ -1,6 +1,6 @@
 {
   "name": "EXBrightness",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Provides an API to get and set screen brightness.",
   "description": "Provides an API to get and set screen brightness.",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "preserve_paths": "EXBrightness/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

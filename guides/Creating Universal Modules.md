@@ -15,12 +15,12 @@ This guide will explain how to create a universal module and integrate it into E
 3. It will guide you through the process, asking some questions about the modules, like a name:
   1. if you’re creating an implementation module (your code will actually do something, expose some functionality to client code, eg. barcode scanner), prefix hyphenated name of your module with `expo-`. (eg. `expo-barcode-scanner`).
   2. if you’re creating an interface module (one that will be a middle-ground between a consumer and provider), prefix hyphenated name of your module with `expo-` and end it with `-interface`. (eg. `expo-barcode-scanner-interface`)
-  3. if you’re creating an adapter for a host platform (like React Native or Flutter), prefix hyphenated name of the platform with `expo-` and end with `-adapter` (eg. `expo-react-native-adapter`)
+  3. if you’re creating an adapter for a host platform (like React Native or Flutter), prefix hyphenated name of the platform with `@unimodules/` and end with `-adapter` (eg. `@unimodules/react-native-adapter`)
   4. Some areas of Expo SDK will be scoped on a name level, eg. for analytics we know we’ll have multiple providers, so we’ll name them `expo-analytics-branch`, `expo-analytics-segment`, etc.
   5. when it comes to Cocoapods name: `expo-module-name-something` => `EXModuleNameSomething`
   6. when it comes to Java module name:
     1. implementation module — `expo.modules.something`
-    2. interface module — `expo.interfaces.something`
+    2. interface module — `org.unimodules.interfaces.something`
     3. platform adapter — `expo.adapters.something`
     4. scoped modules (eg. analytics) — `expo.modules.scope.something`, eg. `expo.modules.analytics.segment`
 4. Great! You should have a new directory created in `packages` named properly.
@@ -39,4 +39,4 @@ This guide will explain how to create a universal module and integrate it into E
 6. If you want your module to also be available in standalone apps:
   - edit `android/app/build.gradle` so that there is a commented out `api 'host.exp.exponent:expo-your-module:1.0.0'` under `// Optional universal modules`
   - edit `expoPackages()` method in `MainActivity.java` so its return value includes your module's package too.
-7. You're good to go! For available API options, check out existing universal modules and [documentation of `expo-core`](https://github.com/expo/expo-core).
+7. You're good to go! For available API options, check out existing universal modules and [documentation of `@unimodules/core`](https://github.com/unimodules/core).

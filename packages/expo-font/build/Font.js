@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
 const isWeb = Platform.OS === 'web';
 const loaded = {};
@@ -98,20 +98,22 @@ function _getNativeFontName(name) {
     }
     return `${Constants.sessionId}-${name}`;
 }
-let wasImportWarningShown = false;
-// @ts-ignore: Temporarily define an export named "Font" for legacy compatibility
-Object.defineProperty(exports, 'Font', {
-    get() {
-        if (!wasImportWarningShown) {
-            console.warn(`The syntax "import { Font } from 'expo-font'" is deprecated. Use "import * as Font from 'expo-font'" or import named exports instead. Support for the old syntax will be removed in SDK 33.`);
-            wasImportWarningShown = true;
-        }
-        return {
-            processFontFamily,
-            isLoaded,
-            isLoading,
-            loadAsync,
-        };
-    }
-});
+if (module && module.exports) {
+    let wasImportWarningShown = false;
+    // @ts-ignore: Temporarily define an export named "Font" for legacy compatibility
+    Object.defineProperty(exports, 'Font', {
+        get() {
+            if (!wasImportWarningShown) {
+                console.warn(`The syntax "import { Font } from 'expo-font'" is deprecated. Use "import * as Font from 'expo-font'" or import named exports instead. Support for the old syntax will be removed in SDK 33.`);
+                wasImportWarningShown = true;
+            }
+            return {
+                processFontFamily,
+                isLoaded,
+                isLoading,
+                loadAsync,
+            };
+        },
+    });
+}
 //# sourceMappingURL=Font.js.map

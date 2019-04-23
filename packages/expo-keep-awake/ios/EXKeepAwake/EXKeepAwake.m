@@ -1,26 +1,32 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXModuleRegistry.h>
+#import <UMCore/UMModuleRegistry.h>
 #import <EXKeepAwake/EXKeepAwake.h>
-#import <EXCore/EXAppLifecycleService.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMAppLifecycleService.h>
+#import <UMCore/UMUtilities.h>
 
-@interface EXKeepAwake () <EXAppLifecycleListener>
+@interface EXKeepAwake () <UMAppLifecycleListener>
 
-@property (nonatomic, weak) id<EXAppLifecycleService> lifecycleManager;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXKeepAwake {
-  BOOL _active;
+  NSMutableSet *_activeTags;
 }
 
-EX_EXPORT_MODULE(ExpoKeepAwake);
+- (instancetype)init {
+  self = [super init];
+  _activeTags = [NSMutableSet set];
+  return self;
+}
 
-# pragma mark - EXModuleRegistryConsumer
+UM_EXPORT_MODULE(ExpoKeepAwake);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+# pragma mark - UMModuleRegistryConsumer
+
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if (_moduleRegistry) {
     [_lifecycleManager unregisterAppLifecycleListener:self];
@@ -29,7 +35,7 @@ EX_EXPORT_MODULE(ExpoKeepAwake);
   _lifecycleManager = nil;
   
   if (moduleRegistry) {
-    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
+    _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
   }
   
   if (_lifecycleManager) {
@@ -37,40 +43,50 @@ EX_EXPORT_MODULE(ExpoKeepAwake);
   }
 }
 
-EX_EXPORT_METHOD_AS(activate, activate:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(activate, activate:(NSString *)tag
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
-  _active = YES;
-  [EXUtilities performSynchronouslyOnMainThread:^{
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-  }];
+  if(![self shouldBeActive]) {
+    [UMUtilities performSynchronouslyOnMainThread:^{
+      [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    }];
+  }
+  [_activeTags addObject:tag];
   resolve(@YES);
 }
 
-EX_EXPORT_METHOD_AS(deactivate, deactivate:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(deactivate, deactivate:(NSString *)tag
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
-  _active = NO;
-  [EXUtilities performSynchronouslyOnMainThread:^{
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-  }];
+  [_activeTags removeObject:tag];
+  if (![self shouldBeActive]) {
+    [UMUtilities performSynchronouslyOnMainThread:^{
+      [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    }];
+  }
   resolve(@YES);
 }
 
-# pragma mark - EXAppLifecycleListener
+# pragma mark - UMAppLifecycleListener
 
 - (void)onAppBackgrounded {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
   }];
 }
 
 - (void)onAppForegrounded {
-  if (_active) {
-    [EXUtilities performSynchronouslyOnMainThread:^{
+  if ([self shouldBeActive]) {
+    [UMUtilities performSynchronouslyOnMainThread:^{
       [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     }];
   }
+}
+
+- (BOOL)shouldBeActive {
+  return [_activeTags count] > 0;
 }
 
 @end

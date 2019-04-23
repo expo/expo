@@ -1,5 +1,10 @@
 package versioned.host.exp.exponent.modules.api.components.svg;
 
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReadableArray;
+
+import java.util.ArrayList;
+
 // https://www.w3.org/TR/SVG/types.html#InterfaceSVGLength
 enum SVGLengthUnitType {
     SVG_LENGTHTYPE_UNKNOWN,
@@ -82,6 +87,55 @@ class SVGLength {
                 unit = SVGLengthUnitType.SVG_LENGTHTYPE_NUMBER;
                 value = Double.valueOf(length);
             }
+        }
+    }
+
+    static SVGLength from(Dynamic dynamic) {
+        switch (dynamic.getType()) {
+            case Number:
+                return new SVGLength(dynamic.asDouble());
+            case String:
+                return new SVGLength(dynamic.asString());
+            default:
+                return new SVGLength();
+        }
+    }
+
+    static String toString(Dynamic dynamic) {
+        switch (dynamic.getType()) {
+            case Number:
+                return String.valueOf(dynamic.asDouble());
+            case String:
+                return dynamic.asString();
+            default:
+                return null;
+        }
+    }
+
+    static ArrayList<SVGLength> arrayFrom(Dynamic dynamic) {
+        switch (dynamic.getType()) {
+            case Number: {
+                ArrayList<SVGLength> list = new ArrayList<>(1);
+                list.add(new SVGLength(dynamic.asDouble()));
+                return list;
+            }
+            case Array: {
+                ReadableArray arr = dynamic.asArray();
+                int size = arr.size();
+                ArrayList<SVGLength> list = new ArrayList<>(size);
+                for (int i = 0; i < size; i++) {
+                    Dynamic val = arr.getDynamic(i);
+                    list.add(from(val));
+                }
+                return list;
+            }
+            case String: {
+                ArrayList<SVGLength> list = new ArrayList<>(1);
+                list.add(new SVGLength(dynamic.asString()));
+                return list;
+            }
+            default:
+                return null;
         }
     }
 }

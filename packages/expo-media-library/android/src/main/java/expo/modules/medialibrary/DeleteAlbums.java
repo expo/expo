@@ -6,7 +6,7 @@ import android.provider.MediaStore.Images.Media;
 
 import java.util.List;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 import static expo.modules.medialibrary.MediaLibraryUtils.deleteAssets;
 import static expo.modules.medialibrary.MediaLibraryUtils.getInPart;
 

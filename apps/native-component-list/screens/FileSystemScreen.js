@@ -22,6 +22,12 @@ export default class FileSystemScreen extends React.Component {
   };
 
   _download = async () => {
+    const url = 'http://ipv4.download.thinkbroadband.com/256KB.zip';
+    await FileSystem.downloadAsync(url, FileSystem.documentDirectory + '256KB.zip');
+    alert('Download complete!');
+  };
+
+  _startDownloading = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
     const fileUri = FileSystem.documentDirectory + '5MB.zip';
     const callback = downloadProgress => {
@@ -169,7 +175,8 @@ export default class FileSystemScreen extends React.Component {
     }
     return (
       <ScrollView style={{ padding: 10 }}>
-        <ListButton onPress={this._download} title="Start Downloading file (5mb)" />
+        <ListButton onPress={this._download} title="Download file (512KB)" />
+        <ListButton onPress={this._startDownloading} title="Start Downloading file (5MB)" />
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._getInfo} title="Get Info" />

@@ -1,15 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Dimensions,
-  Linking,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Linking, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { BarCodeScanner } from 'expo';
 import { throttle } from 'lodash';
 
@@ -47,7 +39,10 @@ export default class BarCodeScreen extends React.Component {
     return (
       <View style={styles.container}>
         {this.state.scannerIsVisible ? (
-          <BarCodeScanner onBarCodeRead={this._handleBarCodeRead} style={StyleSheet.absoluteFill} />
+          <BarCodeScanner
+            onBarCodeScanned={this._handleBarCodeScanned}
+            style={StyleSheet.absoluteFill}
+          />
         ) : null}
 
         <View style={styles.topOverlay} />
@@ -76,7 +71,7 @@ export default class BarCodeScreen extends React.Component {
     );
   }
 
-  _handleBarCodeRead = throttle(({ data: url }) => {
+  _handleBarCodeScanned = throttle(({ data: url }) => {
     this.setState({ scannerIsVisible: false }, () => {
       if (this._isMounted) {
         this._openUrl(url);
@@ -186,7 +181,6 @@ const styles = StyleSheet.create({
   header: {
     position: 'absolute',
     top: 40,
-    left: 0,
     right: 0,
     alignItems: 'flex-start',
     left: 25,

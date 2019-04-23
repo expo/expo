@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 #import <EXGL/EXGLView.h>
 #import <EXGL/EXGLContext.h>
 
@@ -40,14 +40,14 @@
   return [CAEAGLLayer class];
 }
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if ((self = [super init])) {
     _isLayouted = NO;
     _renderbufferPresented = YES;
     _viewBuffersSize = CGSizeZero;
     
-    self.contentScaleFactor = [EXUtilities screenScale];
+    self.contentScaleFactor = [UMUtilities screenScale];
     
     // Initialize properties of our backing CAEAGLLayer
     CAEAGLLayer *eaglLayer = (CAEAGLLayer *) self.layer;
@@ -102,7 +102,7 @@
   [self maybeCallSurfaceCreated];
 }
 
-- (void)setOnSurfaceCreate:(EXDirectEventBlock)onSurfaceCreate
+- (void)setOnSurfaceCreate:(UMDirectEventBlock)onSurfaceCreate
 {
   _onSurfaceCreate = onSurfaceCreate;
   [self maybeCallSurfaceCreated];

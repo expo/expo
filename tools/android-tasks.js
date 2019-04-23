@@ -184,7 +184,7 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   );
 
   // getDetachableModulesForPlatform was breaking on face detector
-  const detachableUniversalModules = Modules.getAllNativeForExpoClientOnPlatform('android');
+  const detachableUniversalModules = Modules.getAllNativeForExpoClientOnPlatform('android', sdkVersion);
 
   await stashFileAsync(appBuildGradle);
   await stashFileAsync(expoViewBuildGradle);
@@ -249,10 +249,19 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     path.join(androidRoot, 'maven/com/facebook/react'),
   ]);
 
+  const detachableUniversalModulesNames = await Promise.all(
+    detachableUniversalModules.map(async ({ libName }) => {
+      const unimoduleJsonFileName = `../packages/${libName}/unimodule.json`;
+      const unimoduleJson = await fs.readFile(unimoduleJsonFileName);
+      const unimoduleConfiguration = JSON.parse(unimoduleJson);
+      return unimoduleConfiguration.name;
+    })
+  );
+
   // Build RN and exponent view
   const archivesToUpload = [
     'ReactAndroid',
-    ...detachableUniversalModules.map(({ libName }) => libName),
+    ...detachableUniversalModulesNames,
     'expoview',
   ];
 

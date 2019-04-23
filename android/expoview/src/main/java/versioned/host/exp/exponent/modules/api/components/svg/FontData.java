@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.svg;
 
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 
 import static com.facebook.react.uimanager.ViewProps.FONT_FAMILY;
 import static com.facebook.react.uimanager.ViewProps.FONT_SIZE;
@@ -75,14 +76,19 @@ class FontData {
         double parentFontSize = parent.fontSize;
 
         if (font.hasKey(FONT_SIZE)) {
-            String string = font.getString(FONT_SIZE);
-            fontSize = PropHelper.fromRelative(
-                string,
-                parentFontSize,
-                0,
-                1,
-                parentFontSize
-            );
+            ReadableType fontSizeType = font.getType(FONT_SIZE);
+            if (fontSizeType == ReadableType.Number) {
+                fontSize = font.getDouble(FONT_SIZE);
+            } else {
+                String string = font.getString(FONT_SIZE);
+                fontSize = PropHelper.fromRelative(
+                    string,
+                    parentFontSize,
+                    0,
+                    1,
+                    parentFontSize
+                );
+            }
         } else {
             fontSize = parentFontSize;
         }

@@ -1,4 +1,4 @@
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 const isIOS = Platform.OS === 'ios';
 export default class IOSMessaging {
     constructor(messaging) {

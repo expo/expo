@@ -12,7 +12,7 @@ This guide is meant to give a high-level explanation of what Expo offers. For th
 
 You can create a new Expo project with only our desktop tool and a text editor. See [Up and Running](../../workflow/up-and-running/) for a fast guide to creating a project, running it on a device, and making changes.
 
-Expo apps are React Native apps with the Expo SDK built-in. The fastest way to get started is using the [Up and Running](../../workflow/up-and-running/) guide, but you can also [convert an existing React Native app](../faq/#how-do-i-get-my-existing-react-native-project-running-with-expo) or adopt only bits and pieces of Expo into your app.
+Expo apps are React Native apps with the Expo SDK built-in. The fastest way to get started is using the [Up and Running](../../workflow/up-and-running/) guide, but you can also [convert an existing React Native app](../faq/#how-do-i-get-my-existing-react) or adopt only bits and pieces of Expo into your app.
 
 ## Developing locally
 
@@ -32,11 +32,11 @@ On iOS, you'll need to use Apple TestFlight to share your app with others.
 
 You can continue making changes locally without disrupting your users. Any time you **Publish** changes to your app, your new version becomes available immediately to anybody with the link.
 
-We frequently release updates to the [Expo SDK](../../sdk/). Each update includes instructions for how to upgrade your project. If you decide to update to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
+We frequently release updates to the [Expo SDK](../../sdk/overview/). Each update includes instructions for how to upgrade your project. If you decide to update to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 
 ## Deploying to the Apple App Store and Google Play
 
-When you're ready to list your app officially on the Apple App Store and Google Play Store, Expo can generate deployment-ready `.ipa` and `.apk` archives which are ready to submit to Apple and Google. We generate them on our servers, so you still don't need any Apple or Google software. See the documentation about [Distributing Apps](../../distribution/).
+When you're ready to list your app officially on the Apple App Store and Google Play Store, Expo can generate deployment-ready `.ipa` and `.apk` archives which are ready to submit to Apple and Google. We generate them on our servers, so you still don't need any Apple or Google software. See the documentation about [Distributing Apps](../../distribution/introduction/).
 
 ## Changing native code
 

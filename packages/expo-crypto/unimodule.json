@@ -1,0 +1,4 @@
+{
+  "name": "expo-crypto",
+  "platforms": ["ios", "android"]
+}

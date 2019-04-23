@@ -1,0 +1,4 @@
+{
+  "name": "expo-av",
+  "platforms": ["ios", "android"]
+}

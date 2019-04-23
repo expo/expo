@@ -6,7 +6,7 @@ Expo includes support for payments through [Stripe](https://stripe.com/) and [Ap
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
-We encourage you to look at our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples) of ExpoKit apps.
+We encourage you to look at our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples) of ExpoKit apps.
 
 _Note_: (Android only) If you are using Expo Client then the setup has already been done for you.
 Also, the way you should use payments is slightly different. Instead of importing
@@ -48,7 +48,7 @@ Finally, make sure [CocoaPods](https://cocoapods.org/) is installed and run `pod
 > You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
 
 Follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
-If you have problems with this step just look at files: `Info.plist` and `AppDelegate.m` in one of our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples).
+If you have problems with this step just look at files: `Info.plist` and `AppDelegate.m` in one of our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples).
 
 ## Adding the Payments Module on Android
 
@@ -126,7 +126,7 @@ Add the following code to your `AndroidManifest.xml`, replacing `your_scheme` wi
       ...
 ```
 
-If you have problems with this step just look at `AndroidManifest.xml` in one of our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples). Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
+If you have problems with this step just look at `AndroidManifest.xml` in one of our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples). Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
 
 ## Importing Payments
 

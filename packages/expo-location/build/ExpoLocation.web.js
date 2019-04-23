@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-core';
+import { EventEmitter } from '@unimodules/core';
 class GeocoderError extends Error {
     constructor() {
         super('Geocoder service is not available for this device.');

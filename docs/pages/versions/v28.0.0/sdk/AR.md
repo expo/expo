@@ -6,6 +6,10 @@ title: AR
 Augmented Reality with ARKit for iOS 
 This library is generally used with [expo-three](https://github.com/expo/expo-three) to generate a camera, and manage a 3D scene.
 
+## Warning
+
+This API can only be used in ejected projects and is considered experimental.
+
 ## API
 
 > [Examples can be found here](https://github.com/expo/three-ar-test)

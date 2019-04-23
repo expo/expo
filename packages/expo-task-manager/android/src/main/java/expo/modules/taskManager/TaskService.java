@@ -25,13 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import expo.core.interfaces.SingletonModule;
-import expo.interfaces.taskManager.TaskExecutionCallback;
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
-import expo.interfaces.taskManager.TaskServiceInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskInterface;
-import expo.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppRecordInterface;
@@ -237,6 +237,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   @Override
   public void setTaskManager(TaskManagerInterface taskManager, String appId, String appUrl) {
+    // It may be called with null when the host activity is destroyed.
+    if (taskManager == null) {
+      sTaskManagers.remove(appId);
+      return;
+    }
+
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.interfaces.Package;
+import org.unimodules.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.amplitude.AmplitudePackage;
@@ -18,6 +18,7 @@ import expo.modules.bluetooth.BluetoothPackage;
 import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
+import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
 import expo.modules.crypto.CryptoPackage;
@@ -93,6 +94,7 @@ public class ExperiencePackagePicker {
       new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),
+      new SharingPackage(),
       new SpeechPackage(),
       new StripePackage(),
       new TaskManagerPackage(),

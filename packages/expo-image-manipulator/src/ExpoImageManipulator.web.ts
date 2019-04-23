@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-errors';
+import { CodedError } from '@unimodules/core';
 import {
   ImageResult,
   SaveOptions,

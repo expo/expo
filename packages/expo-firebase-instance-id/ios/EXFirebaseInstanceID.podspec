@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXFirebaseInstanceID/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
+  s.dependency 'UMCore'
   s.dependency 'Firebase/Messaging'
 
 end

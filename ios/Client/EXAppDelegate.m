@@ -8,25 +8,17 @@
 #import <Crashlytics/Crashlytics.h>
 #import <Fabric/Fabric.h>
 #import <EXTaskManager/EXTaskService.h>
-#import <EXCore/EXModuleRegistryProvider.h>
+#import <UMCore/UMModuleRegistryProvider.h>
 
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
 
-#if __has_include(<EXAppAuth/EXAppAuth.h>)
-#import <EXAppAuth/EXAppAuth.h>
-#endif
-
-#if __has_include(<ABI32_0_0EXAppAuth/ABI32_0_0EXAppAuth.h>)
-#import <ABI32_0_0EXAppAuth/ABI32_0_0EXAppAuth.h>
+#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
+#import <EXAppAuth/EXAppAuthSessionsManager.h>
 #endif
 
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
-#import <GoogleSignIn/GoogleSignIn.h>
-#endif
-
-#if __has_include(<ABI32_0_0GoogleSignIn/ABI32_0_0GoogleSignIn.h>)
 #import <GoogleSignIn/GoogleSignIn.h>
 #endif
 
@@ -60,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     // App launched in foreground
     [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
   }
-  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
+  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
 
@@ -89,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
+  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:UMTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
 }
 
 #pragma mark - Handling URLs
@@ -98,27 +90,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
   id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
   NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
+  if ([(EXAppAuthSessionsManager *)[UMModuleRegistryProvider getSingletonModuleForClass:EXAppAuthSessionsManager.class] application:app openURL:url options:options]) {
+    return YES;
+  }
+#endif
 #if __has_include(<GoogleSignIn/GoogleSignIn.h>)
   if ([[GIDSignIn sharedInstance] handleURL:url
                           sourceApplication:sourceApplication
                                  annotation:annotation]) {
-    return YES;
-  }
-#endif
-#if __has_include(<ABI32_0_0GoogleSignIn/ABI32_0_0GoogleSignIn.h>)
-  if ([[ABI32_0_0GIDSignIn sharedInstance] handleURL:url
-                          sourceApplication:sourceApplication
-                                 annotation:annotation]) {
-    return YES;
-  }
-#endif
-#if __has_include(<EXAppAuth/EXAppAuth.h>)
-  if ([[EXAppAuth instance] application:app openURL:url options:options]) {
-    return YES;
-  }
-#endif
-#if __has_include(<ABI32_0_0EXAppAuth/ABI32_0_0EXAppAuth.h>)
-  if ([[ABI32_0_0EXAppAuth instance] application:app openURL:url options:options]) {
     return YES;
   }
 #endif
@@ -154,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
   [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-  [(EXTaskService *)[EXModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:EXTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
+  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:UMTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
 }
 
 // TODO: Remove once SDK31 is phased out

@@ -164,7 +164,7 @@ dependencies {
 
   // unversioned modules
   implementation project(':expo-gl-cpp')
-  implementation project(':expo-task-manager-interface')
+  implementation project(':unimodules-task-manager-interface')
   implementation project(':expo-print')
-  implementation project(':expo-core')
+  implementation project(':unimodules-core')
 }

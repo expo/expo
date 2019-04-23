@@ -81,7 +81,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
     nativeModulesList.add(new NativeModulesProxy(reactApplicationContext, moduleRegistry));
 
-    // Add listener that will notify expo.core.ModuleRegistry when all modules are ready
+    // Add listener that will notify org.unimodules.core.ModuleRegistry when all modules are ready
     nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
 
     return nativeModulesList;
@@ -99,7 +99,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
     List<ViewManager> viewManagerList = new ArrayList<>();
 
-    // Naming conflict -- add abiXX_X_X. prefix to expo.core.ViewManager manually 
+    // Naming conflict -- add abiXX_X_X. prefix to org.unimodules.core.ViewManager manually 
     for (abi30_0_0.expo.core.ViewManager viewManager : moduleRegistry.getAllViewManagers()) {
       switch (viewManager.getViewManagerType()) {
         case GROUP:

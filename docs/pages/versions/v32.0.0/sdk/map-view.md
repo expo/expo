@@ -51,7 +51,7 @@ Apple Maps should just work with no extra configuration. For Google Maps, you ca
 
 ### Deploying Google Maps to ExpoKit for iOS
 
-If you want to add MapView with Google Maps to an [ExpoKit](../../expokit) (ejected) project on iOS, you may need to manually provide a key by calling:
+If you want to add MapView with Google Maps to an [ExpoKit](../../expokit/overview/) (ejected) project on iOS, you may need to manually provide a key by calling:
 
 ```
 [GMSServices provideApiKey:@"your api key"]

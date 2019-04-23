@@ -1,8 +1,18 @@
 {
   "name": "expo-app-auth",
-  "version": "3.0.0",
-  "description": "Provides an interface with the OpenID library AppAuth",
-  "main": "index.js",
+  "version": "4.0.0",
+  "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
+  "main": "build/AppAuth.js",
+  "types": "build/AppAuth.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -20,7 +30,7 @@
     "url": "https://github.com/expo/expo.git"
   },
   "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+    "url": "https://github.com/expo/expo/issues?q=is%3Aopen+is%3Aissue+label%3AAppAuth"
   },
   "contributors": [
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
@@ -28,9 +38,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/app-auth/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "unimodulePeerDependencies": {
-    "expo-core": "*",
-    "expo-constants-interface": "*"
+    "@unimodules/core": "*",
+    "unimodules-constants-interface": "*"
   },
   "dependencies": {
     "invariant": "^2.2.4"
@@ -39,5 +52,5 @@
     "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "9132f99f2ceb431006060c7f89d0928cc2053897"
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

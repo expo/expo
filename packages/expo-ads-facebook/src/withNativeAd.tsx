@@ -2,11 +2,13 @@ import { EventSubscription } from 'fbemitter';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
-import { requireNativeViewManager } from 'expo-core';
+import { requireNativeViewManager } from '@unimodules/core';
 
 import { NativeAdIconView } from './AdIconView';
 import { NativeAdMediaView } from './AdMediaView';
 import AdsManager from './NativeAdsManager';
+
+let NativeAdLayout: React.ComponentType = requireNativeViewManager('NativeAdLayout');
 
 type AdContainerProps<P> = {
   adsManager: AdsManager;
@@ -77,20 +79,38 @@ export default function withNativeAd<P>(
 
       let { adsManager } = this.props;
       let props = this._getForwardedProps();
-      return (
-        <NativeAdView
-          ref={this._nativeAdViewRef}
-          adsManager={adsManager.placementId}
-          onAdLoaded={this._handleAdLoaded}>
-          <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
-            <AdIconViewContext.Provider value={this._adIconViewContextValue}>
-              <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                {this.state.ad ? <Component {...props} nativeAd={this.state.ad} /> : null}
-              </AdTriggerViewContext.Provider>
-            </AdIconViewContext.Provider>
-          </AdMediaViewContext.Provider>
-        </NativeAdView>
+
+      let viewHierarchy = (
+          <NativeAdView
+            ref={this._nativeAdViewRef}
+            adsManager={adsManager.placementId}
+            onAdLoaded={this._handleAdLoaded}>
+            <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
+              <AdIconViewContext.Provider value={this._adIconViewContextValue}>
+                <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
+                  <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
+                    {this.state.ad ? (
+                      <Component
+                        {...props}
+                        nativeAd={this.state.ad}
+                      />
+                    ) : null}
+                  </AdOptionsViewContext.Provider>
+                </AdTriggerViewContext.Provider>
+              </AdIconViewContext.Provider>
+            </AdMediaViewContext.Provider>
+          </NativeAdView>
       );
+
+      if (Platform.OS === 'android') {
+        return (
+          <NativeAdLayout>
+            {viewHierarchy}
+          </NativeAdLayout>
+        );
+      }
+
+      return viewHierarchy;
     }
 
     _getForwardedProps(): P {
@@ -115,6 +135,10 @@ export default function withNativeAd<P>(
           this._setAdNodeHandles({ adMediaViewNodeHandle: null });
         }
       },
+    };
+
+    _adOptionsViewContextValue = {
+      nativeAdViewRef: this._nativeAdViewRef
     };
 
     _adIconViewContextValue = {
@@ -208,9 +232,14 @@ export type AdTriggerViewContextValue = {
   onTriggerAd: () => void;
 };
 
+export type AdOptionsViewContextValue = {
+  nativeAdViewRef: React.RefObject<NativeAdView>;
+};
+
 export const AdIconViewContext = React.createContext<AdIconViewContextValue | null>(null);
 export const AdMediaViewContext = React.createContext<AdMediaViewContextValue | null>(null);
 export const AdTriggerViewContext = React.createContext<AdTriggerViewContextValue | null>(null);
+export const AdOptionsViewContext = React.createContext<AdOptionsViewContextValue | null>(null);
 
 export type NativeAd = {
   /**

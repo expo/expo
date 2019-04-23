@@ -6,6 +6,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- updated `react-native-svg` to `9.3.6` by [@Szymon20000](https://github.com/Szymon20000) ([#3860](https://github.com/expo/expo/pull/3860))
 - removed deprecated `MediaView` and `TriggerView` from `expo-ads-facebook` by [@EvanBacon](https://github.com/EvanBacon) ([#3539](https://github.com/expo/expo/pull/3603)). You should use `AdMediaView` & `AdTriggerView` instead.
 - deprecated `Expo.Util` by [@EvanBacon](https://github.com/EvanBacon) ([#3539](https://github.com/expo/expo/pull/3577)). You should use `Expo.Updates` & `Expo.Localization` instead.
 - removed use of `expolib_v1.okhttp` in favor of regular `okhttp` dependency by [@Szymon20000](https://github.com/Szymon20000) ([#3539](https://github.com/expo/expo/pull/3539)) (an update to `MainApplication.getOkHttpBuilder` may be required when upgrading)
@@ -15,27 +16,46 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `ImageManipulator.manipulateAsync` is now accepting `ImageManipulator.FlipType.{Vertical, Horizontal}` as flipping action parameter and `ImageManipulator.SaveFormat.{JPEG, PNG}` as saving option [@bbarthec](https://github.com/bbarthec) ([#3245](https://github.com/expo/expo/pull/3245))
 - removed `devKernel` and `prodKernel` build flavors from Android ExpoKit projects (all Gradle commands become simply `[verb](Debug|Release)`, e.g. `installDebug` or `assembleRelease`) by [@esamelson](https://github.com/esamelson) ([#3386](https://github.com/expo/expo/pull/3386))
 - renamed `IntentLauncherAndroid` to `IntentLauncher` and changed signature of `startActivityAsync` method by [@tsapeta](https://github.com/tsapeta) ([#3427](https://github.com/expo/expo/pull/3427))
+- fixed crash in `WebBrowser.openBrowserAsync` when there is no browser supporting `customtabs` on Android by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
+- `WebBrowser.openBrowserAsync` on Android resolves promise on opening Custom Tabs instead of on closing by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
+- `WebBrowser.dismissBrowser` throws `UnavailabilityError` [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
+- added `staysActiveInBackground` audio mode option that selects whether audio playback or recording should continue when the app is in background by [@sjchmiela](https://github.com/sjchmiela) and [@redpandatronicsuk](https://github.com/redpandatronicsuk) ([#3498](https://github.com/expo/expo/pull/3498))
+- renamed the `EncodingTypes` attribute to `EncodingType` in the FileSystem module docs to match changes in the source code by [@sergeichestakov](https://github.com/sergeichestakov) ([#3997](https://github.com/expo/expo/pull/3997))
 
 ### 🎉 New features
 
 - `BarCodeScanner` is now returning barcode's bounding box [@Szymon20000](https://github.com/Szymon20000) ([#2904](https://github.com/expo/expo/pull/2904))
 - added method `Speech.getAvailableVoicesAsync()` [@Szymon20000](https://github.com/Szymon20000) ([#3423](https://github.com/expo/expo/pull/3423))
 - added `BackgroundFetch` support for Android by [@tsapeta](https://github.com/tsapeta) ([#3281](https://github.com/expo/expo/pull/3281))
+- incorporated `react-native-webview@5.4.6` into Expo SDK by [@sjchmiela](https://github.com/sjchmiela) ([#3748](https://github.com/expo/expo/pull/3748))
 - added support for overriding MIME type in `IntentLauncherAndroid.startActivityAsync` for Android by [@rhunt4675](https://github.com/rhunt4675) ([#3300](https://github.com/expo/expo/pull/3300))
 - added `Location.enableNetworkProviderAsync` method to ask the user to turn on high accuracy location services by [@tsapeta](https://github.com/tsapeta) ([#3273](https://github.com/expo/expo/pull/3273))
 - upgraded Facebook Audience Network SDK dependency to 5.1.1 by [@sjchmiela](https://github.com/sjchmiela) ([#3394](https://github.com/expo/expo/pull/3394))
 - upgraded Facebook Core- and LoginKit dependency to 4.40.0 by [@sjchmiela](https://github.com/sjchmiela) ([#3394](https://github.com/expo/expo/pull/3394))
 - upgrade `react-native-maps` to `0.23.0` by [@sjchmiela](https://github.com/sjchmiela) ([#3389](https://github.com/expo/expo/pull/3389))
 - added Firebase integration to `expo-analytics-segment` by [@sjchmiela](https://github.com/sjchmiela) ([#3615](https://github.com/expo/expo/pull/3615))
+- added support for new arguments in `WebBrowser.openBrowserAsync` as described in [the documentation](https://docs.expo.io/versions/latest/sdk/webbrowser/) by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
+- added tags support in `KeepAwake.activate` and `KeepAwake.deactivate` by [@mczernek](https://github.com/mczernek) [#3747](https://github.com/expo/expo/pull/3747)
+- added `deferredUpdatesInterval` and `deferredUpdatesDistance` options that defer background location updates by [@tsapeta](https://github.com/tsapeta) ([#3548](https://github.com/expo/expo/pull/3548))
+- added `foregroundService` option to background location (Android Oreo and newer) by [@tsapeta](https://github.com/tsapeta) ([#3837](https://github.com/expo/expo/pull/3837))
+- added support for picking animated GIFs with `ImagePicker` by [@sjchmiela](https://github.com/sjchmiela) ([#3844](https://github.com/expo/expo/pull/3844))
+- added support for headers in `downloadAsync` method in `FileSystem` by [@mczernek](https://github.com/mczernek) ([#3911](https://github.com/expo/expo/pull/3911))
 
 ### 🐛 Bug fixes
 
-- fixed several issues related to `expo-av` by [@Szymon20000](https://github.com/Szymon20000) ([#3539](https://github.com/expo/expo/pull/3539)) 
+- fixed several issues related to `expo-av` by [@Szymon20000](https://github.com/Szymon20000) ([#3539](https://github.com/expo/expo/pull/3539))
 - `Location.getCurrentPositionAsync` and `Location.watchPositionAsync` are now automatically asking for high accuracy location services by [@tsapeta](https://github.com/tsapeta) ([#3273](https://github.com/expo/expo/pull/3273))
 - fix `Location.getCurrentPositionAsync` hanging on simultaneous calls by [@tsapeta](https://github.com/tsapeta) ([#3273](https://github.com/expo/expo/pull/3273))
 - fix `ImagePicker.launchImageLibraryAsync` and `ImageManipulator.manipulateAsync` in SDKs lower than 32 [@bbarthec](https://github.com/bbarthec) ([#3159](https://github.com/expo/expo/pull/3159))
 - fix app crash when attempting to `console.log(Object.create(null))` by [@juangl](https://github.com/juangl) ([#3143](https://github.com/expo/expo/pull/3143))
 - `GoogleSignInOptions.offlineAccess` is now corrected `GoogleSignInOptions.isOfflineEnabled`
+- fix `SMS.sendSMSAsync` crash on android for empty addresses list. Promise won't be rejected when there is no TELEPHONY feature on Android device, only when there is no SMS app by [@mczernek](https://github.com/mczernek) ([#3656](https://github.com/expo/expo/pull/3656))
+- fix MediaPlayer not working on Android. by [@mczernek](https://github.com/mczernek) ([#3768](https://github.com/expo/expo/pull/3768))
+- fixed `Localization.isRTL` always being `true` on iOS by [@sjchmiela](https://github.com/sjchmiela) ([#3792](https://github.com/expo/expo/pull/3792))
+- fixed adding/removing react children to `Camera` preview on Android by [@bbarthec](https://github.com/bbarthec) ([#3904](https://github.com/expo/expo/pull/3904))
+- changed `FileSystem` requests timeout for downloading resumables from 10 seconds to 60 seconds on Android (now the timeout is 60s on both platforms) by [@Szymon20000](https://github.com/Szymon20000) ([#3872](https://github.com/expo/expo/pull/3872))
+- removed unwanted downsampling of big images when using `ImageManipulator` on Android by [@bbarthec](https://github.com/bbarthec) ([#3928](https://github.com/expo/expo/pull/3928))
+- fixed tablet splash always being shown in Expo Client if specified by [@GfxKai](https://github.com/GfxKai) ([#3538](https://github.com/expo/expo/pull/3538))
 
 ## 32.0.0
 

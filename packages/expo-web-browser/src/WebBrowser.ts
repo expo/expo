@@ -1,12 +1,33 @@
 import { Linking, Platform } from 'react-native';
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import ExponentWebBrowser from './ExpoWebBrowser';
 
 type RedirectEvent = {
   url: string;
 };
 
+type OpenBrowserParams = {
+  toolbarColor?: string;
+  browserPackage?: string;
+  enableBarCollapsing?: boolean;
+  showTitle?: boolean;
+};
+
 type AuthSessionResult = RedirectResult | BrowserResult;
+
+type CustomTabsBrowsersResults = {
+  defaultBrowserPackage?: string;
+  preferredBrowserPackage?: string;
+  browserPackages: string[];
+  servicePackages: string[];
+};
+
+const emptyCustomTabsPackages: CustomTabsBrowsersResults = {
+  defaultBrowserPackage: undefined,
+  preferredBrowserPackage: undefined,
+  browserPackages: [],
+  servicePackages: [],
+};
 
 type BrowserResult = {
   type: 'cancel' | 'dismiss';
@@ -17,11 +38,69 @@ type RedirectResult = {
   url: string;
 };
 
-export async function openBrowserAsync(url: string): Promise<BrowserResult> {
+type ServiceActionResult = {
+  servicePackage?: string;
+};
+
+type MayInitWithUrlResult = ServiceActionResult;
+type WarmUpResult = ServiceActionResult;
+type CoolDownResult = ServiceActionResult;
+
+export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults> {
+  if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
+    throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
+  }
+  if (Platform.OS !== 'android') {
+    return emptyCustomTabsPackages;
+  } else {
+    return await ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+  }
+}
+
+export async function warmUpAsync(browserPackage?: string): Promise<WarmUpResult> {
+  if (!ExponentWebBrowser.warmUpAsync) {
+    throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
+  }
+  if (Platform.OS !== 'android') {
+    return {};
+  } else {
+    return await ExponentWebBrowser.warmUpAsync(browserPackage);
+  }
+}
+
+export async function mayInitWithUrlAsync(
+  url: string,
+  browserPackage?: string
+): Promise<MayInitWithUrlResult> {
+  if (!ExponentWebBrowser.mayInitWithUrlAsync) {
+    throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
+  }
+  if (Platform.OS !== 'android') {
+    return {};
+  } else {
+    return await ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
+  }
+}
+
+export async function coolDownAsync(browserPackage?: string): Promise<CoolDownResult> {
+  if (!ExponentWebBrowser.coolDownAsync) {
+    throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
+  }
+  if (Platform.OS !== 'android') {
+    return {};
+  } else {
+    return await ExponentWebBrowser.coolDownAsync(browserPackage);
+  }
+}
+
+export async function openBrowserAsync(
+  url: string,
+  browserParams: OpenBrowserParams = {}
+): Promise<BrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
   }
-  return ExponentWebBrowser.openBrowserAsync(url);
+  return await ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }
 
 export function dismissBrowser(): void {
@@ -31,7 +110,10 @@ export function dismissBrowser(): void {
   ExponentWebBrowser.dismissBrowser();
 }
 
-export async function openAuthSessionAsync(url: string, redirectUrl: string): Promise<AuthSessionResult> {
+export async function openAuthSessionAsync(
+  url: string,
+  redirectUrl: string
+): Promise<AuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.openAuthSessionAsync) {
       throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');

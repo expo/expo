@@ -1,0 +1,4 @@
+{
+  "name": "expo-app-loader-provider",
+  "platforms": ["ios", "android"]
+}

@@ -1,13 +1,29 @@
-import { AppAuth } from 'expo-app-auth';
-import { UnavailabilityError } from 'expo-errors';
+import * as AppAuth from 'expo-app-auth';
+import { CodedError } from '@unimodules/core';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
-export type LogInConfig = {
+const isInExpo = Constants.appOwnership === 'expo';
+export type GoogleLogInConfig = {
   androidClientId?: string;
   iosClientId?: string;
-  clientId: string;
+  androidStandaloneAppClientId?: string;
+  iosStandaloneAppClientId?: string;
+  /** Deprecated: You will need to use expo-google-sign-in to do server side authentication outside of the Expo client */
+  webClientId?: string;
+  /**
+   * System authentication is very different from web auth.
+   * All system functionality has been moved to expo-google-sign-in
+   */
   behavior?: 'system' | 'web';
   scopes?: string[];
+  /**
+   * Optionally you can define your own redirect URL.
+   * If this isn't defined then it will be infered from the correct client ID.
+   */
+  redirectUrl?: string;
+  /* If no other client IDs are defined this will be used. */
+  clientId: string;
 };
 
 export type GoogleUser = {
@@ -25,20 +41,99 @@ export type LogInResult =
     }
   | {
       type: 'success';
-      accessToken?: string;
+      accessToken: string | null;
       idToken: string | null;
       refreshToken: string | null;
       user: GoogleUser;
     };
 
-export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
-  if (!AppAuth.authAsync) {
-    throw new UnavailabilityError('AppAuth', 'logInAsync');
+function getPlatformGUID(config: GoogleLogInConfig) {
+  const { clientId } = config;
+
+  const iosClientId =
+    Constants.appOwnership === 'standalone' ? config.iosClientId : config.iosStandaloneAppClientId;
+  const androidClientId = isInExpo ? config.androidClientId : config.androidStandaloneAppClientId;
+
+  const platformClientId =
+    Platform.select({
+      ios: iosClientId,
+      android: androidClientId,
+      default: config.clientId,
+    }) || clientId;
+
+  if (
+    typeof iosClientId === 'string' &&
+    typeof androidClientId === 'string' &&
+    iosClientId === androidClientId
+  ) {
+    throw new CodedError(
+      'ERR_GOOGLE_CONFIG',
+      'Keys for Android and iOS cannot be the same value. Ensure you are linking the client IDs matching the given platforms in the Google APIs console: https://console.developers.google.com/apis/credentials'
+    );
   }
 
+  const guid = guidFromClientId(platformClientId);
+  return guid;
+}
+
+// TODO: Bacon: ensure this is valid for all cases.
+const PROJECT_NUMBER_LENGTH = 11;
+
+const PROJECT_ID_LENGTH = 32;
+
+function isValidGUID(guid: string) {
+  const components = guid.split('-');
+  if (components.length !== 2) {
+    return {
+      isValid: false,
+      reason: `\`${guid}\` must be a string of numbers and an alphanumeric string ${PROJECT_ID_LENGTH} characters long, joined with a hyphen.`,
+    };
+  }
+  const projectNumber = components[0];
+  const projectId = components[1];
+  if (isNaN(+projectNumber)) {
+    const hashedProjectId = Array(PROJECT_ID_LENGTH).fill('x');
+    return {
+      isValid: false,
+      reason: `\`${projectNumber}-${hashedProjectId}\` project number must be a string of numbers.`,
+    };
+  }
+  if (!projectId.match('^[a-zA-Z0-9]+$')) {
+    const hashedProjectNumber = Array(projectNumber.length).fill('x');
+    return {
+      isValid: false,
+      reason: `\`${hashedProjectNumber}-${projectId}\` project ID must be an alphanumeric string ${PROJECT_ID_LENGTH} characters long.`,
+    };
+  }
+
+  return { isValid: true };
+}
+
+function guidFromClientId(clientId: string): string {
+  const clientIdComponents = clientId.split('.').filter(component => component.includes('-'));
+
+  const guid = clientIdComponents[0];
+  const { isValid, reason } = isValidGUID(guid);
+  if (!isValid) {
+    throw new CodedError(
+      'ERR_GOOGLE_GUID',
+      reason + ' Please ensure you copied the client ID correctly.'
+    );
+  }
+
+  return guid;
+}
+
+export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult> {
   if (config.behavior !== undefined) {
     console.warn(
       "Deprecated: Native Google Sign-In has been moved to Expo.GoogleSignIn ('expo-google-sign-in') Falling back to `web` behavior. `behavior` deprecated in SDK 34"
+    );
+  }
+
+  if (config.webClientId !== undefined) {
+    console.warn(
+      'Deprecated: You will need to use expo-google-sign-in to do server side authentication outside of the Expo client'
     );
   }
 
@@ -48,30 +143,19 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   /* Remove duplicates */
   const scopes = [...new Set(requiredScopes)];
 
-  /* This is the CLIENT_ID generated from a Firebase project */
-  const clientId =
-    config.clientId ||
-    Platform.select({
-      ios: config.iosClientId,
-      android: config.androidClientId || config['androidStandaloneAppClientId'],
-      web: config.clientId || config['iosStandaloneAppClientId'],
-    });
+  const guid = getPlatformGUID(config);
 
-  if (
-    config.iosClientId ||
-    config.androidClientId ||
-    config['androidStandaloneAppClientId'] ||
-    config['iosStandaloneAppClientId']
-  ) {
-    console.warn(
-      'Expo.Google.logInAsync(): `iosClientId`, `androidClientId`, `iosStandaloneAppClientId`, and `androidStandaloneAppClientId` have been deprecated and will be removed in SDK 34 in favor of `clientId`'
-    );
+  const clientId = `${guid}.apps.googleusercontent.com`;
+  const reverseClientId = `com.googleusercontent.apps.${guid}`;
+  let redirectUrl;
+  if (!isInExpo) {
+    redirectUrl = config.redirectUrl || `${reverseClientId}:/oauth2redirect/google`;
   }
-
   try {
     const logInResult = await AppAuth.authAsync({
       issuer: 'https://accounts.google.com',
       scopes,
+      redirectUrl,
       clientId,
     });
 
@@ -81,9 +165,12 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
       headers: { Authorization: `Bearer ${logInResult.accessToken}` },
     });
     const userInfo = await userInfoResponse.json();
+
     return {
       type: 'success',
-      ...logInResult,
+      accessToken: logInResult.accessToken,
+      idToken: logInResult.idToken,
+      refreshToken: logInResult.refreshToken,
       user: {
         id: userInfo.id,
         name: userInfo.name,
@@ -101,7 +188,14 @@ export async function logInAsync(config: LogInConfig): Promise<LogInResult> {
   }
 }
 
-export async function logOutAsync({ accessToken, clientId }): Promise<any> {
+export async function logOutAsync({
+  accessToken,
+  ...inputConfig
+}: GoogleLogInConfig & { accessToken: string }): Promise<any> {
+  const guid = getPlatformGUID(inputConfig);
+
+  const clientId = `${guid}.apps.googleusercontent.com`;
+
   const config = {
     issuer: 'https://accounts.google.com',
     clientId,

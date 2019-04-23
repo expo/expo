@@ -42,15 +42,26 @@ public class AppAuthBrowserActivity extends Activity {
 
   public static class OAuthResultEvent {
     @Nullable
-    public AuthorizationResponse response;
+    private AuthorizationResponse mResponse;
     @Nullable
-    public AuthorizationException exception;
+    private AuthorizationException mException;
 
     public OAuthResultEvent(@Nullable Intent intent) {
 
-      response = AuthorizationResponse.fromIntent(intent);
-      exception = AuthorizationException.fromIntent(intent);
+      mResponse = AuthorizationResponse.fromIntent(intent);
+      mException = AuthorizationException.fromIntent(intent);
     }
+
+    @Nullable
+    public AuthorizationResponse getResponse() {
+      return mResponse;
+    }
+
+    @Nullable
+    public AuthorizationException getException() {
+      return mException;
+    }
+
   }
 }
 

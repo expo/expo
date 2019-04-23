@@ -19,14 +19,6 @@ const { DeviceMotion } = DangerZone;
 import { DeviceMotion } from 'expo-sensors';
 ```
 
-### `DeviceMotion.isAvailableAsync()`
-
-Returns whether device motion is enabled on the device.
-
-#### Returns
-
-- A promise that resolves to a `boolean` denoting the availability of the sensor.
-
 ### `DeviceMotion.addListener(listener)`
 
 Subscribe for updates to DeviceMotion.

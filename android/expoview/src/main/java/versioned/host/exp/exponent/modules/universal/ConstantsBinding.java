@@ -15,7 +15,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import expo.interfaces.constants.ConstantsInterface;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 import expo.modules.constants.ConstantsService;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -66,6 +66,8 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
+    constants.put("nativeAppVersion", Constants.VERSION_NAME);
+    constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
 
     if (mExperienceProperties != null) {
       constants.put("appOwnership", getAppOwnership());

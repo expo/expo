@@ -5,7 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.widget.FrameLayout;
 
-import expo.core.ModuleRegistry;
+import org.unimodules.core.ModuleRegistry;
 
 /**
  * We need the wrapper to be able to remove the view from the React-managed tree

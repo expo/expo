@@ -1,7 +1,7 @@
 import './polyfillNextTick';
 import zipObject from 'lodash.zipobject';
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
 const { ExponentSQLite } = NativeModulesProxy;
 class SQLiteDatabase {
@@ -55,11 +55,17 @@ function _escapeBlob(data) {
     }
 }
 const _openExpoSQLiteDatabase = customOpenDatabase(SQLiteDatabase);
+function addExecMethod(db) {
+    db.exec = db._db.exec;
+    return db;
+}
 export function openDatabase(name, version = '1.0', description = name, size = 1, callback) {
     if (name === undefined) {
         throw new TypeError(`The database name must not be undefined`);
     }
-    return _openExpoSQLiteDatabase(name, version, description, size, callback);
+    const db = _openExpoSQLiteDatabase(name, version, description, size, callback);
+    const dbWithExec = addExecMethod(db);
+    return dbWithExec;
 }
 export default {
     openDatabase,

@@ -15,7 +15,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { AppAuth } from 'expo';
 
 // in bare apps:
-import { AppAuth } from 'expo-app-auth';
+import * as AppAuth from 'expo-app-auth';
 ```
 
 ## Methods

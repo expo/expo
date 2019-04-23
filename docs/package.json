@@ -6,9 +6,9 @@
     "dev": "node server.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
     "export": "yarn run build && next export",
-    "export-server": "cd out && python -m SimpleHTTPServer 8000",
+    "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
-    "test-links": "blc --recursive --exclude-external --filter-level 2"
+    "test-links": "./scripts/test-links"
   },
   "dependencies": {
     "@mdx-js/loader": "^0.16.8",
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "broken-link-checker": "^0.7.8",
+    "http-server": "^0.11.1",
     "minimist": "^1.2.0",
     "prettier": "^1.15.3"
   }

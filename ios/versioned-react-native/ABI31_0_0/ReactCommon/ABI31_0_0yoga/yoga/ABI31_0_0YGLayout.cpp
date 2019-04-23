@@ -48,13 +48,13 @@ bool ABI31_0_0YGLayout::operator==(ABI31_0_0YGLayout layout) const {
     isEqual = isEqual && cachedMeasurements[i] == layout.cachedMeasurements[i];
   }
 
-  if (!yoga::isUndefined(measuredDimensions[0]) ||
-      !yoga::isUndefined(layout.measuredDimensions[0])) {
+  if (!ABI31_0_0yoga::isUndefined(measuredDimensions[0]) ||
+      !ABI31_0_0yoga::isUndefined(layout.measuredDimensions[0])) {
     isEqual =
         isEqual && (measuredDimensions[0] == layout.measuredDimensions[0]);
   }
-  if (!yoga::isUndefined(measuredDimensions[1]) ||
-      !yoga::isUndefined(layout.measuredDimensions[1])) {
+  if (!ABI31_0_0yoga::isUndefined(measuredDimensions[1]) ||
+      !ABI31_0_0yoga::isUndefined(layout.measuredDimensions[1])) {
     isEqual =
         isEqual && (measuredDimensions[1] == layout.measuredDimensions[1]);
   }

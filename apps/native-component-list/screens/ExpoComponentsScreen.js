@@ -16,40 +16,36 @@ export default class ExpoComponentsScreen extends React.Component {
   }
 
   _getApis = () => {
-    const screens = Platform.select({
-      web: [
-        'AdMob',
-        'BlurView',
-        'Camera',
-        'ImagePreview',
-        'Gif',
-        'GL',
-        'LinearGradient',
-        'Lottie',
-        'Maps',
-        'SVG',
-        'Video',
-      ],
-      default: [
-        'AdMob',
-        'BarCodeScanner',
-        'BlurView',
-        'Camera',
-        'FacebookAds',
-        'GestureHandlerList',
-        'GestureHandlerPinch',
-        'GestureHandlerSwipeable',
-        'ImagePreview',
-        'Gif',
-        'GL',
-        'LinearGradient',
-        'Lottie',
-        'Maps',
-        'Screens',
-        'SVG',
-        'Video',
-      ],
-    });
-    return screens.map(name => ({ name, isAvailable: !!Screens[name] }));
+    const screens = [
+      'AdMob',
+      'BarCodeScanner',
+      'BlurView',
+      'Camera',
+      'FacebookAds',
+      'GestureHandlerList',
+      'GestureHandlerPinch',
+      'GestureHandlerSwipeable',
+      'ImagePreview',
+      'Gif',
+      'GL',
+      'LinearGradient',
+      'Lottie',
+      'Maps',
+      'Screens',
+      'SVG',
+      'Video',
+      'WebView',
+    ];
+    return screens
+      .map(name => ({ name, isAvailable: !!Screens[name] }))
+      .sort((a, b) => {
+        if (a.isAvailable !== b.isAvailable) {
+          if (a.isAvailable) {
+            return -1;
+          }
+          return 1;
+        }
+        return 0;
+      });
   };
 }

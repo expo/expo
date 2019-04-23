@@ -84,13 +84,14 @@ if (contact) {
 
 ### addContactAsync
 
-> iOS Only - temporary
 
 ```js
 addContactAsync(contact: Contact, containerId: string): Promise<string>
 ```
 
 Creates a new contact and adds it to the system.
+
+> **Note**: For Android users, the Expo Client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/) and add permission through there.
 
 **Parameters**
 
@@ -127,7 +128,30 @@ updateContactAsync(contact: Contact): Promise<string>
 Mutate the information of an existing contact.
 
 > On Android, you can use `presentFormAsync` to make edits to contacts.
-> Do to an error with the Apple API, `nonGregorianBirthday` cannot be modified.
+> Due to an iOS bug, `nonGregorianBirthday` cannot be modified.
+
+### presentFormAsync
+
+```js
+presentFormAsync(contactId: string, contact: Contact, formOptions: FormOptions): Promise<any>
+```
+
+Present a native form for manipulating contacts
+
+**Parameters**
+
+| Name        | Type          | Description                                     |
+| ----------- | ------------- | ----------------------------------------------- |
+| contactId   | `string`      | The ID of a system contact.                     |
+| contact     | `Contact`     | A contact with the changes you wish to persist. |
+| formOptions | `FormOptions` | Options for the native editor                   |
+
+**Example**
+
+```js
+// Edit contact
+await Contacts.presentFormAsync("161A368D-D614-4A15-8DC6-665FDBCFAE55");
+``` 
 
 **Parameters**
 
@@ -206,29 +230,6 @@ Share.share({ url: localUri, message: "Call me!" });
 ## IOS Only Functions
 
 iOS contacts have a multi-layered grouping system that you can access through this API.
-
-### presentFormAsync
-
-```js
-presentFormAsync(contactId: string, contact: Contact, formOptions: FormOptions): Promise<any>
-```
-
-Present a native form for manipulating contacts
-
-**Parameters**
-
-| Name        | Type          | Description                                     |
-| ----------- | ------------- | ----------------------------------------------- |
-| contactId   | `string`      | The ID of a system contact.                     |
-| contact     | `Contact`     | A contact with the changes you wish to persist. |
-| formOptions | `FormOptions` | Options for the native editor                   |
-
-**Example**
-
-```js
-// Edit contact
-await Contacts.presentFormAsync("161A368D-D614-4A15-8DC6-665FDBCFAE55");
-```
 
 ### addExistingGroupToContainerAsync
 

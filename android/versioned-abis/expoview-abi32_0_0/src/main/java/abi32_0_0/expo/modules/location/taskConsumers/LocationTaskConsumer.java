@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import expo.interfaces.taskManager.TaskConsumer;
-import expo.interfaces.taskManager.TaskExecutionCallback;
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumer;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
 import abi32_0_0.expo.modules.location.LocationHelpers;
 import abi32_0_0.expo.modules.location.LocationModule;
 import io.nlopez.smartlocation.location.config.LocationParams;

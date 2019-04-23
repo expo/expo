@@ -12,6 +12,8 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
+If you're using the iOS or Android Emulators, ensure that [Location is enabled](#Enabling-Emulator-Location).
+
 You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 <SnackEmbed snackId="H14SNiW3g" />
@@ -379,3 +381,13 @@ Object of type `Region` includes following fields:
 | `GeofencingRegionState.Inside`  |   1   | Indicates that the device is inside the region. |
 | `GeofencingRegionState.Outside` |   2   | Inverse of inside state.                        |
 
+## Enabling Emulator Location 
+### iOS Simulator
+With Simulator open, go to Debug > Location and choose any option besides "None" (obviously).
+
+![iOS Simulator location](/static/images/ios-simulator-location.png)
+
+### Android Emulator
+Open Android Studio, and launch your AVD in the emulator. Then, on the options bar for your device, click the icon for "More" and navigate to the "Location" tab.
+
+![Android Simulator location](/static/images/android-emulator-location.png)

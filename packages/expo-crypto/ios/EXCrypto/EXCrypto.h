@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
+#import <UMCore/UMExportedModule.h>
 
-@interface EXCrypto : EXExportedModule
+@interface EXCrypto : UMExportedModule
 
 @end

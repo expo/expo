@@ -173,9 +173,9 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 
   if (destinationApp) {
     // send the body to the already-open experience
-    [self _dispatchJSEvent:@"Exponent.notification" body:notification.properties toApp:destinationApp];
+    BOOL success = [self _dispatchJSEvent:@"Exponent.notification" body:notification.properties toApp:destinationApp];
     [self _moveAppToVisible:destinationApp];
-    return YES;
+    return success;
   } else {
     // no app is currently running for this experience id.
     // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
@@ -215,10 +215,14 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   }
 }
 
-- (void)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody toApp:(EXKernelAppRecord *)appRecord
+- (BOOL)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody toApp:(EXKernelAppRecord *)appRecord
 {
+  if (!appRecord.appManager.reactBridge) {
+    return NO;
+  }
   [appRecord.appManager.reactBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
                                              args:eventBody ? @[eventName, eventBody] : @[eventName]];
+  return YES;
 }
 
 #pragma mark - App props

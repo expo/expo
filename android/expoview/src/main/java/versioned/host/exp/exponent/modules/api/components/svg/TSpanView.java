@@ -26,6 +26,9 @@ import android.view.ViewParent;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.text.ReactFontManager;
+
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
@@ -44,9 +47,10 @@ class TSpanView extends TextView {
     private static final String OTF = ".otf";
     private static final String TTF = ".ttf";
 
-    private Path mCache;
     @Nullable String mContent;
     private TextPathView textPath;
+    ArrayList<String> emoji = new ArrayList<>();
+    ArrayList<Matrix> emojiTransforms = new ArrayList<>();
 
     public TSpanView(ReactContext reactContext) {
         super(reactContext);
@@ -61,6 +65,20 @@ class TSpanView extends TextView {
     @Override
     void draw(Canvas canvas, Paint paint, float opacity) {
         if (mContent != null) {
+            int numEmoji = emoji.size();
+            if (numEmoji > 0) {
+                GlyphContext gc = getTextRootGlyphContext();
+                FontData font = gc.getFont();
+                applyTextPropertiesToPaint(paint, font);
+                for (int i = 0; i < numEmoji; i++) {
+                    String current = emoji.get(i);
+                    Matrix mid = emojiTransforms.get(i);
+                    canvas.save();
+                    canvas.concat(mid);
+                    canvas.drawText(current, 0, 0, paint);
+                    canvas.restore();
+                }
+            }
             drawPath(canvas, paint, opacity);
         } else {
             clip(canvas, paint);
@@ -69,28 +87,23 @@ class TSpanView extends TextView {
     }
 
     @Override
-    void releaseCachedPath() {
-        mCache = null;
-        mPath = null;
-    }
-
-    @Override
     Path getPath(Canvas canvas, Paint paint) {
-        if (mCache != null) {
-            return mCache;
+        if (mPath != null) {
+            return mPath;
         }
 
         if (mContent == null) {
-            return getGroupPath(canvas, paint);
+            mPath = getGroupPath(canvas, paint);
+            return mPath;
         }
 
         setupTextPath();
 
         pushGlyphContext();
-        mCache = getLinePath(mContent, paint, canvas);
+        mPath = getLinePath(mContent, paint, canvas);
         popGlyphContext();
 
-        return mCache;
+        return mPath;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -681,6 +694,9 @@ class TSpanView extends TextView {
         final float[] midPointMatrixData = new float[9];
         final float[] endPointMatrixData = new float[9];
 
+        emoji.clear();
+        emojiTransforms.clear();
+
         for (int index = 0; index < length; index++) {
             char currentChar = chars[index];
             String current = String.valueOf(currentChar);
@@ -860,12 +876,12 @@ class TSpanView extends TextView {
             glyph.computeBounds(bounds, true);
             float width = bounds.width();
             if (width == 0) { // Render unicode emoji
-                mid.getValues(midPointMatrixData);
-                double midX = midPointMatrixData[MTRANS_X];
-                double midY = midPointMatrixData[MTRANS_Y];
-                canvas.rotate((float) r, (float)midX, (float)midY);
-                canvas.drawText(current, (float)midX, (float)midY, paint);
-                canvas.rotate((float) -r, (float)midX, (float)midY);
+                canvas.save();
+                canvas.concat(mid);
+                emoji.add(current);
+                emojiTransforms.add(new Matrix(mid));
+                canvas.drawText(current, 0, 0, paint);
+                canvas.restore();
             } else {
                 glyph.transform(mid);
                 path.addPath(glyph);
@@ -935,7 +951,7 @@ class TSpanView extends TextView {
                 typeface = Typeface.createFromAsset(assetManager, path);
             } catch (Exception ignored2) {
                 try {
-                    typeface = Typeface.create(fontFamily, fontStyle);
+                    typeface = ReactFontManager.getInstance().getTypeface(fontFamily, fontStyle, assetManager);
                 } catch (Exception ignored3) {
                 }
             }

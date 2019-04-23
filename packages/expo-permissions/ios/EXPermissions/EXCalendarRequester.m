@@ -1,6 +1,6 @@
 #import <EXPermissions/EXCalendarRequester.h>
 #import <EventKit/EventKit.h>
-#import <EXCore/EXDefines.h>
+#import <UMCore/UMDefines.h>
 
 @interface EXCalendarRequester ()
 
@@ -17,7 +17,7 @@
   
   NSString *calendarUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCalendarsUsageDescription"];
   if (!calendarUsageDescription) {
-    EXFatal(EXErrorWithMessage(@"This app is missing NSCalendarsUsageDescription, so calendar methods will fail. Add this key to your bundle's Info.plist."));
+    UMFatal(UMErrorWithMessage(@"This app is missing NSCalendarsUsageDescription, so calendar methods will fail. Add this key to your bundle's Info.plist."));
     permissions = EKAuthorizationStatusDenied;
   } else {
     permissions = [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent];
@@ -40,7 +40,7 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   EKEventStore *eventStore = [[EKEventStore alloc] init];
   [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {

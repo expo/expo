@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { requireNativeViewManager } from 'expo-core';
+import { requireNativeViewManager } from '@unimodules/core';
 export default class NativeLinearGradient extends React.Component {
     render() {
         let { colors, locations, startPoint, endPoint, children, style, ...props } = this.props;

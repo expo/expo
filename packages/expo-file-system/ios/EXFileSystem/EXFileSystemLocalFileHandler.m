@@ -5,8 +5,8 @@
 
 + (void)getInfoForFile:(NSURL *)fileUri
            withOptions:(NSDictionary *)options
-              resolver:(EXPromiseResolveBlock)resolve
-              rejecter:(EXPromiseRejectBlock)reject
+              resolver:(UMPromiseResolveBlock)resolve
+              rejecter:(UMPromiseRejectBlock)reject
 {
   NSString *path = fileUri.path;
   BOOL isDirectory;
@@ -29,8 +29,8 @@
 
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
-        resolver:(EXPromiseResolveBlock)resolve
-        rejecter:(EXPromiseRejectBlock)reject
+        resolver:(UMPromiseResolveBlock)resolve
+        rejecter:(UMPromiseRejectBlock)reject
 {
   NSString *fromPath = [from.path stringByStandardizingPath];
   NSString *toPath = [to.path stringByStandardizingPath];

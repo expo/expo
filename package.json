@@ -11,27 +11,32 @@
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },
   "exp": {
-    "sdkVersion": "32.0.0"
+    "sdkVersion": "33.0.0"
   },
   "workspaces": {
     "packages": [
       "apps/*",
       "expokit-npm-package",
       "home",
-      "packages/*",
+      "packages/!(expo-firebase)*",
+      "packages/@unimodules/*",
       "react-native-lab/react-native"
     ]
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
-    "eslint": "^5.4.0",
+    "eslint": "^5.15.3",
     "eslint-config-universe": "^2.0.0-alpha.0",
-    "expo-cli": "^2.7.1",
+    "expo-cli": "^2.13.0",
     "expo-yarn-workspaces": "^1.1.0",
-    "prettier": "^1.14.2"
+    "prettier": "^1.16.4"
   },
   "resolutions": {
-    "react-native-gesture-handler": "1.0.14"
+    "detox": "^12.0.0",
+    "react-native-gesture-handler": "1.1.0"
+  },
+  "dependencies": {
+    "react-native-unimodules": "~0.2.0"
   }
 }

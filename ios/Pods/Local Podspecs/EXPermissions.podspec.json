@@ -1,6 +1,6 @@
 {
   "name": "EXPermissions",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "license": "MIT",
@@ -16,10 +16,10 @@
   "preserve_paths": "EXPermissions/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXPermissionsInterface": [
+    "UMPermissionsInterface": [
 
     ]
   }

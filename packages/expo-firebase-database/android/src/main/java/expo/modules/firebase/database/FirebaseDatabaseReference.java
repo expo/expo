@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
 import expo.modules.firebase.app.Utils;
 
 class FirebaseDatabaseReference {

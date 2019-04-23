@@ -2,7 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <EXCore/EXDefines.h>
+#import <UMCore/UMDefines.h>
 
 #import <EXAV/EXAudioSessionManager.h>
 
@@ -26,7 +26,7 @@ NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
 
 @implementation EXAudioSessionManager
 
-EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
+UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 
 - (instancetype)init
 {
@@ -77,6 +77,20 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
     return [scopedModule experienceId];
   }
   return nil;
+}
+
+- (BOOL)isActiveForScopedModule:(id)scopedModule {
+  return _activeScopedModule == scopedModule;
+}
+
+- (NSString *)activeCategory
+{
+  return [[AVAudioSession sharedInstance] category];
+}
+
+- (AVAudioSessionCategoryOptions)activeCategoryOptions
+{
+  return [[AVAudioSession sharedInstance] categoryOptions];
 }
 
 - (NSError *)setActive:(BOOL)active forScopedModule:(id)scopedModule {

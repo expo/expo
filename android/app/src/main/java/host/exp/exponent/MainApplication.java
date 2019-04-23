@@ -5,7 +5,7 @@ import com.facebook.react.ReactPackage;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.interfaces.Package;
+import org.unimodules.core.interfaces.Package;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.ads.facebook.AdsFacebookPackage;
@@ -42,6 +42,7 @@ import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
 import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
+import expo.modules.sharing.SharingPackage;
 import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
@@ -109,6 +110,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
         new SecureStorePackage(),
         new SegmentPackage(),
         new SensorsPackage(),
+        new SharingPackage(),
         new SpeechPackage(),
         new TaskManagerPackage(),
         new WebBrowserPackage()

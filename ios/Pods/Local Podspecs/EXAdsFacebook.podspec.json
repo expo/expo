@@ -1,6 +1,6 @@
 {
   "name": "EXAdsFacebook",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "summary": "Facebook Audience SDK integration",
   "description": "Facebook Audience SDK integration",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "preserve_paths": "EXAdsFacebook/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
     "FBAudienceNetwork": [

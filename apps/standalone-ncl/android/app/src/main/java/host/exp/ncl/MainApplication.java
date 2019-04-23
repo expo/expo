@@ -14,10 +14,10 @@ import com.swmansion.rnscreens.RNScreensPackage;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.adapters.react.ModuleRegistryAdapter;
-import expo.adapters.react.ReactAdapterPackage;
-import expo.adapters.react.ReactModuleRegistryProvider;
-import expo.core.interfaces.Package;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactAdapterPackage;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.Package;
 
 public class MainApplication extends Application implements ReactApplication {
     private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(

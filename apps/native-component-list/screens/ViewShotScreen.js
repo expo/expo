@@ -3,6 +3,7 @@ import { LinearGradient, takeSnapshotAsync } from 'expo';
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { captureScreen } from 'react-native-view-shot';
 
+import { Platform } from '@unimodules/core';
 import Button from '../components/Button';
 
 // Source: https://codepen.io/zessx/pen/rDEAl <3
@@ -36,6 +37,19 @@ export default class ViewShotScreen extends React.Component {
   };
 
   handleScreenCapturePress = async () => {
+    if (Platform.OS === 'web') {
+      try {
+        const screenUri = await takeSnapshotAsync(null, {
+          format: 'jpg',
+          quality: 0.8,
+          result: 'data-uri',
+        });
+        this.setState({ screenUri });
+      } catch (e) {
+        console.error(e);
+      }
+      return;
+    }
     const uri = await captureScreen({
       format: 'jpg',
       quality: 0.8,
