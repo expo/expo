@@ -8,7 +8,7 @@ Expo Bluetooth provides access to native Bluetooth Low-Energy features in React 
 
 - Background scanning: Because of how strict Apple is about this permission, I've prioritized it very low.
 - Restoration: React Native state mixed with the asynchronous nature of the native Bluetooth API makes this a very messy and unreliable feature.
-- Mesh Networks: Basically completely unrealted to this library.
+- Mesh Networks: Basically completely unrelated to this library.
 - Acting as a peripheral: This would make sense as a different library, something that extends `CBPeripheralManager` on iOS the same way we extend the `Central` here. You would also need an extra iOS permission: `NSBluetoothPeripheralUsageDescription`
 - Encrypted requests: Feel free to [open a PR.](https://github.com/expo/expo/pull/new)
 - Enable/Disable Bluetooth on iOS: Not possible.
