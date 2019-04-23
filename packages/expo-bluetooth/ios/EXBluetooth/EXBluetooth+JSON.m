@@ -121,7 +121,7 @@
     [props addObject:@"indicate"];
   }
   if ((input & CBCharacteristicPropertyAuthenticatedSignedWrites) != 0x0) {
-    [props addObject:@"autheticateSignedWrites"];
+    [props addObject:@"authenticateSignedWrites"];
   }
   if ((input & CBCharacteristicPropertyExtendedProperties) != 0x0) {
     [props addObject:@"extendedProperties"];
@@ -156,7 +156,7 @@
     return CBCharacteristicPropertyNotify;
   } else if ([input isEqualToString:@"indicate"]) {
     return CBCharacteristicPropertyIndicate;
-  } else if ([input isEqualToString:@"autheticateSignedWrites"]) {
+  } else if ([input isEqualToString:@"authenticateSignedWrites"]) {
     return CBCharacteristicPropertyAuthenticatedSignedWrites;
   } else if ([input isEqualToString:@"extendedProperties"]) {
     return CBCharacteristicPropertyExtendedProperties;
