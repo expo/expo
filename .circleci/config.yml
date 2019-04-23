@@ -430,7 +430,7 @@ jobs:
       - run: nix-env -iA nixpkgs.curl
       - run: mkdir -p /opt/bin
       - run: export PATH=$PATH:/opt/bin
-      - run: curl -fLSs https://circle.ci/cli | DESTDIR=/opt/bin bash
+      - run: curl -fLSs https://circle.ci/cli | DESTDIR=/opt/bin bash || exit 0
       - run: /opt/bin/circleci step halt
       - run:
           name: "Skip job if tarball has already been uploaded"
