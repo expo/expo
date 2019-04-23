@@ -24,7 +24,7 @@ export type FullscreenUpdateEvent = {
   status: PlaybackStatus;
 };
 
-export type Props = {
+export type VideoPlaybackProps = {
   // Source stuff
   source?: PlaybackSource; // { uri: 'http://foo/bar.mp4' }, Asset, or require('./foo/bar.mp4')
   posterSource?: { uri: string } | number; // { uri: 'http://foo/bar.mp4' } or require('./foo/bar.mp4')
@@ -77,7 +77,7 @@ export type NativeProps = {
   useNativeControls?: boolean;
 } & React.ComponentProps<typeof View>;
 
-export type State = {
+export type VideoPlaybackState = {
   showPoster: boolean;
 };
 export type ExponentVideoComponent = React.ComponentClass<NativeProps>;

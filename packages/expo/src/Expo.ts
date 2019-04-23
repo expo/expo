@@ -13,7 +13,7 @@ import * as TaskManager from 'expo-task-manager';
 import * as Facebook from 'expo-facebook';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
-import { Audio, Video } from 'expo-av';
+import * as AV from 'expo-av';
 import { BlurView } from 'expo-blur';
 import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
@@ -29,6 +29,7 @@ import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
 import * as FacebookAds from 'expo-ads-facebook';
 import * as SplashScreen from './launch/SplashScreen';
+import * as Sensors from 'expo-sensors';
 import * as WebBrowser from 'expo-web-browser';
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 import * as Segment from 'expo-analytics-segment';
@@ -48,7 +49,9 @@ import * as FaceDetector from 'expo-face-detector';
 export { FaceDetector };
 export { FileSystem };
 export { Font };
-export { GLView } from 'expo-gl';
+import * as GL from 'expo-gl';
+const GLView = GL.GLView;
+export { GL, GLView };
 import * as GoogleSignIn from 'expo-google-sign-in';
 export { GoogleSignIn };
 export { ImageManipulator };
@@ -66,8 +69,9 @@ import * as MediaLibrary from 'expo-media-library';
 export { MediaLibrary };
 import * as Permissions from 'expo-permissions';
 export { Permissions };
-export { Print } from 'expo-print';
-export { Accelerometer, Barometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
+import * as Print from 'expo-print';
+export { Print };
+export { Sensors };
 export { SQLite } from 'expo-sqlite';
 export { SMS };
 export { Speech };
@@ -98,7 +102,8 @@ export { Updates };
 export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
-export { Audio, Video };
+const { Audio, Video } = AV;
+export { AV, Audio, Video };
 export { BlurView };
 export { LinearGradient } from 'expo-linear-gradient';
 export { FacebookAds };
@@ -115,6 +120,21 @@ if (module && module.exports) {
 
   //@ts-ignore
   Object.defineProperties(module.exports, {
+    // Accelerometer: {
+
+    // },
+    // Barometer: {
+
+    // },
+    // Gyroscope: {
+
+    // },
+    // Magnetometer: {
+
+    // },
+    // MagnetometerUncalibarted: {
+
+    // }
     Haptic: {
       enumerable: false,
       get() {

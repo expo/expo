@@ -1,10 +1,10 @@
 import DeviceSensor from './DeviceSensor';
 
-type ThreeAxisMeasurement = {
-  x: number,
-  y: number,
-  z: number,
-};
+export interface ThreeAxisMeasurement {
+  x: number;
+  y: number;
+  z: number;
+}
 
 /**
  * A base class for subscribable sensors that take {x, y, z} measurements.

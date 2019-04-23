@@ -23,13 +23,23 @@ import {
   FullscreenUpdateEvent,
   NativeProps,
   NaturalSize,
-  Props,
+  VideoPlaybackProps,
   ReadyForDisplayEvent,
   ResizeMode,
-  State,
+  VideoPlaybackState,
 } from './Video.types';
 
-export { NaturalSize };
+export {
+  ExponentVideoComponent,
+  FullscreenUpdateEvent,
+  NativeProps,
+  NaturalSize,
+  VideoPlaybackProps,
+  ReadyForDisplayEvent,
+  ResizeMode,
+  VideoPlaybackState,
+}
+
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -66,21 +76,7 @@ const _STYLES = StyleSheet.create({
 const ExpoVideoManagerConstants = ExpoVideoManager;
 const ExpoVideoViewManager = ExpoVideoManager;
 
-export default class Video extends React.Component<Props, State> implements Playback {
-  static RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
-  static RESIZE_MODE_COVER = ResizeMode.COVER;
-  static RESIZE_MODE_STRETCH = ResizeMode.STRETCH;
-
-  static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
-  static IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
-  static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
-  static IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
-
-  static FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
-  static FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
-  static FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
-  static FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
-
+export class VideoPlayback extends React.Component<VideoPlaybackProps, VideoPlaybackState> implements Playback {
   static propTypes = {
     // Source stuff
     source: PropTypes.oneOfType([
@@ -144,7 +140,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
 
-  constructor(props: Props) {
+  constructor(props: VideoPlaybackProps) {
     super(props);
     this.state = {
       showPoster: !!props.usePoster,
@@ -414,4 +410,4 @@ export default class Video extends React.Component<Props, State> implements Play
   }
 }
 
-Object.assign(Video.prototype, PlaybackMixin);
+Object.assign(VideoPlayback.prototype, PlaybackMixin);

@@ -14,7 +14,7 @@ type AdContainerProps<P> = {
   adsManager: AdsManager;
   // TODO: rename this to onAdLoad
   onAdLoaded?: ((ad: NativeAd) => void) | null;
-} & P;
+} & Pick<P, Exclude<keyof P, keyof AdProps>>;
 
 type AdContainerState = {
   ad: NativeAd | null;
