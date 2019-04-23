@@ -44,9 +44,9 @@
     "prop-types": "^15.6.2"
   },
   "devDependencies": {
-    "react-test-renderer": "^16.7.0",
     "babel-preset-expo": "^5.0.0",
-    "expo-module-scripts": "^1.0.0"
+    "expo-module-scripts": "^1.0.0",
+    "react-test-renderer": "^16.7.0"
   },
   "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

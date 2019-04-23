@@ -4,118 +4,118 @@ import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
 
 type RecurringEventOptions = {
-  futureEvents?: boolean,
-  instanceStartDate?: string,
+  futureEvents?: boolean;
+  instanceStartDate?: string;
 }; // iOS
 
-type Calendar = {
-  id?: string,
-  title?: string,
-  sourceId?: string, // iOS
-  source?: Source,
-  type?: string, // iOS
-  color?: string,
-  entityType?: string, // iOS
-  allowsModifications?: boolean,
-  allowedAvailabilities?: string[],
-  isPrimary?: boolean, // Android
-  name?: string, // Android
-  ownerAccount?: string, // Android
-  timeZone?: string, // Android
-  allowedReminders?: string[], // Android
-  allowedAttendeeTypes?: string[], // Android
-  isVisible?: boolean, // Android
-  isSynced?: boolean, // Android
-  accessLevel?: string, // Android
+export interface Calendar {
+  id?: string;
+  title?: string;
+  sourceId?: string; // iOS
+  source?: Source;
+  type?: string; // iOS
+  color?: string;
+  entityType?: string; // iOS
+  allowsModifications?: boolean;
+  allowedAvailabilities?: string[];
+  isPrimary?: boolean; // Android
+  name?: string; // Android
+  ownerAccount?: string; // Android
+  timeZone?: string; // Android
+  allowedReminders?: string[]; // Android
+  allowedAttendeeTypes?: string[]; // Android
+  isVisible?: boolean; // Android
+  isSynced?: boolean; // Android
+  accessLevel?: string; // Android
 };
 
 type Source = {
-  id?: string, // iOS only ??
-  type?: string,
-  name?: string,
-  isLocalAccount?: boolean, // Android
+  id?: string; // iOS only ??
+  type?: string;
+  name?: string;
+  isLocalAccount?: boolean; // Android
 };
 
-type Event = {
-  id?: string,
-  calendarId?: string,
-  title?: string,
-  location?: string,
-  creationDate?: string, // iOS
-  lastModifiedDate?: string, // iOS
-  timeZone?: string,
-  endTimeZone?: string, // Android
-  url?: string, // iOS
-  notes?: string,
-  alarms?: Alarm[],
-  recurrenceRule?: RecurrenceRule,
-  startDate?: string,
-  endDate?: string,
-  originalStartDate?: string, // iOS
-  isDetached?: boolean, // iOS
-  allDay?: boolean,
-  availability?: string, // Availability
-  status?: string, // Status
-  organizer?: string, // Organizer - iOS
-  organizerEmail?: string, // Android
-  accessLevel?: string, // Android,
-  guestsCanModify?: boolean, // Android,
-  guestsCanInviteOthers?: boolean, // Android
-  guestsCanSeeGuests?: boolean, // Android
-  originalId?: string, // Android
-  instanceId?: string, // Android
+export type Event = {
+  id?: string;
+  calendarId?: string;
+  title?: string;
+  location?: string;
+  creationDate?: string; // iOS
+  lastModifiedDate?: string; // iOS
+  timeZone?: string;
+  endTimeZone?: string; // Android
+  url?: string; // iOS
+  notes?: string;
+  alarms?: Alarm[];
+  recurrenceRule?: RecurrenceRule;
+  startDate?: string;
+  endDate?: string;
+  originalStartDate?: string; // iOS
+  isDetached?: boolean; // iOS
+  allDay?: boolean;
+  availability?: string; // Availability
+  status?: string; // Status
+  organizer?: string; // Organizer - iOS
+  organizerEmail?: string; // Android
+  accessLevel?: string; // Android,
+  guestsCanModify?: boolean; // Android,
+  guestsCanInviteOthers?: boolean; // Android
+  guestsCanSeeGuests?: boolean; // Android
+  originalId?: string; // Android
+  instanceId?: string; // Android
 };
 
-type Reminder = {
-  id?: string,
-  calendarId?: string,
-  title?: string,
-  location?: string,
-  creationDate?: string,
-  lastModifiedDate?: string,
-  timeZone?: string,
-  url?: string,
-  notes?: string,
-  alarms?: Alarm[],
-  recurrenceRule?: RecurrenceRule,
-  startDate?: string,
-  dueDate?: string,
-  completed?: boolean,
-  completionDate?: string,
-};
+export interface Reminder {
+  id?: string;
+  calendarId?: string;
+  title?: string;
+  location?: string;
+  creationDate?: string;
+  lastModifiedDate?: string;
+  timeZone?: string;
+  url?: string;
+  notes?: string;
+  alarms?: Alarm[];
+  recurrenceRule?: RecurrenceRule;
+  startDate?: string | Date;
+  dueDate?: string | Date;
+  completed?: boolean;
+  completionDate?: string;
+}
 
 type Attendee = {
-  id?: string, // Android
-  isCurrentUser?: boolean, // iOS
-  name?: string,
-  role?: string,
-  status?: string,
-  type?: string,
-  url?: string, // iOS
-  email?: string, // Android
+  id?: string; // Android
+  isCurrentUser?: boolean; // iOS
+  name?: string;
+  role?: string;
+  status?: string;
+  type?: string;
+  url?: string; // iOS
+  email?: string; // Android
 };
 
 type Alarm = {
-  absoluteDate?: string, // iOS
-  relativeOffset?: string,
+  absoluteDate?: string; // iOS
+  relativeOffset?: string;
   structuredLocation?: {
     // iOS
-    title?: string,
-    proximity?: string, // Proximity
-    radius?: number,
+    title?: string;
+    proximity?: string; // Proximity
+    radius?: number;
     coords?: {
-      latitude?: number,
-      longitude?: number,
-    },
-  },
-  method?: string, // Method, Android
+      latitude?: number;
+      longitude?: number;
+    };
+  };
+  method?: string; // Method, Android
 };
 
 type RecurrenceRule = {
-  frequency: string, // Frequency
-  interval?: number,
-  endDate?: string,
-  occurrence?: number,
+  frequency: string; // Frequency
+  interval?: number;
+  endDate?: string;
+  occurrence?: number;
 };
 
 export async function getCalendarsAsync(entityType?: string): Promise<void> {
@@ -300,10 +300,7 @@ export async function deleteEventAsync(
   if (!id) {
     throw new Error('deleteEventAsync must be called with an id (string) of the target event');
   }
-  return ExpoCalendar.deleteEventAsync(
-    { id, instanceStartDate },
-    { futureEvents }
-  );
+  return ExpoCalendar.deleteEventAsync({ id, instanceStartDate }, { futureEvents });
 }
 
 export async function getAttendeesForEventAsync(

@@ -5,55 +5,55 @@ import ExpoLocation from './ExpoLocation';
 
 const LocationEventEmitter = new EventEmitter(ExpoLocation);
 
-interface ProviderStatus {
-  locationServicesEnabled: boolean,
-  gpsAvailable?: boolean,
-  networkAvailable?: boolean,
-  passiveAvailable?: boolean,
-};
+export interface ProviderStatus {
+  locationServicesEnabled: boolean;
+  gpsAvailable?: boolean;
+  networkAvailable?: boolean;
+  passiveAvailable?: boolean;
+}
 
-interface LocationOptions {
-  accuracy?: LocationAccuracy,
-  enableHighAccuracy?: boolean,
-  timeInterval?: number,
-  distanceInterval?: number,
-  timeout?: number,
-  mayShowUserSettingsDialog?: boolean,
-};
+export interface LocationOptions {
+  accuracy?: LocationAccuracy;
+  enableHighAccuracy?: boolean;
+  timeInterval?: number;
+  distanceInterval?: number;
+  timeout?: number;
+  mayShowUserSettingsDialog?: boolean;
+}
 
-interface LocationData {
+export interface LocationData {
   coords: {
-    latitude: number,
-    longitude: number,
-    altitude: number,
-    accuracy: number,
-    heading: number,
-    speed: number,
-  },
-  timestamp: number,
-};
+    latitude: number;
+    longitude: number;
+    altitude: number;
+    accuracy: number;
+    heading: number;
+    speed: number;
+  };
+  timestamp: number;
+}
 
-interface HeadingData {
-  trueHeading: number,
-  magHeading: number,
-  accuracy: number,
-};
+export interface HeadingData {
+  trueHeading: number;
+  magHeading: number;
+  accuracy: number;
+}
 
-interface GeocodedLocation {
-  latitude: number,
-  longitude: number,
-  altitude?: number,
-  accuracy?: number,
-};
+export interface GeocodedLocation {
+  latitude: number;
+  longitude: number;
+  altitude?: number;
+  accuracy?: number;
+}
 
-interface Address {
-  city: string,
-  street: string,
-  region: string,
-  country: string,
-  postalCode: string,
-  name: string,
-};
+export interface Address {
+  city: string;
+  street: string;
+  region: string;
+  country: string;
+  postalCode: string;
+  name: string;
+}
 
 interface LocationTaskOptions {
   accuracy?: LocationAccuracy;
@@ -62,6 +62,7 @@ interface LocationTaskOptions {
   showsBackgroundLocationIndicator?: boolean; // iOS only
   deferredUpdatesDistance?: number;
   deferredUpdatesTimeout?: number;
+  deferredUpdatesInterval?: number;
   foregroundService?: {
     notificationTitle: string;
     notificationBody: string;
@@ -70,16 +71,16 @@ interface LocationTaskOptions {
 };
 
 interface Region {
-  identifier?: string,
-  latitude: number,
-  longitude: number,
-  radius: number,
-  notifyOnEnter?: boolean,
-  notifyOnExit?: boolean,
-};
+  identifier?: string;
+  latitude: number;
+  longitude: number;
+  radius: number;
+  notifyOnEnter?: boolean;
+  notifyOnExit?: boolean;
+}
 
 type Subscription = {
-  remove: () => void,
+  remove: () => void;
 };
 type LocationCallback = (data: LocationData) => any;
 type HeadingCallback = (data: HeadingData) => any;
@@ -116,7 +117,7 @@ function _getCurrentWatchId() {
 }
 
 let watchCallbacks: {
-  [watchId: number]: LocationCallback | HeadingCallback,
+  [watchId: number]: LocationCallback | HeadingCallback;
 } = {};
 
 let deviceEventSubscription: Subscription | null;
@@ -139,7 +140,9 @@ export async function enableNetworkProviderAsync(): Promise<void> {
   }
 }
 
-export async function getCurrentPositionAsync(options: LocationOptions = {}): Promise<LocationData> {
+export async function getCurrentPositionAsync(
+  options: LocationOptions = {}
+): Promise<LocationData> {
   return ExpoLocation.getCurrentPositionAsync(options);
 }
 
@@ -192,7 +195,9 @@ export async function getHeadingAsync(): Promise<HeadingData> {
   });
 }
 
-export async function watchHeadingAsync(callback: HeadingCallback): Promise<object> {
+export async function watchHeadingAsync(
+  callback: HeadingCallback
+): Promise<{ remove: () => void }> {
   // Check if there is already a compass event watch.
   if (headingEventSub) {
     _removeHeadingWatcher(headingId);
@@ -200,7 +205,7 @@ export async function watchHeadingAsync(callback: HeadingCallback): Promise<obje
 
   headingEventSub = LocationEventEmitter.addListener(
     'Expo.headingChanged',
-    ({ watchId, heading }: { watchId: string, heading: HeadingData }) => {
+    ({ watchId, heading }: { watchId: string; heading: HeadingData }) => {
       const callback = watchCallbacks[watchId];
       if (callback) {
         callback(heading);
@@ -238,7 +243,7 @@ function _maybeInitializeEmitterSubscription() {
   if (!deviceEventSubscription) {
     deviceEventSubscription = LocationEventEmitter.addListener(
       'Expo.locationChanged',
-      ({ watchId, location }: { watchId: string, location: LocationData }) => {
+      ({ watchId, location }: { watchId: string; location: LocationData }) => {
         const callback = watchCallbacks[watchId];
         if (callback) {
           callback(location);
@@ -264,7 +269,10 @@ export async function geocodeAsync(address: string): Promise<Array<GeocodedLocat
   });
 }
 
-export async function reverseGeocodeAsync(location: { latitude: number, longitude: number }): Promise<Address[]> {
+export async function reverseGeocodeAsync(location: {
+  latitude: number;
+  longitude: number;
+}): Promise<Address[]> {
   if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
     throw new TypeError(
       'Location should be an object with number properties `latitude` and `longitude`.'
@@ -308,7 +316,10 @@ async function _googleGeocodeAsync(address: string): Promise<GeocodedLocation[]>
   });
 }
 
-async function _googleReverseGeocodeAsync(options: { latitude: number, longitude: number }): Promise<Address[]> {
+async function _googleReverseGeocodeAsync(options: {
+  latitude: number;
+  longitude: number;
+}): Promise<Address[]> {
   const result = await fetch(
     `${googleApiUrl}?key=${googleApiKey}&latlng=${options.latitude},${options.longitude}`
   );
@@ -461,14 +472,18 @@ export async function hasStartedLocationUpdatesAsync(taskName: string): Promise<
 
 function _validateRegions(regions: Array<Region>) {
   if (!regions || regions.length === 0) {
-    throw new Error('Regions array cannot be empty. Use `stopGeofencingAsync` if you want to stop geofencing all regions');
+    throw new Error(
+      'Regions array cannot be empty. Use `stopGeofencingAsync` if you want to stop geofencing all regions'
+    );
   }
   for (const region of regions) {
     if (typeof region.latitude !== 'number') {
       throw new TypeError(`Region's latitude must be a number. Got '${region.latitude}' instead.`);
     }
     if (typeof region.longitude !== 'number') {
-      throw new TypeError(`Region's longitude must be a number. Got '${region.longitude}' instead.`);
+      throw new TypeError(
+        `Region's longitude must be a number. Got '${region.longitude}' instead.`
+      );
     }
     if (typeof region.radius !== 'number') {
       throw new TypeError(`Region's radius must be a number. Got '${region.radius}' instead.`);
@@ -476,7 +491,10 @@ function _validateRegions(regions: Array<Region>) {
   }
 }
 
-export async function startGeofencingAsync(taskName: string, regions: Array<Region> = []): Promise<void> {
+export async function startGeofencingAsync(
+  taskName: string,
+  regions: Array<Region> = []
+): Promise<void> {
   _validateTaskName(taskName);
   _validateRegions(regions);
   await ExpoLocation.startGeofencingAsync(taskName, { regions });

@@ -8,6 +8,7 @@ import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
 import ExpoVideoManager from './ExpoVideoManager';
 import { ResizeMode, } from './Video.types';
+export { ResizeMode, };
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -40,7 +41,7 @@ const _STYLES = StyleSheet.create({
 // we have to use the provided native module mock to access constants
 const ExpoVideoManagerConstants = ExpoVideoManager;
 const ExpoVideoViewManager = ExpoVideoManager;
-export default class Video extends React.Component {
+export class VideoPlayback extends React.Component {
     // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
     constructor(props) {
         super(props);
@@ -222,18 +223,7 @@ export default class Video extends React.Component {
       </View>);
     }
 }
-Video.RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
-Video.RESIZE_MODE_COVER = ResizeMode.COVER;
-Video.RESIZE_MODE_STRETCH = ResizeMode.STRETCH;
-Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
-Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
-Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
-Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
-Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
-Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
-Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
-Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
-Video.propTypes = {
+VideoPlayback.propTypes = {
     // Source stuff
     source: PropTypes.oneOfType([
         PropTypes.shape({
@@ -287,5 +277,5 @@ Video.propTypes = {
     rotation: PropTypes.number,
     ...ViewPropTypes,
 };
-Object.assign(Video.prototype, PlaybackMixin);
+Object.assign(VideoPlayback.prototype, PlaybackMixin);
 //# sourceMappingURL=Video.js.map
