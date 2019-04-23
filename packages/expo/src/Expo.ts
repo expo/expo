@@ -569,6 +569,16 @@ if (module && module.exports) {
         return require('expo-sensors').MagnetometerUncalibrated;
       },
     },
+    Sensors: {
+      enumerable: true,
+      get() {
+        deprecatedModule(
+          `import { Sensors } from 'expo' -> import * as Sensors from 'expo-sensors';`,
+          'expo-sensors'
+        );
+        return require('expo-sensors');
+      },
+    },
 
     Sharing: {
       enumerable: true,
