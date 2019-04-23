@@ -31,25 +31,21 @@ function methodWithTransformedError(
       // console.log(`EXBLE: invoke: ${methodName}()`);
       return await method(...props);
     } catch ({ message, code, ...props }) {
-      let error;
       if (code.indexOf('ERR_BLE_GATT:') > -1) {
         const gattStatusCode = code.split(':')[1];
-        error = new AndroidGATTError({
+        return new AndroidGATTError({
           gattStatusCode: parseInt(gattStatusCode),
           stack,
           invokedMethod: methodName,
         });
       }
-      error = new BluetoothPlatformError({
+      return new BluetoothPlatformError({
         message,
         code,
         ...props,
         invokedMethod: methodName,
         stack,
       });
-
-      // error.log();
-      throw error;
     }
   };
 }

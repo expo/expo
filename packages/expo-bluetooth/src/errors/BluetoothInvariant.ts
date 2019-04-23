@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoBluetooth from '../ExpoBluetooth';
 import BluetoothError from './BluetoothError';
