@@ -433,9 +433,9 @@ jobs:
       - yarn_install:
           working_directory: ~/expo/tools
       - run: |
-        if aws s3 ls $S3_URI ; then
-          ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
-          aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+        if aws s3 ls $S3_URI ; then \
+          ./buildAndroidTarballLocally.sh \ # TODO: put in fastlane?
+          aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI \
         fi
 
   android_test_suite:
