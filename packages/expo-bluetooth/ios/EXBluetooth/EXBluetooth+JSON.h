@@ -9,8 +9,8 @@
 #import <EXBluetooth/EXBluetoothCentralManager.h>
 
 
-static id EXNullIfEmpty(NSString *input) {
-  if (!input || input == nil || [input isEqualToString:@""]) {
+static id EXNullIfEmpty(nullable NSString *input) {
+  if (!input || [input isEqualToString:@""]) {
     return NSNull.null;
   }
   return input;
