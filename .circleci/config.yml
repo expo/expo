@@ -427,6 +427,7 @@ jobs:
     steps:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
+      - run: circleci-agent step halt
       - run:
           name: "Skip job if tarball has already been uploaded"
           command: (aws s3 ls $S3_URI && circleci-agent step halt) || exit 0
