@@ -663,12 +663,13 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
     try {
       in = getApplication(mPromise).getContentResolver().openInputStream(uri);
       if (in != null) {
-        byte[] buffer = new byte[in.available()];
-        in.read(buffer);
-
         path = ExpFileUtils.generateOutputPath(mContext.getCacheDir(), "ImagePicker", ".mp4");
         out = new FileOutputStream(path);
-        out.write(buffer);
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) > 0) {
+          out.write(buffer, 0, bytesRead);
+        }
       }
     } catch (IOException e) {
       e.printStackTrace();
