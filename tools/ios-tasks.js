@@ -108,6 +108,10 @@ async function namespaceReactNativeFilesAsync(
             libraryName = versionedLibraryName;
           }
           fileString = fileString.replace(
+            new RegExp(`<${versionedLibraryName}\/([^\.]+)\.h>`, 'g'), // for versioned yoga
+            `<${versionedLibraryName}\/${versionPrefix}$1.h>`
+          );
+          fileString = fileString.replace(
             new RegExp(`<${libraryName}\/([^\.]+)\.h>`, 'g'),
             `<${versionedLibraryName}\/${versionPrefix}$1.h>`
           );
