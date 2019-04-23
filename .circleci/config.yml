@@ -427,21 +427,16 @@ jobs:
     steps:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
-      - run: nix-env -iA nixpkgs.curl
-      - run: mkdir -p /opt/bin
-      - run: export PATH=$PATH:/opt/bin
-      - run: curl -fLSs https://circle.ci/cli | DESTDIR=/opt/bin bash || exit 0
-      - run: /opt/bin/circleci step halt
-      - run:
-          name: "Skip job if tarball has already been uploaded"
-          command: (aws s3 ls $S3_URI && circleci-agent step halt) || exit 0
       - decrypt_secrets_if_possible
       - yarn_install:
           working_directory: ~/expo/tools-public
       - yarn_install:
           working_directory: ~/expo/tools
-      - run: ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
-      - run: aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+      - run: |
+        if aws s3 ls $S3_URI ; then
+          ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
+          aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+        fi
 
   android_test_suite:
     executor: android
