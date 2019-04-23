@@ -304,6 +304,14 @@ if (module && module.exports) {
       },
     },
 
+    GL: {
+      enumerable: true,
+      get() {
+        deprecatedModule(`import { GL } from 'expo' -> import * as GL from 'expo-gl';`, 'expo-gl');
+        return require('expo-gl');
+      },
+    },
+
     GLView: {
       enumerable: true,
       get() {
