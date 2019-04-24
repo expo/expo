@@ -17,7 +17,6 @@ for (const key in SvgModules) {
         return SvgModules[key];
       },
     });
-    Svg[key] = SvgModules[key];
   }
 }
 
