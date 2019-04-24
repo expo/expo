@@ -2,12 +2,20 @@ import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
 import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 
-const ExpoPackageJson = require('expo/package.json');
+function getExpoVersion(): string | null {
+  try {
+    // Remove the need to install the entire expo package.
+    return require('expo/package.json').version;
+  } catch (error) {
+    return null;
+  }
+}
+
+const version = getExpoVersion();
 
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
-declare var __DEV__: boolean;
 declare var process: { env: any };
 declare var navigator: Navigator;
 declare var location: Location;
@@ -52,15 +60,15 @@ export default {
   get isDetached(): false {
     return false;
   },
-  get expoVersion(): string {
-    return ExpoPackageJson.version;
+  get expoVersion(): string | null {
+    return version;
   },
   get linkingUri(): string {
     // On native this is `exp://`
     return location.origin + location.pathname;
   },
-  get expoRuntimeVersion(): string {
-    return ExpoPackageJson.version;
+  get expoRuntimeVersion(): string | null {
+    return version;
   },
   get deviceName(): string | undefined {
     const { browser, engine, os: OS } = parser.getResult();
@@ -91,7 +99,7 @@ export default {
     return location.origin + location.pathname;
   },
   get debugMode(): boolean {
-    return __DEV__;
+    return process.env.NODE_ENV !== 'production';
   },
   async getWebViewUserAgentAsync(): Promise<string> {
     return navigator.userAgent;

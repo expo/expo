@@ -1,6 +1,15 @@
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
-const ExpoPackageJson = require('expo/package.json');
+function getExpoVersion() {
+    try {
+        // Remove the need to install the entire expo package.
+        return require('expo/package.json').version;
+    }
+    catch (error) {
+        return null;
+    }
+}
+const version = getExpoVersion();
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
@@ -44,18 +53,24 @@ export default {
         return false;
     },
     get expoVersion() {
-        return ExpoPackageJson.version;
+        return version;
     },
     get linkingUri() {
         // On native this is `exp://`
         return location.origin + location.pathname;
     },
     get expoRuntimeVersion() {
-        return ExpoPackageJson.version;
+        return version;
     },
     get deviceName() {
         const { browser, engine, os: OS } = parser.getResult();
         return browser.name || engine.name || OS.name || undefined;
+    },
+    get nativeAppVersion() {
+        return null;
+    },
+    get nativeBuildVersion() {
+        return null;
     },
     get systemFonts() {
         // TODO: Bacon: Maybe possible.
@@ -75,7 +90,7 @@ export default {
         return location.origin + location.pathname;
     },
     get debugMode() {
-        return __DEV__;
+        return process.env.NODE_ENV !== 'production';
     },
     async getWebViewUserAgentAsync() {
         return navigator.userAgent;
