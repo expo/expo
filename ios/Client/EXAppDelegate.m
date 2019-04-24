@@ -66,7 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: Remove once SDK31 is phased out
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
 {
-  [super application:application didRegisterUserNotificationSettings:notificationSettings];
   [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
 }
 
