@@ -37,7 +37,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { AdMobBanner } from 'expo' -> import { AdMobBanner } from 'expo-ads-admob';`,
+          `import { AdMobBanner } from 'expo' -> import { AdMobBanner } from 'expo-ads-admob'`,
           'expo-ads-admob'
         );
         return require('expo-ads-admob').AdMobBanner;
@@ -47,7 +47,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { AdMobInterstitial } from 'expo' -> import { AdMobInterstitial } from 'expo-ads-admob';`,
+          `import { AdMobInterstitial } from 'expo' -> import { AdMobInterstitial } from 'expo-ads-admob'`,
           'expo-ads-admob'
         );
         return require('expo-ads-admob').AdMobInterstitial;
@@ -57,7 +57,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { AdMobRewarded } from 'expo' -> import { AdMobRewarded } from 'expo-ads-admob';`,
+          `import { AdMobRewarded } from 'expo' -> import { AdMobRewarded } from 'expo-ads-admob'`,
           'expo-ads-admob'
         );
         return require('expo-ads-admob').AdMobRewarded;
@@ -67,7 +67,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { PublisherBanner } from 'expo' -> import { PublisherBanner } from 'expo-ads-admob';`,
+          `import { PublisherBanner } from 'expo' -> import { PublisherBanner } from 'expo-ads-admob'`,
           'expo-ads-admob'
         );
         return require('expo-ads-admob').PublisherBanner;
@@ -78,7 +78,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { FacebookAds } from 'expo' -> import * as FacebookAds from 'expo-ads-facebook';`,
+          `import { FacebookAds } from 'expo' -> import * as FacebookAds from 'expo-ads-facebook'`,
           'expo-ads-facebook'
         );
         return require('expo-ads-facebook');
@@ -89,7 +89,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Amplitude } from 'expo' -> import * as Amplitude from 'expo-analytics-amplitude';`,
+          `import { Amplitude } from 'expo' -> import * as Amplitude from 'expo-analytics-amplitude'`,
           'expo-analytics-amplitude'
         );
         return require('expo-analytics-amplitude');
@@ -100,7 +100,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Segment } from 'expo' -> import * as Segment from 'expo-analytics-segment';`,
+          `import { Segment } from 'expo' -> import * as Segment from 'expo-analytics-segment'`,
           'expo-analytics-segment'
         );
         return require('expo-analytics-segment');
@@ -111,7 +111,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { AppAuth } from 'expo' -> import * as AppAuth from 'expo-app-auth';`,
+          `import { AppAuth } from 'expo' -> import * as AppAuth from 'expo-app-auth'`,
           'expo-app-auth'
         );
         return require('expo-app-auth');
@@ -122,7 +122,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Asset } from 'expo' -> import { Asset } from 'expo-asset';`,
+          `import { Asset } from 'expo' -> import { Asset } from 'expo-asset'`,
           'expo-asset'
         );
         return require('expo-asset').Asset;
@@ -133,7 +133,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Audio } from 'expo' -> import { Audio } from 'expo-av';`,
+          `import { Audio } from 'expo' -> import { Audio } from 'expo-av'`,
           'expo-av'
         );
         return require('expo-av').Audio;
@@ -143,7 +143,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Video } from 'expo' -> import { Video } from 'expo-av';`,
+          `import { Video } from 'expo' -> import { Video } from 'expo-av'`,
           'expo-av'
         );
         return require('expo-av').Video;
@@ -154,7 +154,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { BackgroundFetch } from 'expo' -> import * as BackgroundFetch from 'expo-background-fetch';`,
+          `import { BackgroundFetch } from 'expo' -> import * as BackgroundFetch from 'expo-background-fetch'`,
           'expo-background-fetch'
         );
         return require('expo-background-fetch');
@@ -165,7 +165,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { BarCodeScanner } from 'expo' -> import { BarCodeScanner } from 'expo-barcode-scanner';`,
+          `import { BarCodeScanner } from 'expo' -> import { BarCodeScanner } from 'expo-barcode-scanner'`,
           'expo-barcode-scanner'
         );
         return require('expo-barcode-scanner').BarCodeScanner;
@@ -176,7 +176,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { BlurView } from 'expo' -> import { BlurView } from 'expo-blur';`,
+          `import { BlurView } from 'expo' -> import { BlurView } from 'expo-blur'`,
           'expo-blur'
         );
         return require('expo-blur').BlurView;
@@ -187,7 +187,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Brightness } from 'expo' -> import * as Brightness from 'expo-brightness';`,
+          `import { Brightness } from 'expo' -> import * as Brightness from 'expo-brightness'`,
           'expo-brightness'
         );
         return require('expo-brightness');
@@ -198,7 +198,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Calendar } from 'expo' -> import * as Calendar from 'expo-calendar';`,
+          `import { Calendar } from 'expo' -> import * as Calendar from 'expo-calendar'`,
           'expo-calendar'
         );
         return require('expo-calendar');
@@ -209,7 +209,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Camera } from 'expo' -> import { Camera } from 'expo-camera';`,
+          `import { Camera } from 'expo' -> import { Camera } from 'expo-camera'`,
           'expo-camera'
         );
         return require('expo-camera').Camera;
@@ -231,7 +231,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Contacts } from 'expo' -> import * as Contacts from 'expo-contacts';`,
+          `import { Contacts } from 'expo' -> import * as Contacts from 'expo-contacts'`,
           'expo-contacts'
         );
         return require('expo-contacts');
@@ -242,7 +242,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Crypto } from 'expo' -> import * as Crypto from 'expo-crypto';`,
+          `import { Crypto } from 'expo' -> import * as Crypto from 'expo-crypto'`,
           'expo-crypto'
         );
         return require('expo-crypto');
@@ -253,7 +253,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { DocumentPicker } from 'expo' -> import * as DocumentPicker from 'expo-document-picker';`,
+          `import { DocumentPicker } from 'expo' -> import * as DocumentPicker from 'expo-document-picker'`,
           'expo-document-picker'
         );
         return require('expo-document-picker');
@@ -264,7 +264,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { FaceDetector } from 'expo' -> import * as FaceDetector from 'expo-face-detector';`,
+          `import { FaceDetector } from 'expo' -> import * as FaceDetector from 'expo-face-detector'`,
           'expo-face-detector'
         );
         return require('expo-face-detector');
@@ -275,7 +275,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Facebook } from 'expo' -> import * as Facebook from 'expo-facebook';`,
+          `import { Facebook } from 'expo' -> import * as Facebook from 'expo-facebook'`,
           'expo-facebook'
         );
         return require('expo-facebook');
@@ -286,7 +286,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { FileSystem } from 'expo' -> import * as FileSystem from 'expo-file-system';`,
+          `import { FileSystem } from 'expo' -> import * as FileSystem from 'expo-file-system'`,
           'expo-file-system'
         );
         return require('expo-file-system');
@@ -297,7 +297,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Font } from 'expo' -> import * as Font from 'expo-font';`,
+          `import { Font } from 'expo' -> import * as Font from 'expo-font'`,
           'expo-font'
         );
         return require('expo-font');
@@ -307,7 +307,7 @@ if (module && module.exports) {
     GL: {
       enumerable: true,
       get() {
-        deprecatedModule(`import { GL } from 'expo' -> import * as GL from 'expo-gl';`, 'expo-gl');
+        deprecatedModule(`import { GL } from 'expo' -> import * as GL from 'expo-gl'`, 'expo-gl');
         return require('expo-gl');
       },
     },
@@ -316,7 +316,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { GLView } from 'expo' -> import { GLView } from 'expo-gl';`,
+          `import { GLView } from 'expo' -> import { GLView } from 'expo-gl'`,
           'expo-gl'
         );
         return require('expo-gl').GLView;
@@ -327,7 +327,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { GoogleSignIn } from 'expo' -> import * as GoogleSignIn from 'expo-google-sign-in';`,
+          `import { GoogleSignIn } from 'expo' -> import * as GoogleSignIn from 'expo-google-sign-in'`,
           'expo-google-sign-in'
         );
         return require('expo-google-sign-in');
@@ -359,7 +359,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { ImageManipulator } from 'expo' -> import * as ImageManipulator from 'expo-image-manipulator';`,
+          `import { ImageManipulator } from 'expo' -> import * as ImageManipulator from 'expo-image-manipulator'`,
           'expo-image-manipulator'
         );
         return require('expo-image-manipulator');
@@ -370,7 +370,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { ImagePicker } from 'expo' -> import * as ImagePicker from 'expo-image-picker';`,
+          `import { ImagePicker } from 'expo' -> import * as ImagePicker from 'expo-image-picker'`,
           'expo-image-picker'
         );
         return require('expo-image-picker');
@@ -381,7 +381,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { IntentLauncher } from 'expo' -> import * as IntentLauncher from 'expo-intent-launcher';`,
+          `import { IntentLauncher } from 'expo' -> import * as IntentLauncher from 'expo-intent-launcher'`,
           'expo-intent-launcher'
         );
         return require('expo-intent-launcher');
@@ -402,7 +402,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { KeepAwake } from 'expo' -> import KeepAwake from 'expo-keep-awake';`,
+          `import { KeepAwake } from 'expo' -> import KeepAwake from 'expo-keep-awake'`,
           'expo-keep-awake'
         );
         return require('expo-keep-awake').default;
@@ -413,7 +413,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { LinearGradient } from 'expo' -> import { LinearGradient } from 'expo-linear-gradient';`,
+          `import { LinearGradient } from 'expo' -> import { LinearGradient } from 'expo-linear-gradient'`,
           'expo-linear-gradient'
         );
         return require('expo-linear-gradient').LinearGradient;
@@ -424,7 +424,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { LocalAuthentication } from 'expo' -> import * as LocalAuthentication from 'expo-local-authentication';`,
+          `import { LocalAuthentication } from 'expo' -> import * as LocalAuthentication from 'expo-local-authentication'`,
           'expo-local-authentication'
         );
         return require('expo-local-authentication');
@@ -435,7 +435,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Localization } from 'expo' -> import * as Localization from 'expo-localization';`,
+          `import { Localization } from 'expo' -> import * as Localization from 'expo-localization'`,
           'expo-localization'
         );
         return require('expo-localization');
@@ -446,7 +446,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Location } from 'expo' -> import * as Location from 'expo-location';`,
+          `import { Location } from 'expo' -> import * as Location from 'expo-location'`,
           'expo-location'
         );
         return require('expo-location');
@@ -457,7 +457,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { MailComposer } from 'expo' -> import * as MailComposer from 'expo-mail-composer';`,
+          `import { MailComposer } from 'expo' -> import * as MailComposer from 'expo-mail-composer'`,
           'expo-mail-composer'
         );
         return require('expo-mail-composer');
@@ -468,7 +468,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { MediaLibrary } from 'expo' -> import * as MediaLibrary from 'expo-media-library';`,
+          `import { MediaLibrary } from 'expo' -> import * as MediaLibrary from 'expo-media-library'`,
           'expo-media-library'
         );
         return require('expo-media-library');
@@ -479,7 +479,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Permissions } from 'expo' -> import * as Permissions from 'expo-permissions';`,
+          `import { Permissions } from 'expo' -> import * as Permissions from 'expo-permissions'`,
           'expo-permissions'
         );
         return require('expo-permissions');
@@ -490,7 +490,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Print } from 'expo' -> import * as Print from 'expo-print';`,
+          `import { Print } from 'expo' -> import * as Print from 'expo-print'`,
           'expo-print'
         );
         return require('expo-print');
@@ -501,7 +501,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Random } from 'expo' -> import * as Random from 'expo-random';`,
+          `import { Random } from 'expo' -> import * as Random from 'expo-random'`,
           'expo-random'
         );
         return require('expo-random');
@@ -512,7 +512,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { SecureStore } from 'expo' -> import * as SecureStore from 'expo-secure-store';`,
+          `import { SecureStore } from 'expo' -> import * as SecureStore from 'expo-secure-store'`,
           'expo-secure-store'
         );
         return require('expo-secure-store');
@@ -523,7 +523,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Accelerometer } from 'expo' -> import { Accelerometer } from 'expo-sensors';`,
+          `import { Accelerometer } from 'expo' -> import { Accelerometer } from 'expo-sensors'`,
           'expo-sensors'
         );
         return require('expo-sensors').Accelerometer;
@@ -533,7 +533,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Barometer } from 'expo' -> import { Barometer } from 'expo-sensors';`,
+          `import { Barometer } from 'expo' -> import { Barometer } from 'expo-sensors'`,
           'expo-sensors'
         );
         return require('expo-sensors').Barometer;
@@ -543,7 +543,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Gyroscope } from 'expo' -> import { Gyroscope } from 'expo-sensors';`,
+          `import { Gyroscope } from 'expo' -> import { Gyroscope } from 'expo-sensors'`,
           'expo-sensors'
         );
         return require('expo-sensors').Gyroscope;
@@ -553,7 +553,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Magnetometer } from 'expo' -> import { Magnetometer } from 'expo-sensors';`,
+          `import { Magnetometer } from 'expo' -> import { Magnetometer } from 'expo-sensors'`,
           'expo-sensors'
         );
         return require('expo-sensors').Magnetometer;
@@ -563,7 +563,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { MagnetometerUncalibrated } from 'expo' -> import { MagnetometerUncalibrated } from 'expo-sensors';`,
+          `import { MagnetometerUncalibrated } from 'expo' -> import { MagnetometerUncalibrated } from 'expo-sensors'`,
           'expo-sensors'
         );
         return require('expo-sensors').MagnetometerUncalibrated;
@@ -573,7 +573,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Sensors } from 'expo' -> import * as Sensors from 'expo-sensors';`,
+          `import { Sensors } from 'expo' -> import * as Sensors from 'expo-sensors'`,
           'expo-sensors'
         );
         return require('expo-sensors');
@@ -584,7 +584,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Sharing } from 'expo' -> import * as Sharing from 'expo-sharing';`,
+          `import { Sharing } from 'expo' -> import * as Sharing from 'expo-sharing'`,
           'expo-sharing'
         );
         return require('expo-sharing');
@@ -595,7 +595,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { SMS } from 'expo' -> import * as SMS from 'expo-sms';`,
+          `import { SMS } from 'expo' -> import * as SMS from 'expo-sms'`,
           'expo-sms'
         );
         return require('expo-sms');
@@ -606,7 +606,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Speech } from 'expo' -> import * as Speech from 'expo-speech';`,
+          `import { Speech } from 'expo' -> import * as Speech from 'expo-speech'`,
           'expo-speech'
         );
         return require('expo-speech');
@@ -617,7 +617,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { SQLite } from 'expo' -> import { SQLite } from 'expo-sqlite';`,
+          `import { SQLite } from 'expo' -> import { SQLite } from 'expo-sqlite'`,
           'expo-sqlite'
         );
         return require('expo-sqlite').SQLite;
@@ -628,7 +628,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { TaskManager } from 'expo' -> import * as TaskManager from 'expo-task-manager';`,
+          `import { TaskManager } from 'expo' -> import * as TaskManager from 'expo-task-manager'`,
           'expo-task-manager'
         );
         return require('expo-task-manager');
@@ -639,7 +639,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { WebBrowser } from 'expo' -> import * as WebBrowser from 'expo-web-browser';`,
+          `import { WebBrowser } from 'expo' -> import * as WebBrowser from 'expo-web-browser'`,
           'expo-web-browser'
         );
         return require('expo-web-browser');
@@ -652,7 +652,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { GestureHandler } from 'expo' -> import * as GestureHandler from 'react-native-gesture-handler';`,
+          `import { GestureHandler } from 'expo' -> import * as GestureHandler from 'react-native-gesture-handler'`,
           'react-native-gesture-handler'
         );
         return require('react-native-gesture-handler');
@@ -663,7 +663,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Icon } from 'expo' -> import * as Icons from '@expo/vector-icons';`,
+          `import { Icon } from 'expo' -> import * as Icons from '@expo/vector-icons'`,
           '@expo/vector-icons'
         );
         return require('@expo/vector-icons');
@@ -674,7 +674,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { MapView } from 'expo' -> import MapView from 'react-native-maps';`,
+          `import { MapView } from 'expo' -> import MapView from 'react-native-maps'`,
           'react-native-maps'
         );
         return require('react-native-maps').default;
@@ -685,7 +685,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { Svg } from 'expo' -> import * as Svg from 'react-native-svg';`,
+          `import { Svg } from 'expo' -> import * as Svg from 'react-native-svg'`,
           'react-native-svg'
         );
         return require('./Svg').default;
@@ -696,7 +696,7 @@ if (module && module.exports) {
       enumerable: true,
       get() {
         deprecatedModule(
-          `import { WebView } from 'expo' -> import { WebView } from 'react-native-webview';`,
+          `import { WebView } from 'expo' -> import { WebView } from 'react-native-webview'`,
           'react-native-webview'
         );
         return require('./WebView').WebView;

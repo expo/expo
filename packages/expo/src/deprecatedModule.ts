@@ -22,7 +22,7 @@ function logWarning() {
   packages.sort();
 
   messages.forEach(message => {
-    instructions += `- ${message}';\n`;
+    instructions += `- ${message}\n`;
   });
   instructions += '\n';
   instructions += 'You can add the correct versions of these packages to your project using:\n';
