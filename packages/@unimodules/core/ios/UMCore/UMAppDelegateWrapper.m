@@ -147,17 +147,6 @@ static dispatch_once_t onceToken;
   }
 }
 
-// TODO: Remove once SDK31 is phased out
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-  SEL selector = @selector(application:didRegisterUserNotificationSettings:);
-  NSArray<id<UIApplicationDelegate>> *subcontractorsArray = [self getSubcontractorsImplementingSelector:selector];
-  
-  for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
-    [subcontractor application:application didRegisterUserNotificationSettings:notificationSettings];
-  }
-}
-
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
   SEL selector = @selector(application:didReceiveRemoteNotification:fetchCompletionHandler:);
