@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import prettyFormat from 'pretty-format';
-import parseErrorStack, { StackFrame } from 'react-native/Libraries/Core/Devtools/parseErrorStack';
+import parseErrorStack, { StackFrame } from './parseErrorStack';
 import symbolicateStackTrace from './symbolicateStackTrace';
 
 import { LogData, LogLevel } from './RemoteLogging';
