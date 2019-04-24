@@ -136,7 +136,6 @@
     "react-native-view-shot": "2.5.0",
     "react-native-webview": "5.4.6",
     "serialize-error": "^2.1.0",
-    "stacktrace-parser": "^0.1.5",
     "unimodules-barcode-scanner-interface": "~1.0.0",
     "unimodules-camera-interface": "~1.0.0",
     "unimodules-constants-interface": "~1.0.0",
