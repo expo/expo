@@ -8,26 +8,21 @@
  * @flow
  */
 
-import { parse } from 'stacktrace-parser';
+import { parse, StackFrame } from 'stacktrace-parser';
 
-export type StackFrame = {
-  column?: number;
-  file: string;
-  lineNumber: number;
-  methodName: string;
-};
-
-export type ExtendedError = Error & {
+type ExtendedError = Error & {
   framesToPop?: number;
   jsEngine?: string;
 };
+
+export { StackFrame, ExtendedError };
 
 export default function parseErrorStack(e: ExtendedError): StackFrame[] {
   if (!e || !e.stack) {
     return [];
   }
 
-  const stack = Array.isArray(e.stack) ? e.stack : parse(e.stack);
+  const stack: StackFrame[] = Array.isArray(e.stack) ? e.stack : parse(e.stack);
 
   let framesToPop = typeof e.framesToPop === 'number' ? e.framesToPop : 0;
   while (framesToPop--) {
