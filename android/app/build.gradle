@@ -202,26 +202,6 @@ dependencies {
   implementation(project(':expoview-abi31_0_0'))
   // END_SDK_31
 
-  // BEGIN_SDK_30
-  implementation(project(':expoview-abi30_0_0'))
-  // END_SDK_30
-
-  // BEGIN_SDK_29
-  implementation(project(':expoview-abi29_0_0'))
-  // END_SDK_29
-
-  // BEGIN_SDK_28
-  implementation(project(':expoview-abi28_0_0'))
-  // END_SDK_28
-
-  // BEGIN_SDK_27
-  implementation(project(':expoview-abi27_0_0'))
-  // END_SDK_27
-
-  // BEGIN_SDK_26
-  implementation(project(':expoview-abi26_0_0'))
-  // END_SDK_26
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
   implementation 'com.amplitude:android-sdk:2.9.2'
