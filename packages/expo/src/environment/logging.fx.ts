@@ -2,6 +2,7 @@ import Constants from 'expo-constants';
 
 import Logs from '../logs/Logs';
 import RemoteLogging from '../logs/RemoteLogging';
+import './muteCyclicWarnings.fx';
 
 if (Constants.manifest && Constants.manifest.logUrl) {
   // Enable logging to the Expo dev tools only if this JS is not running in a web browser (ex: the
@@ -14,17 +15,3 @@ if (Constants.manifest && Constants.manifest.logUrl) {
     ]);
   }
 }
-
-// NOTE(2018-10-29): temporarily filter out cyclic dependency warnings here since they are noisy and
-// each warning symbolicates a stack trace, which is slow when there are many warnings
-const originalWarn = console.warn;
-console.warn = function warn(...args) {
-  if (
-    args.length > 0 &&
-    typeof args[0] === 'string' &&
-    /^Require cycle: .*node_modules/.test(args[0])
-  ) {
-    return;
-  }
-  originalWarn.apply(console, args);
-};
