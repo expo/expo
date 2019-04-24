@@ -152,7 +152,7 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
   return angle * (180 / M_PI);
 }
 
-- (CGPoint)toPoint:(FIRVisionPoint*)visionPoint
+- (CGPoint)toPoint:(FIRVisionPoint *)visionPoint
 {
   return CGPointMake([[visionPoint x] floatValue], [[visionPoint y] floatValue]);
 }

@@ -18,11 +18,11 @@ typedef float (^angleTransformer)(float);
 
 + (NSDictionary *)constantsToExport;
 
-+ (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions*)first to:(FIRVisionFaceDetectorOptions*)second;
++ (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions *)first to:(FIRVisionFaceDetectorOptions *)second;
 
-+ (FIRVisionFaceDetectorOptions*)mapOptions:(NSDictionary*)options;
++ (FIRVisionFaceDetectorOptions *)mapOptions:(NSDictionary*)options;
 
-+ (FIRVisionFaceDetectorOptions*) newOptions:(FIRVisionFaceDetectorOptions*)options withValues:(NSDictionary*)values;
++ (FIRVisionFaceDetectorOptions *) newOptions:(FIRVisionFaceDetectorOptions* )options withValues:(NSDictionary *)values;
 
 + (angleTransformer)angleTransformerFromTransform:(CGAffineTransform)transform;
 

@@ -10,22 +10,22 @@
 
 @implementation EXFaceDetector
 
-FIRVisionFaceDetector* detector;
+FIRVisionFaceDetector *detector;
 
--(instancetype) initWithOptions:(FIRVisionFaceDetectorOptions*)options {
+-(instancetype) initWithOptions:(FIRVisionFaceDetectorOptions *)options {
   self = [super init];
   detector = [EXFaceDetector detectorForOptions:options];
   return self;
 }
 
--(void) detectFromImage:(UIImage*)image completionListener:(void(^)(NSArray<FIRVisionFace*>* faces, NSError* error)) completion {
+-(void) detectFromImage:(UIImage*)image completionListener:(void(^)(NSArray<FIRVisionFace *> *faces, NSError* error)) completion {
   if(image != nil) {
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
     [self detectFromFIRImage:visionImage completionListener:completion];
   }
 }
 
--(void) detectFromBuffer:(CMSampleBufferRef)buffer metadata:(FIRVisionImageMetadata*)metadata completionListener:(void(^)(NSArray<FIRVisionFace *> *faces, NSError *error))completion {
+-(void) detectFromBuffer:(CMSampleBufferRef)buffer metadata:(FIRVisionImageMetadata *)metadata completionListener:(void(^)(NSArray<FIRVisionFace *> *faces, NSError *error))completion {
   if(buffer != nil) {
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithBuffer:buffer];
     visionImage.metadata = metadata;
@@ -33,7 +33,7 @@ FIRVisionFaceDetector* detector;
   }
 }
 
--(void) detectFromFIRImage:(FIRVisionImage*)image completionListener:(void(^)(NSArray<FIRVisionFace *> *faces, NSError *error))completion {
+-(void) detectFromFIRImage:(FIRVisionImage *)image completionListener:(void(^)(NSArray<FIRVisionFace *> *faces, NSError *error))completion {
   if(image != nil) {
     [detector processImage:image
                 completion:^(NSArray<FIRVisionFace *> *faces,

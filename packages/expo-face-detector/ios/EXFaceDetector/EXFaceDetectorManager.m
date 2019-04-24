@@ -232,7 +232,7 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
   NSDate* currentTime = [NSDate new];
   double timePassedMillis = [currentTime timeIntervalSinceDate:self.startDetect] * 1000;
   if(timePassedMillis > self.timeIntervalMillis) {
-   
+    
     if(self.faceDetectionProcessing)
     {
       return;

@@ -9,7 +9,6 @@
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <EXFaceDetector/CSBufferOrientationCalculator.h>
 #import "Firebase.h"
-#import "FIRVisionFaceDetectorOptions+Immutbility.h"
 
 NSString *const EXGMVDataOutputWidthKey = @"Width";
 NSString *const EXGMVDataOutputHeightKey = @"Height";
@@ -38,13 +37,36 @@ static const NSString *kRunClassificationsOptionName = @"runClassifications";
            };
 }
 
-+ (FIRVisionFaceDetectorOptions*) mapOptions:(NSDictionary*)options {
++ (BOOL)optionsChanged:(FIRVisionFaceDetectorOptions *)options comparingTo:(FIRVisionFaceDetectorOptions *)other
+{
+  return options.performanceMode == other.performanceMode &&
+  options.classificationMode == other.classificationMode &&
+  options.contourMode == other.contourMode &&
+  options.minFaceSize == other.minFaceSize &&
+  options.landmarkMode == other.landmarkMode &&
+  options.trackingEnabled == other.trackingEnabled;
+}
+
++ (FIRVisionFaceDetectorOptions *)createCopy:(FIRVisionFaceDetectorOptions *)from
+{
+  FIRVisionFaceDetectorOptions *options = [FIRVisionFaceDetectorOptions new];
+  options.performanceMode = from.performanceMode;
+  options.classificationMode = from.classificationMode;
+  options.contourMode = from.contourMode;
+  options.minFaceSize = from.minFaceSize;
+  options.landmarkMode = from.landmarkMode;
+  options.trackingEnabled = from.trackingEnabled;
+  return options;
+}
+
+
++ (FIRVisionFaceDetectorOptions *) mapOptions:(NSDictionary*)options {
   return [self newOptions:[self defaultFIRVisionFaceDetectorOptions] withValues:options];
 }
 
-+ (FIRVisionFaceDetectorOptions*) newOptions:(FIRVisionFaceDetectorOptions*)options withValues:(NSDictionary*)values
++ (FIRVisionFaceDetectorOptions *) newOptions:(FIRVisionFaceDetectorOptions*)options withValues:(NSDictionary *)values
 {
-  FIRVisionFaceDetectorOptions* result = [options createCopy];
+  FIRVisionFaceDetectorOptions *result = [self createCopy:options];
   if([values objectForKey:kModeOptionName]) {
     result.performanceMode = [values[kModeOptionName] longValue];
   }
@@ -57,16 +79,16 @@ static const NSString *kRunClassificationsOptionName = @"runClassifications";
   return result;
 }
 
-+ (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions*)first to:(FIRVisionFaceDetectorOptions*)second {
-  return [first optionsChanged:second];
++ (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions *)first to:(FIRVisionFaceDetectorOptions*)second {
+  return [self optionsChanged:first comparingTo:second];
 }
 
-+ (FIRVisionFaceDetectorOptions*)defaultFIRVisionFaceDetectorOptions
++ (FIRVisionFaceDetectorOptions *)defaultFIRVisionFaceDetectorOptions
 {
   return [FIRVisionFaceDetectorOptions new];
 }
 
-+ (NSDictionary*)defaultFaceDetectorOptions
++ (NSDictionary *)defaultFaceDetectorOptions
 {
   return @{
            kModeOptionName: @(FIRVisionFaceDetectorPerformanceModeFast),
