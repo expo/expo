@@ -1,7 +1,7 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 import {
   isSensorEnabledAsync,
-  guardSensorEventEnabledAsync,
+  assertSensorEventEnabledAsync,
 } from './utils/isSensorEnabledAsync.web';
 
 const eventName = 'devicemotion';
@@ -14,9 +14,10 @@ export default {
     return 9.81;
   },
   async isAvailableAsync(): Promise<boolean> {
-    const isTypeAvailable = typeof DeviceMotionEvent !== 'undefined';
-    const isSensorEnabled = await isSensorEnabledAsync(eventName);
-    return isTypeAvailable && isSensorEnabled;
+    if (typeof DeviceMotionEvent === 'undefined') {
+      return false;
+    }
+    return await isSensorEnabledAsync(eventName);
   },
   _handleMotion(motion) {
     // TODO: Bacon: Can rotation be calculated?
@@ -31,7 +32,7 @@ export default {
   async startObserving(): Promise<void> {
     window.addEventListener(eventName, this._handleMotion);
     try {
-      await guardSensorEventEnabledAsync(eventName);
+      await assertSensorEventEnabledAsync(eventName);
     } catch (error) {
       this.stopObserving();
       throw error;

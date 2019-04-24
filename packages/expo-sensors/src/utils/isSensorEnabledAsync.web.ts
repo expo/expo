@@ -2,7 +2,7 @@ type SensorEventName = 'deviceorientation' | 'devicemotion';
 
 // iOS 12.2 disables DeviceMotion by default now
 // https://github.com/w3c/deviceorientation/issues/57
-export async function guardSensorEventEnabledAsync(
+export async function assertSensorEventEnabledAsync(
   eventName: SensorEventName,
   timeout?: number
 ): Promise<boolean> {
@@ -11,7 +11,7 @@ export async function guardSensorEventEnabledAsync(
   }
 
   try {
-    return await guardEventEnabledAsync(eventName, timeout);
+    return await assertEventEnabledAsync(eventName, timeout);
   } catch ({ message }) {
     throw new Error(
       message +
@@ -22,7 +22,7 @@ export async function guardSensorEventEnabledAsync(
 }
 
 // throw error if the sensor is disabled.
-export async function guardEventEnabledAsync(
+export async function assertEventEnabledAsync(
   eventName: string,
   timeout: number = 500
 ): Promise<boolean> {
@@ -44,9 +44,9 @@ export async function guardEventEnabledAsync(
 
 // https://stackoverflow.com/a/9039885/4047926
 function isIOS(): boolean {
-  const iosUA = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+  const isIOSUA = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
   const isIE11 = !!window['MSStream'];
-  return iosUA && !isIE11;
+  return isIOSUA && !isIE11;
 }
 
 export async function isSensorEnabledAsync(
@@ -54,7 +54,7 @@ export async function isSensorEnabledAsync(
   timeout?: number
 ): Promise<boolean> {
   try {
-    await guardEventEnabledAsync(eventName, timeout);
+    await assertEventEnabledAsync(eventName, timeout);
     return true;
   } catch (error) {
     return false;
