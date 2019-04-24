@@ -144,6 +144,7 @@ workflows:
             branches:
               only:
                 - master
+                - /.*all-ci.*/
       - docs_deploy:
           requires:
             - docs_approve_deploy
@@ -176,7 +177,8 @@ workflows:
           filters:
             branches:
               only:
-                - /^sdk-\d+$/
+                - /sdk-\d+/
+                - /.*all-ci.*/
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
@@ -187,11 +189,13 @@ workflows:
 
   client_shell_app:
     jobs:
-      - expo_client_before_approval
       - expo_client_approve_build:
           type: approval
-          requires:
-            - expo_client_before_approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
       - expo_client_build:
           requires:
             - expo_client_approve_build
@@ -370,14 +374,6 @@ jobs:
       - run: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
-
-  expo_client_before_approval:
-    executor: js
-    steps:
-      - run:
-          name: Approve expo_client_approve_build if you wish to build Expo Client shell app
-          command: |
-            echo "Go, find and approve expo_client_approve_build job to trigger building an Expo Client shell app"
 
   expo_client_build:
     executor: mac
