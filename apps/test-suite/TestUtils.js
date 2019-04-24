@@ -59,7 +59,7 @@ export function getTestModules() {
     require('./tests/AdMobRewarded'),
     require('./tests/FBBannerAd'),
   ];
-  if (!ExponentTest.isInCI) {
+  if (ExponentTest && !ExponentTest.isInCI) {
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
     // Requires interaction (sign in popup)

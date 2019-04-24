@@ -130,7 +130,7 @@
     "react-native-branch": "2.2.5",
     "react-native-gesture-handler": "^1.1.0",
     "react-native-maps": "expo/react-native-maps#v0.23.0-exp.0",
-    "react-native-reanimated": "1.0.0-alpha.11",
+    "react-native-reanimated": "1.0.1",
     "react-native-screens": "1.0.0-alpha.22",
     "react-native-svg": "9.3.6",
     "react-native-view-shot": "2.5.0",

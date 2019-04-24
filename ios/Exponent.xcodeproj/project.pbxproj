@@ -100,6 +100,12 @@
 		31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47D20B8451B0082B09F /* EXSensorManager.m */; };
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		3C3C339520E24EC0000F8B92 /* EXSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */; };
+		6AF6CA2722687D8B00FB11C1 /* REATransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF6CA1C22687D8B00FB11C1 /* REATransition.m */; };
+		6AF6CA2822687D8B00FB11C1 /* REATransitionValues.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF6CA1D22687D8B00FB11C1 /* REATransitionValues.m */; };
+		6AF6CA2922687D8B00FB11C1 /* RCTConvert+REATransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF6CA2022687D8B00FB11C1 /* RCTConvert+REATransition.m */; };
+		6AF6CA2A22687D8B00FB11C1 /* REATransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF6CA2222687D8B00FB11C1 /* REATransitionManager.m */; };
+		6AF6CA2B22687D8B00FB11C1 /* REATransitionAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF6CA2422687D8B00FB11C1 /* REATransitionAnimation.m */; };
+		6AF6CA2C22687D8B00FB11C1 /* REAAllTransitions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AF6CA2622687D8B00FB11C1 /* REAAllTransitions.m */; };
 		783435D3205B8BEE00DD28C3 /* AIRGoogleMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 783435AE205B8BE900DD28C3 /* AIRGoogleMapPolylineManager.m */; };
 		783435D4205B8BEE00DD28C3 /* AIRGoogleMapCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 783435AF205B8BE900DD28C3 /* AIRGoogleMapCircle.m */; };
 		783435D5205B8BEE00DD28C3 /* AIRGoogleMapPolyline.m in Sources */ = {isa = PBXBuildFile; fileRef = 783435B0205B8BE900DD28C3 /* AIRGoogleMapPolyline.m */; };
@@ -504,6 +510,18 @@
 		3C3C339320E24E7D000F8B92 /* EXSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreen.h; sourceTree = "<group>"; };
 		3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreen.m; sourceTree = "<group>"; };
 		4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6AF6CA1B22687D8B00FB11C1 /* REATransitionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REATransitionManager.h; sourceTree = "<group>"; };
+		6AF6CA1C22687D8B00FB11C1 /* REATransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REATransition.m; sourceTree = "<group>"; };
+		6AF6CA1D22687D8B00FB11C1 /* REATransitionValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REATransitionValues.m; sourceTree = "<group>"; };
+		6AF6CA1E22687D8B00FB11C1 /* REATransitionAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REATransitionAnimation.h; sourceTree = "<group>"; };
+		6AF6CA1F22687D8B00FB11C1 /* REAAllTransitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REAAllTransitions.h; sourceTree = "<group>"; };
+		6AF6CA2022687D8B00FB11C1 /* RCTConvert+REATransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+REATransition.m"; sourceTree = "<group>"; };
+		6AF6CA2122687D8B00FB11C1 /* REATransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REATransition.h; sourceTree = "<group>"; };
+		6AF6CA2222687D8B00FB11C1 /* REATransitionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REATransitionManager.m; sourceTree = "<group>"; };
+		6AF6CA2322687D8B00FB11C1 /* REATransitionValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = REATransitionValues.h; sourceTree = "<group>"; };
+		6AF6CA2422687D8B00FB11C1 /* REATransitionAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REATransitionAnimation.m; sourceTree = "<group>"; };
+		6AF6CA2522687D8B00FB11C1 /* RCTConvert+REATransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+REATransition.h"; sourceTree = "<group>"; };
+		6AF6CA2622687D8B00FB11C1 /* REAAllTransitions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REAAllTransitions.m; sourceTree = "<group>"; };
 		783435AD205B8BE800DD28C3 /* AIRGoogleMapCallout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapCallout.h; sourceTree = "<group>"; };
 		783435AE205B8BE900DD28C3 /* AIRGoogleMapPolylineManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapPolylineManager.m; sourceTree = "<group>"; };
 		783435AF205B8BE900DD28C3 /* AIRGoogleMapCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapCircle.m; sourceTree = "<group>"; };
@@ -1009,6 +1027,25 @@
 				9A44375C5408A1FBD7D682FA /* Pods-Tests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		6AF6CA1A22687D8A00FB11C1 /* Transitioning */ = {
+			isa = PBXGroup;
+			children = (
+				6AF6CA1B22687D8B00FB11C1 /* REATransitionManager.h */,
+				6AF6CA1C22687D8B00FB11C1 /* REATransition.m */,
+				6AF6CA1D22687D8B00FB11C1 /* REATransitionValues.m */,
+				6AF6CA1E22687D8B00FB11C1 /* REATransitionAnimation.h */,
+				6AF6CA1F22687D8B00FB11C1 /* REAAllTransitions.h */,
+				6AF6CA2022687D8B00FB11C1 /* RCTConvert+REATransition.m */,
+				6AF6CA2122687D8B00FB11C1 /* REATransition.h */,
+				6AF6CA2222687D8B00FB11C1 /* REATransitionManager.m */,
+				6AF6CA2322687D8B00FB11C1 /* REATransitionValues.h */,
+				6AF6CA2422687D8B00FB11C1 /* REATransitionAnimation.m */,
+				6AF6CA2522687D8B00FB11C1 /* RCTConvert+REATransition.h */,
+				6AF6CA2622687D8B00FB11C1 /* REAAllTransitions.m */,
+			);
+			path = Transitioning;
 			sourceTree = "<group>";
 		};
 		783435E9205B8C5800DD28C3 /* Callout */ = {
@@ -1957,6 +1994,7 @@
 		BB5BD2FA20AEFCB4007E02FC /* Reanimated */ = {
 			isa = PBXGroup;
 			children = (
+				6AF6CA1A22687D8A00FB11C1 /* Transitioning */,
 				BB5BD2FB20AEFCB4007E02FC /* REAModule.m */,
 				BB5BD2FC20AEFCB4007E02FC /* Nodes */,
 				BB5BD31920AEFCB4007E02FC /* REANodesManager.h */,
@@ -2139,6 +2177,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -2432,12 +2471,15 @@
 				25742BF121774212003E7453 /* EXNotifications.m in Sources */,
 				3179683620B5B96A00243B6B /* EXScopedModuleRegistryAdapter.m in Sources */,
 				3159BB9F21806E76002D2A81 /* RNSVGTSpanManager.m in Sources */,
+				6AF6CA2A22687D8B00FB11C1 /* REATransitionManager.m in Sources */,
 				19A04FA6209119B300D6EFE9 /* RNBranchConfig.m in Sources */,
 				F1389D0C21C3A507006CEB1A /* RNForceTouchHandler.m in Sources */,
+				6AF6CA2B22687D8B00FB11C1 /* REATransitionAnimation.m in Sources */,
 				BB36BC632135C98E00AFFD58 /* RNSScreenContainer.m in Sources */,
 				783435D5205B8BEE00DD28C3 /* AIRGoogleMapPolyline.m in Sources */,
 				B5FB74E11FF6DADC001C764B /* EXDisabledDevLoadingView.m in Sources */,
 				78343613205B8C5F00DD28C3 /* SMCalloutView.m in Sources */,
+				6AF6CA2922687D8B00FB11C1 /* RCTConvert+REATransition.m in Sources */,
 				78343618205B8C5F00DD28C3 /* AIRMapUrlTile.m in Sources */,
 				B5A72C2020A0D13E00974CCE /* EXManifestResource.m in Sources */,
 				3159BB9321806E76002D2A81 /* RNSVGRectManager.m in Sources */,
@@ -2477,6 +2519,7 @@
 				783435DC205B8BEE00DD28C3 /* AIRGoogleMapCalloutManager.m in Sources */,
 				B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */,
 				B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */,
+				6AF6CA2C22687D8B00FB11C1 /* REAAllTransitions.m in Sources */,
 				78343615205B8C5F00DD28C3 /* AIRMapCircle.m in Sources */,
 				3159BB2421806E0C002D2A81 /* RNSVGMask.m in Sources */,
 				3159BB4B21806E3D002D2A81 /* RNSVGGlyphContext.m in Sources */,
@@ -2490,6 +2533,7 @@
 				3159BB3621806E24002D2A81 /* RNSVGLine.m in Sources */,
 				BB5BD32920AEFCB4007E02FC /* REAOperatorNode.m in Sources */,
 				B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */,
+				6AF6CA2722687D8B00FB11C1 /* REATransition.m in Sources */,
 				3159BB2021806E0C002D2A81 /* RNSVGUse.m in Sources */,
 				BB50E88920B9C0D3003C752D /* RNGestureHandlerManager.m in Sources */,
 				317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */,
@@ -2584,6 +2628,7 @@
 				B5FB74D61FF6DADC001C764B /* BranchLinkProperties+RNBranch.m in Sources */,
 				31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */,
 				3159BB4521806E3D002D2A81 /* RNSVGPropHelper.m in Sources */,
+				6AF6CA2822687D8B00FB11C1 /* REATransitionValues.m in Sources */,
 				78343617205B8C5F00DD28C3 /* AIRMapPolyline.m in Sources */,
 				783435D6205B8BEE00DD28C3 /* AIRGoogleMapMarkerManager.m in Sources */,
 				BB5BD32220AEFCB4007E02FC /* REACondNode.m in Sources */,
