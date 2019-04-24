@@ -1,5 +1,13 @@
+<manifest package="expo.modules.facedetector"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
-<manifest package="expo.modules.facedetector">
+    <application>
+
+        <meta-data
+            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+            android:value="face"/>
+
+    </application>
 
 </manifest>
   

@@ -8,7 +8,6 @@ import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +43,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
 
   // Public API
 
+  @Override
   public boolean isOperational() {
     if (mFaceDetector == null) {
       createFaceDetector();
@@ -68,12 +68,13 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
     return mFaceDetector.detect(frame.getFrame());
   }
 
+  @Override
   public List<Bundle> detectFaces(byte[] imageData, int width, int height, int rotation, int facing, double scaleX, double scaleY) {
     try {
       ExpoFrame frame = ExpoFrameFactory.buildFrame(imageData, width, height, rotation);
       SparseArray<Face> detectedFaces = detect(frame);
       List<Bundle> facesList = new ArrayList<>();
-      for(int i = 0; i < detectedFaces.size(); i++) {
+      for (int i = 0; i < detectedFaces.size(); i++) {
         Face face = detectedFaces.valueAt(i);
         Bundle serializedFace = FaceDetectorUtils.serializeFace(face, scaleX, scaleY);
         if (facing == 1) { // CameraView.FACING_FRONT
@@ -89,6 +90,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
     }
   }
 
+  @Override
   public void setSettings(Map<String, Object> settings) {
     if (settings.get(MODE_KEY) instanceof Number) {
       setMode(((Number) settings.get(MODE_KEY)).intValue());
@@ -136,6 +138,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
     mBuilder.setTrackingEnabled(tracking);
   }
 
+  @Override
   public void release() {
     releaseFaceDetector();
     mPreviousDimensions = null;
