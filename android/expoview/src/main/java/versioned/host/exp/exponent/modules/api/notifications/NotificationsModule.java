@@ -366,4 +366,15 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       promise.reject(e);
     }
   }
+
+  @ReactMethod
+  public void scheduleNotificationWithTime() {
+
+  }
+  
+  @ReactMethod
+  public void scheduleNotificationWithCalendar() {
+
+  }
+
 }
