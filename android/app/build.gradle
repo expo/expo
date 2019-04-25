@@ -125,9 +125,6 @@ dependencies {
   implementation 'com.jakewharton:butterknife:9.0.0'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
-  // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  implementation 'com.amplitude:android-sdk:2.9.2'
-
   implementation 'com.squareup.picasso:picasso:2.5.2'
   implementation 'com.google.android.gms:play-services-gcm:15.0.1'
   implementation 'com.google.android.gms:play-services-analytics:16.0.1'
@@ -226,6 +223,10 @@ dependencies {
   // BEGIN_SDK_26
   implementation(project(':expoview-abi26_0_0'))
   // END_SDK_26
+
+  // This is not needed in shell apps, the Amplitude module will include this dep if installed
+  // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
+  implementation 'com.amplitude:android-sdk:2.9.2'
 
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
