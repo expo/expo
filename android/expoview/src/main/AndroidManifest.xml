@@ -70,7 +70,7 @@
             android:exported="false"/>
 
         <receiver
-            android:name="versioned.host.exp.exponent.modules.api.notifications.ScheduleTriggerReceiver"
+            android:name="versioned.host.exp.exponent.modules.api.notifications.SchedulingTriggerReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

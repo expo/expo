@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 
+import com.facebook.react.bridge.ReactMethod;
+
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -311,4 +313,5 @@ public class ExponentNotificationManager {
       e.printStackTrace();
     }
   }
+
 }
