@@ -15,6 +15,10 @@ apply plugin: 'maven'
 group = 'host.exp.exponent'
 version = '4.0.0'
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 // Upload android library to maven with javadoc and android sources
 configurations {
   deployerJars
@@ -41,11 +45,11 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 3
     versionName '1.0.0'
   }
