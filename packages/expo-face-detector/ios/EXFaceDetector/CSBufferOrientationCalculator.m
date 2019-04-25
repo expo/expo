@@ -8,9 +8,9 @@
 
 #import <EXFaceDetector/CSBufferOrientationCalculator.h>
 
-#define TRANSFORM_PI_2 CGAffineTransformMake(0, 1, -1, 0, 0, 0);
-#define TRANSFORM_PI CGAffineTransformMake(-1, 0, 0, -1, 0, 0);
-#define TRANSFORM_NEGATIVE_PI_2 CGAffineTransformMake(0, 1, -1, 0, 0, 0);
+#define TRANSFORM_PI_2 CGAffineTransformMake(0, 1, -1, 0, 0, 0)
+#define TRANSFORM_PI CGAffineTransformMake(-1, 0, 0, -1, 0, 0)
+#define TRANSFORM_NEGATIVE_PI_2 CGAffineTransformMake(0, 1, -1, 0, 0, 0)
 #define TRANSFORM_X_SYMETRY CGAffineTransformMake(1, 0, 0, -1, 0, 0)
 #define TRANSFORM_Y_SYMETRY CGAffineTransformMake(-1, 0, 0, 1, 0, 0)
 

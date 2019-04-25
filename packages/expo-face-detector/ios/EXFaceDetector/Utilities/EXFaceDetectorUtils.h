@@ -26,6 +26,8 @@ typedef float (^EXFaceDetectionAngleTransformBlock)(float);
 
 + (EXFaceDetectionAngleTransformBlock)angleTransformerFromTransform:(CGAffineTransform)transform;
 
++ (int)toCGImageOrientation:(UIImageOrientation)imageOrientation;
+
 + (NSDictionary*)defaultFaceDetectorOptions;
 
 @end

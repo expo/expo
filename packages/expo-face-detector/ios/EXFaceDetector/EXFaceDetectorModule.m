@@ -11,6 +11,8 @@
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <UMCore/UMModuleRegistry.h>
+#import <EXFaceDetector/EXFaceEncoder.h>
+#import <EXFaceDetector/CSBufferOrientationCalculator.h>
 #import "Firebase.h"
 
 @interface EXFaceDetectorModule ()
@@ -31,7 +33,6 @@ static NSDictionary *defaultDetectorOptions = nil;
     _moduleRegistry = moduleRegistry;
     fileManager = [NSFileManager defaultManager];
   }
-  [FIRApp configure];
   return self;
 }
 
@@ -70,25 +71,37 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
   }
   
   @try {
-    
-    // This check was failing, probably because of some race condition
-    // see note at https://developer.apple.com/documentation/foundation/nsfilemanager/1415645-fileexistsatpath?language=objc
-    //    if (![fileManager fileExistsAtPath:path]) {
-    //      reject(@"E_FACE_DETECTION_FAILED", [NSString stringWithFormat:@"The file does not exist. Given path: `%@`.", path], nil);
-    //      return;
-    //    }
-    
     UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
+    CIImage *ciImage = image.CIImage;
+    if(!ciImage) {
+      ciImage = [CIImage imageWithCGImage:image.CGImage];
+    }
+    ciImage = [ciImage imageByApplyingOrientation:[EXFaceDetectorUtils toCGImageOrientation:image.imageOrientation]];
+    CIContext *context = [CIContext contextWithOptions:@{}];
+    UIImage *temporaryImage = [UIImage imageWithCIImage:ciImage];
+    CGRect tempImageRect = CGRectMake(0, 0, temporaryImage.size.width, temporaryImage.size.height);
+    CGImageRef cgImage = [context createCGImage:ciImage fromRect:tempImageRect];
     
-    NSDictionary *detectionOptions = [EXFaceDetectorUtils defaultFaceDetectorOptions];
-    
-    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:detectionOptions]];
-    [detector detectFromImage:image completionListener:^(NSArray<NSDictionary *> * _Nonnull faces, NSError * _Nonnull error) {
+    UIImage *finalImage = [UIImage imageWithCGImage:cgImage];
+    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:options]];
+    [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
+      NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
+      
+      //      // set correct orientation
+      //      __block UIInterfaceOrientation orientation;
+      
+      if(faces && faces.count > 0) {
+        EXFaceEncoder *encoder = [[EXFaceEncoder alloc] init];
+        for(FIRVisionFace* face in faces)
+        {
+          [reportableFaces addObject:[encoder encode:face]];
+        }
+      }
       if (error != nil) {
         reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
       } else if (faces != nil) {
         resolve(@{
-                  @"faces" : faces,
+                  @"faces" : reportableFaces,
                   @"image" : @{
                       @"uri" : options[@"uri"],
                       @"width" : @(image.size.width),

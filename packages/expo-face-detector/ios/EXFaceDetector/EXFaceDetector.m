@@ -19,9 +19,19 @@
 }
 
 -(void) detectFromImage:(UIImage*)image completionListener:(void(^)(NSArray<FIRVisionFace *> *faces, NSError* error)) completion {
-  if(image != nil) {
-    FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    [self detectFromFIRImage:visionImage completionListener:completion];
+  if(image) {
+    if(image.CGImage) {
+      FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
+      [self detectFromFIRImage:visionImage completionListener:completion];
+    } else {
+      completion(nil, [NSError errorWithDomain:@"faceDetector" code:0 userInfo:@{
+                                                                                 @"error": @"Image's CGImage must not be nil!"
+                                                                                 }]);
+    }
+  } else {
+    completion(nil, [NSError errorWithDomain:@"faceDetector" code:0 userInfo:@{
+                                                                               @"error": @"Image must not be nil!"
+                                                                               }]);
   }
 }
 
@@ -32,7 +42,7 @@
     [self detectFromFIRImage:visionImage completionListener:completion];
   } else {
     completion(nil, [NSError errorWithDomain:@"faceDetector" code:0 userInfo:@{
-                                                                               @"error": @"Image is nil!"
+                                                                               @"error": @"Image must not be nil!"
                                                                                }]);
   }
 }

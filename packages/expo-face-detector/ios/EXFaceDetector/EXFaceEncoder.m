@@ -37,6 +37,11 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
   return [self initWithTransform:pointTransformer withRotationTransform:transformer];
 }
 
+- (instancetype)initWithRotationTransform:(EXFaceDetectionAngleTransformBlock)rotationTransform
+{
+  return [self initWithTransform:CGAffineTransformIdentity withRotationTransform:rotationTransform];
+}
+
 - (instancetype)initWithTransform:(CGAffineTransform)transform withRotationTransform:(EXFaceDetectionAngleTransformBlock)rotationTransform
 {
   self = [super init];

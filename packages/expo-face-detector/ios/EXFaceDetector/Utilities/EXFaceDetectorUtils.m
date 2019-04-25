@@ -92,6 +92,36 @@ static const NSString *kRunClassificationsOptionName = @"runClassifications";
            };
 }
 
++ (int)toCGImageOrientation:(UIImageOrientation)imageOrientation
+{
+  switch (imageOrientation) {
+    case UIImageOrientationUp:
+      return kCGImagePropertyOrientationUp;
+      break;
+    case UIImageOrientationUpMirrored:
+      return kCGImagePropertyOrientationUpMirrored;
+      break;
+    case UIImageOrientationDown:
+      return kCGImagePropertyOrientationDown;
+      break;
+    case UIImageOrientationDownMirrored:
+      return kCGImagePropertyOrientationDownMirrored;
+      break;
+    case UIImageOrientationRight:
+      return kCGImagePropertyOrientationRight;
+      break;
+    case UIImageOrientationRightMirrored:
+      return kCGImagePropertyOrientationRightMirrored;
+      break;
+    case UIImageOrientationLeft:
+      return kCGImagePropertyOrientationLeft;
+      break;
+    case UIImageOrientationLeftMirrored:
+      return kCGImagePropertyOrientationLeftMirrored;
+      break;
+  }
+};
+
 # pragma mark - Encoder helpers
 
 + (EXFaceDetectionAngleTransformBlock)angleTransformerFromTransform:(CGAffineTransform)transform

@@ -14,6 +14,7 @@
 @interface EXFaceEncoder : NSObject
 
 - (instancetype)initWithTransform:(CGAffineTransform)transform;
+- (instancetype)initWithRotationTransform:(EXFaceDetectionAngleTransformBlock)transform;
 - (instancetype)initWithTransform:(CGAffineTransform)transform withRotationTransform:(EXFaceDetectionAngleTransformBlock)rotationTransform;
 
 - (NSDictionary *)encode:(FIRVisionFace *)face;
