@@ -36,6 +36,15 @@ private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactMod
 ), Arrays.<SingletonModule>asList());
 ```
 
+In `AndroidManifest.xml`, add the following line right before `</application`
+
+```xml
+...
+      <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
+    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
+  </application>
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
