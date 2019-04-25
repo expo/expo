@@ -92,25 +92,18 @@
 
 + (CGAffineTransform)rotationTransformForOrientation:(UIInterfaceOrientation)orientation
 {
-  CGAffineTransform rotationTransformation = CGAffineTransformIdentity;
-  
   switch (orientation) {
     case (UIInterfaceOrientationLandscapeRight):
-      rotationTransformation = CGAffineTransformIdentity;
-      break;
+      return CGAffineTransformIdentity;
     case (UIInterfaceOrientationPortrait):
-      rotationTransformation = TRANSFORM_PI_2;
-      break;
+      return TRANSFORM_PI_2;
     case (UIInterfaceOrientationLandscapeLeft):
-      rotationTransformation = TRANSFORM_PI;
-      break;
+      return TRANSFORM_PI;
     case (UIInterfaceOrientationPortraitUpsideDown):
-      rotationTransformation = TRANSFORM_NEGATIVE_PI_2;
-      break;
+       return TRANSFORM_NEGATIVE_PI_2;
     default:
-      break;
+      return CGAffineTransformIdentity;
   }
-  return rotationTransformation;
 }
 
 + (CGAffineTransform)transformForMirror:(UIInterfaceOrientation)orientation forMirrored:(BOOL)mirrored

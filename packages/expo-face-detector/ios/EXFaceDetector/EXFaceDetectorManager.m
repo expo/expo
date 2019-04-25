@@ -72,16 +72,11 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
   // It allows us to smoothly toggle face detection without interrupting preview and reconfiguring camera session.
   
   if ([self isDetectingFaceEnabled] != newFaceDetecting) {
-    _faceDetectionEnabled = newFaceDetecting;
-    __weak EXFaceDetectorManager *weakSelf = self;
+    UM_WEAKIFY(self);
     [self _runBlockIfQueueIsPresent:^{
-      __strong EXFaceDetectorManager *strongSelf = weakSelf;
-      if (strongSelf) {
-        if ([strongSelf isDetectingFaceEnabled]) {
-          if (![strongSelf isFaceDetecionRunning]) {
-            [strongSelf tryEnablingFaceDetection];
-          }
-        }
+      UM_ENSURE_STRONGIFY(self);
+      if ([self isDetectingFaceEnabled] && ![self isFaceDetecionRunning]) {
+        [self tryEnablingFaceDetection];
       }
     }];
   }
