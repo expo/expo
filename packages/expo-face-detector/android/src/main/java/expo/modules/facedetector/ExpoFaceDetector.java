@@ -1,12 +1,18 @@
 package expo.modules.facedetector;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.SparseArray;
 
-import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.face.FirebaseVisionFace;
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +30,10 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   public static int ACCURATE_MODE = FaceDetector.ACCURATE_MODE;
   public static int FAST_MODE = FaceDetector.FAST_MODE;
 
-  private FaceDetector mFaceDetector = null;
+  private FirebaseVisionFaceDetector mFaceDetector = null;
   private ImageDimensions mPreviousDimensions;
-  private FaceDetector.Builder mBuilder;
+
+  private Context mContext;
 
   private int mClassificationType = NO_CLASSIFICATIONS;
   private int mLandmarkType = NO_LANDMARKS;
@@ -34,60 +41,41 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   private int mMode = FAST_MODE;
 
   public ExpoFaceDetector(Context context) {
-    mBuilder = new FaceDetector.Builder(context);
-    mBuilder.setMinFaceSize(mMinFaceSize);
-    mBuilder.setMode(mMode);
-    mBuilder.setLandmarkType(mLandmarkType);
-    mBuilder.setClassificationType(mClassificationType);
+    this.mContext = context;
   }
 
   // Public API
 
-  @Override
-  public boolean isOperational() {
-    if (mFaceDetector == null) {
-      createFaceDetector();
-    }
-
-    return mFaceDetector.isOperational();
-  }
-
-  public SparseArray<Face> detect(ExpoFrame frame) {
-    // If the frame has different dimensions, create another face detector.
-    // Otherwise we will get nasty "inconsistent image dimensions" error from detector
-    // and no face will be detected.
-    if (!frame.getDimensions().equals(mPreviousDimensions)) {
-      releaseFaceDetector();
-    }
+  public void detect(Uri filePath, OnCompleteListener<List<FirebaseVisionFace>> listener) throws IOException {
 
     if (mFaceDetector == null) {
       createFaceDetector();
-      mPreviousDimensions = frame.getDimensions();
     }
-
-    return mFaceDetector.detect(frame.getFrame());
+    FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(mContext, filePath);
+    mFaceDetector.detectInImage(image).addOnCompleteListener(listener);
   }
 
   @Override
   public List<Bundle> detectFaces(byte[] imageData, int width, int height, int rotation, int facing, double scaleX, double scaleY) {
-    try {
-      ExpoFrame frame = ExpoFrameFactory.buildFrame(imageData, width, height, rotation);
-      SparseArray<Face> detectedFaces = detect(frame);
-      List<Bundle> facesList = new ArrayList<>();
-      for (int i = 0; i < detectedFaces.size(); i++) {
-        Face face = detectedFaces.valueAt(i);
-        Bundle serializedFace = FaceDetectorUtils.serializeFace(face, scaleX, scaleY);
-        if (facing == 1) { // CameraView.FACING_FRONT
-          serializedFace = FaceDetectorUtils.rotateFaceX(serializedFace, frame.getDimensions().getWidth(), scaleX);
-        } else {
-          serializedFace = FaceDetectorUtils.changeAnglesDirection(serializedFace);
-        }
-        facesList.add(serializedFace);
-      }
-      return facesList;
-    } catch (Exception e) {
-      return new ArrayList<>();
-    }
+//    try {
+//      ExpoFrame frame = ExpoFrameFactory.buildFrame(imageData, width, height, rotation);
+//      SparseArray<Face> detectedFaces = detect(frame);
+//      List<Bundle> facesList = new ArrayList<>();
+//      for (int i = 0; i < detectedFaces.size(); i++) {
+//        Face face = detectedFaces.valueAt(i);
+//        Bundle serializedFace = FaceDetectorUtils.serializeFace(face, scaleX, scaleY);
+//        if (facing == 1) { // CameraView.FACING_FRONT
+//          serializedFace = FaceDetectorUtils.rotateFaceX(serializedFace, frame.getDimensions().getWidth(), scaleX);
+//        } else {
+//          serializedFace = FaceDetectorUtils.changeAnglesDirection(serializedFace);
+//        }
+//        facesList.add(serializedFace);
+//      }
+//      return facesList;
+//    } catch (Exception e) {
+//      return new ArrayList<>();
+//    }
+    return new ArrayList<>();
   }
 
   @Override
@@ -112,7 +100,6 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   public void setClassificationType(int classificationType) {
     if (classificationType != mClassificationType) {
       release();
-      mBuilder.setClassificationType(classificationType);
       mClassificationType = classificationType;
     }
   }
@@ -120,7 +107,6 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   public void setLandmarkType(int landmarkType) {
     if (landmarkType != mLandmarkType) {
       release();
-      mBuilder.setLandmarkType(landmarkType);
       mLandmarkType = landmarkType;
     }
   }
@@ -128,14 +114,12 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   public void setMode(int mode) {
     if (mode != mMode) {
       release();
-      mBuilder.setMode(mode);
       mMode = mode;
     }
   }
 
   public void setTrackingEnabled(boolean tracking) {
     release();
-    mBuilder.setTrackingEnabled(tracking);
   }
 
   @Override
@@ -148,12 +132,21 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
 
   private void releaseFaceDetector() {
     if (mFaceDetector != null) {
-      mFaceDetector.release();
       mFaceDetector = null;
     }
   }
 
   private void createFaceDetector() {
-    mFaceDetector = mBuilder.build();
+    mFaceDetector = FirebaseVision.getInstance().getVisionFaceDetector(createOptions());
   }
+
+  private FirebaseVisionFaceDetectorOptions createOptions() {
+    return new FirebaseVisionFaceDetectorOptions.Builder()
+        .setClassificationMode(mClassificationType)
+        .setLandmarkMode(mLandmarkType)
+        .setPerformanceMode(mMode)
+        .setMinFaceSize(mMinFaceSize)
+        .build();
+  }
+
 }
