@@ -38,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init {
   self = [super init];
-  [FIRApp configure];
   return self;
 }
 
@@ -47,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
   CrashlyticsKit.delegate = [ExpoKit sharedInstance]; // this must be set prior to init'ing fabric.
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
+  [FIRApp configure];
 
 #if __has_include(<EXFacebook/EXFacebook.h>)
   if ([EXFacebook facebookAppIdFromNSBundle]) {

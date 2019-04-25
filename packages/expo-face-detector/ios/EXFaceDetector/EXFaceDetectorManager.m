@@ -20,7 +20,7 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
 
 @property (assign, nonatomic) long previousFacesCount;
 @property (nonatomic, weak) AVCaptureSession *session;
-@property BOOL mirroredImageSession;
+@property (nonatomic, assign) BOOL mirroredImageSession;
 @property UIInterfaceOrientation interfaceOrientation;
 @property (nonatomic, weak) dispatch_queue_t sessionQueue;
 @property (nonatomic, copy, nullable) void (^onFacesDetected)(NSArray<NSDictionary *> *);
@@ -28,12 +28,11 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
 @property (nonatomic, assign, getter=isDetectingFaceEnabled) BOOL faceDetectionEnabled;
 @property (nonatomic, assign, getter=isFaceDetecionRunning) BOOL faceDetectionRunning;
 @property (nonatomic, strong) FIRVisionFaceDetectorOptions* faceDetectorOptions;
-@property (readwrite) BOOL firebaseInitialized;
-@property (readwrite) NSInteger lastFrameCapturedTimeMilis;
-@property (nonatomic, copy) NSDate *startDetect;
+@property (atomic, assign) NSInteger lastFrameCapturedTimeMilis;
+@property (atomic) NSDate *startDetect;
 @property (atomic) BOOL faceDetectionProcessing;
+@property EXFaceDetector *faceDetector;
 @property NSInteger timeIntervalMillis;
-@property EXFaceEncoder* encoder;
 
 @end
 
@@ -51,7 +50,6 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
     _lastFrameCapturedTimeMilis = 0;
     _previousFacesCount = -1;
     _faceDetectorOptions = [EXFaceDetectorUtils mapOptions:options];
-    _firebaseInitialized = NO;
     _timeIntervalMillis = 0;
     _startDetect = [NSDate new];
     _interfaceOrientation = UIInterfaceOrientationUnknown;
@@ -129,8 +127,8 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
   if (!_session) {
     return;
   }
-  [self initializeFirebase];
   [_session beginConfiguration];
+  self.faceDetector = [[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions];
   
   if ([self isDetectingFaceEnabled]) {
     @try {
@@ -172,12 +170,6 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
 }
 
 # pragma mark Private API
-
-- (void)initializeFirebase {
-  if(!_firebaseInitialized) {
-    _firebaseInitialized = YES;
-  }
-}
 
 - (void)_resetFaceDetector
 {
@@ -251,7 +243,7 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
     float previewWidth =_previewLayer.bounds.size.width;
     float previewHeight = _previewLayer.bounds.size.height;
     
-    angleTransformer angleTransform = ^(float angle) { return -angle; };
+    EXFaceDetectionAngleTransformBlock angleTransform = ^(float angle) { return -angle; };
     
     CGAffineTransform transformation = [CSBufferOrientationCalculator pointTransformForInterfaceOrientation:_interfaceOrientation
                                                                                              forBufferWidth:outputWidth andBufferHeight:outputHeight
@@ -260,7 +252,7 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
     FIRVisionImageMetadata* metadata = [EXFaceDetectorManager metadataForInterfaceOrientation:_interfaceOrientation andMirrored:_mirroredImageSession];
     
     _startDetect = currentTime;
-    [[[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions] detectFromBuffer:sampleBuffer metadata:metadata completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
+    [_faceDetector detectFromBuffer:sampleBuffer metadata:metadata completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
       if(error != nil) {
         [self _notifyOfFaces:nil withEncoder:nil];
       } else {

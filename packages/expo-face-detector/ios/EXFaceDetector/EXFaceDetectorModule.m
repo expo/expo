@@ -80,7 +80,7 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
     
     UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
     
-    NSDictionary *detectionOptions = [[self class] detectionOptionsForImage:image];
+    NSDictionary *detectionOptions = [EXFaceDetectorUtils defaultFaceDetectorOptions];
     
     EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:detectionOptions]];
     [detector detectFromImage:image completionListener:^(NSArray<NSDictionary *> * _Nonnull faces, NSError * _Nonnull error) {
@@ -102,34 +102,7 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
   }
 }
 
-# pragma mark: - Detector default options getter and initializer
-
-+ (NSDictionary *)getDefaultDetectorOptions
-{
-  if (defaultDetectorOptions == nil) {
-    [self initDefaultDetectorOptions];
-  }
-  
-  return defaultDetectorOptions;
-}
-
-+ (void)initDefaultDetectorOptions
-{
-  defaultDetectorOptions = @{
-                             GMVDetectorFaceMode : @(GMVDetectorFaceAccurateMode),
-                             GMVDetectorFaceLandmarkType : @(GMVDetectorFaceLandmarkAll),
-                             GMVDetectorFaceClassificationType : @(GMVDetectorFaceClassificationAll)
-                             };
-}
-
 # pragma mark: - Utility methods
-
-+ (NSDictionary *)detectionOptionsForImage:(UIImage *)image
-{
-  return @{
-           GMVDetectorImageOrientation : @([[self class] gmvImageOrientationFor:image.imageOrientation]),
-           };
-}
 
 // As the documentation (http://cocoadocs.org/docsets/GoogleMobileVision/1.0.2/Constants/GMVImageOrientation.html) suggests
 // the value of GMVImageOrientation is the same as the value defined by EXIF specifications, so we can adapt

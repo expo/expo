@@ -20,7 +20,7 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
 
 @property (assign, nonatomic) BOOL swapWidthAndHeight;
 @property CGAffineTransform transform;
-@property angleTransformer angleTransformer;
+@property EXFaceDetectionAngleTransformBlock angleTransformer;
 
 @end
 
@@ -33,11 +33,11 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
 
 - (instancetype)initWithTransform:(CGAffineTransform)pointTransformer
 {
-  angleTransformer transformer = ^(float angle) {return angle;};
+  EXFaceDetectionAngleTransformBlock transformer = ^(float angle) {return angle;};
   return [self initWithTransform:pointTransformer withRotationTransform:transformer];
 }
 
-- (instancetype)initWithTransform:(CGAffineTransform)transform withRotationTransform:(angleTransformer)rotationTransform
+- (instancetype)initWithTransform:(CGAffineTransform)transform withRotationTransform:(EXFaceDetectionAngleTransformBlock)rotationTransform
 {
   self = [super init];
   if (self) {
@@ -81,7 +81,7 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
     [self putAPoint:leftEye.position forKey:@"leftEyePosition" toDictionary:encodedFace];
   }
   FIRVisionFaceLandmark *rightEye = [face landmarkOfType:FIRFaceLandmarkTypeRightEye];
-  if(rightEye != nil) {
+  if(rightEye) {
     [self putAPoint:rightEye.position forKey:@"rightEyePosition" toDictionary:encodedFace];
   }
   
@@ -89,29 +89,29 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
   [self putAFloat:face.rightEyeOpenProbability forKey:@"rightEyeOpenProbability" toDictionary:encodedFace ifValueIsValid:face.hasRightEyeOpenProbability];
   
   FIRVisionFaceLandmark *leftCheek = [face landmarkOfType:FIRFaceLandmarkTypeLeftCheek];
-  if(leftCheek != nil) {
+  if(leftCheek) {
     [self putAPoint:leftCheek.position forKey:@"leftCheekPosition" toDictionary:encodedFace];
   }
   FIRVisionFaceLandmark *rightCheek = [face landmarkOfType:FIRFaceLandmarkTypeRightCheek];
-  if(rightCheek != nil) {
+  if(rightCheek) {
     [self putAPoint:rightCheek.position forKey:@"rightCheekPosition" toDictionary:encodedFace];
   }
   
   FIRVisionFaceLandmark *leftMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthLeft];
-  if(leftMouth != nil) {
+  if(leftMouth) {
     [self putAPoint:leftMouth.position forKey:@"leftMouthPosition" toDictionary:encodedFace];
   }
   FIRVisionFaceLandmark *rightMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthRight];
-  if(rightMouth != nil) {
+  if(rightMouth) {
     [self putAPoint:rightMouth.position forKey:@"rightMouthPosition" toDictionary:encodedFace];
   }
   FIRVisionFaceLandmark *bottomMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthBottom];
-  if(bottomMouth != nil) {
+  if(bottomMouth) {
     [self putAPoint:bottomMouth.position forKey:@"bottomMouthPosition" toDictionary:encodedFace];
   }
   
   FIRVisionFaceLandmark *noseBase = [face landmarkOfType:FIRFaceLandmarkTypeNoseBase];
-  if(noseBase != nil) {
+  if(noseBase) {
     [self putAPoint:noseBase.position forKey:@"noseBasePosition" toDictionary:encodedFace];
   }
   

@@ -267,7 +267,7 @@ export default class Camera extends React.Component<Props> {
         onBarCodeScanned={onBarCodeScanned}
         onFacesDetected={onFacesDetected}
         faceDetectorSettings={{
-          detectLandmarks: FaceDetector.Constants.Landmarks.all,
+          detectLandmarks: FaceDetector.Constants.Landmarks.none,
         }}
         onPictureSaved={_onPictureSaved}
       />

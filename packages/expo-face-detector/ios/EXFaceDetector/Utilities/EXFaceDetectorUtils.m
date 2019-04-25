@@ -37,7 +37,7 @@ static const NSString *kRunClassificationsOptionName = @"runClassifications";
            };
 }
 
-+ (BOOL)optionsChanged:(FIRVisionFaceDetectorOptions *)options comparingTo:(FIRVisionFaceDetectorOptions *)other
++ (BOOL)didOptionsChange:(FIRVisionFaceDetectorOptions *)options comparingTo:(FIRVisionFaceDetectorOptions *)other
 {
   return options.performanceMode == other.performanceMode &&
   options.classificationMode == other.classificationMode &&
@@ -61,7 +61,7 @@ static const NSString *kRunClassificationsOptionName = @"runClassifications";
 
 
 + (FIRVisionFaceDetectorOptions *) mapOptions:(NSDictionary*)options {
-  return [self newOptions:[self defaultFIRVisionFaceDetectorOptions] withValues:options];
+  return [self newOptions:[FIRVisionFaceDetectorOptions new] withValues:options];
 }
 
 + (FIRVisionFaceDetectorOptions *) newOptions:(FIRVisionFaceDetectorOptions*)options withValues:(NSDictionary *)values
@@ -80,12 +80,7 @@ static const NSString *kRunClassificationsOptionName = @"runClassifications";
 }
 
 + (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions *)first to:(FIRVisionFaceDetectorOptions*)second {
-  return [self optionsChanged:first comparingTo:second];
-}
-
-+ (FIRVisionFaceDetectorOptions *)defaultFIRVisionFaceDetectorOptions
-{
-  return [FIRVisionFaceDetectorOptions new];
+  return [self didOptionsChange:first comparingTo:second];
 }
 
 + (NSDictionary *)defaultFaceDetectorOptions
@@ -97,9 +92,9 @@ static const NSString *kRunClassificationsOptionName = @"runClassifications";
            };
 }
 
-# pragma marg - encoder helpers
+# pragma mark - Encoder helpers
 
-+ (angleTransformer)angleTransformerFromTransform:(CGAffineTransform)transform
++ (EXFaceDetectionAngleTransformBlock)angleTransformerFromTransform:(CGAffineTransform)transform
 {
   return ^(float angle) {
     return (float)(angle - (atan2(transform.b, transform.a) * (180 / M_PI)));

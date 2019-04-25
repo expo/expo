@@ -8,9 +8,9 @@
 #import "EXFaceDetector.h"
 #import "Firebase.h"
 
-@implementation EXFaceDetector
-
-FIRVisionFaceDetector *detector;
+@implementation EXFaceDetector {
+  FIRVisionFaceDetector *detector;
+}
 
 -(instancetype) initWithOptions:(FIRVisionFaceDetectorOptions *)options {
   self = [super init];
@@ -30,6 +30,10 @@ FIRVisionFaceDetector *detector;
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithBuffer:buffer];
     visionImage.metadata = metadata;
     [self detectFromFIRImage:visionImage completionListener:completion];
+  } else {
+    completion(nil, [NSError errorWithDomain:@"faceDetector" code:0 userInfo:@{
+                                                                               @"error": @"Image is nil!"
+                                                                               }]);
   }
 }
 
@@ -48,6 +52,10 @@ FIRVisionFaceDetector *detector;
                     completion(encodedFaces, nil);
                   }
                 }];
+  } else {
+    completion(nil, [NSError errorWithDomain:@"faceDetector" code:0 userInfo:@{
+                                                                               @"error": @"Image is nil!"
+                                                                               }]);
   }
 }
 

@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "Firebase.h"
 
-typedef float (^angleTransformer)(float);
+typedef float (^EXFaceDetectionAngleTransformBlock)(float);
 
 @interface EXFaceDetectorUtils : NSObject
 
@@ -24,7 +24,7 @@ typedef float (^angleTransformer)(float);
 
 + (FIRVisionFaceDetectorOptions *) newOptions:(FIRVisionFaceDetectorOptions* )options withValues:(NSDictionary *)values;
 
-+ (angleTransformer)angleTransformerFromTransform:(CGAffineTransform)transform;
++ (EXFaceDetectionAngleTransformBlock)angleTransformerFromTransform:(CGAffineTransform)transform;
 
 + (NSDictionary*)defaultFaceDetectorOptions;
 
