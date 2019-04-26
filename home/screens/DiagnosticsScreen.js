@@ -1,7 +1,7 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-navigation';
-import { BaseButton, State } from 'react-native-gesture-handler';
+import { BaseButton } from 'react-native-gesture-handler';
 import Colors from '../constants/Colors';
 
 class ShadowButton extends React.Component {

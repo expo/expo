@@ -1,38 +1,32 @@
 /* @flow */
 
-import ApolloClient from 'apollo-client';
-import createAuthAwareNetworkInterface from './createAuthAwareNetworkInterface';
-import SessionActions from '../redux/SessionActions';
+import ApolloClient from 'apollo-boost';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 
-function getSessionSecret() {
-  let Store = require('../redux/Store').default;
-  let state = Store.getState();
-  return state.session.sessionSecret;
-}
-
-function setSession(session) {
-  let Store = require('../redux/Store').default;
-  Store.dispatch(SessionActions.setSession(session));
-}
-
-async function signOutAsync(options = {}) {
-  let Store = require('../redux/Store').default;
-  Store.dispatch(SessionActions.signOut(options));
-}
+import Connectivity from './Connectivity';
+import Store from '../redux/Store';
 
 export default new ApolloClient({
-  dataIdFromObject: result => {
-    if (result.id && result.__typename) {
-      return result.__typename + result.id;
+  uri: 'https://exp.host/--/graphql',
+
+  async request(operation) {
+    let isConnected = await Connectivity.isAvailableAsync();
+    if (!isConnected) {
+      throw new Error('No connection available');
     }
 
-    // Make sure to return null if this object doesn't have an ID
-    return null;
+    const { sessionSecret } = Store.getState().session;
+    if (sessionSecret) {
+      operation.setContext({
+        headers: { 'expo-session': sessionSecret },
+      });
+    }
   },
-  networkInterface: createAuthAwareNetworkInterface({
-    uri: 'https://exp.host/--/graphql',
-    getSessionSecret,
-    setSession,
-    signOutAsync,
+
+  cache: new InMemoryCache({
+    dataIdFromObject(value) {
+      // Make sure to return null if this object doesn't have an ID
+      return value.hasOwnProperty('id') ? value.id : null;
+    },
   }),
 });
