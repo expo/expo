@@ -215,3 +215,17 @@ UM_REGISTER_MODULE();
 }
 
 @end
+
+UIApplication * UMSharedApplication(void)
+{
+  if ([[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"]) {
+    return nil;
+  }
+  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+}
+
+NSError *UMErrorWithMessage(NSString *message)
+{
+  NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
+  return [[NSError alloc] initWithDomain:@"UMModulesErrorDomain" code:0 userInfo:errorInfo];
+}
