@@ -118,7 +118,9 @@ export default class DocumentationSidebarGroup extends React.Component {
       const pathname = stripVersionFromPath(this.props.url.pathname);
       const asPath = stripVersionFromPath(this.props.asPath);
 
-      if (linkUrl === pathname || linkUrl === asPath) {
+      if ( (linkUrl === pathname || linkUrl === asPath) ||
+        (linkUrl === '//') // accounts for 'index' page (Getting to know Expo)
+      ) {
         result = true;
       }
     };
