@@ -30,7 +30,7 @@ async function deleteUserAsync(sessionSecret) {
     },
   });
 
-  return response.json();
+  return await response.json();
 }
 
 describe('User Authentication Flow', () => {
@@ -61,9 +61,8 @@ describe('User Authentication Flow', () => {
     await deleteUserAsync(signinResult.sessionSecret);
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     // reset the spies
-    jest.resetAllMocks();
     jest.restoreAllMocks();
   });
 
@@ -86,11 +85,7 @@ describe('User Authentication Flow', () => {
 
   function createSpies() {
     return {
-      _signOutAsync: jest.spyOn(ApolloClient.networkInterface, '_signOutAsync'),
-      connectivityAwareNetworkQuery: jest.spyOn(
-        ApolloClient.networkInterface._networkInterface,
-        'query'
-      ),
+      linkRequest: jest.spyOn(ApolloClient.link, 'request'),
     };
   }
 
@@ -113,7 +108,7 @@ describe('User Authentication Flow', () => {
     } catch (e) {}
   }
   it('does graphQL queries correctly, using sessions', async () => {
-    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
+    let { linkRequest } = createSpies();
 
     // sign in, request for session secret to be returned
     const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
@@ -123,7 +118,6 @@ describe('User Authentication Flow', () => {
     await doGraphqlQuery();
 
     // expect to do just a query
-    expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(1);
-    expect(_signOutAsync).toHaveBeenCalledTimes(0);
+    expect(linkRequest).toHaveBeenCalledTimes(1);
   });
 });
