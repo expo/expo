@@ -740,7 +740,12 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 - (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri
 {
-  if ([uri.scheme isEqualToString:@"assets-library"]) {
+  NSArray *validSchemas = @[
+                            @"assets-library",
+                            @"http",
+                            @"https",
+                            ];
+  if ([validSchemas containsObject:uri.scheme]) {
     return UMFileSystemPermissionRead;
   }
   if ([uri.scheme isEqualToString:@"file"]) {
