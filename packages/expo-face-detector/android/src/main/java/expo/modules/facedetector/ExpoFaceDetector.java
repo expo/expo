@@ -58,7 +58,6 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   @Override
   public List<Bundle> detectFaces(byte[] imageData, int width, int height, int rotation, int facing, double scaleX, double scaleY) {
 //    try {
-//      ExpoFrame frame = ExpoFrameFactory.buildFrame(imageData, width, height, rotation);
 //      SparseArray<Face> detectedFaces = detect(frame);
 //      List<Bundle> facesList = new ArrayList<>();
 //      for (int i = 0; i < detectedFaces.size(); i++) {

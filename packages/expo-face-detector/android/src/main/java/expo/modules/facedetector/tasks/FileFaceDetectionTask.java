@@ -51,6 +51,18 @@ public class FileFaceDetectionTask {
     }
 
     try {
+      ExifInterface exif = new ExifInterface(mFilePath.getPath());
+      mOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+      if (mOrientation == ExifInterface.ORIENTATION_ROTATE_270
+          || mOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+        mWidth = exif.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_UNDEFINED);
+        mHeight = exif.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_UNDEFINED);
+      } else {
+        mWidth = exif.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, ExifInterface.ORIENTATION_UNDEFINED);
+        mHeight = exif.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_UNDEFINED);
+      }
+
       mExpoFaceDetector.detect(mFilePath, this::processFaces);
     } catch (IOException e) {
       mListener.reject(ERROR_TAG, "Problem while accesing file: `" + mFilePath.getPath() + "`.");
@@ -78,7 +90,15 @@ public class FileFaceDetectionTask {
       }
 
       result.putParcelableArrayList("faces", facesArray);
+
     }
+
+    Bundle image = new Bundle();
+    image.putInt("width", mWidth);
+    image.putInt("height", mHeight);
+    image.putInt("orientation", mOrientation);
+    image.putString("uri", mFilePath.getPath());
+    result.putBundle("image", image);
 
     mExpoFaceDetector.release();
     mListener.resolve(result);

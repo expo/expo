@@ -20,6 +20,7 @@ interface State {
   faceDetection?: {
     detecting: boolean;
     faces: FaceFeature[];
+    image?: FaceDetector.Image;
     error?: any;
   };
 }
@@ -44,11 +45,11 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
       runClassifications: FaceDetector.Constants.Classifications.none,
     })
       .then(result => {
-        console.log('Faces detected: ', result);
         this.setState({
           faceDetection: {
             detecting: false,
             faces: result.faces,
+            image: result.image,
           },
         });
       })
@@ -144,6 +145,9 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
       return (
         <View style={{ marginVertical: 16 }}>
           <MonoText>Detected faces: {JSON.stringify(faceDetection.faces)}</MonoText>
+          {faceDetection.image && (
+            <MonoText>In image: {JSON.stringify(faceDetection.image)}</MonoText>
+          )}
         </View>
       );
     }
