@@ -1,1 +1,0 @@
-{"version":3,"file":"any.js","sourceRoot":"","sources":["../../src/utils/any.ts"],"names":[],"mappings":"","sourcesContent":["export type AnyJs = null | undefined | boolean | number | string | { [key: string]: any };\n"]}
