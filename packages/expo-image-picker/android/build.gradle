@@ -17,6 +17,10 @@ apply plugin: 'maven'
 group = 'host.exp.exponent'
 version = '4.0.0'
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 // Upload android library to maven with javadoc and android sources
 configurations {
   deployerJars
@@ -43,11 +47,11 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 3
     versionName "4.0.0"
   }
@@ -67,8 +71,9 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-permissions-interface"
+
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
-  api "com.android.support:support-v4:27.1.0"
+  api "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
   api 'com.facebook.fresco:fresco:1.10.0'
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:2.6'
