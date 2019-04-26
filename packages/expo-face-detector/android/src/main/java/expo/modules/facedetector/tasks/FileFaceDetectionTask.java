@@ -4,16 +4,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.media.ExifInterface;
 
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.ml.vision.face.FirebaseVisionFace;
+import org.unimodules.interfaces.facedetector.FaceDetector;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import expo.modules.facedetector.ExpoFaceDetector;
-import expo.modules.facedetector.FaceDetectorUtils;
 
 public class FileFaceDetectionTask {
   private static final String ERROR_TAG = "E_FACE_DETECTION_FAILED";
@@ -22,10 +17,10 @@ public class FileFaceDetectionTask {
   private int mWidth = 0;
   private int mHeight = 0;
   private int mOrientation = ExifInterface.ORIENTATION_UNDEFINED;
-  private ExpoFaceDetector mExpoFaceDetector;
+  private FaceDetector mExpoFaceDetector;
   private Uri mFilePath;
 
-  public FileFaceDetectionTask(ExpoFaceDetector faceDetector, HashMap<String, Object> options, FileFaceDetectionCompletionListener promise) {
+  public FileFaceDetectionTask(FaceDetector faceDetector, HashMap<String, Object> options, FileFaceDetectionCompletionListener promise) {
     mFilePath = Uri.parse((String) options.get("uri"));
     mListener = promise;
     mExpoFaceDetector = faceDetector;
@@ -63,35 +58,24 @@ public class FileFaceDetectionTask {
         mHeight = exif.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, ExifInterface.ORIENTATION_UNDEFINED);
       }
 
-      mExpoFaceDetector.detect(mFilePath, this::processFaces);
+      mExpoFaceDetector.detectFaces(mFilePath, this::processFaces, this::detectionError);
     } catch (IOException e) {
       mListener.reject(ERROR_TAG, "Problem while accesing file: `" + mFilePath.getPath() + "`.");
     }
   }
 
-  private void processFaces(Task<List<FirebaseVisionFace>> faces) {
-    if (faces.isComplete() && faces.isSuccessful()) {
-      resolveWithFaces(faces.getResult());
-    } else if (!faces.isSuccessful()) {
-      mListener.reject(ERROR_TAG, "Unable to detect faces!");
-    }
+  private void processFaces(ArrayList<Bundle> faces) {
+    resolveWithFaces(faces);
   }
 
-  private void resolveWithFaces(List<FirebaseVisionFace> faces) {
+  private void detectionError(Throwable error) {
+    mListener.reject(ERROR_TAG, "Unable to detect faces!");
+  }
+
+  private void resolveWithFaces(ArrayList<Bundle> faces) {
     Bundle result = new Bundle();
-    ArrayList<Bundle> facesArray = new ArrayList<>();
 
-    if (faces != null) {
-      for (FirebaseVisionFace face : faces) {
-        Bundle encodedFace = FaceDetectorUtils.serializeFace(face);
-        encodedFace.putDouble("yawAngle", (-encodedFace.getDouble("yawAngle") + 360) % 360);
-        encodedFace.putDouble("rollAngle", (-encodedFace.getDouble("rollAngle") + 360) % 360);
-        facesArray.add(encodedFace);
-      }
-
-      result.putParcelableArrayList("faces", facesArray);
-
-    }
+    result.putParcelableArrayList("faces", faces);
 
     Bundle image = new Bundle();
     image.putInt("width", mWidth);

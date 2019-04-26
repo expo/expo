@@ -1,12 +1,15 @@
 package org.unimodules.interfaces.facedetector;
 
-import android.os.Bundle;
+import android.net.Uri;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Map;
 
 public interface FaceDetector {
-  List<Bundle> detectFaces(byte[] imageData, int width, int height, int rotation, int facing, double scaleX, double scaleY);
+
+  void detectFaces(Uri filePath, FacesDetectionCompleted listener, FaceDetectionError error) throws IOException;
+
+  void detectFaces(byte[] imageData, int width, int height, int rotation, int facing, double scaleX, double scaleY, FacesDetectionCompleted listener, FaceDetectionError error);
 
   void setSettings(Map<String, Object> settings);
 

@@ -48,7 +48,8 @@ public class FaceDetectorAsyncTask extends android.os.AsyncTask<Void, Void, List
       return null;
     }
     try {
-      return mFaceDetector.detectFaces(mImageData, mWidth, mHeight, mRotation, mFacing, mScaleX, mScaleY);
+//      return mFaceDetector.detectFaces(mImageData, mWidth, mHeight, mRotation, mFacing, mScaleX, mScaleY);
+      return null;
     } catch (Exception e) {
       // for some reason, sometimes the very first preview frame the camera passes back to us
       // doesn't have the correct amount of data (data.length is too small for the height and width)
