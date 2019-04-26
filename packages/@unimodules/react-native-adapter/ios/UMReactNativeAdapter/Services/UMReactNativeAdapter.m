@@ -5,6 +5,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
+#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 
 @interface UMReactNativeAdapter ()
 
