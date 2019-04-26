@@ -21,6 +21,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `WebBrowser.dismissBrowser` throws `UnavailabilityError` [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
 - added `staysActiveInBackground` audio mode option that selects whether audio playback or recording should continue when the app is in background by [@sjchmiela](https://github.com/sjchmiela) and [@redpandatronicsuk](https://github.com/redpandatronicsuk) ([#3498](https://github.com/expo/expo/pull/3498))
 - renamed the `EncodingTypes` attribute to `EncodingType` in the FileSystem module docs to match changes in the source code by [@sergeichestakov](https://github.com/sergeichestakov) ([#3997](https://github.com/expo/expo/pull/3997))
+- the `properties` parameter of `Segment.screenWithProperties` is now a `{ [key: string]: any }`, instead of a `string`. [@juampi92](https://github.com/juampi92) ([#4053](https://github.com/expo/expo/pull/4053))
 
 ### 🎉 New features
 
