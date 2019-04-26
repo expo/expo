@@ -4,15 +4,25 @@
 #import <UMCore/UMLogHandler.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 
+@interface UMLogManager ()
+
+@property (nonatomic, strong) NSSet<id<UMLogHandler>> *logHandlersCache;
+
+@end
+
 @implementation UMLogManager
 
 UM_REGISTER_SINGLETON_MODULE(LogManager);
 
 - (NSSet<id<UMLogHandler>> *)logHandlers
 {
-  return [[UMModuleRegistryProvider singletonModules] filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-    return [evaluatedObject conformsToProtocol:@protocol(UMLogHandler)];
-  }]];
+  if (!_logHandlersCache) {
+    _logHandlersCache = [[UMModuleRegistryProvider singletonModules] filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+      return [evaluatedObject conformsToProtocol:@protocol(UMLogHandler)];
+    }]];
+  }
+
+  return _logHandlersCache;
 }
 
 - (void)info:(NSString *)message
