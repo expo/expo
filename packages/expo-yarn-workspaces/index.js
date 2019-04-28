@@ -8,7 +8,7 @@ const { assetExts } = require('metro-config/src/defaults/defaults');
 const path = require('path');
 
 /**
- * Returns a configuration object in the format expected for "rn-cli.config.js" files. The
+ * Returns a configuration object in the format expected for "metro.config.js" files. The
  * configuration:
  *
  *   * includes the Yarn workspace root in Metro's list of root directories
@@ -16,9 +16,9 @@ const path = require('path');
  *   * excludes all modules from Haste's module system (providesModule)
  *   * excludes modules in the native Android and Xcode projects
  */
-exports.createReactNativeConfiguration = function createReactNativeConfiguration(projectPath) {
+exports.createMetroConfiguration = function createMetroConfiguration(projectPath) {
   projectPath = path.resolve(projectPath);
-  debug(`Creating a React Native configuration for the project at %s`, projectPath);
+  debug(`Creating a Metro configuration for the project at %s`, projectPath);
 
   let watchFolders;
   let extraNodeModules;
