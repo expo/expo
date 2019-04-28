@@ -4,6 +4,9 @@
  */
 'use strict';
 
+// whatwg-fetch@3 expects "self" to be globally defined
+global.self = global;
+
 const { Response, Request, Headers, fetch } = require('whatwg-fetch');
 global.Response = Response;
 global.Request = Request;
