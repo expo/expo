@@ -18,7 +18,7 @@
       fallbackToCacheTimeout: 0,
     },
     packagerOpts: {
-      config: 'rn-cli.config.js',
+      config: 'metro.config.js',
     },
     ios: {
       supportsTablet: true,
