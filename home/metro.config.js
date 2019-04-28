@@ -1,3 +1,3 @@
-const { createReactNativeConfiguration } = require('expo-yarn-workspaces');
+const { createMetroConfiguration } = require('expo-yarn-workspaces');
 
-module.exports = createReactNativeConfiguration(__dirname);
+module.exports = createMetroConfiguration(__dirname);
