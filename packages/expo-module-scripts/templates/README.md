@@ -34,16 +34,7 @@ Run `pod install` in the ios directory after installing the npm package.
 <!--- remove for interfaces --->
 
 <!--- remove for no-package --->
-In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.${androidPackagePath};
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new ${androidPackageName}()
-), Arrays.<SingletonModule>asList());
-```
+No additional set up necessary.
 
 <!--- end remove for no-package --->
 <!--- end remove for interfaces --->
