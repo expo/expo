@@ -6986,11 +6986,6 @@ expo-asset-utils@^0.0.4-alpha.2:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-0.0.4-alpha.3.tgz#557aa99e394d6e4e6a369914b7e040a414588e78"
   integrity sha512-COMyBrFN2719uTR6c+OnpZmjG8ox2Ipa+t4VHOmrA2ErYxtIYAZs4OcYXe+1Zjn8TlUoQ3B2VC8AofB/P9h7yw==
 
-expo-av@~4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-4.0.0.tgz#40ef8523fa9228b8bd9c4eea4d0f7b7b28af61d4"
-  integrity sha512-+FOBkQiNEd7c8DnZHaGP8D8zu7hhzmg3QkyAtXpC/YRX2N8kNagwemKfYiF0ogUZVox7Dfh+GhV8/lJpOir0pQ==
-
 expo-cli@^2.13.0:
   version "2.15.4"
   resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-2.15.4.tgz#bf9df040d23545f81fe8e0f653c059d8d606035a"
