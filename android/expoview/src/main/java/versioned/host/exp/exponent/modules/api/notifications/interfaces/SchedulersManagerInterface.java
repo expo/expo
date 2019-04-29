@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package versioned.host.exp.exponent.modules.api.notifications.interfaces;
 
 import org.unimodules.core.interfaces.Function;
 

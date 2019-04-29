@@ -36,6 +36,7 @@ import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import versioned.host.exp.exponent.modules.api.notifications.schedulers.TimeScheduler;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -368,12 +369,26 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void scheduleNotificationWithTime() {
+  public void scheduleNotificationWithTime(final ReadableMap data, final ReadableMap options, final Promise promise) {
+    int notificationId = new Random().nextInt();
+    HashMap<String, Object> hashMap = data.toHashMap();
+    if (data.hasKey("categoryId")) {
+      hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
+    }
+    String experienceId = ma
 
+
+    TimeScheduler timeScheduler = new TimeScheduler();
+    timeScheduler.setExperienceId();
   }
   
   @ReactMethod
-  public void scheduleNotificationWithCalendar() {
+  public void scheduleNotificationWithCalendar(final ReadableMap data, final ReadableMap options, final Promise promise) {
+    int notificationId = new Random().nextInt();
+    HashMap<String, Object> hashMap = data.toHashMap();
+    if (data.hasKey("categoryId")) {
+      hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
+    }
 
   }
 

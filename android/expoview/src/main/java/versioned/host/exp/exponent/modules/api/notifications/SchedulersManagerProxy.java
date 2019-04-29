@@ -3,10 +3,13 @@ package versioned.host.exp.exponent.modules.api.notifications;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.fabric.Scheduler;
-
 import org.unimodules.core.interfaces.Function;
+
+import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
+import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulersManagerInterface;
+
+// The implementation of this class should be changed because currently method calls can be swapped in time
+// all method calls should be pushed to the same thread
 
 public class SchedulersManagerProxy implements SchedulersManagerInterface {
 
