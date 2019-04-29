@@ -1,13 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import "EXScopedFileSystemModule.h"
-#import "EXEnvironment.h"
 
 // TODO @sjchmiela: Should this be versioned? It is only used in detached scenario.
 NSString * const EXShellManifestResourceName = @"shell-app-manifest";
 
 @implementation EXScopedFileSystemModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   NSString *escapedExperienceId = [EXScopedFileSystemModule escapedResourceName:experienceId];
 
@@ -19,7 +18,7 @@ NSString * const EXShellManifestResourceName = @"shell-app-manifest";
   NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
   NSString *experienceCachesDirectory = [[exponentCachesDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
 
-  if ([EXEnvironment sharedEnvironment].isDetached) {
+  if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
     [self ensureOldFilesAreMigratedFrom:experienceDocumentDirectory to:mainDocumentDirectory];
 
     return [super init];

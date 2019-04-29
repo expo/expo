@@ -25,7 +25,7 @@
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];
 
-  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId];
+  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:fileSystemModule];
 
   EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];
