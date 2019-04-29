@@ -17,11 +17,11 @@ apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion 28
 
   defaultConfig {
     minSdkVersion 19
-    targetSdkVersion 26
+    targetSdkVersion 28
     versionCode 1
     versionName "1.0"
     ndk {
@@ -75,7 +75,7 @@ dependencies {
 
   // React native dependencies
   // We use a different version of appcompat
-  api 'com.android.support:recyclerview-v7:27.1.1'
+  api 'com.android.support:recyclerview-v7:28.0.0'
   api 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
   api 'com.facebook.fresco:fresco:1.0.1'
   api 'com.facebook.fresco:animated-gif:1.0.1'
@@ -93,9 +93,9 @@ dependencies {
   api 'org.webkit:android-jsc:r174650'
 
   // Our dependencies
-  api 'com.android.support:appcompat-v7:27.1.1'
-  api 'com.android.support:customtabs:27.1.1'
-  api 'com.android.support:cardview-v7:27.1.1'
+  api 'com.android.support:appcompat-v7:28.0.0'
+  api 'com.android.support:customtabs:28.0.0'
+  api 'com.android.support:cardview-v7:28.0.0'
   api('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
     transitive = true;
   }
@@ -155,7 +155,7 @@ dependencies {
   api('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  api 'com.android.support:exifinterface:27.1.1'
+  api 'com.android.support:exifinterface:28.0.0'
   api 'com.google.android:cameraview:1.0.0'
   api 'com.google.firebase:firebase-core:16.0.1'
   api 'com.google.firebase:firebase-messaging:17.1.0'
