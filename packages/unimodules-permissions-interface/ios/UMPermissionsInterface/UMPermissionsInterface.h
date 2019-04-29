@@ -16,10 +16,3 @@
              withRejecter:(UMPromiseRejectBlock)reject;
 
 @end
-
-@protocol UMPermissionsServiceInterface
-
-- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId;
-- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
-
-@end

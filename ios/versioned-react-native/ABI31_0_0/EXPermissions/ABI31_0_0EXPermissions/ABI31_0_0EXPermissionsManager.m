@@ -11,11 +11,6 @@ ABI31_0_0EX_REGISTER_SINGLETON_MODULE(Permissions)
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
 {
-  NSNumber *supportsAppMultiplexing = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"SupportsAppMultiplexing"];
-  if (![supportsAppMultiplexing boolValue]) {
-    return YES;
-  }
-  
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary *expoPermissions = [userDefaults dictionaryForKey:ABI31_0_0EXPermissionsKey];
   if (expoPermissions == nil) {
