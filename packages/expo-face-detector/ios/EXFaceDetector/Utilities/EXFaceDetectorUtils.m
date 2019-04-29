@@ -16,6 +16,7 @@ NSString *const EXGMVDataOutputHeightKey = @"Height";
 static const NSString *kModeOptionName = @"mode";
 static const NSString *kDetectLandmarksOptionName = @"detectLandmarks";
 static const NSString *kRunClassificationsOptionName = @"runClassifications";
+static const NSString *kTrackingEnabled = @"tracking";
 
 @implementation EXFaceDetectorUtils
 
@@ -75,6 +76,9 @@ static const NSString *kRunClassificationsOptionName = @"runClassifications";
   }
   if([values objectForKey:kRunClassificationsOptionName]) {
     result.classificationMode = [values[kRunClassificationsOptionName] longValue];
+  }
+  if([values objectForKey:kTrackingEnabled]) {
+    result.trackingEnabled = values[kTrackingEnabled];
   }
   return result;
 }

@@ -52,13 +52,13 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   }
 
   private FirebaseVisionFaceDetector mFaceDetector = null;
-  private ImageDimensions mPreviousDimensions;
 
   private Context mContext;
 
   private int mClassificationType = NO_CLASSIFICATIONS;
   private int mLandmarkType = NO_LANDMARKS;
   private float mMinFaceSize = 0.15f;
+  private boolean mTracking = false;
   private int mMode = FAST_MODE;
 
   public ExpoFaceDetector(Context context) {
@@ -185,13 +185,12 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   }
 
   public void setTrackingEnabled(boolean tracking) {
-    release();
+    mTracking = tracking;
   }
 
   @Override
   public void release() {
     releaseFaceDetector();
-    mPreviousDimensions = null;
   }
 
   // Lifecycle methods
@@ -207,12 +206,15 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   }
 
   private FirebaseVisionFaceDetectorOptions createOptions() {
-    return new FirebaseVisionFaceDetectorOptions.Builder()
+    FirebaseVisionFaceDetectorOptions.Builder builder = new FirebaseVisionFaceDetectorOptions.Builder()
         .setClassificationMode(mClassificationType)
         .setLandmarkMode(mLandmarkType)
         .setPerformanceMode(mMode)
-        .setMinFaceSize(mMinFaceSize)
-        .build();
+        .setMinFaceSize(mMinFaceSize);
+    if (mTracking) {
+      builder.enableTracking();
+    }
+    return builder.build();
   }
 
 }
