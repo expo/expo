@@ -4,21 +4,19 @@ export async function assertSensorEventEnabledAsync(eventName, timeout) {
     if (!isIOS()) {
         return true;
     }
-    try {
-        return await assertEventEnabledAsync(eventName, timeout);
+    if (await isSensorEnabledAsync(eventName, timeout)) {
+        return true;
     }
-    catch ({ message }) {
-        throw new Error(message +
-            '\nEnable device orientation in Settings > Safari > Motion & Orientation Access' +
-            '\nalso ensure that you are hosting with https as DeviceMotion is now a secure API on iOS Safari.');
-    }
+    throw new Error(`Cannot observe event: ${eventName}.` +
+        '\nEnable device orientation in Settings > Safari > Motion & Orientation Access' +
+        '\nalso ensure that you are hosting with https as DeviceMotion is now a secure API on iOS Safari.');
 }
 // throw error if the sensor is disabled.
-export async function assertEventEnabledAsync(eventName, timeout = 500) {
-    return new Promise((resolve, reject) => {
+export function isSensorEnabledAsync(eventName, timeout = 250) {
+    return new Promise(resolve => {
         const id = setTimeout(() => {
             window.removeEventListener(eventName, listener);
-            reject(new Error(`Cannot observe event: ${eventName}.`));
+            resolve(false);
         }, timeout);
         const listener = () => {
             clearTimeout(id);
@@ -33,15 +31,6 @@ function isIOS() {
     const isIOSUA = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
     const isIE11 = !!window['MSStream'];
     return isIOSUA && !isIE11;
-}
-export async function isSensorEnabledAsync(eventName, timeout) {
-    try {
-        await assertEventEnabledAsync(eventName, timeout);
-        return true;
-    }
-    catch (error) {
-        return false;
-    }
 }
 export default isSensorEnabledAsync;
 //# sourceMappingURL=isSensorEnabledAsync.web.js.map
