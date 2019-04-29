@@ -13,18 +13,18 @@ export async function assertSensorEventEnabledAsync(eventName, timeout) {
 export async function isSensorEnabledAsync(eventName, 
 // Initial interval tests found results on a median of
 // devicemotion:
-// - iPhone 7 Plus: 166.6666753590107mms
-// - iPhone X: 166.6666753590107mms
+// - iPhone 7 Plus: 166.6666753590107ms
+// - iPhone X: 166.6666753590107ms
 // deviceorientation:
 // -
 //
 // The initial launch of iOS Safari onto a page calling this API seems to take a little longer than a regular call.
 // devicemotion:
-// - ~35mms
+// - ~35ms
 // deviceorientation:
-// - ~45mms
+// - ~45ms
 //
-timeout = 210) {
+timeout = 250) {
     if (!isIOS()) {
         return true;
     }
