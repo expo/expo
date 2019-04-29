@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "react-native-unimodules": "0.2.0",
+    "react-native-unimodules": "0.3.1",
     "react": "16.6.3",
     "react-native": "0.58.6"
   },
