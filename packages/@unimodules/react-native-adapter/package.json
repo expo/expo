@@ -1,6 +1,6 @@
 {
   "name": "@unimodules/react-native-adapter",
-  "version": "1.0.2",
+  "version": "2.0.0-alpha.0",
   "description": "The adapter to use universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -53,5 +53,5 @@
     "@unimodules/core": "~1.0.0",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "65a95ffa04b473a7fd7fd3773ef44c7f4804d85b"
+  "gitHead": "0c9c728afc913b2fd53e4f0a9cb163a58e83b68d"
 }

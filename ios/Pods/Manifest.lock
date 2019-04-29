@@ -1161,13 +1161,13 @@ PODS:
   - UMBarCodeScannerInterface (1.0.0)
   - UMCameraInterface (1.0.0)
   - UMConstantsInterface (1.0.0)
-  - UMCore (1.0.0)
+  - UMCore (2.0.0-alpha.0)
   - UMFaceDetectorInterface (1.0.0)
   - UMFileSystemInterface (1.0.0)
   - UMFontInterface (1.0.0)
   - UMImageLoaderInterface (1.0.0)
   - UMPermissionsInterface (1.0.0)
-  - UMReactNativeAdapter (1.0.2):
+  - UMReactNativeAdapter (2.0.0-alpha.0):
     - React
     - UMCore
     - UMFontInterface
