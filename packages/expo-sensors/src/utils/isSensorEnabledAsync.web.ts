@@ -6,11 +6,8 @@ export async function assertSensorEventEnabledAsync(
   eventName: SensorEventName,
   timeout?: number
 ): Promise<boolean> {
-  if (!isIOS()) {
-    return true;
-  }
-
-  if (await isSensorEnabledAsync(eventName, timeout)) {
+  const isEnabled = await isSensorEnabledAsync(eventName, timeout);
+  if (isEnabled) {
     return true;
   }
 
@@ -22,10 +19,27 @@ export async function assertSensorEventEnabledAsync(
 }
 
 // throw error if the sensor is disabled.
-export function isSensorEnabledAsync(
+export async function isSensorEnabledAsync(
   eventName: SensorEventName,
-  timeout: number = 250
+  // Initial interval tests found results on a median of
+  // devicemotion:
+  // - iPhone 7 Plus: 166.6666753590107mms
+  // - iPhone X: 166.6666753590107mms
+  // deviceorientation:
+  // -
+  //
+  // The initial launch of iOS Safari onto a page calling this API seems to take a little longer than a regular call.
+  // devicemotion:
+  // - ~35mms
+  // deviceorientation:
+  // - ~45mms
+  //
+  timeout: number = 210
 ): Promise<boolean> {
+  if (!isIOS()) {
+    return true;
+  }
+
   return new Promise(resolve => {
     const id = setTimeout(() => {
       window.removeEventListener(eventName, listener);

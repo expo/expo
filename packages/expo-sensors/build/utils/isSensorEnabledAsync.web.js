@@ -1,10 +1,8 @@
 // iOS 12.2 disables DeviceMotion by default now
 // https://github.com/w3c/deviceorientation/issues/57
 export async function assertSensorEventEnabledAsync(eventName, timeout) {
-    if (!isIOS()) {
-        return true;
-    }
-    if (await isSensorEnabledAsync(eventName, timeout)) {
+    const isEnabled = await isSensorEnabledAsync(eventName, timeout);
+    if (isEnabled) {
         return true;
     }
     throw new Error(`Cannot observe event: ${eventName}.` +
@@ -12,7 +10,24 @@ export async function assertSensorEventEnabledAsync(eventName, timeout) {
         '\nalso ensure that you are hosting with https as DeviceMotion is now a secure API on iOS Safari.');
 }
 // throw error if the sensor is disabled.
-export function isSensorEnabledAsync(eventName, timeout = 250) {
+export async function isSensorEnabledAsync(eventName, 
+// Initial interval tests found results on a median of
+// devicemotion:
+// - iPhone 7 Plus: 166.6666753590107mms
+// - iPhone X: 166.6666753590107mms
+// deviceorientation:
+// -
+//
+// The initial launch of iOS Safari onto a page calling this API seems to take a little longer than a regular call.
+// devicemotion:
+// - ~35mms
+// deviceorientation:
+// - ~45mms
+//
+timeout = 210) {
+    if (!isIOS()) {
+        return true;
+    }
     return new Promise(resolve => {
         const id = setTimeout(() => {
             window.removeEventListener(eventName, listener);

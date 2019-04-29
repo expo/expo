@@ -6,7 +6,7 @@ declare const _default: {
         beta: any;
         gamma: any;
     }): void;
-    startObserving(): Promise<void>;
+    startObserving(): void;
     stopObserving(): void;
 };
 export default _default;

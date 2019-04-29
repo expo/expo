@@ -4,7 +4,7 @@ declare const _default: {
     _handleMotion({ accelerationIncludingGravity }: {
         accelerationIncludingGravity: any;
     }): void;
-    startObserving(): Promise<void>;
+    startObserving(): void;
     stopObserving(): void;
 };
 export default _default;
