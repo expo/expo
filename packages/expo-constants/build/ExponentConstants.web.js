@@ -1,5 +1,5 @@
 import UAParser from 'ua-parser-js';
-import uuidv4 from 'uuid/v4';
+import UUID from 'uuid-js';
 function getExpoVersion() {
     try {
         // Remove the need to install the entire expo package.
@@ -12,7 +12,7 @@ function getExpoVersion() {
 const version = getExpoVersion();
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
-const _sessionId = uuidv4();
+const _sessionId = UUID.create(4).toString();
 export default {
     get name() {
         return 'ExponentConstants';
@@ -25,7 +25,7 @@ export default {
         try {
             installationId = localStorage.getItem(ID_KEY);
             if (installationId == null || typeof installationId !== 'string') {
-                installationId = uuidv4();
+                installationId = UUID.create(4).toString();
                 localStorage.setItem(ID_KEY, installationId);
             }
         }

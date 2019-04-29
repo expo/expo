@@ -37,11 +37,10 @@
   },
   "dependencies": {
     "ua-parser-js": "^0.7.19",
-    "uuid": "^3.3.2"
+    "uuid-js": "^0.7.5"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0",
-    "uuid": "^3.3.2"
+    "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
 }

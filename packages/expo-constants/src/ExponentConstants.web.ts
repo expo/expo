@@ -1,5 +1,6 @@
 import UAParser from 'ua-parser-js';
-import uuidv4 from 'uuid/v4';
+import UUID from 'uuid-js';
+
 import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 
 function getExpoVersion(): string | null {
@@ -21,7 +22,7 @@ declare var navigator: Navigator;
 declare var location: Location;
 declare var localStorage: Storage;
 
-const _sessionId = uuidv4();
+const _sessionId = UUID.create(4).toString();
 
 export default {
   get name(): string {
@@ -35,7 +36,7 @@ export default {
     try {
       installationId = localStorage.getItem(ID_KEY);
       if (installationId == null || typeof installationId !== 'string') {
-        installationId = uuidv4();
+        installationId = UUID.create(4).toString();
         localStorage.setItem(ID_KEY, installationId as string);
       }
     } catch (error) {
