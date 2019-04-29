@@ -14,7 +14,7 @@ export default {
     console.warn(
       'GestureHandler is no longer in DangerZone, you can now import it directly from the expo package.'
     );
-    return require('./GestureHandler').GestureHandler;
+    return require('react-native-gesture-handler');
   },
   get Stripe() {
     return require('expo-payments-stripe').PaymentsStripe;
