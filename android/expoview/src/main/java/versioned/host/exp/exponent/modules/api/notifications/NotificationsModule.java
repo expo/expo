@@ -365,10 +365,25 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void cancelScheduledNotificationWithStringIdAsync(final String id, final Promise promise) {
+    try {
+      SchedulersManagerProxy.getInstance(getReactApplicationContext()
+          .getApplicationContext())
+          .removeScheduler(id);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
   public void cancelAllScheduledNotificationsAsync(final Promise promise) {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+
+      SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).removeAll();
+
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -400,8 +415,8 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     timeScheduler.setNotificationId(notificationId);
     timeScheduler.setDetails(details);
     timeScheduler.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
-    timeScheduler.setScheduledTime(System.currentTimeMillis() + (Long) options.get("scheduledTime"));
-    timeScheduler.setInterval((Long) options.get("scheduledTime")); // on iOS we cannot change interval
+    timeScheduler.setScheduledTime(System.currentTimeMillis() + (Long) options.get("interval"));
+    timeScheduler.setInterval((Long) options.get("interval")); // on iOS we cannot change interval
 
     SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
         timeScheduler,

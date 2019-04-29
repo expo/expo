@@ -32,6 +32,8 @@ class SchedulerManager implements SchedulersManagerInterface {
   void scheduleAll(String action) {
     fetchSchedulersMap();
 
+    cancelAlreadyScheduled();
+
     ArrayList<String> unsuccessful = new ArrayList<String>();
 
     for (Map.Entry<String, SchedulerInterface> scheduler : mSchedulersMap.entrySet()) {
