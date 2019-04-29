@@ -2701,23 +2701,10 @@
   dependencies:
     compare-versions "^3.4.0"
 
-"@unimodules/core@^2.0.0":
-  version "2.0.0-alpha.0"
-  dependencies:
-    compare-versions "^3.4.0"
-
 "@unimodules/react-native-adapter@*", "@unimodules/react-native-adapter@~1.0.0":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@unimodules/react-native-adapter/-/react-native-adapter-1.0.2.tgz#2eeb776fea6ba9f8ab741ff61a2551b3ed8f7996"
   integrity sha512-qlsvx6VPj/w0tQ31t707Iu8N0Tu2aO26LMNikugaR4EDXaBiSq3MfN3hP7NnYr+NlPihbeJ3zxWQxsXhBuh9wQ==
-  dependencies:
-    invariant "^2.2.4"
-    lodash.omit "^4.5.0"
-    lodash.pick "^4.4.0"
-    prop-types "^15.6.1"
-
-"@unimodules/react-native-adapter@^2.0.0":
-  version "2.0.0-alpha.0"
   dependencies:
     invariant "^2.2.4"
     lodash.omit "^4.5.0"
