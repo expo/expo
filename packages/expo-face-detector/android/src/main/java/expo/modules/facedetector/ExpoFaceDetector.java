@@ -33,6 +33,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   private static final String RUN_CLASSIFICATIONS_KEY = "runClassifications";
   private static final String DETECT_LANDMARKS_KEY = "detectLandmarks";
   private static final String TRACKING_KEY = "tracking";
+  private static final String MIN_INTERVAL_MILLIS_KEY = "minDetectionIntervalMillis";
   private static final String MODE_KEY = "mode";
 
   public static int ALL_CLASSIFICATIONS = FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS;
@@ -59,6 +60,8 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   private int mLandmarkType = NO_LANDMARKS;
   private float mMinFaceSize = 0.15f;
   private boolean mTracking = false;
+  private long mMinDetecitonInterval = 0;
+  private long lastDetectionMillis = 0;
   private int mMode = FAST_MODE;
 
   public ExpoFaceDetector(Context context) {
@@ -81,7 +84,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   }
 
   @Override
-  public void detectFaces(byte[] imageData, int width, int height, int rotation, boolean mirrored, double scaleX, double scaleY, FacesDetectionCompleted complete, FaceDetectionError error) {
+  public boolean detectFaces(byte[] imageData, int width, int height, int rotation, boolean mirrored, double scaleX, double scaleY, FacesDetectionCompleted complete, FaceDetectionError error) {
 
     if (mFaceDetector == null) {
       createFaceDetector();
@@ -97,20 +100,27 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
         .build();
 
     FirebaseVisionImage image = FirebaseVisionImage.fromByteArray(imageData, metadata);
-    mFaceDetector.detectInImage(image)
-        .addOnCompleteListener(
-            faceDetectionHandler(face -> {
-              Bundle result = FaceDetectorUtils.serializeFace(face, scaleX, scaleY);
-              if (mirrored) {
-                if (firRotation == ROTATION_270 || firRotation == ROTATION_90) {
-                  result = FaceDetectorUtils.rotateFaceX(result, height, scaleX);
-                } else {
-                  result = FaceDetectorUtils.rotateFaceX(result, width, scaleX);
+
+    if (mMinDetecitonInterval <= 0 || minIntervalPassed()) {
+      lastDetectionMillis = System.currentTimeMillis();
+      mFaceDetector.detectInImage(image)
+          .addOnCompleteListener(
+              faceDetectionHandler(face -> {
+                Bundle result = FaceDetectorUtils.serializeFace(face, scaleX, scaleY);
+                if (mirrored) {
+                  if (firRotation == ROTATION_270 || firRotation == ROTATION_90) {
+                    result = FaceDetectorUtils.rotateFaceX(result, height, scaleX);
+                  } else {
+                    result = FaceDetectorUtils.rotateFaceX(result, width, scaleX);
+                  }
                 }
-              }
-              return result;
-            }, complete, error)
-        );
+                return result;
+              }, complete, error)
+          );
+      return true;
+    }
+    return false;
+
   }
 
   private int getFirRotation(int rotation) {
@@ -144,6 +154,10 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
     };
   }
 
+  private boolean minIntervalPassed() {
+    return (lastDetectionMillis + mMinDetecitonInterval) < System.currentTimeMillis();
+  }
+
   @Override
   public void setSettings(Map<String, Object> settings) {
     if (settings.get(MODE_KEY) instanceof Number) {
@@ -160,6 +174,12 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
 
     if (settings.get(RUN_CLASSIFICATIONS_KEY) instanceof Number) {
       setClassificationType(((Number) settings.get(RUN_CLASSIFICATIONS_KEY)).intValue());
+    }
+
+    if (settings.get(MIN_INTERVAL_MILLIS_KEY) instanceof Number) {
+      setMinIntervalMillis(((Number) settings.get(MIN_INTERVAL_MILLIS_KEY)).intValue());
+    } else {
+      setMinIntervalMillis(0);
     }
   }
 
@@ -182,6 +202,10 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
       release();
       mMode = mode;
     }
+  }
+
+  private void setMinIntervalMillis(long intValue) {
+    this.mMinDetecitonInterval = intValue;
   }
 
   public void setTrackingEnabled(boolean tracking) {
