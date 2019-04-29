@@ -65,6 +65,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
   };
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
+    await requestPermissionAsync(Permissions.CAMERA_ROLL);
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes,
       allowsEditing,

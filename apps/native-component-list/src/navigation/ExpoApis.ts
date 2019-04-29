@@ -12,7 +12,7 @@ import Contacts from '../screens/Contacts/ContactsScreen';
 import DocumentPicker from '../screens/DocumentPickerScreen';
 import Events from '../screens/EventsScreen';
 import FacebookLogin from '../screens/FacebookLoginScreen';
-import FaceDetector from '../screens/FaceDetector';
+import FaceDetector from '../screens/FaceDetectorScreen';
 import FileSystem from '../screens/FileSystemScreen';
 import Font from '../screens/FontScreen';
 import Geocoding from '../screens/GeocodingScreen';
