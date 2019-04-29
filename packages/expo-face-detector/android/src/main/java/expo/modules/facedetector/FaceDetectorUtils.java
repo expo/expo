@@ -78,7 +78,7 @@ public class FaceDetectorUtils {
 
     encodedFace.putBundle("bounds", bounds);
 
-    return encodedFace;
+    return mirrorRollDirection(encodedFace);
   }
 
   public static Bundle rotateFaceX(Bundle face, int sourceWidth, double scaleX) {
@@ -103,12 +103,11 @@ public class FaceDetectorUtils {
 
     face.putBundle("bounds", newBounds);
 
-    return face;
+    return mirrorRollDirection(face);
   }
 
-  public static Bundle changeAnglesDirection(Bundle face) {
+  public static Bundle mirrorRollDirection(Bundle face) {
     face.putDouble("rollAngle", (-face.getDouble("rollAngle") + 360) % 360);
-    face.putDouble("yawAngle", (-face.getDouble("yawAngle") + 360) % 360);
     return face;
   }
 
@@ -132,8 +131,6 @@ public class FaceDetectorUtils {
   }
 
   public static double valueMirroredHorizontally(double elementX, int containerWidth, double scaleX) {
-    double originalX = elementX / scaleX;
-    double mirroredX = containerWidth - originalX;
-    return mirroredX * scaleX;
+    return -elementX + (containerWidth * scaleX);
   }
 }

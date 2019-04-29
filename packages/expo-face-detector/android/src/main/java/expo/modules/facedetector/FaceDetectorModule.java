@@ -3,8 +3,6 @@ package expo.modules.facedetector;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
-
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -23,9 +21,9 @@ import expo.modules.facedetector.tasks.FileFaceDetectionTask;
 public class FaceDetectorModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String TAG = "ExpoFaceDetector";
 
-  private static final String MODE_OPTION_KEY = "mode";
-  private static final String DETECT_LANDMARKS_OPTION_KEY = "detectLandmarks";
-  private static final String RUN_CLASSIFICATIONS_OPTION_KEY = "runClassifications";
+  private static final String MODE_OPTION_KEY = "Mode";
+  private static final String DETECT_LANDMARKS_OPTION_KEY = "Landmarks";
+  private static final String RUN_CLASSIFICATIONS_OPTION_KEY = "Classifications";
 
   private ModuleRegistry mModuleRegistry;
 
@@ -42,16 +40,16 @@ public class FaceDetectorModule extends ExportedModule implements ModuleRegistry
   public Map<String, Object> getConstants() {
     return Collections.unmodifiableMap(new HashMap<String, Object>() {
       {
-        put("Mode", getFaceDetectionModeConstants());
-        put("Landmarks", getFaceDetectionLandmarksConstants());
-        put("Classifications", getFaceDetectionClassificationsConstants());
+        put(MODE_OPTION_KEY, getFaceDetectionModeConstants());
+        put(DETECT_LANDMARKS_OPTION_KEY, getFaceDetectionLandmarksConstants());
+        put(RUN_CLASSIFICATIONS_OPTION_KEY, getFaceDetectionClassificationsConstants());
       }
 
       private Map<String, Object> getFaceDetectionModeConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put("fast", FirebaseVisionFaceDetectorOptions.FAST);
-            put("accurate", FirebaseVisionFaceDetectorOptions.ACCURATE);
+            put("fast", ExpoFaceDetector.FAST_MODE);
+            put("accurate", ExpoFaceDetector.ACCURATE_MODE);
           }
         });
       }
@@ -59,8 +57,8 @@ public class FaceDetectorModule extends ExportedModule implements ModuleRegistry
       private Map<String, Object> getFaceDetectionClassificationsConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put("all", FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS);
-            put("none", FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS);
+            put("all", ExpoFaceDetector.ALL_CLASSIFICATIONS);
+            put("none", ExpoFaceDetector.NO_CLASSIFICATIONS);
           }
         });
       }
@@ -68,8 +66,8 @@ public class FaceDetectorModule extends ExportedModule implements ModuleRegistry
       private Map<String, Object> getFaceDetectionLandmarksConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put("all", FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS);
-            put("none", FirebaseVisionFaceDetectorOptions.NO_LANDMARKS);
+            put("all", ExpoFaceDetector.ALL_LANDMARKS);
+            put("none", ExpoFaceDetector.NO_LANDMARKS);
           }
         });
       }

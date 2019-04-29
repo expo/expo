@@ -3,7 +3,6 @@ import mapValues from 'lodash.mapvalues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
-import { FaceDetector } from 'expo';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
 // TODO: Bacon: Fix multiplatform
@@ -167,9 +166,7 @@ export default class Camera extends React.Component {
         const nativeProps = ensureNativeProps(this.props);
         const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
         const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
-        return (<ExponentCamera {...nativeProps} ref={this._setReference} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarCodeScanned={onBarCodeScanned} onFacesDetected={onFacesDetected} faceDetectorSettings={{
-            detectLandmarks: FaceDetector.Constants.Landmarks.none,
-        }} onPictureSaved={_onPictureSaved}/>);
+        return (<ExponentCamera {...nativeProps} ref={this._setReference} onCameraReady={this._onCameraReady} onMountError={this._onMountError} onBarCodeScanned={onBarCodeScanned} onFacesDetected={onFacesDetected} onPictureSaved={_onPictureSaved}/>);
     }
 }
 Camera.Constants = {

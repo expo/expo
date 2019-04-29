@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.util.SparseIntArray;
 import android.view.Surface;
 
-import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata;
@@ -14,6 +14,7 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 
+import org.unimodules.core.interfaces.Function;
 import org.unimodules.interfaces.facedetector.FaceDetectionError;
 import org.unimodules.interfaces.facedetector.FaceDetectionUnspecifiedError;
 import org.unimodules.interfaces.facedetector.FacesDetectionCompleted;
@@ -23,18 +24,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_0;
+import static com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_180;
+import static com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_270;
+import static com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_90;
+
 public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.FaceDetector {
   private static final String RUN_CLASSIFICATIONS_KEY = "runClassifications";
   private static final String DETECT_LANDMARKS_KEY = "detectLandmarks";
   private static final String TRACKING_KEY = "tracking";
   private static final String MODE_KEY = "mode";
 
-  public static int ALL_CLASSIFICATIONS = FaceDetector.ALL_CLASSIFICATIONS;
-  public static int NO_CLASSIFICATIONS = FaceDetector.NO_CLASSIFICATIONS;
-  public static int ALL_LANDMARKS = FaceDetector.ALL_LANDMARKS;
-  public static int NO_LANDMARKS = FaceDetector.NO_LANDMARKS;
-  public static int ACCURATE_MODE = FaceDetector.ACCURATE_MODE;
-  public static int FAST_MODE = FaceDetector.FAST_MODE;
+  public static int ALL_CLASSIFICATIONS = FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS;
+  public static int NO_CLASSIFICATIONS = FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS;
+  public static int ALL_LANDMARKS = FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS;
+  public static int NO_LANDMARKS = FirebaseVisionFaceDetectorOptions.NO_LANDMARKS;
+  public static int ACCURATE_MODE = FirebaseVisionFaceDetectorOptions.ACCURATE;
+  public static int FAST_MODE = FirebaseVisionFaceDetectorOptions.FAST;
 
   private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -62,45 +68,80 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   // Public API
 
   @Override
-  public void detectFaces(Uri filePath, FacesDetectionCompleted listener, FaceDetectionError error) throws IOException {
+  public void detectFaces(Uri filePath, FacesDetectionCompleted complete, FaceDetectionError error) throws IOException {
 
     if (mFaceDetector == null) {
       createFaceDetector();
     }
     FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(mContext, filePath);
-    mFaceDetector.detectInImage(image).addOnCompleteListener(task -> {
-      if (task.isComplete() && task.isComplete()) {
+    mFaceDetector.detectInImage(image)
+        .addOnCompleteListener(
+            faceDetectionHandler(FaceDetectorUtils::serializeFace, complete, error)
+        );
+  }
+
+  @Override
+  public void detectFaces(byte[] imageData, int width, int height, int rotation, boolean mirrored, double scaleX, double scaleY, FacesDetectionCompleted complete, FaceDetectionError error) {
+
+    if (mFaceDetector == null) {
+      createFaceDetector();
+    }
+
+    final int firRotation = getFirRotation(rotation);
+
+    FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
+        .setWidth(width)
+        .setHeight(height)
+        .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
+        .setRotation(firRotation)
+        .build();
+
+    FirebaseVisionImage image = FirebaseVisionImage.fromByteArray(imageData, metadata);
+    mFaceDetector.detectInImage(image)
+        .addOnCompleteListener(
+            faceDetectionHandler(face -> {
+              Bundle result = FaceDetectorUtils.serializeFace(face, scaleX, scaleY);
+              if (mirrored) {
+                if (firRotation == ROTATION_270 || firRotation == ROTATION_90) {
+                  result = FaceDetectorUtils.rotateFaceX(result, height, scaleX);
+                } else {
+                  result = FaceDetectorUtils.rotateFaceX(result, width, scaleX);
+                }
+              }
+              return result;
+            }, complete, error)
+        );
+  }
+
+  private int getFirRotation(int rotation) {
+    rotation = (rotation + 360) % 360;
+    if (rotation == 90) {
+      return ROTATION_90;
+    }
+    if (rotation == 180) {
+      return ROTATION_180;
+    }
+    if (rotation == 270) {
+      return ROTATION_270;
+    }
+    return ROTATION_0;
+  }
+
+  private OnCompleteListener<List<FirebaseVisionFace>> faceDetectionHandler(Function<FirebaseVisionFace, Bundle> transformer, FacesDetectionCompleted complete, FaceDetectionError error) {
+    return (task) -> {
+      if (task.isComplete() && task.isSuccessful()) {
         ArrayList<Bundle> facesArray = new ArrayList<>();
         List<FirebaseVisionFace> faces = task.getResult();
         if (faces != null) {
           for (FirebaseVisionFace face : faces) {
-            Bundle encodedFace = FaceDetectorUtils.serializeFace(face);
-            encodedFace.putDouble("yawAngle", (-encodedFace.getDouble("yawAngle") + 360) % 360);
-            encodedFace.putDouble("rollAngle", (-encodedFace.getDouble("rollAngle") + 360) % 360);
-            facesArray.add(encodedFace);
+            facesArray.add(transformer.apply(face));
           }
         }
-        listener.detectionCompleted(facesArray);
+        complete.detectionCompleted(facesArray);
       } else {
         error.onError(new FaceDetectionUnspecifiedError());
       }
-    });
-  }
-
-  @Override
-  public void detectFaces(byte[] imageData, int width, int height, int rotation, int facing, double scaleX, double scaleY, FacesDetectionCompleted listener, FaceDetectionError error) {
-
-    FirebaseVisionImageMetadata metadata = new FirebaseVisionImageMetadata.Builder()
-        .setWidth(width)   // 480x360 is typically sufficient for
-        .setHeight(height)  // image recognition
-        .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-        .setRotation(rotation)
-        .build();
-
-    FirebaseVisionImage image = FirebaseVisionImage.fromByteArray(imageData, metadata);
-    mFaceDetector.detectInImage(image).addOnCompleteListener(task -> {
-//      if (task.)
-    });
+    };
   }
 
   @Override

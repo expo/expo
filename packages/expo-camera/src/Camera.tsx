@@ -266,9 +266,6 @@ export default class Camera extends React.Component<Props> {
         onMountError={this._onMountError}
         onBarCodeScanned={onBarCodeScanned}
         onFacesDetected={onFacesDetected}
-        faceDetectorSettings={{
-          detectLandmarks: FaceDetector.Constants.Landmarks.none,
-        }}
         onPictureSaved={_onPictureSaved}
       />
     );
