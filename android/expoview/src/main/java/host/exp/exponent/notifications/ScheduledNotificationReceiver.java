@@ -30,7 +30,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
     int notificationId = bundle.getInt(KernelConstants.NOTIFICATION_ID_KEY, 0);
     String schedulerId = bundle.getString(SchedulersManagerProxy.SCHEDULER_ID);
 
-    SchedulersManagerProxy.getInstance(context).rescheduleOrDelete(schedulerId, notificationId);
+    SchedulersManagerProxy.getInstance(context).rescheduleOrDelete(schedulerId);
 
     NotificationHelper.showNotification(
             context,

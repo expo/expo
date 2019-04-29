@@ -28,7 +28,8 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public void scheduleAll(String action) {
+  public
+  void scheduleAll(String action) {
     fetchSchedulersMap();
 
     ArrayList<String> unsuccessful = new ArrayList<String>();
@@ -98,6 +99,7 @@ class SchedulerManager implements SchedulersManagerInterface {
     scheduler.setApplicationContext(mApplicationContext);
     String id = scheduler.saveAndGetId();
     mSchedulersMap.put(id, scheduler);
+    scheduler.schedule(null);
     handler.apply(id);
   }
 

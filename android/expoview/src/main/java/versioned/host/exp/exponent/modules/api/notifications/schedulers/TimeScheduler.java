@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import host.exp.exponent.notifications.ExponentNotificationManager;
+import versioned.host.exp.exponent.modules.api.notifications.SchedulersManagerProxy;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
 import versioned.host.exp.exponent.modules.api.notifications.SchedulersDatabase;
 
@@ -114,6 +115,8 @@ public class TimeScheduler extends BaseModel implements SchedulerInterface {
 
   @Override
   public String saveAndGetId() {
+    details.put(SchedulersManagerProxy.SCHEDULER_ID, getIdAsString());
+    setDetails(details);
     save();
     return getIdAsString();
   }
