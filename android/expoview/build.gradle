@@ -194,6 +194,7 @@ dependencies {
   compileOnly 'host.exp.exponent:expo-sms:4.0.0'
   compileOnly 'host.exp.exponent:expo-speech:4.0.0'
   compileOnly 'host.exp.exponent:expo-sqlite:4.0.0'
+  compileOnly 'host.exp.exponent:expo-video-thumbnails:1.0.0'
   compileOnly 'host.exp.exponent:expo-web-browser:4.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
