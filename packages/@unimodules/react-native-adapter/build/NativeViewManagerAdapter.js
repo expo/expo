@@ -1,5 +1,5 @@
-import omit from 'lodash.omit';
-import pick from 'lodash.pick';
+import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 import React from 'react';
 import { NativeModules, UIManager, ViewPropTypes, requireNativeComponent } from 'react-native';
 // To make the transition from React Native's `requireNativeComponent` to Expo's
