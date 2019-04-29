@@ -84,7 +84,7 @@ void (^UMinitializeGlobalSingletonModulesSet)(void) = ^{
   return nil;
 }
 
-- (UMModuleRegistry *)moduleRegistryForExperienceId:(NSString *)experienceId
+- (UMModuleRegistry *)moduleRegistry
 {
   NSMutableSet<id<UMInternalModule>> *internalModules = [NSMutableSet set];
   NSMutableSet<UMExportedModule *> *exportedModules = [NSMutableSet set];
@@ -96,7 +96,7 @@ void (^UMinitializeGlobalSingletonModulesSet)(void) = ^{
       continue;
     }
 
-    id<UMInternalModule> instance = [self createModuleInstance:klass forExperienceWithId:experienceId];
+    id<UMInternalModule> instance = [self createModuleInstance:klass];
 
     if ([[instance class] exportedInterfaces] != nil && [[[instance class] exportedInterfaces] count] > 0) {
       [internalModules addObject:instance];
@@ -121,15 +121,9 @@ void (^UMinitializeGlobalSingletonModulesSet)(void) = ^{
 
 # pragma mark - Utilities
 
-- (id<UMInternalModule>)createModuleInstance:(Class)moduleClass forExperienceWithId:(NSString *)experienceId
+- (id<UMInternalModule>)createModuleInstance:(Class)moduleClass
 {
-  id<UMInternalModule> instance;
-  if ([moduleClass instancesRespondToSelector:@selector(initWithExperienceId:)]) {
-    instance = [[moduleClass alloc] initWithExperienceId:experienceId];
-  } else {
-    instance = [[moduleClass alloc] init];
-  }
-  return instance;
+  return [[moduleClass alloc] init];
 }
 
 @end

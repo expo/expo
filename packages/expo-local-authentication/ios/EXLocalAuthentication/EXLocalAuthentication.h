@@ -3,5 +3,13 @@
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXLocalAuthentication : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXLocalAuthentication : UMExportedModule
+
+- (void)authenticateAsync:(NSString *)reason
+                  resolve:(UMPromiseResolveBlock)resolve
+                   reject:(UMPromiseRejectBlock)reject;
+- (NSString *)convertErrorCode:(NSError *)error;
++ (BOOL)isTouchIdDevice;
++ (BOOL)isFaceIdDevice;
+
 @end
