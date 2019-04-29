@@ -18,7 +18,7 @@
       "apps/*",
       "expokit-npm-package",
       "home",
-      "packages/!(expo-firebase)*",
+      "packages/*",
       "packages/@unimodules/*",
       "react-native-lab/react-native"
     ]

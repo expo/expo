@@ -145,8 +145,7 @@
     "unimodules-image-loader-interface": "~1.0.0",
     "unimodules-permissions-interface": "~1.0.0",
     "unimodules-sensors-interface": "~1.0.0",
-    "uuid-js": "^0.7.5",
-    "whatwg-fetch": "^2.0.4"
+    "uuid-js": "^0.7.5"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",

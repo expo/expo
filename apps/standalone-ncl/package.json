@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ../../react-native-lab/react-native/local-cli/cli.js start --config ../../../../apps/standalone-ncl/rn-cli.config.js"
+    "start": "node ../../react-native-lab/react-native/local-cli/cli.js start --config ../../../../apps/standalone-ncl/metro.config.js"
   },
   "dependencies": {
     "@unimodules/core": "*",

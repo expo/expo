@@ -24,23 +24,23 @@ The postinstall script determines the location of the generated entry module by 
 
 You can specify other paths too. The `.expo` directory is convenient since it already contains auto-generated files and is .gitignore'd.
 
-### Create a file named `rn-cli.config.js` and reference it from app.json
+### Create a file named `metro.config.js` and reference it from app.json
 
-**Create a file named `rn-cli.config.js` in the app's base directory with these contents:**
+**Create a file named `metro.config.js` in the app's base directory with these contents:**
 
 ```js
-const { createReactNativeConfiguration } = require('expo-yarn-workspaces');
+const { createMetroConfiguration } = require('expo-yarn-workspaces');
 
-module.exports = createReactNativeConfiguration(__dirname);
+module.exports = createMetroConfiguration(__dirname);
 ```
 
-The `expo-yarn-workspaces` package defines a React Native configuration object that makes Metro work with Yarn workspaces in the Expo repo. It configures Metro to include packages from the workspace root, resolves symlinked packages, excludes modules from Haste's module system, and exclude modules in the native Android and Xcode projects. You can further customize this configuration object before exporting it, if needed.
+The `expo-yarn-workspaces` package defines a Metro configuration object that makes Metro work with Yarn workspaces in the Expo repo. It configures Metro to include packages from the workspace root, resolves symlinked packages, excludes modules from Haste's module system, and exclude modules in the native Android and Xcode projects. You can further customize this configuration object before exporting it, if needed.
 
 **Add this JSON fragment to app.json to tell Metro about the custom configuration:**
 
 ```json
 "packagerOpts": {
-  "config": "rn-cli.config.js"
+  "config": "metro.config.js"
 }
 ```
 
