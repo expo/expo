@@ -1,8 +1,8 @@
+import './muteWarnings.fx';
 import Constants from 'expo-constants';
 
 import Logs from '../logs/Logs';
 import RemoteLogging from '../logs/RemoteLogging';
-import './muteCyclicWarnings.fx';
 
 if (Constants.manifest && Constants.manifest.logUrl) {
   // Enable logging to the Expo dev tools only if this JS is not running in a web browser (ex: the
