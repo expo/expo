@@ -362,6 +362,9 @@ export default {
 
   /* Cancel scheduled notification notification with ID */
   cancelScheduledNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
+    if (Platform.OS === 'android' && typeof notificationId === 'string') {
+      return ExponentNotifications.cancelScheduledNotificationWithStringIdAsync(notificationId);
+    }
     return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
   },
 
@@ -397,5 +400,35 @@ export default {
       throw new UnavailabilityError('Expo.Notifications', 'setBadgeNumberAsync');
     }
     return ExponentNotifications.setBadgeNumberAsync(number);
+  },
+
+  async scheduleNotificationWithCalendarAsync(
+    notification: LocalNotification,
+    options: {
+      year?: number;
+      month?: number;
+      hour?: number;
+      minute?: number;
+      second?: number;
+      weakDay?: number;
+      repeat?: boolean;
+    } = {}
+  ): Promise<string> {
+    if (!ExponentNotifications.scheduleNotificationWithCalendar) {
+      return;
+    }
+    return ExponentNotifications.scheduleNotificationWithCalendar(nativeNotification, options);
+  },
+
+  async schedulNotificationWithTimerAsync(  notification: LocalNotification,
+    options: {
+      interval?: number;
+      repeat?: boolean;
+    } = {}
+  ): Promise<string> {
+    if (!ExponentNotifications.schedulNotificationWithTimer) {
+      return;
+    }
+    return ExponentNotifications.scheduleNotificationWithTimer(nativeNotification, options);
   },
 };
