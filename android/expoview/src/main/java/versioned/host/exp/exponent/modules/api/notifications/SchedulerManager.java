@@ -28,7 +28,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public synchronized void scheduleAll(String action) {
+  public void scheduleAll(String action) {
     fetchSchedulersMap();
 
     ArrayList<String> unsuccessful = new ArrayList<String>();
@@ -46,7 +46,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public synchronized void removeAll() {
+  public void removeAll() {
     fetchSchedulersMap();
     cancelAlreadyScheduled();
     for (Map.Entry<String, SchedulerInterface> scheduler : mSchedulersMap.entrySet()) {
@@ -64,7 +64,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public synchronized void rescheduleOrDelete(String id) {
+  public void rescheduleOrDelete(String id) {
     fetchSchedulersMap();
     SchedulerInterface scheduler = mSchedulersMap.get(id);
     if (scheduler == null) {
@@ -80,7 +80,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public synchronized void removeScheduler(String id) {
+  public void removeScheduler(String id) {
     fetchSchedulersMap();
     SchedulerInterface scheduler = mSchedulersMap.get(id);
     if (scheduler == null) {
@@ -92,7 +92,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public synchronized void addScheduler(SchedulerInterface scheduler, Function<String, Boolean> handler) {
+  public void addScheduler(SchedulerInterface scheduler, Function<String, Boolean> handler) {
     fetchSchedulersMap();
 
     scheduler.setApplicationContext(mApplicationContext);

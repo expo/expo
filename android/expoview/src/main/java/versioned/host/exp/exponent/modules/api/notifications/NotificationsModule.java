@@ -2,6 +2,10 @@
 
 package versioned.host.exp.exponent.modules.api.notifications;
 
+import com.cronutils.builder.CronBuilder;
+import com.cronutils.model.Cron;
+import com.cronutils.model.CronType;
+import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -36,7 +40,10 @@ import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import versioned.host.exp.exponent.modules.api.notifications.schedulers.CalendarScheduler;
 import versioned.host.exp.exponent.modules.api.notifications.schedulers.TimeScheduler;
+
+import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -369,27 +376,111 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void scheduleNotificationWithTime(final ReadableMap data, final ReadableMap options, final Promise promise) {
+  public void scheduleNotificationWithTimer(final ReadableMap data, final ReadableMap optionsMap, final Promise promise) {
+    HashMap<String, Object> options = optionsMap.toHashMap();
     int notificationId = new Random().nextInt();
     HashMap<String, Object> hashMap = data.toHashMap();
     if (data.hasKey("categoryId")) {
       hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
     }
-    String experienceId = ma
+    HashMap<String, Object> details = new HashMap<>();
+    details.put("data", hashMap);
+    String experienceId;
 
+    try {
+      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      details.put("experienceId", experienceId);
+    } catch (Exception e) {
+      promise.reject(new Exception("Requires Experience Id"));
+      return;
+    }
 
     TimeScheduler timeScheduler = new TimeScheduler();
-    timeScheduler.setExperienceId();
+    timeScheduler.setExperienceId(experienceId);
+    timeScheduler.setNotificationId(notificationId);
+    timeScheduler.setDetails(details);
+    timeScheduler.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
+    timeScheduler.setScheduledTime(System.currentTimeMillis() + (Long) options.get("scheduledTime"));
+    timeScheduler.setInterval((Long) options.get("scheduledTime")); // on iOS we cannot change interval
+
+    SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
+        timeScheduler,
+        (String id) -> {
+          promise.resolve(id);
+          return true;
+        }
+    );
   }
   
   @ReactMethod
-  public void scheduleNotificationWithCalendar(final ReadableMap data, final ReadableMap options, final Promise promise) {
+  public void scheduleNotificationWithCalendar(final ReadableMap data, final ReadableMap optionsMap, final Promise promise) {
+    HashMap<String, Object> options = optionsMap.toHashMap();
     int notificationId = new Random().nextInt();
     HashMap<String, Object> hashMap = data.toHashMap();
     if (data.hasKey("categoryId")) {
       hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
     }
+    HashMap<String, Object> details = new HashMap<>();
+    details.put("data", hashMap);
+    String experienceId;
 
+    try {
+      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      details.put("experienceId", experienceId);
+    } catch (Exception e) {
+      promise.reject(new Exception("Requires Experience Id"));
+      return;
+    }
+
+    Cron cron = createCronInstance(options);
+
+    CalendarScheduler calendarScheduler = new CalendarScheduler();
+    calendarScheduler.setExperienceId(experienceId);
+    calendarScheduler.setNotificationId(notificationId);
+    calendarScheduler.setDetails(details);
+    calendarScheduler.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
+    calendarScheduler.setCalendarData(cron.asString());
+
+    SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
+        calendarScheduler,
+        (String id) -> {
+          promise.resolve(id);
+          return true;
+        }
+    );
+  }
+
+  private Cron createCronInstance(HashMap<String, Object> options) {
+    CronBuilder cronBuilder = CronBuilder.cron(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ));
+
+    if (options.containsKey("year")) {
+      cronBuilder.withYear(on(((Number) options.get("year")).intValue()));
+    }
+
+    if (options.containsKey("hour")) {
+      cronBuilder.withHour(on(((Number) options.get("hour")).intValue()));
+    }
+
+    if (options.containsKey("minute")) {
+      cronBuilder.withMinute(on(((Number) options.get("minute")).intValue()));
+    }
+
+    if (options.containsKey("second")) {
+      cronBuilder.withSecond(on(((Number) options.get("second")).intValue()));
+    }
+
+    if (options.containsKey("month")) {
+      cronBuilder.withMonth(on(((Number) options.get("month")).intValue()));
+    }
+
+    if (options.containsKey("day")) {
+      cronBuilder.withDoM(on(((Number) options.get("day")).intValue()));
+    }
+
+    if (options.containsKey("weekDay")) {
+      cronBuilder.withDoW(on(((Number) options.get("weekDay")).intValue()));
+    }
+    return cronBuilder.instance();
   }
 
 }
