@@ -5,6 +5,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
+#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 
 @interface UMReactNativeAdapter ()
 
@@ -208,39 +209,3 @@ UM_REGISTER_MODULE();
 }
 
 @end
-
-extern void UMLogInfo(NSString *format, ...) {
-  va_list args;
-  va_start(args, format);
-  NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-  va_end(args);
-  RCTLogInfo(@"%@", message);
-}
-
-extern void UMLogWarn(NSString *format, ...) {
-  va_list args;
-  va_start(args, format);
-  NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-  va_end(args);
-  RCTLogWarn(@"%@", message);
-}
-
-extern void UMLogError(NSString *format, ...) {
-  va_list args;
-  va_start(args, format);
-  NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-  va_end(args);
-  RCTLogError(@"%@", message);
-}
-
-extern void UMFatal(NSError *error) {
-  RCTFatal(error);
-}
-
-extern NSError * UMErrorWithMessage(NSString *message) {
-  return RCTErrorWithMessage(message);
-}
-
-extern UIApplication *UMSharedApplication() {
-  return RCTSharedApplication();
-}
