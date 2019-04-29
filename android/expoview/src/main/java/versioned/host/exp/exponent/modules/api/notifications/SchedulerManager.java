@@ -1,14 +1,19 @@
 package versioned.host.exp.exponent.modules.api.notifications;
 
 import android.content.Context;
-
-import com.facebook.react.fabric.Scheduler;
-
+import com.raizlabs.android.dbflow.sql.language.Select;
 import org.unimodules.core.interfaces.Function;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
+import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulersManagerInterface;
+import versioned.host.exp.exponent.modules.api.notifications.schedulers.CalendarScheduler;
+import versioned.host.exp.exponent.modules.api.notifications.schedulers.TimeScheduler;
 
 class SchedulerManager implements SchedulersManagerInterface {
 
@@ -44,7 +49,10 @@ class SchedulerManager implements SchedulersManagerInterface {
   public synchronized void removeAll() {
     fetchSchedulersMap();
     cancelAlreadyScheduled();
-    // remove all from db
+    for (Map.Entry<String, SchedulerInterface> scheduler : mSchedulersMap.entrySet()) {
+      scheduler.getValue().remove();
+    }
+    mSchedulersMap.clear();
   }
 
   @Override
@@ -87,14 +95,27 @@ class SchedulerManager implements SchedulersManagerInterface {
   public synchronized void addScheduler(SchedulerInterface scheduler, Function<String, Boolean> handler) {
     fetchSchedulersMap();
 
-    String id = Integer.valueOf(scheduler.saveAndGetId()).toString();
+    scheduler.setApplicationContext(mApplicationContext);
+    String id = scheduler.saveAndGetId();
     mSchedulersMap.put(id, scheduler);
+    handler.apply(id);
+  }
+
+  private List<Class> getSchedulerClasses() {
+    return Arrays.asList(CalendarScheduler.class, TimeScheduler.class);
   }
 
   private void fetchSchedulersMap() {
     if (!mFetchedFromDB) {
       mFetchedFromDB = true;
       // fetch from db
+      for (Class schedulerClass : getSchedulerClasses()) {
+        List<SchedulerInterface> schedulers = new Select().from(schedulerClass).queryList();
+        for (SchedulerInterface scheduler : schedulers) {
+          mSchedulersMap.put(scheduler.getIdAsString(), scheduler);
+        }
+      }
+      //
       for (SchedulerInterface scheduler : mSchedulersMap.values()) {
         scheduler.setApplicationContext(mApplicationContext);
       }

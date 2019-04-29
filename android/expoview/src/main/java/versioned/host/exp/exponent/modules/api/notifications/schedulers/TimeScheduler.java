@@ -4,11 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 
-import com.cronutils.model.Cron;
-import com.cronutils.model.definition.CronDefinition;
-import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.model.time.ExecutionTime;
-import com.cronutils.parser.CronParser;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
@@ -16,7 +11,6 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,15 +19,11 @@ import host.exp.exponent.notifications.ExponentNotificationManager;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
 import versioned.host.exp.exponent.modules.api.notifications.SchedulersDatabase;
 
-import static com.cronutils.model.CronType.QUARTZ;
-
 @Table(databaseName = SchedulersDatabase.NAME)
-public class CalendarScheduler extends BaseModel implements SchedulerInterface {
+public class TimeScheduler extends BaseModel implements SchedulerInterface {
 
   private ArrayList<String> mTriggeringActions = (ArrayList<String>) Arrays.asList(null,
-      Intent.ACTION_BOOT_COMPLETED,
-      Intent.ACTION_TIME_CHANGED,
-      Intent.ACTION_TIMEZONE_CHANGED);
+      Intent.ACTION_BOOT_COMPLETED);
 
   private Context mApplicationContext;
 
@@ -61,7 +51,10 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
   String serializedDetails;
 
   @Column
-  String calendarData;
+  long scheduledTime;
+
+  @Column
+  long interval;
 
   // -- scheduler methods --
 
@@ -76,13 +69,13 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
       return true;
     }
     long nextAppearanceTime = 0;
-    
+
     try {
       nextAppearanceTime = getNextAppearanceTime();
     } catch (IllegalArgumentException e) {
       return false;
     }
-    
+
     ensureDetails();
     try {
       getManager().schedule(experienceId, notificationId, details, nextAppearanceTime, null);
@@ -91,11 +84,6 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
       return false;
     }
     return true;
-  }
-
-  @Override
-  public String getIdAsString() {
-    return Integer.valueOf(id).toString();
   }
 
   private void ensureDetails() {
@@ -108,12 +96,12 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
 
   @Override
   public void cancel() {
-      getManager().cancel(experienceId, notificationId);
+    getManager().cancel(experienceId, notificationId);
   }
 
   @Override
   public boolean canBeRescheduled() {
-    return repeat || (!scheduled);
+    return repeat || (DateTime.now().toDate().getTime() < scheduledTime);
   }
 
   @Override
@@ -129,19 +117,35 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
   }
 
   @Override
+  public String getIdAsString() {
+    return Integer.valueOf(id).toString();
+  }
+
+  @Override
   public void remove() {
     cancel();
     delete();
   }
 
   private long getNextAppearanceTime() { // elapsedTime
-    CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(QUARTZ);
-    CronParser parser = new CronParser(cronDefinition);
-    Cron cron = parser.parse(calendarData);
+    // time when notification should be presented can be represented as (interval * t + scheduledTime)
 
-    DateTime now = DateTime.now();
-    DateTime nextExecution = ExecutionTime.forCron(cron).nextExecution(now);
-    long whenShouldAppear = nextExecution.toDate().getTime();
+    long now = DateTime.now().toDate().getTime();
+    long whenShouldAppear = -1;
+    if (now <= scheduledTime) {
+      whenShouldAppear =  scheduledTime;
+    } else {
+
+      if (interval <= 0) {
+        throw new IllegalArgumentException();
+      }
+
+      now  = DateTime.now().toDate().getTime();
+      long elapsedTime = (now - scheduledTime);
+      long t = elapsedTime / interval + 1;
+      whenShouldAppear = interval * t + scheduledTime;
+    }
+
     long bootTime = DateTime.now().toDate().getTime() - SystemClock.elapsedRealtime();
     return whenShouldAppear-bootTime;
   }
@@ -200,12 +204,20 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
     this.serializedDetails = serializedDetails;
   }
 
-  public String getCalendarData() {
-    return calendarData;
+  public long getScheduledTime() {
+    return scheduledTime;
   }
 
-  public void setCalendarData(String calendarData) {
-    this.calendarData = calendarData;
+  public void setScheduledTime(long time) {
+    this.scheduledTime = time;
+  }
+
+  public long getInterval() {
+    return interval;
+  }
+
+  public void setInterval(long time) {
+    this.interval = time;
   }
 
 }
