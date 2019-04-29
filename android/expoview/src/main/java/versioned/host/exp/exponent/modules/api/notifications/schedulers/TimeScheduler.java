@@ -11,6 +11,8 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,7 +29,7 @@ public class TimeScheduler extends BaseModel implements SchedulerInterface {
 
   private Context mApplicationContext;
 
-  public HashMap<String, java.io.Serializable> details;
+  public HashMap<String, Object> details;
 
   // -- model fields --
 
@@ -220,4 +222,12 @@ public class TimeScheduler extends BaseModel implements SchedulerInterface {
     this.interval = time;
   }
 
+  public HashMap<String, Object> getDetails() {
+    return details;
+  }
+
+  public void setDetails(HashMap<String, Object> details) {
+    this.details = details;
+    serializedDetails = HashMapSerializer.serialize(details);
+  }
 }
