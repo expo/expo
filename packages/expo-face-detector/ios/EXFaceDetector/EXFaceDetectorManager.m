@@ -70,8 +70,8 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
 {
   // If the data output is already initialized, we toggle its connections instead of adding/removing the output from camera session.
   // It allows us to smoothly toggle face detection without interrupting preview and reconfiguring camera session.
-  
   if ([self isDetectingFaceEnabled] != newFaceDetecting) {
+    _faceDetectionEnabled = newFaceDetecting;
     UM_WEAKIFY(self);
     [self _runBlockIfQueueIsPresent:^{
       UM_ENSURE_STRONGIFY(self);
