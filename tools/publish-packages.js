@@ -617,6 +617,8 @@ async function _gitCommitAsync(allConfigs) {
     // Add expoview's build.gradle in which the dependencies were updated
     _runCommand(`git add ${ROOT_DIR}/android/expoview/build.gradle`);
 
+    _runCommand(`git add ${ROOT_DIR}/packages/expo/bundledNativeModules.json`);
+
     _runCommand(`git commit -m "${message}" -m "${description}"`);
   }
 }
