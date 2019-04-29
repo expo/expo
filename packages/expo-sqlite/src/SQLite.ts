@@ -1,6 +1,6 @@
 import './polyfillNextTick';
 
-import zipObject from 'lodash.zipobject';
+import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
