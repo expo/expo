@@ -62,5 +62,3 @@ function isIOS(): boolean {
   const isIE11 = !!window['MSStream'];
   return isIOSUA && !isIE11;
 }
-
-export default isSensorEnabledAsync;

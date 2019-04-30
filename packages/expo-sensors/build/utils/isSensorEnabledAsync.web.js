@@ -47,5 +47,4 @@ function isIOS() {
     const isIE11 = !!window['MSStream'];
     return isIOSUA && !isIE11;
 }
-export default isSensorEnabledAsync;
 //# sourceMappingURL=isSensorEnabledAsync.web.js.map
