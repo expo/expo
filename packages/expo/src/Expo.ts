@@ -18,7 +18,7 @@ import { BlurView } from 'expo-blur';
 import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
-import * as Google from './Google/Google';
+import * as Google from './Google';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as ImageManipulator from 'expo-image-manipulator';
