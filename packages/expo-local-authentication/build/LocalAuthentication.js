@@ -27,7 +27,7 @@ export async function authenticateAsync(promptMessageIOS = 'Authenticate') {
         throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
     }
     if (Platform.OS === 'ios') {
-        invariant(typeof promptMessageIOS === 'string' && promptMessageIOS.length, 'Fingerprint.authenticateAsync must be called with a non-empty string on iOS');
+        invariant(typeof promptMessageIOS === 'string' && promptMessageIOS.length, 'LocalAuthentication.authenticateAsync must be called with a non-empty string on iOS');
         const result = await ExpoLocalAuthentication.authenticateAsync(promptMessageIOS);
         if (result.warning) {
             console.warn(result.warning);
