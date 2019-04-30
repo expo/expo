@@ -34,13 +34,13 @@ export default {
     console.warn(
       'Animated is no longer in DangerZone, you can now import it directly from the expo package.'
     );
-    return require('react-native-reanimated').default;
+    return require('./Animated').default;
   },
   get Easing() {
     console.warn(
       'Easing is no longer in DangerZone, you can now import it directly from the expo package.'
     );
-    return require('react-native-reanimated').Easing;
+    return require('./Animated').Easing;
   },
 
   // react-native-screens
