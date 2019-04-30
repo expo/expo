@@ -1,13 +1,11 @@
-import './LegacyReact';
-
 import React from 'react';
-import { NativeModules } from 'react-native';
 import { ApolloProvider } from 'react-apollo';
+import { NativeModules } from 'react-native';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import Store from './redux/Store';
-import ApolloClient from './api/ApolloClient';
 import HomeApp from './HomeApp';
+import ApolloClient from './api/ApolloClient';
+import Store from './redux/Store';
 
 let { JSCExecutor } = NativeModules;
 
