@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import { Asset } from 'expo';
 
 class Renderer extends THREE.WebGLRenderer {
