@@ -24,7 +24,7 @@
     "apollo-cache-inmemory": "^1.5.1",
     "dedent": "^0.7.0",
     "es6-error": "^4.0.1",
-    "expo": "^33.0.0-alpha.web.2",
+    "expo": "^33.0.0-alpha.web.3",
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
     "immutable": "^3.8.1",
