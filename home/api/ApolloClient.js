@@ -1,9 +1,10 @@
 /* @flow */
 
 import ApolloClient from 'apollo-boost';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 
 import Connectivity from './Connectivity';
+import graphqlFragmentTypes from './generated/graphqlFragmentTypes';
 import Store from '../redux/Store';
 
 export default new ApolloClient({
@@ -24,6 +25,9 @@ export default new ApolloClient({
   },
 
   cache: new InMemoryCache({
+    fragmentMatcher: new IntrospectionFragmentMatcher({
+      introspectionQueryResultData: graphqlFragmentTypes,
+    }),
     dataIdFromObject(value) {
       // Make sure to return null if this object doesn't have an ID
       return value.hasOwnProperty('id') ? value.id : null;
