@@ -1,6 +1,5 @@
-// tslint:disable max-classes-per-file
 import React from 'react';
-// @ts-ignore
+
 import { StyleSheet, Button, View, TextInput } from 'react-native';
 import { DangerZone } from 'expo';
 const { Screen, ScreenContainer } = DangerZone;
