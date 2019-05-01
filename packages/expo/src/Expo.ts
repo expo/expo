@@ -113,7 +113,8 @@ export { FacebookAds };
 export { default as AppLoading } from './launch/AppLoading';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as Logs } from './logs/Logs';
+import * as Logs from './logs/Logs';
+export { Logs };
 export { default as Pedometer } from './Pedometer';
 export { WebView } from './WebView';
 
