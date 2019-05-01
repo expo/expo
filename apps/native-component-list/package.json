@@ -18,7 +18,7 @@
     "@expo/react-native-action-sheet": "^2.0.1",
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
-    "expo": "^33.0.0-alpha.web.1",
+    "expo": "^33.0.0-alpha.web.2",
     "expo-cli": "^2.13.0",
     "expo-processing": "~2.0.0",
     "expo-three": "^3.0.0-alpha.6",
