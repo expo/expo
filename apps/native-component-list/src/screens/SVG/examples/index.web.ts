@@ -15,6 +15,7 @@ import Stroking from './Stroking';
 import Svg from './Svg';
 import Text from './Text';
 import TouchEvents from './TouchEvents';
+import Example from './Example';
 
 const examples: { [key: string]: Example } = {
   Svg,
