@@ -47,8 +47,8 @@ import { Constants, Permissions, BarCodeScanner } from 'expo';
 export default class BarcodeScannerExample extends React.Component {
   state = {
     hasCameraPermission: null,
-    scanned: false
-  }
+    scanned: false,
+  };
 
   async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -65,25 +65,25 @@ export default class BarcodeScannerExample extends React.Component {
       return <Text>No access to camera</Text>;
     }
     return (
-      <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end'}}>
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
           style={StyleSheet.absoluteFillObject}
         />
-        {scanned &&
+        {scanned && (
           <Button
             title={'Tap to Scan Again'}
-            onPress={() => this.setState({scanned: false})}
+            onPress={() => this.setState({ scanned: false })}
           />
-        }
+        )}
       </View>
     );
   }
 
   handleBarCodeScanned = ({ type, data }) => {
-    this.setState({scanned: true});
+    this.setState({ scanned: true });
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-  }
+  };
 }
 ```
 >Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
