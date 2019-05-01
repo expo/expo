@@ -68,7 +68,6 @@ export default class BarcodeScannerExample extends React.Component {
       <View
         style={{
           flex: 1,
-          flexDirection: 'column',
           justifyContent: 'flex-end',
         }}>
         <BarCodeScanner
