@@ -1,4 +1,3 @@
-import './muteWarnings.fx';
 import Constants from 'expo-constants';
 
 import Logs from '../logs/Logs';
