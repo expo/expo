@@ -78,19 +78,34 @@ export type FaceGeometry = {
   triangleIndices: number[];
 };
 
-export type Anchor = {
+export type BaseAnchor = {
   type: AnchorType;
   transform: Matrix;
   id: string;
-  center?: Vector3;
-  extent?: { width: number; length: number };
+};
+
+export type PlaneAnchor = BaseAnchor & {
+  type: AnchorType.Plane;
+  center: Vector3;
+  extent: { width: number; length: number };
+};
+
+export type ImageAnchor = BaseAnchor & {
+  type: AnchorType.Image;
   image?: {
     name: string | null;
     size: Size;
   };
+};
+
+export type FaceAnchor = BaseAnchor & {
+  type: AnchorType.Face;
+  isTracked: boolean;
   geometry?: FaceGeometry;
   blendShapes?: { [shape in BlendShape]?: number };
 };
+
+export type Anchor = BaseAnchor | PlaneAnchor | ImageAnchor | FaceAnchor;
 
 export type HitTest = {
   type: number;
@@ -101,7 +116,7 @@ export type HitTest = {
 };
 
 export type HitTestResults = {
-  hitTest: HitTest;
+  hitTest: HitTest[];
 };
 
 export type DetectionImage = {
