@@ -6,6 +6,8 @@ import {
   NavigationScreenProps,
 } from 'react-navigation';
 
+export { default as LifecycleAwareView } from './LifecycleAwareView';
+
 const IMGS = [
   require('./img/dawid-zawila-628275-unsplash.jpg'),
   require('./img/dawid-zawila-715178-unsplash.jpg'),
