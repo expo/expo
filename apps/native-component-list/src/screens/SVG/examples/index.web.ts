@@ -16,7 +16,7 @@ import Svg from './Svg';
 import Text from './Text';
 import TouchEvents from './TouchEvents';
 
-export {
+const examples: { [key: string]: Example } = {
   Svg,
   Rect,
   Circle,
@@ -35,3 +35,5 @@ export {
   Reusable,
   PanResponder,
 };
+
+export default examples;
