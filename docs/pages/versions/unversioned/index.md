@@ -4,7 +4,8 @@ title: Getting to know Expo
 
 ## Introduction
 
-This is the documentation for [Expo](http://expo.io). Expo is a set of tools, libraries and services you can use to build native iOS and Android apps faster than ever before.
+Welcome to the documentation for [Expo](http://expo.io) -- a set of tools, libraries and services you can use to build native iOS and Android apps faster than ever before!
+
 
 There are two ways to build a project with Expo, we call these workflows: you can use the "managed" workflow or the "bare" workflow. With the "managed" workflow, you only write JavaScript and lean on the [Expo SDK](sdk/overview/) to give you access to your device capabilities and the Expo services to handle the heavy lifting of building your app binary and uploading it to the store, all without you touching Xcode or Android Studio. With the "bare" workflow, we also speed up your development with the [Expo SDK](sdk/overview/) and React Native, and you have full control over your iOS and Android projects.
 
