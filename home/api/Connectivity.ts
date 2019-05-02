@@ -1,21 +1,21 @@
-/* @flow */
-
 import { NetInfo } from 'react-native';
+
+type ConnectivityListener = (available: boolean) => void;
 
 class Connectivity {
   _isAvailable = true;
-  _listeners = new Set();
+  _listeners = new Set<ConnectivityListener>();
 
   constructor() {
     NetInfo.isConnected.addEventListener('connectionChange', this._handleConnectivityChange);
     this.isAvailableAsync();
   }
 
-  isAvailable = () => {
+  isAvailable(): boolean {
     return this._isAvailable;
-  };
+  }
 
-  isAvailableAsync = async () => {
+  async isAvailableAsync(): Promise<boolean> {
     if (this._isAvailable) {
       return this._isAvailable;
     }
@@ -24,25 +24,26 @@ class Connectivity {
       this._isAvailable = await NetInfo.isConnected.fetch();
     } catch (e) {
       this._isAvailable = false;
+      console.warn(`Uncaught error when fetching connectivity status: ${e}`);
     }
 
     return this._isAvailable;
-  };
+  }
 
   _handleConnectivityChange = (isAvailable: boolean) => {
     this._isAvailable = isAvailable;
     this._listeners.forEach(listener => {
-      typeof listener === 'function' && listener(this._isAvailable);
+      listener(this._isAvailable);
     });
   };
 
-  addListener = (listener: any) => {
+  addListener(listener: ConnectivityListener): void {
     this._listeners.add(listener);
-  };
+  }
 
-  removeListener = (listener: any) => {
+  removeListener(listener: ConnectivityListener): void {
     this._listeners.delete(listener);
-  };
+  }
 }
 
 export default new Connectivity();

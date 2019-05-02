@@ -1,10 +1,5 @@
-/**
- * @flow
- */
-'use strict';
-
-import { NativeModules, Platform } from 'react-native';
 import querystring from 'querystring';
+import { NativeModules, Platform } from 'react-native';
 
 import ApiV2Error from './ApiV2Error';
 import Config from './Config';
@@ -13,28 +8,28 @@ const { ExponentKernel } = NativeModules;
 
 type RequestOptions = {
   httpMethod: 'get' | 'post',
-  queryParameters?: ?QueryParameters,
-  body?: ?Object,
+  queryParameters?: QueryParameters,
+  body?: any,
 };
 
-type QueryParameters = { [key: string]: ?(string | number | boolean) };
+type QueryParameters = { [key: string]: string | number | boolean | null | undefined };
 
 export default class ApiV2HttpClient {
-  async getAsync(methodName: string, args: ?QueryParameters): Promise<*> {
-    return this._requestAsync(methodName, {
+  async getAsync<R = any>(methodName: string, args?: QueryParameters): Promise<R> {
+    return this._requestAsync<R>(methodName, {
       httpMethod: 'get',
       queryParameters: args,
     });
   }
 
-  async postAsync(methodName: string, args: ?Object): Promise<*> {
-    return this._requestAsync(methodName, {
+  async postAsync<R = any>(methodName: string, args?: any): Promise<R> {
+    return this._requestAsync<R>(methodName, {
       httpMethod: 'post',
       body: args,
     });
   }
 
-  async _requestAsync(methodName: string, options: RequestOptions): Promise<*> {
+  async _requestAsync<R>(methodName: string, options: RequestOptions): Promise<R> {
     let url = `${Config.api.host}/--/api/v2/${encodeURI(methodName)}`;
     if (options.queryParameters) {
       url += '?' + querystring.stringify(options.queryParameters);
@@ -55,7 +50,7 @@ export default class ApiV2HttpClient {
     // We expect the result to be JSON
     let response = await fetch(url, fetchOptions);
     let resultText = await response.text();
-    let result;
+    let result: any;
     try {
       result = JSON.parse(resultText);
     } catch (e) {

@@ -2635,7 +2635,7 @@
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.2.tgz#e13182e1b69871a422d7863e11a4a6f5b814a4bd"
   integrity sha512-42zEJkBpNfMEAvWR5WlwtTH22oDzcMjFsL9gDGExwF8X8WvAiw7Vwop7hPw03QT8TKfec83LwbHj6SvpqM4ELQ==
 
-"@types/three@^0.93.22", "@types/three@^0.93.28":
+"@types/three@^0.93.28":
   version "0.93.31"
   resolved "https://registry.yarnpkg.com/@types/three/-/three-0.93.31.tgz#9698891a463b5c1ef0fc65f46114fe4f70f87ba2"
   integrity sha512-lR9eLY3gnrUDAdW4ujITgVTPEv1Oy2yoL3LlfKAnjQuzyjGSR+PvQuXuWmaDCD1IyWhkqbnol1nJwaW0MGe35A==
@@ -7006,10 +7006,10 @@ expo-2d-context@^0.0.2:
     string-format "0.5.0"
     tess2 "^1.0.0"
 
-expo-asset-utils@^1.0.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-1.1.1.tgz#2dcbd0cce0364257c78c4dffc42fe863ffee6f9e"
-  integrity sha512-9dOPkiQwHDwTsEdvTlta4UqYW91UHvv9rnUDgHgqB2MfJ5jsPSh7tls5k1eVhXpltn4RBfLA/0ii71BZ5MPPRA==
+expo-asset-utils@^0.0.4-alpha.2:
+  version "0.0.4-alpha.3"
+  resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-0.0.4-alpha.3.tgz#557aa99e394d6e4e6a369914b7e040a414588e78"
+  integrity sha512-COMyBrFN2719uTR6c+OnpZmjG8ox2Ipa+t4VHOmrA2ErYxtIYAZs4OcYXe+1Zjn8TlUoQ3B2VC8AofB/P9h7yw==
 
 expo-cli@^2.13.0:
   version "2.15.4"
@@ -7059,6 +7059,16 @@ expo-cli@^2.13.0:
   optionalDependencies:
     "@expo/traveling-fastlane-darwin" "1.9.3"
     "@expo/traveling-fastlane-linux" "1.9.3"
+
+expo-three@^3.0.0-alpha.6:
+  version "3.0.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-3.0.0-alpha.8.tgz#42e3143f3b188a7bae1cd4043810aecdacf8f91a"
+  integrity sha512-JOOzFeMy6x6IkUzKR1LVIsSoMOaZ+ZCEnA4xgr82zfU2WmGgwglStLo1RVwTdo64AKyPmm2VfiuCF8qa7mPbDw==
+  dependencies:
+    "@expo/browser-polyfill" "^0.0.1-alpha.3"
+    color-temperature "0.2.7"
+    expo-asset-utils "^0.0.4-alpha.2"
+    three "0.88.0"
 
 express@4.16.4, express@^4.16.2, express@^4.16.3:
   version "4.16.4"
@@ -15640,12 +15650,7 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
-three@^0.102.1:
-  version "0.102.1"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.102.1.tgz#fc08b6b11860cf59e8cd45b7e90e34d1d1a8cbd6"
-  integrity sha512-btHBdww/Es4vdBkB2GjTE9mpj0vy8tgtxkX7ne7uxySXV8zoGxWJv1N88BydxnCqvAfmD4ZUTqPeESO7oDgeOQ==
-
-three@^0.88.0:
+three@0.88.0, three@^0.88.0:
   version "0.88.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.88.0.tgz#4256c2fc38e4fb23a0d23eba2b6cce4df8e466d5"
   integrity sha1-QlbC/Djk+yOg0j66K2zOTfjkZtU=

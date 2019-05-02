@@ -1,18 +1,21 @@
-/* @flow */
 import ApiV2HttpClient from './ApiV2HttpClient';
 
 const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
 const SignOutEndpoint = 'https://exp.host/--/api/v2/auth/logoutAsync';
 
-async function signInAsync(username: string, password: string) {
+type SignInResult = {
+  sessionSecret: boolean
+};
+
+export async function signInAsync(username: string, password: string): Promise<SignInResult> {
   let api = new ApiV2HttpClient();
-  return api.postAsync('auth/loginAsync', {
+  return await api.postAsync('auth/loginAsync', {
     username,
     password,
   });
 }
 
-async function signOutAsync(sessionSecret) {
+export async function signOutAsync(sessionSecret: string | null): Promise<void> {
   if (!sessionSecret) {
     return;
   }
@@ -25,14 +28,14 @@ async function signOutAsync(sessionSecret) {
 }
 
 type SignUpData = {
-  firstName: string,
-  lastName: string,
-  email: string,
-  username: string,
-  password: string,
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  password: string;
 };
 
-async function signUpAsync(data: SignUpData) {
+export async function signUpAsync(data: SignUpData): Promise<any> {
   let response = await fetch(SignUpEndpoint, {
     method: 'POST',
     headers: {

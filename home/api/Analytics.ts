@@ -1,12 +1,13 @@
-/**
- * @flow
- */
-
 import { Amplitude, Constants } from 'expo';
-import Environment from '../utils/Environment';
-import { normalizeTrackingOptions } from './AnalyticsUtils';
 
-const events = {
+import { TrackingOptions, normalizeTrackingOptions } from './AnalyticsUtils';
+import Environment from '../utils/Environment';
+
+let isInitialized = false;
+const { manifest } = Constants;
+const apiKey = manifest.extra && manifest.extra.amplitudeApiKey;
+
+export const events = {
   USER_LOGGED_IN: 'USER_LOGGED_IN',
   USER_LOGGED_OUT: 'USER_LOGGED_OUT',
   USER_CREATED_ACCOUNT: 'USER_CREATED_ACCOUNT',
@@ -22,51 +23,43 @@ const events = {
   USER_UPDATED_SETTINGS: 'USER_UPDATED_SETTINGS',
 };
 
-let isInitialized = false;
-const { manifest } = Constants;
-const apiKey = manifest.extra && manifest.extra.amplitudeApiKey;
-const initialize = () => {
-  if (!Environment.isProduction || !apiKey) {
+export function initialize(): void {
+  if (isInitialized || !Environment.isProduction || !apiKey) {
     return;
   }
 
   Amplitude.initialize(apiKey);
   isInitialized = true;
-};
+}
 
-const maybeInitialize = () => {
-  if (apiKey && !isInitialized) {
-    initialize();
-  }
-};
-
-const identify = (id: ?string, options?: ?Object = null) => {
-  maybeInitialize();
-  options = normalizeTrackingOptions(options);
+export function identify(id: string | null, options?: TrackingOptions) {
+  initialize();
+  const properties = normalizeTrackingOptions(options);
 
   if (id) {
     Amplitude.setUserId(id);
-    if (options) {
-      Amplitude.setUserProperties(options);
+    if (properties) {
+      Amplitude.setUserProperties(properties);
     }
   } else {
     Amplitude.clearUserProperties();
   }
-};
+}
 
-const track = (event: string, options: any = null) => {
-  maybeInitialize();
-  options = normalizeTrackingOptions(options);
+export function track(event: string, options?: TrackingOptions): void {
+  initialize();
+  const properties = normalizeTrackingOptions(options);
 
-  if (options) {
-    Amplitude.logEventWithProperties(event, options);
+  if (properties) {
+    Amplitude.logEventWithProperties(event, properties);
   } else {
     Amplitude.logEvent(event);
   }
-};
+}
 
 export default {
   events,
-  track,
+  initialize,
   identify,
+  track,
 };
