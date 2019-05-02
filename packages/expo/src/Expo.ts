@@ -39,6 +39,8 @@ export {
   // @ts-ignore
   AdMobRewarded,
   // @ts-ignore
+  Animated,
+  // @ts-ignore
   Amplitude,
   // @ts-ignore
   AppAuth,
@@ -68,6 +70,8 @@ export {
   Crypto,
   // @ts-ignore
   DocumentPicker,
+  // @ts-ignore
+  Easing,
   // @ts-ignore
   Facebook,
   // @ts-ignore
@@ -148,6 +152,10 @@ export {
   Svg,
   // @ts-ignore
   TaskManager,
+  // @ts-ignore
+  Transition,
+  // @ts-ignore
+  Transitioning,
   // @ts-ignore
   Video,
   // @ts-ignore
