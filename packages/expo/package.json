@@ -1,9 +1,9 @@
 {
   "name": "expo",
-  "version": "33.0.0-alpha.web.1",
+  "version": "33.0.0-alpha.web.3",
   "description": "The Expo SDK",
   "main": "build/ExpoLazy.js",
-  "module": "build/Expo.js",
+  "module": "build/Expo",
   "types": "build/Expo.d.ts",
   "sideEffects": [
     "*.fx.js",

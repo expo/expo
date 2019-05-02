@@ -11,7 +11,7 @@ import Colors from '../constants/Colors';
 import CloseButton from '../components/CloseButton';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
-import Auth0Api from '../api/Auth0Api';
+import AuthApi from '../api/AuthApi';
 import ApolloClient from '../api/ApolloClient';
 
 const DEBUG = false;
@@ -130,7 +130,7 @@ export default class SignInScreen extends React.Component {
     this.setState({ isLoading: true });
 
     try {
-      let result = await Auth0Api.signInAsync(email, password);
+      let result = await AuthApi.signInAsync(email, password);
       if (this._isMounted) {
         if (result.error) {
           this._handleError(result);

@@ -231,10 +231,17 @@ type PushMessage = {
 
   /**
    * Time to Live: the number of seconds for which the message may be kept
-   * around for redelivery if it hasn't been delivered yet. Defaults to 0.
+   * around for redelivery if it hasn't been delivered yet. Defaults to
+   * `undefined` in order to use the respective defaults of each provider.
+   * These are 0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM.
    *
    * On Android, we make a best effort to deliver messages with zero TTL
-   * immediately and do not throttle them
+   * immediately and do not throttle them.
+   *
+   * However, note that setting TTL to a low value (e.g. zero) can prevent
+   * normal-priority notifications from ever reaching Android devices that are
+   * in doze mode. In order to guarantee that a notification will be delivered,
+   * TTL must be long enough for the device to wake from doze mode.
    *
    * This field takes precedence over `expiration` when both are specified.
    */

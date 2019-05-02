@@ -8,7 +8,7 @@ import SessionActions from '../redux/SessionActions';
 
 import Analytics from '../api/Analytics';
 import Alerts from '../constants/Alerts';
-import Auth0Api from '../api/Auth0Api';
+import AuthApi from '../api/AuthApi';
 import CloseButton from '../components/CloseButton';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
@@ -226,7 +226,7 @@ export default class SignUpScreen extends React.Component {
     this.setState({ isLoading: true });
 
     try {
-      let signUpResult = await Auth0Api.signUpAsync(this.state);
+      let signUpResult = await AuthApi.signUpAsync(this.state);
 
       if (signUpResult.errors) {
         this._isMounted && this._handleError(signUpResult);
@@ -235,7 +235,7 @@ export default class SignUpScreen extends React.Component {
 
       Analytics.track(Analytics.events.USER_CREATED_ACCOUNT, { github: false });
 
-      let signInResult = await Auth0Api.signInAsync(this.state.email, this.state.password);
+      let signInResult = await AuthApi.signInAsync(this.state.email, this.state.password);
 
       if (this._isMounted) {
         if (signInResult.error) {

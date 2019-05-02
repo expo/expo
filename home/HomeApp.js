@@ -1,17 +1,19 @@
 import { AppLoading, Asset, Constants, Font } from 'expo';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Assets as StackAssets } from 'react-navigation-stack';
 import url from 'url';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Assets as StackAssets } from 'react-navigation-stack';
+
+import './menu/MenuView';
 
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
-import LocalStorage from './storage/LocalStorage';
 import Store from './redux/Store';
+import LocalStorage from './storage/LocalStorage';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);

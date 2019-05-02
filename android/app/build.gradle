@@ -150,7 +150,6 @@ dependencies {
   implementation('com.airbnb.android:lottie:2.5.5') {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
-  implementation 'io.branch.sdk.android:library:2.17.1'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
