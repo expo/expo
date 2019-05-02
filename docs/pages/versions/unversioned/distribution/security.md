@@ -2,7 +2,7 @@
 title: Security
 ---
 
-Before you enter outside credentials or provide other sensitive data to a third party tool you should ask yourself whether you trust the tool to use it responsibly and protect it. Due to the native of what goes in to building an app binary for distribution on app stores, the Expo standalone app build service requires various pieces of information with varying degrees of sensitivty. The purpose of this document is to explain what those are, how we store them, and what could go wrong if they were to be compromised.
+Before you enter outside credentials or provide other sensitive data to third-party software you should ask yourself whether you trust the software to use it responsibly and protect it. Due to the nature of what goes into building an app binary for distribution on app stores, the Expo standalone app build service requires various pieces of information with varying degrees of sensitivity. This document explains what those are, how we store them, and what could go wrong if they were to be compromised.
 
 Most data stored by Expo — credentials or otherwise — is encrypted at rest by our cloud provider, Google Cloud. Credentials are additionally encrypted using [KMS](https://cloud.google.com/kms/). Credentials are only unencrypted for as long as we need them in memory in the standalone app builders or notification services. Credentials are always encrypted in our databases, message queues and other less transient parts of the system.
 
