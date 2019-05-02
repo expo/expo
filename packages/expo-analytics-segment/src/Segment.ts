@@ -25,7 +25,7 @@ export function identify(userId: string): void {
   ExponentSegment.identify(userId);
 }
 
-export function identifyWithTraits(userId: string, traits: { [key: string]: any }): void {
+export function identifyWithTraits(userId: string, traits: object): void {
   if (!ExponentSegment.identifyWithTraits) {
     throw new UnavailabilityError('expo-analytics-segment', 'identifyWithTraits');
   }
@@ -39,14 +39,14 @@ export function group(groupId: string): void {
   ExponentSegment.group(groupId);
 }
 
-export function groupWithTraits(groupId: string, traits: { [key: string]: any }): void {
+export function groupWithTraits(groupId: string, traits: object): void {
   if (!ExponentSegment.groupWithTraits) {
     throw new UnavailabilityError('expo-analytics-segment', 'groupWithTraits');
   }
   ExponentSegment.groupWithTraits(groupId, traits);
 }
 
-export async function alias(newId: string, options?: { [key: string]: any }): Promise<boolean> {
+export async function alias(newId: string, options?: object): Promise<boolean> {
   if (!ExponentSegment.alias) {
     throw new UnavailabilityError('expo-analytics-segment', 'alias');
   }
@@ -67,7 +67,7 @@ export function track(event: string): void {
   ExponentSegment.track(event);
 }
 
-export function trackWithProperties(event: string, properties: { [key: string]: any }): void {
+export function trackWithProperties(event: string, properties: object): void {
   if (!ExponentSegment.trackWithProperties) {
     throw new UnavailabilityError('expo-analytics-segment', 'trackWithProperties');
   }

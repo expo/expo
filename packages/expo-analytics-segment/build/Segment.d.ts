@@ -4,21 +4,13 @@ export declare type SegmentOptions = {
 };
 export declare function initialize(options: SegmentOptions): void;
 export declare function identify(userId: string): void;
-export declare function identifyWithTraits(userId: string, traits: {
-    [key: string]: any;
-}): void;
+export declare function identifyWithTraits(userId: string, traits: object): void;
 export declare function group(groupId: string): void;
-export declare function groupWithTraits(groupId: string, traits: {
-    [key: string]: any;
-}): void;
-export declare function alias(newId: string, options?: {
-    [key: string]: any;
-}): Promise<boolean>;
+export declare function groupWithTraits(groupId: string, traits: object): void;
+export declare function alias(newId: string, options?: object): Promise<boolean>;
 export declare function reset(): void;
 export declare function track(event: string): void;
-export declare function trackWithProperties(event: string, properties: {
-    [key: string]: any;
-}): void;
+export declare function trackWithProperties(event: string, properties: object): void;
 export declare function screen(screenName: string): void;
 export declare function screenWithProperties(event: string, properties: string): void;
 export declare function flush(): void;
