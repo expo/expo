@@ -238,10 +238,6 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
           serviceConfiguration = castObjectsToStrings((Map<String, Object>) options.get("serviceConfiguration"));
         }
 
-        if (clientSecret != null) {
-          additionalParametersMap.put("client_secret", clientSecret);
-        }
-
         mAdditionalParametersMap = additionalParametersMap;
         mCanMakeInsecureRequests = canMakeInsecureRequests;
 
