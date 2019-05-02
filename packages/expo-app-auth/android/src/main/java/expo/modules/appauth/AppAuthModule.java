@@ -224,10 +224,6 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
           serviceConfig = Serialization.jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.SERVICE_CONFIGURATION));
         }
 
-        if (clientSecret != null) {
-          params.put(AppAuthConstants.HTTPS.CLIENT_SECRET, clientSecret);
-        }
-
         mAdditionalParametersMap = params;
         mShouldMakeHTTPCalls = shouldMakeHTTPCalls;
 
