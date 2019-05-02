@@ -14,17 +14,8 @@
 #import <EXCore/EXUtilitiesInterface.h>
 #import <EXPaymentsStripe/EXTPSConvert.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
-
 
 @interface EXTPSStripeManager : EXExportedModule <PKPaymentAuthorizationViewControllerDelegate, STPAddCardViewControllerDelegate, EXModuleRegistryConsumer>
 @property (nonatomic) STPRedirectContext *redirectContext;
-@end
-
-/**
- It notifies react native code every time there is a change in the address in ApplePay sheet so that taxes can be accordingly updated.
- */
-@interface ApplePayEventsManager : RCTEventEmitter <RCTBridgeModule>
-
 @end
 

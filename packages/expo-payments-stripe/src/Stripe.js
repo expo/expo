@@ -19,11 +19,6 @@ class Stripe {
     return StripeModule.init(options, errorCodes);
   };
 
-  updateTaxes = taxes => {
-    checkInit(this);
-    return StripeModule.updateTaxes(taxes);
-  };
-
   // @deprecated use deviceSupportsNativePay
   deviceSupportsAndroidPayAsync = () => StripeModule.deviceSupportsAndroidPay();
 

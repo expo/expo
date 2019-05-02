@@ -31,7 +31,6 @@ typedef void(^DidUpdateShippingContact)(PKPaymentRequestShippingContactUpdate *)
 @import AddressBook;
 API_AVAILABLE(ios(11.0))
 DidUpdateShippingContact updateShippingContactCompletion;
-ApplePayEventsManager * applePayEventsManager;
 
 @interface EXTPSStripeManager ()
 
@@ -50,7 +49,6 @@ NSString * const TPSPaymentNetworkVisa = @"visa";
     NSString *merchantId;
     NSDictionary *errorCodes;
     
-    
     EXPromiseResolveBlock promiseResolver;
     EXPromiseRejectBlock promiseRejector;
     
@@ -62,6 +60,14 @@ NSString * const TPSPaymentNetworkVisa = @"visa";
     NSMutableArray *paymentSummaryItems;
     PKContact *selectedShippingContact;
     
+    /*
+     These properties pertain to context of the app and are useful
+     in making the graphql api calls in order to get taxes based on the
+     address selected in ApplePay
+     */
+    NSString *cartId;
+    NSDictionary *productInfo;
+    NSDictionary *graphqlHeaders;
 }
 
 - (instancetype)init {
@@ -109,10 +115,9 @@ EX_EXPORT_METHOD_AS(deviceSupportsApplePay, deviceSupportsApplePay:(EXPromiseRes
 }
 
 /**
- This method is called from react native code in order to udpate taxes in Apple Pay sheet
+ This method udpates taxes in Apple Pay sheet
  */
-EX_EXPORT_METHOD_AS(updateTaxes, updateTaxes:(NSNumber *)taxes resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject) {
+- (void)updateTaxes:(NSNumber *)taxes {
     // We find the TAX item in Apple pay sheet and update its value with tax received in 'taxes' function paramter
     for (PKPaymentSummaryItem *item in paymentSummaryItems) {
         if([item.label isEqualToString:@"TAX"]) {
@@ -389,6 +394,12 @@ EX_EXPORT_METHOD_AS(paymentRequestWithApplePay, paymentRequestWithApplePay:(NSAr
     promiseResolver = resolve;
     promiseRejector = reject;
     
+    // set headers, product information and cartId with the details received in options from React native
+    NSDictionary *taxComputationAPIParams = options[@"taxComputationAPIParams"];
+    graphqlHeaders = taxComputationAPIParams[@"headers"];
+    productInfo = taxComputationAPIParams[@"productInfo"];
+    cartId = taxComputationAPIParams[@"cartId"];
+    
     NSUInteger requiredShippingAddressFields = [self applePayAddressFields:options[@"requiredShippingAddressFields"]];
     NSUInteger requiredBillingAddressFields = [self applePayAddressFields:options[@"requiredBillingAddressFields"]];
     PKShippingType shippingType = [self applePayShippingType:options[@"shippingType"]];
@@ -643,7 +654,8 @@ EX_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(EXPromiseResolveBlock)
             NSDictionary *extra = @{
                                     @"billingContact": [self contactDetails:payment.billingContact] ?: [NSNull null],
                                     @"shippingContact": [self contactDetails:payment.shippingContact] ?: [NSNull null],
-                                    @"shippingMethod": [self shippingDetails:payment.shippingMethod] ?: [NSNull null]
+                                    @"shippingMethod": [self shippingDetails:payment.shippingMethod] ?: [NSNull null],
+                                    @"cartId":self->cartId,
                                     };
             
             [result setValue:extra forKey:@"extra"];
@@ -684,10 +696,73 @@ EX_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(EXPromiseResolveBlock)
     updateShippingContactCompletion = completion;
     selectedShippingContact = contact;
     NSDictionary *selectedAddress = [self contactDetails:contact];
-    [applePayEventsManager sendEventWithName:@"addressUpdated" body:selectedAddress];
+    //  Based on whether the cart Id is available or not, call the createCart or SetShippingaAddress method to udpate taxes
+    if(cartId.length != 0) {
+        [self setShippingAddress:selectedAddress onCart:cartId];
+    } else {
+        [self createCart:selectedAddress];
+    }
 }
 
+/**
+ This method makes a graphql api call to set address selected in ApplePay on the specified cartId
+ */
+-(void)setShippingAddress:(NSDictionary *)address onCart:(NSString *)cartId{
+    NSString *setShippingAddressQuery = @"mutation setShippingAddress($shippingAddress: AddressInput!, $cartId: String) {\n setShippingAddress(shippingAddress: $shippingAddress, cartId:$cartId) {\n id\n shippingAddress{\t\n \tid \n firstName\n lastName\n \tstreetName\n \tstreetNumber\n \tpostalCode\n \tcity\n \tstate\n \tcountry\n \tphone\n }\n    price {\n      currency\n      totalPrice\n      taxedPrice\n    }\n }\n}\n";
+    
+    NSDictionary  *setShippingAddressVariables =   @{@"shippingAddress":@{@"postalCode":address[@"postalCode"],@"city":address[@"city"],@"state":address[@"state"],@"country":@"US"},@"cartId":cartId};
+    [self callGraphqlApiWithQuery:setShippingAddressQuery andVariables:setShippingAddressVariables];
+}
 
+/**
+ This method makes a graphql api call to create a new temporary cart with the product details and address selected in ApplePay
+ */
+-(void)createCart:(NSDictionary *)address {
+    NSString *createCartQuery = @"mutation twoStepBuy($items: [LineItemInput]!, $shippingAddress: AddressInput) {\n  twoStepBuy(items: $items, shippingAddress:$shippingAddress) {\n    id\n    shippingAddress {\n      firstName\n      lastName\n      streetName\n      streetNumber\n      additionalStreetInfo\n      postalCode\n      city\n      state\n      country\n    }\n    shippingMethod {\n      name\n      price\n      taxedPrice\n    }\n    price {\n      totalPrice\n      taxedPrice\n    }\n    items {\n      options {\n        size\n      }\n    }\n  }\n}";
+    
+    NSDictionary  *createCartVariables =  @{@"items":@[productInfo],@"shippingAddress":@{@"postalCode":address[@"postalCode"],@"city":address[@"city"],@"state":address[@"state"],@"country":@"US"}};
+    [self callGraphqlApiWithQuery:createCartQuery andVariables:createCartVariables];
+}
+
+-(void)callGraphqlApiWithQuery:(NSString *)query andVariables:(NSDictionary *)variables{
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
+    NSURL *url = [NSURL URLWithString:@"http://gateway.ferriswheel.ai/"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                       timeoutInterval:60.0];
+    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request addValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    [request addValue:@"http://gateway.ferriswheel.ai" forHTTPHeaderField:@"Origin"];
+    [request addValue:@"gzip, deflate, br" forHTTPHeaderField:@"Accept-Encoding"];
+    [request addValue:@"keep-alive" forHTTPHeaderField:@"Connection"];
+    [request addValue:@"1" forHTTPHeaderField:@"DNT"];
+    [request addValue:graphqlHeaders[@"accountId"] forHTTPHeaderField:@"authorization"];
+    [request addValue:graphqlHeaders[@"fwid"] forHTTPHeaderField:@"fwid"];
+    [request setHTTPMethod:@"POST"];
+    
+    NSDictionary *requestData = @{@"query":query,@"variables":variables};
+    NSData *postData = [NSJSONSerialization dataWithJSONObject:requestData options:0 error:nil];
+    [request setHTTPBody:postData];
+    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+        NSDictionary *price;
+        if(self->cartId.length != 0) {
+            // parse setShippingAddressAPIResponse
+            NSDictionary *setShippingAddressResponse = (json[@"data"])[@"setShippingAddress"];
+            price = setShippingAddressResponse[@"price"];
+        } else {
+            // parse twoStepBuyAPIResponse
+            NSDictionary *twoStepBuyResponse = (json[@"data"])[@"twoStepBuy"];
+            self->cartId = twoStepBuyResponse[@"id"];
+            price = twoStepBuyResponse[@"price"];
+        }
+        NSNumber *tax = [NSNumber numberWithFloat:([ price[@"taxedPrice"] floatValue]- [ price[@"totalPrice"] floatValue])/100];
+        [self updateTaxes:tax];
+    }];
+    
+    [postDataTask resume];
+}
 
 /**
  This pre-defined delegate method is called everytime user changes the shipping method. We simply get the cost attached to newly selected shipping method('shippingMethod' function parameter)and update it in the summary item for shipping method. Finaly, we make a call to again calculate the total cost and update it in the final summary item.
@@ -1259,14 +1334,3 @@ API_AVAILABLE(ios(11.0)){
 
 @end
 
-@implementation ApplePayEventsManager
-
-RCT_EXPORT_MODULE();
-
-- (NSArray<NSString *> *)supportedEvents
-{
-    applePayEventsManager = self;
-    return @[@"addressUpdated"];
-}
-
-@end
