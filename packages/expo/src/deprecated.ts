@@ -625,7 +625,7 @@ Object.defineProperties(module.exports, {
         `import { GestureHandler } from 'expo' -> import * as GestureHandler from 'react-native-gesture-handler'`,
         'react-native-gesture-handler'
       );
-      return require('./GestureHandler').GestureHandler;
+      return require('react-native-gesture-handler');
     },
   },
 
