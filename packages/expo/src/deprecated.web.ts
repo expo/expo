@@ -83,7 +83,6 @@ export { Random };
 export { Sharing };
 export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { MailComposer };
-export { default as Animated, Easing, Transitioning, Transition } from './Animated';
 export { SecureStore };
 export { default as Svg } from './Svg';
 export { WebBrowser };
