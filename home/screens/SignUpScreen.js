@@ -238,13 +238,9 @@ export default class SignUpScreen extends React.Component {
       let signInResult = await AuthApi.signInAsync(this.state.email, this.state.password);
 
       if (this._isMounted) {
-        if (signInResult.error) {
-          this._handleError(signInResult);
-        } else {
-          this.props.dispatch(
-            SessionActions.setSession({ sessionSecret: signInResult.sessionSecret })
-          );
-        }
+        this.props.dispatch(
+          SessionActions.setSession({ sessionSecret: signInResult.sessionSecret })
+        );
       }
     } catch (e) {
       this._isMounted && this._handleError(e);

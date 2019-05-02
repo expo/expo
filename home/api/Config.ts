@@ -1,4 +1,3 @@
-
 export default {
   api: {
     host: 'https://exp.host',
