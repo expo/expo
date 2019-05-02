@@ -93,6 +93,7 @@ const DISTRIBUTION = [
   'Building Standalone Apps on Your CI',
   'Uploading Apps to the Apple App Store and Google Play',
   'App Transfers',
+  'Security',
 ];
 
 const EXPOKIT = [
