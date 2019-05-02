@@ -58,6 +58,7 @@ const GUIDES = [
   'Using Firebase: Web SDK',
   'Using GraphQL',
   'Using Sentry',
+  'User Interface Component Libraries',
 ];
 
 const FUNDAMENTALS = [
