@@ -13,12 +13,12 @@ import * as TaskManager from 'expo-task-manager';
 import * as Facebook from 'expo-facebook';
 import * as MailComposer from 'expo-mail-composer';
 import * as SecureStore from 'expo-secure-store';
-import { Audio, Video } from 'expo-av';
+import * as AV from 'expo-av';
 import { BlurView } from 'expo-blur';
 import * as AR from './AR';
 import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
-import * as Google from './Google/Google';
+import * as Google from './Google';
 import * as Haptics from 'expo-haptics';
 import * as Sharing from 'expo-sharing';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -29,6 +29,7 @@ import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
 import * as FacebookAds from 'expo-ads-facebook';
 import * as SplashScreen from './launch/SplashScreen';
+import * as Sensors from 'expo-sensors';
 import * as WebBrowser from 'expo-web-browser';
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 import * as Segment from 'expo-analytics-segment';
@@ -48,7 +49,9 @@ import * as FaceDetector from 'expo-face-detector';
 export { FaceDetector };
 export { FileSystem };
 export { Font };
-export { GLView } from 'expo-gl';
+import * as GL from 'expo-gl';
+const GLView = GL.GLView;
+export { GL, GLView };
 import * as GoogleSignIn from 'expo-google-sign-in';
 export { GoogleSignIn };
 export { ImageManipulator };
@@ -66,13 +69,15 @@ import * as MediaLibrary from 'expo-media-library';
 export { MediaLibrary };
 import * as Permissions from 'expo-permissions';
 export { Permissions };
-export { Print } from 'expo-print';
-export { Accelerometer, Barometer, Gyroscope, Magnetometer, MagnetometerUncalibrated } from 'expo-sensors';
+import * as Print from 'expo-print';
+export { Print };
+export { Sensors };
 export { SQLite } from 'expo-sqlite';
 export { SMS };
 export { Speech };
 export { TaskManager };
-export { GestureHandler } from './GestureHandler';
+import * as GestureHandler from 'react-native-gesture-handler';
+export { GestureHandler };
 export { default as MapView } from './Maps/MapView';
 export { AR };
 export { Amplitude };
@@ -83,13 +88,15 @@ export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 export { Facebook };
 export { Google };
 import * as Random from 'expo-random';
-export { default as Icon } from './Icon';
+import * as Icon from '@expo/vector-icons';
+export { Icon };
 export { Random };
 export { Sharing };
 export { default as KeepAwake, activate, deactivate } from 'expo-keep-awake';
 export { default as Linking } from './Linking/Linking';
 export { MailComposer };
 export { default as Notifications } from './Notifications/Notifications';
+export { default as Animated, Easing, Transitioning, Transition } from './Animated';
 export { ScreenOrientation };
 export { SecureStore };
 export { StoreReview };
@@ -98,14 +105,16 @@ export { Updates };
 export { WebBrowser };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
-export { Audio, Video };
+const { Audio, Video } = AV;
+export { AV, Audio, Video };
 export { BlurView };
 export { LinearGradient } from 'expo-linear-gradient';
 export { FacebookAds };
 export { default as AppLoading } from './launch/AppLoading';
 export { SplashScreen };
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as Logs } from './logs/Logs';
+import * as Logs from './logs/Logs';
+export { Logs };
 export { default as Pedometer } from './Pedometer';
 export { WebView } from './WebView';
 
@@ -115,6 +124,21 @@ if (module && module.exports) {
 
   //@ts-ignore
   Object.defineProperties(module.exports, {
+    // Accelerometer: {
+
+    // },
+    // Barometer: {
+
+    // },
+    // Gyroscope: {
+
+    // },
+    // Magnetometer: {
+
+    // },
+    // MagnetometerUncalibarted: {
+
+    // }
     Haptic: {
       enumerable: false,
       get() {

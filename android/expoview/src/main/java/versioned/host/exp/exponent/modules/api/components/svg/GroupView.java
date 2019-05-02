@@ -88,9 +88,12 @@ class GroupView extends RenderableView {
         final GroupView self = this;
         final RectF groupRect = new RectF();
         for (int i = 0; i < getChildCount(); i++) {
-            View lNode = getChildAt(i);
-            if (lNode instanceof VirtualView) {
-                VirtualView node = ((VirtualView)lNode);
+            View child = getChildAt(i);
+            if (child instanceof MaskView) {
+                continue;
+            }
+            if (child instanceof VirtualView) {
+                VirtualView node = ((VirtualView)child);
                 if (node instanceof RenderableView) {
                     ((RenderableView)node).mergeProperties(self);
                 }
@@ -111,9 +114,12 @@ class GroupView extends RenderableView {
                 if (node.isResponsible()) {
                     svg.enableTouchEvents();
                 }
-            } else if (lNode instanceof SvgView) {
-                SvgView svgView = (SvgView)lNode;
+            } else if (child instanceof SvgView) {
+                SvgView svgView = (SvgView)child;
                 svgView.drawChildren(canvas);
+                if (svgView.isResponsible()) {
+                    svg.enableTouchEvents();
+                }
             }
         }
         this.setClientRect(groupRect);
@@ -126,18 +132,24 @@ class GroupView extends RenderableView {
 
     @Override
     Path getPath(final Canvas canvas, final Paint paint) {
-        final Path path = new Path();
+        if (mPath != null) {
+            return mPath;
+        }
+        mPath = new Path();
 
         for (int i = 0; i < getChildCount(); i++) {
             View node = getChildAt(i);
+            if (node instanceof MaskView) {
+                continue;
+            }
             if (node instanceof VirtualView) {
                 VirtualView n = (VirtualView)node;
                 Matrix transform = n.mMatrix;
-                path.addPath(n.getPath(canvas, paint), transform);
+                mPath.addPath(n.getPath(canvas, paint), transform);
             }
         }
 
-        return path;
+        return mPath;
     }
 
     Path getPath(final Canvas canvas, final Paint paint, final Region.Op op) {
@@ -147,6 +159,9 @@ class GroupView extends RenderableView {
             final Path.Op pop = Path.Op.valueOf(op.name());
             for (int i = 0; i < getChildCount(); i++) {
                 View node = getChildAt(i);
+                if (node instanceof MaskView) {
+                    continue;
+                }
                 if (node instanceof VirtualView) {
                     VirtualView n = (VirtualView)node;
                     Matrix transform = n.mMatrix;
@@ -166,6 +181,9 @@ class GroupView extends RenderableView {
             final Region r = new Region();
             for (int i = 0; i < getChildCount(); i++) {
                 View node = getChildAt(i);
+                if (node instanceof MaskView) {
+                    continue;
+                }
                 if (node instanceof VirtualView) {
                     VirtualView n = (VirtualView)node;
                     Matrix transform = n.mMatrix;
@@ -215,15 +233,24 @@ class GroupView extends RenderableView {
 
         for (int i = getChildCount() - 1; i >= 0; i--) {
             View child = getChildAt(i);
-            if (!(child instanceof VirtualView)) {
-                continue;
-            }
+            if (child instanceof VirtualView) {
+                if (child instanceof MaskView) {
+                    continue;
+                }
 
-            VirtualView node = (VirtualView) child;
+                VirtualView node = (VirtualView) child;
 
-            int hitChild = node.hitTest(dst);
-            if (hitChild != -1) {
-                return (node.isResponsible() || hitChild != child.getId()) ? hitChild : getId();
+                int hitChild = node.hitTest(dst);
+                if (hitChild != -1) {
+                    return (node.isResponsible() || hitChild != child.getId()) ? hitChild : getId();
+                }
+            } else if (child instanceof SvgView) {
+                SvgView node = (SvgView) child;
+
+                int hitChild = node.reactTagForTouch(dst[0], dst[1]);
+                if (hitChild != child.getId()) {
+                    return hitChild;
+                }
             }
         }
 

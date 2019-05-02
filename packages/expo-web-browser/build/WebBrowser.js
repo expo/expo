@@ -1,17 +1,61 @@
 import { Linking, Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
 import ExponentWebBrowser from './ExpoWebBrowser';
+const emptyCustomTabsPackages = {
+    defaultBrowserPackage: undefined,
+    preferredBrowserPackage: undefined,
+    browserPackages: [],
+    servicePackages: [],
+};
 export async function getCustomTabsSupportingBrowsersAsync() {
     if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
         throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
     }
-    return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+    if (Platform.OS !== 'android') {
+        return emptyCustomTabsPackages;
+    }
+    else {
+        return await ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+    }
+}
+export async function warmUpAsync(browserPackage) {
+    if (!ExponentWebBrowser.warmUpAsync) {
+        throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
+    }
+    if (Platform.OS !== 'android') {
+        return {};
+    }
+    else {
+        return await ExponentWebBrowser.warmUpAsync(browserPackage);
+    }
+}
+export async function mayInitWithUrlAsync(url, browserPackage) {
+    if (!ExponentWebBrowser.mayInitWithUrlAsync) {
+        throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
+    }
+    if (Platform.OS !== 'android') {
+        return {};
+    }
+    else {
+        return await ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
+    }
+}
+export async function coolDownAsync(browserPackage) {
+    if (!ExponentWebBrowser.coolDownAsync) {
+        throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
+    }
+    if (Platform.OS !== 'android') {
+        return {};
+    }
+    else {
+        return await ExponentWebBrowser.coolDownAsync(browserPackage);
+    }
 }
 export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
     }
-    return ExponentWebBrowser.openBrowserAsync(url, browserParams);
+    return await ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }
 export function dismissBrowser() {
     if (!ExponentWebBrowser.dismissBrowser) {

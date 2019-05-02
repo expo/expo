@@ -1,10 +1,11 @@
 self: super:
 
 {
-  xcpretty = assert !(builtins.hasAttr "xcpretty" super); super.bundlerApp {
-    pname = "xcpretty";
-    gemdir = ./xcpretty;
-    exes = [ "xcpretty" ];
+  # TODO: Delete this after removing `native_target` usage from xdl podfile template
+  cocoapods = super.bundlerApp {
+    pname = "cocoapods";
+    gemdir = ./cocoapods;
+    exes = [ "pod" ];
   };
 
   nodejs = super.nodejs-10_x;

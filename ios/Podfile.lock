@@ -345,7 +345,7 @@ PODS:
     - AppAuth
     - UMCore
   - EXAppLoaderProvider (4.0.0)
-  - EXAV (4.0.0):
+  - EXAV (4.1.0):
     - UMCore
     - UMPermissionsInterface
   - EXBackgroundFetch (4.0.0):
@@ -462,6 +462,9 @@ PODS:
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
+  - EXVideoThumbnails (1.0.0):
+    - UMCore
+    - UMFileSystemInterface
   - EXWebBrowser (4.0.0):
     - UMCore
   - Fabric (1.9.0)
@@ -470,7 +473,7 @@ PODS:
     - Bolts (~> 1.9)
   - FBSDKLoginKit (4.40.0):
     - FBSDKCoreKit
-  - Folly (2016.10.31.00):
+  - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
@@ -526,57 +529,65 @@ PODS:
     - GoogleSymbolUtilities (~> 1.1)
   - GTMSessionFetcher/Core (1.2.1)
   - JKBigInteger2 (0.0.5)
-  - lottie-ios (2.5.2)
-  - React (0.57.1):
-    - React/Core (= 0.57.1)
-  - React/ART (0.57.1):
+  - lottie-ios (2.5.3)
+  - React (0.59.5):
+    - React/Core (= 0.59.5)
+  - React/ART (0.59.5):
     - React/Core
-  - React/Core (0.57.1):
-    - yoga (= 0.57.1.React)
-  - React/CxxBridge (0.57.1):
-    - Folly (= 2016.10.31.00)
+  - React/Core (0.59.5):
+    - yoga (= 0.59.5.React)
+  - React/CxxBridge (0.59.5):
+    - Folly (= 2018.10.22.00)
     - React/Core
     - React/cxxreact
-  - React/cxxreact (0.57.1):
+    - React/jsiexecutor
+  - React/cxxreact (0.59.5):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
-    - React/jschelpers
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
     - React/jsinspector
-  - React/DevSupport (0.57.1):
+  - React/DevSupport (0.59.5):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.57.1)
-  - React/jschelpers (0.57.1):
-    - Folly (= 2016.10.31.00)
-    - React/PrivateDatabase
-  - React/jsinspector (0.57.1)
-  - React/PrivateDatabase (0.57.1)
-  - React/RCTActionSheet (0.57.1):
+  - React/fishhook (0.59.5)
+  - React/jsi (0.59.5):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+  - React/jsiexecutor (0.59.5):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React/cxxreact
+    - React/jsi
+  - React/jsinspector (0.59.5)
+  - React/RCTActionSheet (0.59.5):
     - React/Core
-  - React/RCTAnimation (0.57.1):
+  - React/RCTAnimation (0.59.5):
     - React/Core
-  - React/RCTBlob (0.57.1):
+  - React/RCTBlob (0.59.5):
     - React/Core
-  - React/RCTCameraRoll (0.57.1):
+  - React/RCTCameraRoll (0.59.5):
     - React/Core
     - React/RCTImage
-  - React/RCTGeolocation (0.57.1):
+  - React/RCTGeolocation (0.59.5):
     - React/Core
-  - React/RCTImage (0.57.1):
+  - React/RCTImage (0.59.5):
     - React/Core
     - React/RCTNetwork
-  - React/RCTNetwork (0.57.1):
+  - React/RCTNetwork (0.59.5):
     - React/Core
-  - React/RCTText (0.57.1):
+  - React/RCTText (0.59.5):
     - React/Core
-  - React/RCTVibration (0.57.1):
+  - React/RCTVibration (0.59.5):
     - React/Core
-  - React/RCTWebSocket (0.57.1):
+  - React/RCTWebSocket (0.59.5):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - ReactABI26_0_0/ABI26_0_0jschelpers (0.54.2):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI26_0_0/ABI26_0_0PrivateDatabase
   - ReactABI26_0_0/ABI26_0_0jsinspector (0.54.2)
   - ReactABI26_0_0/ABI26_0_0PrivateDatabase (0.54.2)
@@ -585,12 +596,12 @@ PODS:
   - ReactABI26_0_0/Core (0.54.2):
     - yogaABI26_0_0 (= 0.54.2.React)
   - ReactABI26_0_0/CxxBridge (0.54.2):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI26_0_0/Core
     - ReactABI26_0_0/cxxReactABI26_0_0
   - ReactABI26_0_0/cxxReactABI26_0_0 (0.54.2):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI26_0_0/ABI26_0_0jschelpers
     - ReactABI26_0_0/ABI26_0_0jsinspector
   - ReactABI26_0_0/DevSupport (0.54.2):
@@ -641,9 +652,9 @@ PODS:
     - ReactABI26_0_0/fishhook
     - ReactABI26_0_0/RCTBlob
   - ReactABI27_0_0/ABI27_0_0fabric (0.55.2):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
   - ReactABI27_0_0/ABI27_0_0jschelpers (0.55.2):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI27_0_0/ABI27_0_0PrivateDatabase
   - ReactABI27_0_0/ABI27_0_0jsinspector (0.55.2)
   - ReactABI27_0_0/ABI27_0_0PrivateDatabase (0.55.2)
@@ -653,12 +664,12 @@ PODS:
     - ReactABI27_0_0/ABI27_0_0fabric
     - yogaABI27_0_0 (= 0.55.2.React)
   - ReactABI27_0_0/CxxBridge (0.55.2):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI27_0_0/Core
     - ReactABI27_0_0/cxxReactABI27_0_0
   - ReactABI27_0_0/cxxReactABI27_0_0 (0.55.2):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI27_0_0/ABI27_0_0jschelpers
     - ReactABI27_0_0/ABI27_0_0jsinspector
   - ReactABI27_0_0/DevSupport (0.55.2):
@@ -709,7 +720,7 @@ PODS:
     - ReactABI27_0_0/fishhook
     - ReactABI27_0_0/RCTBlob
   - ReactABI28_0_0/ABI28_0_0jschelpers (0.55.4):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI28_0_0/ABI28_0_0PrivateDatabase
   - ReactABI28_0_0/ABI28_0_0jsinspector (0.55.4)
   - ReactABI28_0_0/ABI28_0_0PrivateDatabase (0.55.4)
@@ -718,12 +729,12 @@ PODS:
   - ReactABI28_0_0/Core (0.55.4):
     - yogaABI28_0_0 (= 0.55.4.React)
   - ReactABI28_0_0/CxxBridge (0.55.4):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI28_0_0/Core
     - ReactABI28_0_0/cxxReactABI28_0_0
   - ReactABI28_0_0/cxxReactABI28_0_0 (0.55.4):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI28_0_0/ABI28_0_0jschelpers
     - ReactABI28_0_0/ABI28_0_0jsinspector
   - ReactABI28_0_0/DevSupport (0.55.4):
@@ -777,7 +788,7 @@ PODS:
   - ReactABI29_0_0 (0.55.4):
     - ReactABI29_0_0/Core (= 0.55.4)
   - ReactABI29_0_0/ABI29_0_0jschelpers (0.55.4):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI29_0_0/ABI29_0_0PrivateDatabase
   - ReactABI29_0_0/ABI29_0_0jsinspector (0.55.4)
   - ReactABI29_0_0/ABI29_0_0PrivateDatabase (0.55.4)
@@ -786,12 +797,12 @@ PODS:
   - ReactABI29_0_0/Core (0.55.4):
     - yogaABI29_0_0 (= 0.55.4.React)
   - ReactABI29_0_0/CxxBridge (0.55.4):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI29_0_0/Core
     - ReactABI29_0_0/cxxReactABI29_0_0
   - ReactABI29_0_0/cxxReactABI29_0_0 (0.55.4):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI29_0_0/ABI29_0_0jschelpers
     - ReactABI29_0_0/ABI29_0_0jsinspector
   - ReactABI29_0_0/DevSupport (0.55.4):
@@ -859,7 +870,7 @@ PODS:
   - ReactABI30_0_0 (0.55.4):
     - ReactABI30_0_0/Core (= 0.55.4)
   - ReactABI30_0_0/ABI30_0_0jschelpers (0.55.4):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI30_0_0/PrivateDatabase
   - ReactABI30_0_0/ABI30_0_0jsinspector (0.55.4)
   - ReactABI30_0_0/ART (0.55.4):
@@ -867,12 +878,12 @@ PODS:
   - ReactABI30_0_0/Core (0.55.4):
     - yogaABI30_0_0 (= 0.55.4.React)
   - ReactABI30_0_0/CxxBridge (0.55.4):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI30_0_0/Core
     - ReactABI30_0_0/cxxReactABI30_0_0
   - ReactABI30_0_0/cxxReactABI30_0_0 (0.55.4):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI30_0_0/ABI30_0_0jschelpers
     - ReactABI30_0_0/ABI30_0_0jsinspector
   - ReactABI30_0_0/DevSupport (0.55.4):
@@ -953,7 +964,7 @@ PODS:
   - ReactABI31_0_0 (0.57.1):
     - ReactABI31_0_0/Core (= 0.57.1)
   - ReactABI31_0_0/ABI31_0_0jschelpers (0.57.1):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI31_0_0/PrivateDatabase
   - ReactABI31_0_0/ABI31_0_0jsinspector (0.57.1)
   - ReactABI31_0_0/ART (0.57.1):
@@ -961,12 +972,12 @@ PODS:
   - ReactABI31_0_0/Core (0.57.1):
     - yogaABI31_0_0 (= 0.57.1.React)
   - ReactABI31_0_0/CxxBridge (0.57.1):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI31_0_0/Core
     - ReactABI31_0_0/cxxReactABI31_0_0
   - ReactABI31_0_0/cxxReactABI31_0_0 (0.57.1):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI31_0_0/ABI31_0_0jschelpers
     - ReactABI31_0_0/ABI31_0_0jsinspector
   - ReactABI31_0_0/DevSupport (0.57.1):
@@ -1048,7 +1059,7 @@ PODS:
   - ReactABI32_0_0 (0.57.1):
     - ReactABI32_0_0/Core (= 0.57.1)
   - ReactABI32_0_0/ABI32_0_0jschelpers (0.57.1):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI32_0_0/PrivateDatabase
   - ReactABI32_0_0/ABI32_0_0jsinspector (0.57.1)
   - ReactABI32_0_0/ART (0.57.1):
@@ -1056,12 +1067,12 @@ PODS:
   - ReactABI32_0_0/Core (0.57.1):
     - yogaABI32_0_0 (= 0.57.1.React)
   - ReactABI32_0_0/CxxBridge (0.57.1):
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI32_0_0/Core
     - ReactABI32_0_0/cxxReactABI32_0_0
   - ReactABI32_0_0/cxxReactABI32_0_0 (0.57.1):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
+    - Folly (= 2018.10.22.00)
     - ReactABI32_0_0/ABI32_0_0jschelpers
     - ReactABI32_0_0/ABI32_0_0jsinspector
   - ReactABI32_0_0/DevSupport (0.57.1):
@@ -1150,19 +1161,19 @@ PODS:
   - UMBarCodeScannerInterface (1.0.0)
   - UMCameraInterface (1.0.0)
   - UMConstantsInterface (1.0.0)
-  - UMCore (1.0.0)
+  - UMCore (2.0.0-alpha.0)
   - UMFaceDetectorInterface (1.0.0)
   - UMFileSystemInterface (1.0.0)
   - UMFontInterface (1.0.0)
   - UMImageLoaderInterface (1.0.0)
   - UMPermissionsInterface (1.0.0)
-  - UMReactNativeAdapter (1.0.1):
+  - UMReactNativeAdapter (2.0.0-alpha.0):
     - React
     - UMCore
     - UMFontInterface
   - UMSensorsInterface (1.0.0)
   - UMTaskManagerInterface (1.0.0)
-  - yoga (0.57.1.React)
+  - yoga (0.59.5.React)
   - yogaABI26_0_0 (0.54.2.React)
   - yogaABI27_0_0 (0.55.2.React)
   - yogaABI28_0_0 (0.55.4.React)
@@ -1332,6 +1343,7 @@ DEPENDENCIES:
   - EXSpeech (from `../packages/expo-speech/ios`)
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
+  - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - Fabric (~> 1.6)
   - FBAudienceNetwork (= 5.1.1)
@@ -1821,6 +1833,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-sqlite/ios"
   EXTaskManager:
     :path: "../packages/expo-task-manager/ios"
+  EXVideoThumbnails:
+    :path: "../packages/expo-video-thumbnails/ios"
   EXWebBrowser:
     :path: "../packages/expo-web-browser/ios"
   Folly:
@@ -2047,13 +2061,14 @@ SPEC CHECKSUMS:
   EXSpeech: 393adb0f37972bb8095a99da0e4a455c73366e13
   EXSQLite: 6de0e07822d8c3ee03e89491f7de2f12b2208f8a
   EXTaskManager: 24c66563e0a7a9a1a686dfe960bd131c94339071
+  EXVideoThumbnails: 849e77e53c3c03eaf05b46cc80aa343067bc7508
   EXWebBrowser: 80d1c7fc02cc459528b9e04863c8837f242bc3b4
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
   FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
-  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
-  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
+  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
+  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
   GoogleInterchangeUtilities: d5bc4d88d5b661ab72f9d70c58d02ca8c27ad1f7
@@ -2066,15 +2081,15 @@ SPEC CHECKSUMS:
   GoogleUtilities: 8bbc733218aad26306f9d4a253823986110e3358
   GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
-  lottie-ios: 3fef45d3fabe63e3c7c2eb603dd64ddfffc73062
-  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
-  ReactABI26_0_0: d4d795143f0c4d4178b46b680e08ab15dadeb428
-  ReactABI27_0_0: 116223f1e2d03ff282f020792e5bd8078cb41d20
-  ReactABI28_0_0: f6e3790bb09c4288518be94e257abb08921e43f2
-  ReactABI29_0_0: d06c0c6ceb828ce1dce4b57007bb32c19326dbdb
-  ReactABI30_0_0: 801e156645b710af58dd6ce33df3a828f2be27a1
-  ReactABI31_0_0: 1153bcc4d2a62453ea9105fcf8f56ed6d9566ca0
-  ReactABI32_0_0: 474f19ba214d520d8dfa91a450ab41496486158d
+  lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
+  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
+  ReactABI26_0_0: ac930998d72fcc411d6dc6054e251971832c02b6
+  ReactABI27_0_0: 9585959da1fb55fcaaf9c21599855b186e37353a
+  ReactABI28_0_0: 9879c97df26f261e99fba8eb707bbc49a8672485
+  ReactABI29_0_0: 776e124e28c6369f879a8304ca14a073b8d48f96
+  ReactABI30_0_0: 1bf38e89f4d73eaf18c902e49fb1172b1692441b
+  ReactABI31_0_0: 4ee2a9c3fa66b83109532d9d85e955092eccff9d
+  ReactABI32_0_0: 9b436321df18c2f0a8997f27d1e69ef32c96c67e
   UMBarCodeScannerInterface: f623227f2f6e8fa5c45fef1cc2b5ae200dd14918
   UMCameraInterface: 2a22ae5a2d4f710d617e3fd2c5c0511019aea1c7
   UMConstantsInterface: 9884d2a4a4563b20d7efbafba421151698dd8991
@@ -2087,7 +2102,7 @@ SPEC CHECKSUMS:
   UMReactNativeAdapter: b5ea1cc455cdb00114f6922d17bb64ca770a421f
   UMSensorsInterface: 4b16dad6584fc08d11b10a3a45490034cd5ff37f
   UMTaskManagerInterface: c594f1584e28026f98cca344d10183f635896094
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
   yogaABI26_0_0: 3d0b9ddd940a22bab64f64291415846298cb263c
   yogaABI27_0_0: 15bb7f6d47c919692ddbfef84e1f69d935664fce
   yogaABI28_0_0: c9b0e4fbc789b5db29690ede5e85b0140b975f9b
@@ -2096,6 +2111,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: ce0101a624a69a0a88530ef162d81d176c4e4fe5
+PODFILE CHECKSUM: 370dae8a35119f70875849e47f09064387002650
 
 COCOAPODS: 1.5.3

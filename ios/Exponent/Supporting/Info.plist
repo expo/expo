@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.10.4</string>
+	<string>2.10.5</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -53,7 +53,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.10.4</string>
+	<string>2.10.5</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -102,17 +102,16 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Expo experiences to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Expo experiences to access your device's accelerometer</string>
+	<string>Allow Expo experiences to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Expo experiences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give Expo experiences permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow Expo experiences to access your reminders</string>
-	<key>SupportsAppMultiplexing</key>
-	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>fetch</string>
 		<string>location</string>
 	</array>

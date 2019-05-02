@@ -1,25 +1,39 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import "EXScopedFileSystemModule.h"
-#import <EXFileSystem/EXFileSystem.h>
-#import "EXUnscopingDataMigrator.h"
-#import "EXEnvironment.h"
+
+// TODO @sjchmiela: Should this be versioned? It is only used in detached scenario.
+NSString * const EXShellManifestResourceName = @"shell-app-manifest";
 
 @implementation EXScopedFileSystemModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
-  self = [super initWithExperienceId:experienceId];
-  return self;
+  NSString *escapedExperienceId = [EXScopedFileSystemModule escapedResourceName:experienceId];
+
+  NSString *mainDocumentDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *exponentDocumentDirectory = [mainDocumentDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
+  NSString *experienceDocumentDirectory = [[exponentDocumentDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
+
+  NSString *mainCachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
+  NSString *experienceCachesDirectory = [[exponentCachesDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
+
+  if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
+    [self ensureOldFilesAreMigratedFrom:experienceDocumentDirectory to:mainDocumentDirectory];
+
+    return [super init];
+  }
+
+  return [super initWithDocumentDirectory:experienceDocumentDirectory
+                          cachesDirectory:experienceCachesDirectory
+                          bundleDirectory:nil];
 }
 
-- (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
+- (NSDictionary *)constantsToExport
 {
-  return [EXScopedFileSystemModule documentDirectoryForExperienceId:experienceId];
-}
-
-- (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
-{
-  return [EXScopedFileSystemModule cachesDirectoryForExperienceId:experienceId];
+  NSMutableDictionary *constants = [[NSMutableDictionary alloc] initWithDictionary:[super constantsToExport]];
+  constants[@"bundledAssets"] = [self bundledAssets] ?: [NSNull null];
+  return constants;
 }
 
 + (NSString *)escapedResourceName:(NSString *)name
@@ -29,34 +43,43 @@
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
-+ (NSString *)generateDocumentDirectoryPath:(NSString *)experienceId
+- (NSArray<NSString *> *)bundledAssets
 {
-  NSString *subdir = [self escapedResourceName:experienceId];
-  return [[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
-            stringByAppendingPathComponent:@"ExponentExperienceData"]
-           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
-}
-
-+ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
-{
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    if ([EXUnscopingDataMigrator firstStartAfterUpdate:experienceId]) {
-      [EXUnscopingDataMigrator moveOldFiles:experienceId];
+  static NSArray<NSString *> *bundledAssets = nil;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    NSString *manifestBundlePath = [[NSBundle mainBundle] pathForResource:EXShellManifestResourceName ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:manifestBundlePath];
+    if (data.length == 0) {
+      return;
     }
-    return [EXFileSystem documentDirectoryForExperienceId:experienceId];
-  } 
-  return [EXScopedFileSystemModule generateDocumentDirectoryPath:experienceId];
+    __block NSError *error;
+    id manifest = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    if (error) {
+      UMLogError(@"Error parsing bundled manifest: %@", error);
+      return;
+    }
+    bundledAssets = manifest[@"bundledAssets"];
+  });
+  return bundledAssets;
 }
 
-+ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
+// This method ensures that data are migrated from the old scoped path to the new, unscoped one.
+// It needs to be called in case somebody wants to update their standalone app.
+// This method can be removed when SDK32 is phased out.
+- (void)ensureOldFilesAreMigratedFrom:(NSString *)fromDirectory to:(NSString *)toDirectory
 {
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    return [EXFileSystem cachesDirectoryForExperienceId:experienceId];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:fromDirectory]) {
+    NSArray<NSString *> *files = [fileManager contentsOfDirectoryAtPath:fromDirectory error:nil];
+
+    for (NSString *file in files) {
+      [fileManager moveItemAtPath:[fromDirectory stringByAppendingPathComponent:file]
+                           toPath:[toDirectory stringByAppendingPathComponent:file]
+                            error:nil];
+    }
+    [fileManager removeItemAtPath:fromDirectory error:nil];
   }
-  NSString *subdir = [self escapedResourceName:experienceId];
-  return [[[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject
-            stringByAppendingPathComponent:@"ExponentExperienceData"]
-           stringByAppendingPathComponent:subdir] stringByStandardizingPath];
 }
 
 @end

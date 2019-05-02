@@ -40,8 +40,13 @@ xcuserdata
 .idea/modules.xml
 .idea/vcs.xml
 
+# Eclipse
+.project
+.settings
+
 # Android
 *.apk
+*.hprof
 /android/**/build
 /android/**/local.properties
 /android/captures
@@ -88,6 +93,7 @@ android-shell-app
 shellAppBase-*
 shellAppIntermediates
 shellAppWorkspaces
+/artifacts/*
 
 # Expo Client builds
 /client-builds

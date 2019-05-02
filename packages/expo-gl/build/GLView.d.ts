@@ -75,8 +75,8 @@ export declare class GLView extends React.Component<GLViewProps> {
         msaaSamples: number;
     };
     static createContextAsync(): Promise<ExpoWebGLRenderingContext>;
-    static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean>;
-    static takeSnapshotAsync(exgl?: WebGLRenderingContext | number, options?: SnapshotOptions): Promise<GLSnapshot>;
+    static destroyContextAsync(exgl?: ExpoWebGLRenderingContext | number): Promise<boolean>;
+    static takeSnapshotAsync(exgl?: ExpoWebGLRenderingContext | number, options?: SnapshotOptions): Promise<GLSnapshot>;
     nativeRef: ComponentOrHandle;
     exglCtxId?: number;
     render(): JSX.Element;
@@ -86,9 +86,6 @@ export declare class GLView extends React.Component<GLViewProps> {
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;
     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
-}
-declare class WebGLRenderingContext {
-    __exglCtxId?: number;
 }
 declare type WebGLObjectId = any;
 declare class WebGLObject {

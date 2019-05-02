@@ -3,6 +3,10 @@ apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -12,7 +16,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0'
   }
 }
 
@@ -22,11 +26,11 @@ repositories {
 }
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
     versionName "1.0"
     ndk {
@@ -78,8 +82,8 @@ dependencies {
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api 'com.android.support:appcompat-v7:27.1.1'
-  api 'com.android.support:customtabs:27.1.1'
+  api "com.android.support:appcompat-v7:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:customtabs:${safeExtGet("supportLibVersion", "28.0.0")}"
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
@@ -126,12 +130,12 @@ dependencies {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
   api 'io.branch.sdk.android:library:2.17.1'
-  api 'com.android.support:exifinterface:27.1.1'
+  api "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
   api 'com.google.firebase:firebase-core:16.0.1'
   api 'com.google.firebase:firebase-messaging:17.1.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:8.4.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+  api 'com.jakewharton:butterknife:9.0.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-analytics-segment
@@ -164,7 +168,7 @@ dependencies {
 
   // unversioned modules
   implementation project(':expo-gl-cpp')
-  implementation project(':unimodules-task-manager-interface')
   implementation project(':expo-print')
   implementation project(':unimodules-core')
+  implementation project(':unimodules-task-manager-interface')
 }

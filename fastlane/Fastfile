@@ -169,13 +169,15 @@ platform :android do
     UI.success("Run successful")
   end
 
-  lane :devicefarm do |channel: git_branch|
-    UI.error("Release channel can't be blank") if channel.to_s.empty?
-    ENV["TEST_SUITE_URI"] = "exp://exp.host/@exponent_ci_bot/test-suite?release-channel=#{channel}"
+  lane :devicefarm do
+    commit_info = last_git_commit
+    channel = commit_info[:commit_hash] 
+    ENV["TEST_SUITE_URI"] = "exp://exp.host/@exponent_ci_bot/test-suite/--/all?release-channel=#{channel}"
     ENV["TEST_CONFIG"] = {
       includeModules:  '.*',
       includeSdkVersions: ['UNVERSIONED'],
       includeTestTypes: ['test-suite'],
+      isInCI: true,
     }.to_json
     ENV["DEVICEFARM_PROJECT_NAME"] = "exponent"
     ENV["DEVICEFARM_DEVICE_POOL"] = "android-test-device-pool"
@@ -184,7 +186,6 @@ platform :android do
     upload_result = gradle(
       project_dir: "android",
       task: "app:devicefarmUpload",
-      build_type: "Debug"
     )
     result_info = upload_result.match(/View the INSTRUMENTATION run.*\/projects\/(?<project_id>.*)\/runs\/(?<run_id>.*)$/)
     UI.shell_error!("Apks not uploaded!") unless result_info

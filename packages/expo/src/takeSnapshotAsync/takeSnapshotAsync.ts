@@ -4,7 +4,7 @@ import captureRef from './captureRef';
 type ReactNativeNodeHandle = number;
 
 export default async function takeSnapshotAsync<T>(
-  node: ReactNativeNodeHandle | React.Component | React.RefObject<T>,
+  node?: ReactNativeNodeHandle | React.Component | React.RefObject<T>,
   options?: CaptureOptions
 ): Promise<string> {
   if (node && typeof node === 'object' && 'current' in node && node.current) {

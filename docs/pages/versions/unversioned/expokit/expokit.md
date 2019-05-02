@@ -209,7 +209,6 @@ If upgrading from SDK31 or below:
           new PermissionsPackage(),
           new SMSPackage(),
           new PrintPackage(),
-          new ConstantsPackage(),
           new MediaLibraryPackage(),
           new SegmentPackage(),
           new FontLoaderPackage(),

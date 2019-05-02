@@ -216,7 +216,7 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
     "data": [
       {
         "scheme": "https",
-        "host": "*.myapp.io"
+        "host": "*.myapp.io",
         "pathPrefix": "/records"
       },
     ],
@@ -238,7 +238,7 @@ It may be desirable for links to your domain to always open your app (without pr
     "data": [
       {
         "scheme": "https",
-        "host": "*.myapp.io"
+        "host": "*.myapp.io",
         "pathPrefix": "/records"
       },
     ],

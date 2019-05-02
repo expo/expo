@@ -10,6 +10,9 @@ module.exports = function updateVendoredNativeModule(options) {
   options.recursive = options.recursive === undefined
     ? true
     : options.recursive;
+  options.installableInManagedApps = options.installableInManagedApps === undefined
+    ? true
+    : options.installableInManagedApps;
 
   const TMP_DIR = path.join(os.tmpdir(), options.name);
   const TMP_IOS_DIR = path.join(TMP_DIR, options.sourceIosPath);
@@ -61,6 +64,14 @@ module.exports = function updateVendoredNativeModule(options) {
     let newFileName = file.replace(options.iosPrefix, 'EX');
     fs.writeFileSync(newFileName, content, 'utf8');
     rm(file);
+  }
+
+  function updateBundledNativeModules(updater) {
+    echo('Updating bundledNativeModules.json...');
+    let filename = path.join(__dirname, '../packages/expo/bundledNativeModules.json');
+    let data = JSON.parse(fs.readFileSync(filename, 'utf8'));
+    let json = JSON.stringify(updater(data), null, 2);
+    fs.writeFileSync(filename, json + '\n');
   }
 
   let { argv } = options;
@@ -125,6 +136,18 @@ module.exports = function updateVendoredNativeModule(options) {
       renamePackageAndroid(file);
     });
   }
+
+  updateBundledNativeModules(bundledNativeModules => {
+    let { name, version } = JSON.parse(fs.readFileSync(path.join(TMP_DIR, 'package.json'), 'utf8'));
+    if (options.installableInManagedApps) {
+      bundledNativeModules[name] = `~${version}`;
+      echo(`Updated ${name} version number in bundledNativeModules.json`);
+    } else if (bundledNativeModules[name]) {
+      delete bundledNativeModules[name];
+      echo(`Removed non-installable package ${name} from bundledNativeModules.json`);
+    }
+    return bundledNativeModules;
+  });
 
   echo(
     `Finished updating ${options.name}, make sure to update files in the Xcode project (if you updated iOS) ` +

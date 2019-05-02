@@ -18,30 +18,15 @@
     RNSVGGlyphContext *_glyphContext;
     NSString *_alignmentBaseline;
     NSString *_baselineShift;
-    BOOL _merging;
 }
 
 - (void)invalidate
 {
-    if (_merging) {
+    if (self.dirty || self.merging) {
         return;
     }
     [super invalidate];
-    [self releaseCachedPath];
-}
-
-- (void)mergeProperties:(__kindof RNSVGRenderable *)target
-{
-    _merging = true;
-    [super mergeProperties:target];
-    _merging = false;
-}
-
-- (void)resetProperties
-{
-    _merging = true;
-    [super resetProperties];
-    _merging = false;
+    [self clearChildCache];
 }
 
 - (void)setTextLength:(RNSVGLength *)textLength
@@ -130,14 +115,8 @@
     [self clip:context];
     CGContextSaveGState(context);
     [self setupGlyphContext:context];
-
-    CGPathRef path = [self getGroupPath:context];
     [self renderGroupTo:context rect:rect];
     CGContextRestoreGState(context);
-
-    CGPathRef transformedPath = CGPathCreateCopy(path);
-    [self setHitArea:transformedPath];
-    CGPathRelease(transformedPath);
 }
 
 - (void)setupGlyphContext:(CGContextRef)context
@@ -150,19 +129,25 @@
 
 - (CGPathRef)getGroupPath:(CGContextRef)context
 {
+    CGPathRef path = self.path;
+    if (path) {
+        return path;
+    }
     [self pushGlyphContext];
-    CGPathRef groupPath = [super getPath:context];
+    path = [super getPath:context];
     [self popGlyphContext];
-
-    return groupPath;
+    self.path = path;
+    return path;
 }
 
 - (CGPathRef)getPath:(CGContextRef)context
 {
+    CGPathRef path = self.path;
+    if (path) {
+        return path;
+    }
     [self setupGlyphContext:context];
-    CGPathRef groupPath = [self getGroupPath:context];
-
-    return (CGPathRef)CFAutorelease(CGPathCreateCopy(groupPath));
+    return [self getGroupPath:context];
 }
 
 - (void)renderGroupTo:(CGContextRef)context rect:(CGRect)rect

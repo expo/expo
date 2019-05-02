@@ -144,6 +144,7 @@ workflows:
             branches:
               only:
                 - master
+                - /.*all-ci.*/
       - docs_deploy:
           requires:
             - docs_approve_deploy
@@ -153,6 +154,7 @@ workflows:
     jobs:
       - expo_sdk
       - web_test_suite
+      - web_storybook_ui
       - babel_preset
 
   # Android and iOS clients
@@ -163,11 +165,11 @@ workflows:
       - client_android
       - client_ios
       - test_suite_publish
-      # TODO: fix devicefarm running tests
-      #- android_test_suite:
-      #   requires:
-      #     - test_suite_publish
+      - android_test_suite:
+          requires:
+            - test_suite_publish
       - shell_app_sim_base_ios
+      - shell_app_base_android
       - client_android_approve_google_play:
           type: approval
           requires:
@@ -175,7 +177,8 @@ workflows:
           filters:
             branches:
               only:
-                - /^sdk-\d+$/
+                - /sdk-\d+/
+                - /.*all-ci.*/
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
@@ -183,15 +186,16 @@ workflows:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-  #     - shell_app_base_android_new # tarball built and uploaded from universe/server/turtle
 
   client_shell_app:
     jobs:
-      - expo_client_before_approval
       - expo_client_approve_build:
           type: approval
-          requires:
-            - expo_client_before_approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
       - expo_client_build:
           requires:
             - expo_client_approve_build
@@ -300,6 +304,20 @@ jobs:
           command: test:web:ci
           working_directory: ~/expo/apps/test-suite
 
+  web_storybook_ui:
+    executor: web
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/expo
+      - save_yarn_cache
+      - yarn:
+          command: build-storybook
+          working_directory: ~/expo/apps/storybook
+
   babel_preset:
     executor: js
     steps:
@@ -357,14 +375,6 @@ jobs:
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
-  expo_client_before_approval:
-    executor: js
-    steps:
-      - run:
-          name: Approve expo_client_approve_build if you wish to build Expo Client shell app
-          command: |
-            echo "Go, find and approve expo_client_approve_build job to trigger building an Expo Client shell app"
-
   expo_client_build:
     executor: mac
     steps:
@@ -407,6 +417,22 @@ jobs:
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
           command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+
+  shell_app_base_android:
+    executor: android
+    steps:
+      - setup
+      - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
+      - decrypt_secrets_if_possible
+      - yarn_install:
+          working_directory: ~/expo/tools-public
+      - yarn_install:
+          working_directory: ~/expo/tools
+      - run: |
+          aws s3 ls $S3_URI || {
+            ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
+            aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+          }
 
   android_test_suite:
     executor: android
@@ -479,11 +505,11 @@ jobs:
           working_directory: docs
       - run:
           working_directory: docs
-          command: nix run expo.python --command yarn run export-server
+          command: yarn run export-server
           background: true
       - run:
           working_directory: docs
-          command: yarn run test-links http://localhost:8000
+          command: nix run expo.curl --command yarn run test-links http://localhost:8000
       - save_cache:
           key: docs-site-{{ .Revision }}
           paths:

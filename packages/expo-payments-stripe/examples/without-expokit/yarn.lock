@@ -2125,59 +2125,59 @@ expand-range@^1.8.1:
     fill-range "^2.1.0"
 
 "expo-core@file:../../../expo-core":
-  version "1.2.0"
+  version "2.0.0"
 
-expo-core@~1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/expo-core/-/expo-core-1.2.0.tgz#c8fecf18b36a5b583bcb69a0227d4a6e45b56f17"
-  integrity sha512-EbfgL/NPIROzY+Vvmuo2teUqSo8FEdFSZm3dyUcCTEV8jXioTCyJNpsH3G3cTI2U7nxn84SxoB6BvEzWdQyu4Q==
+expo-core@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-core/-/expo-core-2.0.0.tgz#374e297add4386296b9cdc429ceeaa5797212a24"
+  integrity sha512-mGvAzqJyN/RCIX34dCOnPYu4KqTNaoKGbwjssWUKIlquNeQAuT7q09h3D52xK4eo0zeCV8tg8jipYJEzgzFDHQ==
 
 "expo-font-interface@file:../../../expo-font-interface":
-  version "1.1.0"
+  version "2.0.0"
   dependencies:
-    expo-core "~1.2.0"
+    expo-core "~2.0.0"
 
 "expo-image-loader-interface@file:../../../expo-image-loader-interface":
-  version "1.1.0"
+  version "2.0.0"
   dependencies:
-    expo-core "~1.2.0"
+    expo-core "~2.0.0"
 
-expo-image-loader-interface@~1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/expo-image-loader-interface/-/expo-image-loader-interface-1.1.0.tgz#f3fb98bb238db797562a0d3f2f156c32745d2bd1"
-  integrity sha512-4gpraV+7BfRG0ZbSSVw4cB4wVp9/JUHsSaGjBD4kCu8+ZVGCDx5WAEeX8rROe6DI90HtUzwdeQ/RFfMyhnpVag==
+expo-image-loader-interface@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-image-loader-interface/-/expo-image-loader-interface-2.0.0.tgz#3934f01c4ccdea40d4248110b7da234741abf9c8"
+  integrity sha512-aOHa37N/8gEyzDGO5df6PST8uce1L94OxNTfD5JtWVH3tWmkaN760S33T9ecWmydcUv9zFCOcCC4gZTwEWUJiQ==
   dependencies:
-    expo-core "~1.2.0"
+    expo-core "~2.0.0"
 
 "expo-payments-stripe@file:../..":
-  version "1.1.0"
+  version "2.0.0"
   dependencies:
-    expo-core "~1.2.0"
+    expo-core "~2.0.0"
 
 "expo-permissions-interface@file:../../../expo-permissions-interface":
-  version "1.2.0"
+  version "2.0.0"
   dependencies:
-    expo-core "~1.2.0"
+    expo-core "~2.0.0"
 
-expo-permissions-interface@~1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/expo-permissions-interface/-/expo-permissions-interface-1.2.0.tgz#9c65f66f3ff90f2f9ed79d9292ec3c788ae9b85e"
-  integrity sha512-hHduXuB0+hSymex0ZTJWjlTJffmHt2cEZGLorhwM51r082oudurrpfed7sjGqKu9wSM6TeAjPG3UaLvyWVG/dQ==
+expo-permissions-interface@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-permissions-interface/-/expo-permissions-interface-2.0.0.tgz#563fd815925fd472a1b04f292afc9bef77f14774"
+  integrity sha512-hk9oR6CtV2MLONdtPkKvOfpfmbJ48BDbYjvW/Na31znVvUAPHs7owckqSgh5BVoIAz8tMgp7fptaifEhPOayvg==
   dependencies:
-    expo-core "~1.2.0"
+    expo-core "~2.0.0"
 
 "expo-permissions@file:../../../expo-permissions":
-  version "1.2.0"
+  version "2.0.0"
   dependencies:
-    expo-core "~1.2.0"
-    expo-permissions-interface "~1.2.0"
+    expo-core "~2.0.0"
+    expo-permissions-interface "~2.0.0"
 
 "expo-react-native-adapter@file:../../../expo-react-native-adapter":
-  version "1.2.0"
+  version "2.0.0"
   dependencies:
-    expo-core "~1.2.0"
-    expo-image-loader-interface "~1.1.0"
-    expo-permissions-interface "~1.2.0"
+    expo-image-loader-interface "~2.0.0"
+    expo-permissions-interface "~2.0.0"
+    invariant "^2.2.4"
     lodash.omit "^4.5.0"
     lodash.pick "^4.4.0"
     prop-types "^15.6.1"

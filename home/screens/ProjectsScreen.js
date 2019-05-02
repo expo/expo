@@ -20,6 +20,7 @@ import { Constants } from 'expo';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 
+import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
@@ -38,7 +39,7 @@ import { isAuthenticated, authenticatedFetch } from '../api/helpers';
 
 import extractReleaseChannel from '../utils/extractReleaseChannel';
 
-const IS_RESTRICTED = Constants.isDevice && Platform.OS === 'ios';
+const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
 const PROJECT_UPDATE_INTERVAL = 10000;
 const USE_STAGING = false;
 
@@ -128,7 +129,9 @@ export default class ProjectsScreen extends React.Component {
           contentContainerStyle={styles.contentContainer}>
           <View style={SharedStyles.sectionLabelContainer}>
             <Text style={SharedStyles.sectionLabelText}>
-              {IS_RESTRICTED || Platform.OS === 'android' ? 'TOOLS' : 'CLIPBOARD'}
+              {Platform.OS === 'ios' && Environment.IOSClientReleaseType === 'SIMULATOR'
+                ? 'CLIPBOARD'
+                : 'TOOLS'}
             </Text>
           </View>
           {this._renderProjectTools()}
@@ -243,7 +246,7 @@ export default class ProjectsScreen extends React.Component {
       );
     }
 
-    let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same WiFi network as your mobile device. Lastly, ensure that you are using the latest version of exp or XDE. Pull to refresh to update.`;
+    let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of exp or XDE. Pull to refresh to update.`;
     let message = Platform.select({
       ios: Constants.isDevice
         ? baseMessage

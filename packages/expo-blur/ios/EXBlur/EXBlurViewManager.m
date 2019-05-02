@@ -31,11 +31,13 @@ UM_EXPORT_MODULE(ExpoBlurViewManager);
 UM_VIEW_PROPERTY(tint, NSString *, EXBlurView)
 {
   [view setTint:value];
+  [view didSetProps:@[@"tint"]];
 }
 
 UM_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
 {
   [view setIntensity:value];
+  [view didSetProps:@[@"intensity"]];
 }
 
 UM_EXPORT_METHOD_AS(updateProps,

@@ -25,4 +25,14 @@ public interface TaskManagerUtilsInterface {
    * Schedules a job for given task and with given extra data.
    */
   void scheduleJob(Context context, TaskInterface task, PersistableBundle extras);
+
+  /**
+   * Creates JobInfo.Builder that has jobId already set and is associated with given task.
+   */
+  JobInfo.Builder createJobInfoBuilder(Context context, TaskInterface task, PersistableBundle data);
+
+  /**
+   * Cancels scheduled job with given identifier.
+   */
+  void cancelScheduledJob(Context context, int jobId);
 }

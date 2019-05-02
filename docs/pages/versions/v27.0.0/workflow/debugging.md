@@ -14,9 +14,7 @@ Make sure you have the latest Xcode (e.g. from the [Mac App Store](https://itune
 
 ### Android
 
-On Android we recommend the Genymotion emulator over the standard emulator -- we have found it to be more feature complete, faster and easier to use.
-
-[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready. If you run into any issues follow our [Genymotion guide](../genymotion/#genymotion).
+Follow our [Android Studio emulator guide](../android-studio-emulator/) to set up the Android tools and create a virtual device to use for testing.
 
 ## Developer Menu
 
@@ -32,9 +30,9 @@ Shake the device a little bit.
 
 Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
 
-### On Genymotion
+### On Android Virtual Device
 
-Either press "Menu" button in Genymotion's toolbar, or just hit `Cmd-m`.
+Either hit `Cmd+M`, or run `adb shell input keyevent 82` in your terminal window.
 
 ## Debugging Javascript
 

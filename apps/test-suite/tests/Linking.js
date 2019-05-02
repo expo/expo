@@ -45,7 +45,6 @@ export function test(t) {
         // "The specified URL has an unsupported scheme. Only HTTP and HTTPS URLs are supported."
         t.it('listener gets called with a proper URL when opened from a web modal', async () => {
           let handlerCalled = false;
-          // we add two pluses here so test-suite knows to ignore the deep link content (see index.js line 92)
           const testUrl = Linking.makeUrl('++message=hello');
           const handler = ({ url }) => {
             t.expect(url).toEqual(testUrl);
@@ -78,7 +77,7 @@ export function test(t) {
         const handler = ({ url }) => {
           t.expect(url).toEqual(Linking.makeUrl('++message=Redirected automatically by timer'));
           handlerCalled = true;
-          WebBrowser.dismissBrowser();
+          if (Platform.OS === 'ios') WebBrowser.dismissBrowser();
         };
         Linking.addEventListener('url', handler);
         await WebBrowser.openBrowserAsync(`${redirectingBackendUrl}${Linking.makeUrl('++')}`);

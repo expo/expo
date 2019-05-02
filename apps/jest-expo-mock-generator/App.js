@@ -36,7 +36,7 @@ export default class App extends React.Component {
 }
 
 async function _getExpoModuleSpecsAsync() {
-  let whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|RN|NativeUnimoduleProxy)(?![a-z])/;
+  let whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
   let moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
   let expoModuleNames = moduleNames.filter(moduleName => whitelist.test(moduleName)).sort();
   let specPromises = {};

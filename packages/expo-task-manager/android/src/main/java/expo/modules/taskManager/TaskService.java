@@ -237,6 +237,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   @Override
   public void setTaskManager(TaskManagerInterface taskManager, String appId, String appUrl) {
+    // It may be called with null when the host activity is destroyed.
+    if (taskManager == null) {
+      sTaskManagers.remove(appId);
+      return;
+    }
+
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.

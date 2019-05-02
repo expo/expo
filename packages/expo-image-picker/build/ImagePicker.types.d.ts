@@ -7,6 +7,7 @@ export declare type ImageInfo = {
     uri: string;
     width: number;
     height: number;
+    type?: 'image' | 'video';
 };
 export declare type ImagePickerResult = {
     cancelled: true;

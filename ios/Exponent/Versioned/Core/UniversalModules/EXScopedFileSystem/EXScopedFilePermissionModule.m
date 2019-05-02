@@ -3,7 +3,27 @@
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMConstantsInterface/UMConstantsInterface.h>
 
+@interface EXFilePermissionModule (Protected)
+
+- (UMFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path;
+
+@end
+
+@interface EXScopedFilePermissionModule ()
+
+@property (nonatomic, assign) BOOL isDetached;
+
+@end
+
 @implementation EXScopedFilePermissionModule
+
+- (instancetype)initWithConstantsBinding:(EXConstantsBinding *)constantsBinding
+{
+  if (self = [super init]) {
+    _isDetached = ![constantsBinding.appOwnership isEqualToString:@"expo"];
+  }
+  return self;
+}
 
 - (UMFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
 {
@@ -15,8 +35,7 @@
 }
 
 - (BOOL)shouldForbidAccessToExternalDirectories {
-  id<UMConstantsInterface> constantsModule = [[self moduleRegistry] getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
-  return [@"expo" isEqualToString:constantsModule.appOwnership];
+  return !_isDetached;
 }
 
 @end

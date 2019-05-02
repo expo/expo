@@ -46,10 +46,10 @@ import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
+import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
-import versioned.host.exp.exponent.modules.api.standalone.branch.RNBranchModule;
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
@@ -126,7 +126,7 @@ public class ExponentPackage implements ReactPackage {
       // which are going to be deallocated in a tick, but there's no better solution
       // without a bigger-than-minimal refactor. In SDK32 the only singleton module
       // is TaskService which is safe to initialize more than once.
-      List<SingletonModule> packageSingletonModules = expoPackage.createSingletonModules(context);
+      List<? extends SingletonModule> packageSingletonModules = expoPackage.createSingletonModules(context);
       for (SingletonModule singletonModule : packageSingletonModules) {
         if (!sSingletonModulesClasses.contains(singletonModule.getClass())) {
           sSingletonModules.add(singletonModule);
@@ -167,7 +167,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new PedometerModule(reactContext));
-        nativeModules.add(new RNBranchModule(reactContext));
         nativeModules.add(new ErrorRecoveryModule(reactContext, experienceId));
         nativeModules.add(new ScreenOrientationModule(reactContext));
         nativeModules.add(new RNGestureHandlerModule(reactContext));
@@ -175,6 +174,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new ReanimatedModule(reactContext));
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
         nativeModules.add(new RNCWebViewModule(reactContext));
+        nativeModules.add(new NetInfoModule(reactContext));
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 

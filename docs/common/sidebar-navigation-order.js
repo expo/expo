@@ -44,21 +44,24 @@ const GUIDES = [
   'Preloading & Caching Assets',
   'Icons',
   'Custom Fonts',
-  'Splash Screens',
   'Using Custom Fonts',
   'Routing & Navigation',
   'Configuring StatusBar',
+  'Create a Splash Screen',
   'Offline Support',
   'Configuring OTA Updates',
   'Push Notifications',
   'Using FCM for Push Notifications',
   'Notification Channels',
+  'Testing with Jest',
+  'Using TypeScript',
   'Using Modern JavaScript',
   'Using ClojureScript',
-  'Using Firebase: Web SDK',
+  'Using Firebase',
   'Using GraphQL',
   'Using Sentry',
   'User Interface Component Libraries',
+  'Crafting Educational Materials',
 ];
 
 const FUNDAMENTALS = [
@@ -68,7 +71,6 @@ const FUNDAMENTALS = [
   'Debugging',
   'Development Mode',
   'Android Studio Emulator',
-  'Genymotion',
   'Configuration with app.json',
   'Publishing',
   'Release Channels',
@@ -92,6 +94,7 @@ const DISTRIBUTION = [
   'Building Standalone Apps on Your CI',
   'Uploading Apps to the Apple App Store and Google Play',
   'App Transfers',
+  'Security',
 ];
 
 const EXPOKIT = [

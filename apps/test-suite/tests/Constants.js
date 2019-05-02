@@ -15,6 +15,8 @@ export function test(t) {
       'sessionId',
       'manifest',
       'linkingUri',
+      'nativeAppVersion',
+      'nativeBuildVersion',
     ].forEach(v =>
       t.it(`has ${v}`, () => {
         t.expect(Constants[v]).toBeDefined();

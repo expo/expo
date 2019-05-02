@@ -12,12 +12,4 @@ static id EXnullIfEmpty(NSString *input) {
 
 @interface EXAppAuth : UMExportedModule <UMModuleRegistryConsumer>
 
-+ (_Nonnull instancetype)instance;
-
-#if !TARGET_OS_TV
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options;
-#endif
-
-
-
 @end

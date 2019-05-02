@@ -19,6 +19,10 @@ apply plugin: 'maven'
 group = 'host.exp.exponent'
 version = '4.0.0'
 
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 // Upload android library to maven with javadoc and android sources
 configurations {
     deployerJars
@@ -45,11 +49,11 @@ uploadArchives {
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 26
+        minSdkVersion safeExtGet("minSdkVersion", 21)
+        targetSdkVersion safeExtGet("targetSdkVersion", 28)
         versionCode 11
         versionName "4.0.0"
     }
@@ -68,6 +72,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
     unimodule "unimodules-core"
+    unimodule "unimodules-constants-interface"
+
     api 'com.google.android.gms:play-services-auth:16.0.1'
-    implementation project(path: ':unimodules-constants-interface')
 }

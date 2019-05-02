@@ -1,6 +1,10 @@
 ---
-name: "🐛 Bug Report in Expo CLI"
+name: "\U0001F41B Bug Report in Expo CLI"
 about: You want to report an issue with Expo CLI, our command line tool.
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 <!--

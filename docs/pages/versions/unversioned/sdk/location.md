@@ -12,6 +12,8 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
+If you're using the iOS or Android Emulators, ensure that [Location is enabled](#Enabling-Emulator-Location).
+
 You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 <SnackEmbed snackId="H14SNiW3g" />
@@ -215,7 +217,17 @@ Registers for receiving location updates that can also come when the app is in t
     -   **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
     -   **timeInterval (_number_)** -- Minimum time to wait between each update in milliseconds. Default value depends on `accuracy` option. (**Android only**)
     -   **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters. Default value may depend on `accuracy` option.
+    -   **deferredUpdatesInterval (_number_)** -- Minimum time interval in miliseconds that must pass since last reported location before all later locations are reported in a batched update. Defaults to `0`.
+    -   **deferredUpdatesDistance (_number_)** -- The distance in meters that must occur between last reported location and the current location before deferred locations are reported. Defaults to `0`.
     -   **showsBackgroundLocationIndicator (_boolean_)** -- A boolean indicating whether the status bar changes its appearance when location services are used in the background. Defaults to `false`. (**Takes effect only on iOS 11.0 and later**)
+    -   **foregroundService (_object_)** -- Use this option to put the location service into a foreground state, which will make location updates in the background as frequent as in the foreground state. As a downside, it requires a sticky notification, so the user will be aware that your app is running and consumes more resources even if backgrounded. (**Available since Android 8.0**)
+        -   **notificationTitle (_string_)** -- Title of the foreground service notification. *required*
+        -   **notificationBody (_string_)** -- Subtitle of the foreground service notification. *required*
+        -   **notificationColor (_string_)** -- Color of the foreground service notification. Accepts `#RRGGBB` and `#AARRGGBB` hex formats. *optional*
+
+> Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
+
+> Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
 
 #### Returns
 
@@ -387,3 +399,13 @@ Object of type `Region` includes following fields:
 | `GeofencingRegionState.Inside`  |   1   | Indicates that the device is inside the region. |
 | `GeofencingRegionState.Outside` |   2   | Inverse of inside state.                        |
 
+## Enabling Emulator Location 
+### iOS Simulator
+With Simulator open, go to Debug > Location and choose any option besides "None" (obviously).
+
+![iOS Simulator location](/static/images/ios-simulator-location.png)
+
+### Android Emulator
+Open Android Studio, and launch your AVD in the emulator. Then, on the options bar for your device, click the icon for "More" and navigate to the "Location" tab.
+
+![Android Simulator location](/static/images/android-emulator-location.png)

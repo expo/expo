@@ -26,21 +26,6 @@ includeUnimodulesProjects([
     modulesPaths: ['../../packages'],
     target: 'react-native',
     exclude: [
-        'expo-firebase-analytics',
-        'expo-firebase-app',
-        'expo-firebase-auth',
-        'expo-firebase-crashlytics',
-        'expo-firebase-database',
-        'expo-firebase-firestore',
-        'expo-firebase-functions',
-        'expo-firebase-instance-id',
-        'expo-firebase-invites',
-        'expo-firebase-links',
-        'expo-firebase-messaging',
-        'expo-firebase-notifications',
-        'expo-firebase-performance',
-        'expo-firebase-remote-config',
-        'expo-firebase-storage',
         'expo-module-template',
     ]
 ])

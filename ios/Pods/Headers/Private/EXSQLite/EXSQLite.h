@@ -1,1 +1,1 @@
-../../../../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h
+../../../../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h

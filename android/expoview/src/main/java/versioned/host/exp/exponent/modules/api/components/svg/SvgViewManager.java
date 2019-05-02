@@ -11,6 +11,7 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 
 import android.util.SparseArray;
 
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.view.ReactViewGroup;
@@ -89,13 +90,13 @@ class SvgViewManager extends ReactViewManager {
     }
 
     @ReactProp(name = "bbWidth")
-    public void setVbWidth(SvgView node, String bbWidth) {
-        node.setVbWidth(bbWidth);
+    public void setBbWidth(SvgView node, Dynamic bbWidth) {
+        node.setBbWidth(bbWidth);
     }
 
     @ReactProp(name = "bbHeight")
-    public void setVbHeight(SvgView node, String bbHeight) {
-        node.setVbHeight(bbHeight);
+    public void setBbHeight(SvgView node, Dynamic bbHeight) {
+        node.setBbHeight(bbHeight);
     }
 
     @ReactProp(name = "align")

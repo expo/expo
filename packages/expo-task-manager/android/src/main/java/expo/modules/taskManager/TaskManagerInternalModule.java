@@ -127,31 +127,38 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
 
   @Override
   public void onHostResume() {
-    List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
-    for (TaskConsumerInterface taskConsumer : taskConsumers) {
-      if (taskConsumer instanceof LifecycleEventListener) {
-        ((LifecycleEventListener) taskConsumer).onHostResume();
+    if (!isRunningInHeadlessMode()) {
+      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+      for (TaskConsumerInterface taskConsumer : taskConsumers) {
+        if (taskConsumer instanceof LifecycleEventListener) {
+          ((LifecycleEventListener) taskConsumer).onHostResume();
+        }
       }
     }
   }
 
   @Override
   public void onHostPause() {
-    List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
-    for (TaskConsumerInterface taskConsumer : taskConsumers) {
-      if (taskConsumer instanceof LifecycleEventListener) {
-        ((LifecycleEventListener) taskConsumer).onHostPause();
+    if (!isRunningInHeadlessMode()) {
+      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+      for (TaskConsumerInterface taskConsumer : taskConsumers) {
+        if (taskConsumer instanceof LifecycleEventListener) {
+          ((LifecycleEventListener) taskConsumer).onHostPause();
+        }
       }
     }
   }
 
   @Override
   public void onHostDestroy() {
-    List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
-    for (TaskConsumerInterface taskConsumer : taskConsumers) {
-      if (taskConsumer instanceof LifecycleEventListener) {
-        ((LifecycleEventListener) taskConsumer).onHostDestroy();
+    if (!isRunningInHeadlessMode()) {
+      List<TaskConsumerInterface> taskConsumers = mTaskService.getTaskConsumers(getAppId());
+      for (TaskConsumerInterface taskConsumer : taskConsumers) {
+        if (taskConsumer instanceof LifecycleEventListener) {
+          ((LifecycleEventListener) taskConsumer).onHostDestroy();
+        }
       }
+      mTaskService.setTaskManager(null, getAppId(), getAppUrl());
     }
   }
 

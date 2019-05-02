@@ -24,6 +24,11 @@ UM_EXPORT_MODULE(ExpoMailComposer);
   _moduleRegistry = moduleRegistry;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 UM_EXPORT_METHOD_AS(composeAsync,
                     composeAsync:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
@@ -103,11 +108,8 @@ UM_EXPORT_METHOD_AS(composeAsync,
 
   self.resolve = resolve;
   self.reject = reject;
-  __weak typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    id<UMUtilitiesInterface> utilities = [weakSelf.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
-    [utilities.currentViewController presentViewController:composeController animated:YES completion:nil];
-  });
+  id<UMUtilitiesInterface> utilities = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+  [utilities.currentViewController presentViewController:composeController animated:YES completion:nil];
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller

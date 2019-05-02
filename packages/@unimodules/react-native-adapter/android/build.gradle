@@ -13,7 +13,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'org.unimodules'
-version = '1.0.1'
+version = '2.0.0-alpha.0'
+
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -41,13 +45,13 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
-    versionCode 3
-    versionName "1.0.1"
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    versionCode 5
+    versionName "2.0.0-alpha.0"
   }
   lintOptions {
     abortOnError false
@@ -61,7 +65,9 @@ dependencies {
   unimodule 'unimodules-font-interface'
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
+
   compileOnly('com.facebook.react:react-native:+') {
     exclude group: 'com.android.support'
   }
+  implementation 'com.github.bumptech.glide:glide:4.9.0'
 }

@@ -40,24 +40,23 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 ```javascript
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { BarCodeScanner, Permissions } from 'expo';
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import { Constants, Permissions, BarCodeScanner } from 'expo';
 
 export default class BarcodeScannerExample extends React.Component {
   state = {
     hasCameraPermission: null,
-  }
+    scanned: false,
+  };
 
   async componentDidMount() {
-    /* @info Before we can use the BarCodeScanner we need to ask the user for permission to access their camera. <a href='permissions.html'>Read more about Permissions.</a> */
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
-    /* @end */
   }
 
   render() {
-    const { hasCameraPermission } = this.state;
+    const { hasCameraPermission, scanned } = this.state;
 
     if (hasCameraPermission === null) {
       return <Text>Requesting for camera permission</Text>;
@@ -66,22 +65,36 @@ export default class BarcodeScannerExample extends React.Component {
       return <Text>No access to camera</Text>;
     }
     return (
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'flex-end',
+        }}>
         <BarCodeScanner
-          onBarCodeScanned={this.handleBarCodeScanned}
-          style={StyleSheet.absoluteFill}
+          onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
         />
+
+        {scanned && (
+          <Button
+            title={'Tap to Scan Again'}
+            onPress={() => this.setState({ scanned: false })}
+          />
+        )}
       </View>
     );
   }
 
   handleBarCodeScanned = ({ type, data }) => {
+    this.setState({ scanned: true });
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-  }
+  };
 }
 ```
 
-[Try this example on Snack](https://snack.expo.io/Skxzn6-5b).
+>Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
+
+[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example).
 
 ## API
 

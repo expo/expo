@@ -10,4 +10,4 @@ Expo isn't ready to be used for all apps yet. There are plenty of cases where it
 - **If you know that you want to use a particular push notification service** (such as OneSignal) instead of Expo's [Push Notification service/API](../../guides/push-notifications/), you will need to use ExpoKit or React Native without Expo.
 - **JS and assets managed by Expo require connectivity to Google Cloud Platform and AWS.** Each device must be able to connect to GCP and AWS (two of the most common cloud services) to receive updates to published projects and to download remote assets hosted by Expo. Note that standalone apps embed the project manifest, JS, and specified assets so they don't require network connectivity to run, but do need to connect to GCP and AWS for updates. You also need to connect to GCP to develop and publish your projects.
 
-Are we missing something here? Let us know [on Slack](http://slack.expo.io/) or on our [feature requests board](https://expo.canny.io/feature-requests).
+Are we missing something here? Let us know on our [forums](http://forums.expo.io/) or on our [feature requests board](https://expo.canny.io/feature-requests).

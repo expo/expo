@@ -167,7 +167,7 @@ abstract public class RenderableView extends VirtualView {
             int fromSize = strokeDasharray.size();
             this.strokeDasharray = new SVGLength[fromSize];
             for (int i = 0; i < fromSize; i++) {
-                this.strokeDasharray[i] = new SVGLength(strokeDasharray.getString(i));
+                this.strokeDasharray[i] = SVGLength.from(strokeDasharray.getDynamic(i));
             }
         } else {
             this.strokeDasharray = null;
@@ -183,7 +183,7 @@ abstract public class RenderableView extends VirtualView {
 
     @ReactProp(name = "strokeWidth")
     public void setStrokeWidth(Dynamic strokeWidth) {
-        this.strokeWidth = getLengthFromDynamic(strokeWidth);
+        this.strokeWidth = SVGLength.from(strokeWidth);
         invalidate();
     }
 
@@ -403,12 +403,19 @@ abstract public class RenderableView extends VirtualView {
         int colorType = colors.getInt(0);
         switch (colorType) {
             case 0:
-                // solid color
-                paint.setARGB(
-                        (int) (colors.size() > 4 ? colors.getDouble(4) * opacity * 255 : opacity * 255),
-                        (int) (colors.getDouble(1) * 255),
-                        (int) (colors.getDouble(2) * 255),
-                        (int) (colors.getDouble(3) * 255));
+                if (colors.size() == 2) {
+                    int color = colors.getInt(1);
+                    int alpha = color >>> 24;
+                    int combined = Math.round((float)alpha * opacity);
+                    paint.setColor(combined << 24 | (color & 0x00ffffff));
+                } else {
+                    // solid color
+                    paint.setARGB(
+                            (int) (colors.size() > 4 ? colors.getDouble(4) * opacity * 255 : opacity * 255),
+                            (int) (colors.getDouble(1) * 255),
+                            (int) (colors.getDouble(2) * 255),
+                            (int) (colors.getDouble(3) * 255));
+                }
                 break;
             case 1: {
                 Brush brush = getSvgView().getDefinedBrush(colors.getString(1));

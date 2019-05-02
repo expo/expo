@@ -1,4 +1,5 @@
 import { ViewProps } from 'react-native';
+import WebGL2RenderingContext from './WebGL2RenderingContext';
 export declare type SurfaceCreateEvent = {
     nativeEvent: {
         exglCtxId: number;
@@ -22,7 +23,8 @@ export declare type GLSnapshot = {
     width: number;
     height: number;
 };
-export interface ExpoWebGLRenderingContext extends WebGLRenderingContext {
+export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
+    __exglCtxId: number;
     endFrameEXP(): void;
 }
 /**

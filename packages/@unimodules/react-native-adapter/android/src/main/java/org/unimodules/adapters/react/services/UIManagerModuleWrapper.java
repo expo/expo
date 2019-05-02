@@ -3,10 +3,16 @@ package org.unimodules.adapters.react.services;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
@@ -232,7 +238,7 @@ public class UIManagerModuleWrapper implements
   }
 
   @Override
-  public void loadImageFromURL(@NonNull String url, final ResultListener resultListener) {
+  public void loadImageForDisplayFromURL(@NonNull String url, final ResultListener resultListener) {
     ImageRequest imageRequest = ImageRequest.fromUri(url);
 
     ImagePipeline imagePipeline = Fresco.getImagePipeline();
@@ -256,6 +262,26 @@ public class UIManagerModuleWrapper implements
           }
         },
         AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  @Override
+  public void loadImageForManipulationFromURL(@NonNull String url, final ResultListener resultListener) {
+    Glide.with(getContext())
+        .asBitmap()
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
+        .load(url)
+        .into(new SimpleTarget<Bitmap>() {
+          @Override
+          public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+            resultListener.onSuccess(resource);
+          }
+
+          @Override
+          public void onLoadFailed(@Nullable Drawable errorDrawable) {
+            resultListener.onFailure(new Exception("Loading bitmap failed"));
+          }
+        });
   }
 
   @Override

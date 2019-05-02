@@ -6,7 +6,7 @@ Expo includes support for payments through [Stripe](https://stripe.com/) and [Ap
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
-We encourage you to look at our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples) of ExpoKit apps.
+We encourage you to look at our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples) of ExpoKit apps.
 
 _Note_: (Android only) If you are using Expo Client then the setup has already been done for you.
 Also, the way you should use payments is slightly different. Instead of importing
@@ -48,7 +48,7 @@ Finally, make sure [CocoaPods](https://cocoapods.org/) is installed and run `pod
 > You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
 
 Follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
-If you have problems with this step just look at files: `Info.plist` and `AppDelegate.m` in one of our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples).
+If you have problems with this step just look at files: `Info.plist` and `AppDelegate.m` in one of our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples).
 
 ## Adding the Payments Module on Android
 
@@ -221,11 +221,10 @@ Launch `Add Card` view to to accept payment.
 
 **options.prefilledInformation** — An object with the following keys:
 
-| Key            | Type   | Description                                                                              |
-| :------------- | :----- | :--------------------------------------------------------------------------------------- |
-| email          | String | The user’s email address                                                                 |
-| phone          | String | The user’s phone number                                                                  |
-| billingAddress | Object | The user’s billing address. When set, the add card form will be filled with this address |
+|       Key       |  Type  | Description                                                                                                                                                                             |
+|:---------------:|:------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| shippingAddress | Object | The user’s shipping address. When set, the shipping address form will be filled with this address. The user will also have the option to fill their billing address using this address. |
+|  billingAddress | Object | The user’s billing address. When set, the "add card" form will be filled with this address. The user will also have the option to fill their shipping address using this address.          |
 
 **options.prefilledInformation.billingAddress** — An object with the following keys:
 
@@ -842,4 +841,3 @@ If you want to use Apple Pay for payments, you'll need to set up your merchant I
 If you haven't already, set up an Apple Merchant ID via the [Apple Developer Portal](https://developer.apple.com/). Then, open the application in XCode and navigate to the capabilities tab. Enable Apple Pay and insert your merchant ID into the corresponding space.
 
 Note: Apple Pay can be used only for real world items (ex. appeal, car sharing, food) and not virtual goods. For more information about proper usage of Apple Pay, visit Apple's [Apple Pay guidelines](https://developer.apple.com/app-store/review/guidelines/#apple-pay) and [Acceptable Use](https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/).
-

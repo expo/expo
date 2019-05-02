@@ -1,1 +1,0 @@
-{"version":3,"file":"FirebaseApp.js","sourceRoot":"","sources":["../../src/app/FirebaseApp.ts"],"names":[],"mappings":"AAAA,OAAO,QAAQ,MAAM,mBAAmB,CAAC;AACzC,eAAe,QAAQ,CAAC","sourcesContent":["import firebase from 'expo-firebase-app';\nexport default firebase;\n"]}

@@ -5,33 +5,19 @@
 #import <ABI32_0_0EXCore/ABI32_0_0EXUtilitiesInterface.h>
 #import <ABI32_0_0EXCore/ABI32_0_0EXUtilities.h>
 #import <ABI32_0_0EXAppAuth/ABI32_0_0EXAppAuth+JSON.h>
+#import <EXAppAuth/EXAppAuthSessionsManager.h>
 
 static NSString *const ABI32_0_0EXAppAuthError = @"ERR_APP_AUTH";
 
-@interface ABI32_0_0EXAppAuth() {
-  id<OIDExternalUserAgentSession> session;
-}
+@interface ABI32_0_0EXAppAuth ()
 
 @property (nonatomic, weak) ABI32_0_0EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXAppAuthSessionsManagerInterface> sessionsManager;
 @property (nonatomic, weak) id<ABI32_0_0EXUtilitiesInterface> utilities;
 
 @end
 
 @implementation ABI32_0_0EXAppAuth
-
-static ABI32_0_0EXAppAuth *shared = nil;
-
-+ (nonnull instancetype)instance {
-  return shared;
-}
-
-- (id)init {
-  self = [super init];
-  if (self != nil) {
-    shared = self;
-  }
-  return self;
-}
 
 #pragma mark - Expo
 
@@ -45,6 +31,7 @@ ABI32_0_0EX_EXPORT_MODULE(ExpoAppAuth);
 - (void)setModuleRegistry:(ABI32_0_0EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+  _sessionsManager = [moduleRegistry getSingletonModuleForName:@"AppAuthSessionsManager"];
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI32_0_0EXUtilitiesInterface)];
 }
 
@@ -97,13 +84,13 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
   NSURL *authorizationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"authorizationEndpoint"]];
   NSURL *tokenEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"tokenEndpoint"]];
   NSURL *registrationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"registrationEndpoint"]];
-  
+
   OIDServiceConfiguration *configuration =
   [[OIDServiceConfiguration alloc]
    initWithAuthorizationEndpoint:authorizationEndpoint
    tokenEndpoint:tokenEndpoint
    registrationEndpoint:registrationEndpoint];
-  
+
   return configuration;
 }
 
@@ -123,16 +110,12 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
                                              redirectURL:redirectURL
                                             responseType:OIDResponseTypeCode
                                     additionalParameters:additionalParameters];
-  
+
   [ABI32_0_0EXUtilities performSynchronouslyOnMainThread:^{
-    __weak typeof(self) weakSelf = self;
-    
+    __block id<OIDExternalUserAgentSession> session;
+    __weak id<EXAppAuthSessionsManagerInterface> sessionsManager = self->_sessionsManager;
     OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
-      typeof(self) strongSelf = weakSelf;
-      if (strongSelf != nil) {
-        // Destroy the current session
-        strongSelf->session = nil;
-      }
+      [sessionsManager unregisterSession:session];
       if (authState) {
         NSDictionary *tokenResponse = [ABI32_0_0EXAppAuth _tokenResponseNativeToJSON:authState.lastTokenResponse request:options];
         resolve(tokenResponse);
@@ -152,9 +135,10 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
       presentingViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     }
 
-    self->session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
-                                                   presentingViewController:presentingViewController
-                                                                   callback:callback];
+    session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
+                                             presentingViewController:presentingViewController
+                                                             callback:callback];
+    [self->_sessionsManager registerSession:session];
   }];
 }
 
@@ -162,16 +146,15 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
 {
   NSDictionary *tokenResponse = [ABI32_0_0EXAppAuth tokenResponseNativeToJSON:input];
   NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary:tokenResponse];
-  
+
   NSString *refreshToken;
   if (!input.refreshToken) {
     refreshToken = request[@"refreshToken"];
   } else {
     refreshToken = input.accessToken;
   }
-  
-  [output setValue:@"refreshToken" forKey:ABI32_0_0EXnullIfEmpty(refreshToken)];
-  
+
+  output[@"refreshToken"] = ABI32_0_0EXnullIfEmpty(refreshToken);
   return output;
 }
 
@@ -181,7 +164,7 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
                            reject:(ABI32_0_0EXPromiseRejectBlock)reject {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
-  
+
   OIDTokenRequest *tokenRefreshRequest =
   [[OIDTokenRequest alloc] initWithConfiguration:configuration
                                        grantType:@"refresh_token"
@@ -193,7 +176,7 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
                                     refreshToken:options[@"refreshToken"]
                                     codeVerifier:nil
                             additionalParameters:additionalParameters];
-  
+
   OIDTokenCallback callback = ^(OIDTokenResponse *_Nullable response, NSError *_Nullable error) {
     if (response) {
       NSDictionary *tokenResponse = [ABI32_0_0EXAppAuth _tokenResponseNativeToJSON:response request:options];
@@ -221,12 +204,6 @@ ABI32_0_0EX_EXPORT_METHOD_AS(executeAsync,
   };
 }
 
-#pragma mark - Public
-
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
-  return [session resumeExternalUserAgentFlowWithURL:url];
-}
-
 #pragma mark - Static
 
 // ABI32_0_0EX prefix for versioning to work smoothly
@@ -234,10 +211,9 @@ void ABI32_0_0EXrejectWithError(ABI32_0_0EXPromiseRejectBlock reject, NSError *e
   NSString *errorMessage = [NSString stringWithFormat:@"%@: %@", ABI32_0_0EXAppAuthError, error.localizedDescription];
   if (error.localizedFailureReason != nil && ![error.localizedFailureReason isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Reason: %@", errorMessage, error.localizedFailureReason];
   if (error.localizedRecoverySuggestion != nil && ![error.localizedRecoverySuggestion isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Try: %@", errorMessage, error.localizedRecoverySuggestion];
-  
+
   NSString *errorCode = [NSString stringWithFormat:@"%ld", error.code];
   reject(errorCode, errorMessage, error);
 }
 
 @end
-

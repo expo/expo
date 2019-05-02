@@ -56,13 +56,13 @@ export class GLView extends React.Component<GLViewProps> {
     return getGl(exglCtxId);
   }
 
-  static async destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean> {
+  static async destroyContextAsync(exgl?: ExpoWebGLRenderingContext | number): Promise<boolean> {
     const exglCtxId = getContextId(exgl);
     return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
   }
 
   static async takeSnapshotAsync(
-    exgl?: WebGLRenderingContext | number,
+    exgl?: ExpoWebGLRenderingContext | number,
     options: SnapshotOptions = {}
   ): Promise<GLSnapshot> {
     const exglCtxId = getContextId(exgl);
@@ -561,7 +561,7 @@ const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
   return gl;
 };
 
-const getContextId = (exgl?: WebGLRenderingContext | number): number => {
+const getContextId = (exgl?: ExpoWebGLRenderingContext | number): number => {
   const exglCtxId = exgl && typeof exgl === 'object' ? exgl.__exglCtxId : exgl;
 
   if (!exglCtxId || typeof exglCtxId !== 'number') {
