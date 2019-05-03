@@ -69,6 +69,7 @@ const FUNDAMENTALS = [
   'Viewing Logs',
   'Debugging',
   'Development Mode',
+  'Common Development Errors',
   'Android Studio Emulator',
   'Configuration with app.json',
   'Publishing',
