@@ -61,13 +61,20 @@ NSString * const TPSPaymentNetworkVisa = @"visa";
     PKContact *selectedShippingContact;
     
     /*
-     These properties pertain to context of the app and are useful
-     in making the graphql api calls in order to get taxes based on the
-     address selected in ApplePay
+     These variables are set from react native code so that any change
+     in the url, headers, query and variables in the app context doesn't require
+     any change in the implementation here
      */
-    NSString *cartId;
-    NSDictionary *productInfo;
+    NSString *graphqlGatewayUrl;
     NSDictionary *graphqlHeaders;
+    
+    NSString *cartId;
+    
+    NSString *createCartQuery;
+    NSMutableDictionary *createCartVariables;
+    
+    NSString *setShippingAddressQuery;
+    NSMutableDictionary *setShippingAddressVariables;
 }
 
 - (instancetype)init {
@@ -394,11 +401,25 @@ EX_EXPORT_METHOD_AS(paymentRequestWithApplePay, paymentRequestWithApplePay:(NSAr
     promiseResolver = resolve;
     promiseRejector = reject;
     
-    // set headers, product information and cartId with the details received in options from React native
+    /*
+     Set the following parameters with the details received in options from React native:
+     - graphqlGatewayUrl
+     - graphqlHeaders
+     - createCartQuery
+     - createCartVariables
+     - setShippingAddressQuery
+     - setShippingAddressVariables
+     - cartId
+     These details are helpful in making graphql API calls and get new taxes
+     */
     NSDictionary *taxComputationAPIParams = options[@"taxComputationAPIParams"];
+    graphqlGatewayUrl = taxComputationAPIParams[@"graphqlGatewayUrl"];
     graphqlHeaders = taxComputationAPIParams[@"headers"];
-    productInfo = taxComputationAPIParams[@"productInfo"];
-    cartId = taxComputationAPIParams[@"cartId"];
+    createCartQuery = taxComputationAPIParams[@"createCartQuery"];
+    createCartVariables = [NSMutableDictionary dictionaryWithDictionary:taxComputationAPIParams[@"createCartVariables"]];
+    setShippingAddressQuery = taxComputationAPIParams[@"setShippingAddressQuery"];
+    setShippingAddressVariables =  [NSMutableDictionary dictionaryWithDictionary:taxComputationAPIParams[@"setShippingAddressVariables"]];
+    cartId = setShippingAddressVariables[@"cartId"];
     
     NSUInteger requiredShippingAddressFields = [self applePayAddressFields:options[@"requiredShippingAddressFields"]];
     NSUInteger requiredBillingAddressFields = [self applePayAddressFields:options[@"requiredBillingAddressFields"]];
@@ -708,9 +729,8 @@ EX_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(EXPromiseResolveBlock)
  This method makes a graphql api call to set address selected in ApplePay on the specified cartId
  */
 -(void)setShippingAddress:(NSDictionary *)address onCart:(NSString *)cartId{
-    NSString *setShippingAddressQuery = @"mutation setShippingAddress($shippingAddress: AddressInput!, $cartId: String) {\n setShippingAddress(shippingAddress: $shippingAddress, cartId:$cartId) {\n id\n shippingAddress{\t\n \tid \n firstName\n lastName\n \tstreetName\n \tstreetNumber\n \tpostalCode\n \tcity\n \tstate\n \tcountry\n \tphone\n }\n    price {\n      currency\n      totalPrice\n      taxedPrice\n    }\n }\n}\n";
-    
-    NSDictionary  *setShippingAddressVariables =   @{@"shippingAddress":@{@"postalCode":address[@"postalCode"],@"city":address[@"city"],@"state":address[@"state"],@"country":@"US"},@"cartId":cartId};
+    NSDictionary *shippingAddress = @{@"postalCode":address[@"postalCode"],@"city":address[@"city"],@"state":address[@"state"],@"country":@"US"};
+    setShippingAddressVariables[@"shippingAddress"] = shippingAddress;
     [self callGraphqlApiWithQuery:setShippingAddressQuery andVariables:setShippingAddressVariables];
 }
 
@@ -718,27 +738,28 @@ EX_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(EXPromiseResolveBlock)
  This method makes a graphql api call to create a new temporary cart with the product details and address selected in ApplePay
  */
 -(void)createCart:(NSDictionary *)address {
-    NSString *createCartQuery = @"mutation twoStepBuy($items: [LineItemInput]!, $shippingAddress: AddressInput) {\n  twoStepBuy(items: $items, shippingAddress:$shippingAddress) {\n    id\n    shippingAddress {\n      firstName\n      lastName\n      streetName\n      streetNumber\n      additionalStreetInfo\n      postalCode\n      city\n      state\n      country\n    }\n    shippingMethod {\n      name\n      price\n      taxedPrice\n    }\n    price {\n      totalPrice\n      taxedPrice\n    }\n    items {\n      options {\n        size\n      }\n    }\n  }\n}";
-    
-    NSDictionary  *createCartVariables =  @{@"items":@[productInfo],@"shippingAddress":@{@"postalCode":address[@"postalCode"],@"city":address[@"city"],@"state":address[@"state"],@"country":@"US"}};
+    NSDictionary *shippingAddress = @{@"postalCode":address[@"postalCode"],@"city":address[@"city"],@"state":address[@"state"],@"country":@"US"};
+    createCartVariables[@"shippingAddress"] = shippingAddress;
     [self callGraphqlApiWithQuery:createCartQuery andVariables:createCartVariables];
 }
 
 -(void)callGraphqlApiWithQuery:(NSString *)query andVariables:(NSDictionary *)variables{
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
-    NSURL *url = [NSURL URLWithString:@"http://gateway.ferriswheel.ai/"];
+    NSURL *url = [NSURL URLWithString:graphqlGatewayUrl];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                        timeoutInterval:60.0];
+    [request addValue:graphqlGatewayUrl forHTTPHeaderField:@"Origin"];
+    [request addValue:graphqlHeaders[@"accountId"] forHTTPHeaderField:@"authorization"];
+    [request addValue:graphqlHeaders[@"fwid"] forHTTPHeaderField:@"fwid"];
+    
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request addValue:@"application/json" forHTTPHeaderField:@"Accept"];
-    [request addValue:@"http://gateway.ferriswheel.ai" forHTTPHeaderField:@"Origin"];
     [request addValue:@"gzip, deflate, br" forHTTPHeaderField:@"Accept-Encoding"];
     [request addValue:@"keep-alive" forHTTPHeaderField:@"Connection"];
     [request addValue:@"1" forHTTPHeaderField:@"DNT"];
-    [request addValue:graphqlHeaders[@"accountId"] forHTTPHeaderField:@"authorization"];
-    [request addValue:graphqlHeaders[@"fwid"] forHTTPHeaderField:@"fwid"];
+    
     [request setHTTPMethod:@"POST"];
     
     NSDictionary *requestData = @{@"query":query,@"variables":variables};
