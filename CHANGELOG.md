@@ -62,6 +62,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed tablet splash always being shown in Expo Client if specified by [@GfxKai](https://github.com/GfxKai) ([#3538](https://github.com/expo/expo/pull/3538))
 - allow manipulating `http://` and `https://` files using `ImageManipulator` on iOS by [@bbarthec](https://github.com/bbarthec) ([#3982](https://github.com/expo/expo/pull/3982))
 - calling `FileSystem.downloadAsync` will now raise an error when a target local directory doesn't exist by [@dsokal](https://github.com/dsokal) ([#4142](https://github.com/expo/expo/pull/4142))
+- flush UI blocks when needed, which fixes eg. `Camera.takePicture` not resolving on iOS by [@sjchmiela](https://github.com/sjchmiela) ([#4125](https://github.com/expo/expo/pull/4125))
 
 ## 32.0.0
 
