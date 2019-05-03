@@ -109,7 +109,6 @@ export default class ExponentCamera extends React.Component<NativeProps> {
 
   render() {
     const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
-    const reactStyle = StyleSheet.flatten(this.props.style);
     const style: CSSProperties = {
       position: 'absolute',
       top: 0,
@@ -123,7 +122,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     };
 
     return (
-      <View style={{ flex: 1, alignItems: 'stretch', ...reactStyle }}>
+      <View style={[{ flex: 1, alignItems: 'stretch' }, this.props.style]}>
         <video ref={this._setRef} style={style} autoPlay playsInline />
         {this.props.children}
       </View>

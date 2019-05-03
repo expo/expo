@@ -43,8 +43,10 @@ export declare type Props = React.ComponentProps<typeof View> & {
     pictureSize?: string;
     videoStabilizationMode?: number;
     onMountError?: (event: MountError) => void;
+    barCodeScannerEnabled?: boolean;
     barCodeScannerSettings?: {};
     onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
+    faceDetectorEnabled?: boolean;
     faceDetectorSettings?: {};
     onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
