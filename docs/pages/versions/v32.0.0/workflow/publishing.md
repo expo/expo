@@ -35,6 +35,10 @@ two versions of your code (one for iOS, one for Android) and then upload
 those to a CDN. You’ll get a link like [https://exp.host/@ccheever/an-example](https://exp.host/@ccheever/an-example)
 that anyone can load your project from.
 
+If you haven't optimized your assets yet you will be prompted and asked
+if you'd like to do so when you run `expo publish`. This has the same effect
+as running `expo optimize` and will compress all of the PNGs and JPGs in your project.
+
 Any time you want to deploy an update, hit publish again and a new
 version will be available immediately to your users the next time they
 open it.

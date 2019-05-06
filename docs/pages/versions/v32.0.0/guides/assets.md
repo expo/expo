@@ -20,4 +20,10 @@ Each time you publish your app, Expo will upload your assets to Amazon CloudFron
 
 ## Performance
 
+### Fonts
+
 Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@expo/vector-icons](../icons/#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
+
+### Images
+
+Images often take up the most space out of the assets in an Expo project. To compress the images (PNGs and JPGs) in your project, you can run `expo optimize`. Alternatively, when you publish using `expo publish`, you will be prompted and asked if you'd like to do so if you haven't already. You can pass in a `--save` flag to backup a copy of each file using a `.orig` extension so that you can easily restore them if you find you don't like the compressed version. You can compress specific assets using `--include="[pattern]"`. This will only optimize assets that match this glob pattern. Otherwise, it defaults to using the `assetBundlePatterns` field in your `app.json`. If you want to exclude certain assets you can pass in `--exclude="[pattern]"`. This will avoid assets that match this glob pattern. Glob patterns are always relative to project root regardless of where you call the command from.
