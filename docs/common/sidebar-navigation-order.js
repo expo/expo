@@ -75,7 +75,6 @@ const FUNDAMENTALS = [
   'Publishing',
   'Release Channels',
   'Building Standalone Apps',
-  'Upgrading Expo',
   'Upgrading Expo SDK Walkthrough',
   'Linking',
   'How Expo Works',
