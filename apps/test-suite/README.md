@@ -7,10 +7,7 @@ at https://github.com/expo/expo. Thanks!
 
 ## Running tests
 
-Just run this on XDE or exp and point Expo to the URL. You can navigate to `<theurl>/+<regexp>` to only run tests whose names match the regexp. The tests are in `tests/` and their name usually is the same as the filename.
-
-There is also a published version of this at exp://exp.host/@nikki/test-suite. So you can go to, for example, exp://exp.host/@nikki/test-suite/+Assets.* to run the asset tests!
-
+Start up this project by running `expo start` from this directory. You can then select which tests you'd like to run from the initial screen. The tests are in `tests/` and their name is usually the same as the filename.
 
 ## Adding tests
 
