@@ -136,7 +136,7 @@ can be reused across different Expo apps as well.
 ### Switch to Push Notification Key on iOS
 
 If you are using Push Notifications Certificate and want to switch to Push Notifications Key you need
-to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifcations Key for you.
+to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifications Key for you.
 
 ## 4. Wait for it to finish building
 
