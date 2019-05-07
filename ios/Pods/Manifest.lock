@@ -344,7 +344,7 @@ PODS:
   - EXAppAuth (4.0.0):
     - AppAuth
     - UMCore
-  - EXAppLoaderProvider (4.0.0)
+  - EXAppLoaderProvider (5.0.0-rc.0)
   - EXAV (4.1.0):
     - UMCore
     - UMPermissionsInterface
@@ -367,7 +367,7 @@ PODS:
     - UMFileSystemInterface
     - UMImageLoaderInterface
     - UMPermissionsInterface
-  - EXConstants (4.0.0):
+  - EXConstants (5.0.0-rc.0):
     - UMConstantsInterface
     - UMCore
   - EXContacts (4.0.0):
@@ -389,7 +389,7 @@ PODS:
     - GoogleMobileVision/MVDataOutput (~> 1.1.0)
     - UMCore
     - UMFaceDetectorInterface
-  - EXFileSystem (4.0.0):
+  - EXFileSystem (5.0.0-rc.0):
     - UMCore
     - UMFileSystemInterface
   - EXFont (4.0.0):
@@ -433,7 +433,7 @@ PODS:
   - EXMediaLibrary (4.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXPermissions (4.0.0):
+  - EXPermissions (5.0.0-rc.0):
     - UMCore
     - UMPermissionsInterface
   - EXPrint (4.0.0):
@@ -2111,6 +2111,6 @@ SPEC CHECKSUMS:
   yogaABI31_0_0: 7978689ddccec43cffd5914889304cf3b7fd7c77
   yogaABI32_0_0: b6e0ba3796cd5e47ccea0454694e605a1cfc817a
 
-PODFILE CHECKSUM: 370dae8a35119f70875849e47f09064387002650
+PODFILE CHECKSUM: ce0101a624a69a0a88530ef162d81d176c4e4fe5
 
 COCOAPODS: 1.5.3
