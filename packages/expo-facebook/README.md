@@ -36,7 +36,7 @@ private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactMod
 ), Arrays.<SingletonModule>asList());
 ```
 
-In `AndroidManifest.xml`, add the following line right before `</application`
+In `AndroidManifest.xml`, add the following element within your `<application>` element:
 
 ```xml
 ...
