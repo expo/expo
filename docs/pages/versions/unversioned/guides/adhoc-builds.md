@@ -6,8 +6,6 @@ title: Installing a Custom iOS Expo Client
 
 Build and install a custom version of the Expo Client (link) with your own Apple Credentials using our build service. This custom version of the Expo Client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo Client, and you can install it to your iOS device directly from our website.
 
-\*\* not sure if we should mention custom capabilities if we dont support it yet (ie) this will let people without macs (or people who don’t want to bother building their own project with Xcode) continue to use the managed workflow without getting the Expo client from the App Store, and we can also customize the Expo client for each developer to make it more similar to their final standalone app.
-
 ## 0. Prerequisites
 
 You'll need an [Apple Developer Account](https://developer.apple.com/programs)
