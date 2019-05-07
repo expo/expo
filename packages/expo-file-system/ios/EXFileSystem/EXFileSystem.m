@@ -536,6 +536,12 @@ UM_EXPORT_METHOD_AS(downloadAsync,
 {
   NSURL *url = [NSURL URLWithString:uriString];
   NSURL *localUri = [NSURL URLWithString:localUriString];
+  if (!([self checkIfFileDirExists:localUri.path])) {
+    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
+           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", localUriString],
+           nil);
+    return;
+  }
   if (!([self permissionsForURI:localUri] & UMFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", localUri],
@@ -585,6 +591,12 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
 {
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUrl = [NSURL URLWithString:fileUri];
+  if (!([self checkIfFileDirExists:localUrl.path])) {
+    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
+           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", fileUri],
+           nil);
+    return;
+  }
   if (![localUrl.scheme isEqualToString:@"file"]) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot download to '%@': only 'file://' URI destinations are supported.", fileUri],
@@ -761,6 +773,12 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
     return [self _permissionsForPath:uri.path];
   }
   return UMFileSystemPermissionNone;
+}
+
+- (BOOL)checkIfFileDirExists:(NSString *)path
+{
+  NSString *dir = [path stringByDeletingLastPathComponent];
+  return [[NSFileManager defaultManager] fileExistsAtPath:dir];
 }
 
 #pragma mark - Class methods
