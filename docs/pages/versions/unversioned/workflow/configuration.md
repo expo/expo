@@ -347,7 +347,8 @@ Configuration for how and when the app should request OTA JavaScript updates
     "isTabletOnly": BOOLEAN,
 
     /*
-      Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration.
+      Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration. 
+      Must be customized if your app requests system permissions, see details here: https://docs.expo.io/versions/latest/distribution/app-stores/#system-permissions-dialogs-on-ios
 
       No other validation is performed, so use this at your own risk of rejection from the App Store.
     */
