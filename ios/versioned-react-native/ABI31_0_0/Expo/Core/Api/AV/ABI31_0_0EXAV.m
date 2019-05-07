@@ -88,7 +88,7 @@ NSString *const ABI31_0_0EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybac
 
     _kernelPermissionsServiceDelegate = kernelServiceInstances[@"PermissionsManager"];
     _kernelAudioSessionManagerDelegate = kernelServiceInstances[@"AudioSessionManager"];
-    [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
+    [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   }
   return self;
 }
@@ -116,7 +116,7 @@ NSString *const ABI31_0_0EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybac
 
 - (void)_bridgeDidForeground:(NSNotification *)notification
 {
-  [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
+  [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   _isBackgrounded = NO;
   
   [self _runBlockForAllAVObjects:^(NSObject<ABI31_0_0EXAVObject> *exAVObject) {
@@ -132,7 +132,7 @@ NSString *const ABI31_0_0EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybac
   [self _runBlockForAllAVObjects:^(NSObject<ABI31_0_0EXAVObject> *exAVObject) {
     [exAVObject bridgeDidBackground:notification];
   }];
-  [_kernelAudioSessionManagerDelegate scopedModuleDidBackground:self];
+  [_kernelAudioSessionManagerDelegate moduleDidBackground:self];
 }
 
 #pragma mark - ABI31_0_0RCTEventEmitter
@@ -841,7 +841,7 @@ ABI31_0_0RCT_EXPORT_METHOD(unloadAudioRecorder:(ABI31_0_0RCTPromiseResolveBlock)
 
 - (void)dealloc
 {
-  [_kernelAudioSessionManagerDelegate scopedModuleWillDeallocate:self];
+  [_kernelAudioSessionManagerDelegate moduleWillDeallocate:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   // This will clear all @properties and deactivate the audio session:
