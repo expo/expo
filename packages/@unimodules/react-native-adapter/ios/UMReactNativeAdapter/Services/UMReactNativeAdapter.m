@@ -3,6 +3,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <UMReactNativeAdapter/UMReactNativeAdapter.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
 #import <UMImageLoaderInterface/UMImageLoaderInterface.h>
@@ -19,6 +20,7 @@
 @interface RCTBridge ()
 
 - (JSGlobalContextRef)jsContextRef;
+- (void *)runtime;
 - (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue;
 
 @end
@@ -130,7 +132,15 @@ UM_REGISTER_MODULE();
 
 - (JSGlobalContextRef)javaScriptContextRef
 {
-  return _bridge.jsContextRef;
+  if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
+    return _bridge.jsContextRef;
+  } else { 
+    // In react-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
+    // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
+    // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
+    // WARNING: This is temporary solution that may break with new react-native releases.
+    return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);
+  }
 }
 
 # pragma mark - UMImageLoader

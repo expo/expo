@@ -6,8 +6,8 @@
     "start": "node ../../react-native-lab/react-native/local-cli/cli.js start --config ../../../../apps/standalone-ncl/metro.config.js"
   },
   "dependencies": {
-    "@unimodules/core": "*",
-    "@unimodules/react-native-adapter": "*",
+    "@unimodules/core": "^2.0.0-alpha.0",
+    "@unimodules/react-native-adapter": "^2.0.0-alpha.0",
     "native-component-list": "*",
     "react": "16.8.3",
     "react-native": "0.59.5"

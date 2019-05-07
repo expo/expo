@@ -205,7 +205,7 @@ export class VideoPlayback extends React.Component {
         // Replace selected native props
         // @ts-ignore: TypeScript thinks "children" is not in the list of props
         const nativeProps = {
-            ...omit(this.props, 'source', ...Object.keys(status)),
+            ...omit(this.props, 'source', 'onPlaybackStatusUpdate', ...Object.keys(status)),
             style: StyleSheet.flatten([_STYLES.base, this.props.style]),
             source,
             resizeMode: nativeResizeMode,

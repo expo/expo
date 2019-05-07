@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
@@ -191,6 +192,9 @@ export default {
 
   /* Re-export */
   getExpoPushTokenAsync(): Promise<string> {
+    if (!Constants.isDevice) {
+      throw new Error(`Must be on a physical device to get an Expo Push Token`);
+    }
     return ExponentNotifications.getExponentPushTokenAsync();
   },
 

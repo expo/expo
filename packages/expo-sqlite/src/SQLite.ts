@@ -1,6 +1,6 @@
 import './polyfillNextTick';
 
-import zipObject from 'lodash.zipobject';
+import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
@@ -84,7 +84,7 @@ function _escapeBlob<T>(data: T): T {
 const _openExpoSQLiteDatabase = customOpenDatabase(SQLiteDatabase);
 
 function addExecMethod(db: any): WebSQLDatabase {
-  db.exec = (queries: InternalQuery[], readOnly: boolean, callback: SQLiteCallback): void) => {
+  db.exec = (queries: InternalQuery[], readOnly: boolean, callback: SQLiteCallback): void => {
     db._db.exec(queries, readOnly, callback);
   }
   return db;
