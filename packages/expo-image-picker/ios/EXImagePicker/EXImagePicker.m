@@ -203,7 +203,10 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
     data = UIImagePNGRepresentation(image);
-  } else if ([[imageURL absoluteString] containsString:@"ext=GIF"]) {
+    } else if ([[imageURL absoluteString] containsString:@"ext=BMP"]) {
+      extension = @".bmp";
+      data = nil;
+    } else if ([[imageURL absoluteString] containsString:@"ext=GIF"]) {
     extension = @".gif";
     data = [NSMutableData data];
     CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data, kUTTypeGIF, 1, NULL);
