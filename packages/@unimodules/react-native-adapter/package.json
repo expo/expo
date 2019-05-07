@@ -48,7 +48,7 @@
   "devDependencies": {
     "@types/lodash": "^4.5.4",
     "babel-preset-expo": "^5.0.0",
-    "@unimodules/core": "~1.0.0",
+    "@unimodules/core": "^2.0.0-alpha.0",
     "expo-module-scripts": "^1.0.0"
   },
   "gitHead": "0c9c728afc913b2fd53e4f0a9cb163a58e83b68d"
