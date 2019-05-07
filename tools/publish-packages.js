@@ -65,13 +65,33 @@ function _trimExpoDirectory(dir) {
 async function _runPipelineAsync(pipeline, publishConfigs, options) {
   for (const action of pipeline) {
     for (const [libName, publishConfig] of publishConfigs) {
-      shell.cd(publishConfig.dir);
+      const runAction = async () => {
+        try {
+          shell.cd(publishConfig.dir);
 
-      const newConfig = await action(publishConfig, publishConfigs, options);
+          const newConfig = await action(publishConfig, publishConfigs, options);
 
-      if (newConfig) {
-        publishConfigs.set(libName, { ...publishConfig, ...newConfig });
-      }
+          if (newConfig) {
+            publishConfigs.set(libName, { ...publishConfig, ...newConfig });
+          }
+        } catch (e) {
+          console.log(
+            chalk.red(`Pipeline failed for package ${chalk.green(libName)} with reason:`),
+            chalk.gray(e.stack),
+          );
+          const select = await _selectPromptAsync(
+            `Do you want to (s)kip this package or (e)xit?`,
+            ['s', 'e']
+          );
+
+          if (select === 's') {
+            publishConfigs.delete(libName);
+          } else {
+            return process.exit(1);
+          }
+        }
+      };
+      await runAction();
     }
   }
 }

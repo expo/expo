@@ -42,13 +42,11 @@
   },
   "dependencies": {
     "invariant": "^2.2.4",
-    "lodash.omit": "^4.5.0",
-    "lodash.pick": "^4.4.0",
+    "lodash": "^4.5.0",
     "prop-types": "^15.6.1"
   },
   "devDependencies": {
-    "@types/lodash.omit": "^4.5.4",
-    "@types/lodash.pick": "^4.4.4",
+    "@types/lodash": "^4.5.4",
     "babel-preset-expo": "^5.0.0",
     "@unimodules/core": "~1.0.0",
     "expo-module-scripts": "^1.0.0"

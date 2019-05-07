@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "2.0.0",
+  "version": "3.0.0-rc.0",
   "description": "ExpoSharing standalone module",
   "main": "build/Sharing.js",
   "types": "build/Sharing.d.ts",
@@ -34,5 +34,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "211a7a3ce4007e7aa10ccf6efac4b5333ec31d0a"
 }

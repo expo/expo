@@ -1,6 +1,6 @@
 {
   "name": "expo-constants",
-  "version": "4.0.0",
+  "version": "5.0.0-rc.0",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
@@ -42,5 +42,5 @@
     "expo-module-scripts": "^1.0.0",
     "uuid": "^3.3.2"
   },
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "f04f6c038278daf9d4536da5ef651dbccf95c7b2"
 }

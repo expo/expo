@@ -1,4 +1,4 @@
-import filter from 'lodash.filter';
+import filter from 'lodash/filter';
 import qs from 'query-string';
 function checkValue(value) {
     if (!value) {
