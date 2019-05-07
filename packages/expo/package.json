@@ -117,7 +117,7 @@
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
     "lodash": "^4.6.0",
-    "lottie-react-native": "2.5.0",
+    "lottie-react-native": "2.6.1",
     "md5-file": "^3.2.3",
     "nullthrows": "^1.1.0",
     "pretty-format": "^23.6.0",

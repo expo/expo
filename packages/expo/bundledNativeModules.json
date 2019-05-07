@@ -50,7 +50,7 @@
   "expo-sqlite": "~5.0.0-rc.0",
   "expo-task-manager": "~5.0.0-rc.0",
   "expo-web-browser": "~5.0.0-rc.0",
-  "lottie-react-native": "2.5.0",
+  "lottie-react-native": "~2.6.1",
   "react-native-branch": "2.2.5",
   "react-native-gesture-handler": "~1.1.0",
   "react-native-maps": "expo/react-native-maps#v0.23.0-exp.0",
