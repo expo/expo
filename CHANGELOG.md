@@ -36,6 +36,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added `Location.enableNetworkProviderAsync` method to ask the user to turn on high accuracy location services by [@tsapeta](https://github.com/tsapeta) ([#3273](https://github.com/expo/expo/pull/3273))
 - upgraded Facebook Audience Network SDK dependency to 5.1.1 by [@sjchmiela](https://github.com/sjchmiela) ([#3394](https://github.com/expo/expo/pull/3394))
 - upgraded Facebook Core- and LoginKit dependency to 4.40.0 by [@sjchmiela](https://github.com/sjchmiela) ([#3394](https://github.com/expo/expo/pull/3394))
+- upgraded `react-native-webview` to `5.8.1` by [@sjchmiela](https://github.com/sjchmiela) ([#4146](https://github.com/expo/expo/pull/4146))
 - upgrade `react-native-maps` to `0.23.0` by [@sjchmiela](https://github.com/sjchmiela) ([#3389](https://github.com/expo/expo/pull/3389))
 - added Firebase integration to `expo-analytics-segment` by [@sjchmiela](https://github.com/sjchmiela) ([#3615](https://github.com/expo/expo/pull/3615))
 - added support for new arguments in `WebBrowser.openBrowserAsync` as described in [the documentation](https://docs.expo.io/versions/latest/sdk/webbrowser/) by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
