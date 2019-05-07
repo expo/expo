@@ -24,9 +24,9 @@ export default class KeepAwake extends React.PureComponent {
 KeepAwake.activate = activate;
 KeepAwake.deactivate = deactivate;
 export function activate(tag) {
-    ExpoKeepAwake.activate(tag ? tag : ExpoKeepAwakeTag);
+    ExpoKeepAwake.activate(tag || ExpoKeepAwakeTag);
 }
 export function deactivate(tag) {
-    ExpoKeepAwake.deactivate(tag ? tag : ExpoKeepAwakeTag);
+    ExpoKeepAwake.deactivate(tag || ExpoKeepAwakeTag);
 }
 //# sourceMappingURL=index.js.map

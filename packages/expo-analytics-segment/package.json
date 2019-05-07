@@ -1,6 +1,6 @@
 {
   "name": "expo-analytics-segment",
-  "version": "4.0.0",
+  "version": "5.0.0-rc.0",
   "description": "Expo module that provides access to Segment mobile analytics",
   "main": "build/Segment.js",
   "types": "build/Segment.d.ts",
@@ -40,5 +40,5 @@
     "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "211a7a3ce4007e7aa10ccf6efac4b5333ec31d0a"
 }

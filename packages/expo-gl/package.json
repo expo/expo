@@ -1,6 +1,6 @@
 {
   "name": "expo-gl",
-  "version": "4.0.0",
+  "version": "5.0.0-rc.0",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,10 +38,10 @@
     "unimodules-camera-interface": "*",
     "@unimodules/core": "*",
     "unimodules-file-system-interface": "*",
-    "expo-gl-cpp": "*"
+    "expo-gl-cpp": "~5.0.0-rc.0"
   },
   "dependencies": {
-    "expo-gl-cpp": "^4.0.0",
+    "expo-gl-cpp": "~5.0.0-rc.0",
     "prop-types": "^15.6.2"
   },
   "devDependencies": {
@@ -49,5 +49,5 @@
     "expo-module-scripts": "^1.0.0",
     "react-test-renderer": "^16.7.0"
   },
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "211a7a3ce4007e7aa10ccf6efac4b5333ec31d0a"
 }
