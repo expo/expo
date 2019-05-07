@@ -16,4 +16,4 @@ export EXPO_SKIP_MANIFEST_VALIDATION_TOKEN=true
 export EXPO_NO_DOCTOR=true
 
 yarn run expo login --username "$EXPO_CI_ACCOUNT_USERNAME" --password "$EXPO_CI_ACCOUNT_PASSWORD"
-yarn run expo publish --release-channel "$commit_hash"
+yarn run expo publish --non-interactive --release-channel "$commit_hash"
