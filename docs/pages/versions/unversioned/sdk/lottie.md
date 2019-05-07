@@ -14,7 +14,7 @@ https://github.com/react-native-community/lottie-react-native).
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 
-<SnackEmbed snackId="Byu2WM2af" />
+<SnackEmbed snackId="@documentation/lottie-example" />
 
 ## Importing Lottie
 
