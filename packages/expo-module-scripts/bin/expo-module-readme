@@ -77,7 +77,7 @@ function generateREADME() {
     if (homepage === DEFAULT_HOMEPAGE || homepage.startsWith('https://github.com')) {
       docName = packageName.replace('expo-', '');
       console.warn(
-        'Tried to guess the docs home, add it under homepage in package.json to help me out.'
+        `Tried to guess the docs homepage for ${packageName}; add it under the "homepage" entry in package.json`
       );
     } else {
       docName = (() => {
