@@ -168,7 +168,7 @@ A Promise that resolves to an array of strings, each containing the name of a fi
 
 ### `FileSystem.downloadAsync(uri, fileUri, options)`
 
-Download the contents at a remote URI to a file in the app's file system.
+Download the contents at a remote URI to a file in the app's file system. The directory for a local file uri must exist prior to calling this function.
 
 #### Example
 
@@ -189,7 +189,7 @@ FileSystem.downloadAsync(
 
 - **url (_string_)** -- The remote URI to download from.
 
-- **fileUri (_string_)** -- The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced.
+- **fileUri (_string_)** -- The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced. The directory for the file must exist.
 
 - **options (_object_)** -- A map of options:
 
@@ -211,13 +211,13 @@ Returns a Promise that resolves to an object with the following fields:
 
 ### `FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)`
 
-Create a `DownloadResumable` object which can start, pause, and resume a download of contents at a remote URI to a file in the app's file system. Please note: You need to call `downloadAsync()`, on a `DownloadResumable` instance to initiate the download. The `DownloadResumable` object has a callback that provides download progress updates. Downloads can be resumed across app restarts by using `AsyncStorage` to store the `DownloadResumable.savable()` object for later retrieval. The `savable` object contains the arguments required to initialize a new `DownloadResumable` object to resume the download after an app restart.
+Create a `DownloadResumable` object which can start, pause, and resume a download of contents at a remote URI to a file in the app's file system. Please note: You need to call `downloadAsync()`, on a `DownloadResumable` instance to initiate the download. The `DownloadResumable` object has a callback that provides download progress updates. Downloads can be resumed across app restarts by using `AsyncStorage` to store the `DownloadResumable.savable()` object for later retrieval. The `savable` object contains the arguments required to initialize a new `DownloadResumable` object to resume the download after an app restart. The directory for a local file uri must exist prior to calling this function.
 
 #### Arguments
 
 - **url (_string_)** -- The remote URI to download from.
 
-- **fileUri (_string_)** -- The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced.
+- **fileUri (_string_)** -- The local URI of the file to download to. If there is no file at this URI, a new one is created. If there is a file at this URI, its contents are replaced. The directory for the file must exist.
 
 - **options (_object_)** -- A map of options:
 
