@@ -4,7 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { echo, exec, cp, find, rm, mkdir } = require('shelljs');
-const escapeRegExp = require('lodash.escaperegexp');
+const escapeRegExp = require('lodash/escapeRegExp');
 
 module.exports = function updateVendoredNativeModule(options) {
   options.recursive = options.recursive === undefined

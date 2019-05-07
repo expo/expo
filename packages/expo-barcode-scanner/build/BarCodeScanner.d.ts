@@ -47,6 +47,13 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
+        isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
+        hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
+        tvParallaxProperties?: PropTypes.Validator<import("react-native").TVParallaxProperties | undefined> | undefined;
+        tvParallaxShiftDistanceX?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxShiftDistanceY?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxTiltAngle?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxMagnification?: PropTypes.Validator<number | undefined> | undefined;
         onStartShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onMoveShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onResponderEnd?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
@@ -88,7 +95,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
     }>;
     render(): JSX.Element;
     onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
-    convertNativeProps(props: BarCodeScannerProps): any;
+    convertNativeProps(props: BarCodeScannerProps): import("lodash").Dictionary<any>;
     convertProp(value: any, key: string): any;
 }
 export declare const Constants: {

@@ -19,7 +19,7 @@
     "babel-jest": "^24.7.1",
     "jest": "^24.7.1",
     "json5": "^2.1.0",
-    "lodash.isequal": "^4.5.0",
+    "lodash": "^4.5.0",
     "react-test-renderer": "^16.8.6",
     "whatwg-fetch": "^3.0.0"
   },

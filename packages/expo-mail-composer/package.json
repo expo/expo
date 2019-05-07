@@ -41,7 +41,7 @@
   },
   "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a",
   "dependencies": {
-    "lodash.filter": "^4.6.0",
+    "lodash": "^4.6.0",
     "query-string": "^6.2.0"
   }
 }
