@@ -40,7 +40,7 @@
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {
-    "lodash.mapvalues": "^4.6.0",
+    "lodash": "^4.6.0",
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
