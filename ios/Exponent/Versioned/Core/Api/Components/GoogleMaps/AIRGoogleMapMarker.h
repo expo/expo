@@ -10,6 +10,7 @@
 #import "AIRGMSMarker.h"
 #import "AIRGoogleMap.h"
 #import "AIRGoogleMapCallout.h"
+#import "AIRGoogleMapCalloutSubview.h"
 
 @interface AIRGoogleMapMarker : UIView
 
@@ -42,6 +43,8 @@
 - (UIView *)markerInfoContents;
 - (UIView *)markerInfoWindow;
 - (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker;
+- (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker point:(CGPoint)point frame:(CGRect)frame;
+- (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker subview:(AIRGoogleMapCalloutSubview*)subview point:(CGPoint)point frame:(CGRect)frame;
 - (void)didBeginDraggingMarker:(AIRGMSMarker *)marker;
 - (void)didEndDraggingMarker:(AIRGMSMarker *)marker;
 - (void)didDragMarker:(AIRGMSMarker *)marker;

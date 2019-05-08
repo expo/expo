@@ -1,10 +1,11 @@
 //
-//  AIRUrlTileOverlay.h
+//  AIRMapWMSTile.h
 //  AirMaps
 //
-//  Created by cascadian on 3/19/16.
-//  Copyright © 2016. All rights reserved.
+//  Created by nizam on 10/28/18.
+//  Copyright © 2018. All rights reserved.
 //
+
 
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
@@ -16,7 +17,7 @@
 #import "AIRMap.h"
 #import "RCTConvert+AirMap.h"
 
-@interface AIRMapUrlTile : MKAnnotationView <MKOverlay>
+@interface AIRMapWMSTile : MKAnnotationView <MKOverlay>
 
 @property (nonatomic, weak) AIRMap *map;
 
@@ -25,15 +26,16 @@
 @property (nonatomic, copy) NSString *urlTemplate;
 @property NSInteger maximumZ;
 @property NSInteger minimumZ;
-@property BOOL flipY;
+@property NSInteger tileSize;
 @property BOOL shouldReplaceMapContent;
-@property CGFloat tileSize;
 
 #pragma mark MKOverlay protocol
 
 @property(nonatomic, readonly) CLLocationCoordinate2D coordinate;
 @property(nonatomic, readonly) MKMapRect boundingMapRect;
-//- (BOOL)intersectsMapRect:(MKMapRect)mapRect;
 - (BOOL)canReplaceMapContent;
+@end
 
+@interface TileOverlay : MKTileOverlay
+@property (nonatomic) double MapX,MapY,FULL;
 @end

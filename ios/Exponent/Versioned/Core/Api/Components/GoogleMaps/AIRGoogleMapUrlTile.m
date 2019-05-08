@@ -26,6 +26,11 @@
   NSInteger *maximumZ = self.maximumZ;
   NSInteger *minimumZ = self.minimumZ;
   GMSTileURLConstructor urls = ^NSURL* _Nullable (NSUInteger x, NSUInteger y, NSUInteger zoom) {
+    
+    if (self.flipY == YES) {
+      y = (1 << zoom) - y - 1;
+    }
+    
     NSString *url = urlTemplate;
     url = [url stringByReplacingOccurrencesOfString:@"{x}" withString:[NSString stringWithFormat: @"%ld", (long)x]];
     url = [url stringByReplacingOccurrencesOfString:@"{y}" withString:[NSString stringWithFormat: @"%ld", (long)y]];
