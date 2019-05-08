@@ -36,3 +36,10 @@ export type CapturedPicture = {
   base64?: string;
   exif?: any;
 };
+
+export type BarCodeSettings = {
+  barCodeTypes: string[];
+  interval: number;
+};
+
+export type BarCodeScanningResult = { type: string; data: string };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CapturedPicture, NativeProps, PictureOptions, MountError } from './Camera.types';
+import { CapturedPicture, MountError, NativeProps, PictureOptions } from './Camera.types';
 import CameraModule from './CameraModule/CameraModule';
 export default class ExponentCamera extends React.Component<NativeProps> {
     video?: number | null;
@@ -9,7 +9,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     };
     componentWillUnmount(): void;
     componentWillReceiveProps(nextProps: any): void;
-    _updateCameraProps: ({ type, zoom, pictureSize, flashMode, autoFocus, whiteBalance, }: NativeProps) => Promise<void>;
+    private updateCameraProps;
     getCamera: () => CameraModule;
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
     takePicture: (options: PictureOptions) => Promise<CapturedPicture>;
@@ -19,6 +19,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     onMountError: ({ nativeEvent }: {
         nativeEvent: MountError;
     }) => void;
-    _setRef: (ref: any) => void;
+    private setRef;
+    private updateScanner;
     render(): JSX.Element;
 }

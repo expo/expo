@@ -30,3 +30,11 @@ export declare type CapturedPicture = {
     base64?: string;
     exif?: any;
 };
+export declare type BarCodeSettings = {
+    barCodeTypes: string[];
+    interval: number;
+};
+export declare type BarCodeScanningResult = {
+    type: string;
+    data: string;
+};

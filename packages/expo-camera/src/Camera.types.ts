@@ -1,5 +1,9 @@
 import { View } from 'react-native';
 
+import { BarCodeSettings, BarCodeScanningResult } from './CameraModule/CameraModule.types';
+
+export { BarCodeSettings, BarCodeScanningResult };
+
 export type PictureOptions = {
   quality?: number;
   base64?: boolean;
@@ -27,8 +31,6 @@ export type CapturedPicture = {
 
 export type MountError = { message: string };
 
-export type BarCodeScanningResult = { type: string; data: string };
-
 export type FaceDetectionResult = { faces: any[] };
 
 export type Props = React.ComponentProps<typeof View> & {
@@ -45,7 +47,7 @@ export type Props = React.ComponentProps<typeof View> & {
   videoStabilizationMode?: number;
   onMountError?: (event: MountError) => void;
   barCodeScannerEnabled?: boolean;
-  barCodeScannerSettings?: {};
+  barCodeScannerSettings?: BarCodeSettings;
   onBarCodeScanned?: (scanningResult: BarCodeScanningResult) => void;
   faceDetectorEnabled?: boolean;
   faceDetectorSettings?: {};
@@ -68,7 +70,7 @@ export type NativeProps = {
   zoom?: number;
   whiteBalance?: number | string;
   pictureSize?: string;
-  barCodeScannerSettings?: {};
+  barCodeScannerSettings?: BarCodeSettings;
   barCodeScannerEnabled?: boolean;
   faceDetectorEnabled?: boolean;
   faceDetectorSettings?: {};

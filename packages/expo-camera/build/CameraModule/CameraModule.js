@@ -1,8 +1,10 @@
 import invariant from 'invariant';
-import { CameraType, ImageType } from './CameraModule.types';
+import { CameraType, ImageType, } from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import { FacingModeToCameraType, PictureSizes } from './constants';
 import * as CapabilityUtils from './CapabilityUtils';
+import { WebWorker } from './barcode/WorkerUtils';
+import BarcodeScannerWorker from './barcode/BarcodeScannerWorker.js';
 export { ImageType, CameraType };
 class CameraModule {
     constructor(videoElement) {
@@ -19,10 +21,6 @@ class CameraModule {
         // TODO: Bacon: we don't even use ratio in native...
         this.getAvailablePictureSizes = async (ratio) => {
             return PictureSizes;
-        };
-        this.unmount = () => {
-            this.settings = null;
-            this.stream = null;
         };
         this.videoElement = videoElement;
         if (this.videoElement) {
@@ -169,6 +167,53 @@ class CameraModule {
         }
         return null;
     }
+    startScanner(settings, callback) {
+        if (this.webWorker) {
+            this.stopScanner();
+        }
+        // Initiate web worker execute handler according to mode.
+        this.webWorker = new WebWorker(BarcodeScannerWorker);
+        this.webWorker.onmessage = event => {
+            if (callback && this.webWorker) {
+                if (event && Array.isArray(event.data)) {
+                    for (const result of event.data) {
+                        callback(result);
+                    }
+                }
+                // If interval is 0 then only scan once.
+                if (settings.interval) {
+                    // @ts-ignore
+                    this.barcodeLoop = setTimeout(() => {
+                        this.scanForBarcodes(settings.barCodeTypes);
+                    }, settings.interval);
+                }
+                return;
+            }
+            this.stopScanner();
+        };
+        // Invoke the initial scan
+        this.scanForBarcodes(settings.barCodeTypes);
+    }
+    stopScanner() {
+        // Stop web-worker and clear the component
+        if (this.webWorker) {
+            this.webWorker.terminate();
+            this.webWorker = undefined;
+        }
+        // @ts-ignore
+        clearTimeout(this.barcodeLoop);
+    }
+    scanForBarcodes(types, config = {}) {
+        if (!this.webWorker)
+            throw new Error('Cannot process a barcode before the worker has been created.');
+        const image = Utils.captureImageData(this.videoElement, config);
+        this.invokeWorker({ image, types });
+    }
+    invokeWorker(payload) {
+        if (!this.webWorker || !payload)
+            return;
+        this.webWorker.postMessage({ module: 'expo-barcode-scanner', payload });
+    }
     takePicture(config) {
         const base64 = Utils.captureImage(this.videoElement, config);
         const capturedPicture = {
@@ -195,6 +240,11 @@ class CameraModule {
         }
         this.stream.getTracks().forEach(track => track.stop());
         this.setStream(null);
+    }
+    unmount() {
+        this.stopScanner();
+        this.settings = null;
+        this.stream = null;
     }
 }
 export default CameraModule;

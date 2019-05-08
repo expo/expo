@@ -1,13 +1,13 @@
 import React, { CSSProperties } from 'react';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
-import { CapturedPicture, NativeProps, PictureOptions, MountError } from './Camera.types';
+import { findNodeHandle, View } from 'react-native';
+
+import { CapturedPicture, MountError, NativeProps, PictureOptions } from './Camera.types';
 import CameraModule, { CameraType } from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 
 export default class ExponentCamera extends React.Component<NativeProps> {
   video?: number | null;
   camera?: CameraModule;
-
   state = { type: null };
 
   componentWillUnmount() {
@@ -17,10 +17,10 @@ export default class ExponentCamera extends React.Component<NativeProps> {
   }
 
   componentWillReceiveProps(nextProps) {
-    this._updateCameraProps(nextProps);
+    this.updateCameraProps(nextProps);
   }
 
-  _updateCameraProps = async ({
+  private updateCameraProps = async ({
     type,
     zoom,
     pictureSize,
@@ -46,6 +46,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     if (actualCameraType !== this.state.type) {
       this.setState({ type: actualCameraType });
     }
+    this.updateScanner();
   };
 
   getCamera = (): CameraModule => {
@@ -91,11 +92,12 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     }
   };
 
-  _setRef = ref => {
+  private setRef = async ref => {
     if (!ref) {
       this.video = null;
       if (this.camera) {
         this.camera.unmount();
+        this.camera.stopScanner();
         this.camera = undefined;
       }
       return;
@@ -104,28 +106,51 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     this.camera = new CameraModule(ref);
     this.camera.onCameraReady = this.onCameraReady;
     this.camera.onMountError = this.onMountError;
-    this._updateCameraProps(this.props);
+    this.updateCameraProps(this.props);
+  };
+
+  private updateScanner = () => {
+    if (!this.camera) return;
+    const { barCodeScannerSettings } = this.props;
+    if (this.props.onBarCodeScanned && barCodeScannerSettings) {
+      this.camera.startScanner(
+        {
+          // Default barcode scanning update interval, same as is defined in the API layer.
+          // TODO: Bacon: Make this larger for low-end devices.
+          interval: 500,
+          ...barCodeScannerSettings,
+        },
+        nativeEvent => {
+          if (this.props.onBarCodeScanned) {
+            this.props.onBarCodeScanned({ nativeEvent });
+            return;
+          }
+          this.updateScanner();
+        }
+      );
+    } else {
+    }
   };
 
   render() {
     const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
-    const style: CSSProperties = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      transform,
-    };
 
     return (
       <View style={[{ flex: 1, alignItems: 'stretch' }, this.props.style]}>
-        <video ref={this._setRef} style={style} autoPlay playsInline />
+        <video ref={this.setRef} style={{ ...videoStyle, transform }} autoPlay playsInline />
         {this.props.children}
       </View>
     );
   }
 }
+
+const videoStyle: CSSProperties = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+};

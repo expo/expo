@@ -64,9 +64,11 @@ function ensureCaptureOptions(config: any): CaptureOptions {
 
 const DEFAULT_QUALITY = 0.92;
 
-export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOptions): string {
-  const config = ensureCaptureOptions(pictureOptions);
-  const { scale, imageType, quality = DEFAULT_QUALITY, isImageMirror } = config;
+export function captureImageContext(
+  video: HTMLVideoElement,
+  config: CaptureOptions
+): HTMLCanvasElement {
+  const { scale, isImageMirror } = config;
 
   const { videoWidth, videoHeight } = video;
   const { width, height } = getImageSize(videoWidth, videoHeight, scale);
@@ -84,10 +86,37 @@ export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOpt
     context.setTransform(-1, 0, 0, 1, canvas.width, 0);
   }
 
+  context.imageSmoothingEnabled = true;
   context.drawImage(video, 0, 0, width, height);
 
-  const base64 = toDataURL(canvas, imageType, quality);
-  return base64;
+  return canvas;
+}
+
+export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOptions): string {
+  const config = ensureCaptureOptions(pictureOptions);
+  const canvas = captureImageContext(video, config);
+  const { imageType, quality = DEFAULT_QUALITY } = config;
+  return toDataURL(canvas, imageType, quality);
+}
+
+export function captureImageData(
+  video: HTMLVideoElement,
+  pictureOptions: PictureOptions = {}
+): ImageData | null {
+  const config = ensureCaptureOptions(pictureOptions);
+  const canvas = captureImageContext(video, config);
+
+  const context = canvas.getContext('2d');
+  if (!context || !canvas.width || !canvas.height) {
+    return null;
+  }
+
+  // const image = new Image();
+  // image.src = require('./qr.png');
+  // context.drawImage(image, 0, 0);
+
+  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+  return imageData;
 }
 
 function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
@@ -152,4 +181,26 @@ export async function getStreamDevice(
   );
   const stream: MediaStream = await getUserMedia(constraints);
   return stream;
+}
+
+function drawLine(context: CanvasRenderingContext2D, points, options: any = {}) {
+  const { color = 'blue', lineWidth = 4 } = options;
+  const [start, end] = points;
+  context.beginPath();
+  context.moveTo(start.x, start.y);
+  context.lineTo(end.x, end.y);
+  context.lineWidth = lineWidth;
+  context.strokeStyle = color;
+  context.stroke();
+}
+
+export function drawBarcodeBounds(
+  context: CanvasRenderingContext2D,
+  { topLeftCorner, topRightCorner, bottomRightCorner, bottomLeftCorner },
+  options
+) {
+  drawLine(context, [topLeftCorner, topRightCorner], options);
+  drawLine(context, [topRightCorner, bottomRightCorner], options);
+  drawLine(context, [bottomRightCorner, bottomLeftCorner], options);
+  drawLine(context, [bottomLeftCorner, topLeftCorner], options);
 }

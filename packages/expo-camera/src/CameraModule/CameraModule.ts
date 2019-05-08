@@ -1,10 +1,20 @@
 import invariant from 'invariant';
 
 import { PictureOptions } from '../Camera.types';
-import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
+import {
+  CameraType,
+  CapturedPicture,
+  CaptureOptions,
+  BarCodeSettings,
+  ImageType,
+} from './CameraModule.types';
 import * as Utils from './CameraUtils';
 import { FacingModeToCameraType, PictureSizes } from './constants';
 import * as CapabilityUtils from './CapabilityUtils';
+
+import { WebWorker } from './barcode/WorkerUtils';
+
+import BarcodeScannerWorker from './barcode/BarcodeScannerWorker.js';
 
 export { ImageType, CameraType, CaptureOptions };
 
@@ -30,13 +40,22 @@ class CameraModule {
   settings: MediaTrackSettings | null = null;
   onCameraReady: OnCameraReadyListener = () => {};
   onMountError: OnMountErrorListener = () => {};
-  _pictureSize?: string;
-  _isStartingCamera = false;
 
-  _autoFocus: string = 'continuous';
+  private _pictureSize?: string;
+  private _isStartingCamera = false;
+  private _autoFocus: string = 'continuous';
+  private _flashMode: string = 'off';
+  private _whiteBalance: string = 'continuous';
+  private _cameraType: CameraType = CameraType.front;
+  private _zoom: number = 1;
+
+  private webWorker?: WebWorker;
+  private barcodeLoop?: NodeJS.Timeout;
+
   get autoFocus(): string {
     return this._autoFocus;
   }
+
   async setAutoFocusAsync(value: string): Promise<void> {
     if (value === this.autoFocus) {
       return;
@@ -45,10 +64,10 @@ class CameraModule {
     await this._syncTrackCapabilities();
   }
 
-  _flashMode: string = 'off';
   get flashMode(): string {
     return this._flashMode;
   }
+
   async setFlashModeAsync(value: string): Promise<void> {
     if (value === this.flashMode) {
       return;
@@ -56,8 +75,6 @@ class CameraModule {
     this._flashMode = value;
     await this._syncTrackCapabilities();
   }
-
-  _whiteBalance: string = 'continuous';
 
   get whiteBalance(): string {
     return this._whiteBalance;
@@ -71,8 +88,6 @@ class CameraModule {
     await this._syncTrackCapabilities();
   }
 
-  _cameraType: CameraType = CameraType.front;
-
   get type(): CameraType {
     return this._cameraType;
   }
@@ -85,8 +100,6 @@ class CameraModule {
     await this.resumePreview();
   }
 
-  _zoom: number = 1;
-
   get zoom(): number {
     return this._zoom;
   }
@@ -98,6 +111,15 @@ class CameraModule {
     //TODO: Bacon: IMP on non-android devices
     this._zoom = value;
     await this._syncTrackCapabilities();
+  }
+
+  constructor(videoElement: HTMLVideoElement) {
+    this.videoElement = videoElement;
+    if (this.videoElement) {
+      this.videoElement.addEventListener('loadedmetadata', () => {
+        this._syncTrackCapabilities();
+      });
+    }
   }
 
   setPictureSize(value: string) {
@@ -116,15 +138,6 @@ class CameraModule {
     const aspectRatio = parseFloat(width) / parseFloat(height);
 
     this._pictureSize = value;
-  }
-
-  constructor(videoElement: HTMLVideoElement) {
-    this.videoElement = videoElement;
-    if (this.videoElement) {
-      this.videoElement.addEventListener('loadedmetadata', () => {
-        this._syncTrackCapabilities();
-      });
-    }
   }
 
   async onCapabilitiesReady(track: MediaStreamTrack): Promise<void> {
@@ -156,7 +169,7 @@ class CameraModule {
     await track.applyConstraints({ advanced: [constraints] as any });
   }
 
-  async _syncTrackCapabilities(): Promise<void> {
+  private async _syncTrackCapabilities(): Promise<void> {
     if (this.stream) {
       await Promise.all(this.stream.getTracks().map(track => this.onCapabilitiesReady(track)));
     }
@@ -218,6 +231,60 @@ class CameraModule {
     return null;
   }
 
+  startScanner(settings: BarCodeSettings, callback: (results: any) => void) {
+    if (this.webWorker) {
+      this.stopScanner();
+    }
+    // Initiate web worker execute handler according to mode.
+    this.webWorker = new WebWorker(BarcodeScannerWorker);
+
+    this.webWorker.onmessage = event => {
+      if (callback && this.webWorker) {
+        if (event && Array.isArray(event.data)) {
+          for (const result of event.data) {
+            callback(result);
+          }
+        }
+        // If interval is 0 then only scan once.
+        if (settings.interval) {
+          // @ts-ignore
+          this.barcodeLoop = setTimeout(() => {
+            this.scanForBarcodes(settings.barCodeTypes);
+          }, settings.interval);
+        }
+        return;
+      }
+
+      this.stopScanner();
+    };
+
+    // Invoke the initial scan
+    this.scanForBarcodes(settings.barCodeTypes);
+  }
+
+  stopScanner() {
+    // Stop web-worker and clear the component
+    if (this.webWorker) {
+      this.webWorker.terminate();
+      this.webWorker = undefined;
+    }
+
+    // @ts-ignore
+    clearTimeout(this.barcodeLoop);
+  }
+
+  private scanForBarcodes(types: string[], config: PictureOptions = {}) {
+    if (!this.webWorker)
+      throw new Error('Cannot process a barcode before the worker has been created.');
+    const image = Utils.captureImageData(this.videoElement, config);
+    this.invokeWorker({ image, types });
+  }
+
+  private invokeWorker(payload: any) {
+    if (!this.webWorker || !payload) return;
+    this.webWorker.postMessage({ module: 'expo-barcode-scanner', payload });
+  }
+
   takePicture(config: PictureOptions): CapturedPicture {
     const base64 = Utils.captureImage(this.videoElement, config);
 
@@ -255,10 +322,11 @@ class CameraModule {
     return PictureSizes;
   };
 
-  unmount = () => {
+  unmount() {
+    this.stopScanner();
     this.settings = null;
     this.stream = null;
-  };
+  }
 }
 
 export default CameraModule;

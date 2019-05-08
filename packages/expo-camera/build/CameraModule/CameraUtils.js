@@ -38,9 +38,8 @@ function ensureCaptureOptions(config) {
     return captureOptions;
 }
 const DEFAULT_QUALITY = 0.92;
-export function captureImage(video, pictureOptions) {
-    const config = ensureCaptureOptions(pictureOptions);
-    const { scale, imageType, quality = DEFAULT_QUALITY, isImageMirror } = config;
+export function captureImageContext(video, config) {
+    const { scale, isImageMirror } = config;
     const { videoWidth, videoHeight } = video;
     const { width, height } = getImageSize(videoWidth, videoHeight, scale);
     // Build the canvas size and draw the camera image to the context from video
@@ -55,9 +54,28 @@ export function captureImage(video, pictureOptions) {
     if (isImageMirror) {
         context.setTransform(-1, 0, 0, 1, canvas.width, 0);
     }
+    context.imageSmoothingEnabled = true;
     context.drawImage(video, 0, 0, width, height);
-    const base64 = toDataURL(canvas, imageType, quality);
-    return base64;
+    return canvas;
+}
+export function captureImage(video, pictureOptions) {
+    const config = ensureCaptureOptions(pictureOptions);
+    const canvas = captureImageContext(video, config);
+    const { imageType, quality = DEFAULT_QUALITY } = config;
+    return toDataURL(canvas, imageType, quality);
+}
+export function captureImageData(video, pictureOptions = {}) {
+    const config = ensureCaptureOptions(pictureOptions);
+    const canvas = captureImageContext(video, config);
+    const context = canvas.getContext('2d');
+    if (!context || !canvas.width || !canvas.height) {
+        return null;
+    }
+    // const image = new Image();
+    // image.src = require('./qr.png');
+    // context.drawImage(image, 0, 0);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    return imageData;
 }
 function getUserMedia(constraints) {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -99,5 +117,21 @@ export async function getStreamDevice(preferredCameraType, preferredWidth, prefe
     const constraints = getIdealConstraints(preferredCameraType, preferredWidth, preferredHeight);
     const stream = await getUserMedia(constraints);
     return stream;
+}
+function drawLine(context, points, options = {}) {
+    const { color = 'blue', lineWidth = 4 } = options;
+    const [start, end] = points;
+    context.beginPath();
+    context.moveTo(start.x, start.y);
+    context.lineTo(end.x, end.y);
+    context.lineWidth = lineWidth;
+    context.strokeStyle = color;
+    context.stroke();
+}
+export function drawBarcodeBounds(context, { topLeftCorner, topRightCorner, bottomRightCorner, bottomLeftCorner }, options) {
+    drawLine(context, [topLeftCorner, topRightCorner], options);
+    drawLine(context, [topRightCorner, bottomRightCorner], options);
+    drawLine(context, [bottomRightCorner, bottomLeftCorner], options);
+    drawLine(context, [bottomLeftCorner, topLeftCorner], options);
 }
 //# sourceMappingURL=CameraUtils.js.map
