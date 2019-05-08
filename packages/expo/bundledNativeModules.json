@@ -52,13 +52,14 @@
   "expo-web-browser": "~5.0.0-rc.0",
   "lottie-react-native": "2.5.0",
   "react-native-branch": "2.2.5",
-  "react-native-gesture-handler": "~1.1.0",
+  "react-native-gesture-handler": "~1.2.1",
   "react-native-maps": "expo/react-native-maps#v0.23.0-exp.0",
   "react-native-reanimated": "1.0.0-alpha.11",
   "react-native-screens": "1.0.0-alpha.22",
   "react-native-svg": "9.3.6",
   "react-native-view-shot": "2.5.0",
   "react-native-webview": "5.4.6",
+<<<<<<< HEAD
   "unimodules-barcode-scanner-interface": "~2.0.0-rc.0",
   "unimodules-camera-interface": "~2.0.0-rc.0",
   "unimodules-constants-interface": "~2.0.0-rc.0",
@@ -70,3 +71,16 @@
   "unimodules-sensors-interface": "~2.0.0-rc.0",
   "unimodules-task-manager-interface": "~2.0.0-rc.0"
 }
+=======
+  "unimodules-barcode-scanner-interface": "~1.0.0",
+  "unimodules-camera-interface": "~1.0.0",
+  "unimodules-constants-interface": "~1.0.0",
+  "unimodules-face-detector-interface": "~1.0.0",
+  "unimodules-file-system-interface": "~1.0.0",
+  "unimodules-font-interface": "~1.0.0",
+  "unimodules-image-loader-interface": "~1.0.0",
+  "unimodules-permissions-interface": "~1.0.0",
+  "unimodules-sensors-interface": "~1.0.0",
+  "unimodules-task-manager-interface": "~1.0.0"
+}
+>>>>>>> Update react-native-gesture-handler to 1.2.1 and correct updating script.
