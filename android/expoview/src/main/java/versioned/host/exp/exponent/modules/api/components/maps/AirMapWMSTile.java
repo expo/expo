@@ -10,43 +10,54 @@ import com.google.android.gms.maps.model.UrlTileProvider;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class AirMapUrlTile extends AirMapFeature {
+public class AirMapWMSTile extends AirMapFeature {
+  private static final double[] mapBound = {-20037508.34789244, 20037508.34789244};
+  private static final double FULL = 20037508.34789244 * 2;
 
-  class AIRMapUrlTileProvider extends UrlTileProvider {
+    class AIRMapGSUrlTileProvider extends UrlTileProvider {
     private String urlTemplate;
-
-    public AIRMapUrlTileProvider(int width, int height, String urlTemplate) {
+    private int width;
+    private int height;
+    public AIRMapGSUrlTileProvider(int width, int height, String urlTemplate) {
       super(width, height);
       this.urlTemplate = urlTemplate;
+      this.width = width;
+      this.height = height;
     }
 
     @Override
     public synchronized URL getTileUrl(int x, int y, int zoom) {
-
-      if (AirMapUrlTile.this.flipY == true) {
-        y = (1 << zoom) - y - 1;
+      if(AirMapWMSTile.this.maximumZ > 0 && zoom > maximumZ) {
+          return null;
       }
-
+      if(AirMapWMSTile.this.minimumZ > 0 && zoom < minimumZ) {
+          return null;
+      }
+      double[] bb = getBoundingBox(x, y, zoom);
       String s = this.urlTemplate
-          .replace("{x}", Integer.toString(x))
-          .replace("{y}", Integer.toString(y))
-          .replace("{z}", Integer.toString(zoom));
+          .replace("{minX}", Double.toString(bb[0]))
+          .replace("{minY}", Double.toString(bb[1]))
+          .replace("{maxX}", Double.toString(bb[2]))
+          .replace("{maxY}", Double.toString(bb[3]))
+          .replace("{width}", Integer.toString(width))
+          .replace("{height}", Integer.toString(height));
       URL url = null;
-
-      if(AirMapUrlTile.this.maximumZ > 0 && zoom > maximumZ) {
-        return url;
-      }
-
-      if(AirMapUrlTile.this.minimumZ > 0 && zoom < minimumZ) {
-        return url;
-      }
-
       try {
         url = new URL(s);
       } catch (MalformedURLException e) {
         throw new AssertionError(e);
       }
       return url;
+    }
+
+    private double[] getBoundingBox(int x, int y, int zoom) {
+      double tile = FULL / Math.pow(2, zoom);
+      return new double[]{
+              mapBound[0] + x * tile,
+              mapBound[1] - (y + 1) * tile,
+              mapBound[0] + (x + 1) * tile,
+              mapBound[1] - y * tile
+      };
     }
 
     public void setUrlTemplate(String urlTemplate) {
@@ -56,15 +67,16 @@ public class AirMapUrlTile extends AirMapFeature {
 
   private TileOverlayOptions tileOverlayOptions;
   private TileOverlay tileOverlay;
-  private AIRMapUrlTileProvider tileProvider;
+  private AIRMapGSUrlTileProvider tileProvider;
 
   private String urlTemplate;
   private float zIndex;
   private float maximumZ;
   private float minimumZ;
-  private boolean flipY;
+  private int tileSize;
+  private float opacity;
 
-  public AirMapUrlTile(Context context) {
+  public AirMapWMSTile(Context context) {
     super(context);
   }
 
@@ -98,11 +110,16 @@ public class AirMapUrlTile extends AirMapFeature {
       tileOverlay.clearTileCache();
     }
   }
-
-  public void setFlipY(boolean flipY) {
-    this.flipY = flipY;
+  public void setTileSize(int tileSize) {
+    this.tileSize = tileSize;
     if (tileOverlay != null) {
       tileOverlay.clearTileCache();
+    }
+  }
+  public void setOpacity(float opacity) {
+    this.opacity = opacity;
+    if (tileOverlay != null) {
+        tileOverlay.setTransparency(1-opacity);
     }
   }
 
@@ -116,7 +133,8 @@ public class AirMapUrlTile extends AirMapFeature {
   private TileOverlayOptions createTileOverlayOptions() {
     TileOverlayOptions options = new TileOverlayOptions();
     options.zIndex(zIndex);
-    this.tileProvider = new AIRMapUrlTileProvider(256, 256, this.urlTemplate);
+    options.transparency(1-opacity);
+    this.tileProvider = new AIRMapGSUrlTileProvider(this.tileSize, this.tileSize, this.urlTemplate);
     options.tileProvider(this.tileProvider);
     return options;
   }
