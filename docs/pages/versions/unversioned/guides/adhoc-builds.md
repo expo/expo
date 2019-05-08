@@ -17,7 +17,7 @@ Expo CLI is the tool for developing and building Expo apps. Run `npm install -g 
 If you haven't created an Expo account before, you'll be asked to create one when running the build command.
 
 **Windows users** must have WSL enabled. We recommend picking Ubuntu from the Windows Store. Be sure
-to Launch Ubuntu at least once. After that, use an Admin powershell to run:
+to launch Ubuntu at least once. After that, use an Admin powershell to run:
 `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux`
 
 ## 2. Start the build
