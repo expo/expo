@@ -37,7 +37,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentIntentService;
@@ -266,23 +265,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   public void shouldCheckOptions() {
     if (mManifestUrl != null && mKernel.hasOptionsForManifestUrl(mManifestUrl)) {
       handleOptions(mKernel.popOptionsForManifestUrl(mManifestUrl));
-    }
-
-    // this is old code from before `Expo.Notifications.dismissAllNotificationsAsync` existed
-    // since removing it is a breaking change (people have to call ^^^ explicitly if they want
-    // this behavior) we only do it starting in SDK 28
-    // TODO: eric: remove this once SDK 27 is phased out
-    if (mSDKVersion != null && ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("28.0.0")) {
-      clearNotifications();
-    }
-  }
-
-  // TODO: eric: remove this once SDK 27 is phased out
-  protected void clearNotifications() {
-    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
-    if (experienceId != null) {
-      ExponentNotificationManager manager = new ExponentNotificationManager(this);
-      manager.cancelAll(experienceId);
     }
   }
 

@@ -162,21 +162,6 @@ dependencies {
   // BEGIN_SDK_31
   api 'host.exp:reactandroid-abi31_0_0:1.0.0'
   // END_SDK_31
-  // BEGIN_SDK_30
-  api 'host.exp:reactandroid-abi30_0_0:1.0.0'
-  // END_SDK_30
-  // BEGIN_SDK_29
-  api 'host.exp:reactandroid-abi29_0_0:1.0.0'
-  // END_SDK_29
-  // BEGIN_SDK_28
-  api 'host.exp:reactandroid-abi28_0_0:1.0.0'
-  // END_SDK_28
-  // BEGIN_SDK_27
-  api 'host.exp:reactandroid-abi27_0_0:1.0.0'
-  // END_SDK_27
-  // BEGIN_SDK_26
-  api 'host.exp:reactandroid-abi26_0_0:1.0.0'
-  // END_SDK_26
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE

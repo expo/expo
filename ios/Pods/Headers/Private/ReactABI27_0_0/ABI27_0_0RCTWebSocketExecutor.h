@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI27_0_0/Libraries/WebSocket/ABI27_0_0RCTWebSocketExecutor.h

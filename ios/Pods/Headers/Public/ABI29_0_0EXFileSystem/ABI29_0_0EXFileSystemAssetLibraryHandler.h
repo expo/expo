@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI29_0_0/EXFileSystem/ABI29_0_0EXFileSystem/ABI29_0_0EXFileSystemAssetLibraryHandler.h
