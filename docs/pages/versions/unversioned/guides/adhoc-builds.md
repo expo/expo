@@ -28,7 +28,7 @@ Run `expo client:ios`.
 
 You are given a choice of letting the `expo` client create the
 necessary credentials for you, while still having a chance to provide
-your own overrides. Your Apple ID and password is used locally and
+your own overrides. Your Apple ID and password are used locally and
 never saved on Expo's servers.
 
 ```bash
