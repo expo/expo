@@ -118,4 +118,6 @@ extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 
 - (void)clearChildCache;
 
+- (void)clearPath;
+
 @end

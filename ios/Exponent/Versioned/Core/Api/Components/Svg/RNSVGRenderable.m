@@ -10,6 +10,7 @@
 #import "RNSVGClipPath.h"
 #import "RNSVGMask.h"
 #import "RNSVGViewBox.h"
+#import "RNSVGVectorEffect.h"
 
 @implementation RNSVGRenderable
 {
@@ -141,6 +142,15 @@
     }
     [self invalidate];
     _strokeDashoffset = strokeDashoffset;
+}
+
+- (void)setVectorEffect:(RNSVGVectorEffect)vectorEffect
+{
+    if (vectorEffect == _vectorEffect) {
+        return;
+    }
+    [self invalidate];
+    _vectorEffect = vectorEffect;
 }
 
 - (void)setPropList:(NSArray<NSString *> *)propList
@@ -304,6 +314,11 @@ UInt32 saturate(CGFloat value) {
     CGRect clientRect = CGRectApplyAffineTransform(pathBounds, svgToClientTransform);
 
     self.clientRect = clientRect;
+
+    if (_vectorEffect == kRNSVGVectorEffectNonScalingStroke) {
+        path = CGPathCreateCopyByTransformingPath(path, &svgToClientTransform);
+        CGContextConcatCTM(context, CGAffineTransformInvert(svgToClientTransform));
+    }
 
     CGAffineTransform vbmatrix = self.svgView.getViewBoxTransform;
     CGAffineTransform transform = CGAffineTransformConcat(self.matrix, self.transforms);
@@ -493,12 +508,12 @@ UInt32 saturate(CGFloat value) {
 
 - (void)mergeProperties:(__kindof RNSVGRenderable *)target
 {
-    self.merging = true;
     NSArray<NSString *> *targetAttributeList = [target getAttributeList];
 
     if (targetAttributeList.count == 0) {
         return;
     }
+    self.merging = true;
 
     NSMutableArray* attributeList = [self.propList mutableCopy];
     _originProperties = [[NSMutableDictionary alloc] init];

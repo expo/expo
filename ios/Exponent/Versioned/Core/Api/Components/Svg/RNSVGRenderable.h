@@ -12,6 +12,7 @@
 #import "RNSVGCGFCRule.h"
 #import "RNSVGNode.h"
 #import "RNSVGLength.h"
+#import "RNSVGVectorEffect.h"
 #import "RNSVGPercentageConverter.h"
 
 @interface RNSVGRenderable : RNSVGNode
@@ -27,6 +28,7 @@
 @property (nonatomic, assign) CGFloat strokeMiterlimit;
 @property (nonatomic, strong) NSArray<RNSVGLength *> *strokeDasharray;
 @property (nonatomic, assign) CGFloat strokeDashoffset;
+@property (nonatomic, assign) RNSVGVectorEffect vectorEffect;
 @property (nonatomic, copy) NSArray<NSString *> *propList;
 
 - (void)setHitArea:(CGPathRef)path;
