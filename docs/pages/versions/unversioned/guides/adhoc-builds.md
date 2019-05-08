@@ -67,7 +67,7 @@ to upload your own certificates, we recommend following [this excellent guide on
 is required to upload your own certificate to Expo's service. Please enter a password
 when prompted. We'll ask you similar questions about your choice regarding
 Push Notifications service key and provisioning profile. Remember that Push Notifications service keys
-can be reused across different Expo apps as well.
+are shared across all apps published under the same Apple Developer account.
 
 ### 2b. Determine UDID of your iOS Device
 
