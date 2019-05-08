@@ -108,7 +108,7 @@ You will need to open this QR code on the iOS device you wish to register. If yo
 
 ### 2c. Wait for it to finish building
 
-You can monitor the status of your Expo Client build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.io/builds)
+You can monitor the status of your Expo Client build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.io/builds).
 
 ```bash
 ==================
