@@ -1,5 +1,5 @@
 export type TrackingOptions = {
-  usernameOrEmail: string;
+  usernameOrEmail?: string;
   [key: string]: any;
 };
 
