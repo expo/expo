@@ -8,7 +8,7 @@ Build and install a custom version of the Expo Client (link) with your own Apple
 
 ## 0. Prerequisites
 
-You'll need an [Apple Developer Account](https://developer.apple.com/programs)
+You'll need a paid [Apple Developer Account](https://developer.apple.com/programs).
 
 ## 1. Install Expo CLI
 
