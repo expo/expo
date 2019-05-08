@@ -403,7 +403,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 {
   // TODO check that the bridge is still valid after the dispatch
   // TODO check if the queues are ok
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] addUIBlock:^(id view) {
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXVideoView class]]) {
       block(view);
     } else {

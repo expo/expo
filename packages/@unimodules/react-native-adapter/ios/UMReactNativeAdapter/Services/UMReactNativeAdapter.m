@@ -104,6 +104,42 @@ UM_REGISTER_MODULE();
   [self.bridge dispatchBlock:block queue:RCTJSThread];
 }
 
+- (void)executeUIBlock:(void (^)(NSDictionary<id,UIView *> *))block {
+  __weak UMReactNativeAdapter *weakSelf = self;
+  dispatch_async(_bridge.uiManager.methodQueue, ^{
+    __strong UMReactNativeAdapter *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        block(viewRegistry);
+      }];
+      [strongSelf.bridge.uiManager setNeedsLayout];
+    }
+  });
+}
+
+
+- (void)executeUIBlock:(void (^)(id))block forView:(id)viewId implementingProtocol:(Protocol *)protocol {
+  [self executeUIBlock:^(UIView *view) {
+    if (![view.class conformsToProtocol:protocol]) {
+      block(nil);
+    } else {
+      block(view);
+    }
+  } forView:viewId];
+}
+
+
+- (void)executeUIBlock:(void (^)(id))block forView:(id)viewId ofClass:(Class)klass {
+  [self executeUIBlock:^(UIView *view) {
+    if (![view isKindOfClass:klass]) {
+      block(nil);
+    } else {
+      block(view);
+    }
+  } forView:viewId];
+}
+
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
@@ -223,6 +259,21 @@ UM_REGISTER_MODULE();
         UIView *view = viewRegistry[viewId];
         block(view);
       }];
+    }
+  });
+}
+
+- (void)executeUIBlock:(void (^)(UIView *view))block forView:(id)viewId
+{
+  __weak UMReactNativeAdapter *weakSelf = self;
+  dispatch_async(_bridge.uiManager.methodQueue, ^{
+    __strong UMReactNativeAdapter *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        UIView *view = viewRegistry[viewId];
+        block(view);
+      }];
+      [strongSelf.bridge.uiManager setNeedsLayout];
     }
   });
 }
