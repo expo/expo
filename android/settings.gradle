@@ -8,11 +8,6 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
     // ADD_NEW_SUPPORTED_ABIS_HERE
     "abi32_0_0",
     "abi31_0_0",
-    "abi30_0_0",
-    "abi29_0_0",
-    "abi28_0_0",
-    "abi27_0_0",
-    "abi26_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")

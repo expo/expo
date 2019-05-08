@@ -37,7 +37,7 @@
   "expo-localization": "~5.0.0-rc.0",
   "expo-location": "~5.0.0-rc.0",
   "expo-mail-composer": "~5.0.0-rc.0",
-  "expo-media-library": "~5.0.0-rc.0",
+  "expo-media-library": "~5.0.0-rc.1",
   "expo-payments-stripe": "~5.0.0-rc.0",
   "expo-permissions": "~5.0.0-rc.0",
   "expo-print": "~5.0.0-rc.0",

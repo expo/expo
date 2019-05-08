@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI27_0_0/Expo/Core/Api/AV/ABI27_0_0EXAVObject.h

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI28_0_0/ReactCommon/ABI28_0_0jsinspector/ABI28_0_0InspectorInterfaces.h
