@@ -174,38 +174,6 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-31-0-0", false);
   }
 
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("30.0.0")
-  public void sdk30TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-30-0-0", false);
-  }
-
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("28.0.0")
-  public void sdk28TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-28-0-0", false);
-  }
-
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("27.0.0")
-  public void sdk27TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-27-0-0", false);
-  }
-
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("26.0.0")
-  public void sdk26TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-26-0-0", false);
-  }
-
   @Test
   @ExpoAlwaysPassThroughFilter
   public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {}
