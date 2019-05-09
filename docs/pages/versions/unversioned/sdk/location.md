@@ -224,6 +224,8 @@ Registers for receiving location updates that can also come when the app is in t
         -   **notificationTitle (_string_)** -- Title of the foreground service notification. *required*
         -   **notificationBody (_string_)** -- Subtitle of the foreground service notification. *required*
         -   **notificationColor (_string_)** -- Color of the foreground service notification. Accepts `#RRGGBB` and `#AARRGGBB` hex formats. *optional*
+    -   **pausesUpdatesAutomatically (_boolean_)** -- A boolean value indicating whether the location manager can pause location updates to improve battery life without sacrificing location data. When this option is set to `true`, the location manager pauses updates (and powers down the appropriate hardware) at times when the location data is unlikely to change. You can help the determination of when to pause location updates by assigning a value to the `activityType` property. Defaults to `false`. (**iOS only**)
+    -   **activityType : [Location.ActivityType](#activityType)** -- The type of user activity associated with the location updates. See [Apple docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620567-activitytype) for more details. Defaults to `Location.ActivityType.Other`. (**iOS only**)
 
 > Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
 
@@ -384,6 +386,16 @@ Object of type `Region` includes following fields:
 | `Accuracy.High`              |   4   | Accurate to within ten meters of the desired target.                                          |
 | `Accuracy.Highest`           |   5   | The best level of accuracy available.                                                         |
 | `Accuracy.BestForNavigation` |   6   | The highest possible accuracy that uses additional sensor data to facilitate navigation apps. |
+
+### `Location.ActivityType`
+
+| ActivityType                        | Value | Description                                                                                                           |
+| ----------------------------------- |:-----:| --------------------------------------------------------------------------------------------------------------------- |
+| `ActivityType.Other`                |   1   | Default activity type. Use it if there is no other type that matches the activity you track.                          |
+| `ActivityType.AutomotiveNavigation` |   2   | Location updates are being used specifically during vehicular navigation to track location changes to the automobile. |
+| `ActivityType.Fitness`              |   3   | Use this activity type if you track fitness activities such as walking, running, cycling, and so on.                  |
+| `ActivityType.OtherNavigation`      |   4   | Activity type for movements for other types of vehicular navigation that are not automobile related.                  |
+| `ActivityType.Airborne`             |   5   | Intended for airborne activities. **Available since iOS 12.0, fall backs to `ActivityType.Other` otherwise.**         |
 
 ### `Location.GeofencingEventType`
 

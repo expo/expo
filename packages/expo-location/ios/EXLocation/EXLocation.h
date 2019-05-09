@@ -34,5 +34,6 @@ typedef NS_ENUM(NSUInteger, EXGeofencingRegionState) {
 
 + (NSDictionary *)exportLocation:(CLLocation *)location;
 + (CLLocationAccuracy)CLLocationAccuracyFromOption:(EXLocationAccuracy)accuracy;
++ (CLActivityType)CLActivityTypeFromOption:(NSInteger)activityType;
 
 @end
