@@ -174,7 +174,7 @@
     }
 
     if (!event) {
-        NSPredicate *const anyActive = [NSPredicate predicateWithFormat:@"active == TRUE"];
+        NSPredicate *const anyActive = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@ AND active == TRUE", [RNSVGNode class]];
         NSArray *const filtered = [self.subviews filteredArrayUsingPredicate:anyActive];
         if ([filtered count] != 0) {
             return [filtered.lastObject hitTest:transformed withEvent:event];
