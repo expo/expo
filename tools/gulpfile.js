@@ -123,7 +123,7 @@ gulp.task('update-react-native-svg', () => {
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-svg',
-    repoUrl: 'https://github.com/expo/react-native-svg.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-svg.git',
     sourceIosPath: 'ios',
     targetIosPath: 'Api/Components/Svg',
     sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
@@ -141,13 +141,13 @@ gulp.task('update-react-native-gesture-handler', () => {
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-gesture-handler',
-    repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+    repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
     sourceIosPath: 'ios',
     sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
     targetIosPath: 'Api/Components/GestureHandler',
     targetAndroidPath: 'modules/api/components/gesturehandler/react',
-    sourceAndroidPackage: 'com.swmansion.gesturehandler.react',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler.react',
+    sourceAndroidPackage: 'com.swmansion',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components',
     installableInManagedApps: true,
   });
 });
@@ -156,7 +156,7 @@ gulp.task('update-react-native-gesture-handler-lib', () => {
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-gesture-handler',
-    repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+    repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
     sourceIosPath: 'ios',
     targetIosPath: '',
     sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
