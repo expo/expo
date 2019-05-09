@@ -7,7 +7,7 @@ export default () => {
         if (e.data && e.data.module === 'expo-barcode-scanner') {
             const { payload = {} } = e.data;
             let results = [];
-            const { image, types } = payload;
+            const { image, types, options } = payload;
             if (!image || !Array.isArray(types)) {
                 // @ts-ignore
                 postMessage(results);
@@ -19,7 +19,7 @@ export default () => {
                     case 'qr':
                         {
                             // @ts-ignore
-                            const decoded = jsQR(image.data, image.width, image.height);
+                            const decoded = jsQR(image.data, image.width, image.height, options);
                             if (decoded) {
                                 decoded.type = type;
                                 results.push(decoded);

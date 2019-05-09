@@ -13,4 +13,4 @@ export declare function drawBarcodeBounds(context: CanvasRenderingContext2D, { t
     topRightCorner: any;
     bottomRightCorner: any;
     bottomLeftCorner: any;
-}, options: any): void;
+}, options?: any): void;

@@ -21,5 +21,9 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     }) => void;
     private setRef;
     private updateScanner;
+    canvas?: HTMLCanvasElement;
+    private setCanvasRef;
+    private updateCameraCanvas;
+    private shouldRenderIndicator;
     render(): JSX.Element;
 }

@@ -39,7 +39,8 @@ export type CapturedPicture = {
 
 export type BarCodeSettings = {
   barCodeTypes: string[];
-  interval: number;
+  interval?: number;
+  shouldRenderIndicator?: boolean;
 };
 
 export type BarCodeScanningResult = { type: string; data: string };

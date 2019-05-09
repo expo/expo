@@ -7,8 +7,10 @@ declare type OnMountErrorListener = ({ nativeEvent: Error }: {
 }) => void;
 declare class CameraModule {
     videoElement: HTMLVideoElement;
+    canvas?: HTMLCanvasElement;
     stream: MediaStream | null;
     settings: MediaTrackSettings | null;
+    drawBarcodeOptions: any;
     onCameraReady: OnCameraReadyListener;
     onMountError: OnMountErrorListener;
     private _pictureSize?;
@@ -37,6 +39,7 @@ declare class CameraModule {
     setVideoSource(stream: MediaStream | MediaSource | Blob | null): void;
     setSettings(stream: MediaStream | null): void;
     setStream(stream: MediaStream | null): void;
+    private isImageMirrored;
     getActualCameraType(): CameraType | null;
     ensureCameraIsRunningAsync(): Promise<void>;
     resumePreview(): Promise<MediaStream | null>;

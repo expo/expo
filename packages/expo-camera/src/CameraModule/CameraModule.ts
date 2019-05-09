@@ -36,8 +36,11 @@ type OnMountErrorListener = ({ nativeEvent: Error }) => void;
 
 class CameraModule {
   videoElement: HTMLVideoElement;
+  canvas?: HTMLCanvasElement;
+
   stream: MediaStream | null = null;
   settings: MediaTrackSettings | null = null;
+  drawBarcodeOptions: any;
   onCameraReady: OnCameraReadyListener = () => {};
   onMountError: OnMountErrorListener = () => {};
 
@@ -197,10 +200,12 @@ class CameraModule {
     this.setVideoSource(stream);
   }
 
+  private isImageMirrored: boolean = true;
   getActualCameraType(): CameraType | null {
     if (this.settings) {
       // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
       const { facingMode = 'user' } = this.settings;
+      this.isImageMirrored = facingMode === 'user';
       return FacingModeToCameraType[facingMode];
     }
     return null;
@@ -241,16 +246,80 @@ class CameraModule {
     this.webWorker.onmessage = event => {
       if (callback && this.webWorker) {
         if (event && Array.isArray(event.data)) {
+          let context: CanvasRenderingContext2D | undefined;
+          if (settings.shouldRenderIndicator && this.canvas) {
+            const { videoWidth, videoHeight } = this.videoElement;
+            const elementWidth: number = this.videoElement.offsetWidth;
+            const elementHeight: number = this.videoElement.offsetHeight;
+
+            const videoRatio = scaleAspectFill(
+              videoWidth,
+              videoHeight,
+              elementWidth,
+              elementHeight
+            );
+            // let videoRatio = scalePreserveAspectRatio(videoWidth, videoHeight, elementWidth, elementHeight);
+
+            this.canvas.width = elementWidth;
+            this.canvas.height = elementHeight;
+
+            const dW = videoWidth * videoRatio;
+            const dH = videoHeight * videoRatio;
+
+            const diffW = elementWidth - dW;
+            const diffH = elementHeight - dH;
+            const xScale = (elementWidth - diffW) / videoWidth;
+            const yScale = (elementHeight - diffH) / videoHeight;
+
+            const xOffset = diffW * 0.5;
+            const yOffset = diffH * 0.5;
+
+            context = this.canvas.getContext('2d')!;
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+            context.save();
+            if (this.isImageMirrored) {
+              context.setTransform(-1, 0, 0, 1, this.canvas.width, 0);
+            }
+
+            // DEBUG: Screen bounds
+            // context.strokeStyle = 'rgba(200, 0, 0, 1)';
+            // context.strokeRect(20, 20, this.canvas.width - 40, this.canvas.height - 40);
+
+            context.save();
+            context.translate(xOffset, yOffset);
+            context.scale(xScale, yScale);
+
+            // DEBUG: If this doesn't match the edges, something is wrong
+            // context.strokeStyle = 'rgba(0, 200, 0, 1)';
+            // context.strokeRect(0, 0, videoWidth, videoHeight);
+          }
           for (const result of event.data) {
+            if (context) {
+              Utils.drawBarcodeBounds(context, result.location, this.drawBarcodeOptions);
+            }
             callback(result);
+          }
+
+          if (context) {
+            // Restore the transform
+            context.restore();
+            context.restore();
           }
         }
         // If interval is 0 then only scan once.
         if (settings.interval) {
-          // @ts-ignore
-          this.barcodeLoop = setTimeout(() => {
-            this.scanForBarcodes(settings.barCodeTypes);
-          }, settings.interval);
+          if (settings.interval < 0) {
+            // @ts-ignore
+            this.barcodeLoop = requestAnimationFrame(() => {
+              this.scanForBarcodes(settings.barCodeTypes);
+            });
+          } else {
+            // @ts-ignore
+            this.barcodeLoop = setTimeout(() => {
+              this.scanForBarcodes(settings.barCodeTypes);
+            }, settings.interval);
+          }
         }
         return;
       }
@@ -274,10 +343,12 @@ class CameraModule {
   }
 
   private scanForBarcodes(types: string[], config: PictureOptions = {}) {
-    if (!this.webWorker)
+    if (!this.webWorker) {
       throw new Error('Cannot process a barcode before the worker has been created.');
+    }
     const image = Utils.captureImageData(this.videoElement, config);
-    this.invokeWorker({ image, types });
+    // this.canvas.drawImage
+    this.invokeWorker({ image, types, options: { inversionAttempts: 'dontInvert' } });
   }
 
   private invokeWorker(payload: any) {
@@ -330,3 +401,10 @@ class CameraModule {
 }
 
 export default CameraModule;
+
+function scalePreserveAspectRatio(imgW, imgH, maxW, maxH) {
+  return Math.min(maxW / imgW, maxH / imgH);
+}
+function scaleAspectFill(imgW, imgH, maxW, maxH) {
+  return Math.max(maxW / imgW, maxH / imgH);
+}
