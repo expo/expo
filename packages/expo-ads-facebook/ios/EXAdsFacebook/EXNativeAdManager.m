@@ -52,7 +52,7 @@ UM_EXPORT_METHOD_AS(registerViewsForInteraction,
                     reject:(UMPromiseRejectBlock)reject)
 {
   id<UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
-  [uiManager addUIBlock:^(NSDictionary<id,UIView *> * viewRegistry) {
+  [uiManager executeUIBlock:^(NSDictionary<id,UIView *> * viewRegistry) {
     UIView *mediaView = nil;
     UIView *adIconView = nil;
     UIView *nativeAdView = nil;

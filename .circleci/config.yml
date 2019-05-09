@@ -144,6 +144,7 @@ workflows:
             branches:
               only:
                 - master
+                - /.*all-ci.*/
       - docs_deploy:
           requires:
             - docs_approve_deploy
@@ -176,7 +177,8 @@ workflows:
           filters:
             branches:
               only:
-                - /^sdk-\d+$/
+                - /sdk-\d+/
+                - /.*all-ci.*/
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
@@ -187,11 +189,13 @@ workflows:
 
   client_shell_app:
     jobs:
-      - expo_client_before_approval
       - expo_client_approve_build:
           type: approval
-          requires:
-            - expo_client_before_approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
       - expo_client_build:
           requires:
             - expo_client_approve_build
@@ -371,14 +375,6 @@ jobs:
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
-  expo_client_before_approval:
-    executor: js
-    steps:
-      - run:
-          name: Approve expo_client_approve_build if you wish to build Expo Client shell app
-          command: |
-            echo "Go, find and approve expo_client_approve_build job to trigger building an Expo Client shell app"
-
   expo_client_build:
     executor: mac
     steps:
@@ -427,16 +423,16 @@ jobs:
     steps:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
-      - run:
-          name: "Skip job if tarball has already been uploaded"
-          command: bin/aws s3 ls $S3_URI && circleci step halt
       - decrypt_secrets_if_possible
       - yarn_install:
           working_directory: ~/expo/tools-public
       - yarn_install:
           working_directory: ~/expo/tools
-      - run: ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
-      - run: bin/aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+      - run: |
+          aws s3 ls $S3_URI || {
+            ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
+            aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+          }
 
   android_test_suite:
     executor: android

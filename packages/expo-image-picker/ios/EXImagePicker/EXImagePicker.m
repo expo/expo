@@ -203,6 +203,15 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
     data = UIImagePNGRepresentation(image);
+  } else if ([[imageURL absoluteString] containsString:@"ext=BMP"]) {
+      if (([[self.options objectForKey:@"allowsEditing"] boolValue]) || (quality != nil)){
+        //switch to png if editing.
+        extension = @".png";
+        data = UIImagePNGRepresentation(image);
+      } else {
+        extension = @".bmp";
+        data = nil;
+      }
   } else if ([[imageURL absoluteString] containsString:@"ext=GIF"]) {
     extension = @".gif";
     data = [NSMutableData data];

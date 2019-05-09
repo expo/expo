@@ -18,13 +18,13 @@
   },
   "dependencies": {
     "async-retry": "^1.1.4",
-    "expo": "^33.0.0-alpha.web.1",
+    "expo": "^33.0.0-alpha.web.3",
     "i18n-js": "^3.0.11",
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.4",
-    "react": "16.5.0",
-    "react-native": "0.57.1",
+    "react": "16.8.3",
+    "react-native": "0.59.5",
     "react-native-web": "^0.11.0",
     "sinon": "^7.1.1"
   },

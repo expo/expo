@@ -1,3 +1,4 @@
+import { Constants } from 'expo';
 import React from 'react';
 import {
   Alert,
@@ -15,9 +16,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
-import { Constants } from 'expo';
-import ResponsiveImage from '@expo/react-native-responsive-image';
 
 import DevIndicator from '../components/DevIndicator';
 import FriendlyUrls from '../legacy/FriendlyUrls';

@@ -1,5 +1,5 @@
-import omit from 'lodash.omit';
-import pick from 'lodash.pick';
+import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 import React from 'react';
 import { NativeModules, UIManager, ViewPropTypes, requireNativeComponent } from 'react-native';
 // To make the transition from React Native's `requireNativeComponent` to Expo's
@@ -29,7 +29,8 @@ export function requireNativeViewManager(viewName) {
     // manager
     const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
     const ReactNativeComponent = requireNativeComponent(reactNativeViewName);
-    const reactNativeUIConfiguration = UIManager[reactNativeViewName] || {
+    // @ts-ignore: UIManager.getViewManagerConfig is not declared
+    const reactNativeUIConfiguration = UIManager.getViewManagerConfig(reactNativeViewName) || {
         NativeProps: {},
         directEventTypes: {},
     };

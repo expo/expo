@@ -8,19 +8,16 @@
 
 #import <EXAV/EXAV.h>
 
-NSString * const EXAudioSessionManagerErrorDomain = @"EXAudioSessionManager";
-
 @interface EXAudioSessionManager ()
 
 @property (nonatomic, assign) BOOL sessionIsActive;
 @property (nonatomic, strong) NSString *activeCategory;
 @property (nonatomic, assign) AVAudioSessionCategoryOptions activeOptions;
 
-@property (nonatomic, weak) id activeScopedModule;
-@property (nonatomic, strong) NSMapTable<NSString *, id> *allModules;
-@property (nonatomic, strong) NSMutableSet<NSString *> *activeModules;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *moduleCategory;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *moduleCategoryOptions;
+@property (nonatomic, strong) NSPointerArray *foregroundedModules;
+@property (nonatomic, strong) NSMapTable<id, NSNumber *> *activeModules;
+@property (nonatomic, strong) NSMapTable<id, NSString *> *moduleCategory;
+@property (nonatomic, strong) NSMapTable<id, NSNumber *> *moduleCategoryOptions;
 
 @end
 
@@ -32,10 +29,10 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 {
   if ((self = [super init])) {
     _sessionIsActive = NO;
-    _allModules = [NSMapTable strongToWeakObjectsMapTable];
-    _activeModules = [[NSMutableSet alloc] init];
-    _moduleCategory = [[NSMutableDictionary alloc] init];
-    _moduleCategoryOptions = [[NSMutableDictionary alloc] init];
+    _foregroundedModules = [NSPointerArray weakObjectsPointerArray];
+    _activeModules = [NSMapTable weakToStrongObjectsMapTable];
+    _moduleCategory = [NSMapTable weakToStrongObjectsMapTable];
+    _moduleCategoryOptions = [NSMapTable weakToStrongObjectsMapTable];
 
     AVAudioSession *session = [AVAudioSession sharedInstance];
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -57,30 +54,22 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 
 - (void)handleAudioSessionInterruption:(NSNotification *)notification
 {
-  if (_activeScopedModule) {
-    [_activeScopedModule handleAudioSessionInterruption:notification];
+  for (id foregroundedModule in [_foregroundedModules allObjects]) {
+    [foregroundedModule handleAudioSessionInterruption:notification];
   }
 }
 
 - (void)handleMediaServicesReset:(NSNotification *)notification
 {
-  for (NSString *experienceId in _allModules.keyEnumerator) {
-    [[_allModules objectForKey:experienceId] handleMediaServicesReset:notification];
+  for (id foregroundedModule in [_foregroundedModules allObjects]) {
+    [foregroundedModule handleMediaServicesReset:notification];
   }
 }
 
 #pragma mark - EXAVScopedModuleDelegate
 
-+ (NSString *)getExperienceIdFromScopedModule:(id)scopedModule
-{
-  if ([scopedModule respondsToSelector:@selector(experienceId)]) {
-    return [scopedModule experienceId];
-  }
-  return nil;
-}
-
-- (BOOL)isActiveForScopedModule:(id)scopedModule {
-  return _activeScopedModule == scopedModule;
+- (BOOL)isActiveForModule:(id)module {
+  return [[_activeModules objectForKey:module] boolValue];
 }
 
 - (NSString *)activeCategory
@@ -93,100 +82,82 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   return [[AVAudioSession sharedInstance] categoryOptions];
 }
 
-- (NSError *)setActive:(BOOL)active forScopedModule:(id)scopedModule {
-  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
-  if (!experienceId) {
-    return [self _getNoExperienceIdError];
-  }
-
-  BOOL overridenActive = [_activeModules containsObject:experienceId];
+- (NSError *)setActive:(BOOL)active forModule:(id)module {
+  BOOL overridenActive = [self _shouldBeActive];
 
   if (active) {
-    [_activeModules addObject:experienceId];
+    [_activeModules setObject:@(YES) forKey:module];
   } else {
-    [_activeModules removeObject:experienceId];
+    [_activeModules removeObjectForKey:module];
   }
 
-  if (_activeScopedModule == scopedModule && active != overridenActive) {
-    return [self _updateSessionConfigurationForScopedModule:scopedModule];
+  if (active != overridenActive) {
+    return [self _updateSessionConfiguration];
   }
   return nil;
 }
 
-- (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forScopedModule:(id)scopedModule {
-  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
-  if (!experienceId) {
-    return [self _getNoExperienceIdError];
-  }
+- (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forModule:(id)module {
+  NSString *overridenCategory = [_moduleCategory objectForKey:module];
+  NSNumber *overridenOptions = [_moduleCategoryOptions objectForKey:module];
 
-  NSString *overridenCategory = [_moduleCategory objectForKey:experienceId];
-  NSNumber *overridenOptions = [_moduleCategoryOptions objectForKey:experienceId];
-
-  [_moduleCategory setObject:category forKey:experienceId];
-  [_moduleCategoryOptions setObject:@(options) forKey:experienceId];
+  [_moduleCategory setObject:category forKey:module];
+  [_moduleCategoryOptions setObject:@(options) forKey:module];
 
   BOOL oldSettingsWerePresent = overridenCategory && overridenOptions;
   BOOL newSettingsAreDifferent = !oldSettingsWerePresent || ![overridenCategory isEqualToString:category] || ([overridenOptions unsignedIntegerValue] != options);
 
-  if (_activeScopedModule == scopedModule && newSettingsAreDifferent) {
-    return [self _updateSessionConfigurationForScopedModule:scopedModule];
+  if ([[_foregroundedModules allObjects] containsObject:module] && newSettingsAreDifferent) {
+    return [self _updateSessionConfiguration];
   }
   return nil;
 }
 
-- (void)scopedModuleDidBackground:(id)scopedModule
+- (void)moduleDidBackground:(id)backgroundingModule
 {
-  if (_activeScopedModule == scopedModule) {
-    _activeScopedModule = nil;
+  for (int i = 0; i < _foregroundedModules.count; i++) {
+    id pointer = [_foregroundedModules pointerAtIndex:i];
+    if (pointer == (__bridge void * _Nullable)(backgroundingModule) || !pointer) {
+      [_foregroundedModules removePointerAtIndex:i];
+      i--;
+    }
   }
+  // compact doesn't work, that's why we need the `|| !pointer` above
+  // http://www.openradar.me/15396578
+  [_foregroundedModules compact];
 
   // Any possible failures are silent
-  [self _updateSessionConfigurationForScopedModule:_activeScopedModule];
+  [self _updateSessionConfiguration];
 }
 
-- (void)scopedModuleDidForeground:(id)scopedModule
+- (void)moduleDidForeground:(id)module
 {
-  _activeScopedModule = scopedModule;
-  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
-  @synchronized (_allModules) {
-    [_allModules setObject:scopedModule forKey:experienceId];
-  }
+  [_foregroundedModules addPointer:(__bridge void * _Nullable)(module)];
 
   // Any possible failures are silent
-  [self _updateSessionConfigurationForScopedModule:_activeScopedModule];
+  [self _updateSessionConfiguration];
 }
 
-- (void)scopedModuleWillDeallocate:(id)scopedModule
+- (void)moduleWillDeallocate:(id)module
 {
   // In case of reloading we won't get a notification about backgrounding,
   // but still we would like to start afresh with an inactive audio session.
-  if (scopedModule == _activeScopedModule) {
-    [self scopedModuleDidBackground:scopedModule];
-  }
-
-  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
-  @synchronized (_allModules) {
-    if ([_allModules objectForKey:experienceId] == scopedModule) {
-      [_allModules removeObjectForKey:experienceId];
-    }
-  }
-  [_activeModules removeObject:experienceId];
-  [_moduleCategory removeObjectForKey:experienceId];
-  [_moduleCategoryOptions removeObjectForKey:experienceId];
+  [self moduleDidBackground:module];
+  [_activeModules removeObjectForKey:module];
+  [_moduleCategory removeObjectForKey:module];
+  [_moduleCategoryOptions removeObjectForKey:module];
 }
 
 # pragma mark - Utilities
 
-- (NSError *)_updateSessionConfigurationForScopedModule:(id)scopedModule
+- (NSError *)_updateSessionConfiguration
 {
-  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
-
   AVAudioSession *session = [AVAudioSession sharedInstance];
   NSError *error;
 
-  BOOL shouldBeActive = [_activeModules containsObject:experienceId];
-  NSString *category = [self _getRequestedCategoryForScopedModule:scopedModule];
-  AVAudioSessionCategoryOptions options = [self _getCategoryOptionsForScopedModule:scopedModule];
+  BOOL shouldBeActive = [self _shouldBeActive];
+  NSString *category = [self _getRequestedCategory];
+  AVAudioSessionCategoryOptions options = [self _getCategoryOptions];
 
   // If the session ought to be deactivated let's deactivate it and then configure.
   // And if the session should be activated, let's configure it first!
@@ -228,33 +199,40 @@ UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   return nil;
 }
 
-- (NSString *)_getRequestedCategoryForScopedModule:(id)scopedModule
+- (BOOL)_shouldBeActive
 {
-  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
-  NSString *category = [_moduleCategory objectForKey:experienceId];
-  if (category) {
-    return category;
+  for (id module in [_foregroundedModules allObjects]) {
+    if ([[_activeModules objectForKey:module] boolValue]) {
+      return YES;
+    }
   }
+  return NO;
+}
+
+- (NSString *)_getRequestedCategory
+{
+  NSArray *foregroundedModules = [_foregroundedModules allObjects];
+  for (int i = (int) foregroundedModules.count - 1; i >= 0; i--) {
+    NSString *category = [_moduleCategory objectForKey:foregroundedModules[i]];
+    if (category) {
+      return category;
+    }
+  }
+
   return AVAudioSessionCategorySoloAmbient;
 }
 
-- (AVAudioSessionCategoryOptions)_getCategoryOptionsForScopedModule:(id)scopedModule
+- (AVAudioSessionCategoryOptions)_getCategoryOptions
 {
-  NSString *experienceId = [EXAudioSessionManager getExperienceIdFromScopedModule:scopedModule];
-  NSNumber *categoryOptions = [_moduleCategoryOptions objectForKey:experienceId];
-  if (categoryOptions) {
-    return [categoryOptions unsignedIntegerValue];
+  NSArray *foregroundedModules = [_foregroundedModules allObjects];
+  for (int i = (int) foregroundedModules.count - 1; i >= 0; i--) {
+    NSNumber *categoryOptions = [_moduleCategoryOptions objectForKey:foregroundedModules[i]];
+    if (categoryOptions) {
+      return [categoryOptions unsignedIntegerValue];
+    }
   }
-  return 0;
-}
 
-- (NSError *)_getNoExperienceIdError
-{
-  return [NSError errorWithDomain:EXAudioSessionManagerErrorDomain
-                             code:EXAudioSessionManagerErrorCodeNoExperienceId
-                         userInfo:@{
-                                    NSLocalizedDescriptionKey: @"Experience requesting Audio Session changes has no ID"
-                                    }];
+  return 0;
 }
 
 @end

@@ -186,7 +186,7 @@ export class Recording {
 
   _pollingLoop = async () => {
     if (isAudioEnabled() && this._canRecord && this._onRecordingStatusUpdate != null) {
-      this._progressUpdateTimeoutVariable = setTimeout(
+      this._progressUpdateTimeoutVariable = <any>setTimeout(
         this._pollingLoop,
         this._progressUpdateIntervalMillis
       );

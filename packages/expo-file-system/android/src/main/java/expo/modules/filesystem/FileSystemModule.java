@@ -102,6 +102,14 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     return new File(uri.getPath());
   }
 
+  private void checkIfFileDirExists(Uri uri) throws IOException {
+    File file = uriToFile(uri);
+    File dir = file.getParentFile();
+    if (!dir.exists()) {
+      throw new IOException("Directory for " + file.getPath() + " doesn't exist.");
+    }
+  }
+
   private EnumSet<Permission> permissionsForPath(String path) {
     return mModuleRegistry.getModule(FilePermissionModuleInterface.class).getPathPermissions(getContext(), path);
   }
@@ -446,6 +454,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     try {
       final Uri uri = Uri.parse(uriStr);
       ensurePermission(uri, Permission.WRITE);
+      checkIfFileDirExists(uri);
 
       if (!url.contains(":")) {
         Context context = getContext();
@@ -512,6 +521,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   public void downloadResumableStartAsync(String url, final String fileUriStr, final String uuid, final Map<String, Object> options, final String resumeData, final Promise promise) {
     try {
       final Uri fileUri = Uri.parse(fileUriStr);
+      checkIfFileDirExists(fileUri);
       if (!("file".equals(fileUri.getScheme()))) {
         throw new IOException("Unsupported scheme for location '" + fileUri + "'.");
       }

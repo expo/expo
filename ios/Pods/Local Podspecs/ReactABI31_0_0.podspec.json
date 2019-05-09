@@ -211,7 +211,7 @@
       "name": "CxxBridge",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ],
         "ReactABI31_0_0/Core": [
 
@@ -243,7 +243,7 @@
       "name": "RCTFabric",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ],
         "ReactABI31_0_0/Core": [
 
@@ -274,7 +274,7 @@
       "name": "ABI31_0_0jschelpers",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ],
         "ReactABI31_0_0/PrivateDatabase": [
 
@@ -317,7 +317,7 @@
           "1.63.0"
         ],
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -335,7 +335,7 @@
           "name": "activityindicator",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -350,7 +350,7 @@
           "name": "attributedstring",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -365,7 +365,7 @@
           "name": "core",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -380,7 +380,7 @@
           "name": "debug",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -395,7 +395,7 @@
           "name": "graphics",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -410,7 +410,7 @@
           "name": "scrollview",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -425,7 +425,7 @@
           "name": "text",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -440,7 +440,7 @@
           "name": "textlayoutmanager",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -455,7 +455,7 @@
           "name": "uimanager",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -470,7 +470,7 @@
           "name": "view",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ],
             "ABI31_0_0yoga": [
 
@@ -490,7 +490,7 @@
       "name": "RCTFabricSample",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",

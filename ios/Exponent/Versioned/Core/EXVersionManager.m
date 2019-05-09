@@ -27,6 +27,7 @@
 
 #import <objc/message.h>
 
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
@@ -162,9 +163,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     }
     items[@"dev-hmr"] =  hmrItem;
   }
-  if (devSettings.isJSCSamplingProfilerAvailable && isDevModeEnabled) {
-    items[@"dev-jsc-profiler"] = @{ @"label": @"Start / Stop JS Sampling Profiler", @"isEnabled": @YES };
-  }
+
   id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
   if (perfMonitor) {
     items[@"dev-perf-monitor"] = @{
@@ -192,8 +191,6 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
   } else if ([key isEqualToString:@"dev-hmr"]) {
     devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
-  } else if ([key isEqualToString:@"dev-jsc-profiler"]) {
-    [devSettings toggleJSCSamplingProfiler];
   } else if ([key isEqualToString:@"dev-inspector"]) {
     [devSettings toggleElementInspector];
   } else if ([key isEqualToString:@"dev-perf-monitor"]) {
@@ -283,7 +280,6 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
-  NSString *localStorageDirectory = [[EXScopedFileSystemModule documentDirectoryForExperienceId:experienceId] stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
   BOOL isOpeningHomeInProductionMode = params[@"browserModuleClass"] && !manifest[@"developer"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
@@ -292,7 +288,6 @@ void EXRegisterScopedModule(Class moduleClass, ...)
                                     [[EXDevSettings alloc] initWithExperienceId:experienceId isDevelopment:(!isOpeningHomeInProductionMode && isDeveloper)],
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXStatusBarManager alloc] init],
-                                    [[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory],
                                     ]];
   
   // add scoped modules
@@ -345,10 +340,13 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
   EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
-
-  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForParams:params andExperience:experienceId withScopedModulesArray:extraModules withKernelServices:services];
-
+  UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
+  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
+
+  id<UMFileSystemInterface> fileSystemModule = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  NSString *localStorageDirectory = [fileSystemModule.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
+  [extraModules addObject:[[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory]];
 
   return extraModules;
 }

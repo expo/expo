@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Sensors } from 'expo';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as Sensors from 'expo-sensors';
 import { Subscription } from '@unimodules/core';
 
 const FAST_INTERVAL = 16;
@@ -36,10 +30,7 @@ interface State<M extends object> {
   isAvailable?: boolean;
 }
 
-abstract class SensorBlock<M extends object> extends React.Component<
-  {},
-  State<M>
-> {
+abstract class SensorBlock<M extends object> extends React.Component<{}, State<M>> {
   readonly state: State<M> = { data: {} as M };
 
   _subscription?: Subscription;
@@ -51,7 +42,7 @@ abstract class SensorBlock<M extends object> extends React.Component<
   checkAvailability = async () => {
     const isAvailable = await this.getSensor().isAvailableAsync();
     this.setState({ isAvailable });
-  }
+  };
 
   componentWillUnmount() {
     this._unsubscribe();
@@ -67,26 +58,26 @@ abstract class SensorBlock<M extends object> extends React.Component<
     } else {
       this._subscribe();
     }
-  }
+  };
 
   _slow = () => {
     this.getSensor().setUpdateInterval(SLOW_INTERVAL);
-  }
+  };
 
   _fast = () => {
     this.getSensor().setUpdateInterval(FAST_INTERVAL);
-  }
+  };
 
   _subscribe = () => {
     this._subscription = this.getSensor().addListener((data: any) => {
       this.setState({ data });
     });
-  }
+  };
 
   _unsubscribe = () => {
     this._subscription && this._subscription.remove();
     this._subscription = undefined;
-  }
+  };
 
   render() {
     if (this.state.isAvailable !== true) {
@@ -100,10 +91,7 @@ abstract class SensorBlock<M extends object> extends React.Component<
           <TouchableOpacity onPress={this._toggle} style={styles.button}>
             <Text>Toggle</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this._slow}
-            style={[styles.button, styles.middleButton]}
-          >
+          <TouchableOpacity onPress={this._slow} style={[styles.button, styles.middleButton]}>
             <Text>Slow</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={this._fast} style={styles.button}>
@@ -115,15 +103,12 @@ abstract class SensorBlock<M extends object> extends React.Component<
   }
 }
 
-abstract class ThreeAxisSensorBlock extends SensorBlock<
-  Sensors.ThreeAxisMeasurement
-> {
+abstract class ThreeAxisSensorBlock extends SensorBlock<Sensors.ThreeAxisMeasurement> {
   renderData = () => (
     <Text>
-      x: {round(this.state.data.x)} y: {round(this.state.data.y)} z:{' '}
-      {round(this.state.data.z)}
+      x: {round(this.state.data.x)} y: {round(this.state.data.y)} z: {round(this.state.data.z)}
     </Text>
-  )
+  );
 }
 
 class GyroscopeSensor extends ThreeAxisSensorBlock {
@@ -149,38 +134,28 @@ class MagnetometerUncalibratedSensor extends ThreeAxisSensorBlock {
 class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
   getName = () => 'DangerZone.DeviceMotion';
   getSensor = () => Sensors.DeviceMotion;
-  renderXYZBlock = (
-    name: string,
-    { x, y, z }: { x?: number; y?: number; z?: number } = {}
-  ) => (
+  renderXYZBlock = (name: string, { x, y, z }: { x?: number; y?: number; z?: number } = {}) => (
     <Text>
       {name}: x: {round(x)} y: {round(y)} z: {round(z)}
     </Text>
-  )
+  );
   renderABGBlock = (
     name: string,
-    {
-      alpha,
-      beta,
-      gamma,
-    }: { alpha?: number; beta?: number; gamma?: number } = {}
+    { alpha, beta, gamma }: { alpha?: number; beta?: number; gamma?: number } = {}
   ) => (
     <Text>
       {name}: α: {round(alpha)} β: {round(beta)} γ: {round(gamma)}
     </Text>
-  )
+  );
   renderData = () => (
     <View>
       {this.renderXYZBlock('Acceleration', this.state.data.acceleration)}
-      {this.renderXYZBlock(
-        'Acceleration w/gravity',
-        this.state.data.accelerationIncludingGravity
-      )}
+      {this.renderXYZBlock('Acceleration w/gravity', this.state.data.accelerationIncludingGravity)}
       {this.renderABGBlock('Rotation', this.state.data.rotation)}
       {this.renderABGBlock('Rotation rate', this.state.data.rotationRate)}
       <Text>Orientation: {this.state.data.orientation}</Text>
     </View>
-  )
+  );
 }
 
 class BarometerSensor extends SensorBlock<Sensors.BarometerMeasurement> {
@@ -191,7 +166,7 @@ class BarometerSensor extends SensorBlock<Sensors.BarometerMeasurement> {
       <Text>Pressure: {this.state.data.pressure}</Text>
       <Text>Relative Altitude: {this.state.data.relativeAltitude}</Text>
     </View>
-  )
+  );
 }
 
 function round(n?: number) {
