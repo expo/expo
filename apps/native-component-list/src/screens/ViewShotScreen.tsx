@@ -1,5 +1,5 @@
 import React from 'react';
-import { LinearGradient, takeSnapshotAsync } from 'expo';
+import { LinearGradient } from 'expo';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { captureScreen } from 'react-native-view-shot';
+import { captureRef as takeSnapshotAsync } from 'react-native-view-shot';
 
 import { Platform } from '@unimodules/core';
 import Button from '../components/Button';
