@@ -81,7 +81,7 @@ export function screen(screenName: string): void {
   ExponentSegment.screen(screenName);
 }
 
-export function screenWithProperties(event: string, properties: string): void {
+export function screenWithProperties(event: string, properties: { [key: string]: any }): void {
   if (!ExponentSegment.screenWithProperties) {
     throw new UnavailabilityError('expo-analytics-segment', 'screenWithProperties');
   }
