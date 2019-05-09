@@ -104,7 +104,7 @@ module.exports = function updateVendoredNativeModule(options) {
 
   // iOS
   if (argv.ios || argv.allPlatforms) {
-    if(!argv.doNotClean) {
+    if(!argv.doNotRemoveOldFiles) {
       echo(`Removing previous iOS files...`)
       rm('-rf', TARGET_IOS_DIR);
     }
@@ -127,7 +127,7 @@ module.exports = function updateVendoredNativeModule(options) {
 
   // Android
   if (argv.android || argv.allPlatforms) {
-    if(!argv.doNotClean) {
+    if(!argv.doNotRemoveOldFiles) {
       echo(`Removing previous Android files...`)
       rm('-rf', TARGET_ANDROID_DIR);
     }
