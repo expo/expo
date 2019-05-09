@@ -51,8 +51,8 @@ static void RNCReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
   if (self->_firstTimeReachability) {
     [self->_firstTimeReachabilityResolvers enumerateObjectsUsingBlock:^(RCTPromiseResolveBlock resolver, BOOL *stop) {
-      resolver(@{@"connectionType": connectionType,
-                 @"effectiveConnectionType": effectiveConnectionType});
+      resolver(@{@"type": connectionType,
+                 @"effectiveType": effectiveConnectionType});
     }];
 
     [self cleanUpFirstTimeReachability];
@@ -60,8 +60,8 @@ static void RNCReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   }
 
   if (didSetReachabilityFlags && self->_isObserving) {
-    [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": connectionType,
-                                                             @"effectiveConnectionType": effectiveConnectionType}];
+    [self sendEventWithName:@"netInfo.networkStatusDidChange" body:@{@"type": connectionType,
+                                                             @"effectiveType": effectiveConnectionType}];
   }
 }
 
@@ -87,7 +87,7 @@ static void RNCReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"networkStatusDidChange"];
+  return @[@"netInfo.networkStatusDidChange"];
 }
 
 - (void)startObserving

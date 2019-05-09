@@ -1,13 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXMediaLibrary/EXMediaLibrary.h>
-#import <EXPermissions/EXCameraRollRequester.h>
-#import <UMCore/UMDefines.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <EXPermissions/EXPermissions.h>
 #import <Photos/Photos.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+
+#import <EXMediaLibrary/EXMediaLibrary.h>
+
+#import <UMCore/UMDefines.h>
 #import <UMCore/UMEventEmitterService.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 NSString *const EXAssetMediaTypeAudio = @"audio";
 NSString *const EXAssetMediaTypePhoto = @"photo";
