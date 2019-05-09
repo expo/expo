@@ -57,7 +57,7 @@
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
-		<string>a25fafe9f9edee11a9882b32e0cd7a26df6e2c42</string>
+    <string>a25fafe9f9edee11a9882b32e0cd7a26df6e2c42</string>
 		<key>Kits</key>
 		<array>
 			<dict>
@@ -102,7 +102,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Expo experiences to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Expo experiences to access your device&apos;s accelerometer</string>
+	<string>Allow Expo experiences to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Expo experiences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>

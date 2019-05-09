@@ -41,7 +41,7 @@ const _STYLES = StyleSheet.create({
 // we have to use the provided native module mock to access constants
 const ExpoVideoManagerConstants = ExpoVideoManager;
 const ExpoVideoViewManager = ExpoVideoManager;
-export class VideoPlayback extends React.Component {
+export default class Video extends React.Component {
     // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
     constructor(props) {
         super(props);
@@ -223,7 +223,18 @@ export class VideoPlayback extends React.Component {
       </View>);
     }
 }
-VideoPlayback.propTypes = {
+Video.RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
+Video.RESIZE_MODE_COVER = ResizeMode.COVER;
+Video.RESIZE_MODE_STRETCH = ResizeMode.STRETCH;
+Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
+Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
+Video.IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
+Video.IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
+Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
+Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
+Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+Video.propTypes = {
     // Source stuff
     source: PropTypes.oneOfType([
         PropTypes.shape({
@@ -277,5 +288,5 @@ VideoPlayback.propTypes = {
     rotation: PropTypes.number,
     ...ViewPropTypes,
 };
-Object.assign(VideoPlayback.prototype, PlaybackMixin);
+Object.assign(Video.prototype, PlaybackMixin);
 //# sourceMappingURL=Video.js.map

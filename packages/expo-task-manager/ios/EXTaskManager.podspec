@@ -19,4 +19,5 @@ Pod::Spec.new do |s|
   s.dependency 'UMCore'
   s.dependency 'UMConstantsInterface'
   s.dependency 'UMTaskManagerInterface'
+  s.dependency 'EXAppLoaderProvider'
 end

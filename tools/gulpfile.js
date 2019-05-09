@@ -123,7 +123,7 @@ gulp.task('update-react-native-svg', () => {
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-svg',
-    repoUrl: 'https://github.com/expo/react-native-svg.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-svg.git',
     sourceIosPath: 'ios',
     targetIosPath: 'Api/Components/Svg',
     sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
