@@ -9,18 +9,12 @@ static NSString *const EXSegmentOptOutKey = @"EXSegmentOptOutKey";
 @interface EXSegment ()
 
 @property (nonatomic, strong) SEGAnalytics *instance;
-@property (nonatomic, weak) id<UMConstantsInterface> constants;
 
 @end
 
 @implementation EXSegment
 
 UM_EXPORT_MODULE(ExponentSegment)
-
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  _constants = [moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
-}
 
 UM_EXPORT_METHOD_AS(initializeIOS,
                     initializeIOS:(NSString *)writeKey
@@ -189,10 +183,6 @@ UM_EXPORT_METHOD_AS(setEnabledAsync,
                     withResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if ([_constants.appOwnership isEqualToString:@"expo"]) {
-    reject(@"E_UNSUPPORTED", @"Setting Segment's `enabled` is not supported in Expo Client.", nil);
-    return;
-  }
   [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:EXSegmentOptOutKey];
   if (_instance) {
     if (enabled) {

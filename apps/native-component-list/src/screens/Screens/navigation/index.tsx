@@ -1,16 +1,12 @@
 import React from 'react';
+import { Animated, Button, Image, StyleSheet, TextInput, View } from 'react-native';
 import {
-  StyleSheet,
-  Button,
-  View,
-  TextInput,
-  Animated,
-  Image,
-  requireNativeComponent,
-} from 'react-native';
-import { createStackNavigator, NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
+  createStackNavigator,
+  NavigationScreenConfig,
+  NavigationScreenProps,
+} from 'react-navigation';
 
-export const LifecycleAwareView = requireNativeComponent('RNSLifecycleAwareView');
+export { default as LifecycleAwareView } from './LifecycleAwareView';
 
 const IMGS = [
   require('./img/dawid-zawila-628275-unsplash.jpg'),
@@ -37,7 +33,7 @@ class DetailsScreen extends React.Component<NavigationScreenProps> {
     return {
       title: 'Details screen #' + navigation.getParam('index', '0'),
     };
-  }
+  };
   animvalue = new Animated.Value(0);
   rotation = this.animvalue.interpolate({
     inputRange: [0, 1],

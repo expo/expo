@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/Expo/Core/Api/Components/Svg/ABI30_0_0RNSVGContainer.h

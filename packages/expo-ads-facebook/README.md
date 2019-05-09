@@ -25,28 +25,7 @@ Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':expo-ads-facebook'
-project(':expo-ads-facebook').projectDir = new File(rootProject.projectDir, '../node_modules/expo-ads-facebook/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':expo-ads-facebook')
-```
-
-3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.ads.facebook.AdsFacebookPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new AdsFacebookPackage()
-), Arrays.<SingletonModule>asList());
-```
+No additional set up necessary.
 
 # Contributing
 

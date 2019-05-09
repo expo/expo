@@ -39,7 +39,7 @@ export async function authenticateAsync(
   if (Platform.OS === 'ios') {
     invariant(
       typeof promptMessageIOS === 'string' && promptMessageIOS.length,
-      'Fingerprint.authenticateAsync must be called with a non-empty string on iOS'
+      'LocalAuthentication.authenticateAsync must be called with a non-empty string on iOS'
     );
 
     const result = await ExpoLocalAuthentication.authenticateAsync(promptMessageIOS);

@@ -434,6 +434,16 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
               } else {
                 extension = ".gif";
               }
+            } else if (type.contains("bmp")) {
+              // If we allow editing, the result image won't ever be a BMP as the cropper doesn't support it.
+              // Let's convert to PNG in such case.
+              if (allowsEditing) {
+                extension = ".png";
+                compressFormat = Bitmap.CompressFormat.PNG;
+              } else {
+                extension = ".bmp";
+                compressFormat = null; //BMP is not compressed
+              }
             } else if (!type.contains("jpeg")) {
               System.out.println(TAG + " Image type not supported. Falling back to JPEG instead.");
               extension = ".jpg";

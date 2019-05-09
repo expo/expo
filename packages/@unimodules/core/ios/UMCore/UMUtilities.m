@@ -34,13 +34,7 @@ UM_REGISTER_MODULE();
 - (nullable NSDictionary *)launchOptions
 {
   id<UMUtilService> utilService = [_moduleRegistry getSingletonModuleForName:@"Util"];
-  
-  if (utilService != nil) {
-    // Uses launchOptions from UMUtilService that is a part of ExpoKit
-    return [utilService launchOptions];
-  }
-
-  return nil;
+  return [utilService launchOptions];
 }
 
 - (UIViewController *)currentViewController
@@ -48,11 +42,9 @@ UM_REGISTER_MODULE();
   id<UMUtilService> utilService = [_moduleRegistry getSingletonModuleForName:@"Util"];
 
   if (utilService != nil) {
-    // Uses currentViewController from UMUtilService that is a part of ExpoKit
     return [utilService currentViewController];
   }
-  
-  // If the app doesn't have ExpoKit - then do the same as RCTPresentedViewController() does
+
   UIViewController *controller = [[[UIApplication sharedApplication] keyWindow] rootViewController];
   UIViewController *presentedController = controller.presentedViewController;
   
@@ -215,3 +207,17 @@ UM_REGISTER_MODULE();
 }
 
 @end
+
+UIApplication * UMSharedApplication(void)
+{
+  if ([[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"]) {
+    return nil;
+  }
+  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+}
+
+NSError *UMErrorWithMessage(NSString *message)
+{
+  NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
+  return [[NSError alloc] initWithDomain:@"UMModulesErrorDomain" code:0 userInfo:errorInfo];
+}

@@ -3101,9 +3101,9 @@ expo-web-browser@~4.0.0:
   resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-4.0.0.tgz#2a5f26b23da50a1863844c783b67fe945165c01e"
   integrity sha512-pxmYrZI1HrzIXTzcVqoXZXhN/S9vHlZWbsHwufclEEAupzoztVy5f6oFQ7JdkU0QHlVp7fDzLVt9JwZmD5EZZA==
 
-expo@^33.0.0-alpha.web.1:
-  version "33.0.0-alpha.web.1"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-33.0.0-alpha.web.1.tgz#21dc78e76009360596615fb196a644a40067244e"
+expo@^33.0.0-alpha.web.3:
+  version "33.0.0-alpha.web.3"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-33.0.0-alpha.web.3.tgz#21dc78e76009360596615fb196a644a40067244e"
   integrity sha512-p5HFXn1QOlUK1IVDSpMkLuCrO0C23QlHvJK5HZ+dncP89Bc27QADCD7ewL3+SzExuntbLIkRD4H71S7hbnaYQg==
   dependencies:
     "@babel/runtime" "^7.1.2"

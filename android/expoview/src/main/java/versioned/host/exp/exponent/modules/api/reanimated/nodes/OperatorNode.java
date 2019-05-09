@@ -101,6 +101,30 @@ public class OperatorNode extends Node {
       return Math.cos(x);
     }
   };
+  private static final Operator TAN = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.tan(x);
+    }
+  };
+  private static final Operator ACOS = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.acos(x);
+    }
+  };
+  private static final Operator ASIN = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.asin(x);
+    }
+  };
+  private static final Operator ATAN = new SingleOperator() {
+    @Override
+    public double eval(Double x) {
+      return Math.atan(x);
+    }
+  };
   private static final Operator EXP = new SingleOperator() {
     @Override
     public double eval(Double x) {
@@ -215,6 +239,14 @@ public class OperatorNode extends Node {
       mOperator = SIN;
     } else if ("cos".equals(op)) {
       mOperator = COS;
+    } else if ("tan".equals(op)) {
+      mOperator = TAN;
+    } else if ("acos".equals(op)) {
+      mOperator = ACOS;
+    } else if ("asin".equals(op)) {
+      mOperator = ASIN;
+    } else if ("atan".equals(op)) {
+      mOperator = ATAN;
     } else if ("exp".equals(op)) {
       mOperator = EXP;
     } else if ("round".equals(op)) {

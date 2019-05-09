@@ -1,7 +1,7 @@
 import Analytics from '../api/Analytics';
 import LocalStorage from '../storage/LocalStorage';
 import ApolloClient from '../api/ApolloClient';
-import Auth0Api from '../api/Auth0Api';
+import AuthApi from '../api/AuthApi';
 
 export default {
   setSession(session) {
@@ -19,7 +19,7 @@ export default {
       const shouldResetApolloStore = options.shouldResetApolloStore || true;
       const session = await LocalStorage.getSessionAsync();
       if (session) {
-        await Auth0Api.signOutAsync(session.sessionSecret);
+        await AuthApi.signOutAsync(session.sessionSecret);
       }
       await LocalStorage.removeSessionAsync();
       await LocalStorage.clearHistoryAsync();

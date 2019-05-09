@@ -1,7 +1,7 @@
 import uuid from 'uuid';
 import HashIds from 'hashids';
 import gql from 'graphql-tag';
-import Auth0Api from '../Auth0Api';
+import AuthApi from '../AuthApi';
 import ApolloClient from '../ApolloClient';
 import Store from '../../redux/Store';
 import SessionActions from '../../redux/SessionActions';
@@ -30,7 +30,7 @@ async function deleteUserAsync(sessionSecret) {
     },
   });
 
-  return response.json();
+  return await response.json();
 }
 
 describe('User Authentication Flow', () => {
@@ -50,26 +50,25 @@ describe('User Authentication Flow', () => {
       email: `quin-${testUsername}@getexponent.com`,
     };
 
-    await Auth0Api.signUpAsync(newUser);
+    await AuthApi.signUpAsync(newUser);
 
     await Store.dispatch(SessionActions.signOut());
   });
 
   afterAll(async () => {
     // sign in to obtain token, then delete user
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
+    const signinResult = await AuthApi.signInAsync(testUsername, testPassword);
     await deleteUserAsync(signinResult.sessionSecret);
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     // reset the spies
-    jest.resetAllMocks();
     jest.restoreAllMocks();
   });
 
   it('login and stores auth tokens and sessions correctly', async () => {
     // sign in
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
+    const signinResult = await AuthApi.signInAsync(testUsername, testPassword);
     const { sessionSecret } = signinResult;
 
     // store auth and session tokens
@@ -86,11 +85,7 @@ describe('User Authentication Flow', () => {
 
   function createSpies() {
     return {
-      _signOutAsync: jest.spyOn(ApolloClient.networkInterface, '_signOutAsync'),
-      connectivityAwareNetworkQuery: jest.spyOn(
-        ApolloClient.networkInterface._networkInterface,
-        'query'
-      ),
+      linkRequest: jest.spyOn(ApolloClient.link, 'request'),
     };
   }
 
@@ -113,17 +108,16 @@ describe('User Authentication Flow', () => {
     } catch (e) {}
   }
   it('does graphQL queries correctly, using sessions', async () => {
-    let { _signOutAsync, connectivityAwareNetworkQuery } = createSpies();
+    let { linkRequest } = createSpies();
 
     // sign in, request for session secret to be returned
-    const signinResult = await Auth0Api.signInAsync(testUsername, testPassword);
+    const signinResult = await AuthApi.signInAsync(testUsername, testPassword);
 
     // store auth and session tokens
     await Store.dispatch(SessionActions.setSession({ sessionSecret: signinResult.sessionSecret }));
     await doGraphqlQuery();
 
     // expect to do just a query
-    expect(connectivityAwareNetworkQuery).toHaveBeenCalledTimes(1);
-    expect(_signOutAsync).toHaveBeenCalledTimes(0);
+    expect(linkRequest).toHaveBeenCalledTimes(1);
   });
 });

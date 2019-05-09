@@ -1,6 +1,6 @@
 {
   "name": "expo-permissions",
-  "version": "4.0.0",
+  "version": "5.0.0-rc.0",
   "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "main": "build/Permissions.js",
   "types": "build/Permissions.d.ts",
@@ -38,5 +38,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "f04f6c038278daf9d4536da5ef651dbccf95c7b2"
 }

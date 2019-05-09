@@ -1,1 +1,0 @@
-{"version":3,"file":"SharedEventEmitter.js","sourceRoot":"","sources":["../../src/utils/SharedEventEmitter.ts"],"names":[],"mappings":"AAAA,OAAO,YAAY,MAAM,oDAAoD,CAAC;AAC9E,eAAe,IAAI,YAAY,EAAE,CAAC","sourcesContent":["import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';\nexport default new EventEmitter();\n"]}
