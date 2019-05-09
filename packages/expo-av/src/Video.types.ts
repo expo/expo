@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, StyleProp, ViewStyle } from 'react-native';
 
 import { PlaybackNativeSource, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 export type NaturalSize = {
@@ -28,6 +28,7 @@ export type VideoProps = {
   // Source stuff
   source?: PlaybackSource; // { uri: 'http://foo/bar.mp4' }, Asset, or require('./foo/bar.mp4')
   posterSource?: { uri: string } | number; // { uri: 'http://foo/bar.mp4' } or require('./foo/bar.mp4')
+  posterStyle?: StyleProp<ViewStyle>;
 
   // Callbacks
   onPlaybackStatusUpdate?: (status: PlaybackStatus) => void;
