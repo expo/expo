@@ -154,8 +154,6 @@ gulp.task('update-react-native-gesture-handler-code', () => {
       argv,
       name: 'react-native-gesture-handler-lib',
       repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
-      sourceIosPath: 'ios',
-      targetIosPath: '',
       sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
       targetAndroidPath: 'modules/api/components/gesturehandler',
       sourceAndroidPackage: 'com.swmansion.gesturehandler',
