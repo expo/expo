@@ -29,6 +29,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🎉 New features
 
+- updated `react-native-view-shot` to `2.6.0` by [@sjchmiela](https://github.com/sjchmiela) ([#4175](https://github.com/expo/expo/pull/4175))
 - added `VideoThumbnails` API allowing you to thumbnail videos by [@graszka22](https://github.com/graszka22) ([#3980](https://github.com/expo/expo/pull/3980))
 - `BarCodeScanner` is now returning barcode's bounding box [@Szymon20000](https://github.com/Szymon20000) ([#2904](https://github.com/expo/expo/pull/2904))
 - added method `Speech.getAvailableVoicesAsync()` [@Szymon20000](https://github.com/Szymon20000) ([#3423](https://github.com/expo/expo/pull/3423))
