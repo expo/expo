@@ -25,11 +25,14 @@
 #import "FIRInstanceIDUtilities.h"
 #import "NSError+FIRInstanceID.h"
 
+#import <FirebaseCore/FIRAppInternal.h>
+
 // We can have a static int since this error should theoretically only
 // happen once (for the first time). If it repeats there is something
 // else that is wrong.
 static int phoneRegistrationErrorRetryCount = 0;
 static const int kMaxPhoneRegistrationErrorRetryCount = 10;
+NSString *const kFIRInstanceIDFirebaseUserAgentKey = @"X-firebase-client";
 
 @implementation FIRInstanceIDTokenFetchOperation
 
@@ -55,6 +58,8 @@ static const int kMaxPhoneRegistrationErrorRetryCount = 10;
   NSMutableURLRequest *request = [[self class] requestWithAuthHeader:authHeader];
   NSString *checkinVersionInfo = self.checkinPreferences.versionInfo;
   [request setValue:checkinVersionInfo forHTTPHeaderField:@"info"];
+  [request setValue:[FIRApp firebaseUserAgent]
+      forHTTPHeaderField:kFIRInstanceIDFirebaseUserAgentKey];
 
   // Build form-encoded body
   NSString *deviceAuthID = self.checkinPreferences.deviceID;

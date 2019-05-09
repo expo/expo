@@ -122,6 +122,9 @@ static const NSInteger kOldCheckinPlistCount = 6;
     }
     return;
   }
+  FIRInstanceIDLoggerDebug(kFIRInstanceIDMessageCodeCheckinStoreCheckinPlistSaved,
+                           @"Checkin plist file is saved");
+
   // Save the deviceID and secret in the Keychain
   if (!preferences.hasPreCachedAuthCredentials) {
     NSData *data = [checkinKeychainContent dataUsingEncoding:NSUTF8StringEncoding];
@@ -146,21 +149,19 @@ static const NSInteger kOldCheckinPlistCount = 6;
 }
 
 - (void)removeCheckinPreferencesWithHandler:(void (^)(NSError *error))handler {
+  // Delete the checkin preferences plist first to avoid delay.
+  NSError *deletePlistError;
+  if (![self.plist deleteFile:&deletePlistError]) {
+    handler(deletePlistError);
+    return;
+  }
+  FIRInstanceIDLoggerDebug(kFIRInstanceIDMessageCodeCheckinStoreCheckinPlistDeleted,
+                           @"Deleted checkin plist file.");
   // Remove deviceID and secret from Keychain
   [self.keychain
       removeItemsMatchingService:kFIRInstanceIDCheckinKeychainService
                          account:self.bundleIdentifierForKeychainAccount
                          handler:^(NSError *error) {
-                           if (error) {
-                             if (handler) {
-                               handler(error);
-                             }
-                             return;
-                           }
-                           // Delete the checkin preferences plist
-                           NSError *deletePlistError;
-                           [self.plist deleteFile:&deletePlistError];
-
                            // Try to remove from old location as well because migration
                            // is no longer needed. Consider this is either a fresh install
                            // or an identity wipe.
@@ -168,7 +169,7 @@ static const NSInteger kOldCheckinPlistCount = 6;
                                removeItemsMatchingService:kFIRInstanceIDLegacyCheckinKeychainService
                                                   account:kFIRInstanceIDLegacyCheckinKeychainAccount
                                                   handler:nil];
-                           handler(deletePlistError);
+                           handler(error);
                          }];
 }
 

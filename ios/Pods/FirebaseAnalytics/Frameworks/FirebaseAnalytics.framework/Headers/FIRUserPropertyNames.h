@@ -15,3 +15,15 @@
 /// The method used to sign in. For example, "google", "facebook" or "twitter".
 static NSString *const kFIRUserPropertySignUpMethod
     NS_SWIFT_NAME(AnalyticsUserPropertySignUpMethod) = @"sign_up_method";
+
+/// Indicates whether events logged by Google Analytics can be used to personalize ads for the user.
+/// Set to "YES" to enable, or "NO" to disable. Default is enabled. See the
+/// <a href="https://firebase.google.com/support/guides/disable-analytics">documentation</a> for
+/// more details and information about related settings.
+///
+/// <pre>
+///     [FIRAnalytics setUserPropertyString:@"NO"
+///                                 forName:kFIRUserPropertyAllowAdPersonalizationSignals];
+/// </pre>
+static NSString *const kFIRUserPropertyAllowAdPersonalizationSignals
+    NS_SWIFT_NAME(AnalyticsUserPropertyAllowAdPersonalizationSignals) = @"allow_personalized_ads";

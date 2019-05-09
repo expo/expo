@@ -17,6 +17,7 @@
 #import "Private/FIRErrors.h"
 #import "Private/FIRLogger.h"
 #import "Private/FIROptionsInternal.h"
+#import "Private/FIRVersion.h"
 
 // Keys for the strings in the plist file.
 NSString *const kFIRAPIKey = @"API_KEY";
@@ -39,11 +40,13 @@ NSString *const kFIRIsAnalyticsCollectionDeactivated = @"FIREBASE_ANALYTICS_COLL
 NSString *const kFIRIsAnalyticsEnabled = @"IS_ANALYTICS_ENABLED";
 NSString *const kFIRIsSignInEnabled = @"IS_SIGNIN_ENABLED";
 
-// Library version ID.
-NSString *const kFIRLibraryVersionID = @"5"     // Major version (one or more digits)
-                                       @"04"    // Minor version (exactly 2 digits)
-                                       @"01"    // Build number (exactly 2 digits)
-                                       @"000";  // Fixed "000"
+// Library version ID formatted like:
+// @"5"     // Major version (one or more digits)
+// @"04"    // Minor version (exactly 2 digits)
+// @"01"    // Build number (exactly 2 digits)
+// @"000";  // Fixed "000"
+NSString *kFIRLibraryVersionID;
+
 // Plist file name.
 NSString *const kServiceInfoFileName = @"GoogleService-Info";
 // Plist file type.
@@ -109,17 +112,9 @@ static NSDictionary *sDefaultOptionsDictionary = nil;
 
 + (void)initialize {
   // Report FirebaseCore version for useragent string
-  NSRange major = NSMakeRange(0, 1);
-  NSRange minor = NSMakeRange(1, 2);
-  NSRange patch = NSMakeRange(3, 2);
-  [FIRApp
-      registerLibrary:@"fire-ios"
-          withVersion:[NSString stringWithFormat:@"%@.%d.%d",
-                                                 [kFIRLibraryVersionID substringWithRange:major],
-                                                 [[kFIRLibraryVersionID substringWithRange:minor]
-                                                     intValue],
-                                                 [[kFIRLibraryVersionID substringWithRange:patch]
-                                                     intValue]]];
+  [FIRApp registerLibrary:@"fire-ios"
+              withVersion:[NSString stringWithUTF8String:FIRCoreVersionString]];
+
   NSDictionary<NSString *, id> *info = [[NSBundle mainBundle] infoDictionary];
   NSString *xcodeVersion = info[@"DTXcodeBuild"];
   NSString *sdkVersion = info[@"DTSDKBuild"];
@@ -295,6 +290,16 @@ static NSDictionary *sDefaultOptionsDictionary = nil;
 }
 
 - (NSString *)libraryVersionID {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    // The unit tests are set up to catch anything that does not properly convert.
+    NSString *version = [NSString stringWithUTF8String:FIRCoreVersionString];
+    NSArray *components = [version componentsSeparatedByString:@"."];
+    NSString *major = [components objectAtIndex:0];
+    NSString *minor = [NSString stringWithFormat:@"%02d", [[components objectAtIndex:1] intValue]];
+    NSString *patch = [NSString stringWithFormat:@"%02d", [[components objectAtIndex:2] intValue]];
+    kFIRLibraryVersionID = [NSString stringWithFormat:@"%@%@%@000", major, minor, patch];
+  });
   return kFIRLibraryVersionID;
 }
 

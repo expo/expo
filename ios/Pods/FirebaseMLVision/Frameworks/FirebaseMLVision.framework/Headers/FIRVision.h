@@ -170,7 +170,7 @@ NS_SWIFT_NAME(Vision)
  */
 - (FIRVisionCloudLandmarkDetector *)cloudLandmarkDetector;
 
-/*
+/**
  * Gets an instance of cloud image labeler with the given options.
  *
  * @param options Options for configuring the cloud image labeler.

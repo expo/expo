@@ -247,4 +247,16 @@ static BOOL HasEmbeddedMobileProvision() {
 #endif
 }
 
++ (BOOL)isIOS7OrHigher {
+#if __has_builtin(__builtin_available)
+  if (@available(iOS 7.0, *)) {
+#else
+  if ([[UIDevice currentDevice].systemVersion integerValue] >= 7) {
+#endif
+      return YES;
+    }
+
+    return NO;
+}
+
 @end

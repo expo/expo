@@ -40,4 +40,7 @@
 /// Indicates whether it is running inside an extension or an app.
 + (BOOL)isAppExtension;
 
+/// @return Returns @YES when is run on iOS version greater or equal to 7.0
++ (BOOL)isIOS7OrHigher;
+
 @end

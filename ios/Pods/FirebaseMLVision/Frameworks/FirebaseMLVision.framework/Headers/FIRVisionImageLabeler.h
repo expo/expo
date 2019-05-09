@@ -24,6 +24,8 @@ typedef NS_ENUM(NSUInteger, FIRVisionImageLabelerType) {
   FIRVisionImageLabelerTypeOnDevice,
   /** Cloud image labeler type. */
   FIRVisionImageLabelerTypeCloud,
+  /** On-device AutoML image labeler type. */
+  FIRVisionImageLabelerTypeOnDeviceAutoML,
 } NS_SWIFT_NAME(VisionImageLabelerType);
 
 /**

@@ -34,22 +34,5 @@ typedef NS_ENUM(NSInteger, FIRErrorCode) {
   /**
    * Error code for failing to configure a specific service.
    */
-  FIRErrorCodeAdMobFailed = -110,
-  FIRErrorCodeAppInviteFailed = -112,
-  FIRErrorCodeCloudMessagingFailed = -113,
   FIRErrorCodeConfigFailed = -114,
-  FIRErrorCodeDatabaseFailed = -115,
-  FIRErrorCodeCrashReportingFailed = -118,
-  FIRErrorCodeDurableDeepLinkFailed = -119,
-  FIRErrorCodeAuthFailed = -120,
-  FIRErrorCodeInstanceIDFailed = -121,
-  FIRErrorCodeStorageFailed = -123,
-
-  /**
-   * Error codes returned by Dynamic Links
-   */
-  FIRErrorCodeDynamicLinksStrongMatchNotAvailable = -124,
-  FIRErrorCodeDynamicLinksManualRetrievalNotEnabled = -125,
-  FIRErrorCodeDynamicLinksPendingLinkOnlyAvailableAtFirstLaunch = -126,
-  FIRErrorCodeDynamicLinksPendingLinkRetrievalAlreadyRunning = -127,
 };

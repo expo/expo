@@ -2,10 +2,12 @@ framework module FirebaseMLVision {
   umbrella header "FirebaseMLVision.h"
   export *
   module * { export * }
+  link "c++"
   link "sqlite3"
   link "z"
   link framework "AVFoundation"
   link framework "Accelerate"
+  link framework "CoreFoundation"
   link framework "CoreGraphics"
   link framework "CoreMedia"
   link framework "CoreVideo"

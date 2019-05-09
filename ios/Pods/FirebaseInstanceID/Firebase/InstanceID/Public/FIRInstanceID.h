@@ -209,14 +209,6 @@ NS_SWIFT_NAME(InstanceID)
 - (void)instanceIDWithHandler:(FIRInstanceIDResultHandler)handler;
 
 /**
- *  Returns a Firebase Messaging scoped token for the firebase app.
- *
- *  @return Returns the stored token if the device has registered with Firebase Messaging, otherwise
- *          returns nil.
- */
-- (nullable NSString *)token __deprecated_msg("Use instanceIDWithHandler: instead.");
-
-/**
  *  Returns a token that authorizes an Entity (example: cloud service) to perform
  *  an action on behalf of the application identified by Instance ID.
  *

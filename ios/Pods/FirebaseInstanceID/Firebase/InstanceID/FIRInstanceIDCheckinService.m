@@ -16,7 +16,6 @@
 
 #import "FIRInstanceIDCheckinService.h"
 
-#import <FirebaseCore/FIRAppInternal.h>
 #import "FIRInstanceIDCheckinPreferences+Internal.h"
 #import "FIRInstanceIDCheckinPreferences_Private.h"
 #import "FIRInstanceIDDefines.h"
@@ -35,7 +34,6 @@ NSString *const kFIRInstanceIDLastCheckinTimeKey = @"GMSInstanceIDLastCheckinTim
 NSString *const kFIRInstanceIDVersionInfoStringKey = @"GMSInstanceIDVersionInfo";
 NSString *const kFIRInstanceIDGServicesDictionaryKey = @"GMSInstanceIDGServicesData";
 NSString *const kFIRInstanceIDDeviceDataVersionKey = @"GMSInstanceIDDeviceDataVersion";
-NSString *const kFIRInstanceIDFirebaseUserAgentKey = @"X-firebase-client";
 
 static NSUInteger const kCheckinType = 2;  // DeviceType IOS in l/w/a/_checkin.proto
 static NSUInteger const kCheckinVersion = 2;
@@ -85,11 +83,7 @@ static FIRInstanceIDURLRequestTestBlock testBlock;
 
   NSURL *url = [NSURL URLWithString:kDeviceCheckinURL];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-
   [request setValue:@"application/json" forHTTPHeaderField:@"content-type"];
-  [request setValue:[FIRApp firebaseUserAgent]
-      forHTTPHeaderField:kFIRInstanceIDFirebaseUserAgentKey];
-
   NSDictionary *checkinParameters = [self checkinParametersWithExistingCheckin:existingCheckin];
   NSData *checkinData = [NSJSONSerialization dataWithJSONObject:checkinParameters
                                                         options:0

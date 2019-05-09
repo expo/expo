@@ -170,8 +170,8 @@ participate in the Firebase community.
 
 ### macOS and tvOS
 Thanks to contributions from the community, FirebaseAuth, FirebaseCore, FirebaseDatabase,
-FirebaseFunctions and FirebaseStorage now compile, run unit tests, and work on macOS and tvOS.
-FirebaseFirestore is availiable for macOS and FirebaseMessaging for tvOS.
+FirebaseFirestore, FirebaseFunctions and FirebaseStorage now compile, run unit tests, and work on
+macOS and tvOS. FirebaseMessaging is available for tvOS.
 
 For tvOS, checkout the [Sample](Example/tvOSSample).
 

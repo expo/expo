@@ -169,10 +169,9 @@ very grateful!  We'd like to empower as many developers as we can to be able to 
 participate in the Firebase community.
 
 ### macOS and tvOS
-FirebaseAuth, FirebaseCore, FirebaseDatabase, FirebaseFunctions and FirebaseStorage now compile, run
-unit tests, and work on macOS and tvOS, thanks to contributions from the community. There are a few
-tweaks needed, like ensuring iOS-only, macOS-only, or tvOS-only code is correctly guarded with checks
-for `TARGET_OS_IOS`, `TARGET_OS_OSX` and `TARGET_OS_TV`.
+Thanks to contributions from the community, FirebaseAuth, FirebaseCore, FirebaseDatabase,
+FirebaseFirestore, FirebaseFunctions and FirebaseStorage now compile, run unit tests, and work on
+macOS and tvOS. FirebaseMessaging is available for tvOS.
 
 For tvOS, checkout the [Sample](Example/tvOSSample).
 
@@ -181,11 +180,19 @@ actively developed primarily for iOS. While we can catch basic unit test issues 
 may be some changes where the SDK no longer works as expected on macOS or tvOS. If you encounter
 this, please [file an issue](https://github.com/firebase/firebase-ios-sdk/issues).
 
-For installation instructions, see [above](README.md#accessing-firebase-source-snapshots).
+Note that the Firebase pod is not available for macOS and tvOS.
 
-Note that the Firebase pod is not available for macOS and tvOS. Install a selection of the
-`FirebaseAuth`, `FirebaseCore`, `FirebaseDatabase`, `FirebaseFunctions`, and `FirebaseStorage`
-CocoaPods.
+To install, add a subset of the following to the Podfile:
+
+```
+pod 'FirebaseAuth'
+pod 'FirebaseCore'
+pod 'FirebaseDatabase'
+pod 'FirebaseFirestore'  # Only iOS and macOS
+pod 'FirebaseFunctions'
+pod 'FirebaseMessaging'  # Only iOS and tvOS
+pod 'FirebaseStorage'
+```
 
 ## Roadmap
 

@@ -15,15 +15,7 @@
 #import "Private/FIRErrors.h"
 
 NSString *const kFirebaseErrorDomain = @"com.firebase";
-NSString *const kFirebaseAdMobErrorDomain = @"com.firebase.admob";
-NSString *const kFirebaseAppInviteErrorDomain = @"com.firebase.appinvite";
-NSString *const kFirebaseAuthErrorDomain = @"com.firebase.auth";
-NSString *const kFirebaseCloudMessagingErrorDomain = @"com.firebase.cloudmessaging";
 NSString *const kFirebaseConfigErrorDomain = @"com.firebase.config";
 NSString *const kFirebaseCoreErrorDomain = @"com.firebase.core";
-NSString *const kFirebaseCrashReportingErrorDomain = @"com.firebase.crashreporting";
-NSString *const kFirebaseDatabaseErrorDomain = @"com.firebase.database";
-NSString *const kFirebaseDurableDeepLinkErrorDomain = @"com.firebase.durabledeeplink";
-NSString *const kFirebaseInstanceIDErrorDomain = @"com.firebase.instanceid";
 NSString *const kFirebasePerfErrorDomain = @"com.firebase.perf";
 NSString *const kFirebaseStorageErrorDomain = @"com.firebase.storage";

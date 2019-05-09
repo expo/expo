@@ -19,15 +19,6 @@
 #include "FIRErrorCode.h"
 
 extern NSString *const kFirebaseErrorDomain;
-extern NSString *const kFirebaseAdMobErrorDomain;
-extern NSString *const kFirebaseAppInviteErrorDomain;
-extern NSString *const kFirebaseAuthErrorDomain;
-extern NSString *const kFirebaseCloudMessagingErrorDomain;
 extern NSString *const kFirebaseConfigErrorDomain;
 extern NSString *const kFirebaseCoreErrorDomain;
-extern NSString *const kFirebaseCrashReportingErrorDomain;
-extern NSString *const kFirebaseDatabaseErrorDomain;
-extern NSString *const kFirebaseDurableDeepLinkErrorDomain;
-extern NSString *const kFirebaseInstanceIDErrorDomain;
 extern NSString *const kFirebasePerfErrorDomain;
-extern NSString *const kFirebaseStorageErrorDomain;

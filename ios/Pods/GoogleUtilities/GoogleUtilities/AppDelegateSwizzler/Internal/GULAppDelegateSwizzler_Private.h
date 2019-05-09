@@ -23,12 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GULAppDelegateSwizzler ()
 
-/** Returns the current sharedApplication.
- *
- *  @return the current UIApplication if in an app, or nil if in extension or if it doesn't exist.
- */
-+ (nullable UIApplication *)sharedApplication;
-
 /** ISA Swizzles the given appDelegate as the original app delegate would be.
  *
  *  @param appDelegate The object that needs to be isa swizzled. This should conform to the
