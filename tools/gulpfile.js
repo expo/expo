@@ -161,7 +161,6 @@ gulp.task('update-react-native-gesture-handler-code', () => {
       sourceAndroidPackage: 'com.swmansion.gesturehandler',
       targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       installableInManagedApps: true,
-      skipCleanup: true,
     });
   });
 

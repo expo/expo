@@ -104,10 +104,6 @@ module.exports = function updateVendoredNativeModule(options) {
 
   // iOS
   if (argv.ios || argv.allPlatforms) {
-    if(!argv.doNotRemoveOldFiles) {
-      echo(`Removing previous iOS files...`)
-      rm('-rf', TARGET_IOS_DIR);
-    }
     echo(`Copying iOS files...`);
     let objcFiles = findObjcFiles(TMP_IOS_DIR, options.recursive);
     for (let objcFile of objcFiles) {
@@ -127,10 +123,6 @@ module.exports = function updateVendoredNativeModule(options) {
 
   // Android
   if (argv.android || argv.allPlatforms) {
-    if(!argv.doNotRemoveOldFiles) {
-      echo(`Removing previous Android files...`)
-      rm('-rf', TARGET_ANDROID_DIR);
-    }
     echo(`Copying Android files...`);
     let javaFiles = findAndroidFiles(TMP_ANDROID_DIR);
     for (let javaFile of javaFiles) {
