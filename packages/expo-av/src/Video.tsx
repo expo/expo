@@ -106,6 +106,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
       }), // remote URI like { uri: 'http://foo/bar.mp4' }
       PropTypes.number, // asset module like require('./foo/bar.mp4')
     ]),
+    posterStyle: ViewPropTypes.style,
 
     // Callbacks
     onPlaybackStatusUpdate: PropTypes.func,
@@ -364,7 +365,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   _renderPoster = () =>
     this.props.usePoster && this.state.showPoster ? (
       // @ts-ignore: the react-native type declarations are overly restrictive
-      <Image style={_STYLES.poster} source={this.props.posterSource!} />
+      <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource!} />
     ) : null;
 
   render() {
