@@ -22,7 +22,7 @@ Each time you publish your app, Expo will upload your assets to Amazon CloudFron
 
 ### Images
 
-Images often take up the most space out of the assets in an Expo project. Optimizing your images will make them take up less space on end users' devices and reduce the time and bandwidth needed to download before they are ready to display. To compress the images (PNGs and JPGs) in your project, you can run `expo optimize`. You can also pass in the following options:
+Images often take up the most space out of the assets in an Expo project. Optimizing your images will make them take up less space on end users' devices and reduce the time and bandwidth needed to download before they are ready to display. To compress the images (PNGs and JPEGs) in your project, you can run `expo optimize`. You can also pass in the following options:
 
 * `--save`: Backup a copy of each file with a `.orig` extension.
 * `--quality=N`: Compress the images to a certain integer quality N between 1 and 100 inclusive (defaults to 60).
