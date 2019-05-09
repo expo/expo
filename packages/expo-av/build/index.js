@@ -1,4 +1,4 @@
 import * as Audio from './Audio';
-import * as Video from './Video';
-export { Audio, Video };
+export { Audio };
+export { default as Video } from './Video';
 //# sourceMappingURL=index.js.map

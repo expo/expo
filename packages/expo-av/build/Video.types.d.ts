@@ -19,7 +19,7 @@ export declare type FullscreenUpdateEvent = {
     fullscreenUpdate: 0 | 1 | 2 | 3;
     status: PlaybackStatus;
 };
-export declare type VideoPlaybackProps = {
+export declare type VideoProps = {
     source?: PlaybackSource;
     posterSource?: {
         uri: string;
@@ -73,7 +73,7 @@ export declare type NativeProps = {
     }) => void;
     useNativeControls?: boolean;
 } & React.ComponentProps<typeof View>;
-export declare type VideoPlaybackState = {
+export declare type VideoState = {
     showPoster: boolean;
 };
 export declare type ExponentVideoComponent = React.ComponentClass<NativeProps>;
