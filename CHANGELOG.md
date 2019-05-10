@@ -71,6 +71,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - providing `onPlaybackStatusUpdate` property to `Video` doesn't show a warning anymore by [@sjchmiela](https://github.com/sjchmiela) ([#4130](https://github.com/expo/expo/pull/4130))
 - calling `FileSystem.downloadAsync` will now raise an error when a target local directory doesn't exist by [@dsokal](https://github.com/dsokal) ([#4142](https://github.com/expo/expo/pull/4142))
 - flush UI blocks when needed, which fixes eg. `Camera.takePicture` not resolving on iOS by [@sjchmiela](https://github.com/sjchmiela) ([#4125](https://github.com/expo/expo/pull/4125))
+- fixed `MediaLibrary.createAssetAsync` crashing when supplying local asset URIs without "file://" protocol ([#4189](https://github.com/expo/expo/pull/4189) by [@tsapeta](https://github.com/tsapeta))
 
 ## 32.0.0
 
