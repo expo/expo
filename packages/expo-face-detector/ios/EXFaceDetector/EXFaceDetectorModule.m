@@ -48,7 +48,8 @@ UM_EXPORT_MODULE(ExpoFaceDetector);
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject) {
+UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
   NSString *uri = options[@"uri"];
   if (uri == nil) {
     reject(@"E_FACE_DETECTION_FAILED", @"You must define a URI.", nil);
@@ -84,22 +85,19 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
     
     UIImage *finalImage = [UIImage imageWithCGImage:cgImage];
     EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:options]];
-    [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nonnull faces, NSError * _Nonnull error) {
+    [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nullable faces, NSError * _Nullable error) {
       NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
       
-      //      // set correct orientation
-      //      __block UIInterfaceOrientation orientation;
-      
-      if(faces && faces.count > 0) {
+      if(faces.count > 0) {
         EXFaceEncoder *encoder = [[EXFaceEncoder alloc] init];
         for(FIRVisionFace* face in faces)
-        {
+      {
           [reportableFaces addObject:[encoder encode:face]];
         }
       }
       if (error != nil) {
         reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
-      } else if (faces != nil) {
+      } else {
         resolve(@{
                   @"faces" : reportableFaces,
                   @"image" : @{

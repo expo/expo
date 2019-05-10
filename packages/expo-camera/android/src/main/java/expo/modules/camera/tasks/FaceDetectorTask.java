@@ -36,8 +36,8 @@ public class FaceDetectorTask {
     mFaceDetector = faceDetector;
   }
 
-  public boolean execute() {
-    return mFaceDetector.detectFaces(mImageData, mWidth, mHeight, mRotation, mMirrored, mScaleX, mScaleY, result -> {
+  public void execute() {
+    mFaceDetector.detectFaces(mImageData, mWidth, mHeight, mRotation, mMirrored, mScaleX, mScaleY, result -> {
       if (result != null) {
         mDelegate.onFacesDetected(result);
       } else {
@@ -47,7 +47,7 @@ public class FaceDetectorTask {
     }, error -> {
       mDelegate.onFaceDetectionError(mFaceDetector);
       mDelegate.onFaceDetectingTaskCompleted();
-    });
+    }, skippedReason -> mDelegate.onFaceDetectingTaskCompleted());
   }
 
 }

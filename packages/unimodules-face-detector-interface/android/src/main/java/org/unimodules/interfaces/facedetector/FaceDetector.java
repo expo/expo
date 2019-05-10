@@ -9,7 +9,8 @@ public interface FaceDetector {
 
   void detectFaces(Uri filePath, FacesDetectionCompleted listener, FaceDetectionError error) throws IOException;
 
-  boolean detectFaces(byte[] imageData, int width, int height, int rotation, boolean mirrored, double scaleX, double scaleY, FacesDetectionCompleted listener, FaceDetectionError error);
+  void detectFaces(byte[] imageData, int width, int height, int rotation, boolean mirrored, double scaleX, double scaleY,
+                   FacesDetectionCompleted listener, FaceDetectionError error, FaceDetectionSkipped skipped);
 
   void setSettings(Map<String, Object> settings);
 

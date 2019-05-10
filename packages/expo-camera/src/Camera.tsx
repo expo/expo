@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
 import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
-import { FaceDetector } from 'expo';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
 

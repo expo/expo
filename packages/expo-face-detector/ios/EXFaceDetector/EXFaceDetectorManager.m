@@ -14,7 +14,7 @@
 #import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
 #import "Firebase.h"
 
-static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMillis";
+static const NSString *kMinDetectionInterval = @"minDetectionInterval";
 
 @interface EXFaceDetectorManager() <AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -90,9 +90,9 @@ static const NSString *kMinDetectionIntervalMillis = @"minDetectionIntervalMilli
     self.faceDetectorOptions = newOptions;
     [self _resetFaceDetector];
   }
-  if([settings objectForKey:kMinDetectionIntervalMillis])
+  if([settings objectForKey:kMinDetectionInterval])
   {
-    self.timeIntervalMillis = [settings[kMinDetectionIntervalMillis] longValue];
+    self.timeIntervalMillis = [settings[kMinDetectionInterval] longValue];
   }
 }
 

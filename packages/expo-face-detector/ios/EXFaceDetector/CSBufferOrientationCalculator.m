@@ -76,7 +76,12 @@
 
 @implementation CSBufferOrientationCalculator
 
-+ (CGAffineTransform)pointTransformForInterfaceOrientation:(UIInterfaceOrientation)orientation forBufferWidth:(CGFloat)bufferWidth andBufferHeight:(CGFloat)bufferHeight andVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight andMirrored:(BOOL)mirrored
++ (CGAffineTransform)pointTransformForInterfaceOrientation:(UIInterfaceOrientation)orientation
+                                            forBufferWidth:(CGFloat)bufferWidth
+                                           andBufferHeight:(CGFloat)bufferHeight
+                                             andVideoWidth:(CGFloat)videoWidth
+                                            andVideoHeight:(CGFloat)videoHeight
+                                               andMirrored:(BOOL)mirrored
 {
   CGAffineTransform rotationTransform = CGAffineTransformConcat(
                                                                 [CSBufferOrientationCalculator rotationTransformForOrientation:orientation],
@@ -100,7 +105,7 @@
     case (UIInterfaceOrientationLandscapeLeft):
       return TRANSFORM_PI;
     case (UIInterfaceOrientationPortraitUpsideDown):
-       return TRANSFORM_NEGATIVE_PI_2;
+      return TRANSFORM_NEGATIVE_PI_2;
     default:
       return CGAffineTransformIdentity;
   }
@@ -115,13 +120,14 @@
     } else {
       return TRANSFORM_Y_SYMETRY;
     }
-  } else
-  {
+  } else {
     return CGAffineTransformIdentity;
   }
 }
 
-+(CGAffineTransform)rotationWithTranslation:(CGAffineTransform)rotationTransformation forVideoWidth:(CGFloat)videoWidth forVideoHeight:(CGFloat)videoHeight
++(CGAffineTransform)rotationWithTranslation:(CGAffineTransform)rotationTransformation
+                              forVideoWidth:(CGFloat)videoWidth
+                             forVideoHeight:(CGFloat)videoHeight
 {
   BOOL translateX = rotationTransformation.a == -1 || rotationTransformation.c == -1;
   BOOL translateY = rotationTransformation.b == -1 || rotationTransformation.d == -1;
@@ -129,7 +135,10 @@
   return CGAffineTransformConcat(rotationTransformation, translationTransformation);
 }
 
-+(CGFloat)scaleForCropWithPreservingAspectRatioforBufferWidth:(CGFloat)bufferWidth andBufferHeight:(CGFloat)bufferHeight andVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight
++(CGFloat)scaleForCropWithPreservingAspectRatioforBufferWidth:(CGFloat)bufferWidth
+                                              andBufferHeight:(CGFloat)bufferHeight
+                                                andVideoWidth:(CGFloat)videoWidth
+                                               andVideoHeight:(CGFloat)videoHeight
 {
   float widthFactor = videoWidth / bufferWidth;
   float heightFactor = videoHeight / bufferHeight;
@@ -137,7 +146,12 @@
   return MAX(widthFactor, heightFactor);
 }
 
-+(CGAffineTransform)cropTranslationsTransformationForRotation:(CGAffineTransform)rotation andScale:(CGFloat)scale andBufferWidth:(CGFloat)bufferWidth andBufferHeight:(CGFloat)bufferHeight andVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight
++(CGAffineTransform)cropTranslationsTransformationForRotation:(CGAffineTransform)rotation
+                                                     andScale:(CGFloat)scale
+                                               andBufferWidth:(CGFloat)bufferWidth
+                                              andBufferHeight:(CGFloat)bufferHeight
+                                                andVideoWidth:(CGFloat)videoWidth
+                                               andVideoHeight:(CGFloat)videoHeight
 {
   float xOffset = -((bufferWidth * scale) - videoWidth) / 2;
   float yOffset = -((bufferHeight * scale) - videoHeight) / 2;

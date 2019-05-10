@@ -130,6 +130,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         }
 
         if (mShouldDetectFaces && !faceDetectorTaskLock && cameraView instanceof FaceDetectorAsyncTaskDelegate) {
+          faceDetectorTaskLock = true;
           float density = cameraView.getResources().getDisplayMetrics().density;
 
           ImageDimensions dimensions = new ImageDimensions(width, height, correctRotation, getFacing());
@@ -138,7 +139,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
           FaceDetectorAsyncTaskDelegate delegate = (FaceDetectorAsyncTaskDelegate) cameraView;
           FaceDetectorTask task = new FaceDetectorTask(delegate, mFaceDetector, data, width, height, correctRotation, getFacing() == CameraView.FACING_FRONT, scaleX, scaleY);
-          faceDetectorTaskLock = task.execute();
+          task.execute();
         }
       }
     });
@@ -357,6 +358,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onFaceDetectionError(FaceDetector faceDetector) {
+    faceDetectorTaskLock = false;
     if (!mShouldDetectFaces) {
       return;
     }

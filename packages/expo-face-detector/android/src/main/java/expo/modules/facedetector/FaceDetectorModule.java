@@ -96,7 +96,7 @@ public class FaceDetectorModule extends ExportedModule implements ModuleRegistry
   }
 
   private FaceDetector detectorForOptions(HashMap<String, Object> options, Context context) {
-    FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(org.unimodules.interfaces.facedetector.FaceDetectorProvider.class);
+    FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProvider.class);
 
     FaceDetector faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context);
     faceDetector.setSettings(options);

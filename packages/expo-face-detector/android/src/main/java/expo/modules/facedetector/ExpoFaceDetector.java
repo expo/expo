@@ -16,6 +16,7 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 
 import org.unimodules.core.interfaces.Function;
 import org.unimodules.interfaces.facedetector.FaceDetectionError;
+import org.unimodules.interfaces.facedetector.FaceDetectionSkipped;
 import org.unimodules.interfaces.facedetector.FaceDetectionUnspecifiedError;
 import org.unimodules.interfaces.facedetector.FacesDetectionCompleted;
 
@@ -33,7 +34,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   private static final String RUN_CLASSIFICATIONS_KEY = "runClassifications";
   private static final String DETECT_LANDMARKS_KEY = "detectLandmarks";
   private static final String TRACKING_KEY = "tracking";
-  private static final String MIN_INTERVAL_MILLIS_KEY = "minDetectionIntervalMillis";
+  private static final String MIN_INTERVAL_MILLIS_KEY = "minDetectionInterval";
   private static final String MODE_KEY = "mode";
 
   public static int ALL_CLASSIFICATIONS = FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS;
@@ -60,7 +61,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   private int mLandmarkType = NO_LANDMARKS;
   private float mMinFaceSize = 0.15f;
   private boolean mTracking = false;
-  private long mMinDetecitonInterval = 0;
+  private long mMinDetectionInterval = 0;
   private long lastDetectionMillis = 0;
   private int mMode = FAST_MODE;
 
@@ -84,7 +85,10 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   }
 
   @Override
-  public boolean detectFaces(byte[] imageData, int width, int height, int rotation, boolean mirrored, double scaleX, double scaleY, FacesDetectionCompleted complete, FaceDetectionError error) {
+  public void detectFaces(byte[] imageData, int width, int height, int rotation, boolean mirrored, double scaleX, double scaleY,
+                          FacesDetectionCompleted complete,
+                          FaceDetectionError error,
+                          FaceDetectionSkipped skipped) {
 
     if (mFaceDetector == null) {
       createFaceDetector();
@@ -101,7 +105,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
 
     FirebaseVisionImage image = FirebaseVisionImage.fromByteArray(imageData, metadata);
 
-    if (mMinDetecitonInterval <= 0 || minIntervalPassed()) {
+    if (mMinDetectionInterval <= 0 || minIntervalPassed()) {
       lastDetectionMillis = System.currentTimeMillis();
       mFaceDetector.detectInImage(image)
           .addOnCompleteListener(
@@ -117,10 +121,9 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
                 return result;
               }, complete, error)
           );
-      return true;
+    } else {
+      skipped.onSkipped("Skipped frame due to time interval.");
     }
-    return false;
-
   }
 
   private int getFirRotation(int rotation) {
@@ -155,7 +158,7 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   }
 
   private boolean minIntervalPassed() {
-    return (lastDetectionMillis + mMinDetecitonInterval) < System.currentTimeMillis();
+    return (lastDetectionMillis + mMinDetectionInterval) < System.currentTimeMillis();
   }
 
   @Override
@@ -205,11 +208,14 @@ public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.
   }
 
   private void setMinIntervalMillis(long intValue) {
-    this.mMinDetecitonInterval = intValue;
+    this.mMinDetectionInterval = intValue;
   }
 
   public void setTrackingEnabled(boolean tracking) {
-    mTracking = tracking;
+    if (tracking != mTracking) {
+      release();
+      mTracking = tracking;
+    }
   }
 
   @Override

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Image, Platform, View, ScrollView } from 'react-native';
+import { Image, Platform, View, ScrollView, StyleSheet } from 'react-native';
 import { ImagePicker, FaceDetector, Permissions } from 'expo';
+import { FaceFeature } from 'expo-face-detector';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-import { FaceFeature } from '../../../../packages/expo-face-detector/build/FaceDetector';
 
 async function requestPermissionAsync(permission: Permissions.PermissionType) {
   // Image Picker doesn't need permissions in the web
@@ -128,7 +128,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
 
     if (faceDetection && faceDetection.detecting) {
       return (
-        <View style={{ marginVertical: 16 }}>
+        <View style={styles.infoContainer}>
           <MonoText>Detecting faces.</MonoText>
         </View>
       );
@@ -136,7 +136,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
 
     if (faceDetection && faceDetection.error) {
       return (
-        <View style={{ marginVertical: 16 }}>
+        <View style={styles.infoContainer}>
           <MonoText>Somerthing went wrong: {JSON.stringify(faceDetection.error)}</MonoText>
         </View>
       );
@@ -144,7 +144,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
 
     if (faceDetection && !faceDetection.detecting) {
       return (
-        <View style={{ marginVertical: 16 }}>
+        <View style={styles.infoContainer}>
           <MonoText>Detected faces: {JSON.stringify(faceDetection.faces)}</MonoText>
           {faceDetection.image && (
             <MonoText>In image: {JSON.stringify(faceDetection.image)}</MonoText>
@@ -156,3 +156,9 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
     return null;
   };
 }
+
+const styles = StyleSheet.create({
+  infoContainer: {
+    marginVertical: 16,
+  },
+});
