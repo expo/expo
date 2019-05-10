@@ -25,7 +25,6 @@ export { default as Linking } from './Linking/Linking';
 export { default as Notifications } from './Notifications/Notifications';
 export { default as Pedometer } from './Pedometer';
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 
 // @ts-ignore
 export {
@@ -145,6 +144,8 @@ export {
   SQLite,
   // @ts-ignore
   Svg,
+  // @ts-ignore
+  takeSnapshotAsync,
   // @ts-ignore
   TaskManager,
   // @ts-ignore

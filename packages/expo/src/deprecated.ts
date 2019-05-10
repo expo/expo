@@ -662,6 +662,17 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  takeSnapshotAsync: {
+    enumerable: true,
+    get() {
+      deprecatedModule(
+        `import { takeSnapshotAsync } from 'expo' -> import { captureRef as takeSnapshotAsync } 'react-native-view-shot'`,
+        'react-native-view-shot'
+      );
+      return require('react-native-view-shot').captureRef;
+    },
+  },
+
   WebView: {
     enumerable: true,
     get() {
