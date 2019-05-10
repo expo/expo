@@ -351,6 +351,18 @@ ABI32_0_0EX_EXPORT_METHOD_AS(getAssetsAsync,
   PHAssetCollection *collection;
   PHAsset *cursor;
   
+  /*
+   @"id" is mapped to @"localIdentifier" which is a unique
+   identifer and does not have an ordering. Thus it throws an
+   error when we try to use sort descriptors.
+    By substituting the @"default" key for our sort descriptors,
+   we get the desired assets with an ordering given by their
+   insertion order.
+  */
+  if ([[sortBy[0] objectAtIndex: 0] isEqualToString:@"id"]) {
+    [sortBy[0] replaceObjectAtIndex:0 withObject:@"default"];
+  }
+  
   if (after) {
     cursor = [ABI32_0_0EXMediaLibrary _getAssetById:after];
     
