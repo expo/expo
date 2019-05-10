@@ -6,6 +6,7 @@ const shell = require('gulp-shell');
 const argv = require('minimist')(process.argv.slice(2));
 const { Modules } = require('xdl');
 const chalk = require('chalk');
+const fs = require('fs-extra');
 
 const { saveKernelBundlesAsync } = require('./bundle-tasks');
 const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
@@ -15,6 +16,7 @@ const {
   versionReactNativeIOSFilesAsync,
 } = require('./ios-tasks');
 const updateVendoredNativeModule = require('./update-vendored-native-module');
+const outdatedVendoredNativeModules = require('./outdated-vendored-native-modules');
 const AndroidExpolib = require('./android-versioning/android-expolib');
 const androidVersionLibraries = require('./android-versioning/android-version-libraries');
 const { publishPackagesAsync } = require('./publish-packages');
@@ -119,6 +121,12 @@ gulp.task('ios-remove-version', removeVersionWithArguments);
 gulp.task('ios-version-files', versionIOSFilesWithArguments);
 
 // Update external dependencies
+gulp.task('outdated-native-dependencies', async () => {
+  const bundledNativeModules = JSON.parse(await fs.readFile('../packages/expo/bundledNativeModules.json', 'utf8'));
+  const isModuleLinked = async packageName => await fs.pathExists(`../packages/${packageName}/package.json`);
+  return await outdatedVendoredNativeModules({ bundledNativeModules, isModuleLinked });
+});
+
 gulp.task('update-react-native-svg', () => {
   return updateVendoredNativeModule({
     argv,
