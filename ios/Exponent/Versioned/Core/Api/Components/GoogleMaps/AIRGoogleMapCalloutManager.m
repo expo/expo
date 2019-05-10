@@ -6,6 +6,8 @@
 //
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import "AIRGoogleMapCalloutManager.h"
 #import "AIRGoogleMapCallout.h"
 #import <React/RCTView.h>
@@ -24,3 +26,5 @@ RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(alphaHitTest, BOOL)
 
 @end
+
+#endif

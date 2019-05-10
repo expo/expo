@@ -44,6 +44,7 @@ extern const NSInteger AIRMapMaxZoomLevel;
 @property (nonatomic, assign) MKMapCamera *initialCamera;
 @property (nonatomic, assign) CGFloat minZoomLevel;
 @property (nonatomic, assign) CGFloat maxZoomLevel;
+@property (nonatomic, assign) CGPoint compassOffset;
 
 @property (nonatomic, assign) CLLocationCoordinate2D pendingCenter;
 @property (nonatomic, assign) MKCoordinateSpan pendingSpan;

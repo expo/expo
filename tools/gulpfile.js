@@ -196,7 +196,7 @@ gulp.task('update-react-native-maps', async () => {
     await updateVendoredNativeModule({
       argv,
       name: 'react-native-google-maps',
-      repoUrl: 'https://github.com/expo/react-native-maps.git',
+      repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
       sourceIosPath: 'lib/ios/AirGoogleMaps',
       targetIosPath: 'Api/Components/GoogleMaps',
       sourceAndroidPath: '',
@@ -209,7 +209,7 @@ gulp.task('update-react-native-maps', async () => {
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-maps',
-    repoUrl: 'https://github.com/expo/react-native-maps.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
     sourceIosPath: 'lib/ios/AirMaps',
     sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
     targetIosPath: 'Api/Components/Maps',

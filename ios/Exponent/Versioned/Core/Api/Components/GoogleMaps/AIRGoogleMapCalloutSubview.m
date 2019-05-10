@@ -6,6 +6,8 @@
 //
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import "AIRGoogleMapCalloutSubview.h"
 #import <React/RCTUtils.h>
 #import <React/RCTView.h>
@@ -13,3 +15,5 @@
 
 @implementation AIRGoogleMapCalloutSubview
 @end
+
+#endif

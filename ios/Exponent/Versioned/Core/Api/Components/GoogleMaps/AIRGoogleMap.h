@@ -5,6 +5,8 @@
 //  Created by Gil Birman on 9/1/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import <UIKit/UIKit.h>
 #import <React/RCTComponent.h>
 #import <React/RCTBridge.h>
@@ -75,3 +77,5 @@
 - (NSDictionary*) getMarkersFramesWithOnlyVisible:(BOOL)onlyVisible;
 
 @end
+
+#endif

@@ -6,6 +6,8 @@
 //  Copyright © 2018. All rights reserved.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import "AIRGoogleMapWMSTileManager.h"
 #import "AIRGoogleMapWMSTile.h"
 
@@ -31,3 +33,5 @@ RCT_EXPORT_VIEW_PROPERTY(tileSize, int)
 RCT_EXPORT_VIEW_PROPERTY(opacity, float)
 
 @end
+
+#endif

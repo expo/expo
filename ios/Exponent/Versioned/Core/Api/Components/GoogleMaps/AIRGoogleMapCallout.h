@@ -6,6 +6,8 @@
 //
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import <UIKit/UIKit.h>
 #import <React/RCTView.h>
 
@@ -17,3 +19,5 @@
 - (BOOL) isPointInside:(CGPoint)pointInCallout;
 
 @end
+
+#endif
