@@ -107,6 +107,12 @@ async function namespaceReactNativeFilesAsync(
             // sed already hit this one
             libraryName = versionedLibraryName;
           }
+          if (libraryName !== 'cxxreact') {
+            fileString = fileString.replace(
+              new RegExp(`<${versionedLibraryName}\/([^\.]+)\.h>`, 'g'), // for versioned yoga
+              `<${versionedLibraryName}\/${versionPrefix}$1.h>`
+            );
+          }
           fileString = fileString.replace(
             new RegExp(`<${libraryName}\/([^\.]+)\.h>`, 'g'),
             `<${versionedLibraryName}\/${versionPrefix}$1.h>`
@@ -980,6 +986,9 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     },
     {
       pattern: `s/^YG/${versionPrefix}YG/g`,
+    },
+    {
+      pattern: `s/yoga/${versionPrefix}yoga/g`,
     },
     {
       paths: 'Components',
