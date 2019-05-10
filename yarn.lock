@@ -13465,9 +13465,10 @@ react-native-is-iphonex@^1.0.1:
   resolved "https://registry.yarnpkg.com/react-native-is-iphonex/-/react-native-is-iphonex-1.0.1.tgz#4345eb0be61007e84be5c744495108b5634762a2"
   integrity sha512-r6Na6m5qtwhl0lHCy6bWiJu4qNau+zeaHDaNIG5pZhEbX/q+mHLoRYOY5cWuGPiUN+9VNEGzm+z2q4tfg0j6rA==
 
-react-native-maps@expo/react-native-maps#v0.23.0-exp.0:
-  version "0.23.0"
-  resolved "https://codeload.github.com/expo/react-native-maps/tar.gz/b1bc796f9b8590e98ead2261f69c43068ea535d7"
+react-native-maps@0.24.2:
+  version "0.24.2"
+  resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.24.2.tgz#19974f967cb0c2e24dab74ca879118e0932571b2"
+  integrity sha512-1iNIDikp2dkCG+8DguaEviYZiMSYyvwqYT7pO2YTZvuFRDSc/P9jXMhTUnSh4wNDlEeQ47OJ09l0pwWVBZ7wxg==
 
 "react-native-paper@github:brentvatne/react-native-paper#@brent/fix-bottom-navigation-rn-57":
   version "2.1.3"
