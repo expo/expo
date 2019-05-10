@@ -11,6 +11,7 @@ import java.util.List;
 import org.unimodules.adapters.react.views.SimpleViewManagerAdapter;
 import org.unimodules.adapters.react.views.ViewGroupManagerAdapter;
 import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.InternalModule;
 
 /**
  * An adapter over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
@@ -19,6 +20,7 @@ import org.unimodules.core.ModuleRegistry;
  */
 public class ModuleRegistryAdapter implements ReactPackage {
   protected ReactModuleRegistryProvider mModuleRegistryProvider;
+  protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
 
   public ModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
     mModuleRegistryProvider = moduleRegistryProvider;
@@ -27,6 +29,10 @@ public class ModuleRegistryAdapter implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(reactContext);
+
+    for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {
+      moduleRegistry.registerInternalModule(internalModule);
+    }
 
     return getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
   }
