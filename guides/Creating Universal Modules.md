@@ -11,7 +11,7 @@ This guide will explain how to create a universal module and integrate it into E
 #### Create the module
 
 1. In your terminal, go to `packages` directory inside `expo` repository (`cd packages`).
-2. Assuming you've got `expo-cli` package installed (`npm i -g expo-cli`), run `expo generate universal` to start the universal module generator.
+2. Assuming you've got `expo-cli` package installed (`npm i -g expo-cli`), run `expo generate-module [module-name] ` to start the universal module generator.
 3. It will guide you through the process, asking some questions about the modules, like a name:
   1. if you’re creating an implementation module (your code will actually do something, expose some functionality to client code, eg. barcode scanner), prefix hyphenated name of your module with `expo-`. (eg. `expo-barcode-scanner`).
   2. if you’re creating an interface module (one that will be a middle-ground between a consumer and provider), prefix hyphenated name of your module with `expo-` and end it with `-interface`. (eg. `expo-barcode-scanner-interface`)
