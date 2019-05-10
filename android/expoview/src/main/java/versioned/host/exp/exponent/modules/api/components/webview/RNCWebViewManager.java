@@ -319,6 +319,11 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     }
   }
 
+  @ReactProp(name = "textZoom")
+  public void setTextZoom(WebView view, int value) {
+    view.getSettings().setTextZoom(value);
+  }
+
   @ReactProp(name = "scalesPageToFit")
   public void setScalesPageToFit(WebView view, boolean enabled) {
     view.getSettings().setLoadWithOverviewMode(enabled);
@@ -369,12 +374,8 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
     if (source != null) {
       if (source.hasKey("html")) {
         String html = source.getString("html");
-        if (source.hasKey("baseUrl")) {
-          view.loadDataWithBaseURL(
-              source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
-        } else {
-          view.loadData(html, HTML_MIME_TYPE + "; charset=" + HTML_ENCODING, null);
-        }
+        String baseUrl = source.hasKey("baseUrl") ? source.getString("baseUrl") : "";
+        view.loadDataWithBaseURL(baseUrl, html, HTML_MIME_TYPE, HTML_ENCODING, null);
         return;
       }
       if (source.hasKey("uri")) {
