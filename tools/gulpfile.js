@@ -212,6 +212,22 @@ gulp.task('update-react-native-maps', async () => {
   });
 });
 
+gulp.task('update-react-native-view-shot', () => {
+  console.warn('Heads up, iOS uses EX- instead of RN- symbol prefix');
+  return updateVendoredNativeModule({
+    argv,
+    skipCleanup: true,
+    name: 'react-native-view-shot',
+    repoUrl: 'https://github.com/gre/react-native-view-shot.git',
+    sourceIosPath: 'ios',
+    sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
+    targetIosPath: 'Api',
+    targetAndroidPath: 'modules/api/viewshot',
+    sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.viewshot',
+  });
+});
+
 gulp.task('update-react-native-lottie', () => {
   return updateVendoredNativeModule({
     argv,
