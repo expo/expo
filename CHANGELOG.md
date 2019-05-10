@@ -6,7 +6,9 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
-- updated `react-native-svg` to `9.3.6` by [@Szymon20000](https://github.com/Szymon20000) ([#3860](https://github.com/expo/expo/pull/3860))
+- updated `react-native-gesture-handler` to `1.2.1` by [@mczernek](https://github.com/mczernek) ([#4159](https://github.com/expo/expo/pull/4159))
+- updated `react-native-svg` to `9.4.0` by [@Szymon20000](https://github.com/Szymon20000) and [@mczernek](https://github.com/mczernek) ([#3860](https://github.com/expo/expo/pull/3860), [#4159](https://github.com/expo/expo/pull/4159))
+- updated `@react-native-community/netinfo` to `2.0.10` by [@sjchmiela](https://github.com/sjchmiela) ([#4153](https://github.com/expo/expo/pull/4153))
 - updated `react-native-reanimated` to `1.0.1` by [@dsokal](https://github.com/dsokal) ([#4023](https://github.com/expo/expo/pull/4023))
 - removed deprecated `MediaView` and `TriggerView` from `expo-ads-facebook` by [@EvanBacon](https://github.com/EvanBacon) ([#3539](https://github.com/expo/expo/pull/3603)). You should use `AdMediaView` & `AdTriggerView` instead.
 - deprecated `Expo.Util` by [@EvanBacon](https://github.com/EvanBacon) ([#3539](https://github.com/expo/expo/pull/3577)). You should use `Expo.Updates` & `Expo.Localization` instead.
@@ -27,6 +29,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🎉 New features
 
+- updated `react-native-view-shot` to `2.6.0` by [@sjchmiela](https://github.com/sjchmiela) ([#4175](https://github.com/expo/expo/pull/4175))
 - added `VideoThumbnails` API allowing you to thumbnail videos by [@graszka22](https://github.com/graszka22) ([#3980](https://github.com/expo/expo/pull/3980))
 - `BarCodeScanner` is now returning barcode's bounding box [@Szymon20000](https://github.com/Szymon20000) ([#2904](https://github.com/expo/expo/pull/2904))
 - added method `Speech.getAvailableVoicesAsync()` [@Szymon20000](https://github.com/Szymon20000) ([#3423](https://github.com/expo/expo/pull/3423))
@@ -45,6 +48,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added `foregroundService` option to background location (Android Oreo and newer) by [@tsapeta](https://github.com/tsapeta) ([#3837](https://github.com/expo/expo/pull/3837))
 - added support for picking animated GIFs with `ImagePicker` by [@sjchmiela](https://github.com/sjchmiela) ([#3844](https://github.com/expo/expo/pull/3844))
 - added support for headers in `downloadAsync` method in `FileSystem` by [@mczernek](https://github.com/mczernek) ([#3911](https://github.com/expo/expo/pull/3911))
+- added support for custom poster styles in `Video` by [@sjchmiela](https://github.com/sjchmiela) ([#4165](https://github.com/expo/expo/issues/4165))
 
 ### 🐛 Bug fixes
 
@@ -61,6 +65,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - changed `FileSystem` requests timeout for downloading resumables from 10 seconds to 60 seconds on Android (now the timeout is 60s on both platforms) by [@Szymon20000](https://github.com/Szymon20000) ([#3872](https://github.com/expo/expo/pull/3872))
 - removed unwanted downsampling of big images when using `ImageManipulator` on Android by [@bbarthec](https://github.com/bbarthec) ([#3928](https://github.com/expo/expo/pull/3928))
 - fixed tablet splash always being shown in Expo Client if specified by [@GfxKai](https://github.com/GfxKai) ([#3538](https://github.com/expo/expo/pull/3538))
+- the `properties` parameter of `Segment.screenWithProperties` is now a `{ [key: string]: any }`, instead of a `string` by [@juampi92](https://github.com/juampi92) ([#4053](https://github.com/expo/expo/pull/4053))
 - allow manipulating `http://` and `https://` files using `ImageManipulator` on iOS by [@bbarthec](https://github.com/bbarthec) ([#3982](https://github.com/expo/expo/pull/3982))
 - providing `onPlaybackStatusUpdate` property to `Video` doesn't show a warning anymore by [@sjchmiela](https://github.com/sjchmiela) ([#4130](https://github.com/expo/expo/pull/4130))
 - calling `FileSystem.downloadAsync` will now raise an error when a target local directory doesn't exist by [@dsokal](https://github.com/dsokal) ([#4142](https://github.com/expo/expo/pull/4142))

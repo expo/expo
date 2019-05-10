@@ -23,10 +23,10 @@ import {
   FullscreenUpdateEvent,
   NativeProps,
   NaturalSize,
-  VideoPlaybackProps,
+  VideoProps,
   ReadyForDisplayEvent,
   ResizeMode,
-  VideoPlaybackState,
+  VideoState,
 } from './Video.types';
 
 export {
@@ -34,10 +34,10 @@ export {
   FullscreenUpdateEvent,
   NativeProps,
   NaturalSize,
-  VideoPlaybackProps,
+  VideoProps,
   ReadyForDisplayEvent,
   ResizeMode,
-  VideoPlaybackState,
+  VideoState,
 }
 
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
@@ -76,7 +76,21 @@ const _STYLES = StyleSheet.create({
 const ExpoVideoManagerConstants = ExpoVideoManager;
 const ExpoVideoViewManager = ExpoVideoManager;
 
-export class VideoPlayback extends React.Component<VideoPlaybackProps, VideoPlaybackState> implements Playback {
+export default class Video extends React.Component<VideoProps, VideoState> implements Playback {
+  static RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
+  static RESIZE_MODE_COVER = ResizeMode.COVER;
+  static RESIZE_MODE_STRETCH = ResizeMode.STRETCH;
+
+  static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
+  static IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
+  static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
+  static IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+
+  static FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
+  static FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
+  static FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
+  static FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+
   static propTypes = {
     // Source stuff
     source: PropTypes.oneOfType([
@@ -92,6 +106,7 @@ export class VideoPlayback extends React.Component<VideoPlaybackProps, VideoPlay
       }), // remote URI like { uri: 'http://foo/bar.mp4' }
       PropTypes.number, // asset module like require('./foo/bar.mp4')
     ]),
+    posterStyle: ViewPropTypes.style,
 
     // Callbacks
     onPlaybackStatusUpdate: PropTypes.func,
@@ -140,7 +155,7 @@ export class VideoPlayback extends React.Component<VideoPlaybackProps, VideoPlay
 
   // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
 
-  constructor(props: VideoPlaybackProps) {
+  constructor(props: VideoProps) {
     super(props);
     this.state = {
       showPoster: !!props.usePoster,
@@ -350,7 +365,7 @@ export class VideoPlayback extends React.Component<VideoPlaybackProps, VideoPlay
   _renderPoster = () =>
     this.props.usePoster && this.state.showPoster ? (
       // @ts-ignore: the react-native type declarations are overly restrictive
-      <Image style={_STYLES.poster} source={this.props.posterSource!} />
+      <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource!} />
     ) : null;
 
   render() {
@@ -410,4 +425,4 @@ export class VideoPlayback extends React.Component<VideoPlaybackProps, VideoPlay
   }
 }
 
-Object.assign(VideoPlayback.prototype, PlaybackMixin);
+Object.assign(Video.prototype, PlaybackMixin);

@@ -6,6 +6,7 @@ const shell = require('gulp-shell');
 const argv = require('minimist')(process.argv.slice(2));
 const { Modules } = require('xdl');
 const chalk = require('chalk');
+const fs = require('fs-extra');
 
 const { saveKernelBundlesAsync } = require('./bundle-tasks');
 const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
@@ -15,6 +16,7 @@ const {
   versionReactNativeIOSFilesAsync,
 } = require('./ios-tasks');
 const updateVendoredNativeModule = require('./update-vendored-native-module');
+const outdatedVendoredNativeModules = require('./outdated-vendored-native-modules');
 const AndroidExpolib = require('./android-versioning/android-expolib');
 const androidVersionLibraries = require('./android-versioning/android-version-libraries');
 const { publishPackagesAsync } = require('./publish-packages');
@@ -119,11 +121,17 @@ gulp.task('ios-remove-version', removeVersionWithArguments);
 gulp.task('ios-version-files', versionIOSFilesWithArguments);
 
 // Update external dependencies
+gulp.task('outdated-native-dependencies', async () => {
+  const bundledNativeModules = JSON.parse(await fs.readFile('../packages/expo/bundledNativeModules.json', 'utf8'));
+  const isModuleLinked = async packageName => await fs.pathExists(`../packages/${packageName}/package.json`);
+  return await outdatedVendoredNativeModules({ bundledNativeModules, isModuleLinked });
+});
+
 gulp.task('update-react-native-svg', () => {
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-svg',
-    repoUrl: 'https://github.com/expo/react-native-svg.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-svg.git',
     sourceIosPath: 'ios',
     targetIosPath: 'Api/Components/Svg',
     sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
@@ -134,39 +142,39 @@ gulp.task('update-react-native-svg', () => {
   });
 });
 
-gulp.task('update-react-native-gesture-handler', () => {
-  console.log(
-    'If you are updating Android, then also run update-react-native-gesture-handler-lib afterwards'
-  );
+gulp.task('update-react-native-gesture-handler-code', () => {
   return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-gesture-handler',
-    repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
-    sourceIosPath: 'ios',
-    sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-    targetIosPath: 'Api/Components/GestureHandler',
-    targetAndroidPath: 'modules/api/components/gesturehandler/react',
-    sourceAndroidPackage: 'com.swmansion.gesturehandler.react',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler.react',
-    installableInManagedApps: true,
+      argv,
+      name: 'react-native-gesture-handler',
+      repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+      sourceIosPath: 'ios',
+      sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
+      targetIosPath: 'Api/Components/GestureHandler',
+      targetAndroidPath: 'modules/api/components/gesturehandler/react',
+      sourceAndroidPackage: 'com.swmansion.gesturehandler.react',
+      targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler.react',
+      installableInManagedApps: true,
+    });
   });
-});
+  
+  gulp.task('update-react-native-gesture-handler-lib', () => {
+    return updateVendoredNativeModule({
+      argv,
+      name: 'react-native-gesture-handler-lib',
+      repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+      sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
+      targetAndroidPath: 'modules/api/components/gesturehandler',
+      sourceAndroidPackage: 'com.swmansion.gesturehandler',
+      targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+      installableInManagedApps: true,
+    });
+  });
 
-gulp.task('update-react-native-gesture-handler-lib', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-gesture-handler',
-    repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
-    sourceIosPath: 'ios',
-    targetIosPath: '',
-    sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
-    targetAndroidPath: 'modules/api/components/gesturehandler',
-    sourceAndroidPackage: 'com.swmansion.gesturehandler',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
-    installableInManagedApps: true,
-    skipCleanup: true,
-  });
-});
+gulp.task('update-react-native-gesture-handler', 
+  gulp.series(
+    'update-react-native-gesture-handler-lib',
+    'update-react-native-gesture-handler-code'
+  ));
 
 gulp.task('update-amazon-cognito-identity-js', () => {
   return updateVendoredNativeModule({
@@ -209,6 +217,22 @@ gulp.task('update-react-native-maps', async () => {
     sourceAndroidPackage: 'com.airbnb.android.react.maps',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
     installableInManagedApps: true,
+  });
+});
+
+gulp.task('update-react-native-view-shot', () => {
+  console.warn('Heads up, iOS uses EX- instead of RN- symbol prefix');
+  return updateVendoredNativeModule({
+    argv,
+    skipCleanup: true,
+    name: 'react-native-view-shot',
+    repoUrl: 'https://github.com/gre/react-native-view-shot.git',
+    sourceIosPath: 'ios',
+    sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
+    targetIosPath: 'Api',
+    targetAndroidPath: 'modules/api/viewshot',
+    sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.viewshot',
   });
 });
 

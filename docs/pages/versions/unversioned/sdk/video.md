@@ -67,6 +67,10 @@ The `source` and `posterSource` props customize the source of the video content.
   -   A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to a image file on the web.
   -   `require('path/to/file')` for an image file asset in the source code directory.
 
+- `posterStyle`
+
+  An optional property to pass custom styles to the poster image.
+
 The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of the component.
 
 - `useNativeControls`

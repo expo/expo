@@ -228,6 +228,7 @@ PODS:
     - UMTaskManagerInterface
   - EXBarCodeScanner (5.0.0-rc.0):
     - UMCore
+    - UMImageLoaderInterface
   - EXBlur (5.0.0-rc.0):
     - UMCore
   - EXBrightness (5.0.0-rc.0):
@@ -305,7 +306,8 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (5.0.0-rc.0):
     - UMCore
-  - EXMediaLibrary (5.0.0-rc.0):
+    - UMFileSystemInterface
+  - EXMediaLibrary (5.0.0-rc.1):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (5.0.0-rc.0):
@@ -313,6 +315,7 @@ PODS:
     - UMPermissionsInterface
   - EXPrint (5.0.0-rc.0):
     - UMCore
+    - UMFileSystemInterface
   - EXRandom (5.0.0-rc.0):
     - UMCore
   - EXSecureStore (5.0.0-rc.0):
@@ -329,11 +332,14 @@ PODS:
     - UMFileSystemInterface
   - EXSMS (5.0.0-rc.0):
     - UMCore
+    - UMPermissionsInterface
   - EXSpeech (5.0.0-rc.0):
     - UMCore
   - EXSQLite (5.0.0-rc.0):
     - UMCore
+    - UMFileSystemInterface
   - EXTaskManager (5.0.0-rc.0):
+    - EXAppLoaderProvider
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
@@ -405,59 +411,59 @@ PODS:
   - GTMSessionFetcher/Core (1.2.1)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.3)
-  - React (0.59.5):
-    - React/Core (= 0.59.5)
-  - React/ART (0.59.5):
+  - React (0.59.8):
+    - React/Core (= 0.59.8)
+  - React/ART (0.59.8):
     - React/Core
-  - React/Core (0.59.5):
-    - yoga (= 0.59.5.React)
-  - React/CxxBridge (0.59.5):
+  - React/Core (0.59.8):
+    - yoga (= 0.59.8.React)
+  - React/CxxBridge (0.59.8):
     - Folly (= 2018.10.22.00)
     - React/Core
     - React/cxxreact
     - React/jsiexecutor
-  - React/cxxreact (0.59.5):
+  - React/cxxreact (0.59.8):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React/jsinspector
-  - React/DevSupport (0.59.5):
+  - React/DevSupport (0.59.8):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.59.5)
-  - React/jsi (0.59.5):
+  - React/fishhook (0.59.8)
+  - React/jsi (0.59.8):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React/jsiexecutor (0.59.5):
+  - React/jsiexecutor (0.59.8):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React/cxxreact
     - React/jsi
-  - React/jsinspector (0.59.5)
-  - React/RCTActionSheet (0.59.5):
+  - React/jsinspector (0.59.8)
+  - React/RCTActionSheet (0.59.8):
     - React/Core
-  - React/RCTAnimation (0.59.5):
+  - React/RCTAnimation (0.59.8):
     - React/Core
-  - React/RCTBlob (0.59.5):
+  - React/RCTBlob (0.59.8):
     - React/Core
-  - React/RCTCameraRoll (0.59.5):
+  - React/RCTCameraRoll (0.59.8):
     - React/Core
     - React/RCTImage
-  - React/RCTGeolocation (0.59.5):
+  - React/RCTGeolocation (0.59.8):
     - React/Core
-  - React/RCTImage (0.59.5):
+  - React/RCTImage (0.59.8):
     - React/Core
     - React/RCTNetwork
-  - React/RCTNetwork (0.59.5):
+  - React/RCTNetwork (0.59.8):
     - React/Core
-  - React/RCTText (0.59.5):
+  - React/RCTText (0.59.8):
     - React/Core
-  - React/RCTVibration (0.59.5):
+  - React/RCTVibration (0.59.8):
     - React/Core
-  - React/RCTWebSocket (0.59.5):
+  - React/RCTWebSocket (0.59.8):
     - React/Core
     - React/fishhook
     - React/RCTBlob
@@ -661,19 +667,19 @@ PODS:
   - UMBarCodeScannerInterface (2.0.0-rc.0)
   - UMCameraInterface (2.0.0-rc.0)
   - UMConstantsInterface (2.0.0-rc.0)
-  - UMCore (2.0.0-alpha.0)
+  - UMCore (2.0.0-rc.0)
   - UMFaceDetectorInterface (2.0.0-rc.0)
   - UMFileSystemInterface (2.0.0-rc.0)
   - UMFontInterface (2.0.0-rc.0)
   - UMImageLoaderInterface (2.0.0-rc.0)
   - UMPermissionsInterface (2.0.0-rc.0)
-  - UMReactNativeAdapter (2.0.0-alpha.0):
+  - UMReactNativeAdapter (2.0.0-rc.0):
     - React
     - UMCore
     - UMFontInterface
   - UMSensorsInterface (2.0.0-rc.0)
   - UMTaskManagerInterface (2.0.0-rc.0)
-  - yoga (0.59.5.React)
+  - yoga (0.59.8.React)
   - yogaABI31_0_0 (0.57.1.React)
   - yogaABI32_0_0 (0.57.1.React)
 
@@ -1301,7 +1307,7 @@ SPEC CHECKSUMS:
   EXAppLoaderProvider: 2638ca3d779c8baae37e63352c785e5e2dad70d5
   EXAV: 619ea1c25404bdbf66ae243d2b77aa4f90ad5cc9
   EXBackgroundFetch: 41b9c046a5dd6ce5e6a6c6e1ed97a2b3e5ff4a1e
-  EXBarCodeScanner: e24dcd3e0279da0ee25a519eb26aa22a828602b7
+  EXBarCodeScanner: 8a57593fe5bb446043b1d6c02ef75a387a5dd85c
   EXBlur: 04698084cb51c57ec8f0e07f5522a4e2efe2a587
   EXBrightness: 1bd1960d1d9752af53b9c55b813d3720b12f6cce
   EXCalendar: 47b4c8e7f003deff888696f25f52a845f3101c89
@@ -1325,19 +1331,19 @@ SPEC CHECKSUMS:
   EXLocalAuthentication: 64ea3d43b259dfa781a40045fdf88624238a7191
   EXLocalization: 348a20e02a5cf8d44e8c04f611f339df37a7359e
   EXLocation: 429443e5368923b236cd726d1c40ee8d291eedbc
-  EXMailComposer: 6fa88c09aae306fa05e4030482681563b2308446
+  EXMailComposer: fa3adc24943cdbdb782c226d782409638ee771f8
   EXMediaLibrary: 29198a80b055bd1b69e738a44e566abb204f4a90
   EXPermissions: 332e6241b48d34a8363a78d87d90a20436a9eff9
-  EXPrint: 31f99a71a37e4543d401699a12443ffc061ab5bc
+  EXPrint: e802eada2cf4652401e9f12a8b509b1e60029167
   EXRandom: ef63cbfe063ed76e9ffed8ea9e762369a7185bf4
   EXSecureStore: 3bea93c3872a57eb319f02c25cd5d064e96d5ea3
   EXSegment: 59f8dbfb3d351c0b0a142cc5dbacde461fde5b77
   EXSensors: 70818ebc1f2a0014d95556de323e2945c4374ad9
   EXSharing: 3d00ce069b19b698ef219e39e4ded811add87754
-  EXSMS: be674990e4f4649babcbb5092e9fe63fda31dd75
+  EXSMS: c7db65e9cb87c749a03f4ed21fda2056cd08db20
   EXSpeech: 393adb0f37972bb8095a99da0e4a455c73366e13
-  EXSQLite: 6de0e07822d8c3ee03e89491f7de2f12b2208f8a
-  EXTaskManager: 24c66563e0a7a9a1a686dfe960bd131c94339071
+  EXSQLite: 2c18c50ce378e047c902f50fd45f9097ae5ca14f
+  EXTaskManager: 1b96dec009e8b06b07bbcf04355a419ded9eb79f
   EXVideoThumbnails: 849e77e53c3c03eaf05b46cc80aa343067bc7508
   EXWebBrowser: 80d1c7fc02cc459528b9e04863c8837f242bc3b4
   Fabric: f988e33c97f08930a413e08123064d2e5f68d655

@@ -2,7 +2,7 @@
 
 #import <EXSegment/EXSegment.h>
 #import <UMConstantsInterface/UMConstantsInterface.h>
-#import <SEGAnalytics.h>
+#import <Analytics/SEGAnalytics.h>
 
 static NSString *const EXSegmentOptOutKey = @"EXSegmentOptOutKey";
 

@@ -33,7 +33,7 @@
     "querystring": "^0.2.0",
     "react": "16.8.3",
     "react-apollo": "^2.5.5",
-    "react-native": "0.59.5",
+    "react-native": "0.59.8",
     "react-native-infinite-scroll-view": "^0.4.5",
     "react-navigation": "^3.9.0",
     "react-navigation-material-bottom-tabs": "1.0.0",

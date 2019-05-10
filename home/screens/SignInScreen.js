@@ -137,7 +137,7 @@ export default class SignInScreen extends React.Component {
         } else {
           let trackingOpts = {
             id: result.id,
-            emailOrUsername: email,
+            usernameOrEmail: email,
           };
           Analytics.identify(result.id, trackingOpts);
           Analytics.track(Analytics.events.USER_LOGGED_IN, trackingOpts);

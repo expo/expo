@@ -9,7 +9,6 @@ package versioned.host.exp.exponent.modules.api.netinfo;
 
 import android.os.Build;
 
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -18,7 +17,7 @@ import com.facebook.react.bridge.ReactMethod;
 /**
  * Module that monitors and provides information about the connectivity state of the device.
  */
-public class NetInfoModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+public class NetInfoModule extends ReactContextBaseJavaModule {
   public static final String NAME = "RNCNetInfo";
 
   private final ConnectivityReceiver mConnectivityReceiver;
@@ -34,22 +33,13 @@ public class NetInfoModule extends ReactContextBaseJavaModule implements Lifecyc
   }
 
   @Override
-  public void onHostResume() {
+  public void initialize() {
     mConnectivityReceiver.register();
   }
 
   @Override
-  public void onHostPause() {
+  public void onCatalystInstanceDestroy() {
     mConnectivityReceiver.unregister();
-  }
-
-  @Override
-  public void onHostDestroy() {
-  }
-
-  @Override
-  public void initialize() {
-    getReactApplicationContext().addLifecycleEventListener(this);
   }
 
   @Override
