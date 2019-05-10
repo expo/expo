@@ -25,8 +25,15 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
 
   CreateAsset(Context context, String uri, Promise promise) {
     mContext = context;
-    mUri = Uri.parse(uri);
+    mUri = normalizeAssetUri(uri);
     mPromise = promise;
+  }
+
+  private Uri normalizeAssetUri(String uri) {
+    if (uri.startsWith("/")) {
+      return Uri.fromFile(new File(uri));
+    }
+    return Uri.parse(uri);
   }
 
   private File createAssetFile() throws IOException {

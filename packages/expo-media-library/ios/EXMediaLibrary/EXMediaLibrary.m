@@ -93,7 +93,7 @@ UM_EXPORT_METHOD_AS(createAssetAsync,
     return;
   }
   
-  NSURL *assetUrl = [NSURL URLWithString:localUri];
+  NSURL *assetUrl = [self.class _normalizeAssetURLFromUri:localUri];
   
   if (assetUrl == nil) {
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
@@ -859,6 +859,13 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   return sortDescriptors;
 }
 
++ (NSURL *)_normalizeAssetURLFromUri:(NSString *)uri
+{
+  if ([uri hasPrefix:@"/"]) {
+    return [NSURL URLWithString:[@"file://" stringByAppendingString:uri]];
+  }
+  return [NSURL URLWithString:uri];
+}
 
 - (BOOL)_checkPermissions:(UMPromiseRejectBlock)reject
 {
