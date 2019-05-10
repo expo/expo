@@ -240,7 +240,7 @@ gulp.task('update-react-native-lottie', () => {
   return updateVendoredNativeModule({
     argv,
     name: 'lottie-react-native',
-    repoUrl: 'https://github.com/expo/lottie-react-native.git',
+    repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
     sourceIosPath: 'src/ios/LottieReactNative',
     iosPrefix: 'LRN',
     sourceAndroidPath:
