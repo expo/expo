@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <CoreLocation/CLLocation.h>
+#import <CoreLocation/CLLocationManager.h>
 
 #import <UMCore/UMEventEmitter.h>
 #import <UMCore/UMExportedModule.h>
