@@ -134,39 +134,39 @@ gulp.task('update-react-native-svg', () => {
   });
 });
 
-gulp.task('update-react-native-gesture-handler', () => {
-  console.log(
-    'If you are updating Android, then also run update-react-native-gesture-handler-lib afterwards'
-  );
+gulp.task('update-react-native-gesture-handler-code', () => {
   return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-gesture-handler',
-    repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
-    sourceIosPath: 'ios',
-    sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-    targetIosPath: 'Api/Components/GestureHandler',
-    targetAndroidPath: 'modules/api/components/gesturehandler/react',
-    sourceAndroidPackage: 'com.swmansion',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components',
-    installableInManagedApps: true,
+      argv,
+      name: 'react-native-gesture-handler',
+      repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+      sourceIosPath: 'ios',
+      sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
+      targetIosPath: 'Api/Components/GestureHandler',
+      targetAndroidPath: 'modules/api/components/gesturehandler/react',
+      sourceAndroidPackage: 'com.swmansion.gesturehandler.react',
+      targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler.react',
+      installableInManagedApps: true,
+    });
   });
-});
+  
+  gulp.task('update-react-native-gesture-handler-lib', () => {
+    return updateVendoredNativeModule({
+      argv,
+      name: 'react-native-gesture-handler-lib',
+      repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+      sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
+      targetAndroidPath: 'modules/api/components/gesturehandler',
+      sourceAndroidPackage: 'com.swmansion.gesturehandler',
+      targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+      installableInManagedApps: true,
+    });
+  });
 
-gulp.task('update-react-native-gesture-handler-lib', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-gesture-handler',
-    repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
-    sourceIosPath: 'ios',
-    targetIosPath: '',
-    sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
-    targetAndroidPath: 'modules/api/components/gesturehandler',
-    sourceAndroidPackage: 'com.swmansion.gesturehandler',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
-    installableInManagedApps: true,
-    skipCleanup: true,
-  });
-});
+gulp.task('update-react-native-gesture-handler', 
+  gulp.series(
+    'update-react-native-gesture-handler-lib',
+    'update-react-native-gesture-handler-code'
+  ));
 
 gulp.task('update-amazon-cognito-identity-js', () => {
   return updateVendoredNativeModule({
