@@ -3,14 +3,6 @@ import { NativeModules, StyleSheet, Text, View } from 'react-native';
 
 import { getAppLoadingLifecycleEmitter } from './AppLoading';
 
-const { ExponentAppLoadingManager } = NativeModules;
-
-async function finishedAsync() {
-  if (ExponentAppLoadingManager && ExponentAppLoadingManager.finishedAsync) {
-    return await ExponentAppLoadingManager.finishedAsync();
-  }
-}
-
 type Props = {
   children: React.ReactNode;
 };
@@ -51,8 +43,6 @@ export default class RootErrorBoundary extends React.Component<Props, State> {
 
     ErrorUtils.setGlobalHandler((error, isFatal) => {
       if (this._appLoadingIsMounted) {
-        finishedAsync();
-
         if (isFatal) {
           this.setState({ error });
         }
@@ -72,8 +62,6 @@ export default class RootErrorBoundary extends React.Component<Props, State> {
   // Test this by adding `throw new Error('example')` to your root component
   componentDidCatch(error: Error) {
     if (this._appLoadingIsMounted) {
-      finishedAsync();
-
       this.setState({ error });
     }
 
