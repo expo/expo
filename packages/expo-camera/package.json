@@ -42,8 +42,7 @@
   "dependencies": {
     "jsqr": "^1.2.0",
     "lodash.mapvalues": "^4.6.0",
-    "prop-types": "^15.6.0",
-    "qr-scanner": "^1.1.1"
+    "prop-types": "^15.6.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
