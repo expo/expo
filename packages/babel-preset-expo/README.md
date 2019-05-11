@@ -7,7 +7,7 @@ at https://github.com/expo/expo. Thanks!
 
 ### `web.allowCommonJS`
 
-Enabling this will enable your project to run with older javascript syntax (ie: `module.exports`). By enabling this you will also break tree shaking and your bundle will be much larger than it could be. When the older syntax is in
+Enabling this will enable your project to run with CommonJS syntax (i.e.: `module.exports`). By enabling this you will also disable tree shaking and your bundle will be much larger than it could be. When CommonJS syntax is in
 
 > Enabling `common.js` will eliminate this error: `TypeError: Cannot assign to read only property 'exports' of object '#<Object>'`
 
