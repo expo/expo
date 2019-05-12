@@ -175,7 +175,7 @@ The permissions type for changing brighness of the screen
 
 ## Android: permissions equivalents inside `app.json`
 
-In order to request permissions in a standalone Android app, you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Permissions` values and native permission types is as follows:
+In order to request permissions in a standalone Android app (Managed Workflow only), you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Permissions` values and native permission types is as follows:
 
 | Expo            | Android                                           |
 | --------------- | --------------------------------------------------|
