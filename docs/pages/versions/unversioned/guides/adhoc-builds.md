@@ -106,7 +106,7 @@ Open this link on your iOS device (or scan the QR code) to view build logs and i
 https://expo.io/client/XXXXXXXXXX
 ```
 
-### 2d. Installing Expo client on your iOS device
+### 3. Install the Custom Expo client on your iOS device
 
 ![Install Workflow](/static/images/adhoc-builds-install.png)
 
