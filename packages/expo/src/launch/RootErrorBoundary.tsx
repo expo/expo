@@ -75,9 +75,10 @@ export default class RootErrorBoundary extends React.Component<Props, State> {
       finishedAsync();
 
       this.setState({ error });
+    } else {
+      // Let the error propagate up to the global handler
+      throw error;
     }
-
-    console.error(error);
   }
 
   render() {
