@@ -71,6 +71,7 @@ const FUNDAMENTALS = [
   'Debugging',
   'Development Mode',
   'Common Development Errors',
+  'iOS Simulator',
   'Android Studio Emulator',
   'Configuration with app.json',
   'Publishing',
