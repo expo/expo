@@ -64,7 +64,9 @@ async function _getModuleSpecAsync(moduleName, module) {
       .reduce(
         (spec, moduleName) => ({
           ...spec,
-          [moduleName]: _mockify(module.modulesConstants[moduleName]),
+          [moduleName]: module.modulesConstants[moduleName]
+            ? _mockify(module.modulesConstants[moduleName])
+            : undefined,
         }),
         {}
       );
