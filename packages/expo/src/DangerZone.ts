@@ -40,14 +40,14 @@ export default {
       `DangerZone.Animated -> import Animated from 'react-native-reanimated'`,
       'react-native-reanimated'
     );
-    return require('react-native-reanimated').default;
+    return require('./Animated').default;
   },
   get Easing() {
     deprecatedModule(
       `DangerZone.Easing -> import { Easing } from 'react-native-reanimated'`,
       'react-native-reanimated'
     );
-    return require('react-native-reanimated').Easing;
+    return require('./Animated').Easing;
   },
 
   // react-native-screens
