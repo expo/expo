@@ -6,7 +6,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '32.0.0'
+version = '33.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -139,7 +139,7 @@ dependencies {
   // WHEN_VERSIONING_REMOVE_FROM_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:32.0.0'
+  api 'com.facebook.react:react-native:33.0.0'
   addMavenUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',

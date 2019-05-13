@@ -3,10 +3,10 @@
   <groupId>host.exp.exponent</groupId>
   <artifactId>expo-gl-cpp</artifactId>
   <versioning>
-    <release>2.0.0</release>
+    <release>5.0.0-rc.0</release>
     <versions>
-      <version>2.0.0</version>
+      <version>5.0.0-rc.0</version>
     </versions>
-    <lastUpdated>20190219190521</lastUpdated>
+    <lastUpdated>20190520102045</lastUpdated>
   </versioning>
 </metadata>
