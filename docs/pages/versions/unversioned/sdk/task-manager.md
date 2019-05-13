@@ -14,7 +14,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ## Configuration for standalone apps
 
-`TaskManager` works out of the box in the Expo Client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+`TaskManager` works out of the box in the Expo client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
 Example of `app.json` that enables background location and background fetch:
 
 ```json
