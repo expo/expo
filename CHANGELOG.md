@@ -27,6 +27,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added a warning printed when attempting to store a value longer than 2048 bytes in the `SecureStore`. (Since SDK35 it will throw an error.) [@dsokal](https://github.com/dsokal) ([#4084](https://github.com/expo/expo/pull/4084))
 - added `UMAppDelegateWrapper` which allows easy integration between unimodules and `AppDelegate` callbacks by [@Szymon20000](https://github.com/Szymon20000) ([#3917](https://github.com/expo/expo/pull/3917))
 - changed `Constants.platform.ios.buildNumber` and `Constants.platform.android.versionCode` to `null` when running an app in Expo Client by [@dsokal](https://github.com/dsokal) ([#4203](https://github.com/expo/expo/pull/4203))
+- upgrade `react-native-maps` to `0.24.2` by [@sjchmiela](https://github.com/sjchmiela) ([#3389](https://github.com/expo/expo/pull/3389), [#4158](https://github.com/expo/expo/pull/4158), ejected projects will need to add `HAVE_GOOGLE_MAPS=1` preprocessor definition to `Podfile`)
 
 ### 🎉 New features
 
@@ -42,7 +43,6 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - upgraded Facebook Audience Network SDK dependency to 5.1.1 by [@sjchmiela](https://github.com/sjchmiela) ([#3394](https://github.com/expo/expo/pull/3394))
 - upgraded Facebook Core- and LoginKit dependency to 4.40.0 by [@sjchmiela](https://github.com/sjchmiela) ([#3394](https://github.com/expo/expo/pull/3394))
 - upgraded `react-native-webview` to `5.8.1` by [@sjchmiela](https://github.com/sjchmiela) ([#4146](https://github.com/expo/expo/pull/4146))
-- upgrade `react-native-maps` to `0.23.0` by [@sjchmiela](https://github.com/sjchmiela) ([#3389](https://github.com/expo/expo/pull/3389))
 - added Firebase integration to `expo-analytics-segment` by [@sjchmiela](https://github.com/sjchmiela) ([#3615](https://github.com/expo/expo/pull/3615))
 - added support for new arguments in `WebBrowser.openBrowserAsync` as described in [the documentation](https://docs.expo.io/versions/latest/sdk/webbrowser/) by [@mczernek](https://github.com/mczernek) ([#3691](https://github.com/expo/expo/pull/3691))
 - added tags support in `KeepAwake.activate` and `KeepAwake.deactivate` by [@mczernek](https://github.com/mczernek) [#3747](https://github.com/expo/expo/pull/3747)
@@ -51,6 +51,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added support for picking animated GIFs with `ImagePicker` by [@sjchmiela](https://github.com/sjchmiela) ([#3844](https://github.com/expo/expo/pull/3844))
 - added support for headers in `downloadAsync` method in `FileSystem` by [@mczernek](https://github.com/mczernek) ([#3911](https://github.com/expo/expo/pull/3911))
 - added support for custom poster styles in `Video` by [@sjchmiela](https://github.com/sjchmiela) ([#4165](https://github.com/expo/expo/issues/4165))
+- added `pausesUpdatesAutomatically` option to automatically pause background location updates based on the `activityType` by [@tsapeta](https://github.com/tsapeta) ([#4167](https://github.com/expo/expo/pull/4167))
 
 ### 🐛 Bug fixes
 
@@ -72,6 +73,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - providing `onPlaybackStatusUpdate` property to `Video` doesn't show a warning anymore by [@sjchmiela](https://github.com/sjchmiela) ([#4130](https://github.com/expo/expo/pull/4130))
 - calling `FileSystem.downloadAsync` will now raise an error when a target local directory doesn't exist by [@dsokal](https://github.com/dsokal) ([#4142](https://github.com/expo/expo/pull/4142))
 - flush UI blocks when needed, which fixes eg. `Camera.takePicture` not resolving on iOS by [@sjchmiela](https://github.com/sjchmiela) ([#4125](https://github.com/expo/expo/pull/4125))
+- fixed `MediaLibrary.createAssetAsync` crashing when supplying local asset URIs without `file://` protocol ([#4189](https://github.com/expo/expo/pull/4189) by [@tsapeta](https://github.com/tsapeta))
 
 ## 32.0.0
 

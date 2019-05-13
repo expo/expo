@@ -12,7 +12,15 @@ var LocationAccuracy;
     LocationAccuracy[LocationAccuracy["Highest"] = 5] = "Highest";
     LocationAccuracy[LocationAccuracy["BestForNavigation"] = 6] = "BestForNavigation";
 })(LocationAccuracy || (LocationAccuracy = {}));
-export { LocationAccuracy as Accuracy };
+var LocationActivityType;
+(function (LocationActivityType) {
+    LocationActivityType[LocationActivityType["Other"] = 1] = "Other";
+    LocationActivityType[LocationActivityType["AutomotiveNavigation"] = 2] = "AutomotiveNavigation";
+    LocationActivityType[LocationActivityType["Fitness"] = 3] = "Fitness";
+    LocationActivityType[LocationActivityType["OtherNavigation"] = 4] = "OtherNavigation";
+    LocationActivityType[LocationActivityType["Airborne"] = 5] = "Airborne";
+})(LocationActivityType || (LocationActivityType = {}));
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, };
 export var GeofencingEventType;
 (function (GeofencingEventType) {
     GeofencingEventType[GeofencingEventType["Enter"] = 1] = "Enter";

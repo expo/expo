@@ -67,7 +67,7 @@ module.exports = function updateVendoredNativeModule(options) {
   let { argv } = options;
 
   const executeAndroid = (argv.android || argv.allPlatforms) && options.sourceAndroidPath && options.targetAndroidPath;
-  const executeIOS = (argv.android || argv.allPlatforms) && options.sourceIosPath && options.sourceIosPath;
+  const executeIOS = (argv.ios || argv.allPlatforms) && options.sourceIosPath && options.sourceIosPath;
 
   if (!(argv.ios || argv.android || argv.allPlatforms)) {
     echo(`Must specify --ios, --android, or --allPlatforms`);

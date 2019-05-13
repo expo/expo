@@ -5,6 +5,8 @@
 //  Created by Gil Birman on 9/1/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import "AIRGoogleMap.h"
 #import "AIRGoogleMapMarker.h"
 #import "AIRGoogleMapMarkerManager.h"
@@ -12,18 +14,29 @@
 #import "AIRGoogleMapPolyline.h"
 #import "AIRGoogleMapCircle.h"
 #import "AIRGoogleMapUrlTile.h"
+#import "AIRGoogleMapWMSTile.h"
 #import "AIRGoogleMapOverlay.h"
 #import <GoogleMaps/GoogleMaps.h>
 #import <MapKit/MapKit.h>
 #import <React/UIView+React.h>
 #import <React/RCTBridge.h>
 #import "RCTConvert+AirMap.h"
+#import <objc/runtime.h>
 
+#ifdef HAVE_GOOGLE_MAPS_UTILS
 #import <Google-Maps-iOS-Utils/GMUKMLParser.h>
 #import <Google-Maps-iOS-Utils/GMUPlacemark.h>
 #import <Google-Maps-iOS-Utils/GMUPoint.h>
 #import <Google-Maps-iOS-Utils/GMUGeometryRenderer.h>
 #define REQUIRES_GOOGLE_MAPS_UTILS(feature) do {} while (0)
+#else
+#define GMUKMLParser void
+#define GMUPlacemark void
+#define REQUIRES_GOOGLE_MAPS_UTILS(feature) do { \
+ [NSException raise:@"ReactNativeMapsDependencyMissing" \
+             format:@"Use of " feature "requires Google-Maps-iOS-Utils, you  must install via CocoaPods to use this feature"]; \
+} while (0)
+#endif
 
 
 id regionAsJSON(MKCoordinateRegion region) {
@@ -39,6 +52,8 @@ id regionAsJSON(MKCoordinateRegion region) {
 
 - (id)eventFromCoordinate:(CLLocationCoordinate2D)coordinate;
 
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSDictionary*> *origGestureRecognizersMeta;
+
 @end
 
 @implementation AIRGoogleMap
@@ -49,6 +64,7 @@ id regionAsJSON(MKCoordinateRegion region) {
   BOOL _initialCameraSetOnLoad;
   BOOL _didCallOnMapReady;
   BOOL _didMoveToWindow;
+  BOOL _zoomTapEnabled;
 }
 
 - (instancetype)init
@@ -68,12 +84,15 @@ id regionAsJSON(MKCoordinateRegion region) {
     _initialCameraSetOnLoad = false;
     _didCallOnMapReady = false;
     _didMoveToWindow = false;
+    _zoomTapEnabled = YES;
 
     // Listen to the myLocation property of GMSMapView.
     [self addObserver:self
            forKeyPath:@"myLocation"
               options:NSKeyValueObservingOptionNew
               context:NULL];
+      
+    self.origGestureRecognizersMeta = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -125,6 +144,10 @@ id regionAsJSON(MKCoordinateRegion region) {
     AIRGoogleMapUrlTile *tile = (AIRGoogleMapUrlTile*)subview;
     tile.tileLayer.map = self;
     [self.tiles addObject:tile];
+  } else if ([subview isKindOfClass:[AIRGoogleMapWMSTile class]]) {
+    AIRGoogleMapWMSTile *tile = (AIRGoogleMapWMSTile*)subview;
+    tile.tileLayer.map = self;
+    [self.tiles addObject:tile];
   } else if ([subview isKindOfClass:[AIRGoogleMapOverlay class]]) {
     AIRGoogleMapOverlay *overlay = (AIRGoogleMapOverlay*)subview;
     overlay.overlay.map = self;
@@ -163,6 +186,10 @@ id regionAsJSON(MKCoordinateRegion region) {
     [self.circles removeObject:circle];
   } else if ([subview isKindOfClass:[AIRGoogleMapUrlTile class]]) {
     AIRGoogleMapUrlTile *tile = (AIRGoogleMapUrlTile*)subview;
+    tile.tileLayer.map = nil;
+    [self.tiles removeObject:tile];
+  } else if ([subview isKindOfClass:[AIRGoogleMapWMSTile class]]) {
+    AIRGoogleMapWMSTile *tile = (AIRGoogleMapWMSTile*)subview;
     tile.tileLayer.map = nil;
     [self.tiles removeObject:tile];
   } else if ([subview isKindOfClass:[AIRGoogleMapOverlay class]]) {
@@ -251,6 +278,9 @@ id regionAsJSON(MKCoordinateRegion region) {
 
 
 - (void)didPrepareMap {
+  UIView* mapView = [self valueForKey:@"mapView"]; //GMSVectorMapView
+  [self overrideGestureRecognizersForView:mapView];
+    
   if (_didCallOnMapReady) return;
   _didCallOnMapReady = true;
   if (self.onMapReady) self.onMapReady(@{});
@@ -368,7 +398,7 @@ id regionAsJSON(MKCoordinateRegion region) {
       return @"automatic";
     case kGMSMapViewPaddingAdjustmentBehaviorAlways:
       return @"always";
-
+      
     default:
       return @"unknown";
   }
@@ -388,6 +418,14 @@ id regionAsJSON(MKCoordinateRegion region) {
 
 - (BOOL)zoomEnabled {
   return self.settings.zoomGestures;
+}
+
+- (void)setZoomTapEnabled:(BOOL)zoomTapEnabled {
+    _zoomTapEnabled = zoomTapEnabled;
+}
+
+- (BOOL)zoomTapEnabled {
+    return _zoomTapEnabled;
 }
 
 - (void)setRotateEnabled:(BOOL)rotateEnabled {
@@ -517,6 +555,209 @@ id regionAsJSON(MKCoordinateRegion region) {
   return [map cameraForBounds:bounds insets:UIEdgeInsetsZero];
 }
 
+#pragma mark - Utils
+
+- (CGRect) frameForMarker:(AIRGoogleMapMarker*) mrkView {
+    CGPoint mrkAnchor = mrkView.realMarker.groundAnchor;
+    CGPoint mrkPoint = [self.projection pointForCoordinate:mrkView.coordinate];
+    CGSize mrkSize = mrkView.realMarker.iconView ? mrkView.realMarker.iconView.bounds.size : CGSizeMake(20, 30);
+    CGRect mrkFrame = CGRectMake(mrkPoint.x, mrkPoint.y, mrkSize.width, mrkSize.height);
+    mrkFrame.origin.y -= mrkAnchor.y * mrkSize.height;
+    mrkFrame.origin.x -= mrkAnchor.x * mrkSize.width;
+    return mrkFrame;
+}
+
+- (NSDictionary*) getMarkersFramesWithOnlyVisible:(BOOL)onlyVisible {
+    NSMutableDictionary* markersFrames = [NSMutableDictionary new];
+    for (AIRGoogleMapMarker* mrkView in self.markers) {
+        CGRect frame = [self frameForMarker:mrkView];
+        CGPoint point = [self.projection pointForCoordinate:mrkView.coordinate];
+        NSDictionary* frameDict = @{
+                                    @"x": @(frame.origin.x),
+                                    @"y": @(frame.origin.y),
+                                    @"width": @(frame.size.width),
+                                    @"height": @(frame.size.height)
+                                    };
+        NSDictionary* pointDict = @{
+                                    @"x": @(point.x),
+                                    @"y": @(point.y)
+                                    };
+        NSString* k = mrkView.identifier;
+        BOOL isVisible = CGRectIntersectsRect(self.bounds, frame);
+        if (k != nil && (!onlyVisible || isVisible)) {
+            [markersFrames setObject:@{ @"frame": frameDict, @"point": pointDict } forKey:k];
+        }
+    }
+    return markersFrames;
+}
+
+- (AIRGoogleMapMarker*) markerAtPoint:(CGPoint)point {
+    AIRGoogleMapMarker* mrk = nil;
+    for (AIRGoogleMapMarker* mrkView in self.markers) {
+        CGRect frame = [self frameForMarker:mrkView];
+        if (CGRectContainsPoint(frame, point)) {
+            mrk = mrkView;
+            break;
+        }
+    }
+    return mrk;
+}
+
+-(SEL)getActionForTarget:(NSObject*)target {
+    SEL action = nil;
+    uint32_t ivarCount;
+    Ivar *ivars = class_copyIvarList([target class], &ivarCount);
+    if (ivars) {
+        for (uint32_t i = 0 ; i < ivarCount ; i++) {
+            Ivar ivar = ivars[i];
+            const char* type = ivar_getTypeEncoding(ivar);
+            const char* ivarName = ivar_getName(ivar);
+            NSString* name = [NSString stringWithCString: ivarName encoding: NSASCIIStringEncoding];
+            if (type[0] == ':' && [name isEqualToString:@"_action"]) {
+                SEL sel = ((SEL (*)(id, Ivar))object_getIvar)(target, ivar);
+                action = sel;
+                break;
+            }
+        }
+    }
+    free(ivars);
+    return action;
+}
+
+#pragma mark - Overrides for Callout behavior
+
+-(void)overrideGestureRecognizersForView:(UIView*)view {
+    NSArray* grs = view.gestureRecognizers;
+    for (UIGestureRecognizer* gestureRecognizer in grs) {
+        NSNumber* grHash = [NSNumber numberWithUnsignedInteger:gestureRecognizer.hash];
+        if([self.origGestureRecognizersMeta objectForKey:grHash] != nil)
+            continue; //already patched
+        
+        //get original handlers
+        NSArray* origTargets = [gestureRecognizer valueForKey:@"targets"];
+        NSMutableArray* origTargetsActions = [[NSMutableArray alloc] init];
+        BOOL isZoomTapGesture = NO;
+        for (NSObject* trg in origTargets) {
+            NSObject* target = [trg valueForKey:@"target"];
+            SEL action = [self getActionForTarget:trg];
+            isZoomTapGesture = [NSStringFromSelector(action) isEqualToString:@"handleZoomTapGesture:"];
+            [origTargetsActions addObject:@{
+                                            @"target": [NSValue valueWithNonretainedObject:target],
+                                            @"action": NSStringFromSelector(action)
+                                            }];
+        }
+        if (isZoomTapGesture && self.zoomTapEnabled == NO) {
+            [view removeGestureRecognizer:gestureRecognizer];
+            continue;
+        }
+        
+        //replace with extendedMapGestureHandler
+        for (NSDictionary* origTargetAction in origTargetsActions) {
+            NSValue* targetValue = [origTargetAction objectForKey:@"target"];
+            NSObject* target = [targetValue nonretainedObjectValue];
+            NSString* actionString = [origTargetAction objectForKey:@"action"];
+            SEL action = NSSelectorFromString(actionString);
+            [gestureRecognizer removeTarget:target action:action];
+        }
+        [gestureRecognizer addTarget:self action:@selector(extendedMapGestureHandler:)];
+        
+        [self.origGestureRecognizersMeta setObject:@{@"targets": origTargetsActions}
+                                            forKey:grHash];
+    }
+}
+
+- (id)extendedMapGestureHandler:(UIGestureRecognizer*)gestureRecognizer {
+    NSNumber* grHash = [NSNumber numberWithUnsignedInteger:gestureRecognizer.hash];
+    UIWindow* win = [[[UIApplication sharedApplication] windows] firstObject];
+    NSObject* bubbleProvider = [self valueForKey:@"bubbleProvider"]; //GMSbubbleEntityProvider
+    CGRect bubbleAbsoluteFrame = [bubbleProvider accessibilityFrame];
+    CGRect bubbleFrame = [win convertRect:bubbleAbsoluteFrame toView:self];
+    UIView* bubbleView = [bubbleProvider valueForKey:@"view"];
+    
+    BOOL performOriginalActions = YES;
+    BOOL isTap = [gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] || [gestureRecognizer isMemberOfClass:[UITapGestureRecognizer class]];
+    if (isTap) {
+        BOOL isTapInsideBubble = NO;
+    CGPoint tapPoint = CGPointZero;
+    CGPoint tapPointInBubble = CGPointZero;
+    
+    NSArray* touches = [gestureRecognizer valueForKey:@"touches"];
+    UITouch* oneTouch = [touches firstObject];
+    NSArray* delayedTouches = [gestureRecognizer valueForKey:@"delayedTouches"];
+    NSObject* delayedTouch = [delayedTouches firstObject]; //UIGestureDeleayedTouch
+    UITouch* tapTouch = [delayedTouch valueForKey:@"stateWhenDelayed"];
+    if (!tapTouch)
+        tapTouch = oneTouch;
+        tapPoint = [tapTouch locationInView:self];
+        isTapInsideBubble = tapTouch != nil && CGRectContainsPoint(bubbleFrame, tapPoint);
+        if (isTapInsideBubble) {
+            tapPointInBubble = CGPointMake(tapPoint.x - bubbleFrame.origin.x, tapPoint.y - bubbleFrame.origin.y);
+        }
+        if (isTapInsideBubble) {
+            //find bubble's marker
+            AIRGoogleMapMarker* markerView = nil;
+            AIRGMSMarker* marker = nil;
+            for (AIRGoogleMapMarker* mrk in self.markers) {
+                if ([mrk.calloutView isEqual:bubbleView]) {
+                    markerView = mrk;
+                    marker = markerView.realMarker;
+                    break;
+                }
+            }
+            
+            //find real tap target subview
+            UIView* realSubview = [(RCTView*)bubbleView hitTest:tapPointInBubble withEvent:nil];
+            AIRGoogleMapCalloutSubview* realPressableSubview = nil;
+            if (realSubview) {
+                UIView* tmp = realSubview;
+                while (tmp && tmp != win && tmp != bubbleView) {
+                    if ([tmp respondsToSelector:@selector(onPress)]) {
+                        realPressableSubview = (AIRGoogleMapCalloutSubview*) tmp;
+                        break;
+                    }
+                    tmp = tmp.superview;
+                }
+            }
+            
+            if (markerView) {
+                BOOL isInsideCallout = [markerView.calloutView isPointInside:tapPointInBubble];
+                if (isInsideCallout) {
+                    [markerView didTapInfoWindowOfMarker:marker subview:realPressableSubview point:tapPointInBubble frame:bubbleFrame];
+                } else {
+                    AIRGoogleMapMarker* markerAtTapPoint = [self markerAtPoint:tapPoint];
+                    if (markerAtTapPoint != nil) {
+                        [self didTapMarker:markerAtTapPoint.realMarker];
+                    } else {
+                        CLLocationCoordinate2D coord = [self.projection coordinateForPoint:tapPoint];
+                        [markerView hideCalloutView];
+                        [self didTapAtCoordinate:coord];
+                    }
+                }
+                
+                performOriginalActions = NO;
+            }
+        }
+    }
+    
+    if (performOriginalActions) {
+        NSDictionary* origMeta = [self.origGestureRecognizersMeta objectForKey:grHash];
+        NSDictionary* origTargets = [origMeta objectForKey:@"targets"];
+        for (NSDictionary* origTarget in origTargets) {
+            NSValue* targetValue = [origTarget objectForKey:@"target"];
+            NSObject* target = [targetValue nonretainedObjectValue];
+            NSString* actionString = [origTarget objectForKey:@"action"];
+            SEL action = NSSelectorFromString(actionString);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            [target performSelector:action withObject:gestureRecognizer];
+#pragma clang diagnostic pop
+        }
+    }
+    
+    return nil;
+}
+
+
 #pragma mark - KVO updates
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -545,6 +786,7 @@ id regionAsJSON(MKCoordinateRegion region) {
 }
 
 + (NSString *)GetIconUrl:(GMUPlacemark *) marker parser:(GMUKMLParser *) parser {
+#ifdef HAVE_GOOGLE_MAPS_UTILS
   if (marker.style.styleID != nil) {
     for (GMUStyle *style in parser.styles) {
       if (style.styleID == marker.style.styleID) {
@@ -554,6 +796,9 @@ id regionAsJSON(MKCoordinateRegion region) {
   }
 
   return marker.style.iconUrl;
+#else
+    REQUIRES_GOOGLE_MAPS_UTILS("GetIconUrl:parser:"); return @"";
+#endif
 }
 
 - (NSString *)KmlSrc {
@@ -561,6 +806,7 @@ id regionAsJSON(MKCoordinateRegion region) {
 }
 
 - (void)setKmlSrc:(NSString *)kmlUrl {
+#ifdef HAVE_GOOGLE_MAPS_UTILS
 
   _kmlSrc = kmlUrl;
 
@@ -612,6 +858,11 @@ id regionAsJSON(MKCoordinateRegion region) {
 
   id event = @{@"markers": markers};
   if (self.onKmlReady) self.onKmlReady(event);
+#else
+    REQUIRES_GOOGLE_MAPS_UTILS();
+#endif
 }
 
 @end
+
+#endif
