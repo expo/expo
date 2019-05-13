@@ -148,7 +148,7 @@ export default class App extends React.Component {
 }
 ```
 
-## Example without any flickering between SplashScreen and it's later continueation
+## Example without any flickering between SplashScreen and its later continuation
 
 ```javascript
 import React from 'react';
