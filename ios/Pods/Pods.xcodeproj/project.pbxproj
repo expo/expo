@@ -1245,7 +1245,6 @@
 		491F470885BB21936E786DC3A9A964A9 /* ABI31_0_0EXAdsAdMobRewarded.h in Headers */ = {isa = PBXBuildFile; fileRef = 9538C1600DEB1FC58E181CA2BDD28F7C /* ABI31_0_0EXAdsAdMobRewarded.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		493ACF9C800031325B45BBD07B937821 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022758B38720C5B697C3FFD1DCE8EFE5 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		495337B938D7B8FC56A9FC2FEF494DC7 /* SEGStoreKitTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = C2C1D7FE650FA597CC6FE34305C65961 /* SEGStoreKitTracker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		495A89B787123FC1D669F76335414B8A /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = E79A2EBB629FCFBF07099B941675CA47 /* EXSQLite.m */; };
 		4983E1D6D2292CBFBF68051271BE6BBE /* EXFaceDetectorManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E1B9D6C3E7F5DD79F08B5FC6ED45B0FE /* EXFaceDetectorManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		49A3CF564B940CEE0BCE478AC5BF7AAE /* ABI31_0_0REABezierNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC8B7FB2F9ED7BAA11A7F6D9AA1A299 /* ABI31_0_0REABezierNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		49A762B9D8650EACE01D3C594ACB1F03 /* BranchLogoutRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B2489D0250271F897CE3D3F940A914BA /* BranchLogoutRequest.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1901,6 +1900,7 @@
 		70101374A88BB3A6B992F89AD8411D5F /* ABI31_0_0RCTLayoutAnimationGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C8B64203742470FB43342B6731EFF2A /* ABI31_0_0RCTLayoutAnimationGroup.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		7011530E40818C1DC90EADCA065B4F42 /* ABI32_0_0EXGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3558718FE38DDE2B50CED5F30B01A5EC /* ABI32_0_0EXGLView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		701300B4463F07E4D58124E1C0EF56E2 /* ABI31_0_0EXAdsAdMobBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D0351156CFEABABB52036EE685CE4E8 /* ABI31_0_0EXAdsAdMobBannerView.m */; };
+		701EB59D656577D4E41321CF6505CB06 /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7955F8C280177D58E8708462468FA063 /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		70388586BE47D89017349813EF37546A /* BranchContentDiscoverer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4787F403DB58A45C24270D91C211C875 /* BranchContentDiscoverer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		703B7FFB2D68CB2C6B796420978793D2 /* ABI32_0_0RCTBaseTextInputShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 354CFA5CAA355543DEBD36F2FC4B0C0A /* ABI32_0_0RCTBaseTextInputShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		70445326AA8D618C41457650E36ECA66 /* ABI32_0_0Value.h in Headers */ = {isa = PBXBuildFile; fileRef = 77B2D52093B51BACE3EA542220B2909C /* ABI32_0_0Value.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3147,6 +3147,7 @@
 		BB89D380FA327882BFC4702D8E194CF3 /* LOTMaskContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = E2FA8E7EFB4CA225224DAC99A2C60E8A /* LOTMaskContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BB8B0181FC0292E3B8FDFD1AAB8ECE7B /* ABI31_0_0RCTSpringAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = EA1A43FAC1A15280E0B99651E749BB2F /* ABI31_0_0RCTSpringAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		BBB214AC14DB31D9CB885F784218D0D0 /* ABI32_0_0EXDocumentPicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 915E0978C4E05F7B3B5723C6098E23A6 /* ABI32_0_0EXDocumentPicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BBC4290D211551FE0C3DBC26631A65BD /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EC871CC723EAA1A4260EF8D7158D7E /* EXSQLite.m */; };
 		BBC6993AB1FC640E0FA1DECCA211F7F1 /* ANSCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = 93F0C2D3DFF3CE1DAEA7277E64C2C6C1 /* ANSCompatibility.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BBD326C5116B1D35A8784B1B89F4F21C /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 92D125D024669F2A0ED53FCD52AC1C14 /* raw_logging.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		BBD3C3395FF696A3CE7396F1B62720DE /* FBSDKSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BF679496297CC813ECAE32B8B898A89 /* FBSDKSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3248,7 +3249,7 @@
 		C005524E412D85CE85F00A36CB6CD639 /* ABI32_0_0EXAdsAdMobInterstitial.h in Headers */ = {isa = PBXBuildFile; fileRef = 0400E12EC1A623A2499415981F1C9AC7 /* ABI32_0_0EXAdsAdMobInterstitial.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C0408321B17FC2B71F534C8DEC7E2789 /* ABI32_0_0JSCSamplingProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = C8FD39EA18D75C3FB64989B9C6963093 /* ABI32_0_0JSCSamplingProfiler.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C041FB344AC422AC972648CA487A0441 /* EXMagnetometer.m in Sources */ = {isa = PBXBuildFile; fileRef = D79BAD2D702FAD76C078C87769555733 /* EXMagnetometer.m */; };
-		C056F48D040AAA3C9B63366877633FA1 /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7410308D63608C6F9E8DCE6300A135A5 /* EXSQLite-dummy.m */; };
+		C056F48D040AAA3C9B63366877633FA1 /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC501173AE7A6B5A88CEA372CB92C0DC /* EXSQLite-dummy.m */; };
 		C05EF83534939EC3691CE2EC14736CC6 /* RCTUITextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DBAB01939235D49DA98DC7B4A9E1F89 /* RCTUITextView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C07CBC4E16BA1F9A1B1C2FA4576C4457 /* Amplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AD6407F7D753AED1C2032E75A21338 /* Amplitude.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C0820B08931C5351ADC7DE6A71BD61E2 /* SEGHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C75AB3ECBBBE40620E00BC076845A48 /* SEGHTTPClient.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3275,7 +3276,6 @@
 		C2511BA9FD0E8834C3F92DBCB8EFA7DB /* lottie-ios-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1226F6759386C7DE45770D8FB1689725 /* lottie-ios-dummy.m */; };
 		C251500833BCF4C1DFD892B519180D9F /* ABI31_0_0EXUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = BE33FC3CA653973D014218AEBFF4C058 /* ABI31_0_0EXUtilities.m */; };
 		C258BD57599F3D76B12E08E47D9CC7EB /* ABI32_0_0RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = E4A8A070DD1F5CE84A4B6E696CE8C7DD /* ABI32_0_0RCTModuloAnimatedNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C265366DA46D8A0C41858C6C8D6661FE /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = EE84D7601D599A9B866C83AB2C7F379A /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C26D9EC6B480AF7B8B1EE99535688E99 /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 586C15634477D424710A51DCC69C8389 /* instrumentation.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C27480BC2902AD639D7F41701703517A /* ABI32_0_0RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 421049A823D9C2557F12B31FAAE8C9F8 /* ABI32_0_0RNGestureHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C28715115132DDC9AF65298A9060FEBF /* ABI32_0_0YGNodePrint.h in Headers */ = {isa = PBXBuildFile; fileRef = A0E498D26B9F6A11740F7F6188EA5B43 /* ABI32_0_0YGNodePrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -7290,6 +7290,7 @@
 		26E0329488B65FCB9B2A673B0831C789 /* ABI32_0_0AIRMapCoordinate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0AIRMapCoordinate.m; sourceTree = "<group>"; };
 		26E4335BA7B46DB37B033AFFE828AB60 /* ABI32_0_0EXUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0EXUtil.h; sourceTree = "<group>"; };
 		26E6D44D7FFB36BF2D74688C4CB45270 /* ABI31_0_0RNSVGTSpan.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI31_0_0RNSVGTSpan.m; sourceTree = "<group>"; };
+		27002E82FDA27D5F38C6829B96D17E05 /* EXSQLite.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSQLite.xcconfig; sourceTree = "<group>"; };
 		27076CFE273D57AF5169ED4522ACC7B4 /* OIDError.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = OIDError.m; path = Source/OIDError.m; sourceTree = "<group>"; };
 		270D7830263C8DEC8332737101A64F24 /* ABI32_0_0RCTLayoutAnimationGroup.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0RCTLayoutAnimationGroup.h; sourceTree = "<group>"; };
 		271806871EEBC36C906B3B800950B3F8 /* ABI31_0_0RCTImageSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI31_0_0RCTImageSource.m; sourceTree = "<group>"; };
@@ -7939,7 +7940,6 @@
 		475A4399EDA89D967AB61BA26CC7C9A6 /* GoogleToolboxForMac-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleToolboxForMac-dummy.m"; sourceTree = "<group>"; };
 		476CAF58458F0EC54AD4614C63AA18FD /* FBSDKApplicationDelegate+Internal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "FBSDKApplicationDelegate+Internal.h"; path = "FBSDKCoreKit/FBSDKCoreKit/Internal/FBSDKApplicationDelegate+Internal.h"; sourceTree = "<group>"; };
 		476D8F0FCF4708A503DB214270AE0C2D /* ABI32_0_0AIRGoogleMapCircleManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0AIRGoogleMapCircleManager.m; sourceTree = "<group>"; };
-		4771EB52E0B4C389ABD6E6AE02675C1E /* EXSQLite.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = EXSQLite.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		4785DEE076A7449F764492D1849409CF /* LOTBlockCallback.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LOTBlockCallback.h; path = "lottie-ios/Classes/PublicHeaders/LOTBlockCallback.h"; sourceTree = "<group>"; };
 		4787F403DB58A45C24270D91C211C875 /* BranchContentDiscoverer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BranchContentDiscoverer.h; path = "Branch-SDK/Branch-SDK/BranchContentDiscoverer.h"; sourceTree = "<group>"; };
 		478C0BFDF498933004D60BF736629A10 /* RCTBridge.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBridge.h; sourceTree = "<group>"; };
@@ -8729,7 +8729,6 @@
 		6FF8BE3BA90EC174C75DD8515DE6E21C /* GMUDefaultClusterRenderer+Testing.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "GMUDefaultClusterRenderer+Testing.h"; path = "src/Clustering/View/GMUDefaultClusterRenderer+Testing.h"; sourceTree = "<group>"; };
 		7004FFAA34C98F59BF148DEA4879EAF2 /* ABI32_0_0EXSMS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI32_0_0EXSMS-prefix.pch"; sourceTree = "<group>"; };
 		700F29DDC0B971F3DAA9EA7DD9E2CDA4 /* OIDFieldMapping.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = OIDFieldMapping.m; path = Source/OIDFieldMapping.m; sourceTree = "<group>"; };
-		701E53B1C350E6CD2A2C2135049F8701 /* EXSQLite.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSQLite.xcconfig; sourceTree = "<group>"; };
 		70276C224FBE6E174BC7493857C1F14C /* ABI31_0_0EXCameraPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI31_0_0EXCameraPermissionRequester.h; path = ABI31_0_0EXPermissions/ABI31_0_0EXCameraPermissionRequester.h; sourceTree = "<group>"; };
 		70399EC7BCED0BC8FB7EF0DFA095C97A /* EXCalendar-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCalendar-prefix.pch"; sourceTree = "<group>"; };
 		7042AAE9636C6F0DD10DDC09A0AE6A98 /* ABI31_0_0AIRMapLocalTileOverlay.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI31_0_0AIRMapLocalTileOverlay.h; sourceTree = "<group>"; };
@@ -8812,7 +8811,6 @@
 		73DB25053FA468EABD08761E32B72CC9 /* ABI32_0_0RCTImageStoreManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0RCTImageStoreManager.m; path = Libraries/Image/ABI32_0_0RCTImageStoreManager.m; sourceTree = "<group>"; };
 		73DF5ECA8CE94C301013B8710520AF66 /* ABI32_0_0AIRGMSPolygon.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0AIRGMSPolygon.m; sourceTree = "<group>"; };
 		73F9CD30C68E898316720FA2F4D3DBD9 /* ABI32_0_0RCTDevMenu.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTDevMenu.m; sourceTree = "<group>"; };
-		7410308D63608C6F9E8DCE6300A135A5 /* EXSQLite-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSQLite-dummy.m"; sourceTree = "<group>"; };
 		741DCEB48A4E28497029BB53E8B065CB /* ABI32_0_0JSCLegacyTracing.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI32_0_0JSCLegacyTracing.h; path = ReactCommon/cxxReactABI32_0_0/ABI32_0_0JSCLegacyTracing.h; sourceTree = "<group>"; };
 		743EC350E1F2017FF5ACFF5D6CA95E5F /* BFAppLinkResolving.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BFAppLinkResolving.h; path = Bolts/iOS/BFAppLinkResolving.h; sourceTree = "<group>"; };
 		743FB38DB9498FB375579D711F6C3759 /* ABI31_0_0EXRemoteNotificationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI31_0_0EXRemoteNotificationRequester.m; path = ABI31_0_0EXPermissions/ABI31_0_0EXRemoteNotificationRequester.m; sourceTree = "<group>"; };
@@ -8923,6 +8921,7 @@
 		793AAE2E46541AFD563ED5B2ED7DA881 /* FBSDKGraphRequestConnection.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FBSDKGraphRequestConnection.m; path = FBSDKCoreKit/FBSDKCoreKit/FBSDKGraphRequestConnection.m; sourceTree = "<group>"; };
 		79431D58683A245B4A7F816DD0027E19 /* NSData+SEGGZIP.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+SEGGZIP.m"; path = "Analytics/Classes/Internal/NSData+SEGGZIP.m"; sourceTree = "<group>"; };
 		7943F68C05ABD7F4C3CC5CC160FCC536 /* ABI32_0_0RCTDiffClampAnimatedNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0RCTDiffClampAnimatedNode.h; sourceTree = "<group>"; };
+		7955F8C280177D58E8708462468FA063 /* EXSQLite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSQLite.h; path = EXSQlite/EXSQLite.h; sourceTree = "<group>"; };
 		795FB0E9C8455D26546A7B12E077B15B /* CLSLogging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CLSLogging.h; path = iOS/Crashlytics.framework/Headers/CLSLogging.h; sourceTree = "<group>"; };
 		796C76C0B91002AE77CC7CF4825FCEA0 /* ABI32_0_0RCTFrameUpdate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTFrameUpdate.m; sourceTree = "<group>"; };
 		796CF77DEF643E91CDCE724984C7CCC4 /* ABI31_0_0EXContacts.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI31_0_0EXContacts.m; path = ABI31_0_0EXContacts/ABI31_0_0EXContacts.m; sourceTree = "<group>"; };
@@ -9331,6 +9330,7 @@
 		8DFC79FA2ACC8346BCC593ADB1B40AFE /* ABI32_0_0RCTInputAccessoryViewContent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTInputAccessoryViewContent.m; sourceTree = "<group>"; };
 		8DFF66E8A84D345B468F7AB3A39215FB /* OIDGrantTypes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = OIDGrantTypes.h; path = Source/OIDGrantTypes.h; sourceTree = "<group>"; };
 		8E10E88215D7507EFF13C90E15B9384A /* Analytics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Analytics-dummy.m"; sourceTree = "<group>"; };
+		8E2B5876628E9EFAD49A1F8C3A51EB96 /* EXSQLite.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = EXSQLite.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		8E2D5A226395B9D67653E978AEEC6F4D /* ABI32_0_0EXUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0EXUtilities.m; path = ABI32_0_0EXCore/ABI32_0_0EXUtilities.m; sourceTree = "<group>"; };
 		8E2DAD9D17DF7A8A94B7E1E49E2E0F22 /* ABI31_0_0EXBarCodeScannerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI31_0_0EXBarCodeScannerInterface.h; path = ABI31_0_0EXBarCodeScannerInterface/ABI31_0_0EXBarCodeScannerInterface.h; sourceTree = "<group>"; };
 		8E2F34B7C861E82995EC7BD057EC0E9F /* ABI32_0_0RNSVGUse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RNSVGUse.m; sourceTree = "<group>"; };
@@ -10086,7 +10086,6 @@
 		B452D245979E86A9B65E9DB93D55B1C8 /* ABI31_0_0BranchContentMetadata+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI31_0_0BranchContentMetadata+RNBranch.m"; sourceTree = "<group>"; };
 		B453C0DD00E5BC16BAEDE64EC356D699 /* ABI32_0_0EXAudioRecordingPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0EXAudioRecordingPermissionRequester.m; path = ABI32_0_0EXPermissions/ABI32_0_0EXAudioRecordingPermissionRequester.m; sourceTree = "<group>"; };
 		B45E3C191EC09A95AC78F8566C0F9FB8 /* ABI31_0_0MessageQueueThread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI31_0_0MessageQueueThread.h; path = ReactCommon/cxxReactABI31_0_0/ABI31_0_0MessageQueueThread.h; sourceTree = "<group>"; };
-		B4687660C93D83FB68AC214762ACAF23 /* EXSQLite-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSQLite-prefix.pch"; sourceTree = "<group>"; };
 		B46FFE3CDA2CC03C9C91AA76766FABE6 /* GoogleToolboxForMac.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleToolboxForMac.xcconfig; sourceTree = "<group>"; };
 		B486DF5966303C87EEDB9B1E32FB24E7 /* ABI32_0_0RCTUITextView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTUITextView.m; sourceTree = "<group>"; };
 		B4A8F8FE9DDB8FFAE87673B965BF9C05 /* ISPPinnedNSURLConnectionDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ISPPinnedNSURLConnectionDelegate.m; path = Amplitude/SSLCertificatePinning/ISPPinnedNSURLConnectionDelegate.m; sourceTree = "<group>"; };
@@ -10803,6 +10802,7 @@
 		DA61A7B1EE32CC16B3BD2136CA9C1E4A /* ABI32_0_0RNPinchHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RNPinchHandler.m; sourceTree = "<group>"; };
 		DA7770D6ED5A5DD56A8351EF8D115E64 /* EXSharingModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSharingModule.m; path = EXSharing/EXSharingModule.m; sourceTree = "<group>"; };
 		DA7A2F40E600886E7861152FE76A28E8 /* ABI32_0_0EXMediaLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0EXMediaLibrary.m; path = ABI32_0_0EXMediaLibrary/ABI32_0_0EXMediaLibrary.m; sourceTree = "<group>"; };
+		DA7C105DC7FC9F89EB94505AAA8120B0 /* EXSQLite-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSQLite-prefix.pch"; sourceTree = "<group>"; };
 		DA8174CFD46FE5FED5CA35C5CFF1B45A /* EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = EXRandom.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		DA86FA4EE42F9CF8405B926EBF598716 /* BranchCreditHistoryRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BranchCreditHistoryRequest.h; path = "Branch-SDK/Branch-SDK/Networking/Requests/BranchCreditHistoryRequest.h"; sourceTree = "<group>"; };
 		DA9DC75BBEE7B4FF09ECC606C6C13529 /* ABI32_0_0RCTResizeMode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0RCTResizeMode.m; path = Libraries/Image/ABI32_0_0RCTResizeMode.m; sourceTree = "<group>"; };
@@ -11066,7 +11066,6 @@
 		E77958100A15E6B22113D28B0CCB5CF4 /* glog.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = glog.xcconfig; sourceTree = "<group>"; };
 		E77F48850A7CE9358CA5C523FE924D5C /* Google-Maps-iOS-Utils-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Google-Maps-iOS-Utils-dummy.m"; sourceTree = "<group>"; };
 		E784814BB5606B52F69600FCEBE62FC2 /* ABI31_0_0EXBannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI31_0_0EXBannerViewManager.h; sourceTree = "<group>"; };
-		E79A2EBB629FCFBF07099B941675CA47 /* EXSQLite.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSQLite.m; path = EXSQLite/EXSQLite.m; sourceTree = "<group>"; };
 		E7AE84A297C1C56813EDCB5273C8B140 /* ABI32_0_0RCTAppState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0RCTAppState.h; sourceTree = "<group>"; };
 		E7B90AA6799832800C9650EEC7404245 /* EXBlur.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBlur.xcconfig; sourceTree = "<group>"; };
 		E7D6FA4AE0CAF689A5D2386B5C897CD5 /* FBSDKWebViewAppLinkResolver.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBSDKWebViewAppLinkResolver.h; path = FBSDKCoreKit/FBSDKCoreKit/FBSDKWebViewAppLinkResolver.h; sourceTree = "<group>"; };
@@ -11191,7 +11190,6 @@
 		EE3FD9581A8640DD64FCCC59B28A9C73 /* ABI32_0_0RCTInspectorPackagerConnection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0RCTInspectorPackagerConnection.h; sourceTree = "<group>"; };
 		EE514E3201A4DD0CD12A1524E4CB0C6D /* ARTGroup.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ARTGroup.m; path = Libraries/ART/ARTGroup.m; sourceTree = "<group>"; };
 		EE6075F0C73B9861430CC3D3602DF0C3 /* ABI31_0_0ARTGroupManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI31_0_0ARTGroupManager.m; sourceTree = "<group>"; };
-		EE84D7601D599A9B866C83AB2C7F379A /* EXSQLite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSQLite.h; path = EXSQLite/EXSQLite.h; sourceTree = "<group>"; };
 		EE86B8C154D1BD2598081A797007F5E5 /* RCTImageBlurUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RCTImageBlurUtils.h; path = Libraries/Image/RCTImageBlurUtils.h; sourceTree = "<group>"; };
 		EE8B08C0395E3186916F23200A05BBE1 /* ABI32_0_0RCTPropsAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTPropsAnimatedNode.m; sourceTree = "<group>"; };
 		EE920B1690C1A1E6CE16E510BC970ACB /* EXLocation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocation-prefix.pch"; sourceTree = "<group>"; };
@@ -11313,6 +11311,7 @@
 		F4BD7E49AF1573CE15160F271D43EC8B /* ABI32_0_0EXModuleRegistryBinding.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0EXModuleRegistryBinding.m; sourceTree = "<group>"; };
 		F4C89FFF81D2364E4DC2596D95ADDE20 /* FBSDKContainerViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBSDKContainerViewController.h; path = FBSDKCoreKit/FBSDKCoreKit/Internal/FBSDKContainerViewController.h; sourceTree = "<group>"; };
 		F4E8961548D54D16DB87E5840FE4834A /* ABI31_0_0YGEnums.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI31_0_0YGEnums.cpp; path = yoga/ABI31_0_0YGEnums.cpp; sourceTree = "<group>"; };
+		F4EC871CC723EAA1A4260EF8D7158D7E /* EXSQLite.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSQLite.m; path = EXSQlite/EXSQLite.m; sourceTree = "<group>"; };
 		F4EE55F0CFB380C33D0B6281BA767816 /* DDMultiFormatter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DDMultiFormatter.h; path = Classes/Extensions/DDMultiFormatter.h; sourceTree = "<group>"; };
 		F4F541CE5016550B93B8424F8D49E9F5 /* ABI32_0_0ARTBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0ARTBrush.h; sourceTree = "<group>"; };
 		F4F55E43540D2528AA90D8C61DF668FD /* RCTDisplayLink.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTDisplayLink.m; sourceTree = "<group>"; };
@@ -11451,6 +11450,7 @@
 		FC3252FF7765E8D5600CD0C9AD7D87F3 /* ABI31_0_0RCTSinglelineTextInputViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI31_0_0RCTSinglelineTextInputViewManager.h; sourceTree = "<group>"; };
 		FC41E62EB62A494B0CCA8537AAAF1090 /* ABI32_0_0EXFontManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0EXFontManager.m; path = ABI32_0_0EXFont/ABI32_0_0EXFontManager.m; sourceTree = "<group>"; };
 		FC431048104A257988C55D433AAB4272 /* ABI31_0_0RCTNavigator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI31_0_0RCTNavigator.h; sourceTree = "<group>"; };
+		FC501173AE7A6B5A88CEA372CB92C0DC /* EXSQLite-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSQLite-dummy.m"; sourceTree = "<group>"; };
 		FC7447AA85EB6C63DCFA133A36D36379 /* ABI32_0_0EXConstants-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI32_0_0EXConstants-dummy.m"; sourceTree = "<group>"; };
 		FC76570267E6BE4AEEAA839277A1851D /* RCTStyleAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTStyleAnimatedNode.m; sourceTree = "<group>"; };
 		FC7B772CB884FD835E65522C566DAEEE /* ABI31_0_0RNSVGBezierElement.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI31_0_0RNSVGBezierElement.m; sourceTree = "<group>"; };
@@ -17234,14 +17234,6 @@
 			path = Fabric;
 			sourceTree = "<group>";
 		};
-		7761337E58F71ABED2E3A55DBEA8CD9C /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				4771EB52E0B4C389ABD6E6AE02675C1E /* EXSQLite.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		77735CDA3553AE02F5A836894D74AF3C /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -17716,7 +17708,7 @@
 				6298B29DE329589F0A4DB1E32530C0A5 /* EXSharing */,
 				B920608E350CBAC5D73F210345C210FA /* EXSMS */,
 				045019F9BD89C113C802F8FC7E66FB19 /* EXSpeech */,
-				A11809734981E390A311F78A4CA644F9 /* EXSQLite */,
+				B86CB0AC714B16F1FD2F8E4A3BB95EC2 /* EXSQLite */,
 				9C0629E6E8195604FB2311F53E7920EE /* EXTaskManager */,
 				FB02A3C0033260A1BAD69DB40E275BD1 /* EXVideoThumbnails */,
 				9214DEEBE34DF47593D255BA1BB26F2F /* EXWebBrowser */,
@@ -19046,18 +19038,6 @@
 			name = Expo;
 			sourceTree = "<group>";
 		};
-		A11809734981E390A311F78A4CA644F9 /* EXSQLite */ = {
-			isa = PBXGroup;
-			children = (
-				EE84D7601D599A9B866C83AB2C7F379A /* EXSQLite.h */,
-				E79A2EBB629FCFBF07099B941675CA47 /* EXSQLite.m */,
-				7761337E58F71ABED2E3A55DBEA8CD9C /* Pod */,
-				FD3E8C3EF23CA36D75D9AC678261DAC2 /* Support Files */,
-			);
-			name = EXSQLite;
-			path = "../../packages/expo-sqlite/ios";
-			sourceTree = "<group>";
-		};
 		A1281D89975CDB6C625BD9EF58CE78F2 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
@@ -20115,6 +20095,17 @@
 			path = "../../packages/expo-keep-awake/ios";
 			sourceTree = "<group>";
 		};
+		B59855294A864FA3861D666BFA6D9FE9 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				27002E82FDA27D5F38C6829B96D17E05 /* EXSQLite.xcconfig */,
+				FC501173AE7A6B5A88CEA372CB92C0DC /* EXSQLite-dummy.m */,
+				DA7C105DC7FC9F89EB94505AAA8120B0 /* EXSQLite-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXSQLite";
+			sourceTree = "<group>";
+		};
 		B5AFA7C8E088E038050305F70EAEDC38 /* DevSupport */ = {
 			isa = PBXGroup;
 			children = (
@@ -20200,6 +20191,18 @@
 			);
 			name = BaseText;
 			path = Libraries/Text/BaseText;
+			sourceTree = "<group>";
+		};
+		B86CB0AC714B16F1FD2F8E4A3BB95EC2 /* EXSQLite */ = {
+			isa = PBXGroup;
+			children = (
+				7955F8C280177D58E8708462468FA063 /* EXSQLite.h */,
+				F4EC871CC723EAA1A4260EF8D7158D7E /* EXSQLite.m */,
+				D43DCD0ECEC8DBDF5223819A60B300F3 /* Pod */,
+				B59855294A864FA3861D666BFA6D9FE9 /* Support Files */,
+			);
+			name = EXSQLite;
+			path = "../../packages/expo-sqlite/ios";
 			sourceTree = "<group>";
 		};
 		B89284645E4BE0B6F302BC654EFCE902 /* Pod */ = {
@@ -21268,6 +21271,14 @@
 			isa = PBXGroup;
 			children = (
 				264B3A196FF81361F21B494B2572887E /* ABI32_0_0EXSMS.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		D43DCD0ECEC8DBDF5223819A60B300F3 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				8E2B5876628E9EFAD49A1F8C3A51EB96 /* EXSQLite.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -23235,17 +23246,6 @@
 			);
 			name = ABI32_0_0EXAppLoaderProvider;
 			path = "../versioned-react-native/ABI32_0_0/EXAppLoaderProvider";
-			sourceTree = "<group>";
-		};
-		FD3E8C3EF23CA36D75D9AC678261DAC2 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				701E53B1C350E6CD2A2C2135049F8701 /* EXSQLite.xcconfig */,
-				7410308D63608C6F9E8DCE6300A135A5 /* EXSQLite-dummy.m */,
-				B4687660C93D83FB68AC214762ACAF23 /* EXSQLite-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXSQLite";
 			sourceTree = "<group>";
 		};
 		FDA56FC33D32559E1E82A012F89905EE /* EXPrint */ = {
@@ -26197,7 +26197,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C265366DA46D8A0C41858C6C8D6661FE /* EXSQLite.h in Headers */,
+				701EB59D656577D4E41321CF6505CB06 /* EXSQLite.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -29248,7 +29248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C056F48D040AAA3C9B63366877633FA1 /* EXSQLite-dummy.m in Sources */,
-				495A89B787123FC1D669F76335414B8A /* EXSQLite.m in Sources */,
+				BBC4290D211551FE0C3DBC26631A65BD /* EXSQLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39436,7 +39436,7 @@
 		};
 		F28A11ACC15FD4BDD89498EC2CB4C9D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 701E53B1C350E6CD2A2C2135049F8701 /* EXSQLite.xcconfig */;
+			baseConfigurationReference = 27002E82FDA27D5F38C6829B96D17E05 /* EXSQLite.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -39483,7 +39483,7 @@
 		};
 		F51F318ED2DF9960CBAD8CC8B9CE9662 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 701E53B1C350E6CD2A2C2135049F8701 /* EXSQLite.xcconfig */;
+			baseConfigurationReference = 27002E82FDA27D5F38C6829B96D17E05 /* EXSQLite.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
