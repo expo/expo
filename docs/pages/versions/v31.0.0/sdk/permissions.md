@@ -119,7 +119,7 @@ The permission type for location access.
 > **Note:** iOS is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
 On iOS ask for this permission type individually.
 
-> **Note (iOS):** In Expo Client this permission will always ask the user for permission to access location data while the app is in use.
+> **Note (iOS):** In Expo client this permission will always ask the user for permission to access location data while the app is in use.
 >
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 >

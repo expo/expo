@@ -40,7 +40,7 @@ Commands:
   build:web [options] [project-dir]                   Build a production bundle for your project, compressed and ready for deployment.
   build:status|bs [options] [project-dir]             Gets the status of a current (or most recently finished) build for your project.
   bundle-assets [options] [project-dir]               Bundles assets for a detached app. This command should be executed from xcode or gradle.
-  client:ios [options]                                Build a custom version of the Expo Client for iOS using your own Apple credentials and install it on your mobile device using Safari.
+  client:ios [options]                                Build a custom version of the Expo client for iOS using your own Apple credentials and install it on your mobile device using Safari.
   diagnostics [project-dir]                           Prints environment info to console.
   doctor [options] [project-dir]                      Diagnoses issues with your Expo project.
   eject [options] [project-dir]                       Creates Xcode and Android Studio projects for your app. Use this if you need to add custom native functionality.
@@ -51,8 +51,8 @@ Commands:
   fetch:android:upload-cert [options] [project-dir]   Fetch this project's upload certificate needed after opting in to app signing by Google Play or after resetting a previous upload certificate.
   generate-module [options] [new-module-project]      Generate a universal module for Expo from a template in [new-module-project] directory.
   init|i [options] [project-dir]                      Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
-  install:ios                                         Install the latest version of Expo Client for iOS on the simulator
-  install:android                                     Install the latest version of Expo Client for Android on a connected device or emulator
+  install:ios                                         Install the latest version of Expo client for iOS on the simulator
+  install:android                                     Install the latest version of Expo client for Android on a connected device or emulator
   ios [options] [project-dir]                         Opens your app in Expo in an iOS simulator on your computer
   login|signin [options]                              Login with your Expo account
   logout                                              Logout from your Expo account

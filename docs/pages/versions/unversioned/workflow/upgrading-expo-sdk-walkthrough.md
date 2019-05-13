@@ -4,7 +4,7 @@ title: Upgrading Expo SDK Walkthrough
 
 If you are a couple of versions behind, upgrading your projects Expo SDK version can be difficult because of the amount of breaking changes and deprecations in each upgrade. Don't worry, here are all the breaking changes in each SDK version upgrade. We **strongly recommend** upgrading SDK versions incrementally if possible. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
 
-Expo maintains ~6 months of backwards compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo Client for development or build new binaries via `expo build`. You will still be able to publish OTA updates via `expo publish` however. Deprecations **will not** affect standalone apps you have in production.
+Expo maintains ~6 months of backwards compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo client for development or build new binaries via `expo build`. You will still be able to publish OTA updates via `expo publish` however. Deprecations **will not** affect standalone apps you have in production.
 
 > **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../../expokit/expokit#upgrading-expokit). 
 
