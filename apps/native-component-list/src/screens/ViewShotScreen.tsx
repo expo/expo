@@ -75,9 +75,14 @@ export default class ViewShotScreen extends React.Component<{}, State> {
     const uri = this.state.screenUri;
 
     if (uri) {
-      await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      await MediaLibrary.createAssetAsync(uri);
-      alert('Successfully added captured screen to media library');
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+      if (status === 'granted') {
+        await MediaLibrary.createAssetAsync(uri);
+        alert('Successfully added captured screen to media library');
+      } else {
+        alert('Camera roll permissions not granted');
+      }
     }
   }
 
