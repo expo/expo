@@ -1013,8 +1013,6 @@
 		31361A5E2261C64100662769 /* Permissions */ = {
 			isa = PBXGroup;
 			children = (
-				31361A5F2261C65A00662769 /* EXPermissionsManager.h */,
-				31361A602261C65A00662769 /* EXPermissionsManager.m */,
 				31361A622261C6CB00662769 /* EXScopedPermissions.h */,
 				31361A632261C6CB00662769 /* EXScopedPermissions.m */,
 			);
@@ -1648,6 +1646,8 @@
 				07295CD820559E7300ED42D4 /* EXUpdatesManager.m */,
 				F167C439209C7EE600F01382 /* EXUtilService.h */,
 				F167C43A209C7EE600F01382 /* EXUtilService.m */,
+				31361A5F2261C65A00662769 /* EXPermissionsManager.h */,
+				31361A602261C65A00662769 /* EXPermissionsManager.m */,
 				78D8252B2051213D00CBD9D9 /* Notifications */,
 			);
 			path = Services;
