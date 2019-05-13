@@ -41,6 +41,15 @@
   if (_unversionedConstants) {
     [constants addEntriesFromDictionary:_unversionedConstants];
   }
+
+  if ([constants[@"appOwnership"] isEqualToString:@"expo"]) {
+    NSMutableDictionary *platform = [constants[@"platform"] mutableCopy];
+    NSMutableDictionary *ios = [platform[@"ios"] mutableCopy];
+    [ios setValue:[NSNull null] forKey:@"buildNumber"];
+    [platform setValue:ios forKey:@"ios"];
+    [constants setValue:platform forKey:@"platform"];
+  }
+
   return constants;
 }
 
