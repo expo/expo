@@ -27,7 +27,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added a warning printed when attempting to store a value longer than 2048 bytes in the `SecureStore`. (Since SDK35 it will throw an error.) [@dsokal](https://github.com/dsokal) ([#4084](https://github.com/expo/expo/pull/4084))
 - added `UMAppDelegateWrapper` which allows easy integration between unimodules and `AppDelegate` callbacks by [@Szymon20000](https://github.com/Szymon20000) ([#3917](https://github.com/expo/expo/pull/3917))
 - changed `Constants.platform.ios.buildNumber` and `Constants.platform.android.versionCode` to `null` when running an app in Expo Client by [@dsokal](https://github.com/dsokal) ([#4203](https://github.com/expo/expo/pull/4203))
-- upgrade `react-native-maps` to `0.24.2` by [@sjchmiela](https://github.com/sjchmiela) ([#3389](https://github.com/expo/expo/pull/3389), [#4158](https://github.com/expo/expo/pull/4158), ejected projects will need to add `HAVE_GOOGLE_MAPS=1` preprocessor definition to `Podfile`)
+- upgraded `react-native-maps` to `0.24.2` by [@sjchmiela](https://github.com/sjchmiela) ([#3389](https://github.com/expo/expo/pull/3389), [#4158](https://github.com/expo/expo/pull/4158), ejected projects will need to add `HAVE_GOOGLE_MAPS=1` preprocessor definition to `Podfile`)
 
 ### 🎉 New features
 
