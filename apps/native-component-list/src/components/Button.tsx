@@ -35,10 +35,8 @@ const Button: React.FunctionComponent<Props> = ({
       onPress={onPress}
       underlayColor={Colors.highlightColor}
     >
-      {children || loading ? (
-        <ActivityIndicator size="small" color="white" />
-      ) : (
-        <Text style={styles.label}>{title}</Text>
+      {children || (
+        loading ? <ActivityIndicator size="small" color="white" /> : <Text style={styles.label}>{title}</Text>
       )}
     </TouchableHighlight>
   </View>
