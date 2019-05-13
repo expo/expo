@@ -1,31 +1,26 @@
 ---
-title: Installing a Custom iOS Expo Client
+title: Installing a Custom iOS Expo client
 ---
 
 > **WARNING:** This feature is in alpha release and is not released to production yet.
 
 ![Build Overview](/static/images/adhoc-builds-overview.gif)
 
-Build and install a custom version of the Expo Client (link) with your own Apple Credentials using our build service. This custom version of the Expo Client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo Client, and you can install it to your iOS device directly from our website.
+Build and install a custom version of the Expo client (link) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website.
 
 ## 0. Prerequisites
 
-You'll need a paid [Apple Developer Account](https://developer.apple.com/programs).
-
-## 1. Install Expo CLI
-
-Expo CLI is the tool for developing and building Expo apps. Run `npm install -g expo-cli` (or `yarn global add expo-cli`) to get it.
-
-If you haven't created an Expo account before, you'll be asked to create one when running the build command.
+- You'll need a paid [Apple Developer Account](https://developer.apple.com/programs).
+- Install the `expo-cli` command line app by following the instructions [here](https://docs.expo.io/versions/latest/workflow/expo-cli/).
 
 **Windows users** must have WSL enabled. You can follow the installation guide [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We recommend picking Ubuntu from the Windows Store. Be sure to launch Ubuntu at least once. After that, use an Admin powershell to run:
 `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux`
 
-## 2. Start the build
+## 1. Start the build
 
-Run `expo client:ios`.
+Run `expo client:ios`
 
-### 2a. Provide Apple Credentials
+### 1a. Provide Apple Credentials
 
 You are given a choice of letting the `expo` client create the necessary credentials for you, while still having a chance to provide your own overrides. Your Apple ID and password are used locally and
 never saved on Expo's servers.
@@ -59,12 +54,12 @@ The password is only used to authenticate with Apple and never stored.
 We ask you if you'd like us to handle your Distribution Certificate or use your own. If you have previously used `expo-cli` for building a standalone app for a different project, then we'll ask you if you'd like to reuse your existing Distribution Certificate. If you don't know what a Distribution Certificate is, just let us handle it for you. If you do need to upload your own certificates, we recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/).
 **Note:** this guide recommends leaving the P12's password blank, but a P12 password is required to upload your own certificate to Expo's service. Please enter a password when prompted. We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well.
 
-### 2b. Determine UDID of your iOS Device
+### 1b. Determine UDID of your iOS Device
 
-In order to install your custom build of the Expo Client on your iOS device, we will need to determine your device UDID so we can configure your provisioning profile and authorize your device to download the Expo Client.
+In order to install your custom build of the Expo client on your iOS device, we will need to determine your device UDID so we can configure your provisioning profile and authorize your device to download the Expo client.
 
 ```bash
-Custom builds of the Expo Client can only be installed on devices which have been registered with Apple at build-time.
+Custom builds of the Expo client can only be installed on devices which have been registered with Apple at build-time.
 These devices are currently registered on your Apple Developer account:
 ┌───────────────┬──────────────────────────────────────────┐
 │ Name          │ Identifier                               │
@@ -72,13 +67,13 @@ These devices are currently registered on your Apple Developer account:
 │ muh iphone    │ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx         │
 └───────────────┴──────────────────────────────────────────┘
 
-? Would you like to register new devices to use the Expo Client with? (Y/n) Y
+? Would you like to register new devices to use the Expo client with? (Y/n) Y
 ```
 
-If you would like to install the Expo Client on an iOS device that is not listed above, follow the prompts to register your device.
+If you would like to install the Expo client on an iOS device that is not listed above, follow the prompts to register your device.
 
 ```bash
-? Would you like to register new devices to use the Expo Client with? Yes
+? Would you like to register new devices to use the Expo client with? Yes
 
 ==================
 [QR Code redacted]
@@ -96,22 +91,22 @@ You will need to open this QR code on the iOS device you wish to register. If yo
 
 ![UDID Workflow](/static/images/adhoc-builds-udid.png)
 
-### 2c. Wait for it to finish building
+### 2. Wait for it to finish building
 
-You can monitor the status of your Expo Client build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.io/builds).
+You can monitor the status of your Expo client build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.io/builds).
 
 ```bash
 ==================
 [QR Code redacted]
 ==================
 
-Your custom Expo Client is being built! 🛠
+Your custom Expo client is being built! 🛠
 Open this link on your iOS device (or scan the QR code) to view build logs and install the client:
 
 https://expo.io/client/XXXXXXXXXX
 ```
 
-### 2d. Install the Custom Expo client on your iOS device
+### 3. Install the Custom Expo client on your iOS device
 
 ![Install Workflow](/static/images/adhoc-builds-install.png)
 
