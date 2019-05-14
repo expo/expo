@@ -804,7 +804,7 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
 
     public static Uri contentUriFromFile(File file, Application application) {
       try {
-        return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+        return FileProvider.getUriForFile(application, application.getPackageName() + ".ImagePickerFileProvider", file);
       } catch (Exception e) {
         return Uri.fromFile(file);
       }
@@ -826,5 +826,3 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
   }
 
 }
-
-
