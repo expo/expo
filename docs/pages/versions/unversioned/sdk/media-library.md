@@ -253,7 +253,6 @@ Possible media types:
 
 Supported keys that can be used to sort `getAssetsAsync` results:
 - `SortBy.default`
-- `SortBy.id`
 - `SortBy.creationTime`
 - `SortBy.modificationTime`
 - `SortBy.mediaType`
