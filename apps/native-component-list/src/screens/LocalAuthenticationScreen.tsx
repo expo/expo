@@ -93,7 +93,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
         />
         <Button
           onPress={this.checkAuthenticationsTypes}
-          title="Check aunthentications types available on the device"
+          title="Check authentications types available on the device"
         />
       </View>
     );
