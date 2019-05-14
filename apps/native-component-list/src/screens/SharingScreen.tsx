@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { Sharing, Asset } from 'expo';
+import { Asset } from 'expo-asset';
+import * as Sharing from 'expo-sharing';
 import Button from '../components/Button';
 
 // https://www.deviantart.com/squishypanda96/art/ceci-n-est-pas-un-chapeau-296137053

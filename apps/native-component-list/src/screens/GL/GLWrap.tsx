@@ -1,5 +1,5 @@
 import React from 'react';
-import { GL } from 'expo';
+import * as GL from 'expo-gl';
 import { View, StyleProp, ViewStyle } from 'react-native';
 
 import { Colors } from '../../constants';
@@ -9,7 +9,7 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
   onContextCreate:
     (gl: GL.ExpoWebGLRenderingContext) => Promise<{ onTick?: (gl: GL.ExpoWebGLRenderingContext) => void } | void>
 ): React.ComponentType<P> & { title: string } =>
-  class extends React.Component<P> {
+  (class extends React.Component<P> {
     static title = title;
 
     _gl?: GL.ExpoWebGLRenderingContext;
@@ -50,4 +50,4 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
       };
       animate();
     }
-  };
+  });

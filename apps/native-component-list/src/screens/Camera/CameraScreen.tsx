@@ -1,6 +1,11 @@
 import React from 'react';
 import { Alert, StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
-import { Constants, Camera, FileSystem, Permissions, BarCodeScanner, FaceDetector } from 'expo';
+import * as FaceDetector from 'expo-face-detector';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import * as Permissions from 'expo-permissions';
+import * as FileSystem from 'expo-file-system';
+import { Camera } from 'expo-camera';
+import Constants from 'expo-constants';
 import isIPhoneX from 'react-native-is-iphonex';
 import {
   Ionicons,

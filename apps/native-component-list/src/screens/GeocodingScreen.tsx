@@ -11,7 +11,8 @@ import {
 import { NavigationEvents } from 'react-navigation';
 import Touchable from 'react-native-platform-touchable';
 
-import { Permissions, Location } from 'expo';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 const EXAMPLES = [
   '1 Hacker Way',

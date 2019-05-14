@@ -1,5 +1,5 @@
 import React from 'react';
-import { Asset } from 'expo';
+import { Asset } from 'expo-asset';
 import { ScrollView, StyleSheet, PixelRatio } from 'react-native';
 import { Audio } from 'expo-av';
 

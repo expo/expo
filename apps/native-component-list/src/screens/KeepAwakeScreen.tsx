@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { KeepAwake } from 'expo';
+import KeepAwake from 'expo-keep-awake';
 import Button from '../components/Button';
 
 export default class KeepAwakeScreen extends React.Component {

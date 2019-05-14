@@ -1,4 +1,5 @@
-import { Asset, GL } from 'expo';
+import * as GL from 'expo-gl';
+import { Asset } from 'expo-asset';
 import React from 'react';
 import * as THREE from 'three';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
