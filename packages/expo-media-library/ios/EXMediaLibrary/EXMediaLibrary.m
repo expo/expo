@@ -60,7 +60,6 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
                },
            @"SortBy": @{
                @"default": @"default",
-               @"id": @"id",
                @"creationTime": @"creationTime",
                @"modificationTime": @"modificationTime",
                @"mediaType": @"mediaType",
@@ -757,7 +756,6 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   }
   
   NSDictionary *conversionDict = @{
-                                   @"id": @"localIdentifier",
                                    @"creationTime": @"creationDate",
                                    @"modificationTime": @"modificationDate",
                                    @"mediaType": @"mediaType",
