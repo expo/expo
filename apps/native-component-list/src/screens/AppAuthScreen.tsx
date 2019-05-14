@@ -1,4 +1,4 @@
-import { AppAuth } from 'expo';
+import * as AppAuth from 'expo-app-auth';
 import React from 'react';
 import { AsyncStorage, Button, StyleSheet, Text, View } from 'react-native';
 

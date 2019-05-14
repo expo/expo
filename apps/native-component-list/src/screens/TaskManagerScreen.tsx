@@ -1,5 +1,5 @@
 import React from 'react';
-import { TaskManager } from 'expo';
+import * as TaskManager from 'expo-task-manager';
 import { NavigationEvents, NavigationScreenProps } from 'react-navigation';
 import { ScrollView, StyleSheet, View } from 'react-native';
 

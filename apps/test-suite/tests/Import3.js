@@ -1,6 +1,6 @@
 'use strict';
 
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
 
 export const name = 'Import3';
 

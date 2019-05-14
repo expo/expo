@@ -1,6 +1,7 @@
 'use strict';
 
-import { Asset, Audio } from 'expo';
+import { Audio } from 'expo-av';
+import { Asset } from 'expo-asset';
 import { Platform } from 'react-native';
 
 import { retryForStatus, waitFor } from './helpers';

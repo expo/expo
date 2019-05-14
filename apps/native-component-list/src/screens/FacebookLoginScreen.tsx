@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, ScrollView } from 'react-native';
-import { Facebook } from 'expo';
+import * as Facebook from 'expo-facebook';
 import ListButton from '../components/ListButton';
 
 export default class FacebookLoginScreen extends React.Component {

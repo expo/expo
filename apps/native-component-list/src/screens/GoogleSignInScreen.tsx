@@ -1,4 +1,4 @@
-import { GoogleSignIn } from 'expo';
+import * as GoogleSignIn from 'expo-google-sign-in';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 

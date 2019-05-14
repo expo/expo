@@ -1,6 +1,6 @@
 import React from 'react';
 import { SectionList, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { Haptics } from 'expo';
+import * as Haptics from 'expo-haptics';
 
 import Button from '../components/Button';
 import Colors from '../constants/Colors';

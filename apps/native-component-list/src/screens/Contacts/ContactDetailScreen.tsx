@@ -10,7 +10,10 @@ import {
   View,
   Alert,
 } from 'react-native';
-import { Contacts, Permissions, Linking, ImagePicker } from 'expo';
+import { Linking } from 'expo';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+import * as Contacts from 'expo-contacts';
 import HeaderButtons from 'react-navigation-header-buttons';
 import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';

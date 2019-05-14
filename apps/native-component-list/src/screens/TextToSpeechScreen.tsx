@@ -8,7 +8,7 @@ import {
   View,
   Picker,
 } from 'react-native';
-import { Speech } from 'expo';
+import * as Speech from 'expo-speech';
 import Touchable from 'react-native-platform-touchable';
 import HeadingText from '../components/HeadingText';
 import { Colors } from '../constants';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { LocalAuthentication } from 'expo';
+import * as LocalAuthentication from 'expo-local-authentication';
 import Button from '../components/Button';
 
 interface State {

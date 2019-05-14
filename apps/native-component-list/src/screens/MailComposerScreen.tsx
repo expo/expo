@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, View } from 'react-native';
-import { MailComposer } from 'expo';
+import * as MailComposer from 'expo-mail-composer';
 import Button from '../components/Button';
 
 export default class MailComposerScreen extends React.Component {

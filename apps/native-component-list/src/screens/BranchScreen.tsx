@@ -1,6 +1,8 @@
 import React from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import { Constants, DangerZone } from 'expo';
+import { DangerZone } from 'expo';
+
+import Constants from 'expo-constants';
 
 let Branch: any = null;
 

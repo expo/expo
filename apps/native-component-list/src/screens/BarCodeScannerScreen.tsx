@@ -2,7 +2,11 @@ import React from 'react';
 import { NavigationEvents } from 'react-navigation';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 
-import { BarCodeScanner, Permissions, Svg, ScreenOrientation } from 'expo';
+import { ScreenOrientation } from 'expo';
+
+import * as Svg from 'react-native-svg';
+import * as Permissions from 'expo-permissions';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const BUTTON_COLOR = Platform.OS === 'ios' ? '#fff' : '#666';
 
