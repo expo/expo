@@ -8,6 +8,8 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
+import java.util.Map;
+
 public class ModuleTemplateModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String TAG = "ExpoModuleTemplateModule";
 
