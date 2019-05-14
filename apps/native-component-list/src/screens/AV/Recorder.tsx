@@ -1,5 +1,5 @@
 import React from 'react';
-import { Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import {

@@ -1,7 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import { View } from 'react-native';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { Defs, LinearGradient, RadialGradient, Stop, Ellipse, Circle, Text, Rect, G } = Svg;

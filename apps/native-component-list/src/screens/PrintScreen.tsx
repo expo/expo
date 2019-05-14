@@ -7,7 +7,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Print, DocumentPicker } from 'expo';
+import * as DocumentPicker from 'expo-document-picker';
+import * as Print from 'expo-print';
 import ListButton from '../components/ListButton';
 
 interface State {

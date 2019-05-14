@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
-import { WebView } from 'expo';
+import { WebView } from 'react-native-webview';
 
 export default class WebViewScreen extends React.Component {
   static navigationOptions = {

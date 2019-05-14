@@ -1,5 +1,5 @@
 import React from 'react';
-import { MediaLibrary } from 'expo';
+import * as MediaLibrary from 'expo-media-library';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dimensions, Text, View } from 'react-native';
-import { Font, Svg } from 'expo';
+import * as Svg from 'react-native-svg';
+import * as Font from 'expo-font';
 import { VictoryArea, VictoryChart, VictoryStack } from 'victory-native';
 
 import Example from './Example';

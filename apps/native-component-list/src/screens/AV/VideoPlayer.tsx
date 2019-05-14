@@ -1,5 +1,5 @@
 import React from 'react';
-import { Asset } from 'expo';
+import { Asset } from 'expo-asset';
 import { Video } from 'expo-av';
 
 import Player from './Player';

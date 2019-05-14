@@ -1,6 +1,8 @@
 'use strict';
 
-import { SQLite, FileSystem as FS, Asset } from 'expo';
+import { Asset } from 'expo-asset';
+import * as FS from 'expo-file-system';
+import { SQLite } from 'expo-sqlite';
 
 export const name = 'SQLite';
 

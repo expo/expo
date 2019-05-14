@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Button, TextInput, Text } from 'react-native';
-import { SMS } from 'expo';
+import * as SMS from 'expo-sms';
 
 interface State {
   phoneNumbers: string[];

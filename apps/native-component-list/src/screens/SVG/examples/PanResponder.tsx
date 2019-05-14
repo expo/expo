@@ -5,7 +5,7 @@ import {
   PanResponderGestureState,
   GestureResponderEvent,
 } from 'react-native';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { Path, Text, G, Line, Polyline } = Svg;

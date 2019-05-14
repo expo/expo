@@ -9,7 +9,7 @@ import {
   Picker,
   Platform,
 } from 'react-native';
-import { WebBrowser } from 'expo';
+import * as WebBrowser from 'expo-web-browser';
 import Button from '../components/Button';
 
 const url = 'https://expo.io';
