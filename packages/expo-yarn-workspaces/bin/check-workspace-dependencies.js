@@ -4,13 +4,13 @@
 const spawnSync = require('../common/cross-spawn-sync');
 
 function checkWorkspaceDependencies() {
-  let workspacesInfo = _getWorkspacesInfo();
+  let workspacesInfo = getWorkspacesInfo();
   if (!workspacesInfo) {
     console.error(`Couldn't generate Yarn's workspace root information.`);
     return;
   }
 
-  let count = _countMismatchedWorkspaceDependencies(workspacesInfo);
+  let count = countMismatchedWorkspaceDependencies(workspacesInfo);
   if (count === 0) {
     console.log(`✅  Verified that all workspace dependencies are symlinked.`);
     return;
@@ -40,7 +40,7 @@ function checkWorkspaceDependencies() {
   }
 }
 
-function _getWorkspacesInfo() {
+function getWorkspacesInfo() {
   let result = spawnSync('yarn', ['--silent', 'workspaces', 'info']);
 
   if (result.error) {
@@ -82,7 +82,7 @@ function _getWorkspacesInfo() {
   }
 }
 
-function _countMismatchedWorkspaceDependencies(workspacesInfo) {
+function countMismatchedWorkspaceDependencies(workspacesInfo) {
   let count = 0;
   for (let workspaceName in workspacesInfo) {
     count += workspacesInfo[workspaceName].mismatchedWorkspaceDependencies.length;
