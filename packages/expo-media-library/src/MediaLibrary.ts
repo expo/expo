@@ -9,7 +9,6 @@ const eventEmitter = new EventEmitter(MediaLibrary);
 export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
 export type SortByKey =
   | 'default'
-  | 'id'
   | 'mediaType'
   | 'width'
   | 'height'
@@ -27,7 +26,6 @@ export type MediaTypeObject = {
 
 export type SortByObject = {
   default: 'default';
-  id: 'id';
   mediaType: 'mediaType';
   width: 'width';
   height: 'height';
