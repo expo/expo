@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const child_process = require('child_process');
+const spawnSync = require('../common/cross-spawn-sync');
 
 function checkWorkspaceDependencies() {
   let workspacesInfo = _getWorkspacesInfo();
@@ -41,7 +41,7 @@ function checkWorkspaceDependencies() {
 }
 
 function _getWorkspacesInfo() {
-  let result = child_process.spawnSync('yarn', ['--silent', 'workspaces', 'info']);
+  let result = spawnSync('yarn', ['--silent', 'workspaces', 'info']);
 
   if (result.error) {
     console.error(`Could not run yarn: ${result.error.message}`);
