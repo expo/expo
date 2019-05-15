@@ -39,7 +39,7 @@ export default class EmptyProfileProjectsNotice extends React.Component {
   }
 
   _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/publishing.html');
+    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/publishing/');
   };
 }
 
