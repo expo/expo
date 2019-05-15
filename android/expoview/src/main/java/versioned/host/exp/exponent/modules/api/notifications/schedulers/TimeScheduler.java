@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import versioned.host.exp.exponent.modules.api.notifications.SchedulersManagerProxy;
@@ -25,7 +26,8 @@ import versioned.host.exp.exponent.modules.api.notifications.SchedulersDatabase;
 @Table(databaseName = SchedulersDatabase.NAME)
 public class TimeScheduler extends BaseModel implements SchedulerInterface {
 
-  private ArrayList<String> mTriggeringActions = (ArrayList<String>) Arrays.asList(null,
+  private List<String> mTriggeringActions = Arrays.asList(null,
+      Intent.ACTION_REBOOT,
       Intent.ACTION_BOOT_COMPLETED);
 
   private Context mApplicationContext;
