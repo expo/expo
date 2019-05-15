@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulersManagerInterface;
 import versioned.host.exp.exponent.modules.api.notifications.schedulers.CalendarScheduler;
@@ -36,8 +37,9 @@ class SchedulerManager implements SchedulersManagerInterface {
     ArrayList<String> unsuccessful = new ArrayList<String>();
 
     for (Map.Entry<String, SchedulerInterface> scheduler : mSchedulersMap.entrySet()) {
-      boolean success = scheduler.getValue().schedule(action);
-      if (!success) {
+      try {
+        scheduler.getValue().schedule(action);
+      } catch (UnableToScheduleException e) {
         unsuccessful.add(scheduler.getKey());
       }
     }
@@ -77,7 +79,11 @@ class SchedulerManager implements SchedulersManagerInterface {
     if (!scheduler.canBeRescheduled()) {
       this.removeScheduler(id);
     } else {
-      scheduler.schedule(null);
+      try {
+        scheduler.schedule(null);
+      } catch (UnableToScheduleException e) {
+        this.removeScheduler(id);
+      }
     }
   }
 
@@ -100,7 +106,12 @@ class SchedulerManager implements SchedulersManagerInterface {
     scheduler.setApplicationContext(mApplicationContext);
     String id = scheduler.saveAndGetId();
     mSchedulersMap.put(id, scheduler);
-    scheduler.schedule(null);
+    try {
+      scheduler.schedule(null);
+    } catch (UnableToScheduleException e) {
+      this.removeScheduler(id);
+      id = null;
+    }
     handler.apply(id);
   }
 

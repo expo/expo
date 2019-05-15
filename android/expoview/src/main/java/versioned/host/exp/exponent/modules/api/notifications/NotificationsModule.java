@@ -38,6 +38,7 @@ import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
 import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
 import versioned.host.exp.exponent.modules.api.notifications.schedulers.CalendarScheduler;
 import versioned.host.exp.exponent.modules.api.notifications.schedulers.IntervalScheduler;
@@ -422,6 +423,10 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
         intervalScheduler,
         (String id) -> {
+          if (id == null) {
+            promise.reject(new UnableToScheduleException());
+            return false;
+          }
           promise.resolve(id);
           return true;
         }
@@ -460,6 +465,10 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
         calendarScheduler,
         (String id) -> {
+          if (id == null) {
+            promise.reject(new UnableToScheduleException());
+            return false;
+          }
           promise.resolve(id);
           return true;
         }

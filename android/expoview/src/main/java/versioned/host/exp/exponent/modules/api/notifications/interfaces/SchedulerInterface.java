@@ -1,11 +1,11 @@
 package versioned.host.exp.exponent.modules.api.notifications.interfaces;
 
 import android.content.Context;
-import android.content.Intent;
+import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
 
 public interface SchedulerInterface {
 
-  public boolean schedule(String action); // return false if not successful
+  public void schedule(String action) throws UnableToScheduleException; // return false if not successful
 
   public String getIdAsString();
 
