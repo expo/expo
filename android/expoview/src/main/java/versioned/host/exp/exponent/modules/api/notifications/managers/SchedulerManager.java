@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package versioned.host.exp.exponent.modules.api.notifications.managers;
 
 import android.content.Context;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -23,7 +23,7 @@ class SchedulerManager implements SchedulersManagerInterface {
 
   private Context mApplicationContext;
 
-  public SchedulerManager(Context applicationContext) {
+  SchedulerManager(Context applicationContext) {
     mApplicationContext = applicationContext;
   }
 

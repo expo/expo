@@ -1,7 +1,6 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package versioned.host.exp.exponent.modules.api.notifications.managers;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 import org.unimodules.core.interfaces.Function;
 
@@ -17,12 +16,12 @@ public class SchedulersManagerProxy implements SchedulersManagerInterface {
 
   public final static String SCHEDULER_ID = "scheduler_id";
 
-  private SchedulersManagerInterface mSchedulerManager;
+  private SchedulersManagerInterface mSchedulersManager;
 
   private Executor mSingleThreadExecutor = Executors.newSingleThreadExecutor();
 
-  public SchedulersManagerProxy(SchedulersManagerInterface schedulerManager) {
-    mSchedulerManager = schedulerManager;
+  private SchedulersManagerProxy(SchedulersManagerInterface schedulerManager) {
+    mSchedulersManager = schedulerManager;
   }
 
   public static synchronized SchedulersManagerInterface getInstance(Context context) {
@@ -34,32 +33,32 @@ public class SchedulersManagerProxy implements SchedulersManagerInterface {
 
   @Override
   public void scheduleAll(final String action) {
-    mSingleThreadExecutor.execute(()->mSchedulerManager.scheduleAll(action));
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.scheduleAll(action));
   }
 
   @Override
   public void removeAll() {
-    mSingleThreadExecutor.execute(()->mSchedulerManager.removeAll());
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.removeAll());
   }
 
   @Override
   public void cancelAlreadyScheduled() {
-    mSingleThreadExecutor.execute(()->mSchedulerManager.cancelAlreadyScheduled());
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.cancelAlreadyScheduled());
   }
 
   @Override
   public void rescheduleOrDelete(final String id) {
-    mSingleThreadExecutor.execute(()->mSchedulerManager.rescheduleOrDelete(id));
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.rescheduleOrDelete(id));
   }
 
   @Override
   public void removeScheduler(final String id) {
-    mSingleThreadExecutor.execute(()->mSchedulerManager.removeScheduler(id));
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.removeScheduler(id));
   }
 
   @Override
   public void addScheduler(final SchedulerInterface scheduler, final Function<String, Boolean> handler) {
-    mSingleThreadExecutor.execute(()->mSchedulerManager.addScheduler(scheduler, handler));
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.addScheduler(scheduler, handler));
   }
 
 }
