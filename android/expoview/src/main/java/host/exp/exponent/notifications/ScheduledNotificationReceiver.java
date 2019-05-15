@@ -13,7 +13,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
-import versioned.host.exp.exponent.modules.api.notifications.SchedulersManagerProxy;
+import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
 
 public class ScheduledNotificationReceiver extends BroadcastReceiver {
 

@@ -6,7 +6,6 @@ import android.os.SystemClock;
 
 import com.cronutils.model.Cron;
 import com.cronutils.model.definition.CronDefinition;
-import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -17,20 +16,15 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import versioned.host.exp.exponent.modules.api.notifications.ExpoCronDefinitionBuilder;
-import versioned.host.exp.exponent.modules.api.notifications.SchedulersManagerProxy;
+import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
-import versioned.host.exp.exponent.modules.api.notifications.SchedulersDatabase;
-
-import static com.cronutils.model.CronType.QUARTZ;
+import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersDatabase;
 
 @Table(databaseName = SchedulersDatabase.NAME)
 public class CalendarScheduler extends BaseModel implements SchedulerInterface {
