@@ -21,8 +21,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
+import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
+import versioned.host.exp.exponent.modules.api.notifications.ExpoCronDefinitionBuilder;
 import versioned.host.exp.exponent.modules.api.notifications.SchedulersManagerProxy;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
 import versioned.host.exp.exponent.modules.api.notifications.SchedulersDatabase;
@@ -32,8 +35,9 @@ import static com.cronutils.model.CronType.QUARTZ;
 @Table(databaseName = SchedulersDatabase.NAME)
 public class CalendarScheduler extends BaseModel implements SchedulerInterface {
 
-  private ArrayList<String> mTriggeringActions = (ArrayList<String>) Arrays.asList(null,
+  private List<String> mTriggeringActions = Arrays.asList(null,
       Intent.ACTION_BOOT_COMPLETED,
+      Intent.ACTION_REBOOT,
       Intent.ACTION_TIME_CHANGED,
       Intent.ACTION_TIMEZONE_CHANGED);
 
@@ -139,7 +143,7 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
   }
 
   private long getNextAppearanceTime() { // elapsedTime
-    CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(QUARTZ);
+    CronDefinition cronDefinition = ExpoCronDefinitionBuilder.getCronDefinition();
     CronParser parser = new CronParser(cronDefinition);
     Cron cron = parser.parse(calendarData);
 

@@ -417,7 +417,7 @@ export default {
     return ExponentNotifications.scheduleNotificationWithCalendar(notification, options);
   },
 
-  async schedulNotificationWithTimerAsync(  notification: LocalNotification,
+  async scheduleNotificationWithTimerAsync(  notification: LocalNotification,
     options: {
       interval?: number;
       repeat?: boolean;
