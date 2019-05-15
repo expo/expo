@@ -123,7 +123,7 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
   }
 
   @Override
-  public void scheduled() {
+  public void onPostSchedule() {
     this.scheduled = true;
     save();
   }

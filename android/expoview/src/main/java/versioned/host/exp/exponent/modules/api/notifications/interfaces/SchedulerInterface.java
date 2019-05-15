@@ -13,7 +13,7 @@ public interface SchedulerInterface {
 
   public boolean canBeRescheduled();
 
-  public void scheduled();
+  public void onPostSchedule();
 
   public String saveAndGetId();
 
