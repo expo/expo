@@ -4,6 +4,7 @@ const { ExpoInAppPurchases } = NativeModulesProxy;
 
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 
-export async function someGreatMethodAsync(options: any) {
-  return await ExpoInAppPurchases.someGreatMethodAsync(options);
+export async function connectToAppStoreAsync(options: any) {
+  console.log('calling connectToAppStoreAsync from TS');
+  return await ExpoInAppPurchases.connectToAppStoreAsync(options);
 }

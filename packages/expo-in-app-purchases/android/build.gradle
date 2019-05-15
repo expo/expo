@@ -64,4 +64,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
+  implementation 'com.android.billingclient:billing:2.0.0'
 }

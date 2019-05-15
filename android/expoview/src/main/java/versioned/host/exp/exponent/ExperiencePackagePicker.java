@@ -31,6 +31,7 @@ import expo.modules.google.signin.GoogleSignInPackage;
 import expo.modules.haptics.HapticsPackage;
 import expo.modules.imagemanipulator.ImageManipulatorPackage;
 import expo.modules.imagepicker.ImagePickerPackage;
+import expo.modules.inapppurchases.InAppPurchasesPackage;
 import expo.modules.intentlauncher.IntentLauncherPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.lineargradient.LinearGradientPackage;
@@ -77,6 +78,7 @@ public class ExperiencePackagePicker {
       new HapticsPackage(),
       new ImageManipulatorPackage(),
       new ImagePickerPackage(),
+      new InAppPurchasesPackage(),
       new IntentLauncherPackage(),
       new KeepAwakePackage(),
       new LinearGradientPackage(),

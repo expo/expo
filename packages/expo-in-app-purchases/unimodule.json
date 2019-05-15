@@ -1,4 +1,4 @@
 {
-  "name": "expo-module-template",
+  "name": "expo-in-app-purchases",
   "platforms": ["ios", "android"]
 }

@@ -1,0 +1,37 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+	package
+		ADDED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:11-42
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+		ADDED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+	android:versionCode
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+		ADDED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml:1:1-2:12
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+uses-sdk
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+		ADDED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+		ADDED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/sergeichestakov/Documents/expo/packages/expo-in-app-purchases/android/src/main/AndroidManifest.xml

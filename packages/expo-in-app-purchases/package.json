@@ -4,7 +4,14 @@
   "description": "ExpoInAppPurchases standalone module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
-  "scripts": {},
+   "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
