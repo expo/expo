@@ -28,8 +28,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public
-  void scheduleAll(String action) {
+  public void scheduleAll(String action) {
     fetchSchedulersMap();
 
     cancelAlreadyScheduled();
@@ -74,7 +73,7 @@ class SchedulerManager implements SchedulersManagerInterface {
       return;
     }
 
-    scheduler.scheduled();
+    scheduler.onPostSchedule();
     if (!scheduler.canBeRescheduled()) {
       this.removeScheduler(id);
     } else {

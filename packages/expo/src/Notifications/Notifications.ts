@@ -451,7 +451,7 @@ export default {
 
   async scheduleNotificationWithTimerAsync(  notification: LocalNotification,
     options: {
-      interval?: number;
+      interval: number;
       repeat?: boolean;
     } = {}
   ): Promise<string> {
