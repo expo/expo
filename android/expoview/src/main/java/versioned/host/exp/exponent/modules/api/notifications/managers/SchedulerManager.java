@@ -13,7 +13,7 @@ import java.util.Map;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulersManagerInterface;
 import versioned.host.exp.exponent.modules.api.notifications.schedulers.CalendarScheduler;
-import versioned.host.exp.exponent.modules.api.notifications.schedulers.TimeScheduler;
+import versioned.host.exp.exponent.modules.api.notifications.schedulers.IntervalScheduler;
 
 class SchedulerManager implements SchedulersManagerInterface {
 
@@ -105,7 +105,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   private List<Class> getSchedulerClasses() {
-    return Arrays.asList(CalendarScheduler.class, TimeScheduler.class);
+    return Arrays.asList(CalendarScheduler.class, IntervalScheduler.class);
   }
 
   private void fetchSchedulersMap() {

@@ -22,7 +22,7 @@ import versioned.host.exp.exponent.modules.api.notifications.interfaces.Schedule
 import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersDatabase;
 
 @Table(databaseName = SchedulersDatabase.NAME)
-public class TimeScheduler extends BaseModel implements SchedulerInterface {
+public class IntervalScheduler extends BaseModel implements SchedulerInterface {
 
   private List<String> mTriggeringActions = Arrays.asList(null,
       Intent.ACTION_REBOOT,
