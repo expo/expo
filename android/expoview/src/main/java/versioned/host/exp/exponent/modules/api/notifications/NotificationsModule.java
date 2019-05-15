@@ -40,7 +40,7 @@ import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
 import versioned.host.exp.exponent.modules.api.notifications.schedulers.CalendarScheduler;
-import versioned.host.exp.exponent.modules.api.notifications.schedulers.TimeScheduler;
+import versioned.host.exp.exponent.modules.api.notifications.schedulers.IntervalScheduler;
 
 import static com.cronutils.model.field.expression.FieldExpressionFactory.always;
 import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
@@ -411,16 +411,16 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    TimeScheduler timeScheduler = new TimeScheduler();
-    timeScheduler.setExperienceId(experienceId);
-    timeScheduler.setNotificationId(notificationId);
-    timeScheduler.setDetails(details);
-    timeScheduler.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
-    timeScheduler.setScheduledTime(System.currentTimeMillis() + ((Double) options.get("interval")).longValue());
-    timeScheduler.setInterval(((Double) options.get("interval")).longValue()); // on iOS we cannot change interval
+    IntervalScheduler intervalScheduler = new IntervalScheduler();
+    intervalScheduler.setExperienceId(experienceId);
+    intervalScheduler.setNotificationId(notificationId);
+    intervalScheduler.setDetails(details);
+    intervalScheduler.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
+    intervalScheduler.setScheduledTime(System.currentTimeMillis() + ((Double) options.get("interval")).longValue());
+    intervalScheduler.setInterval(((Double) options.get("interval")).longValue()); // on iOS we cannot change interval
 
     SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
-        timeScheduler,
+        intervalScheduler,
         (String id) -> {
           promise.resolve(id);
           return true;
