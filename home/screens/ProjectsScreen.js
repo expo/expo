@@ -241,7 +241,7 @@ export default class ProjectsScreen extends React.Component {
       );
     }
 
-    let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of exp or XDE. Pull to refresh to update.`;
+    let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of Expo CLI. Pull to refresh to update.`;
     let message = Platform.select({
       ios: Constants.isDevice
         ? baseMessage

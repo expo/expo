@@ -38,7 +38,7 @@ export default class EmptyProfileSnacksNotice extends React.Component {
   }
 
   _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/snack');
+    WebBrowser.openBrowserAsync('https://snack.expo.io');
   };
 }
 
