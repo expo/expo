@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import host.exp.exponent.notifications.ExponentNotificationManager;
+import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
 import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
 import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersDatabase;
@@ -67,16 +68,16 @@ public class IntervalScheduler extends BaseModel implements SchedulerInterface {
   }
 
   @Override
-  public boolean schedule(String action) {
+  public void schedule(String action) throws UnableToScheduleException {
     if (!mTriggeringActions.contains(action)) {
-      return true;
+      return;
     }
     long nextAppearanceTime = 0;
 
     try {
       nextAppearanceTime = getNextAppearanceTime();
     } catch (IllegalArgumentException e) {
-      return false;
+      throw new UnableToScheduleException();
     }
 
     ensureDetails();
@@ -84,9 +85,7 @@ public class IntervalScheduler extends BaseModel implements SchedulerInterface {
       getManager().schedule(experienceId, notificationId, details, nextAppearanceTime, null);
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
-      return false;
     }
-    return true;
   }
 
   private void ensureDetails() {
