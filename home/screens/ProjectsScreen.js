@@ -310,6 +310,7 @@ export default class ProjectsScreen extends React.Component {
           (project.manifest && project.manifest.releaseChannel) ||
           extractReleaseChannel(project.manifestUrl)
         }
+        platform={project.platform}
         projectName={project.manifest && project.manifest.name}
         username={
           project.manifestUrl.includes('exp://exp.host')
@@ -361,6 +362,7 @@ export default class ProjectsScreen extends React.Component {
                   : require('../assets/snack.png')
               }
               projectName={project.description}
+              platform={project.platform}
               key={project.url}
               projectUrl={project.url}
               iconBorderStyle={{
