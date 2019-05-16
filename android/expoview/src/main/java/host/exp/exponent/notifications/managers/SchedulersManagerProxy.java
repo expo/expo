@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications.managers;
+package host.exp.exponent.notifications.managers;
 
 import android.content.Context;
 
@@ -7,8 +7,8 @@ import org.unimodules.core.interfaces.Function;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
-import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulersManagerInterface;
+import host.exp.exponent.notifications.interfaces.SchedulerInterface;
+import host.exp.exponent.notifications.interfaces.SchedulersManagerInterface;
 
 public class SchedulersManagerProxy implements SchedulersManagerInterface {
 

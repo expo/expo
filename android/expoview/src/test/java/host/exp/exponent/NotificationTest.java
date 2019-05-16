@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
-import static versioned.host.exp.exponent.modules.api.notifications.helpers.ExpoCronParser.createCronInstance;
+import static host.exp.exponent.notifications.helpers.ExpoCronParser.createCronInstance;
 
 public class NotificationTest {
   @Test

@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications.helpers;
+package host.exp.exponent.notifications.helpers;
 
 import com.cronutils.builder.CronBuilder;
 import com.cronutils.model.Cron;

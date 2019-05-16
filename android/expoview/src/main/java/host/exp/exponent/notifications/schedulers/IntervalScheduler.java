@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications.schedulers;
+package host.exp.exponent.notifications.schedulers;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,10 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import host.exp.exponent.notifications.ExponentNotificationManager;
-import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
-import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
-import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
-import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersDatabase;
+import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
+import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
+import host.exp.exponent.notifications.interfaces.SchedulerInterface;
+import host.exp.exponent.notifications.managers.SchedulersDatabase;
 
 @Table(databaseName = SchedulersDatabase.NAME)
 public class IntervalScheduler extends BaseModel implements SchedulerInterface {

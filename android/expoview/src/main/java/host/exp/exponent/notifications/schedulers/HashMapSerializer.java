@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications.schedulers;
+package host.exp.exponent.notifications.schedulers;
 
 import org.json.JSONArray;
 import org.json.JSONException;
