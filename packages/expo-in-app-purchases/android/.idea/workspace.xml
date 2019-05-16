@@ -2,10 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="096210d5-861b-4597-8afa-3e80d4d14ecd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/build/intermediates/incremental/packageDebugResources/compile-file-map.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/intermediates/incremental/packageDebugResources/compile-file-map.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/intermediates/intermediate-jars/debug/classes.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/intermediates/intermediate-jars/debug/classes.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/InAppPurchasesModule.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/InAppPurchasesModule.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/InAppPurchasesModule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/InAppPurchasesModule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/BillingManager$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/BillingManager$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/BillingManager$BillingUpdatesListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/BillingManager$ServiceConnectedListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/BillingManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/InAppPurchasesModule.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/InAppPurchasesViewManager.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/inapppurchases/UpdateListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/expo/modules/template/BuildConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/BillingManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/BillingManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/UpdateListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/UpdateListener.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,12 +41,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="1789" />
+          <entry key="java" value="2114" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="1789" />
+          <entry key="JAVA" value="2114" />
         </counts>
       </usages-collector>
     </session>
@@ -48,7 +56,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/InAppPurchasesModule.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
+            <state relative-caret-position="386">
               <caret line="43" column="51" selection-start-line="43" selection-start-column="51" selection-end-line="43" selection-end-column="51" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -62,8 +70,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/BillingManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="379">
-              <caret line="63" column="24" selection-start-line="63" selection-start-column="24" selection-end-line="63" selection-end-column="24" />
+            <state relative-caret-position="333">
+              <caret line="251" column="27" selection-start-line="251" selection-start-column="27" selection-end-line="251" selection-end-column="27" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -74,8 +82,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/UpdateListener.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="553">
-              <caret line="37" column="36" selection-start-line="37" selection-start-column="36" selection-end-line="37" selection-end-column="36" />
+            <state relative-caret-position="278">
+              <caret line="22" column="48" lean-forward="true" selection-start-line="22" selection-start-column="48" selection-end-line="22" selection-end-column="48" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -87,35 +95,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>billingClient</find>
-      <find>mIsservice</find>
-      <find>misserviceconnected</find>
-      <find>mBillingClientResponse</find>
-      <find>mModule</find>
-      <find>TAG</find>
-      <find>mBillingUpdatesListener</find>
-      <find>mBillingClientResponseCode</find>
-      <find>moduleRegistry</find>
-      <find>ActivityProvider</find>
-      <find>getCurrentActivity</find>
-      <find>UpdateListener</find>
-      <find>@B</find>
-      <find>getCurren</find>
       <find>BillingRespones</find>
       <find>UpdateLis</find>
       <find>Activity</find>
       <find>Activit</find>
       <find>List</find>
-      <find>mPurchases</find>
       <find>@</find>
       <find>List&lt;</find>
       <find>BillingResult</find>
-      <find>BillingResponse</find>
       <find>resultCode</find>
       <find>onBillingSetupFinished</find>
-      <find>billingResult</find>
       <find>Billing</find>
+      <find>mBillingClient</find>
+      <find>PurchasesResu</find>
+      <find>mIsServiceConne</find>
+      <find>mPurchases</find>
+      <find>handlePurchase</find>
+      <find>skudet</find>
+      <find>SkuDetailsResponse</find>
+      <find>SkuDetailsParams</find>
+      <find>skudetailsresponselist</find>
+      <find>onquerypurchasesFinished</find>
+      <find>onpurchasesupdated</find>
       <find>getCurrent</find>
+      <find>handlepurchase</find>
+      <find>BillingResponse</find>
+      <find>InapppurchasesModule</find>
+      <find>BillingResponseCode</find>
+      <find>PurchasesResult</find>
+      <find>onPurchasesUpdated</find>
+      <find>billingResult</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -271,19 +280,9 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/UpdateListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="553">
-          <caret line="37" column="36" selection-start-line="37" selection-start-column="36" selection-end-line="37" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/InAppPurchasesModule.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
+        <state relative-caret-position="386">
           <caret line="43" column="51" selection-start-line="43" selection-start-column="51" selection-end-line="43" selection-end-column="51" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -293,10 +292,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/UpdateListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="278">
+          <caret line="22" column="48" lean-forward="true" selection-start-line="22" selection-start-column="48" selection-end-line="22" selection-end-column="48" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/expo/modules/inapppurchases/BillingManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="63" column="24" selection-start-line="63" selection-start-column="24" selection-end-line="63" selection-end-column="24" />
+        <state relative-caret-position="333">
+          <caret line="251" column="27" selection-start-line="251" selection-start-column="27" selection-end-line="251" selection-end-column="27" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

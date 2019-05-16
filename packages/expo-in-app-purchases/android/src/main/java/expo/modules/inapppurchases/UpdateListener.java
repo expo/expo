@@ -2,7 +2,6 @@ package expo.modules.inapppurchases;
 
 import java.util.List;
 
-import expo.modules.inapppurchases.InAppPurchasesModule;
 import expo.modules.inapppurchases.BillingManager.BillingUpdatesListener;
 
 import android.app.Activity;
