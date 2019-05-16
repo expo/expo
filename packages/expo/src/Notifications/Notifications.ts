@@ -402,6 +402,9 @@ export default {
 
   /* Cancel scheduled notification notification with ID */
   cancelScheduledNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
+    if (Platform.OS === 'android' && typeof notificationId === 'string') {
+      return ExponentNotifications.cancelScheduledNotificationWithStringIdAsync(notificationId);
+    }
     return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
   },
 
@@ -438,4 +441,56 @@ export default {
     }
     return ExponentNotifications.setBadgeNumberAsync(number);
   },
+
+  async scheduleNotificationWithCalendarAsync(
+      notification: LocalNotification,
+      options: {
+        year?: number;
+        month?: number;
+        hour?: number;
+        day?: number;
+        minute?: number;
+        second?: number;
+        weekDay?: number;
+        repeat?: boolean;
+      } = {}
+    ): Promise<string> {
+      const areOptionsValid: boolean =
+        (options.month == null || isInRange(options.month,1,12)) &&
+        (options.day == null || isInRange(options.day, 1, 31)) &&
+        (options.hour == null || isInRange(options.hour, 0, 23)) &&
+        (options.minute == null || isInRange(options.minute, 0, 59)) &&
+        (options.second == null || isInRange(options.second, 0, 59)) &&
+        (options.weekDay == null || isInRange(options.weekDay, 1, 7)) &&
+        (options.weekDay == null || options.day == null);
+
+      if (!areOptionsValid) {
+        console.warn('Options in scheduleNotificationWithCalendarAsync call were incorrect!');
+        return "unsuccessful";
+      }
+
+      if (options.second == null) {
+        options.second = 0;  // we don't want to trigger notification every second
+      }
+
+      return ExponentNotifications.scheduleNotificationWithCalendar(notification, options);
+    },
+
+    async scheduleNotificationWithTimerAsync(
+      notification: LocalNotification,
+      options: {
+        interval: number;
+        repeat?: boolean;
+      }
+    ): Promise<string> {
+      if (options.interval < 1) {
+        console.warn('Interval must be not less then 1');
+        return "unsuccessful";
+      }
+      return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
+    },
 };
+
+function isInRange(variable: number, min: number, max: number): boolean {
+  return (variable >= min && variable <= max);
+}
