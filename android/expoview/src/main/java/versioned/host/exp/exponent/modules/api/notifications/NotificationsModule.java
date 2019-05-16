@@ -2,7 +2,6 @@
 
 package versioned.host.exp.exponent.modules.api.notifications;
 
-import com.cronutils.builder.CronBuilder;
 import com.cronutils.model.Cron;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -38,16 +37,13 @@ import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
-import versioned.host.exp.exponent.modules.api.notifications.helpers.ExpoCronDefinitionBuilder;
-import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
-import versioned.host.exp.exponent.modules.api.notifications.schedulers.CalendarScheduler;
-import versioned.host.exp.exponent.modules.api.notifications.schedulers.IntervalScheduler;
+import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
+import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
+import host.exp.exponent.notifications.schedulers.CalendarScheduler;
+import host.exp.exponent.notifications.schedulers.IntervalScheduler;
 
-import static com.cronutils.model.field.expression.FieldExpressionFactory.always;
 import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
-import static com.cronutils.model.field.expression.FieldExpressionFactory.questionMark;
-import static versioned.host.exp.exponent.modules.api.notifications.helpers.ExpoCronParser.createCronInstance;
+import static host.exp.exponent.notifications.helpers.ExpoCronParser.createCronInstance;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 

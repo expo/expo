@@ -1,7 +1,7 @@
-package versioned.host.exp.exponent.modules.api.notifications.interfaces;
+package host.exp.exponent.notifications.interfaces;
 
 import android.content.Context;
-import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
+import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 
 public interface SchedulerInterface {
 
