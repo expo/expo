@@ -52,7 +52,7 @@ class VictoryChartExample extends React.Component {
             />
           </VictoryStack>
         </VictoryChart>
-        <Svg width={Dimensions.get('window').width} height={50}>
+        <Svg.Svg width={Dimensions.get('window').width} height={50}>
           <Svg.Text
             fill="#fff"
             stroke="#000"
@@ -63,7 +63,7 @@ class VictoryChartExample extends React.Component {
           >
             drawn with victory-native
           </Svg.Text>
-        </Svg>
+        </Svg.Svg>
       </View>
     );
   }
