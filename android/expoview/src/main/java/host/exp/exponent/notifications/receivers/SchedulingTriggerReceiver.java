@@ -10,7 +10,7 @@ public class SchedulingTriggerReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    SchedulersManagerProxy.getInstance(context).scheduleAll(intent.getAction());
+    SchedulersManagerProxy.getInstance(context).triggerAll(intent.getAction());
   }
 
 }

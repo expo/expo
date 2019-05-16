@@ -29,7 +29,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public void scheduleAll(String action) {
+  public void triggerAll(String action) {
     fetchSchedulersMap();
 
     cancelAlreadyScheduled(null);

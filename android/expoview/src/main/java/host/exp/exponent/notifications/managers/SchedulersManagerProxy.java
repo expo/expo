@@ -32,8 +32,8 @@ public class SchedulersManagerProxy implements SchedulersManagerInterface {
   }
 
   @Override
-  public void scheduleAll(final String action) {
-    mSingleThreadExecutor.execute(()-> mSchedulersManager.scheduleAll(action));
+  public void triggerAll(final String action) {
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.triggerAll(action));
   }
 
   @Override
