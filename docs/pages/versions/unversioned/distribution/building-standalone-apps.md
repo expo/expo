@@ -161,7 +161,7 @@ import safeCompare from 'safe-compare';
 const app = express();
 app.use(bodyParser.text({ type: '*/*' }));
 app.post('/webhook', (req, res) => {
-  const expoSignature = req.headers['expo-signature'];
+  const expoSignature = req.headers['Expo-Signature'];
   // process.env.SECRET_WEBHOOK_KEY has to match <webhook-secret> value set with `expo webhooks:set ...` command
   const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
   hmac.update(req.body);
