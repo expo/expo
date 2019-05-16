@@ -288,7 +288,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (5.0.0-rc.0):
+  - EXImagePicker (5.0.0-rc.1):
     - UMCore
     - UMFileSystemInterface
   - EXKeepAwake (5.0.0-rc.0):
