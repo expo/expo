@@ -32,7 +32,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   public void scheduleAll(String action) {
     fetchSchedulersMap();
 
-    cancelAlreadyScheduled();
+    cancelAlreadyScheduled(null);
 
     ArrayList<String> unsuccessful = new ArrayList<String>();
 
@@ -50,20 +50,31 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public void removeAll() {
+  public void removeAll(String experienceId) {
     fetchSchedulersMap();
-    cancelAlreadyScheduled();
+    cancelAlreadyScheduled(experienceId);
+
+    ArrayList<String> toRemove = new ArrayList<String>();
+
     for (Map.Entry<String, SchedulerInterface> scheduler : mSchedulersMap.entrySet()) {
-      scheduler.getValue().remove();
+      if (experienceId == null || scheduler.getValue().getOwnerExperienceId().equals(experienceId)) {
+        scheduler.getValue().remove();
+        toRemove.add(scheduler.getKey());
+      }
     }
-    mSchedulersMap.clear();
+
+    for (String key : toRemove) {
+      mSchedulersMap.remove(key);
+    }
   }
 
   @Override
-  public void cancelAlreadyScheduled() {
+  public void cancelAlreadyScheduled(String experienceId) {
     fetchSchedulersMap();
     for (SchedulerInterface scheduler : mSchedulersMap.values()) {
-      scheduler.cancel();
+      if (experienceId == null || scheduler.getOwnerExperienceId().equals(experienceId)) {
+        scheduler.cancel();
+      }
     }
   }
 

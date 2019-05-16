@@ -9,6 +9,8 @@ public interface SchedulerInterface {
 
   public String getIdAsString();
 
+  public String getOwnerExperienceId();
+
   public void cancel();
 
   public boolean canBeRescheduled();

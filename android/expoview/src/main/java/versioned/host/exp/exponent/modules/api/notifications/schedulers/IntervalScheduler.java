@@ -121,6 +121,11 @@ public class IntervalScheduler extends BaseModel implements SchedulerInterface {
   }
 
   @Override
+  public String getOwnerExperienceId() {
+    return experienceId;
+  }
+
+  @Override
   public String getIdAsString() {
     return Integer.valueOf(id).toString();
   }
