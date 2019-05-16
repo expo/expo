@@ -4,13 +4,11 @@ title: Installing a Custom iOS Expo client
 
 > **WARNING:** This feature is in alpha release and is not released to production yet.
 
-![Build Overview](/static/images/adhoc-builds-overview.gif)
-
-Build and install a custom version of the Expo client (link) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website.
+Build and install a custom version of the [Expo client](https://docs.expo.io/versions/latest/introduction/installation/#mobile-client-expo-for-ios-and-android) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website (see a [gif of what this looks like](/static/images/adhoc-builds-overview.gif)).
 
 ## 0. Prerequisites
 
-- You'll need a paid [Apple Developer Account](https://developer.apple.com/programs).
+- You'll need a paid [Apple Developer Account](https://developer.apple.com/programs). You'll need a paid account in order to configure resources required for the development and distribution process of an app. Learn more [here](https://developer.apple.com/programs/whats-included/)
 - Install the `expo-cli` command line app by following the instructions [here](https://docs.expo.io/versions/latest/workflow/expo-cli/).
 
 **Windows users** must have WSL enabled. You can follow the installation guide [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We recommend picking Ubuntu from the Windows Store. Be sure to launch Ubuntu at least once. After that, use an Admin powershell to run:
@@ -52,7 +50,9 @@ The password is only used to authenticate with Apple and never stored.
 ```
 
 We ask you if you'd like us to handle your Distribution Certificate or use your own. If you have previously used `expo-cli` for building a standalone app for a different project, then we'll ask you if you'd like to reuse your existing Distribution Certificate. If you don't know what a Distribution Certificate is, just let us handle it for you. If you do need to upload your own certificates, we recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/).
-**Note:** this guide recommends leaving the P12's password blank, but a P12 password is required to upload your own certificate to Expo's service. Please enter a password when prompted. We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well.
+**Note:** this guide recommends leaving the P12's password blank, but a P12 password is required to upload your own certificate to Expo's service. Please enter a password when prompted.
+
+(Optional) We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well.
 
 ### 1b. Determine UDID of your iOS Device
 
