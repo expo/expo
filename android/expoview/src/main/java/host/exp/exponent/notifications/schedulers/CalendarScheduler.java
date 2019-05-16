@@ -77,13 +77,13 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
       return;
     }
     long nextAppearanceTime = 0;
-    
+
     try {
       nextAppearanceTime = getNextAppearanceTime();
     } catch (IllegalArgumentException e) {
       throw new UnableToScheduleException();
     }
-    
+
     ensureDetails();
     try {
       getManager().schedule(experienceId, notificationId, details, nextAppearanceTime, null);
@@ -112,7 +112,7 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
 
   @Override
   public void cancel() {
-      getManager().cancel(experienceId, notificationId);
+    getManager().cancel(experienceId, notificationId);
   }
 
   @Override
@@ -149,7 +149,7 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
     DateTime nextExecution = ExecutionTime.forCron(cron).nextExecution(now);
     long whenShouldAppear = nextExecution.toDate().getTime();
     long bootTime = DateTime.now().toDate().getTime() - SystemClock.elapsedRealtime();
-    return whenShouldAppear-bootTime;
+    return whenShouldAppear - bootTime;
   }
 
   private ExponentNotificationManager getManager() {

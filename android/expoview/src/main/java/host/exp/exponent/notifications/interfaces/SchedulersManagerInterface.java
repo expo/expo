@@ -4,7 +4,7 @@ import org.unimodules.core.interfaces.Function;
 
 public interface SchedulersManagerInterface {
 
-  public void scheduleAll(String action);
+  public void triggerAll(String action);
 
   public void removeAll(String experienceId);
 
