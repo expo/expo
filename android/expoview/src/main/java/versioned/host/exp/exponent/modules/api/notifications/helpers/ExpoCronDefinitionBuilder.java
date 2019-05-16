@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package versioned.host.exp.exponent.modules.api.notifications.helpers;
 
 import com.cronutils.model.Cron;
 import com.cronutils.model.definition.CronConstraint;

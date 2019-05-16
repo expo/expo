@@ -37,13 +37,13 @@ public class SchedulersManagerProxy implements SchedulersManagerInterface {
   }
 
   @Override
-  public void removeAll() {
-    mSingleThreadExecutor.execute(()-> mSchedulersManager.removeAll());
+  public void removeAll(String experienceId) {
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.removeAll(experienceId));
   }
 
   @Override
-  public void cancelAlreadyScheduled() {
-    mSingleThreadExecutor.execute(()-> mSchedulersManager.cancelAlreadyScheduled());
+  public void cancelAlreadyScheduled(String experienceId) {
+    mSingleThreadExecutor.execute(()-> mSchedulersManager.cancelAlreadyScheduled(experienceId));
   }
 
   @Override

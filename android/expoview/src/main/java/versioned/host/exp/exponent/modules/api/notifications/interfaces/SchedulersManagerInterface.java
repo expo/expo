@@ -6,9 +6,9 @@ public interface SchedulersManagerInterface {
 
   public void scheduleAll(String action);
 
-  public void removeAll();
+  public void removeAll(String experienceId);
 
-  public void cancelAlreadyScheduled();
+  public void cancelAlreadyScheduled(String experienceId);
 
   public void rescheduleOrDelete(String id);
 

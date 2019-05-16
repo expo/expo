@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import host.exp.exponent.notifications.ExponentNotificationManager;
-import versioned.host.exp.exponent.modules.api.notifications.ExpoCronDefinitionBuilder;
+import versioned.host.exp.exponent.modules.api.notifications.helpers.ExpoCronDefinitionBuilder;
 import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
 import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
 import versioned.host.exp.exponent.modules.api.notifications.interfaces.SchedulerInterface;
@@ -95,6 +95,11 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
   @Override
   public String getIdAsString() {
     return Integer.valueOf(id).toString();
+  }
+
+  @Override
+  public String getOwnerExperienceId() {
+    return experienceId;
   }
 
   private void ensureDetails() {

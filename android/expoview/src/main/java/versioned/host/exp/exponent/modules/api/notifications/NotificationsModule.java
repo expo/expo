@@ -39,6 +39,7 @@ import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import versioned.host.exp.exponent.modules.api.notifications.exceptions.UnableToScheduleException;
+import versioned.host.exp.exponent.modules.api.notifications.helpers.ExpoCronDefinitionBuilder;
 import versioned.host.exp.exponent.modules.api.notifications.managers.SchedulersManagerProxy;
 import versioned.host.exp.exponent.modules.api.notifications.schedulers.CalendarScheduler;
 import versioned.host.exp.exponent.modules.api.notifications.schedulers.IntervalScheduler;
@@ -46,6 +47,7 @@ import versioned.host.exp.exponent.modules.api.notifications.schedulers.Interval
 import static com.cronutils.model.field.expression.FieldExpressionFactory.always;
 import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
 import static com.cronutils.model.field.expression.FieldExpressionFactory.questionMark;
+import static versioned.host.exp.exponent.modules.api.notifications.helpers.ExpoCronParser.createCronInstance;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -384,7 +386,11 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
 
-      SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).removeAll();
+      String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY, null);
+
+      SchedulersManagerProxy
+          .getInstance(getReactApplicationContext().getApplicationContext())
+          .removeAll(experienceId);
 
       promise.resolve(null);
     } catch (Exception e) {
@@ -473,56 +479,6 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
           return true;
         }
     );
-  }
-
-  private Cron createCronInstance(HashMap<String, Object> options) {
-    CronBuilder cronBuilder = CronBuilder.cron(ExpoCronDefinitionBuilder.getCronDefinition());
-
-    if (options.containsKey("year")) {
-      cronBuilder.withYear(on(((Number) options.get("year")).intValue()));
-    } else {
-      cronBuilder.withYear(always());
-    }
-
-    if (options.containsKey("hour")) {
-      cronBuilder.withHour(on(((Number) options.get("hour")).intValue()));
-    } else {
-      cronBuilder.withHour(always());
-    }
-
-    if (options.containsKey("minute")) {
-      cronBuilder.withMinute(on(((Number) options.get("minute")).intValue()));
-    } else {
-      cronBuilder.withMinute(always());
-    }
-
-    if (options.containsKey("second")) {
-      cronBuilder.withSecond(on(((Number) options.get("second")).intValue()));
-    } else {
-      cronBuilder.withSecond(always());
-    }
-
-    if (options.containsKey("month")) {
-      cronBuilder.withMonth(on(((Number) options.get("month")).intValue()));
-    } else {
-      cronBuilder.withMonth(always());
-    }
-
-    if (options.containsKey("day")) {
-      cronBuilder.withDoM(on(((Number) options.get("day")).intValue()));
-    } else if(options.containsKey("weekDay")) {
-      cronBuilder.withDoM(questionMark());
-    } else {
-      cronBuilder.withDoM(always());
-    }
-
-    if (options.containsKey("weekDay")) {
-      cronBuilder.withDoW(on(((Number) options.get("weekDay")).intValue()));
-    } else {
-      cronBuilder.withDoW(questionMark());
-    }
-
-    return cronBuilder.instance();
   }
 
 }
