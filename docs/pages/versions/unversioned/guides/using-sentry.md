@@ -55,8 +55,7 @@ Sentry.config('your Public DSN goes here').install();
           "config": {
             "organization": "your organization's short name here",
             "project": "your project name here",
-            "authToken": "your auth token here",
-            "url": "your sentry url here", // OPTIONAL- only necessary when self-hosting Sentry
+            "authToken": "your auth token here"
           }
         }
       ]
