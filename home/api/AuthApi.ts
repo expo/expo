@@ -1,10 +1,7 @@
 import ApiV2HttpClient from './ApiV2HttpClient';
 
-const SignUpEndpoint = 'https://exp.host/--/api/v2/auth/createOrUpdateUser';
-const SignOutEndpoint = 'https://exp.host/--/api/v2/auth/logoutAsync';
-
 type SignInResult = {
-  sessionSecret: boolean
+  sessionSecret: boolean;
 };
 
 export async function signInAsync(username: string, password: string): Promise<SignInResult> {
@@ -19,12 +16,9 @@ export async function signOutAsync(sessionSecret: string | null): Promise<void> 
   if (!sessionSecret) {
     return;
   }
-  await fetch(SignOutEndpoint, {
-    method: 'POST',
-    headers: {
-      'Expo-Session': sessionSecret,
-    },
-  });
+
+  let api = new ApiV2HttpClient();
+  return await api.postAsync('auth/logout');
 }
 
 type SignUpData = {
@@ -35,26 +29,27 @@ type SignUpData = {
   password: string;
 };
 
-export async function signUpAsync(data: SignUpData): Promise<any> {
-  let response = await fetch(SignUpEndpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      userData: {
-        connection: 'Username-Password-Authentication',
-        email: data.email,
-        password: data.password,
-        username: data.username,
-        given_name: data.firstName,
-        family_name: data.lastName,
-      },
-    }),
-  });
+type SignUpResult = {
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    [key: string]: any;
+  };
+};
 
-  let result = await response.json();
-  return result;
+export async function signUpAsync(data: SignUpData): Promise<SignUpResult> {
+  let api = new ApiV2HttpClient();
+  return await api.postAsync('auth/createOrUpdateUser', {
+    userData: {
+      connection: 'Username-Password-Authentication',
+      email: data.email,
+      password: data.password,
+      username: data.username,
+      given_name: data.firstName,
+      family_name: data.lastName,
+    },
+  });
 }
 
 export default {
