@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { AuthSession, Constants } from 'expo';
+import { AuthSession } from 'expo';
+
+import Constants from 'expo-constants';
 
 const auth0ClientId = '8wmGum25h3KU2grnmZtFvMQeitmIdSDS';
 const auth0Domain = 'https://expo-testing.auth0.com';

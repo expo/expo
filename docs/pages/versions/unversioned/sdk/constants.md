@@ -64,6 +64,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
     In a standalone app, you can set this with the `ios.buildNumber` value in `app.json`. This
     may differ from the value in `Constants.manifest.ios.buildNumber` because the manifest
     can be updated over the air, whereas this value will never change for a given native binary.
+    The value is set to `null` in case you run your app in Expo client.
 
   - `platform`
 
@@ -86,6 +87,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
   - `versionCode`
 
     The version code set by `android.versionCode` in app.json.
+    The value is set to `null` in case you run your app in Expo client.
 
 ### `Constants.sessionId`
 

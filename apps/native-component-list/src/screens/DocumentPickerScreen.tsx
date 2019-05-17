@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Image, Text, View, Switch } from 'react-native';
-import { DocumentPicker } from 'expo';
+import * as DocumentPicker from 'expo-document-picker';
 import Button from '../components/Button';
 
 interface State {

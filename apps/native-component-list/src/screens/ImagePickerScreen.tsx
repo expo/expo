@@ -1,6 +1,8 @@
 import React from 'react';
 import { Image, Platform, ScrollView, View } from 'react-native';
-import { ImagePicker, Permissions, Video } from 'expo';
+import { Video } from 'expo-av';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';

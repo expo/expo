@@ -1,5 +1,8 @@
 import React from 'react';
-import { Camera, GLView, Permissions, GL } from 'expo';
+import * as GL from 'expo-gl';
+import * as Permissions from 'expo-permissions';
+import { GLView } from 'expo-gl';
+import { Camera } from 'expo-camera';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const vertShaderSource = `#version 300 es

@@ -24,6 +24,9 @@
     ],
     "UMTaskManagerInterface": [
 
+    ],
+    "EXAppLoaderProvider": [
+
     ]
   }
 }

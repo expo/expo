@@ -18,6 +18,9 @@
   "dependencies": {
     "UMCore": [
 
+    ],
+    "UMPermissionsInterface": [
+
     ]
   }
 }

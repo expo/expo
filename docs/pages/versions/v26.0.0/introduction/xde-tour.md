@@ -58,7 +58,7 @@ In addition to the options provided from the home screen, with a project opened 
 
 ## Publish
 
-While you work on your project, it is given a temporary URL which is served from your computer. When you're ready to share the project with others, you can **Publish** the project to get a permanent URL (something like `expo.io/@your-username/your-app-slug`) that anybody can open with the Expo Client.
+While you work on your project, it is given a temporary URL which is served from your computer. When you're ready to share the project with others, you can **Publish** the project to get a permanent URL (something like `expo.io/@your-username/your-app-slug`) that anybody can open with the Expo client.
 
 When you click the **Publish** button in XDE, you'll be asked to confirm that you want your project to be available to the public. XDE takes some time to generate your minified JS bundle and upload your Assets to our servers, and once it's done, prints out your app's published URL. You can read more details about how publishing works in [How Expo Works](../../workflow/how-expo-works/#how-expo-works) and the [Publishing guide](../../workflow/publishing/).
 

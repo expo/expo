@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from 'react-native';
-import { Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;

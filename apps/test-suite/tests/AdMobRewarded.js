@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { AdMobRewarded } from 'expo';
+import { AdMobRewarded } from 'expo-ads-admob';
 import { waitFor } from './helpers';
 
 export const name = 'AdMobRewarded';

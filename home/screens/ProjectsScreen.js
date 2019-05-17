@@ -2,6 +2,8 @@
  * @flow
  */
 
+import Constants from 'expo-constants';
+import _ from 'lodash';
 import React from 'react';
 import {
   AppState,
@@ -16,10 +18,9 @@ import {
   View,
 } from 'react-native';
 import { ScrollView, withNavigationFocus, withNavigation } from 'react-navigation';
-import { Constants } from 'expo';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
+import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Alerts from '../constants/Alerts';
@@ -35,13 +36,11 @@ import SmallProjectCard from '../components/SmallProjectCard';
 import Store from '../redux/Store';
 import Connectivity from '../api/Connectivity';
 import getSnackId from '../utils/getSnackId';
-import { isAuthenticated, authenticatedFetch } from '../api/helpers';
 
 import extractReleaseChannel from '../utils/extractReleaseChannel';
 
 const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
 const PROJECT_UPDATE_INTERVAL = 10000;
-const USE_STAGING = false;
 
 @withNavigationFocus
 @withNavigation
@@ -206,14 +205,10 @@ export default class ProjectsScreen extends React.Component {
 
   _fetchProjectsAsync = async () => {
     try {
-      let BASE_URL = USE_STAGING ? 'https://staging.expo.io' : 'https://exp.host';
-      let fetchStrategy = isAuthenticated() ? authenticatedFetch : fetch;
-      let response = await fetchStrategy(
-        `${BASE_URL}/--/api/v2/development-sessions?deviceId=${getSnackId()}`
-      );
-      let result = await response.json();
-      let rawProjects = (result.data || []).reverse();
-      let projects = _.uniqBy(rawProjects, p => p.url);
+      let api = new ApiV2HttpClient();
+      let projects = await api.getAsync('development-sessions/', {
+        deviceId: getSnackId(),
+      });
       this.setState({ projects });
     } catch (e) {
       // this doesn't really matter, we will try again later
@@ -246,7 +241,7 @@ export default class ProjectsScreen extends React.Component {
       );
     }
 
-    let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of exp or XDE. Pull to refresh to update.`;
+    let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of Expo CLI. Pull to refresh to update.`;
     let message = Platform.select({
       ios: Constants.isDevice
         ? baseMessage
@@ -310,6 +305,7 @@ export default class ProjectsScreen extends React.Component {
           (project.manifest && project.manifest.releaseChannel) ||
           extractReleaseChannel(project.manifestUrl)
         }
+        platform={project.platform}
         projectName={project.manifest && project.manifest.name}
         username={
           project.manifestUrl.includes('exp://exp.host')
@@ -361,6 +357,7 @@ export default class ProjectsScreen extends React.Component {
                   : require('../assets/snack.png')
               }
               projectName={project.description}
+              platform={project.platform}
               key={project.url}
               projectUrl={project.url}
               iconBorderStyle={{

@@ -1,4 +1,4 @@
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
 import { NativeModules, Platform } from 'react-native';
 
 const { ExponentKernel } = NativeModules;

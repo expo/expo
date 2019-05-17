@@ -1,4 +1,4 @@
-import { Calendar } from 'expo';
+import * as Calendar from 'expo-calendar';
 import { Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
 

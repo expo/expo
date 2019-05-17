@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { LocalAuthentication } from 'expo';
+import * as LocalAuthentication from 'expo-local-authentication';
 import Button from '../components/Button';
 
 interface State {
@@ -93,7 +93,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
         />
         <Button
           onPress={this.checkAuthenticationsTypes}
-          title="Check aunthentications types available on the device"
+          title="Check authentications types available on the device"
         />
       </View>
     );

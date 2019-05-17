@@ -154,6 +154,7 @@
 		07E9F71BB0EFDDC7D8AB68C9CD8C9810 /* EXBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 892F5093889D2C73D995CAF11C565782 /* EXBannerView.m */; };
 		07F9F0DCCD1B9C769E39F0E0BFF2DB5E /* FBSDKBoltsMeasurementEventListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 18D89D580F54EAE3CCE8807F6AAAB5D3 /* FBSDKBoltsMeasurementEventListener.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		07FCB3238AE0B52DDE2574787F8751D8 /* ABI32_0_0AIRGoogleMapUrlTile.h in Headers */ = {isa = PBXBuildFile; fileRef = 17CBA38BCAB16ECA07954EF1E161A65C /* ABI32_0_0AIRGoogleMapUrlTile.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		080BA0EF0FDE21AF4660EBDF95957F33 /* EXTaskService.m in Sources */ = {isa = PBXBuildFile; fileRef = 466092D59F498FFA8DD59E22C94CD89D /* EXTaskService.m */; };
 		082235EB29519E1D86DCD45B76052B20 /* ABI31_0_0RNSVGGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 56F208486A36DC676990E1D760549C02 /* ABI31_0_0RNSVGGroup.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		08394AC5C4EDE0588F3FADA62A8AB97F /* ABI32_0_0AIRGoogleMapPolygonManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A0B4A83D8A27D5DF5CB970876B1CB0E /* ABI32_0_0AIRGoogleMapPolygonManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		084B0D61604E14CCEBF1CC89917E0C5D /* ABI31_0_0RCTTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = E6D639E5EA1F459B61DF8E6EE6C741DA /* ABI31_0_0RCTTouchHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -187,6 +188,7 @@
 		0A959E1E4EBEBA1BE3B5E3FE49FB474C /* ABI31_0_0RCTURLRequestDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A3B3E895ECAC1B0BDC982B621FFA8562 /* ABI31_0_0RCTURLRequestDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		0A972ADA9C76990874CBB1E1D3F78EB0 /* ABI31_0_0EXImageManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 640C626942564D2760C2402F6BCA6215 /* ABI31_0_0EXImageManipulator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		0A99E9A7A87C9C2D4A645C1AD234B20D /* LOTShapeCircle.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B1FBCF57F18630BA328D2B1E8047A20 /* LOTShapeCircle.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0A9D7AA4C6A4636ECF4317F87D33631A /* EXTask.h in Headers */ = {isa = PBXBuildFile; fileRef = FBCD76917DB1384EB046D1EA23FDE6CF /* EXTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		0AA7A61D638DEA78EEFE732A06B8D9F9 /* ABI31_0_0EXAdsAdMobBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4825AC1AD2A71B6AC24718154DB2B14E /* ABI31_0_0EXAdsAdMobBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		0ABE2D4CCC798A8664D5859BBCF7073A /* NSTextStorage+FontScaling.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A77F6C9A5434CDEE293467501A9F7E4 /* NSTextStorage+FontScaling.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		0ACE66158631F4FD5B321E94C2D49624 /* ABI31_0_0RCTShadowView+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 395B74A2FF2346DF9610441E9111939A /* ABI31_0_0RCTShadowView+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -808,6 +810,7 @@
 		2DB9F8858689BA683D5DEF081BCC3C55 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = B9C2997F944B9E07AA2E647DEF7995BB /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2E00741570595AB45B1D6A36F3ED9499 /* ABI31_0_0RCTProfileTrampoline-arm.S in Sources */ = {isa = PBXBuildFile; fileRef = FCB15CDD3B7EA6EB7FAF90779CD084E3 /* ABI31_0_0RCTProfileTrampoline-arm.S */; };
 		2E03E0E623783267EB7B4EE16ED6CC8B /* ABI31_0_0RNSVGRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 250917A4FE4F6F4993B93BF74B40E322 /* ABI31_0_0RNSVGRenderable.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2E1C77D076CC42922B3ED5FD199E4889 /* EXTaskManager-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E74DA91E10F1D5138576B8C06884D6BD /* EXTaskManager-dummy.m */; };
 		2E1E9B0E616AE56D11728DD06FF85041 /* ABI32_0_0RCTInspectorPackagerConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = BB93220DC5346E824350452343AF4DB0 /* ABI32_0_0RCTInspectorPackagerConnection.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		2E22A9A408C1052E9FE8EFEB9DB56318 /* yogaABI32_0_0-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A87626E928243F47EC7F1880DC479AF /* yogaABI32_0_0-dummy.m */; };
 		2E2345BFFF8DE801DF73C20500593546 /* ABI32_0_0RNSVGTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 514E2FD112BE56830AF428A83D46449D /* ABI32_0_0RNSVGTextManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -871,7 +874,6 @@
 		32A74AF0003886D2498E560B394395BA /* ABI32_0_0RCTDevSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D36B408F758F5CFB7DE60454066FAE6 /* ABI32_0_0RCTDevSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		32AB0F1A02EDA903BF1AE3883E825772 /* RCTTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = A6DDFBCE51CF13E3C48DE35E8DF295B5 /* RCTTextView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		32B7AA371691989DF35845EB1F49C46F /* ABI32_0_0EXStoreReview.h in Headers */ = {isa = PBXBuildFile; fileRef = F405C6806E0633E89B24E8CEAA3A8E72 /* ABI32_0_0EXStoreReview.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		32CB86295A8774D66EED63A3CC398A5A /* EXTaskService.h in Headers */ = {isa = PBXBuildFile; fileRef = 94D0DCA2F6DD2C7F96A0B8E1344AD4AD /* EXTaskService.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		32D1EF2D39539360A8D727D90DB267C9 /* ABI31_0_0EXLocalNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = DAF8EDE207AC99F0FFDD2A217970537C /* ABI31_0_0EXLocalNotificationRequester.m */; };
 		32DA2C091A28CDC77414887A214CA185 /* ABI31_0_0RNSVGSolidColorBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 15300125AE2C31F59D9BF7FBCB9A88C0 /* ABI31_0_0RNSVGSolidColorBrush.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		32F668756292AB6869C0472F6737EFFD /* NSData+SEGGZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 79431D58683A245B4A7F816DD0027E19 /* NSData+SEGGZIP.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -955,7 +957,6 @@
 		381DC83BBE880A78DABCEE14D593B6BF /* ABI31_0_0EXNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = 5496AD057ED034FD043F96A20EEC35FA /* ABI31_0_0EXNotifications.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		3823DA8CB6CCA322BD310E00DC4AB437 /* EXKeepAwake.h in Headers */ = {isa = PBXBuildFile; fileRef = F47EF71BAE94C7DC16F8DC820497EA32 /* EXKeepAwake.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		38350EEB46EE3E73B11F6DCE9E80C7A1 /* ABI31_0_0RNSVGPathParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F57BE2EFCDEA3DFAE50D0F5F4E088CD7 /* ABI31_0_0RNSVGPathParser.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		384499A060597DE03A915BF4B4560F48 /* EXTask.h in Headers */ = {isa = PBXBuildFile; fileRef = FBCD76917DB1384EB046D1EA23FDE6CF /* EXTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		384C67F870C172504AC2D781C589B9FA /* ABI32_0_0EXScopedModuleRegistryDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0AD506F1FDA9665101B20E8BCD4DDC94 /* ABI32_0_0EXScopedModuleRegistryDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		3854662E174456E238924E1BA67792F8 /* DDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = B12433A8DB27AAEF722335404128A14B /* DDLog.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		3855B52E3BF937ABFE1C7F7DFA86417A /* ABI31_0_0AIRGMSPolygon.m in Sources */ = {isa = PBXBuildFile; fileRef = DB0E01D1FD56DBE9CEE70B1E94E168A1 /* ABI31_0_0AIRGMSPolygon.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1066,6 +1067,7 @@
 		3F84DB50D250F133FFB82EBF2F3D9EAA /* EXSystemBrightnessRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF9EF2080046AC71C4503E1D44F9495 /* EXSystemBrightnessRequester.m */; };
 		3F9DCD6712199662B30F84E33F762C15 /* ABI32_0_0EXMagnetometer.h in Headers */ = {isa = PBXBuildFile; fileRef = C04E9D8AEFF045630997A20D919D5833 /* ABI32_0_0EXMagnetometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		3F9E1F57A05F1FDD916207CCB0198CA5 /* ABI32_0_0RNBranchAgingItem.h in Headers */ = {isa = PBXBuildFile; fileRef = CA546B3C1388040BFF95793D7F640149 /* ABI32_0_0RNBranchAgingItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3FA42F8327CFEB0B9CD1CD9C782B4926 /* EXTaskManagerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A9E876D606CA276C0CCEAAB2CFCEA5 /* EXTaskManagerAppDelegate.m */; };
 		3FA835C871AACBC05C618B3991B99D53 /* UIColor+Expanded.h in Headers */ = {isa = PBXBuildFile; fileRef = 2242113545BAD3C1426C5551D5423282 /* UIColor+Expanded.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		3FA9BB591E06E025497E4813BE7B70BD /* ABI31_0_0EXFaceDetector-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6167029F7CC64147CC1E082C37492F06 /* ABI31_0_0EXFaceDetector-dummy.m */; };
 		3FAB8C3C26836715752ABE47A34F4CAD /* ABI31_0_0RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 103C331E840057668487F62B1E45C60B /* ABI31_0_0RCTBundleURLProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1243,6 +1245,7 @@
 		491F470885BB21936E786DC3A9A964A9 /* ABI31_0_0EXAdsAdMobRewarded.h in Headers */ = {isa = PBXBuildFile; fileRef = 9538C1600DEB1FC58E181CA2BDD28F7C /* ABI31_0_0EXAdsAdMobRewarded.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		493ACF9C800031325B45BBD07B937821 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022758B38720C5B697C3FFD1DCE8EFE5 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		495337B938D7B8FC56A9FC2FEF494DC7 /* SEGStoreKitTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = C2C1D7FE650FA597CC6FE34305C65961 /* SEGStoreKitTracker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		495A89B787123FC1D669F76335414B8A /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = E79A2EBB629FCFBF07099B941675CA47 /* EXSQLite.m */; };
 		4983E1D6D2292CBFBF68051271BE6BBE /* EXFaceDetectorManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E1B9D6C3E7F5DD79F08B5FC6ED45B0FE /* EXFaceDetectorManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		49A3CF564B940CEE0BCE478AC5BF7AAE /* ABI31_0_0REABezierNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC8B7FB2F9ED7BAA11A7F6D9AA1A299 /* ABI31_0_0REABezierNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		49A762B9D8650EACE01D3C594ACB1F03 /* BranchLogoutRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B2489D0250271F897CE3D3F940A914BA /* BranchLogoutRequest.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1754,6 +1757,7 @@
 		66EA01CFE664CA8CFD95285CBCFF09DB /* ABI31_0_0Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 93E9077CC8285AAFEE926A4FD66BAF54 /* ABI31_0_0Yoga-internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		66F9DB1072F6BB4EA63087B5476019C5 /* SEGAliasPayload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3740E1147CD49013D492B07B440F027C /* SEGAliasPayload.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		67131FBF6F2988CD0B58B792CD36A7CF /* ABI31_0_0EXVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D610D4BA4C6FA279E04600E3E79F78B /* ABI31_0_0EXVideoView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		671FA87B7E9483F811D89834943E938E /* EXTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C6FF3BA296EC820779669E8179BC9DC5 /* EXTaskManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		6738A0460BBE48805ED36919FD6334B9 /* RCTCxxBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = F7463FBFA4A89DEB1FFC3BB4437109FD /* RCTCxxBridge.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		673EA4E7EF5EB9F14F6A0D63CB1FED8E /* RCTRootShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = E215582520BBA7B20F6C6C2B7A876834 /* RCTRootShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		674A3377570513AD3ED83362A1AC84D6 /* ABI32_0_0REAValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0F7414F5A32AD00D899FC309A66F40 /* ABI32_0_0REAValueNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1897,7 +1901,6 @@
 		70101374A88BB3A6B992F89AD8411D5F /* ABI31_0_0RCTLayoutAnimationGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C8B64203742470FB43342B6731EFF2A /* ABI31_0_0RCTLayoutAnimationGroup.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		7011530E40818C1DC90EADCA065B4F42 /* ABI32_0_0EXGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3558718FE38DDE2B50CED5F30B01A5EC /* ABI32_0_0EXGLView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		701300B4463F07E4D58124E1C0EF56E2 /* ABI31_0_0EXAdsAdMobBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D0351156CFEABABB52036EE685CE4E8 /* ABI31_0_0EXAdsAdMobBannerView.m */; };
-		701EB59D656577D4E41321CF6505CB06 /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7955F8C280177D58E8708462468FA063 /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		70388586BE47D89017349813EF37546A /* BranchContentDiscoverer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4787F403DB58A45C24270D91C211C875 /* BranchContentDiscoverer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		703B7FFB2D68CB2C6B796420978793D2 /* ABI32_0_0RCTBaseTextInputShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 354CFA5CAA355543DEBD36F2FC4B0C0A /* ABI32_0_0RCTBaseTextInputShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		70445326AA8D618C41457650E36ECA66 /* ABI32_0_0Value.h in Headers */ = {isa = PBXBuildFile; fileRef = 77B2D52093B51BACE3EA542220B2909C /* ABI32_0_0Value.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -2093,6 +2096,7 @@
 		79D41D6CD3B7AF6EA0E43A3B10D86D1A /* FBSDKURLSessionTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AB68519BEB02202321F9A9E386B8053 /* FBSDKURLSessionTask.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		79DEFAA86969EE0B831C3BBE03DAB202 /* ABI32_0_0RCTWKWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C31E7D1D828F18440BFA4B5DDA7EEE4A /* ABI32_0_0RCTWKWebViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		79DF6046A679B2C51A6F807C3EE600ED /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E9E6632F9C9ADFCC5A2DDC4FC82AC1 /* RCTReloadCommand.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		79E6E5DEADC4A535F3872CA877CAB079 /* EXTaskService.h in Headers */ = {isa = PBXBuildFile; fileRef = 94D0DCA2F6DD2C7F96A0B8E1344AD4AD /* EXTaskService.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		79F266D6815DDB57CB90FF3D173733BD /* ABI32_0_0RNSVGLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = F9114CEB25221FFE9549F644A36FA0AD /* ABI32_0_0RNSVGLinearGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7A031075726B2D88C67893B2C6BE281B /* FBSDKServerConfigurationManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = D71D80398455E767DD605D7D03D3EBF0 /* FBSDKServerConfigurationManager+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7A05EC9576D046D69FC57F0074E569E9 /* ABI32_0_0RCTObjcExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BDE21FAE63440B90B19D063B348EC99 /* ABI32_0_0RCTObjcExecutor.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -2460,6 +2464,7 @@
 		9135D05553B520F1F087214ECD2BE721 /* RCTDatePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DFACE8520E8DAE92C2CE608FC5AAF70D /* RCTDatePickerManager.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		913A90B3DE449C548FE305AAA94C9945 /* NSValue+Compat.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C4AFC8437AC2E9B599369DD7C7A1705 /* NSValue+Compat.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9147CF9E758D6861BFB9ADB3583D66E9 /* ABI32_0_0RCTRedBoxExtraDataViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 6D1EA016D8EF13374B398C478C3BAAB5 /* ABI32_0_0RCTRedBoxExtraDataViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		916F4D53D9E17B1034982DB2317990A7 /* EXTaskManagerAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BF851C3EA406DD7C75C7841625BA69C /* EXTaskManagerAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		91896D95ABD06784D7FE6F598F2CF4F0 /* UMBridgeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = E45C3B9F25F83A60D52FE9316AF3DF97 /* UMBridgeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9199C2D7A6C07918FB703C5C9D94EB8C /* ABI32_0_0RCTFrameUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 796C76C0B91002AE77CC7CF4825FCEA0 /* ABI32_0_0RCTFrameUpdate.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		919BEC1849A38D17E88DA72D1D98B403 /* ABI31_0_0RCTTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = D52ABCBC4594D140CAF060955C71B225 /* ABI31_0_0RCTTextView.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -2534,7 +2539,6 @@
 		962B8F5EC227BAE4E67DBBA5F83CE51C /* ABI31_0_0EXFaceDetectorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D2107B4168E6C8F1B45A69DA6021F1 /* ABI31_0_0EXFaceDetectorModule.m */; };
 		9632F5534C69DC81A35BE399E2DB6C36 /* ABI31_0_0RCTClipboard.h in Headers */ = {isa = PBXBuildFile; fileRef = B8E4DADDC9EB9F01D4B48749BF1E7091 /* ABI31_0_0RCTClipboard.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9642A169AAEAC46E92F02D647413552A /* LOTRenderGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C45732E6E9E4FD133A12CF7D5C16366 /* LOTRenderGroup.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		965D8B423A9665CBF9BED83E039E722E /* EXTaskManagerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A9E876D606CA276C0CCEAAB2CFCEA5 /* EXTaskManagerAppDelegate.m */; };
 		966A4E6D084DF72451005E3B814815E1 /* LOTPolygonAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = D80102191A048EB7571747A15C7E24DB /* LOTPolygonAnimator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9680F69CFB0410EF8892133F50D5666B /* RCTShadowView+Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B53BF30ADEAC5F64760B3FF5D411AE5 /* RCTShadowView+Layout.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		968D2B4B7F857B282D7984ACF8D08ECC /* ABI31_0_0JSExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DBA21A82FFC16B2FA359061A74196B6 /* ABI31_0_0JSExecutor.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -2651,6 +2655,7 @@
 		9CA4872A19FE3995986D3849A9238928 /* ABI31_0_0RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ECCCEF383CF8053DB2E3959D767C301D /* ABI31_0_0RCTImageEditingManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9CB4E5026829ACB3609078891E31C97E /* DDASLLogCapture.h in Headers */ = {isa = PBXBuildFile; fileRef = 8788782B880D7B9467DD7379D93B9784 /* DDASLLogCapture.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9CB6B70831AB5AB153E3A8994208CB8E /* ABI32_0_0EXConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D6658051989BC62C3FC5B5CD1123E1B /* ABI32_0_0EXConstants.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9CB9F1C144055F621D92C14B8771A8D1 /* EXTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 17597C301F303CD6D0EDBD13DC8499D5 /* EXTaskManager.m */; };
 		9CC9120A5393255FE37EE9262B2864C7 /* SEGMiddleware.h in Headers */ = {isa = PBXBuildFile; fileRef = B577BAB8A82EB6B771FAF70A67D33616 /* SEGMiddleware.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9CCAC954457FCECCD44B11389A90CF87 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35DCE90BBCC204B0EABA8C4CEC126BB1 /* RCTImageStoreManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9CCC6F4BA0DB4D3FC00C3C0FC0EA9B0A /* RCTShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = ECF39558FD8CE67796430E5E981D4331 /* RCTShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -2741,7 +2746,6 @@
 		A26C4AC413AB7B02992DD927F23F8F95 /* ABI32_0_0JSCNativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = F0E383F3CC5AC0DDE24FEA8234CDE400 /* ABI32_0_0JSCNativeModules.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		A27F8EF167F0C5F63C23314FB4E883C5 /* ABI32_0_0EXImagePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 54C21B333F802CBDB3CB8B34051943CF /* ABI32_0_0EXImagePicker.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A28E1AE1CBC10B7A6FA1765F1FA2477E /* ABI32_0_0RCTSurfaceView+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6C98F11604D5AACF47A40FC65A0B722 /* ABI32_0_0RCTSurfaceView+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A29DAF819C4FA75723C8991887D826B8 /* EXTaskManagerAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BF851C3EA406DD7C75C7841625BA69C /* EXTaskManagerAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		A2A31B4BB92F4AC7BBD04AA7F90611B1 /* RCTLayoutAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4857ADEC97CCF082D8202A6E08DC2006 /* RCTLayoutAnimation.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		A2A569DE4B01E0DC3D1DFF31455257D3 /* ABI32_0_0RCTAsyncLocalStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 03825D6163901912128DAC552BC8E5A4 /* ABI32_0_0RCTAsyncLocalStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		A2A58A9C646F10B7D4559726238BC9AB /* ABI32_0_0RCTSafeAreaShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = ABCB00F2401C8E477CE9D9AD0F901C72 /* ABI32_0_0RCTSafeAreaShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -2986,7 +2990,6 @@
 		B1CC9E3B7CF120C615818DD07C6E59CF /* ABI31_0_0NSDataBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = FFBEB2E4CFDA7F9F879E2B21CF162CB1 /* ABI31_0_0NSDataBigString.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B1E69339B3890613F6839D1C4BE01330 /* BNCDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 9801D2F4FBE6F9A420BCB34F431BE819 /* BNCDeviceInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B1F0E0E7268663598ED15DDCBD810F00 /* FBSDKAppLinkNavigation.h in Headers */ = {isa = PBXBuildFile; fileRef = 5771B8A6D3EF6730580B9A1EC35E846A /* FBSDKAppLinkNavigation.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B1F1E756B772CFC02766181F5B0F84F7 /* EXTaskExecutionRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 482C538FAB495CC99E8C597F2367DC5D /* EXTaskExecutionRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B1F8CF411E3299A6E744D031A04F4F4D /* ABI32_0_0RNSVGSvgViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 562C13404A4DC88E5E6057A17D327040 /* ABI32_0_0RNSVGSvgViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B1FAB0A00999E1DE7C684933E16166CE /* ABI31_0_0RCTBaseTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = A90588EE2CC4B0617238CDB4B0134E4F /* ABI31_0_0RCTBaseTextShadowView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B1FABCC86FA287D5AB779D3A8F8F8A7D /* ABI32_0_0EXScreenOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 16C1259CB4A6C57C01D8A09E6137E583 /* ABI32_0_0EXScreenOrientation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -3050,7 +3053,6 @@
 		B4B718BD81F72310E50E7AB6112EA267 /* ABI32_0_0EXFontScaler.h in Headers */ = {isa = PBXBuildFile; fileRef = 411C4C945195F60A02817387150A717A /* ABI32_0_0EXFontScaler.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B4BECDD6AF6279E3A97EA624270C5923 /* ABI32_0_0JSCLegacyTracing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 710776D2165223D216B3FD2885B540F7 /* ABI32_0_0JSCLegacyTracing.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B4DA9B85E1E9A5E5FC54AD26F45D2FC3 /* OIDURLQueryComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = E70D3E197D9F9F98DA10854D2BCA6987 /* OIDURLQueryComponent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B4E52390084FF66E6C1695B1248B539B /* EXTaskService.m in Sources */ = {isa = PBXBuildFile; fileRef = 466092D59F498FFA8DD59E22C94CD89D /* EXTaskService.m */; };
 		B4ECA30119F9FF40333FD4D916B82C1A /* RCTImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 59E338182362421988D3F9C63598B1CE /* RCTImageUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B4F435FDA9FFAC428A219B25CA915C0F /* LOTInterpolatorCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = E5A070B8DF1FC30D5AE07138B4AFC9A3 /* LOTInterpolatorCallback.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B501397E41B38B374473D524CE44C848 /* ABI32_0_0EXGL-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E05A0BE1FFEF801B4CF6BB24FD838B /* ABI32_0_0EXGL-dummy.m */; };
@@ -3114,7 +3116,6 @@
 		B9A98F3E1BE732CF32ABD976F6E18483 /* ABI31_0_0EXLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DD85ACF3C1F8EB2410DF7B5915E97E0 /* ABI31_0_0EXLocation.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B9B83ED3F231BE2C2675BC4F55854ED4 /* RCTConvert+CoreLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 8689DCFE355057720AFE7A3F7FD3A037 /* RCTConvert+CoreLocation.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B9C5D3378C472DA2753024D02C89B359 /* ABI32_0_0RCTURLRequestDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E4DC5FEC2D76006E6BE92B2C130E5007 /* ABI32_0_0RCTURLRequestDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B9D653C063F0B0A06A75FBB5623518B0 /* EXTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 17597C301F303CD6D0EDBD13DC8499D5 /* EXTaskManager.m */; };
 		B9EA1612A09E6738612189A322F2F32F /* RCTCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = CF8519C231646B24E774FCD93065B6E1 /* RCTCxxModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B9EB7A6BAC2EBF8E460878C2FB34F025 /* EXContacts-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 21E7616C61F21D3AFDD9405D29A3703A /* EXContacts-dummy.m */; };
 		BA30467868BCC8DB89A774B7AB3C893E /* SEGIntegrationsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F88F4155B087CABAD4AA98125C8B43F0 /* SEGIntegrationsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3146,7 +3147,6 @@
 		BB89D380FA327882BFC4702D8E194CF3 /* LOTMaskContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = E2FA8E7EFB4CA225224DAC99A2C60E8A /* LOTMaskContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BB8B0181FC0292E3B8FDFD1AAB8ECE7B /* ABI31_0_0RCTSpringAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = EA1A43FAC1A15280E0B99651E749BB2F /* ABI31_0_0RCTSpringAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		BBB214AC14DB31D9CB885F784218D0D0 /* ABI32_0_0EXDocumentPicker.h in Headers */ = {isa = PBXBuildFile; fileRef = 915E0978C4E05F7B3B5723C6098E23A6 /* ABI32_0_0EXDocumentPicker.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BBC4290D211551FE0C3DBC26631A65BD /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EC871CC723EAA1A4260EF8D7158D7E /* EXSQLite.m */; };
 		BBC6993AB1FC640E0FA1DECCA211F7F1 /* ANSCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = 93F0C2D3DFF3CE1DAEA7277E64C2C6C1 /* ANSCompatibility.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BBD326C5116B1D35A8784B1B89F4F21C /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 92D125D024669F2A0ED53FCD52AC1C14 /* raw_logging.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		BBD3C3395FF696A3CE7396F1B62720DE /* FBSDKSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BF679496297CC813ECAE32B8B898A89 /* FBSDKSettings.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3248,7 +3248,7 @@
 		C005524E412D85CE85F00A36CB6CD639 /* ABI32_0_0EXAdsAdMobInterstitial.h in Headers */ = {isa = PBXBuildFile; fileRef = 0400E12EC1A623A2499415981F1C9AC7 /* ABI32_0_0EXAdsAdMobInterstitial.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C0408321B17FC2B71F534C8DEC7E2789 /* ABI32_0_0JSCSamplingProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = C8FD39EA18D75C3FB64989B9C6963093 /* ABI32_0_0JSCSamplingProfiler.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C041FB344AC422AC972648CA487A0441 /* EXMagnetometer.m in Sources */ = {isa = PBXBuildFile; fileRef = D79BAD2D702FAD76C078C87769555733 /* EXMagnetometer.m */; };
-		C056F48D040AAA3C9B63366877633FA1 /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FC501173AE7A6B5A88CEA372CB92C0DC /* EXSQLite-dummy.m */; };
+		C056F48D040AAA3C9B63366877633FA1 /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7410308D63608C6F9E8DCE6300A135A5 /* EXSQLite-dummy.m */; };
 		C05EF83534939EC3691CE2EC14736CC6 /* RCTUITextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DBAB01939235D49DA98DC7B4A9E1F89 /* RCTUITextView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C07CBC4E16BA1F9A1B1C2FA4576C4457 /* Amplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AD6407F7D753AED1C2032E75A21338 /* Amplitude.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C0820B08931C5351ADC7DE6A71BD61E2 /* SEGHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C75AB3ECBBBE40620E00BC076845A48 /* SEGHTTPClient.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3275,6 +3275,7 @@
 		C2511BA9FD0E8834C3F92DBCB8EFA7DB /* lottie-ios-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1226F6759386C7DE45770D8FB1689725 /* lottie-ios-dummy.m */; };
 		C251500833BCF4C1DFD892B519180D9F /* ABI31_0_0EXUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = BE33FC3CA653973D014218AEBFF4C058 /* ABI31_0_0EXUtilities.m */; };
 		C258BD57599F3D76B12E08E47D9CC7EB /* ABI32_0_0RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = E4A8A070DD1F5CE84A4B6E696CE8C7DD /* ABI32_0_0RCTModuloAnimatedNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C265366DA46D8A0C41858C6C8D6661FE /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = EE84D7601D599A9B866C83AB2C7F379A /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C26D9EC6B480AF7B8B1EE99535688E99 /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = 586C15634477D424710A51DCC69C8389 /* instrumentation.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C27480BC2902AD639D7F41701703517A /* ABI32_0_0RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 421049A823D9C2557F12B31FAAE8C9F8 /* ABI32_0_0RNGestureHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C28715115132DDC9AF65298A9060FEBF /* ABI32_0_0YGNodePrint.h in Headers */ = {isa = PBXBuildFile; fileRef = A0E498D26B9F6A11740F7F6188EA5B43 /* ABI32_0_0YGNodePrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3282,6 +3283,7 @@
 		C299A48A5C7F88DB5790DB896D9D4EC9 /* ABI32_0_0EXAppAuth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 59FB58335C02BAD4CC4AC77903B93EF7 /* ABI32_0_0EXAppAuth+JSON.m */; };
 		C2A1288C15481572F624D7CE5B9C116F /* ABI32_0_0EXErrorRecovery.h in Headers */ = {isa = PBXBuildFile; fileRef = BF59A8A25EA573E9DEDD39366D61DA10 /* ABI32_0_0EXErrorRecovery.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C2A9C75A90C720E01FF1B02C9B2CDDB4 /* FBSDKMaleSilhouetteIcon.h in Headers */ = {isa = PBXBuildFile; fileRef = 872A3E05C18D8C0A8B96E2A00F0004C3 /* FBSDKMaleSilhouetteIcon.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C2B57F222F3873F8B3E0CD0C45AFDCBD /* EXTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D68FB456ADCD4053A31478CF0AFA71F /* EXTask.m */; };
 		C2BB0991D2860AB22FC80F8D7A91BEC4 /* ABI32_0_0RCTCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = BC740281FBF4866C68B3F02B1DF48531 /* ABI32_0_0RCTCxxModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C2D8D39B4BA327C8B24D37B296B17D20 /* CALayer+Compat.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F87938E0B72AE4D7CC0F59564AC05B3 /* CALayer+Compat.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C2EE1B4886D96C92A553DF59DCA4F992 /* stl_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 746B7009B0325A9E33C39105EFB69D90 /* stl_logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3392,6 +3394,7 @@
 		C8D023C3A7AF80AE3FCAEC956D53D66E /* ABI31_0_0AIRGMSPolyline.m in Sources */ = {isa = PBXBuildFile; fileRef = AE10B5705501BF0AD9828D971C4005EA /* ABI31_0_0AIRGMSPolyline.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C8DB23237C8266B8B7BE6528FED9087F /* ABI32_0_0REAAlwaysNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 43FC74421E3FA5C2DBE75D995A5E058D /* ABI32_0_0REAAlwaysNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C8DBA3DF33A7FD90A9CC7763E967D4A7 /* ReactABI32_0_0Marker.h in Headers */ = {isa = PBXBuildFile; fileRef = ED1AF900705FA240831C0FE7263DFEDA /* ReactABI32_0_0Marker.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C8DCD110F00626FDD71A9BA6CFFCE434 /* EXTaskExecutionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 9281FACA93F65442D4EEEAA1FD5F6246 /* EXTaskExecutionRequest.m */; };
 		C8E7D37DC9E48465A63AA98EF7AA7100 /* ABI31_0_0RCTInputAccessoryView.h in Headers */ = {isa = PBXBuildFile; fileRef = 83D0DD1A07AD2700AB073E951651B415 /* ABI31_0_0RCTInputAccessoryView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C8F178DD77D1107387355A90A2A8975A /* ABI32_0_0RCTActivityIndicatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D2CA01E43BDBE1F3066AFF110C95C /* ABI32_0_0RCTActivityIndicatorView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C93C14303A4B9655D850E64FFD81AC0B /* ABI32_0_0RNSVGPathManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9922158A8CE25EF7D47436E8E517EDC0 /* ABI32_0_0RNSVGPathManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -3570,7 +3573,6 @@
 		D233B686EC27E43304EA63227652DCB8 /* FBSDKColor.m in Sources */ = {isa = PBXBuildFile; fileRef = D17172004D8B7BB9251B53971E5AD479 /* FBSDKColor.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D23E6DC4EEAC2365B8231BAD1685F81A /* ABI31_0_0RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = C4E2DA03AC3A8D73DBD25190560EC957 /* ABI31_0_0RCTJavaScriptLoader.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D23FCABA24D5D4745EB1466C3981A5C7 /* BranchViewHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 2DB84F9E8AC0CA03D324296A1DF39692 /* BranchViewHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D2455AAF10DB3010A70A347F80EB5642 /* EXTaskExecutionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 9281FACA93F65442D4EEEAA1FD5F6246 /* EXTaskExecutionRequest.m */; };
 		D2471C1021D1FDBEF56AA8FC4A4F16CD /* ABI31_0_0EXScopedReactNativeAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = E016EB4098DAD63E806A7852C276AF0E /* ABI31_0_0EXScopedReactNativeAdapter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D249471820EB0E7EE04EA9BE51F8278C /* ABI32_0_0RNRootViewGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 219ECC9318F3AC7D86F93AADD0709D7C /* ABI32_0_0RNRootViewGestureRecognizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D265665B5A8A5ADE7CA7B0E514D3DA63 /* ABI32_0_0RCTBaseTextInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = A596244B2BE1114EEB2585A7FF65A879 /* ABI32_0_0RCTBaseTextInputView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -3591,7 +3593,6 @@
 		D321BAB6C64247E87AB57EDFE1E1141E /* ABI32_0_0RNSVGNodeManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2668FD5E11A5F12644B668927B021CBC /* ABI32_0_0RNSVGNodeManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D324CB63C5C31DAB94666CE2C10C1688 /* OIDTokenUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F22BE64FF390F2E430652EB34F00FA49 /* OIDTokenUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D3286805672025523D787237FA7316DC /* ABI32_0_0EXImageManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFF7A79D877AF88440070254FC2174C /* ABI32_0_0EXImageManipulator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		D32FD0A570740B00B6D26928D8A37139 /* EXTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C6FF3BA296EC820779669E8179BC9DC5 /* EXTaskManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D3349B4040A84F2A486F586E880A078D /* ABI31_0_0EXDevSettingsDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = A27E45713A2A0736FAB0113C6781D35D /* ABI31_0_0EXDevSettingsDataSource.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D33C3C0EEC60CEA8662D4AE1BEFEF799 /* ABI31_0_0RNSVGPath.h in Headers */ = {isa = PBXBuildFile; fileRef = B6EE1C0638A0FAFE1525ABDF83B74BAD /* ABI31_0_0RNSVGPath.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D33C3DA75873F2F0BFFCF8329E36314B /* ABI32_0_0EXUnversioned.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E2DFB9FCA5AB9CAB5AC70F7296564F5 /* ABI32_0_0EXUnversioned.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -3764,7 +3765,6 @@
 		DE9517E725B64A4F3DC474A3268CEAD0 /* ABI31_0_0REAStyleNode.h in Headers */ = {isa = PBXBuildFile; fileRef = B52E6457E09462E7B82F1FD09BEAD7D4 /* ABI31_0_0REAStyleNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		DE976F9DAAA16CDB5D178C51288E16EE /* ABI32_0_0RCTSurface.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8725147CA6216F9C59BBADF47AB1C8FF /* ABI32_0_0RCTSurface.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		DEB8AFDCBC6F4A5644A8D2D317EA8D38 /* ABI32_0_0RCTStatusBarManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FF5CA768E6AEE4A9100F175AECAF2E7 /* ABI32_0_0RCTStatusBarManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DEEB86A9310BB31098DBBEECBAE9A2EF /* EXTaskManager-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E74DA91E10F1D5138576B8C06884D6BD /* EXTaskManager-dummy.m */; };
 		DEECB63926D97DC4F8215AB6A6A9B989 /* ABI32_0_0RNSVGEllipse.h in Headers */ = {isa = PBXBuildFile; fileRef = A1C459668437767D65092A34C165C0B5 /* ABI32_0_0RNSVGEllipse.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		DF314F81291C3E763DCE3808003FC15F /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 364E33E59E74E63F050AC56D2037CE08 /* YGValue.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		DF3DE47F8AFE837A862E50CED6A0B1E9 /* fast-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 31730E77A399F323A0FB9DBC5F268C33 /* fast-dtoa.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -3884,6 +3884,7 @@
 		E6323D754406B307839235287EDC287F /* ABI31_0_0ARTRenderableManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 09F7592E6611CD293D6CAB900C7B5A8E /* ABI31_0_0ARTRenderableManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E636093DAB8DD406EBE2EA94679D7F8B /* ABI31_0_0RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 05880C9DEB92056E142FDF5AA22F7635 /* ABI31_0_0RNGestureHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		E647AEF4F7007DE3F9C5416F47900A6A /* ABI32_0_0RCTRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 02FEC10D943FDB57454F91DF3E0EA96A /* ABI32_0_0RCTRedBox.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E650E88FA8FFB4005E61BED4532E52C2 /* EXTaskExecutionRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 482C538FAB495CC99E8C597F2367DC5D /* EXTaskExecutionRequest.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E65EE9963AF5516FE8E6F7CF6251506F /* RCTTransformAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B2C304AA5439843025D51AFBFF01CF /* RCTTransformAnimatedNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		E6629F76AB16857190F54C6125763B73 /* RCTRefreshControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F33BF7F0373B05E5C4DBB875D3D4454E /* RCTRefreshControlManager.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		E67220A409897C2FBFF613EDC2F4C17A /* RCTAlertManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D4ACEF196796B9E245FFC9F633CB8E60 /* RCTAlertManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -4124,7 +4125,6 @@
 		F494B68CCB16C3F4B834A94FB3D8F7BA /* RCTScrollContentShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6CC9E54847510DBBC8F2B76625252CD8 /* RCTScrollContentShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F4F9EDE883FFB1A502EE0543E56DA8E6 /* LOTShapeGradientFill.h in Headers */ = {isa = PBXBuildFile; fileRef = 098D326E251903956FC6BA3B80ED4AA2 /* LOTShapeGradientFill.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F4FF7BB25FB855A9E7BAD5081889BBCA /* UMInternalModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E3D12956ECDB90A654C228843A9875F /* UMInternalModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F500DEAE34F8FE969184015E1C367A58 /* EXTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D68FB456ADCD4053A31478CF0AFA71F /* EXTask.m */; };
 		F500ED49892E94A59BC753366AF6D9A4 /* ABI31_0_0RNSVGRadialGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F2879D3FEAE26A3F39A8ADCF1107C57 /* ABI31_0_0RNSVGRadialGradientManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F51383E060914FC776EC261A1CE28060 /* ABI32_0_0EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = DC47EE09E8BD0B7E68D537FC2CDEEC23 /* ABI32_0_0EXAppState.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F52B529D1F1ADD41B6EA9DF2A9F56D97 /* RCTConvert+Text.h in Headers */ = {isa = PBXBuildFile; fileRef = B529B2314C64EBAEA8FE03DFA96C7A27 /* RCTConvert+Text.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -5154,7 +5154,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = B40154FBF732357225EACF56CEE082C5;
+			remoteGlobalIDString = DFA0FCB1C8B43055924B06FE076CA35B;
 			remoteInfo = EXTaskManager;
 		};
 		622F156C0B6D0A0F15DB19155356C407 /* PBXContainerItemProxy */ = {
@@ -6214,6 +6214,13 @@
 			remoteGlobalIDString = 4C7D5179C285B842143F0498B457706C;
 			remoteInfo = UMCore;
 		};
+		D3AA99AE3C226152FF754D0779DB02F6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C7D5179C285B842143F0498B457706C;
+			remoteInfo = UMCore;
+		};
 		D4C8460DBBFF97A426E739F3F945A3A9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -6270,6 +6277,13 @@
 			remoteGlobalIDString = E0F167E39491B46DC7FEAFF6F1765A77;
 			remoteInfo = React;
 		};
+		DA039EFDAF7F1221B241A280AC0A4D9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F42432668A0F81BE898F1FEA0D6A83B7;
+			remoteInfo = EXAppLoaderProvider;
+		};
 		DD5A022648BB354772FBDC1206AAB154 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -6318,13 +6332,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 14D20271E0B54D0480F7B8A136EFE043;
 			remoteInfo = ABI32_0_0EXConstants;
-		};
-		E2BCD2826EDBD49C2C111F91E0370B80 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4C7D5179C285B842143F0498B457706C;
-			remoteInfo = UMCore;
 		};
 		E3B25346E256966C11848F1D032AEE86 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -7283,7 +7290,6 @@
 		26E0329488B65FCB9B2A673B0831C789 /* ABI32_0_0AIRMapCoordinate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0AIRMapCoordinate.m; sourceTree = "<group>"; };
 		26E4335BA7B46DB37B033AFFE828AB60 /* ABI32_0_0EXUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0EXUtil.h; sourceTree = "<group>"; };
 		26E6D44D7FFB36BF2D74688C4CB45270 /* ABI31_0_0RNSVGTSpan.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI31_0_0RNSVGTSpan.m; sourceTree = "<group>"; };
-		27002E82FDA27D5F38C6829B96D17E05 /* EXSQLite.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSQLite.xcconfig; sourceTree = "<group>"; };
 		27076CFE273D57AF5169ED4522ACC7B4 /* OIDError.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = OIDError.m; path = Source/OIDError.m; sourceTree = "<group>"; };
 		270D7830263C8DEC8332737101A64F24 /* ABI32_0_0RCTLayoutAnimationGroup.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0RCTLayoutAnimationGroup.h; sourceTree = "<group>"; };
 		271806871EEBC36C906B3B800950B3F8 /* ABI31_0_0RCTImageSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI31_0_0RCTImageSource.m; sourceTree = "<group>"; };
@@ -7933,6 +7939,7 @@
 		475A4399EDA89D967AB61BA26CC7C9A6 /* GoogleToolboxForMac-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleToolboxForMac-dummy.m"; sourceTree = "<group>"; };
 		476CAF58458F0EC54AD4614C63AA18FD /* FBSDKApplicationDelegate+Internal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "FBSDKApplicationDelegate+Internal.h"; path = "FBSDKCoreKit/FBSDKCoreKit/Internal/FBSDKApplicationDelegate+Internal.h"; sourceTree = "<group>"; };
 		476D8F0FCF4708A503DB214270AE0C2D /* ABI32_0_0AIRGoogleMapCircleManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0AIRGoogleMapCircleManager.m; sourceTree = "<group>"; };
+		4771EB52E0B4C389ABD6E6AE02675C1E /* EXSQLite.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = EXSQLite.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		4785DEE076A7449F764492D1849409CF /* LOTBlockCallback.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LOTBlockCallback.h; path = "lottie-ios/Classes/PublicHeaders/LOTBlockCallback.h"; sourceTree = "<group>"; };
 		4787F403DB58A45C24270D91C211C875 /* BranchContentDiscoverer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BranchContentDiscoverer.h; path = "Branch-SDK/Branch-SDK/BranchContentDiscoverer.h"; sourceTree = "<group>"; };
 		478C0BFDF498933004D60BF736629A10 /* RCTBridge.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RCTBridge.h; sourceTree = "<group>"; };
@@ -8722,6 +8729,7 @@
 		6FF8BE3BA90EC174C75DD8515DE6E21C /* GMUDefaultClusterRenderer+Testing.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "GMUDefaultClusterRenderer+Testing.h"; path = "src/Clustering/View/GMUDefaultClusterRenderer+Testing.h"; sourceTree = "<group>"; };
 		7004FFAA34C98F59BF148DEA4879EAF2 /* ABI32_0_0EXSMS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI32_0_0EXSMS-prefix.pch"; sourceTree = "<group>"; };
 		700F29DDC0B971F3DAA9EA7DD9E2CDA4 /* OIDFieldMapping.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = OIDFieldMapping.m; path = Source/OIDFieldMapping.m; sourceTree = "<group>"; };
+		701E53B1C350E6CD2A2C2135049F8701 /* EXSQLite.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSQLite.xcconfig; sourceTree = "<group>"; };
 		70276C224FBE6E174BC7493857C1F14C /* ABI31_0_0EXCameraPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI31_0_0EXCameraPermissionRequester.h; path = ABI31_0_0EXPermissions/ABI31_0_0EXCameraPermissionRequester.h; sourceTree = "<group>"; };
 		70399EC7BCED0BC8FB7EF0DFA095C97A /* EXCalendar-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCalendar-prefix.pch"; sourceTree = "<group>"; };
 		7042AAE9636C6F0DD10DDC09A0AE6A98 /* ABI31_0_0AIRMapLocalTileOverlay.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI31_0_0AIRMapLocalTileOverlay.h; sourceTree = "<group>"; };
@@ -8804,6 +8812,7 @@
 		73DB25053FA468EABD08761E32B72CC9 /* ABI32_0_0RCTImageStoreManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0RCTImageStoreManager.m; path = Libraries/Image/ABI32_0_0RCTImageStoreManager.m; sourceTree = "<group>"; };
 		73DF5ECA8CE94C301013B8710520AF66 /* ABI32_0_0AIRGMSPolygon.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0AIRGMSPolygon.m; sourceTree = "<group>"; };
 		73F9CD30C68E898316720FA2F4D3DBD9 /* ABI32_0_0RCTDevMenu.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTDevMenu.m; sourceTree = "<group>"; };
+		7410308D63608C6F9E8DCE6300A135A5 /* EXSQLite-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSQLite-dummy.m"; sourceTree = "<group>"; };
 		741DCEB48A4E28497029BB53E8B065CB /* ABI32_0_0JSCLegacyTracing.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI32_0_0JSCLegacyTracing.h; path = ReactCommon/cxxReactABI32_0_0/ABI32_0_0JSCLegacyTracing.h; sourceTree = "<group>"; };
 		743EC350E1F2017FF5ACFF5D6CA95E5F /* BFAppLinkResolving.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BFAppLinkResolving.h; path = Bolts/iOS/BFAppLinkResolving.h; sourceTree = "<group>"; };
 		743FB38DB9498FB375579D711F6C3759 /* ABI31_0_0EXRemoteNotificationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI31_0_0EXRemoteNotificationRequester.m; path = ABI31_0_0EXPermissions/ABI31_0_0EXRemoteNotificationRequester.m; sourceTree = "<group>"; };
@@ -8914,7 +8923,6 @@
 		793AAE2E46541AFD563ED5B2ED7DA881 /* FBSDKGraphRequestConnection.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FBSDKGraphRequestConnection.m; path = FBSDKCoreKit/FBSDKCoreKit/FBSDKGraphRequestConnection.m; sourceTree = "<group>"; };
 		79431D58683A245B4A7F816DD0027E19 /* NSData+SEGGZIP.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+SEGGZIP.m"; path = "Analytics/Classes/Internal/NSData+SEGGZIP.m"; sourceTree = "<group>"; };
 		7943F68C05ABD7F4C3CC5CC160FCC536 /* ABI32_0_0RCTDiffClampAnimatedNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0RCTDiffClampAnimatedNode.h; sourceTree = "<group>"; };
-		7955F8C280177D58E8708462468FA063 /* EXSQLite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSQLite.h; path = EXSQlite/EXSQLite.h; sourceTree = "<group>"; };
 		795FB0E9C8455D26546A7B12E077B15B /* CLSLogging.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = CLSLogging.h; path = iOS/Crashlytics.framework/Headers/CLSLogging.h; sourceTree = "<group>"; };
 		796C76C0B91002AE77CC7CF4825FCEA0 /* ABI32_0_0RCTFrameUpdate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTFrameUpdate.m; sourceTree = "<group>"; };
 		796CF77DEF643E91CDCE724984C7CCC4 /* ABI31_0_0EXContacts.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI31_0_0EXContacts.m; path = ABI31_0_0EXContacts/ABI31_0_0EXContacts.m; sourceTree = "<group>"; };
@@ -9323,7 +9331,6 @@
 		8DFC79FA2ACC8346BCC593ADB1B40AFE /* ABI32_0_0RCTInputAccessoryViewContent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTInputAccessoryViewContent.m; sourceTree = "<group>"; };
 		8DFF66E8A84D345B468F7AB3A39215FB /* OIDGrantTypes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = OIDGrantTypes.h; path = Source/OIDGrantTypes.h; sourceTree = "<group>"; };
 		8E10E88215D7507EFF13C90E15B9384A /* Analytics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Analytics-dummy.m"; sourceTree = "<group>"; };
-		8E2B5876628E9EFAD49A1F8C3A51EB96 /* EXSQLite.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = EXSQLite.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		8E2D5A226395B9D67653E978AEEC6F4D /* ABI32_0_0EXUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0EXUtilities.m; path = ABI32_0_0EXCore/ABI32_0_0EXUtilities.m; sourceTree = "<group>"; };
 		8E2DAD9D17DF7A8A94B7E1E49E2E0F22 /* ABI31_0_0EXBarCodeScannerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI31_0_0EXBarCodeScannerInterface.h; path = ABI31_0_0EXBarCodeScannerInterface/ABI31_0_0EXBarCodeScannerInterface.h; sourceTree = "<group>"; };
 		8E2F34B7C861E82995EC7BD057EC0E9F /* ABI32_0_0RNSVGUse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RNSVGUse.m; sourceTree = "<group>"; };
@@ -10079,6 +10086,7 @@
 		B452D245979E86A9B65E9DB93D55B1C8 /* ABI31_0_0BranchContentMetadata+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI31_0_0BranchContentMetadata+RNBranch.m"; sourceTree = "<group>"; };
 		B453C0DD00E5BC16BAEDE64EC356D699 /* ABI32_0_0EXAudioRecordingPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0EXAudioRecordingPermissionRequester.m; path = ABI32_0_0EXPermissions/ABI32_0_0EXAudioRecordingPermissionRequester.m; sourceTree = "<group>"; };
 		B45E3C191EC09A95AC78F8566C0F9FB8 /* ABI31_0_0MessageQueueThread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI31_0_0MessageQueueThread.h; path = ReactCommon/cxxReactABI31_0_0/ABI31_0_0MessageQueueThread.h; sourceTree = "<group>"; };
+		B4687660C93D83FB68AC214762ACAF23 /* EXSQLite-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSQLite-prefix.pch"; sourceTree = "<group>"; };
 		B46FFE3CDA2CC03C9C91AA76766FABE6 /* GoogleToolboxForMac.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleToolboxForMac.xcconfig; sourceTree = "<group>"; };
 		B486DF5966303C87EEDB9B1E32FB24E7 /* ABI32_0_0RCTUITextView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTUITextView.m; sourceTree = "<group>"; };
 		B4A8F8FE9DDB8FFAE87673B965BF9C05 /* ISPPinnedNSURLConnectionDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ISPPinnedNSURLConnectionDelegate.m; path = Amplitude/SSLCertificatePinning/ISPPinnedNSURLConnectionDelegate.m; sourceTree = "<group>"; };
@@ -10795,7 +10803,6 @@
 		DA61A7B1EE32CC16B3BD2136CA9C1E4A /* ABI32_0_0RNPinchHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RNPinchHandler.m; sourceTree = "<group>"; };
 		DA7770D6ED5A5DD56A8351EF8D115E64 /* EXSharingModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSharingModule.m; path = EXSharing/EXSharingModule.m; sourceTree = "<group>"; };
 		DA7A2F40E600886E7861152FE76A28E8 /* ABI32_0_0EXMediaLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0EXMediaLibrary.m; path = ABI32_0_0EXMediaLibrary/ABI32_0_0EXMediaLibrary.m; sourceTree = "<group>"; };
-		DA7C105DC7FC9F89EB94505AAA8120B0 /* EXSQLite-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSQLite-prefix.pch"; sourceTree = "<group>"; };
 		DA8174CFD46FE5FED5CA35C5CFF1B45A /* EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = EXRandom.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		DA86FA4EE42F9CF8405B926EBF598716 /* BranchCreditHistoryRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = BranchCreditHistoryRequest.h; path = "Branch-SDK/Branch-SDK/Networking/Requests/BranchCreditHistoryRequest.h"; sourceTree = "<group>"; };
 		DA9DC75BBEE7B4FF09ECC606C6C13529 /* ABI32_0_0RCTResizeMode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0RCTResizeMode.m; path = Libraries/Image/ABI32_0_0RCTResizeMode.m; sourceTree = "<group>"; };
@@ -11059,6 +11066,7 @@
 		E77958100A15E6B22113D28B0CCB5CF4 /* glog.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = glog.xcconfig; sourceTree = "<group>"; };
 		E77F48850A7CE9358CA5C523FE924D5C /* Google-Maps-iOS-Utils-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Google-Maps-iOS-Utils-dummy.m"; sourceTree = "<group>"; };
 		E784814BB5606B52F69600FCEBE62FC2 /* ABI31_0_0EXBannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI31_0_0EXBannerViewManager.h; sourceTree = "<group>"; };
+		E79A2EBB629FCFBF07099B941675CA47 /* EXSQLite.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSQLite.m; path = EXSQLite/EXSQLite.m; sourceTree = "<group>"; };
 		E7AE84A297C1C56813EDCB5273C8B140 /* ABI32_0_0RCTAppState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0RCTAppState.h; sourceTree = "<group>"; };
 		E7B90AA6799832800C9650EEC7404245 /* EXBlur.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBlur.xcconfig; sourceTree = "<group>"; };
 		E7D6FA4AE0CAF689A5D2386B5C897CD5 /* FBSDKWebViewAppLinkResolver.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBSDKWebViewAppLinkResolver.h; path = FBSDKCoreKit/FBSDKCoreKit/FBSDKWebViewAppLinkResolver.h; sourceTree = "<group>"; };
@@ -11183,6 +11191,7 @@
 		EE3FD9581A8640DD64FCCC59B28A9C73 /* ABI32_0_0RCTInspectorPackagerConnection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0RCTInspectorPackagerConnection.h; sourceTree = "<group>"; };
 		EE514E3201A4DD0CD12A1524E4CB0C6D /* ARTGroup.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ARTGroup.m; path = Libraries/ART/ARTGroup.m; sourceTree = "<group>"; };
 		EE6075F0C73B9861430CC3D3602DF0C3 /* ABI31_0_0ARTGroupManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI31_0_0ARTGroupManager.m; sourceTree = "<group>"; };
+		EE84D7601D599A9B866C83AB2C7F379A /* EXSQLite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSQLite.h; path = EXSQLite/EXSQLite.h; sourceTree = "<group>"; };
 		EE86B8C154D1BD2598081A797007F5E5 /* RCTImageBlurUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RCTImageBlurUtils.h; path = Libraries/Image/RCTImageBlurUtils.h; sourceTree = "<group>"; };
 		EE8B08C0395E3186916F23200A05BBE1 /* ABI32_0_0RCTPropsAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0RCTPropsAnimatedNode.m; sourceTree = "<group>"; };
 		EE920B1690C1A1E6CE16E510BC970ACB /* EXLocation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLocation-prefix.pch"; sourceTree = "<group>"; };
@@ -11304,7 +11313,6 @@
 		F4BD7E49AF1573CE15160F271D43EC8B /* ABI32_0_0EXModuleRegistryBinding.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI32_0_0EXModuleRegistryBinding.m; sourceTree = "<group>"; };
 		F4C89FFF81D2364E4DC2596D95ADDE20 /* FBSDKContainerViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBSDKContainerViewController.h; path = FBSDKCoreKit/FBSDKCoreKit/Internal/FBSDKContainerViewController.h; sourceTree = "<group>"; };
 		F4E8961548D54D16DB87E5840FE4834A /* ABI31_0_0YGEnums.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI31_0_0YGEnums.cpp; path = yoga/ABI31_0_0YGEnums.cpp; sourceTree = "<group>"; };
-		F4EC871CC723EAA1A4260EF8D7158D7E /* EXSQLite.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSQLite.m; path = EXSQlite/EXSQLite.m; sourceTree = "<group>"; };
 		F4EE55F0CFB380C33D0B6281BA767816 /* DDMultiFormatter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DDMultiFormatter.h; path = Classes/Extensions/DDMultiFormatter.h; sourceTree = "<group>"; };
 		F4F541CE5016550B93B8424F8D49E9F5 /* ABI32_0_0ARTBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI32_0_0ARTBrush.h; sourceTree = "<group>"; };
 		F4F55E43540D2528AA90D8C61DF668FD /* RCTDisplayLink.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTDisplayLink.m; sourceTree = "<group>"; };
@@ -11443,7 +11451,6 @@
 		FC3252FF7765E8D5600CD0C9AD7D87F3 /* ABI31_0_0RCTSinglelineTextInputViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI31_0_0RCTSinglelineTextInputViewManager.h; sourceTree = "<group>"; };
 		FC41E62EB62A494B0CCA8537AAAF1090 /* ABI32_0_0EXFontManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI32_0_0EXFontManager.m; path = ABI32_0_0EXFont/ABI32_0_0EXFontManager.m; sourceTree = "<group>"; };
 		FC431048104A257988C55D433AAB4272 /* ABI31_0_0RCTNavigator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI31_0_0RCTNavigator.h; sourceTree = "<group>"; };
-		FC501173AE7A6B5A88CEA372CB92C0DC /* EXSQLite-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSQLite-dummy.m"; sourceTree = "<group>"; };
 		FC7447AA85EB6C63DCFA133A36D36379 /* ABI32_0_0EXConstants-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI32_0_0EXConstants-dummy.m"; sourceTree = "<group>"; };
 		FC76570267E6BE4AEEAA839277A1851D /* RCTStyleAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTStyleAnimatedNode.m; sourceTree = "<group>"; };
 		FC7B772CB884FD835E65522C566DAEEE /* ABI31_0_0RNSVGBezierElement.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI31_0_0RNSVGBezierElement.m; sourceTree = "<group>"; };
@@ -11908,13 +11915,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		74ECF0DE273787B1C2248961BE247D32 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		776432BEC83E92F2E8ED21B1C35A2EBC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -12215,6 +12215,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CB79DACF89345D9229B802EA3382D0B5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB83C1B2C2DDFBE29E4727D4ACE7E01A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -17227,6 +17234,14 @@
 			path = Fabric;
 			sourceTree = "<group>";
 		};
+		7761337E58F71ABED2E3A55DBEA8CD9C /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				4771EB52E0B4C389ABD6E6AE02675C1E /* EXSQLite.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		77735CDA3553AE02F5A836894D74AF3C /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -17701,7 +17716,7 @@
 				6298B29DE329589F0A4DB1E32530C0A5 /* EXSharing */,
 				B920608E350CBAC5D73F210345C210FA /* EXSMS */,
 				045019F9BD89C113C802F8FC7E66FB19 /* EXSpeech */,
-				B86CB0AC714B16F1FD2F8E4A3BB95EC2 /* EXSQLite */,
+				A11809734981E390A311F78A4CA644F9 /* EXSQLite */,
 				9C0629E6E8195604FB2311F53E7920EE /* EXTaskManager */,
 				FB02A3C0033260A1BAD69DB40E275BD1 /* EXVideoThumbnails */,
 				9214DEEBE34DF47593D255BA1BB26F2F /* EXWebBrowser */,
@@ -19031,6 +19046,18 @@
 			name = Expo;
 			sourceTree = "<group>";
 		};
+		A11809734981E390A311F78A4CA644F9 /* EXSQLite */ = {
+			isa = PBXGroup;
+			children = (
+				EE84D7601D599A9B866C83AB2C7F379A /* EXSQLite.h */,
+				E79A2EBB629FCFBF07099B941675CA47 /* EXSQLite.m */,
+				7761337E58F71ABED2E3A55DBEA8CD9C /* Pod */,
+				FD3E8C3EF23CA36D75D9AC678261DAC2 /* Support Files */,
+			);
+			name = EXSQLite;
+			path = "../../packages/expo-sqlite/ios";
+			sourceTree = "<group>";
+		};
 		A1281D89975CDB6C625BD9EF58CE78F2 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
@@ -20088,17 +20115,6 @@
 			path = "../../packages/expo-keep-awake/ios";
 			sourceTree = "<group>";
 		};
-		B59855294A864FA3861D666BFA6D9FE9 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				27002E82FDA27D5F38C6829B96D17E05 /* EXSQLite.xcconfig */,
-				FC501173AE7A6B5A88CEA372CB92C0DC /* EXSQLite-dummy.m */,
-				DA7C105DC7FC9F89EB94505AAA8120B0 /* EXSQLite-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXSQLite";
-			sourceTree = "<group>";
-		};
 		B5AFA7C8E088E038050305F70EAEDC38 /* DevSupport */ = {
 			isa = PBXGroup;
 			children = (
@@ -20184,18 +20200,6 @@
 			);
 			name = BaseText;
 			path = Libraries/Text/BaseText;
-			sourceTree = "<group>";
-		};
-		B86CB0AC714B16F1FD2F8E4A3BB95EC2 /* EXSQLite */ = {
-			isa = PBXGroup;
-			children = (
-				7955F8C280177D58E8708462468FA063 /* EXSQLite.h */,
-				F4EC871CC723EAA1A4260EF8D7158D7E /* EXSQLite.m */,
-				D43DCD0ECEC8DBDF5223819A60B300F3 /* Pod */,
-				B59855294A864FA3861D666BFA6D9FE9 /* Support Files */,
-			);
-			name = EXSQLite;
-			path = "../../packages/expo-sqlite/ios";
 			sourceTree = "<group>";
 		};
 		B89284645E4BE0B6F302BC654EFCE902 /* Pod */ = {
@@ -21264,14 +21268,6 @@
 			isa = PBXGroup;
 			children = (
 				264B3A196FF81361F21B494B2572887E /* ABI32_0_0EXSMS.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		D43DCD0ECEC8DBDF5223819A60B300F3 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				8E2B5876628E9EFAD49A1F8C3A51EB96 /* EXSQLite.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -23241,6 +23237,17 @@
 			path = "../versioned-react-native/ABI32_0_0/EXAppLoaderProvider";
 			sourceTree = "<group>";
 		};
+		FD3E8C3EF23CA36D75D9AC678261DAC2 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				701E53B1C350E6CD2A2C2135049F8701 /* EXSQLite.xcconfig */,
+				7410308D63608C6F9E8DCE6300A135A5 /* EXSQLite-dummy.m */,
+				B4687660C93D83FB68AC214762ACAF23 /* EXSQLite-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXSQLite";
+			sourceTree = "<group>";
+		};
 		FDA56FC33D32559E1E82A012F89905EE /* EXPrint */ = {
 			isa = PBXGroup;
 			children = (
@@ -24140,18 +24147,6 @@
 				A244F7D87007193358A9A0F67880D08E /* ABI31_0_0EXGLObjectManager.h in Headers */,
 				1E37663C635530240CCA21971BCD69CC /* ABI31_0_0EXGLView.h in Headers */,
 				3D6B48AA3E78A5ABC2612E91AB89CBF2 /* ABI31_0_0EXGLViewManager.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		36193B0E4C354C50F43776447029A9DA /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				384499A060597DE03A915BF4B4560F48 /* EXTask.h in Headers */,
-				B1F1E756B772CFC02766181F5B0F84F7 /* EXTaskExecutionRequest.h in Headers */,
-				D32FD0A570740B00B6D26928D8A37139 /* EXTaskManager.h in Headers */,
-				A29DAF819C4FA75723C8991887D826B8 /* EXTaskManagerAppDelegate.h in Headers */,
-				32CB86295A8774D66EED63A3CC398A5A /* EXTaskService.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -26090,6 +26085,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D1A6FDF08FC9F0FB274519F2BBDB09A7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A9D7AA4C6A4636ECF4317F87D33631A /* EXTask.h in Headers */,
+				E650E88FA8FFB4005E61BED4532E52C2 /* EXTaskExecutionRequest.h in Headers */,
+				671FA87B7E9483F811D89834943E938E /* EXTaskManager.h in Headers */,
+				916F4D53D9E17B1034982DB2317990A7 /* EXTaskManagerAppDelegate.h in Headers */,
+				79E6E5DEADC4A535F3872CA877CAB079 /* EXTaskService.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D544D44E5D9FE45164B116CECF3A355E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -26190,7 +26197,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				701EB59D656577D4E41321CF6505CB06 /* EXSQLite.h in Headers */,
+				C265366DA46D8A0C41858C6C8D6661FE /* EXSQLite.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -28221,24 +28228,6 @@
 			productReference = 1BD103B2AAA5E56823C46E7BC4EF219F /* libABI32_0_0EXBarCodeScanner.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		B40154FBF732357225EACF56CEE082C5 /* EXTaskManager */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 7DC9BEC088FABE8295C72A248D04E22C /* Build configuration list for PBXNativeTarget "EXTaskManager" */;
-			buildPhases = (
-				36193B0E4C354C50F43776447029A9DA /* Headers */,
-				16A24AA4EFB7B2CC1CC7B342C28591C6 /* Sources */,
-				74ECF0DE273787B1C2248961BE247D32 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				F6B2ED5FDB97D68482389D10FFB6D737 /* PBXTargetDependency */,
-			);
-			name = EXTaskManager;
-			productName = EXTaskManager;
-			productReference = 17998CB7D28D163C78752DB3D1BEBEC8 /* libEXTaskManager.a */;
-			productType = "com.apple.product-type.library.static";
-		};
 		B4FB4944E3167D40A80CF3A500D47166 /* EXGoogleSignIn */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6E1F59E6834A01C76DC7D2F7BA372265 /* Build configuration list for PBXNativeTarget "EXGoogleSignIn" */;
@@ -28493,6 +28482,25 @@
 			name = ABI32_0_0EXLocation;
 			productName = ABI32_0_0EXLocation;
 			productReference = C64EDE43FC69AF9759B88D1A0765F36E /* libABI32_0_0EXLocation.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		DFA0FCB1C8B43055924B06FE076CA35B /* EXTaskManager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 693F9F2EBCCA7E2A4E9811785E7BFDA9 /* Build configuration list for PBXNativeTarget "EXTaskManager" */;
+			buildPhases = (
+				D1A6FDF08FC9F0FB274519F2BBDB09A7 /* Headers */,
+				CB1BB273B03B0ADAC039DA4579B6BEF7 /* Sources */,
+				CB83C1B2C2DDFBE29E4727D4ACE7E01A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				86FD4581EE4E98E92CB85A19B85412CC /* PBXTargetDependency */,
+				6FB62707D11F1DFA9D1048C31C566792 /* PBXTargetDependency */,
+			);
+			name = EXTaskManager;
+			productName = EXTaskManager;
+			productReference = 17998CB7D28D163C78752DB3D1BEBEC8 /* libEXTaskManager.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		E08F10C6CF5D899C105D7AE67BC2E4CA /* ABI31_0_0EXLocalAuthentication */ = {
@@ -28863,7 +28871,7 @@
 				BA8849CB348A734BF8874DFF94378700 /* EXSMS */,
 				04E7A87FD5A9C8519B066E8CB4263697 /* EXSpeech */,
 				6FD449BBC7E130CD667869EDC46CF875 /* EXSQLite */,
-				B40154FBF732357225EACF56CEE082C5 /* EXTaskManager */,
+				DFA0FCB1C8B43055924B06FE076CA35B /* EXTaskManager */,
 				C320EAAFAB50434E09B86828AF7E415B /* EXVideoThumbnails */,
 				240504C276270018DE05B3D0F038B1E5 /* EXWebBrowser */,
 				C9EA1CC0469CB141C3FCD328EDA3C208 /* FBSDKCoreKit */,
@@ -29088,19 +29096,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		16A24AA4EFB7B2CC1CC7B342C28591C6 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F500DEAE34F8FE969184015E1C367A58 /* EXTask.m in Sources */,
-				D2455AAF10DB3010A70A347F80EB5642 /* EXTaskExecutionRequest.m in Sources */,
-				DEEB86A9310BB31098DBBEECBAE9A2EF /* EXTaskManager-dummy.m in Sources */,
-				B9D653C063F0B0A06A75FBB5623518B0 /* EXTaskManager.m in Sources */,
-				965D8B423A9665CBF9BED83E039E722E /* EXTaskManagerAppDelegate.m in Sources */,
-				B4E52390084FF66E6C1695B1248B539B /* EXTaskService.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		17105C706D847D798051977EBEB6D082 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -29253,7 +29248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C056F48D040AAA3C9B63366877633FA1 /* EXSQLite-dummy.m in Sources */,
-				BBC4290D211551FE0C3DBC26631A65BD /* EXSQLite.m in Sources */,
+				495A89B787123FC1D669F76335414B8A /* EXSQLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -30523,6 +30518,19 @@
 				023467260D5B5E73049FC07CC8259364 /* FBSDKLoginTooltipView.m in Sources */,
 				DB1EB9AB7FFBC4A07DC229783D0CF9AA /* FBSDKLoginUtility.m in Sources */,
 				40EB4A1C7EAB10F2FDB137EA0D7031C3 /* FBSDKTooltipView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CB1BB273B03B0ADAC039DA4579B6BEF7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2B57F222F3873F8B3E0CD0C45AFDCBD /* EXTask.m in Sources */,
+				C8DCD110F00626FDD71A9BA6CFFCE434 /* EXTaskExecutionRequest.m in Sources */,
+				2E1C77D076CC42922B3ED5FD199E4889 /* EXTaskManager-dummy.m in Sources */,
+				9CB9F1C144055F621D92C14B8771A8D1 /* EXTaskManager.m in Sources */,
+				3FA42F8327CFEB0B9CD1CD9C782B4926 /* EXTaskManagerAppDelegate.m in Sources */,
+				080BA0EF0FDE21AF4660EBDF95957F33 /* EXTaskService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32700,6 +32708,12 @@
 			target = 4C7D5179C285B842143F0498B457706C /* UMCore */;
 			targetProxy = AD1C7CDC7ED37A4D31E79B7D08868393 /* PBXContainerItemProxy */;
 		};
+		6FB62707D11F1DFA9D1048C31C566792 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			target = 4C7D5179C285B842143F0498B457706C /* UMCore */;
+			targetProxy = D3AA99AE3C226152FF754D0779DB02F6 /* PBXContainerItemProxy */;
+		};
 		6FDEDE22474FCF8D9457A508FC9ED904 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI32_0_0EXSegment;
@@ -32891,6 +32905,12 @@
 			name = ABI31_0_0EXCore;
 			target = 5C9617F9F9DDB73B744693D80CC350EA /* ABI31_0_0EXCore */;
 			targetProxy = AD892EAFAA28610194B47F8A6E2141AB /* PBXContainerItemProxy */;
+		};
+		86FD4581EE4E98E92CB85A19B85412CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EXAppLoaderProvider;
+			target = F42432668A0F81BE898F1FEA0D6A83B7 /* EXAppLoaderProvider */;
+			targetProxy = DA039EFDAF7F1221B241A280AC0A4D9C /* PBXContainerItemProxy */;
 		};
 		87A03C2F1528A2CCCB03AA21C8E3EBDD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -33654,12 +33674,6 @@
 			target = DE2FB6458E695ECEA9F3DCD67251445E /* Bolts */;
 			targetProxy = E896AF5238AAB8EDF4C2A7B51C0CCFA0 /* PBXContainerItemProxy */;
 		};
-		F6B2ED5FDB97D68482389D10FFB6D737 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			target = 4C7D5179C285B842143F0498B457706C /* UMCore */;
-			targetProxy = E2BCD2826EDBD49C2C111F91E0370B80 /* PBXContainerItemProxy */;
-		};
 		F97D1BD4C85050E1B243A79458F79CBB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI31_0_0EXConstants;
@@ -33705,7 +33719,7 @@
 		FEA14D6B341983516DBC343F8BE8AFD0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = EXTaskManager;
-			target = B40154FBF732357225EACF56CEE082C5 /* EXTaskManager */;
+			target = DFA0FCB1C8B43055924B06FE076CA35B /* EXTaskManager */;
 			targetProxy = 6139C10720CA42726D274D9B50578526 /* PBXContainerItemProxy */;
 		};
 		FEC27CDECF3FC1B1994D3A5B490304E3 /* PBXTargetDependency */ = {
@@ -35121,6 +35135,31 @@
 			};
 			name = Debug;
 		};
+		3C03556167E12B6F9750702BB73A11A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A67CFF9A0408CA29CB72537A7334117 /* EXTaskManager.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXTaskManager/EXTaskManager-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXTaskManager;
+				PRODUCT_NAME = EXTaskManager;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		3E06C4C531DBA23A949A53DE85DCE5D9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AC9905F33AD566667408CFE72BF999D8 /* EXDocumentPicker.xcconfig */;
@@ -35485,31 +35524,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		5241B576C1AA79E54ABF8423A59F1ED1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2A67CFF9A0408CA29CB72537A7334117 /* EXTaskManager.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXTaskManager/EXTaskManager-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXTaskManager;
-				PRODUCT_NAME = EXTaskManager;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		53AA5483A207C4F0DD75580DDF2EE216 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -37046,6 +37060,30 @@
 			};
 			name = Release;
 		};
+		94CD0128E6D40649FEEC65BF751052DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A67CFF9A0408CA29CB72537A7334117 /* EXTaskManager.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXTaskManager/EXTaskManager-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXTaskManager;
+				PRODUCT_NAME = EXTaskManager;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		9657CD97A42512EFB1C9AD41B1B1F128 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E77958100A15E6B22113D28B0CCB5CF4 /* glog.xcconfig */;
@@ -38449,30 +38487,6 @@
 			};
 			name = Release;
 		};
-		CAF8A23B3B73AC3E370631F682452375 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2A67CFF9A0408CA29CB72537A7334117 /* EXTaskManager.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXTaskManager/EXTaskManager-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXTaskManager;
-				PRODUCT_NAME = EXTaskManager;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		CB3882A0D16D8154C98459E9BF5469CB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AB927953698E8B729DC3739B387AFF95 /* EXBackgroundFetch.xcconfig */;
@@ -39422,7 +39436,7 @@
 		};
 		F28A11ACC15FD4BDD89498EC2CB4C9D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27002E82FDA27D5F38C6829B96D17E05 /* EXSQLite.xcconfig */;
+			baseConfigurationReference = 701E53B1C350E6CD2A2C2135049F8701 /* EXSQLite.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -39469,7 +39483,7 @@
 		};
 		F51F318ED2DF9960CBAD8CC8B9CE9662 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27002E82FDA27D5F38C6829B96D17E05 /* EXSQLite.xcconfig */;
+			baseConfigurationReference = 701E53B1C350E6CD2A2C2135049F8701 /* EXSQLite.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -40216,6 +40230,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		693F9F2EBCCA7E2A4E9811785E7BFDA9 /* Build configuration list for PBXNativeTarget "EXTaskManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				94CD0128E6D40649FEEC65BF751052DE /* Debug */,
+				3C03556167E12B6F9750702BB73A11A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6AA57DB3AB5DBE0F12DAA9ABC9C9153B /* Build configuration list for PBXNativeTarget "ABI31_0_0EXLocation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -40329,15 +40352,6 @@
 			buildConfigurations = (
 				CC5F80EDF74B3CC06BEA2F91A84CBE58 /* Debug */,
 				92B3254B9F422D1A6EBE2B5D44A2050A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		7DC9BEC088FABE8295C72A248D04E22C /* Build configuration list for PBXNativeTarget "EXTaskManager" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CAF8A23B3B73AC3E370631F682452375 /* Debug */,
-				5241B576C1AA79E54ABF8423A59F1ED1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -6,6 +6,7 @@ const shell = require('gulp-shell');
 const argv = require('minimist')(process.argv.slice(2));
 const { Modules } = require('xdl');
 const chalk = require('chalk');
+const fs = require('fs-extra');
 
 const { saveKernelBundlesAsync } = require('./bundle-tasks');
 const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
@@ -15,6 +16,7 @@ const {
   versionReactNativeIOSFilesAsync,
 } = require('./ios-tasks');
 const updateVendoredNativeModule = require('./update-vendored-native-module');
+const outdatedVendoredNativeModules = require('./outdated-vendored-native-modules');
 const AndroidExpolib = require('./android-versioning/android-expolib');
 const androidVersionLibraries = require('./android-versioning/android-version-libraries');
 const { publishPackagesAsync } = require('./publish-packages');
@@ -119,6 +121,12 @@ gulp.task('ios-remove-version', removeVersionWithArguments);
 gulp.task('ios-version-files', versionIOSFilesWithArguments);
 
 // Update external dependencies
+gulp.task('outdated-native-dependencies', async () => {
+  const bundledNativeModules = JSON.parse(await fs.readFile('../packages/expo/bundledNativeModules.json', 'utf8'));
+  const isModuleLinked = async packageName => await fs.pathExists(`../packages/${packageName}/package.json`);
+  return await outdatedVendoredNativeModules({ bundledNativeModules, isModuleLinked });
+});
+
 gulp.task('update-react-native-svg', () => {
   return updateVendoredNativeModule({
     argv,
@@ -188,7 +196,7 @@ gulp.task('update-react-native-maps', async () => {
     await updateVendoredNativeModule({
       argv,
       name: 'react-native-google-maps',
-      repoUrl: 'https://github.com/expo/react-native-maps.git',
+      repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
       sourceIosPath: 'lib/ios/AirGoogleMaps',
       targetIosPath: 'Api/Components/GoogleMaps',
       sourceAndroidPath: '',
@@ -201,7 +209,7 @@ gulp.task('update-react-native-maps', async () => {
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-maps',
-    repoUrl: 'https://github.com/expo/react-native-maps.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
     sourceIosPath: 'lib/ios/AirMaps',
     sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
     targetIosPath: 'Api/Components/Maps',
@@ -212,11 +220,27 @@ gulp.task('update-react-native-maps', async () => {
   });
 });
 
+gulp.task('update-react-native-view-shot', () => {
+  console.warn('Heads up, iOS uses EX- instead of RN- symbol prefix');
+  return updateVendoredNativeModule({
+    argv,
+    skipCleanup: true,
+    name: 'react-native-view-shot',
+    repoUrl: 'https://github.com/gre/react-native-view-shot.git',
+    sourceIosPath: 'ios',
+    sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
+    targetIosPath: 'Api',
+    targetAndroidPath: 'modules/api/viewshot',
+    sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.viewshot',
+  });
+});
+
 gulp.task('update-react-native-lottie', () => {
   return updateVendoredNativeModule({
     argv,
     name: 'lottie-react-native',
-    repoUrl: 'https://github.com/expo/lottie-react-native.git',
+    repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
     sourceIosPath: 'src/ios/LottieReactNative',
     iosPrefix: 'LRN',
     sourceAndroidPath:

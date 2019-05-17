@@ -1,5 +1,5 @@
 import React from 'react';
-import { LinearGradient, takeSnapshotAsync } from 'expo';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   View,
   Text,
@@ -9,6 +9,10 @@ import {
   Dimensions,
 } from 'react-native';
 import { captureScreen } from 'react-native-view-shot';
+import { captureRef as takeSnapshotAsync } from 'react-native-view-shot';
+
+import * as MediaLibrary from 'expo-media-library';
+import * as Permissions from 'expo-permissions';
 
 import { Platform } from '@unimodules/core';
 import Button from '../components/Button';
@@ -67,6 +71,21 @@ export default class ViewShotScreen extends React.Component<{}, State> {
     this.setState({ screenUri: uri });
   }
 
+  handleAddToMediaLibraryPress = async () => {
+    const uri = this.state.screenUri;
+
+    if (uri) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+      if (status === 'granted') {
+        await MediaLibrary.createAssetAsync(uri);
+        alert('Successfully added captured screen to media library');
+      } else {
+        alert('Camera roll permissions not granted');
+      }
+    }
+  }
+
   render() {
     const imageSource = { uri: this.state.image };
     return (
@@ -104,6 +123,12 @@ export default class ViewShotScreen extends React.Component<{}, State> {
             borderWidth: 10,
           }}
           source={{ uri: this.state.screenUri }}
+        />
+        <Button
+          style={styles.button}
+          disabled={!this.state.screenUri}
+          onPress={this.handleAddToMediaLibraryPress}
+          title="Add to media library"
         />
       </ScrollView>
     );

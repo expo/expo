@@ -20,6 +20,7 @@
     "lodash": "^4.1.2",
     "minimist": "^1.2.0",
     "nullthrows": "^1.0.0",
+    "semver": "^5.7.0",
     "shelljs": "^0.7.0",
     "tmp": "^0.0.33",
     "xdl": "53.5.5-alpha.0",

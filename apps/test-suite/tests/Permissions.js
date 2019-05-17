@@ -1,6 +1,6 @@
 'use strict';
 
-import { Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 import { Platform } from 'react-native';
 
 export const name = 'Permissions';

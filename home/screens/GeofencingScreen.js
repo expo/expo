@@ -1,7 +1,11 @@
+import { Notifications } from 'expo';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { NavigationEvents } from 'react-navigation';
 import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
-import { Location, MapView, Permissions, Notifications, TaskManager } from 'expo';
+import MapView from 'react-native-maps';
+import { NavigationEvents } from 'react-navigation';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../components/PrimaryButton';
