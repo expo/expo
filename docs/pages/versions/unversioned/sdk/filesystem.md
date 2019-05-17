@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { FileSystem } from 'expo';
-
-// in bare apps:
 import * as FileSystem from 'expo-file-system';
 ```
 

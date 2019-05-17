@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## Usage
 
 ```js
-// in managed apps:
-import { AppAuth } from 'expo';
-
-// in bare apps:
 import * as AppAuth from 'expo-app-auth';
 ```
 
@@ -409,4 +405,3 @@ async function signOutAsync({ accessToken }) {
   }
 }
 ```
-

@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { SMS } from 'expo';
-
-// in bare apps:
 import * as SMS from 'expo-sms';
 ```
 
@@ -43,9 +39,9 @@ Opens the default UI/app for sending SMS messages with prefilled addresses and m
 
 #### Arguments
 
--  **addresses (_Array\<string\>|string_)** -- An array of addresses (_phone numbers_) or single address passed as strings. Those would appear as recipients of the prepared message.
+- **addresses (_Array\<string\>|string_)** -- An array of addresses (_phone numbers_) or single address passed as strings. Those would appear as recipients of the prepared message.
 
--  **message (_string_)** -- Message to be sent
+- **message (_string_)** -- Message to be sent
 
 #### Returns
 
@@ -59,10 +55,11 @@ Android does not provide information about the status of the SMS message, so on 
 
 **_Note_**: The only feedback collected by this module is whether any message has been sent. That means we do not check actual content of message nor recipients list.
 
-
 #### Example
 
 ```javascript
-const { result } = await SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
+const { result } = await SMS.sendSMSAsync(
+  ['0123456789', '9876543210'],
+  'My sample HelloWorld message'
+);
 ```
-

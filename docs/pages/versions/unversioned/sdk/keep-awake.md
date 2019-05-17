@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## Usage
 
 ```js
-// in managed apps:
-import { KeepAwake } from 'expo';
-
-// in bare apps:
 import KeepAwake from 'expo-keep-awake';
 ```
 
@@ -23,7 +19,7 @@ import KeepAwake from 'expo-keep-awake';
 ```javascript
 import React from 'react';
 import { Text, View } from 'react-native';
-import { KeepAwake } from 'expo';
+import KeepAwake from 'expo-keep-awake';
 
 export default class KeepAwakeExample extends React.Component {
   render() {

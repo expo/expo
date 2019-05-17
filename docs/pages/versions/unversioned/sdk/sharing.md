@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Sharing } from 'expo';
-
-// in bare apps:
 import * as Sharing from 'expo-sharing';
 ```
 
@@ -24,11 +20,11 @@ Opens action sheet to share file to different applications which can handle this
 
 #### Arguments
 
--   **url (_string_)** -- Local file URL to share.
--   **options (_object_)** --
+- **url (_string_)** -- Local file URL to share.
+- **options (_object_)** --
 
-      A map of options:
-    -   **mimeType (_string_)** -- sets `mimeType` for `Intent` (**Android only**)
-    -   **dialogTitle (_string_)** -- sets share dialog title (**Android and Web only**)
-    -   **UTI (_string_)** -- ([Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)) the type of the target file (**iOS only**)
+  A map of options:
 
+  - **mimeType (_string_)** -- sets `mimeType` for `Intent` (**Android only**)
+  - **dialogTitle (_string_)** -- sets share dialog title (**Android and Web only**)
+  - **UTI (_string_)** -- ([Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)) the type of the target file (**iOS only**)
