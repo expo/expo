@@ -1,4 +1,5 @@
-import { Amplitude, Constants } from 'expo';
+import Constants from 'expo-constants';
+import * as Amplitude from 'expo-analytics-amplitude';
 
 import { TrackingOptions, normalizeTrackingOptions } from './AnalyticsUtils';
 import Environment from '../utils/Environment';

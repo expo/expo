@@ -1,6 +1,4 @@
-/* @flow */
-
-import { Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 // TODO(@skevy): weird formatting here...see https://github.com/jlongster/prettier/issues/700
 export default (async function requestCameraPermissionsAsync() {

@@ -7050,7 +7050,7 @@ expo-asset@~4.0.0:
     path-browserify "^1.0.0"
     url-parse "^1.4.4"
 
-expo-cli@^2.13.0:
+expo-cli@^2.13.0, expo-cli@^2.17.3:
   version "2.17.3"
   resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-2.17.3.tgz#1d4fb88415f0a14726fb78f240d45b04761282b0"
   integrity sha512-UnKDkeLkRHeI0J2/ZhLKqdZznsjbR05ddNekhn9z3kD+CvFpDjDxRij7xZ1Yb+Goeoq2MplK385TiASMpsyWCg==
