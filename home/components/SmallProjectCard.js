@@ -28,6 +28,7 @@ export default class SmallProjectCard extends React.PureComponent {
       hideUsername,
       likeCount,
       projectName,
+      platform,
       projectUrl,
       username,
       privacy,
@@ -50,9 +51,15 @@ export default class SmallProjectCard extends React.PureComponent {
         <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
           <View style={styles.projectNameContainer}>
             <View style={{ flex: 1, flexGrow: 4 }}>
-              <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-                {projectName}
-              </Text>
+              { platform ?
+                <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                  [{platform}]{projectName}
+                </Text> 
+              : 
+                <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                  {projectName}
+                </Text>
+              } 
             </View>
             {releaseChannel && releaseChannel !== 'default' ? (
               <View style={{ flex: 1, flexGrow: 2 }}>
