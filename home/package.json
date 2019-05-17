@@ -44,9 +44,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "hashids": "^1.1.1",
     "jest-expo": "^32.0.0",
-    "node-fetch": "^2.0.0",
     "uuid": "^3.0.1"
   }
 }
