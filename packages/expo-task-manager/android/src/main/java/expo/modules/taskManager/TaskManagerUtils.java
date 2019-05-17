@@ -123,11 +123,15 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
         // Add the task to the list of rescheduled tasks.
         sTasksReschedulingJob.add(task);
 
-        // Cancel jobs with the same ID to let them be rescheduled.
-        jobScheduler.cancel(jobId);
+        try {
+          // Cancel jobs with the same ID to let them be rescheduled.
+          jobScheduler.cancel(jobId);
 
-        // Reschedule job for given task.
-        jobScheduler.schedule(mergedJobInfo);
+          // Reschedule job for given task.
+          jobScheduler.schedule(mergedJobInfo);
+        } catch (IllegalStateException e) {
+          Log.e(this.getClass().getName(), "Unable to reschedule a job: " + e.getMessage());
+        }
         return;
       }
       if (newJobId == jobId) {
@@ -135,9 +139,13 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
       }
     }
 
-    // Given task doesn't have any pending jobs yet, create a new JobInfo and schedule it then.
-    JobInfo jobInfo = createJobInfo(context, task, newJobId, data);
-    jobScheduler.schedule(jobInfo);
+    try {
+      // Given task doesn't have any pending jobs yet, create a new JobInfo and schedule it then.
+      JobInfo jobInfo = createJobInfo(context, task, newJobId, data);
+      jobScheduler.schedule(jobInfo);
+    } catch (IllegalStateException e) {
+      Log.e(this.getClass().getName(), "Unable to schedule a new job: " + e.getMessage());
+    }
   }
 
   private JobInfo createJobInfoByAddingData(JobInfo jobInfo, List<PersistableBundle> data) {
