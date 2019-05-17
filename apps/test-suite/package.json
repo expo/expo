@@ -22,7 +22,7 @@
     "expo-ads-admob": "^5.0.0-rc.0",
     "expo-ads-facebook": "^5.0.0-rc.0",
     "expo-analytics-segment": "^5.0.0-rc.0",
-    "expo-asset": "^4.0.0",
+    "expo-asset": "^5.0.0-rc.0",
     "expo-av": "^5.0.0-rc.0",
     "expo-barcode-scanner": "^5.0.0-rc.0",
     "expo-brightness": "^5.0.0-rc.0",
