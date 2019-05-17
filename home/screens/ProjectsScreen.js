@@ -2,6 +2,8 @@
  * @flow
  */
 
+import Constants from 'expo-constants';
+import _ from 'lodash';
 import React from 'react';
 import {
   AppState,
@@ -16,9 +18,7 @@ import {
   View,
 } from 'react-native';
 import { ScrollView, withNavigationFocus, withNavigation } from 'react-navigation';
-import { Constants } from 'expo';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Environment from '../utils/Environment';
