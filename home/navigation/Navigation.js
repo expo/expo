@@ -1,16 +1,14 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import {
   createAppContainer,
   createStackNavigator,
-  createSwitchNavigator,
   createBottomTabNavigator,
 } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
