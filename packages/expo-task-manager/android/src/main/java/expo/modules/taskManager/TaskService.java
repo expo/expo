@@ -320,9 +320,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
 
-    // remove job ID from pending jobs
-    TaskManagerUtils.removeFromPendingJobs(params.getJobId());
-
     if (consumer == null) {
       Log.w(TAG, "Task or consumer not found.");
       return false;
@@ -346,19 +343,26 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     String appId = extras.getString("appId");
     String taskName = extras.getString("taskName");
 
-    TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
+    TaskInterface task = getTask(taskName, appId);
 
-    // remove job ID from pending jobs
-    TaskManagerUtils.removeFromPendingJobs(params.getJobId());
+    // `notifyTaskJobCancelled` notifies TaskManagerUtils about a job for task being cancelled.
+    // It returns `true` if the job has been intentionally cancelled to be rescheduled,
+    // in that case we don't want to inform the consumer about cancellation.
+    if (task != null && !TaskManagerUtils.notifyTaskJobCancelled(task)) {
+      TaskConsumerInterface consumer = task.getConsumer();
 
-    if (consumer == null) {
-      return false;
+      if (consumer == null) {
+        return false;
+      }
+
+      Log.i(TAG, "Job for task '" + taskName + "' has been cancelled by the system.");
+
+      // cancels task
+      return consumer.didCancelJob(jobService, params);
     }
 
-    Log.i(TAG, "Job for task '" + taskName + "' has been cancelled by the system.");
-
-    // cancels task
-    return consumer.didCancelJob(jobService, params);
+    // `false` = don't reschedule the job.
+    return false;
   }
 
   public void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback) {
@@ -546,7 +550,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
             } else {
               Log.w(TAG, "Task consumer '" + consumerClassString + "' has version '" + currentConsumerVersion + "' that is not compatible with the saved version '" + previousConsumerVersion + "'.");
             }
-          } catch (ClassNotFoundException e) {
+          } catch (ClassNotFoundException | NullPointerException e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
             // nothing, just skip it.
