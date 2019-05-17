@@ -29,7 +29,6 @@
     "expo-blur": "^5.0.0-rc.0",
     "expo-calendar": "^5.0.0-rc.0",
     "expo-camera": "^5.0.0-rc.0",
-    "expo-cli": "^2.13.0",
     "expo-constants": "^5.0.0-rc.0",
     "expo-contacts": "^5.0.0-rc.0",
     "expo-document-picker": "^5.0.0-rc.0",
