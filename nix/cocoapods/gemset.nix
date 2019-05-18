@@ -42,35 +42,29 @@
   };
   cocoapods = {
     dependencies = ["activesupport" "claide" "cocoapods-core" "cocoapods-deintegrate" "cocoapods-downloader" "cocoapods-plugins" "cocoapods-search" "cocoapods-stats" "cocoapods-trunk" "cocoapods-try" "colored2" "escape" "fourflusher" "gh_inspector" "molinillo" "nap" "ruby-macho" "xcodeproj"];
-    groups = ["default"];
-    platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0x5cz19p0j9k1hvn35lxnv3dn8i65n4qvi5nzjaf53pdgh52401h";
+      sha256 = "1f2xdcar9yk3x4v18pjh3rnn489h252wh3llxx39ig18pcijwzmg";
       type = "gem";
     };
-    version = "1.5.3";
+    version = "1.6.2";
   };
   cocoapods-core = {
     dependencies = ["activesupport" "fuzzy_match" "nap"];
-    groups = ["default"];
-    platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0xnxcd2xnvf60f8w27glq5jcn9wdhzch9nkdb24ihhmpxfgj3f39";
+      sha256 = "052fwscc9k3pvka6y8c2mh8i7wm6a6jk44b236krj33jyzk0z2vw";
       type = "gem";
     };
-    version = "1.5.3";
+    version = "1.6.2";
   };
   cocoapods-deintegrate = {
-    groups = ["default"];
-    platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0m3hi4va9cr7anxkjf44as14j1hsrvw00bzvz7c906hyb8qcm4fp";
+      sha256 = "0bf524f1za92i6rlr4cr6jm3c4vfjszsdc9lsr6wk5125c76ipzn";
       type = "gem";
     };
-    version = "1.0.3";
+    version = "1.0.4";
   };
   cocoapods-downloader = {
     groups = ["default"];
@@ -165,14 +159,12 @@
     version = "0.0.4";
   };
   fourflusher = {
-    groups = ["default"];
-    platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "1dzmkxyzrk475c1yk5zddwhhj28b6fnj4jkk1h5gr1c2mrar72d5";
+      sha256 = "1d2ksz077likjv8dcxy1rnqcjallbfa7yk2wvix3228gq7a4jkq3";
       type = "gem";
     };
-    version = "2.0.1";
+    version = "2.2.0";
   };
   fuzzy_match = {
     groups = ["default"];
@@ -288,13 +280,11 @@
   };
   xcodeproj = {
     dependencies = ["CFPropertyList" "atomos" "claide" "colored2" "nanaimo"];
-    groups = ["default"];
-    platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "13z3109lwq632vhazndqjlccpwadljg58sflbyl0m57j9d4blv2y";
+      sha256 = "0qhanxa4zbirbdq6skdpg7hvx1vivwy1i5x22c3xkdb7pykh7dm7";
       type = "gem";
     };
-    version = "1.8.1";
+    version = "1.9.0";
   };
 }
