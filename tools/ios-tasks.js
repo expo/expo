@@ -792,6 +792,7 @@ exports.addVersionAsync = async function addVersionAsync(
       `cp -R ${rootPath}/${RELATIVE_RN_PATH}/Libraries ${newVersionPath}/Libraries`,
       `cp ${rootPath}/${RELATIVE_RN_PATH}/React.podspec ${newVersionPath}/.`,
       `cp ${rootPath}/${RELATIVE_RN_PATH}/package.json ${newVersionPath}/.`,
+      `find ${newVersionPath} -name '*.js' -type f -delete`,
     ].join(' && ')
   );
 
@@ -1005,6 +1006,9 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/\\([^A-Za-z0-9_+]\\)ART/\\1${versionPrefix}ART/g`,
     },
     {
+      pattern: `s/ENABLE_PACKAGER_CONNECTION/${versionPrefix}ENABLE_PACKAGER_CONNECTION/g`,
+    },
+    {
       paths: 'Components',
       pattern: `s/\\([^A-Za-z0-9_+]\\)SM/\\1${versionPrefix}SM/g`,
     },
@@ -1015,6 +1019,10 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     {
       paths: 'Core/Api',
       pattern: `s/^RN/${versionPrefix}RN/g`,
+    },
+    {
+      paths: 'Core/Api',
+      pattern: `s/HAVE_GOOGLE_MAPS/${versionPrefix}HAVE_GOOGLE_MAPS/g`,
     },
     {
       paths: 'Core/Api',
