@@ -5,13 +5,14 @@
 #import "ABI32_0_0EXNativeAdEmitter.h"
 #import "ABI32_0_0EXUtil.h"
 
-#import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <ReactABI32_0_0/ABI32_0_0RCTUtils.h>
 #import <ReactABI32_0_0/ABI32_0_0RCTAssert.h>
 #import <ReactABI32_0_0/ABI32_0_0RCTBridge.h>
 #import <ReactABI32_0_0/ABI32_0_0RCTConvert.h>
 #import <ReactABI32_0_0/ABI32_0_0RCTUIManager.h>
 #import <ReactABI32_0_0/ABI32_0_0RCTBridgeModule.h>
+
+@import FBAudienceNetwork;
 
 @implementation ABI32_0_0RCTConvert (ABI32_0_0EXNativeAdView)
 

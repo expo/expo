@@ -1,7 +1,8 @@
 #import "ABI31_0_0EXNativeAdView.h"
 #import "ABI31_0_0EXUtil.h"
-#import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <ReactABI31_0_0/ABI31_0_0RCTUtils.h>
+
+@import FBAudienceNetwork;
 
 @interface ABI31_0_0EXNativeAdView ()
 
