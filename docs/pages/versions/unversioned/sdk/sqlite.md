@@ -13,10 +13,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { SQLite } from 'expo';
-
-// in bare apps:
 import { SQLite } from 'expo-sqlite';
 ```
 
@@ -26,9 +22,9 @@ Open a database, creating it if it doesn't exist, and return a `Database` object
 
 #### Arguments
 
--   **name (_string_)** -- Name of the database file to open.
+- **name (_string_)** -- Name of the database file to open.
 
-  The `version`, `description` and `size` arguments are ignored, but are accepted by the function for compatibility with the WebSQL specification.
+The `version`, `description` and `size` arguments are ignored, but are accepted by the function for compatibility with the WebSQL specification.
 
 #### Returns
 
@@ -38,30 +34,30 @@ Returns a `Database` object, described below.
 
 `Database` objects are returned by calls to `SQLite.openDatabase()`. Such an object represents a connection to a database on your device. They support one method:
 
--   `db.transaction(callback, error, success)`
+- `db.transaction(callback, error, success)`
 
-    Execute a database transaction.
+  Execute a database transaction.
 
-    #### Parameters
+  #### Parameters
 
-    -   **callback (_function_)** -- A function representing the transaction to perform. Takes a `Transaction` (see below) as its only parameter, on which it can add SQL statements to execute.
-    -   **error (_function_)** -- Called if an error occured processing this transaction. Takes a single parameter describing the error.
-    -   **success (_function_)** -- Called when the transaction has completed executing on the database.
+  - **callback (_function_)** -- A function representing the transaction to perform. Takes a `Transaction` (see below) as its only parameter, on which it can add SQL statements to execute.
+  - **error (_function_)** -- Called if an error occured processing this transaction. Takes a single parameter describing the error.
+  - **success (_function_)** -- Called when the transaction has completed executing on the database.
 
 ### `Transaction` objects
 
 A `Transaction` object is passed in as a parameter to the `callback` parameter for the `db.transaction()` method on a `Database` (see above). It allows enqueuing SQL statements to perform in a database transaction. It supports one method:
 
--   `tx.executeSql(sqlStatement, arguments, success, error)`
+- `tx.executeSql(sqlStatement, arguments, success, error)`
 
-    Enqueue a SQL statement to execute in the transaction. Authors are strongly recommended to make use of the `?` placeholder feature of the method to avoid against SQL injection attacks, and to never construct SQL statements on the fly.
+  Enqueue a SQL statement to execute in the transaction. Authors are strongly recommended to make use of the `?` placeholder feature of the method to avoid against SQL injection attacks, and to never construct SQL statements on the fly.
 
-    #### Parameters
+  #### Parameters
 
-    -   **sqlStatement (_string_)** -- A string containing a database query to execute expressed as SQL. The string may contain `?` placeholders, with values to be substituted listed in the `arguments` parameter.
-    -   **arguments (_array_)** -- An array of values (numbers or strings) to substitute for `?` placeholders in the SQL statement.
-    -   **success (_function_)** -- Called when the query is successfully completed during the transaction. Takes two parameters: the transaction itself, and a `ResultSet` object (see below) with the results of the query.
-    -   **error (_function_)** -- Called if an error occured executing this particular query in the transaction. Takes two parameters: the transaction itself, and the error object.
+  - **sqlStatement (_string_)** -- A string containing a database query to execute expressed as SQL. The string may contain `?` placeholders, with values to be substituted listed in the `arguments` parameter.
+  - **arguments (_array_)** -- An array of values (numbers or strings) to substitute for `?` placeholders in the SQL statement.
+  - **success (_function_)** -- Called when the query is successfully completed during the transaction. Takes two parameters: the transaction itself, and a `ResultSet` object (see below) with the results of the query.
+  - **error (_function_)** -- Called if an error occured executing this particular query in the transaction. Takes two parameters: the transaction itself, and the error object.
 
 ### `ResultSet` objects
 
@@ -79,26 +75,24 @@ A `Transaction` object is passed in as a parameter to the `callback` parameter f
 }
 ```
 
--   **insertId (_number_)** -- The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
+- **insertId (_number_)** -- The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
 
--   **rowsAffected (_number_)** -- The number of rows that were changed by the SQL statement.
+- **rowsAffected (_number_)** -- The number of rows that were changed by the SQL statement.
 
--   **rows.length (_number_)** -- The number of rows returned by the query.
+- **rows.length (_number_)** -- The number of rows returned by the query.
 
--   **rows.item (_function_)** -- `rows.item(index)` returns the row with the given `index`. If there is no such row, returns `null`.
+- **rows.item (_function_)** -- `rows.item(index)` returns the row with the given `index`. If there is no such row, returns `null`.
 
--   **rows._array (_number_)** -- The actual array of rows returned by the query. Can be used directly instead of getting rows through `rows.item()`.
+- **rows._array (\_number_)** -- The actual array of rows returned by the query. Can be used directly instead of getting rows through `rows.item()`.
 
 ## Executing statements outside of a transaction
 
-  > Please note that you should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions (like eg. `PRAGMA foreign_keys = ON;`).
+> Please note that you should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions (like eg. `PRAGMA foreign_keys = ON;`).
 
-  ```js
-  const db = SQLite.openDatabase('dbName', version);
+```js
+const db = SQLite.openDatabase('dbName', version);
 
-  db.exec(
-    [{ sql: 'PRAGMA foreign_keys = ON;', args: [] }],
-    false,
-    () => console.log('Foreign keys turned on'),
-  );
-  ```
+db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
+  console.log('Foreign keys turned on')
+);
+```

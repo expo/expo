@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Accelerometer } from 'expo';
-
-// in bare apps:
 import { Accelerometer } from 'expo-sensors';
 ```
 
@@ -85,14 +81,12 @@ export default class AccelerometerSensor extends React.Component {
 
   _slow = () => {
     /* @info Request updates every 1000ms */ Accelerometer.setUpdateInterval(1000); /* @end */
-
   };
 
   _fast = () => {
     /* @info Request updates every 16ms, which is approximately equal to every frame at 60 frames per second */ Accelerometer.setUpdateInterval(
       16
     ); /* @end */
-
   };
 
   _subscribe = () => {
@@ -101,11 +95,11 @@ export default class AccelerometerSensor extends React.Component {
         this.setState({ accelerometerData });
       }
     ); /* @end */
-
   };
 
   _unsubscribe = () => {
-    /* @info Be sure to unsubscribe from events when the component is unmounted */ this._subscription && this._subscription.remove(); /* @end */
+    /* @info Be sure to unsubscribe from events when the component is unmounted */ this
+      ._subscription && this._subscription.remove(); /* @end */
 
     this._subscription = null;
   };
@@ -116,7 +110,6 @@ export default class AccelerometerSensor extends React.Component {
       y,
       z,
     } = this.state.accelerometerData; /* @end */
-
 
     return (
       <View style={styles.sensor}>

@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { GLView } from 'expo';
-
-// in bare apps:
 import { GLView } from 'expo-gl';
 ```
 
@@ -54,7 +50,7 @@ Destroys given context.
 
 #### Arguments
 
--   **gl (_object_)** -- WebGL context to destroy.
+- **gl (_object_)** -- WebGL context to destroy.
 
 #### Returns
 
@@ -66,13 +62,13 @@ Takes a snapshot of the framebuffer and saves it as a file to app's cache direct
 
 #### Arguments
 
--   **gl (_object_)** -- WebGL context to take a snapshot from.
--   **options (_object_)** -- A map of options:
-    -   **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view or the current framebuffer if context is headless.
-    -   **rect (`{ x: number, y: number, width: number, height: number }`)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
-    -   **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
-    -   **format (_string_)** -- Either `'jpeg'` or `'png'`. Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
-    -   **compress (_number_)** -- A value in range 0 - 1 specifying compression level of the result image. 1 means no compression and 0 the highest compression. Defaults to `1.0`.
+- **gl (_object_)** -- WebGL context to take a snapshot from.
+- **options (_object_)** -- A map of options:
+  - **framebuffer (_WebGLFramebuffer_)** -- Specify the framebuffer that we will be reading from. Defaults to underlying framebuffer that is presented in the view or the current framebuffer if context is headless.
+  - **rect (`{ x: number, y: number, width: number, height: number }`)** -- Rect to crop the snapshot. It's passed directly to `glReadPixels`.
+  - **flip (_boolean_)** -- Whether to flip the snapshot vertically. Defaults to `false`.
+  - **format (_string_)** -- Either `'jpeg'` or `'png'`. Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
+  - **compress (_number_)** -- A value in range 0 - 1 specifying compression level of the result image. 1 means no compression and 0 the highest compression. Defaults to `1.0`.
 
 #### Returns
 
@@ -120,4 +116,5 @@ The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/do
 For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
 
 ## Remote Debugging & GLView
+
 This API does not function as intended with remote debugging enabled. The React Native debugger runs Javascript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).

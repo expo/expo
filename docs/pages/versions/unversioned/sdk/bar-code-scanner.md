@@ -33,7 +33,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 | upc_ean         | No    | Yes     |
 | qr              | Yes   | Yes     |
 
-* sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
+- sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
 
 ## Usage
 
@@ -42,7 +42,9 @@ You must request permission to access the user's camera before attempting to get
 ```javascript
 import * as React from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
-import { Constants, Permissions, BarCodeScanner } from 'expo';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default class BarcodeScannerExample extends React.Component {
   state = {
@@ -71,10 +73,7 @@ export default class BarcodeScannerExample extends React.Component {
           style={StyleSheet.absoluteFillObject}
         />
         {scanned && (
-          <Button
-            title={'Tap to Scan Again'}
-            onPress={() => this.setState({ scanned: false })}
-          />
+          <Button title={'Tap to Scan Again'} onPress={() => this.setState({ scanned: false })} />
         )}
       </View>
     );
@@ -86,9 +85,10 @@ export default class BarcodeScannerExample extends React.Component {
   };
 }
 ```
->Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
 
-[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example). 
+> Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
+
+[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example).
 
 ## API
 
@@ -116,11 +116,10 @@ Scan bar codes from the image given by the URL.
 
 #### Arguments
 
--   **url (_string_)** -- URL to get the image from.
--   **barCodeTypes (_Array\<BarCodeScanner.Constants.BarCodeType\>_)** -- (as in prop) An array of bar code types. Default: all supported bar code types.
-> Note: Only QR codes are supported on iOS.
+- **url (_string_)** -- URL to get the image from.
+- **barCodeTypes (_Array\<BarCodeScanner.Constants.BarCodeType\>_)** -- (as in prop) An array of bar code types. Default: all supported bar code types.
+  > Note: Only QR codes are supported on iOS.
 
 #### Returns
 
 A possibly empty array of objects of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code.
-

@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Speech } from 'expo';
-
-// in bare apps:
 import * as Speech from 'expo-speech';
 ```
 
@@ -24,18 +20,19 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 
 #### Arguments
 
--   **text (_string_)** -- The text to be spoken.
--   **options (_object_)** --
+- **text (_string_)** -- The text to be spoken.
+- **options (_object_)** --
 
-      A map of options:
-    -   **voice (_string_)** -- Voice identifier (**iOS only**)
-    -   **language (_string_)** -- The code of a language that should be used to read the `text`, check out IETF BCP 47 to see valid codes.
-    -   **pitch (_number_)** -- Pitch of the voice to speak `text`. 1.0 is the normal pitch.
-    -   **rate (_number_)** -- Rate of the voice to speak `text`. 1.0 is the normal rate.
-    -   **onStart (_function_)** -- A callback that is invoked when speaking starts.
-    -   **onDone (_function_)** -- A callback that is invoked when speaking finishes.
-    -   **onStopped (_function_)** -- A callback that is invoked when speaking is stopped by calling `Speech.stop()`.
-    -   **onError (_function_)** -- (Android only). A callback that is invoked when an error occurred while speaking.
+  A map of options:
+
+  - **voice (_string_)** -- Voice identifier (**iOS only**)
+  - **language (_string_)** -- The code of a language that should be used to read the `text`, check out IETF BCP 47 to see valid codes.
+  - **pitch (_number_)** -- Pitch of the voice to speak `text`. 1.0 is the normal pitch.
+  - **rate (_number_)** -- Rate of the voice to speak `text`. 1.0 is the normal rate.
+  - **onStart (_function_)** -- A callback that is invoked when speaking starts.
+  - **onDone (_function_)** -- A callback that is invoked when speaking finishes.
+  - **onStopped (_function_)** -- A callback that is invoked when speaking is stopped by calling `Speech.stop()`.
+  - **onError (_function_)** -- (Android only). A callback that is invoked when an error occurred while speaking.
 
 ### `Speech.stop()`
 
@@ -67,13 +64,13 @@ List of `Voice` objects.
 
 ##### `Voice`
 
-|    Field   |               Type               |
-|:----------:|:--------------------------------:|
-| identifier |              string              |
-|    name    |              string              |
-|   quality  |  enum Speech.VoiceQuality   |
-|  language  |              string              |
+|   Field    |           Type           |
+| :--------: | :----------------------: |
+| identifier |          string          |
+|    name    |          string          |
+|  quality   | enum Speech.VoiceQuality |
+|  language  |          string          |
 
 ##### enum `Speech.VoiceQuality`
-  possible values: `Default` or `Enhanced`.
 
+possible values: `Default` or `Enhanced`.

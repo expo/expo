@@ -22,10 +22,6 @@ If you are using the `WebBrowser` window for authentication or another use case 
 ## API
 
 ```js
-// in managed apps:
-import { WebBrowser } from 'expo';
-
-// in bare apps:
 import * as WebBrowser from 'expo-web-browser';
 ```
 
