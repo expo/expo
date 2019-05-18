@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { LocalAuthentication } from 'expo';
-
-// in bare apps:
 import * as LocalAuthentication from 'expo-local-authentication';
 ```
 
@@ -61,4 +57,3 @@ Returns a promise resolving to an object containing `success`, a boolean indicat
 ### `LocalAuthentication.cancelAuthenticate() - (Android Only)`
 
 Cancels the fingerprint authentication flow.
-
