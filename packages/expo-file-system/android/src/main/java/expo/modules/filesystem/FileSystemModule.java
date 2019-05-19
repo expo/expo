@@ -64,6 +64,8 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   private static final String HEADER_KEY = "headers";
 
   private ModuleRegistry mModuleRegistry;
+  
+  private OkHttpClient.Builder clientBuilder;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
@@ -782,14 +784,16 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   interface ProgressListener {
     void update(long bytesRead, long contentLength, boolean done);
   }
-
-  private OkHttpClient.Builder getOkHttpClientBuilder() {
-    CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    if (cookieHandler != null) {
-      builder.cookieJar(new JavaNetCookieJar(cookieHandler));
+  
+  private OkHttpClient.Builder getOkHttpClientBuilder() {    
+    if(clientBuilder == null){
+        CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
+        clientBuilder = new OkHttpClient.Builder();
+        if(cookieHandler != null) {
+            clientBuilder.cookieJar(new JavaNetCookieJar(cookieHandler));
+        }
     }
-    return builder;
+    return clientBuilder;
   }
 
   private String md5(File file) throws IOException {
