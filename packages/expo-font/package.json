@@ -37,6 +37,9 @@
     "@unimodules/core": "*",
     "unimodules-font-interface": "*"
   },
+  "dependencies": {
+    "fontfaceobserver": "^2.1.0"
+  },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
