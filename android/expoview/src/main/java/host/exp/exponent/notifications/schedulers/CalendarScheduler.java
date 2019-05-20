@@ -43,7 +43,7 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
   // -- model fields --
 
   @Column
-  @PrimaryKey
+  @PrimaryKey(autoincrement = true)
   int id;
 
   @Column
@@ -93,7 +93,7 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
 
   @Override
   public String getIdAsString() {
-    return Integer.valueOf(id).toString();
+    return Integer.valueOf(id).toString() + this.getClass().getSimpleName();
   }
 
   @Override
@@ -119,6 +119,7 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
 
   @Override
   public String saveAndGetId() {
+    save(); // get id from database
     details.put(SchedulersManagerProxy.SCHEDULER_ID, getIdAsString());
     setDetails(details);
     save();

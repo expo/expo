@@ -397,7 +397,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void scheduleNotificationWithTimer(final ReadableMap data, final ReadableMap optionsMap, final Promise promise) {
     HashMap<String, Object> options = optionsMap.toHashMap();
-    int notificationId = new Random().nextInt();
+    int notificationId = Math.abs( new Random().nextInt() );
     HashMap<String, Object> hashMap = data.toHashMap();
     if (data.hasKey("categoryId")) {
       hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
@@ -438,7 +438,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void scheduleNotificationWithCalendar(final ReadableMap data, final ReadableMap optionsMap, final Promise promise) {
     HashMap<String, Object> options = optionsMap.toHashMap();
-    int notificationId = new Random().nextInt();
+    int notificationId = Math.abs( new Random().nextInt() );
     HashMap<String, Object> hashMap = data.toHashMap();
     if (data.hasKey("categoryId")) {
       hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
