@@ -25,13 +25,13 @@ import host.exp.exponent.notifications.managers.SchedulersDatabase;
 @Table(databaseName = SchedulersDatabase.NAME)
 public class IntervalScheduler extends BaseModel implements SchedulerInterface {
 
-  private List<String> mTriggeringActions = Arrays.asList(null,
+  private static List<String> triggeringActions = Arrays.asList(null,
       Intent.ACTION_REBOOT,
       Intent.ACTION_BOOT_COMPLETED);
 
   private Context mApplicationContext;
 
-  public HashMap<String, Object> details;
+  private HashMap<String, Object> details;
 
   // -- model fields --
 
@@ -69,7 +69,7 @@ public class IntervalScheduler extends BaseModel implements SchedulerInterface {
 
   @Override
   public void schedule(String action) throws UnableToScheduleException {
-    if (!mTriggeringActions.contains(action)) {
+    if (!IntervalScheduler.triggeringActions.contains(action)) {
       return;
     }
     long nextAppearanceTime = 0;
@@ -80,18 +80,9 @@ public class IntervalScheduler extends BaseModel implements SchedulerInterface {
       throw new UnableToScheduleException();
     }
 
-    ensureDetails();
     try {
       getManager().schedule(experienceId, notificationId, details, nextAppearanceTime, null);
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void ensureDetails() {
-    try {
-      details = HashMapSerializer.deserialize(serializedDetails);
-    } catch (JSONException e) {
       e.printStackTrace();
     }
   }
@@ -210,6 +201,11 @@ public class IntervalScheduler extends BaseModel implements SchedulerInterface {
   }
 
   public void setSerializedDetails(String serializedDetails) {
+    try {
+      details = HashMapSerializer.deserialize(serializedDetails);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
     this.serializedDetails = serializedDetails;
   }
 

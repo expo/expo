@@ -13,37 +13,37 @@ public class ExpoCronParser {
   public static Cron createCronInstance(HashMap<String, Object> options) {
     CronBuilder cronBuilder = CronBuilder.cron(ExpoCronDefinitionBuilder.getCronDefinition());
 
-    if (options.containsKey("year")) {
+    if (options.get("year") instanceof Number) {
       cronBuilder.withYear(on(((Number) options.get("year")).intValue()));
     } else {
       cronBuilder.withYear(always());
     }
 
-    if (options.containsKey("hour")) {
+    if (options.get("hour") instanceof Number) {
       cronBuilder.withHour(on(((Number) options.get("hour")).intValue()));
     } else {
       cronBuilder.withHour(always());
     }
 
-    if (options.containsKey("minute")) {
+    if (options.get("minute") instanceof Number) {
       cronBuilder.withMinute(on(((Number) options.get("minute")).intValue()));
     } else {
       cronBuilder.withMinute(always());
     }
 
-    if (options.containsKey("second")) {
+    if (options.get("second") instanceof Number) {
       cronBuilder.withSecond(on(((Number) options.get("second")).intValue()));
     } else {
       cronBuilder.withSecond(always());
     }
 
-    if (options.containsKey("month")) {
+    if (options.get("month") instanceof Number) {
       cronBuilder.withMonth(on(((Number) options.get("month")).intValue()));
     } else {
       cronBuilder.withMonth(always());
     }
 
-    if (options.containsKey("day")) {
+    if (options.get("day") instanceof Number) {
       cronBuilder.withDoM(on(((Number) options.get("day")).intValue()));
     } else if(options.containsKey("weekDay")) {
       cronBuilder.withDoM(questionMark());
@@ -51,7 +51,7 @@ public class ExpoCronParser {
       cronBuilder.withDoM(always());
     }
 
-    if (options.containsKey("weekDay")) {
+    if (options.get("weekDay") instanceof Number) {
       cronBuilder.withDoW(on(((Number) options.get("weekDay")).intValue()));
     } else {
       cronBuilder.withDoW(questionMark());

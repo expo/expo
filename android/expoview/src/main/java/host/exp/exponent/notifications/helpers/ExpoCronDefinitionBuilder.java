@@ -7,6 +7,12 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.field.CronFieldName;
 import com.cronutils.model.field.expression.QuestionMark;
 
+/*
+The following class provides the format of date and time. It's almost the same as quartz but with
+fixed validator.
+Use this link to see how it works: https://github.com/jmrozanec/cron-utils/tree/4.x.y
+ */
+
 public class ExpoCronDefinitionBuilder {
 
   public static CronDefinition getCronDefinition() {
