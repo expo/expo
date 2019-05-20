@@ -133,8 +133,8 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
       activityType: this.state.activityType,
       pausesUpdatesAutomatically: this.state.activityType != null,
       showsBackgroundLocationIndicator: this.state.showsBackgroundLocationIndicator,
-      // deferredUpdatesInterval: 60 * 1000, // 1 minute
-      // deferredUpdatesDistance: 100, // 100 meters
+      deferredUpdatesInterval: 60 * 1000, // 1 minute
+      deferredUpdatesDistance: 100, // 100 meters
       foregroundService: {
         notificationTitle: 'expo-location-demo',
         notificationBody: 'Background location is running...',
