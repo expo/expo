@@ -64,6 +64,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   private static final String HEADER_KEY = "headers";
 
   private ModuleRegistry mModuleRegistry;
+  private OkHttpClient mClient;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
@@ -81,6 +82,16 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+    CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
+    OkHttpClient.Builder builder =
+        new OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS);
+    if (cookieHandler != null) {
+      builder.cookieJar(new JavaNetCookieJar(cookieHandler));
+    }
+    mClient = builder.build();
   }
 
   @Override
@@ -483,7 +494,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
             requestBuilder.addHeader(key, headers.get(key).toString());
           }
         }
-        getOkHttpClientBuilder().build().newCall(requestBuilder.build()).enqueue(new Callback() {
+        mClient.newCall(requestBuilder.build()).enqueue(new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
             Log.e(TAG, e.getMessage());
@@ -557,10 +568,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       };
 
       OkHttpClient client =
-          getOkHttpClientBuilder()
-              .connectTimeout(60, TimeUnit.SECONDS)
-              .readTimeout(60, TimeUnit.SECONDS)
-              .writeTimeout(60, TimeUnit.SECONDS)
+          mClient.newBuilder()
               .addNetworkInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
@@ -781,15 +789,6 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
 
   interface ProgressListener {
     void update(long bytesRead, long contentLength, boolean done);
-  }
-
-  private OkHttpClient.Builder getOkHttpClientBuilder() {
-    CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    if (cookieHandler != null) {
-      builder.cookieJar(new JavaNetCookieJar(cookieHandler));
-    }
-    return builder;
   }
 
   private String md5(File file) throws IOException {
