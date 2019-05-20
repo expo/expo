@@ -37,17 +37,17 @@ function renameJNILibsWithABIArgument() {
 }
 
 function addVersionWithArguments() {
-  if (!argv.abi || !argv.root) {
-    throw new Error('Run with `--abi <abi version> --root <path to exponent project root>`');
+  if (!argv.abi) {
+    throw new Error('Run with `--abi <abi version> --root <path to expo project root>`');
   }
-  return addVersionAsync(argv.abi, argv.root);
+  return addVersionAsync(argv.abi, argv.root || '..');
 }
 
 function removeVersionWithArguments() {
-  if (!argv.abi || !argv.root) {
-    throw new Error('Run with `--abi <abi version> --root <path to exponent project root>`');
+  if (!argv.abi) {
+    throw new Error('Run with `--abi <abi version> --root <path to expo project root>`');
   }
-  return removeVersionAsync(argv.abi, argv.root);
+  return removeVersionAsync(argv.abi, argv.root || '..');
 }
 
 function versionIOSFilesWithArguments() {
@@ -156,7 +156,7 @@ gulp.task('update-react-native-gesture-handler-code', () => {
       installableInManagedApps: true,
     });
   });
-  
+
   gulp.task('update-react-native-gesture-handler-lib', () => {
     return updateVendoredNativeModule({
       argv,
@@ -170,7 +170,7 @@ gulp.task('update-react-native-gesture-handler-code', () => {
     });
   });
 
-gulp.task('update-react-native-gesture-handler', 
+gulp.task('update-react-native-gesture-handler',
   gulp.series(
     'update-react-native-gesture-handler-lib',
     'update-react-native-gesture-handler-code'
