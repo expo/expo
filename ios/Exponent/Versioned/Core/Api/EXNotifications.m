@@ -124,8 +124,8 @@ RCT_EXPORT_METHOD(scheduleNotificationWithTimer:(NSDictionary *)payload
     reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
     return;
   }
-  BOOL repeats = options[@"repeat"] ? options[@"repeat"] : NO;
-  int seconds = [options[@"interval"] intValue]/1000;
+  BOOL repeats = [options[@"repeat"] boolValue];
+  int seconds = [options[@"interval"] intValue] / 1000;
   UNTimeIntervalNotificationTrigger *notificationTrigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:seconds repeats:repeats];
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
   UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
@@ -149,7 +149,7 @@ RCT_EXPORT_METHOD(scheduleNotificationWithCalendar:(NSDictionary *)payload
     reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
     return;
   }
-  UNCalendarNotificationTrigger *notificationTrigger = [self createCalendarTriggerFor:options];
+  UNCalendarNotificationTrigger *notificationTrigger = [self calendarTriggerFrom:options];
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
   UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
                                                                         content:content
@@ -382,15 +382,15 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
   return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents repeats:NO];
 }
 
-- (UNCalendarNotificationTrigger *)createCalendarTriggerFor:(NSDictionary *)options
+- (UNCalendarNotificationTrigger *)calendarTriggerFrom:(NSDictionary *)options
 {
-  BOOL repeats = options[@"repeat"] ? options[@"repeat"] : NO;
+  BOOL repeats = [options[@"repeat"] boolValue];
   
-  NSDateComponents* date = [[NSDateComponents alloc] init];
+  NSDateComponents *date = [[NSDateComponents alloc] init];
   
   NSArray *timeUnits = @[@"year", @"day", @"weekDay", @"month", @"hour", @"second", @"minute"];
   
-  for (NSString * timeUnit in timeUnits) {
+  for (NSString *timeUnit in timeUnits) {
     if (options[timeUnit]) {
       [date setValue:options[timeUnit] forKey:timeUnit];
     }
