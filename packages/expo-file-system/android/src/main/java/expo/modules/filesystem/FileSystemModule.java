@@ -64,6 +64,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   private static final String HEADER_KEY = "headers";
 
   private ModuleRegistry mModuleRegistry;
+  private OkHttpClient mClient;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
@@ -483,7 +484,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
             requestBuilder.addHeader(key, headers.get(key).toString());
           }
         }
-        getOkHttpClientBuilder().build().newCall(requestBuilder.build()).enqueue(new Callback() {
+        getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
             Log.e(TAG, e.getMessage());
@@ -557,10 +558,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       };
 
       OkHttpClient client =
-          getOkHttpClientBuilder()
-              .connectTimeout(60, TimeUnit.SECONDS)
-              .readTimeout(60, TimeUnit.SECONDS)
-              .writeTimeout(60, TimeUnit.SECONDS)
+          getOkHttpClient().newBuilder()
               .addNetworkInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
@@ -783,13 +781,21 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     void update(long bytesRead, long contentLength, boolean done);
   }
 
-  private OkHttpClient.Builder getOkHttpClientBuilder() {
-    CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    if (cookieHandler != null) {
-      builder.cookieJar(new JavaNetCookieJar(cookieHandler));
+  private synchronized OkHttpClient getOkHttpClient() {
+    if (mClient == null) {
+      OkHttpClient.Builder builder =
+          new OkHttpClient.Builder()
+              .connectTimeout(60, TimeUnit.SECONDS)
+              .readTimeout(60, TimeUnit.SECONDS)
+              .writeTimeout(60, TimeUnit.SECONDS);
+
+      CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
+      if (cookieHandler != null) {
+        builder.cookieJar(new JavaNetCookieJar(cookieHandler));
+      }
+      mClient = builder.build();
     }
-    return builder;
+    return mClient;
   }
 
   private String md5(File file) throws IOException {
