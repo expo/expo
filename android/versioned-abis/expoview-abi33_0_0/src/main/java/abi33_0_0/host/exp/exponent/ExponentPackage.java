@@ -5,16 +5,9 @@ package abi33_0_0.host.exp.exponent;
 import android.content.Context;
 import android.os.Looper;
 
-import abi33_0_0.com.facebook.react.ReactPackage;
-import abi33_0_0.com.facebook.react.bridge.NativeModule;
-import abi33_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi33_0_0.com.facebook.react.uimanager.ViewManager;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import abi33_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import abi33_0_0.org.unimodules.core.interfaces.Package;
-import abi33_0_0.org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.SingletonModule;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -25,11 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import host.exp.exponent.ExponentManifest;
-import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.kernel.ExponentKernelModuleProvider;
-import host.exp.exponent.utils.ScopedContext;
+import abi33_0_0.com.facebook.react.ReactPackage;
+import abi33_0_0.com.facebook.react.bridge.NativeModule;
+import abi33_0_0.com.facebook.react.bridge.ReactApplicationContext;
+import abi33_0_0.com.facebook.react.uimanager.ViewManager;
 import abi33_0_0.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import abi33_0_0.host.exp.exponent.modules.api.KeyboardModule;
 import abi33_0_0.host.exp.exponent.modules.api.PedometerModule;
@@ -57,6 +49,12 @@ import abi33_0_0.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorage
 import abi33_0_0.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import abi33_0_0.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import abi33_0_0.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
+import abi33_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import abi33_0_0.org.unimodules.core.interfaces.Package;
+import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.utils.ScopedContext;
 
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
@@ -152,10 +150,10 @@ public class ExponentPackage implements ReactPackage {
         new ExponentIntentModule(reactContext, mExperienceProperties)
     ));
 
-    if (mIsKernel) {
-      // Never need this in versioned code. Comment this out if this is in an abi package
-      nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
-    }
+//    if (mIsKernel) {
+//      // Never need this in versioned code. Comment this out if this is in an abi package
+//      nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
+//    }
 
     if (isVerified) {
       try {

@@ -66,14 +66,18 @@
         </provider>
 
         <provider
-            android:name="versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewFileProvider"
+            android:name="abi33_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewFileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                android:resource="@xml/provider_paths"/>
         </provider>
+
+        <activity
+            android:name="abi33_0_0.expo.modules.appauth.AppAuthBrowserActivity">
+        </activity>
     </application>
 
 </manifest>

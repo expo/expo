@@ -2,11 +2,13 @@ package abi33_0_0.org.unimodules.core.interfaces;
 
 import android.content.Context;
 
-import abi33_0_0.org.unimodules.core.ExportedModule;
-import abi33_0_0.org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.SingletonModule;
 
 import java.util.Collections;
 import java.util.List;
+
+import abi33_0_0.org.unimodules.core.ExportedModule;
+import abi33_0_0.org.unimodules.core.ViewManager;
 
 public interface Package {
 

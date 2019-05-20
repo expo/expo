@@ -5,7 +5,7 @@ import android.animation.AnimatorInflater;
 import android.content.Context;
 import android.widget.ImageView;
 
-import abi33_0_0.expo.modules.payments.stripe.R;
+import abi33_0_0.host.exp.expoview.R;
 
 /**
  * Created by dmitriy on 11/14/16

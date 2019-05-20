@@ -24,8 +24,8 @@ import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
 
-import abi33_0_0.expo.modules.av.R;
 import abi33_0_0.expo.modules.av.player.PlayerDataControl;
+import host.exp.expoview.R;
 
 // Based on https://www.brightec.co.uk/ideas/custom-android-media-controller
 // We implement our own MediaController,
