@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import ExponentImagePicker from './ExponentImagePicker';
 import { MediaTypeOptions } from './ImagePicker.types';
 export async function launchImageLibraryAsync(options = {}) {

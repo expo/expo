@@ -284,6 +284,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     _lastState = RNGestureHandlerStateUndetermined;
 }
 
+ - (BOOL)containsPointInView
+ {
+     CGPoint pt = [_recognizer locationInView:_recognizer.view];
+     CGRect hitFrame = RNGHHitSlopInsetRect(_recognizer.view.bounds, _hitSlop);
+     return CGRectContainsPoint(hitFrame, pt);
+ }
+
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     [self reset];

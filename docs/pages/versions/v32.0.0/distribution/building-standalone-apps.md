@@ -2,10 +2,6 @@
 title: Building Standalone Apps
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 The purpose of this guide is to help you create standalone binaries of your Expo app for iOS and
 Android which can be submitted to the Apple App Store and Google Play Store.
 
@@ -165,7 +161,7 @@ import safeCompare from 'safe-compare';
 const app = express();
 app.use(bodyParser.text({ type: '*/*' }));
 app.post('/webhook', (req, res) => {
-  const expoSignature = req.headers['expo-signature'];
+  const expoSignature = req.headers['Expo-Signature'];
   // process.env.SECRET_WEBHOOK_KEY has to match <webhook-secret> value set with `expo webhooks:set ...` command
   const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
   hmac.update(req.body);

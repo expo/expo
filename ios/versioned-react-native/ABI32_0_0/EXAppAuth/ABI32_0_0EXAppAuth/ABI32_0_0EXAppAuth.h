@@ -12,12 +12,4 @@ static id ABI32_0_0EXnullIfEmpty(NSString *input) {
 
 @interface ABI32_0_0EXAppAuth : ABI32_0_0EXExportedModule <ABI32_0_0EXModuleRegistryConsumer>
 
-+ (_Nonnull instancetype)instance;
-
-#if !TARGET_OS_TV
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options;
-#endif
-
-
-
 @end

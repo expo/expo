@@ -3,10 +3,6 @@ id: view-style-props
 title: View Style Props
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### Props
 
 * [`borderRightColor`](../view-style-props/#borderrightcolor)

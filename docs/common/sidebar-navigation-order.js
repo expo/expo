@@ -1,11 +1,23 @@
+const GROUPS = {
+  Fundamentals: 'Managed Workflow',
+  Guides: 'Managed Workflow',
+  'Distributing Your App': 'Managed Workflow',
+  ExpoKit: 'Managed Workflow',
+  'Expo SDK': 'API Reference',
+  'React Native': 'API Reference',
+  'Introduction': 'Get Started',
+  'Essentials': 'Bare Workflow',
+};
+
 const ROOT = [
   'Introduction',
-  'Working with Expo',
+  'Fundamentals',
   'Guides',
   'Distributing Your App',
-  'Tutorials',
+  // 'Tutorials',
   'ExpoKit',
-  'SDK API Reference',
+  'Essentials',
+  'Expo SDK',
   'React Native Basics',
   'React Native Guides',
   'React Native Components',
@@ -13,8 +25,9 @@ const ROOT = [
 ];
 
 const INTRODUCTION = [
-  'Quick Start',
+  'Getting to know Expo',
   'Installation',
+  'Managed and Bare Workflows',
   'XDE Tour',
   'Project Lifecycle',
   'Community',
@@ -22,7 +35,6 @@ const INTRODUCTION = [
   'Troubleshooting Proxies',
   'Frequently Asked Questions',
   'Already used React Native?',
-  'Why not Expo?',
 ];
 
 const GUIDES = [
@@ -32,44 +44,50 @@ const GUIDES = [
   'Preloading & Caching Assets',
   'Icons',
   'Custom Fonts',
-  'Splash Screens',
   'Using Custom Fonts',
   'Routing & Navigation',
   'Configuring StatusBar',
+  'Create a Splash Screen',
   'Offline Support',
   'Configuring OTA Updates',
   'Push Notifications',
   'Using FCM for Push Notifications',
   'Notification Channels',
+  'Testing with Jest',
+  'Using TypeScript',
   'Using Modern JavaScript',
   'Using ClojureScript',
-  'Using Firebase: Web SDK',
+  'Using Firebase',
   'Using GraphQL',
   'Using Sentry',
+  'User Interface Component Libraries',
+  'Crafting Educational Materials',
 ];
 
-const WORKING_WITH_EXPO = [
+const FUNDAMENTALS = [
   'Up and Running',
-  'Upgrading Expo',
-  'Upgrading Expo SDK Walkthrough',
-  'Glossary of terms',
-  'Configuration with app.json',
-  'Development Mode',
-  'exp Command-Line Interface',
+  'Expo CLI',
   'Viewing Logs',
   'Debugging',
-  'Genymotion',
+  'Development Mode',
+  'Common Development Errors',
+  'iOS Simulator',
   'Android Studio Emulator',
+  'Configuration with app.json',
+  'Publishing',
   'Release Channels',
   'Building Standalone Apps',
-  'Publishing',
+  'Upgrading Expo SDK Walkthrough',
   'Linking',
-  'Expo & "Create React Native App"',
   'How Expo Works',
+  'Glossary of terms',
+  'exp Command-Line Interface',
 ];
 
 const DISTRIBUTION = [
+  'Overview',
   'Building Standalone Apps',
+  'App signing',
   'Deploying to App Stores',
   'Release Channels',
   'Advanced Release Channels',
@@ -77,14 +95,21 @@ const DISTRIBUTION = [
   'Building Standalone Apps on Your CI',
   'Uploading Apps to the Apple App Store and Google Play',
   'App Transfers',
+  'Security',
 ];
 
 const EXPOKIT = [
+  'Overview',
   'Detaching to ExpoKit',
   'Ejecting to ExpoKit',
   'Developing With ExpoKit',
   'Advanced ExpoKit Topics',
   'Universal Modules and ExpoKit',
+];
+
+const ESSENTIALS = [
+  'Hello World',
+  'Unimodules Full List'
 ];
 
 const REACT_NATIVE = [
@@ -195,8 +220,10 @@ const REACT_NATIVE = [
 
 module.exports = {
   ROOT,
+  GROUPS,
   INTRODUCTION,
-  WORKING_WITH_EXPO,
+  FUNDAMENTALS,
+  ESSENTIALS,
   GUIDES,
   DISTRIBUTION,
   EXPOKIT,

@@ -67,6 +67,25 @@ platform :ios do
     )
   end
 
+  lane :create_expo_client_build do
+    directory = "./ios" + prompt(
+      ci_input: "/../expo-client-build",
+      text: "Please enter the path where we should output the build, relative to ./ios (i.e. ../my-build):",
+    )
+    puts "Build will be written to: " + File.expand_path(directory)
+    xcbuild(
+      workspace: "ios/Exponent.xcworkspace",
+      scheme: "Exponent",
+      configuration: "Release",
+      derivedDataPath: directory,
+      sdk: "iphoneos",
+      destination: "generic/platform=iOS",
+      archive: true,
+      archive_path: directory + "/Exponent.xcarchive",
+      xcargs: "-UseModernBuildSystem=NO CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO"
+    )
+  end
+
   lane :release do
     cert(
       team_id: "C8D8QTF339",
@@ -150,13 +169,15 @@ platform :android do
     UI.success("Run successful")
   end
 
-  lane :devicefarm do |channel: git_branch|
-    UI.error("Release channel can't be blank") if channel.to_s.empty?
-    ENV["TEST_SUITE_URI"] = "exp://exp.host/@exponent_ci_bot/test-suite?release-channel=#{channel}"
+  lane :devicefarm do
+    commit_info = last_git_commit
+    channel = commit_info[:commit_hash] 
+    ENV["TEST_SUITE_URI"] = "exp://exp.host/@exponent_ci_bot/test-suite/--/all?release-channel=#{channel}"
     ENV["TEST_CONFIG"] = {
       includeModules:  '.*',
       includeSdkVersions: ['UNVERSIONED'],
       includeTestTypes: ['test-suite'],
+      isInCI: true,
     }.to_json
     ENV["DEVICEFARM_PROJECT_NAME"] = "exponent"
     ENV["DEVICEFARM_DEVICE_POOL"] = "android-test-device-pool"
@@ -165,7 +186,6 @@ platform :android do
     upload_result = gradle(
       project_dir: "android",
       task: "app:devicefarmUpload",
-      build_type: "Debug"
     )
     result_info = upload_result.match(/View the INSTRUMENTATION run.*\/projects\/(?<project_id>.*)\/runs\/(?<run_id>.*)$/)
     UI.shell_error!("Apks not uploaded!") unless result_info

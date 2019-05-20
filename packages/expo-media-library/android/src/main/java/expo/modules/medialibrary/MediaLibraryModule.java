@@ -17,13 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
-import expo.interfaces.permissions.Permissions;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -41,7 +41,6 @@ import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_CREATION_T
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_DEFAULT;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_DURATION;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_HEIGHT;
-import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_ID;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MEDIA_TYPE;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MODIFICATION_TIME;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_WIDTH;
@@ -80,7 +79,6 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
         put("SortBy", Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
             put("default", SORT_BY_DEFAULT);
-            put("id", SORT_BY_ID);
             put("creationTime", SORT_BY_CREATION_TIME);
             put("modificationTime", SORT_BY_MODIFICATION_TIME);
             put("mediaType", SORT_BY_MEDIA_TYPE);

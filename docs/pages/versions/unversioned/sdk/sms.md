@@ -2,11 +2,17 @@
 title: SMS
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides access to the system's UI/app for sending SMS messages.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sms).
+
+## API
+
+```js
+import * as SMS from 'expo-sms';
+```
 
 ### `SMS.isAvailableAsync()`
 
@@ -33,9 +39,9 @@ Opens the default UI/app for sending SMS messages with prefilled addresses and m
 
 #### Arguments
 
--  **addresses: `Array<string>|string`** -- An array of addresses : `phone numbers` or single address passed as strings. Those would appear as recipients of the prepared message.
+- **addresses (_Array\<string\>|string_)** -- An array of addresses (_phone numbers_) or single address passed as strings. Those would appear as recipients of the prepared message.
 
--  **message: `string`** -- Message to be sent
+- **message (_string_)** -- Message to be sent
 
 #### Returns
 
@@ -49,9 +55,11 @@ Android does not provide information about the status of the SMS message, so on 
 
 **_Note_**: The only feedback collected by this module is whether any message has been sent. That means we do not check actual content of message nor recipients list.
 
-
 #### Example
 
 ```javascript
-const { result } = await SMS.sendSMSAsync(['0123456789', '9876543210'], 'My sample HelloWorld message');
+const { result } = await SMS.sendSMSAsync(
+  ['0123456789', '9876543210'],
+  'My sample HelloWorld message'
+);
 ```

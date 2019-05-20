@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 
@@ -6,6 +7,7 @@ apply plugin: 'com.jakewharton.butterknife'
 //maven repository info
 group = 'host.exp.exponent'
 version = '32.0.0'
+
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -36,6 +38,10 @@ uploadArchives {
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -45,21 +51,22 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0'
   }
 }
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
   maven { url "https://jitpack.io" }
+  mavenCentral()
 }
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
     versionName "1.0"
     ndk {
@@ -98,7 +105,11 @@ task generateDynamicMacros(type: Exec) {
     commandLine '../../tools-public/generate-dynamic-macros-android.sh'
   }
 }
-preBuild.dependsOn generateDynamicMacros
+
+// Automatically generate dynamic macros once the task graph is ready. It ensures this task to be executed before all other tasks.
+gradle.taskGraph.whenReady {
+  generateDynamicMacros.execute()
+}
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 configurations.all {
@@ -107,138 +118,40 @@ configurations.all {
   }
 }
 
+
+// Import gradle helpers for unimodules.
+apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'com.android.support:multidex:1.0.3'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
+  testImplementation 'junit:junit:4.12'
 
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
-  // Current react native
+
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:32.0.0'
-  api 'host.exp.exponent:expo-app-loader-provider:1.0.0'
-  api 'host.exp.exponent:expo-core:2.0.0'
-  api 'host.exp.exponent:expo-constants:2.0.0'
-  api 'host.exp.exponent:expo-constants-interface:2.0.0'
-  api 'host.exp.exponent:expo-document-picker:1.0.0'
-  api 'host.exp.exponent:expo-errors:1.0.0'
-  api 'host.exp.exponent:expo-file-system:2.0.0'
-  api 'host.exp.exponent:expo-file-system-interface:2.0.0'
-  api 'host.exp.exponent:expo-permissions:2.0.0'
-  api 'host.exp.exponent:expo-permissions-interface:2.0.0'
-  api 'host.exp.exponent:expo-react-native-adapter:2.0.0'
-  api 'host.exp.exponent:expo-secure-store:1.0.0'
-  api 'host.exp.exponent:expo-sensors-interface:2.0.0'
-  api 'host.exp.exponent:expo-task-manager:1.0.0'
-  api 'host.exp.exponent:expo-task-manager-interface:1.0.0'
-
-  // Optional universal modules
-  compileOnly 'host.exp.exponent:expo-ads-admob:2.0.0'
-  compileOnly 'host.exp.exponent:expo-ads-facebook:1.0.0'
-  compileOnly 'host.exp.exponent:expo-analytics-amplitude:1.0.0'
-  compileOnly 'host.exp.exponent:expo-analytics-segment:2.0.0'
-  compileOnly 'host.exp.exponent:expo-app-auth:2.0.0'
-  compileOnly 'host.exp.exponent:expo-av:1.0.0'
-  compileOnly 'host.exp.exponent:expo-background-fetch:1.0.0'
-  compileOnly 'host.exp.exponent:expo-barcode-scanner:2.0.0'
-  compileOnly 'host.exp.exponent:expo-barcode-scanner-interface:2.0.0'
-  compileOnly 'host.exp.exponent:expo-blur:1.0.0'
-  compileOnly 'host.exp.exponent:expo-brightness:1.0.0'
-  compileOnly 'host.exp.exponent:expo-calendar:1.0.0'
-  compileOnly 'host.exp.exponent:expo-camera:2.0.0'
-  compileOnly 'host.exp.exponent:expo-camera-interface:2.0.0'
-  compileOnly 'host.exp.exponent:expo-contacts:2.0.0'
-  compileOnly 'host.exp.exponent:expo-face-detector:2.0.0'
-  compileOnly 'host.exp.exponent:expo-facebook:1.0.0'
-  compileOnly 'host.exp.exponent:expo-font:2.0.0'
-  compileOnly 'host.exp.exponent:expo-gl:2.0.0'
-  compileOnly 'host.exp.exponent:expo-gl-cpp:2.0.0'
-  compileOnly 'host.exp.exponent:expo-google-sign-in:2.0.0'
-  compileOnly 'host.exp.exponent:expo-haptics:1.0.0'
-  compileOnly 'host.exp.exponent:expo-image-loader-interface:2.0.0'
-  compileOnly 'host.exp.exponent:expo-image-manipulator:1.0.0'
-  compileOnly 'host.exp.exponent:expo-image-picker:1.0.0'
-  compileOnly 'host.exp.exponent:expo-intent-launcher:1.0.0'
-  compileOnly 'host.exp.exponent:expo-keep-awake:1.0.0'
-  compileOnly 'host.exp.exponent:expo-linear-gradient:1.0.0'
-  compileOnly 'host.exp.exponent:expo-local-authentication:2.0.0'
-  compileOnly 'host.exp.exponent:expo-localization:2.0.0'
-  compileOnly 'host.exp.exponent:expo-location:2.0.1'
-  compileOnly 'host.exp.exponent:expo-mail-composer:1.0.0'
-  compileOnly 'host.exp.exponent:expo-media-library:2.0.0'
-  compileOnly 'host.exp.exponent:expo-payments-stripe:2.0.0'
-  compileOnly 'host.exp.exponent:expo-print:2.0.0'
-  compileOnly 'host.exp.exponent:expo-sensors:2.0.0'
-  compileOnly 'host.exp.exponent:expo-sms:2.0.0'
-  compileOnly 'host.exp.exponent:expo-speech:1.0.0'
-  compileOnly 'host.exp.exponent:expo-sqlite:1.0.0'
-  compileOnly 'host.exp.exponent:expo-web-browser:1.0.0'
+  addMavenUnimodulesDependencies([
+      modulesPaths : ['../../packages'],
+      configuration: 'compileOnly',
+      target       : 'react-native'
+  ])
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
   // Universal modules
-  api project(':expo-app-loader-provider')
-  api project(':expo-core')
-  api project(':expo-constants')
-  api project(':expo-constants-interface')
-  api project(':expo-document-picker')
-  api project(':expo-errors')
-  api project(':expo-permissions')
-  api project(':expo-permissions-interface')
-  api project(':expo-react-native-adapter')
-  api project(':expo-sensors-interface')
-  api project(':expo-task-manager')
-  api project(':expo-task-manager-interface')
-
-  // Optional universal modules
-  // They're defined as "api" so we don't have to define them again in app/build.gradle
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
-  api project(':expo-ads-admob')
-  api project(':expo-ads-facebook')
-  api project(':expo-analytics-amplitude')
-  api project(':expo-analytics-segment')
-  api project(':expo-app-auth')
-  api project(':expo-av')
-  api project(':expo-background-fetch')
-  api project(':expo-barcode-scanner')
-  api project(':expo-barcode-scanner-interface')
-  api project(':expo-blur')
-  api project(':expo-brightness')
-  api project(':expo-calendar')
-  api project(':expo-camera')
-  api project(':expo-camera-interface')
-  api project(':expo-contacts')
-  api project(':expo-facebook')
-  api project(':expo-face-detector')
-  api project(':expo-file-system')
-  api project(':expo-file-system-interface')
-  api project(':expo-font')
-  api project(':expo-gl')
-  api project(':expo-gl-cpp')
-  api project(':expo-google-sign-in')
-  api project(':expo-haptics')
-  api project(':expo-image-loader-interface')
-  api project(':expo-image-manipulator')
-  api project(':expo-image-picker')
-  api project(':expo-intent-launcher')
-  api project(':expo-keep-awake')
-  api project(':expo-linear-gradient')
-  api project(':expo-local-authentication')
-  api project(':expo-localization')
-  api project(':expo-location')
-  api project(':expo-mail-composer')
-  api project(':expo-media-library')
-  api project(':expo-payments-stripe')
-  api project(':expo-print')
-  api project(':expo-secure-store')
-  api project(':expo-sensors')
-  api project(':expo-sms')
-  api project(':expo-speech')
-  api project(':expo-sqlite')
-  api project(':expo-web-browser')
+  addUnimodulesDependencies([
+      modulesPaths : ['../../packages'],
+      configuration: 'api',
+      target       : 'react-native'
+  ])
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -249,21 +162,6 @@ dependencies {
   // BEGIN_SDK_31
   api 'host.exp:reactandroid-abi31_0_0:1.0.0'
   // END_SDK_31
-  // BEGIN_SDK_30
-  api 'host.exp:reactandroid-abi30_0_0:1.0.0'
-  // END_SDK_30
-  // BEGIN_SDK_29
-  api 'host.exp:reactandroid-abi29_0_0:1.0.0'
-  // END_SDK_29
-  // BEGIN_SDK_28
-  api 'host.exp:reactandroid-abi28_0_0:1.0.0'
-  // END_SDK_28
-  // BEGIN_SDK_27
-  api 'host.exp:reactandroid-abi27_0_0:1.0.0'
-  // END_SDK_27
-  // BEGIN_SDK_26
-  api 'host.exp:reactandroid-abi26_0_0:1.0.0'
-  // END_SDK_26
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -273,20 +171,20 @@ dependencies {
   api 'com.facebook.fresco:animated-gif:1.10.0'
   api 'com.facebook.fresco:animated-webp:1.10.0'
   api 'com.facebook.fresco:webpsupport:1.10.0'
-  api 'expolib_v1.com.facebook.fresco:expolib_v1-imagepipeline-okhttp3:1.0.1'
+  api 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'
   api 'com.facebook.stetho:stetho:1.3.1' // do we need this?
   api 'com.facebook.stetho:stetho-okhttp3:1.3.1' // do we need this?
-  compileOnly 'com.facebook.soloader:soloader:0.5.1'
+  compileOnly 'com.facebook.soloader:soloader:0.6.0'
   api 'com.google.code.findbugs:jsr305:3.0.2'
-  api 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
-  api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-  api 'expolib_v1.com.squareup.okio:okio:1.13.0'
+  api 'com.squareup.okhttp3:okhttp:3.6.0'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+  api 'com.squareup.okio:okio:1.13.0'
   api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
   api 'org.webkit:android-jsc:r224109'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api 'com.android.support:appcompat-v7:27.1.1'
+  api "com.android.support:appcompat-v7:${safeExtGet("supportLibVersion", "28.0.0")}"
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
@@ -294,16 +192,16 @@ dependencies {
   api 'de.greenrobot:eventbus:2.4.0'
 
   // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  provided 'com.amplitude:android-sdk:2.9.2'
+  compileOnly 'com.amplitude:android-sdk:2.9.2'
 
   api 'com.squareup.picasso:picasso:2.5.2'
-  api 'com.google.android.gms:play-services-gcm:15.0.1'
-  api 'com.google.android.gms:play-services-analytics:16.0.1'
-  api 'com.google.android.gms:play-services-maps:15.0.1'
-  api 'com.google.android.gms:play-services-auth:15.0.1'
-  api 'com.google.android.gms:play-services-location:15.0.1'
-  api 'com.google.android.gms:play-services-fitness:15.0.1'
-  api 'com.google.android.gms:play-services-wallet:15.0.1' //may need 10.+
+  api 'com.google.android.gms:play-services-gcm:16.1.0'
+  api 'com.google.android.gms:play-services-analytics:16.0.7'
+  api 'com.google.android.gms:play-services-maps:16.1.0'
+  api 'com.google.android.gms:play-services-auth:16.0.1'
+  api 'com.google.android.gms:play-services-location:16.0.0'
+  api 'com.google.android.gms:play-services-fitness:16.0.1'
+  api 'com.google.android.gms:play-services-wallet:16.0.1' //may need 10.+
   annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
   api "com.raizlabs.android:DBFlow-Core:2.2.1"
   api "com.raizlabs.android:DBFlow:2.2.1"
@@ -312,21 +210,24 @@ dependencies {
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  api 'commons-io:commons-io:1.4'
+  api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
   api 'commons-codec:commons-codec:1.10'
-  api 'net.openid:appauth:0.4.1'
+  api 'net.openid:appauth:0.7.1'
   api('com.airbnb.android:lottie:2.5.5') {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
-  api 'io.branch.sdk.android:library:2.17.1'
-  api 'com.android.support:exifinterface:27.1.1'
-  api 'com.google.firebase:firebase-core:16.0.1'
-  api 'com.google.firebase:firebase-messaging:17.1.0'
+  compileOnly 'io.branch.sdk.android:library:2.17.1'
+  api "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:customtabs:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:design:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api 'com.google.firebase:firebase-core:16.0.7'
+  api 'com.google.firebase:firebase-messaging:17.4.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:8.4.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+  api 'com.jakewharton:butterknife:9.0.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system
@@ -335,5 +236,12 @@ dependencies {
 
   // expo-av
   // See explanation in expo-av/build.gradle
-  api 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1'
+  api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
+
+  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+  // TODO: Remove this method once SDK32 is phased out
+  compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
+  compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+  compileOnly 'expolib_v1.com.squareup.okio:okio:1.13.0'
+  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 }

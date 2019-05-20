@@ -3,23 +3,20 @@
 package expo.modules.keepawake;
 
 import android.content.Context;
-import android.app.Activity;
-import android.view.WindowManager;
 
-import expo.core.ExportedModule;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.KeepAwakeManager;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.errors.CurrentActivityNotFoundException;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.KeepAwakeManager;
 
-public class KeepAwakeModule extends ExportedModule implements ModuleRegistryConsumer, KeepAwakeManager {
+public class KeepAwakeModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String NAME = "ExpoKeepAwake";
-  private static final String TAG = KeepAwakeModule.class.getSimpleName();
+  private final static String NO_ACTIVITY_ERROR_CODE = "NO_CURRENT_ACTIVITY";
 
-  private ModuleRegistry mModuleRegistry;
-  private boolean mIsActivated = false;
+  private KeepAwakeManager mKeepAwakeManager;
 
   public KeepAwakeModule(Context context) {
     super(context);
@@ -32,49 +29,30 @@ public class KeepAwakeModule extends ExportedModule implements ModuleRegistryCon
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
-  }
-
-  private Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
+    mKeepAwakeManager = moduleRegistry.getModule(KeepAwakeManager.class);
   }
 
 
   @ExpoMethod
-  public void activate(Promise promise) {
-    final Activity activity = getCurrentActivity();
-
-    if (activity != null) {
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-          mIsActivated = true;
-        }
-      });
+  public void activate(String tag, final Promise promise) {
+    try {
+      mKeepAwakeManager.activate(tag, () -> promise.resolve(true));
+    } catch (CurrentActivityNotFoundException ex) {
+      promise.reject(NO_ACTIVITY_ERROR_CODE, "Unable to activate keep awake");
     }
-
-    promise.resolve(true);
   }
 
   @ExpoMethod
-  public void deactivate(Promise promise) {
-    final Activity activity = getCurrentActivity();
-
-    if (activity != null) {
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          mIsActivated = false;
-          activity.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-      });
+  public void deactivate(String tag, Promise promise) {
+    try {
+      mKeepAwakeManager.deactivate(tag, () -> promise.resolve(true));
+    } catch (CurrentActivityNotFoundException ex) {
+      promise.reject(NO_ACTIVITY_ERROR_CODE, "Unable to deactivate keep awake. However, it probably is deactivated already.");
     }
-    promise.resolve(true);
+
   }
 
   public boolean isActivated() {
-    return mIsActivated;
+    return mKeepAwakeManager.isActivated();
   }
 }

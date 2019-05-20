@@ -56,6 +56,14 @@ abstract public class RenderableView extends VirtualView {
     private static final int FILL_RULE_EVENODD = 0;
     static final int FILL_RULE_NONZERO = 1;
 
+    // vectorEffect
+    static final int VECTOR_EFFECT_DEFAULT = 0;
+    static final int VECTOR_EFFECT_NON_SCALING_STROKE = 1;
+    static final int VECTOR_EFFECT_INHERIT = 2;
+    static final int VECTOR_EFFECT_URI = 3;
+
+    public int vectorEffect = VECTOR_EFFECT_DEFAULT;
+
     /*
     Used in mergeProperties, keep public
     */
@@ -85,6 +93,12 @@ abstract public class RenderableView extends VirtualView {
     @Nullable ArrayList<String> mAttributeList;
 
     private static final Pattern regex = Pattern.compile("[0-9.-]+");
+
+    @ReactProp(name = "vectorEffect", defaultInt = VECTOR_EFFECT_DEFAULT)
+    public void setVectorEffect(int vectorEffect) {
+        this.vectorEffect = vectorEffect;
+        invalidate();
+    }
 
     @ReactProp(name = "fill")
     public void setFill(@Nullable Dynamic fill) {
@@ -167,7 +181,7 @@ abstract public class RenderableView extends VirtualView {
             int fromSize = strokeDasharray.size();
             this.strokeDasharray = new SVGLength[fromSize];
             for (int i = 0; i < fromSize; i++) {
-                this.strokeDasharray[i] = new SVGLength(strokeDasharray.getString(i));
+                this.strokeDasharray[i] = SVGLength.from(strokeDasharray.getDynamic(i));
             }
         } else {
             this.strokeDasharray = null;
@@ -183,7 +197,7 @@ abstract public class RenderableView extends VirtualView {
 
     @ReactProp(name = "strokeWidth")
     public void setStrokeWidth(Dynamic strokeWidth) {
-        this.strokeWidth = getLengthFromDynamic(strokeWidth);
+        this.strokeWidth = SVGLength.from(strokeWidth);
         invalidate();
     }
 
@@ -322,7 +336,14 @@ abstract public class RenderableView extends VirtualView {
                 mPath = getPath(canvas, paint);
                 mPath.setFillType(fillRule);
             }
+            boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
             Path path = mPath;
+            if (nonScalingStroke) {
+                Path scaled = new Path();
+                mPath.transform(canvas.getMatrix(), scaled);
+                canvas.setMatrix(null);
+                path = scaled;
+            }
 
             RectF clientRect = new RectF();
             path.computeBounds(clientRect, true);
@@ -403,12 +424,19 @@ abstract public class RenderableView extends VirtualView {
         int colorType = colors.getInt(0);
         switch (colorType) {
             case 0:
-                // solid color
-                paint.setARGB(
-                        (int) (colors.size() > 4 ? colors.getDouble(4) * opacity * 255 : opacity * 255),
-                        (int) (colors.getDouble(1) * 255),
-                        (int) (colors.getDouble(2) * 255),
-                        (int) (colors.getDouble(3) * 255));
+                if (colors.size() == 2) {
+                    int color = colors.getInt(1);
+                    int alpha = color >>> 24;
+                    int combined = Math.round((float)alpha * opacity);
+                    paint.setColor(combined << 24 | (color & 0x00ffffff));
+                } else {
+                    // solid color
+                    paint.setARGB(
+                            (int) (colors.size() > 4 ? colors.getDouble(4) * opacity * 255 : opacity * 255),
+                            (int) (colors.getDouble(1) * 255),
+                            (int) (colors.getDouble(2) * 255),
+                            (int) (colors.getDouble(3) * 255));
+                }
                 break;
             case 1: {
                 Brush brush = getSvgView().getDefinedBrush(colors.getString(1));

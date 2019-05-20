@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import { Platform, Share } from 'react-native';
 import UUID from 'uuid-js';
 

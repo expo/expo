@@ -2,10 +2,6 @@
 title: Splash Screens
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../../sdk/app-loading/) component.
 
 ## Customize the splash screen for your app
@@ -105,6 +101,10 @@ The following exists are known to us and will be resolved shortly.
 
 - iOS splash screen status bar is white in standalone apps but dark in Expo client. It should be dark in standalone apps by default too, and also it should be customizable. 
 - It is necessary on iOS to close and re-open the Expo client to see changes to the splash screen.
+
+### iOS Caching
+
+Splash Screens on iOS standalone apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However,the caching sometimes can persist for a day or two so be patient if the aforementioned steps were unable to resolve the issue.
 
 ### Migrating from the `loading` API
 

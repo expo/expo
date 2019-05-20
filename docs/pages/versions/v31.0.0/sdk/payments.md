@@ -2,17 +2,13 @@
 title: Payments
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
 
-We encourage you to look at our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples) of ExpoKit apps.
+We encourage you to look at our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples) of ExpoKit apps.
 
-_Note_: (Android only) If you are using Expo Client then the setup has already been done for you.
+_Note_: (Android only) If you are using Expo client then the setup has already been done for you.
 Also, the way you should use payments is slightly different. Instead of importing
 from `'expo-payments-stripe'` use the following code:
 
@@ -52,7 +48,7 @@ Finally, make sure [CocoaPods](https://cocoapods.org/) is installed and run `pod
 > You don't need to make this step if you're not going to use [sources](https://stripe.com/docs/mobile/ios/sources).
 
 Follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
-If you have problems with this step just look at files: `Info.plist` and `AppDelegate.m` in one of our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples).
+If you have problems with this step just look at files: `Info.plist` and `AppDelegate.m` in one of our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples).
 
 ## Adding the Payments Module on Android
 
@@ -130,7 +126,7 @@ Add the following code to your `AndroidManifest.xml`, replacing `your_scheme` wi
       ...
 ```
 
-If you have problems with this step just look at `AndroidManifest.xml` in one of our [examples](https://github.com/expo/expo-payments-stripe/tree/master/examples). Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
+If you have problems with this step just look at `AndroidManifest.xml` in one of our [examples](https://github.com/expo/expo/tree/master/packages/expo-payments-stripe/examples). Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
 
 ## Importing Payments
 
@@ -286,7 +282,7 @@ Creates source object based on params. Sources are used to create payments for a
 
 _NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your `info.plist` and `AndroidManifest.xml`. If You are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
 
-_NOTE_: If you are using Expo Client or an ejected Expo application, do not specify `returnURL`.
+_NOTE_: If you are using Expo client or an ejected Expo application, do not specify `returnURL`.
 
 `params` — An object with the following keys:
 
@@ -846,3 +842,4 @@ If you want to use Apple Pay for payments, you'll need to set up your merchant I
 If you haven't already, set up an Apple Merchant ID via the [Apple Developer Portal](https://developer.apple.com/). Then, open the application in XCode and navigate to the capabilities tab. Enable Apple Pay and insert your merchant ID into the corresponding space.
 
 Note: Apple Pay can be used only for real world items (ex. appeal, car sharing, food) and not virtual goods. For more information about proper usage of Apple Pay, visit Apple's [Apple Pay guidelines](https://developer.apple.com/app-store/review/guidelines/#apple-pay) and [Acceptable Use](https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/).
+

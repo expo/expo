@@ -3,10 +3,6 @@ id: flatlist
 title: FlatList
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 A performant interface for rendering simple, flat lists, supporting the most handy features:
 
 * Fully cross-platform.

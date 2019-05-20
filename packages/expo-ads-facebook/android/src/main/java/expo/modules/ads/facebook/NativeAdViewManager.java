@@ -7,10 +7,10 @@ import com.facebook.ads.NativeAdsManager;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.interfaces.ExpoProp;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.ExpoProp;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 public class NativeAdViewManager extends ViewManager<NativeAdView> implements ModuleRegistryConsumer {
   private static String NAME = "CTKNativeAd";

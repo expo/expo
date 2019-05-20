@@ -1,11 +1,11 @@
 {
   "name": "EXImageManipulator",
-  "version": "1.0.0",
-  "summary": "Expo Image Manipulator standalone module",
-  "description": "Expo Image Manipulator standalone module",
+  "version": "5.0.0-rc.0",
+  "summary": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
+  "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-image-manipulator",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/imagemanipulator/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,13 +16,13 @@
   "preserve_paths": "EXImageManipulator/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXFileSystemInterface": [
+    "UMFileSystemInterface": [
 
     ],
-    "EXImageLoaderInterface": [
+    "UMImageLoaderInterface": [
 
     ]
   }

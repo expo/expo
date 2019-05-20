@@ -10,8 +10,8 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.util.Map;
 
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Call;
+import okhttp3.CacheControl;
+import okhttp3.Call;
 
 // Mainly a copy of com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory,
 // because it's declared as final :(
@@ -21,7 +21,7 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   @Nullable
   private final String mUserAgent;
   @Nullable
-  private final TransferListener<? super DataSource> mListener;
+  private final TransferListener mListener;
   @Nullable
   private final CacheControl mCacheControl;
 
@@ -45,6 +45,6 @@ public class CustomHeadersOkHttpDataSourceFactory extends HttpDataSource.BaseFac
   }
 
   protected OkHttpDataSource createDataSourceInternal(HttpDataSource.RequestProperties defaultRequestProperties) {
-    return new OkHttpDataSource(mCallFactory, mUserAgent, null, mListener, mCacheControl, defaultRequestProperties);
+    return new OkHttpDataSource(mCallFactory, mUserAgent, null, mCacheControl, defaultRequestProperties);
   }
 }

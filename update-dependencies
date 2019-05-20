@@ -7,9 +7,7 @@ nixdir="$scriptdir/nix"
 
 # "nixpkgs-channels" is a mirror of "nixpkgs" with branches that track release channels
 repo=https://github.com/NixOS/nixpkgs-channels.git
-
-# "nixos-unstable" is a branch which points to the latest commit that has passed their CI
-rev=${1:-refs/heads/nixos-unstable} 
+rev=${1:-refs/heads/nixpkgs-unstable}
 
 # "nix-prefetch-git" is a tool that downloads and prints information about a git reference
 # Notably, it includes a commit sha and content hash
@@ -30,11 +28,10 @@ bin/nix-binstubs \
   xcpretty \
   yarn
 
-# Generate nix files for xcpretty ruby gem
-pushd nix/xcpretty
+# Generate lockfile and nix file for cocoapods gem
+pushd nix/cocoapods
 rm Gemfile.lock
-nix run -f $nixdir bundler --command bundle install
-nix run -f $nixdir bundix --command bundix
+nix run -f $nixdir bundix --command bundix --magic
 popd
 
 # Update cross-workspace tools installed by yarn

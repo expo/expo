@@ -1,19 +1,24 @@
 {
   "name": "expo-app-loader-provider",
-  "version": "1.0.0",
-  "description": "Expo module that provides application loaders",
+  "version": "5.0.0-rc.0",
+  "description": "Provides application loaders",
   "keywords": [
     "react-native",
     "expo"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
-    "expo-core": "~2.0.0"
-  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-app-loader-provider",
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
+    "babel-preset-expo": "^5.0.0",
+    "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "f04f6c038278daf9d4536da5ef651dbccf95c7b2"
 }

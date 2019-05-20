@@ -1,5 +1,4 @@
-import { EventEmitter, Platform, Subscription } from 'expo-core';
-import { UnavailabilityError } from 'expo-errors';
+import { EventEmitter, Platform, Subscription, UnavailabilityError } from '@unimodules/core';
 
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import {
@@ -21,6 +20,7 @@ export {
   PlatformOrientationInfo,
   OrientationChangeListener,
   OrientationChangeEvent,
+  WebOrientationLock,
 };
 
 const _orientationChangeEmitter = new EventEmitter(ExpoScreenOrientation);

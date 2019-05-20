@@ -4,6 +4,9 @@
  */
 'use strict';
 
+// whatwg-fetch@3 expects "self" to be globally defined
+global.self = global;
+
 const { Response, Request, Headers, fetch } = require('whatwg-fetch');
 global.Response = Response;
 global.Request = Request;
@@ -11,7 +14,6 @@ global.Headers = Headers;
 global.fetch = fetch;
 
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
-
 const createMockConstants = require('./createMockConstants');
 
 // window isn't defined as of react-native 0.45+ it seems
@@ -30,6 +32,12 @@ const mockImageLoader = {
 };
 Object.defineProperty(mockNativeModules, 'ImageLoader', mockImageLoader);
 Object.defineProperty(mockNativeModules, 'ImageViewManager', mockImageLoader);
+
+Object.defineProperty(mockNativeModules, 'LinkingManager', {
+  configurable: true,
+  enumerable: true,
+  get: () => mockNativeModules.Linking,
+});
 
 const mockPlatformConstants = {
   configurable: true,
@@ -104,7 +112,7 @@ for (let moduleName of Object.keys(expoModules)) {
   });
 }
 
-mockNativeModules.ExpoNativeModuleProxy.viewManagersNames.forEach(viewManagerName => {
+mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach(viewManagerName => {
   Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
     get: () => ({
       NativeProps: {},
@@ -123,8 +131,15 @@ Object.defineProperty(mockNativeModules.UIManager, 'RCTView', {
   }),
 });
 
-const modulesConstants = mockNativeModules.ExpoNativeModuleProxy.modulesConstants;
-mockNativeModules.ExpoNativeModuleProxy.modulesConstants = {
+Object.defineProperty(mockNativeModules.UIManager, 'takeSnapshot', {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  value: jest.fn(),
+});
+
+const modulesConstants = mockNativeModules.NativeUnimoduleProxy.modulesConstants;
+mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
   ...modulesConstants,
   ExponentConstants: {
     ...modulesConstants.ExponentConstants,
@@ -200,9 +215,9 @@ jest.mock('react-native-gesture-handler', () => {
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 
-jest.mock('expo-react-native-adapter', () => {
-  const ExpoReactNativeAdapter = require.requireActual('expo-react-native-adapter');
-  const { NativeModulesProxy } = ExpoReactNativeAdapter;
+jest.mock('@unimodules/react-native-adapter', () => {
+  const ReactNativeAdapter = require.requireActual('@unimodules/react-native-adapter');
+  const { NativeModulesProxy } = ReactNativeAdapter;
 
   // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
   // into the native proxy module. We're not really interested in checking whether the underlying
@@ -220,5 +235,15 @@ jest.mock('expo-react-native-adapter', () => {
     }
   }
 
-  return ExpoReactNativeAdapter;
+  return ReactNativeAdapter;
+});
+
+// The UIManager module is not idempotent and causes issues if we load it again after resetting
+// the modules with Jest.
+let UIManager;
+jest.doMock('react-native/Libraries/ReactNative/UIManager', () => {
+  if (!UIManager) {
+    UIManager = require.requireActual('react-native/Libraries/ReactNative/UIManager');
+  }
+  return UIManager;
 });

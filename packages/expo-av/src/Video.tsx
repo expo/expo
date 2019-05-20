@@ -23,13 +23,23 @@ import {
   FullscreenUpdateEvent,
   NativeProps,
   NaturalSize,
-  Props,
+  VideoProps,
   ReadyForDisplayEvent,
   ResizeMode,
-  State,
+  VideoState,
 } from './Video.types';
 
-export { NaturalSize };
+export {
+  ExponentVideoComponent,
+  FullscreenUpdateEvent,
+  NativeProps,
+  NaturalSize,
+  VideoProps,
+  ReadyForDisplayEvent,
+  ResizeMode,
+  VideoState,
+}
+
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -66,7 +76,7 @@ const _STYLES = StyleSheet.create({
 const ExpoVideoManagerConstants = ExpoVideoManager;
 const ExpoVideoViewManager = ExpoVideoManager;
 
-export default class Video extends React.Component<Props, State> implements Playback {
+export default class Video extends React.Component<VideoProps, VideoState> implements Playback {
   static RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
   static RESIZE_MODE_COVER = ResizeMode.COVER;
   static RESIZE_MODE_STRETCH = ResizeMode.STRETCH;
@@ -96,6 +106,7 @@ export default class Video extends React.Component<Props, State> implements Play
       }), // remote URI like { uri: 'http://foo/bar.mp4' }
       PropTypes.number, // asset module like require('./foo/bar.mp4')
     ]),
+    posterStyle: ViewPropTypes.style,
 
     // Callbacks
     onPlaybackStatusUpdate: PropTypes.func,
@@ -144,7 +155,7 @@ export default class Video extends React.Component<Props, State> implements Play
 
   // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
 
-  constructor(props: Props) {
+  constructor(props: VideoProps) {
     super(props);
     this.state = {
       showPoster: !!props.usePoster,
@@ -354,7 +365,7 @@ export default class Video extends React.Component<Props, State> implements Play
   _renderPoster = () =>
     this.props.usePoster && this.state.showPoster ? (
       // @ts-ignore: the react-native type declarations are overly restrictive
-      <Image style={_STYLES.poster} source={this.props.posterSource!} />
+      <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource!} />
     ) : null;
 
   render() {
@@ -392,7 +403,7 @@ export default class Video extends React.Component<Props, State> implements Play
     // Replace selected native props
     // @ts-ignore: TypeScript thinks "children" is not in the list of props
     const nativeProps: NativeProps = {
-      ...omit(this.props, 'source', ...Object.keys(status)),
+      ...omit(this.props, 'source', 'onPlaybackStatusUpdate', ...Object.keys(status)),
       style: StyleSheet.flatten([_STYLES.base, this.props.style]),
       source,
       resizeMode: nativeResizeMode,

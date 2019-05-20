@@ -1,8 +1,7 @@
 {
   "expo": {
     "name": "Expo APIs",
-    "description":
-      "This demonstrates a bunch of the native components that you can use in React Native core and Expo.",
+    "description": "This demonstrates a bunch of the native components that you can use in React Native core and Expo.",
     "slug": "native-component-list",
     "sdkVersion": "UNVERSIONED",
     "version": "UNVERSIONED",
@@ -20,8 +19,9 @@
       "image": "./assets/icons/loadingIcon.png"
     },
     "packagerOpts": {
-      "config": "rn-cli.config.js"
+      "config": "metro.config.js"
     },
+    "platforms": ["android", "ios", "web"],
     "facebookScheme": "fb1201211719949057",
     "facebookAppId": "1201211719949057",
     "facebookDisplayName": "Expo APIs",
@@ -50,13 +50,15 @@
       "config": {
         "usesNonExemptEncryption": false,
         "googleSignIn": {
-          "reservedClientId":
-            "com.googleusercontent.apps.603386649315-1b2o2gole94qc6h4prj6lvoiueq83se4"
+          "reservedClientId": "com.googleusercontent.apps.603386649315-1b2o2gole94qc6h4prj6lvoiueq83se4"
         },
         "branch": {
           "apiKey": "key_live_pcxsCTBguAUqQBd8CjYZ7ogkurnZcQAO"
         }
       }
+    },
+    "web": {
+      "productionPath": "web-build"
     },
     "assetBundlePatterns": [
       "assets/**",

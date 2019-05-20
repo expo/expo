@@ -155,7 +155,7 @@ private:
 public:
   // function that calls flush on GL thread - on Android it is passed by JNI
   std::function<void(void)> flushOnGLThread = [&]{};
-  
+
   // [GL thread] Do all the remaining work we can do on the GL thread
   void flush(void) noexcept {
     // Keep a copy and clear backlog to minimize lock time
@@ -196,7 +196,7 @@ public:
   inline void mapObject(UEXGLObjectId exglObjId, GLuint glObj) noexcept {
     objects[exglObjId] = glObj;
   }
-  
+
   inline GLuint lookupObject(UEXGLObjectId exglObjId) noexcept {
     auto iter = objects.find(exglObjId);
     return iter == objects.end() ? 0 : iter->second;
@@ -225,7 +225,7 @@ public:
       std::string version = (char *) glGetString(GL_VERSION);
       double glesVersion = strtod(version.substr(10).c_str(), 0);
       this->supportsWebGL2 = glesVersion >= 3.0;
-      
+
       glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
       GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
@@ -927,16 +927,16 @@ private:
     }
     return nullptr;
   }
-  
-  
+
+
   // Framebuffers (WebGL2)
   // ---------------------
-  
+
   _WRAP_METHOD_SIMPLE(blitFramebuffer, glBlitFramebuffer,
                       srcX0, srcY0, srcX1, srcY1,
                       dstX0, dstY0, dstX1, dstY1,
                       mask, filter)
-  
+
   _WRAP_WEBGL2_METHOD(framebufferTextureLayer, 5) {
     EXJS_UNPACK_ARGV(GLenum target, GLenum attachment, UEXGLObjectId texture, GLint level, GLint layer);
     addToNextBatch([=] {
@@ -944,7 +944,7 @@ private:
     });
     return nullptr;
   }
-  
+
   _WRAP_WEBGL2_METHOD(invalidateFramebuffer, 2) {
     EXJS_UNPACK_ARGV(GLenum target);
     size_t length;
@@ -954,7 +954,7 @@ private:
     });
     return nullptr;
   }
-  
+
   _WRAP_WEBGL2_METHOD(invalidateSubFramebuffer, 6) {
     EXJS_UNPACK_ARGV(GLenum target);
     EXJS_UNPACK_ARGV_OFFSET(2, GLint x, GLint y, GLint width, GLint height);
@@ -965,10 +965,10 @@ private:
     });
     return nullptr;
   }
-  
+
   _WRAP_WEBGL2_METHOD_SIMPLE(readBuffer, glReadBuffer, mode)
-  
-  
+
+
   // Renderbuffers
   // -------------
 
@@ -1015,7 +1015,7 @@ private:
   // ----------------------
 
   _WRAP_METHOD_UNIMPL(getInternalformatParameter)
-  
+
   _WRAP_METHOD_UNIMPL(renderbufferStorageMultisample)
 
 
@@ -1248,10 +1248,10 @@ private:
     GLsizei width, height, depth, border;
     GLenum format, type;
     JSObjectRef jsPixels;
-    
+
     EXJS_UNPACK_ARGV(target, level, internalformat, width, height, depth, border, format, type);
     jsPixels = (JSObjectRef) jsArgv[9];
-    
+
     // Null?
     if (JSValueIsNull(jsCtx, jsPixels)) {
       addToNextBatch([=] {
@@ -1259,17 +1259,17 @@ private:
       });
       return nullptr;
     }
-    
+
     std::shared_ptr<void> data(nullptr);
-    
+
     // Try TypedArray
     data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
-    
+
     // Try object with `.localUri` member
     if (!data) {
       data = loadImage(jsCtx, jsPixels, &width, &height, nullptr);
     }
-    
+
     if (data) {
       if (unpackFLipY) {
         GLubyte *texels = (GLubyte *) data.get();
@@ -1284,21 +1284,21 @@ private:
       });
       return nullptr;
     }
-    
+
     // Nothing worked...
     throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texImage3D()!");
   }
-  
+
   _WRAP_WEBGL2_METHOD(texSubImage3D, 11) {
     GLenum target;
     GLint level, xoffset, yoffset, zoffset;
     GLsizei width, height, depth;
     GLenum format, type;
     JSObjectRef jsPixels;
-    
+
     EXJS_UNPACK_ARGV(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type);
     jsPixels = (JSObjectRef) jsArgv[10];
-    
+
     // Null?
     if (JSValueIsNull(jsCtx, jsPixels)) {
       addToNextBatch([=] {
@@ -1308,17 +1308,17 @@ private:
       });
       return nullptr;
     }
-    
+
     std::shared_ptr<void> data(nullptr);
-    
+
     // Try TypedArray
     data = jsValueToSharedArray(jsCtx, jsPixels, nullptr);
-    
+
     // Try object with `.localUri` member
     if (!data) {
       data = loadImage(jsCtx, jsPixels, &width, &height, nullptr);
     }
-    
+
     if (data) {
       if (unpackFLipY) {
         GLubyte *texels = (GLubyte *) data.get();
@@ -1333,7 +1333,7 @@ private:
       });
       return nullptr;
     }
-    
+
     // Nothing worked...
     throw std::runtime_error("EXGL: Invalid pixel data argument for gl.texSubImage3D()!");
   }
@@ -1755,15 +1755,15 @@ private:
     addToNextBatch(glFlush);
     return nullptr;
   }
-  
-  
+
+
   // Drawing buffers (WebGL2)
   // ------------------------
-  
+
   _WRAP_WEBGL2_METHOD_SIMPLE(vertexAttribDivisor, glVertexAttribDivisor, index, divisor)
-  
+
   _WRAP_WEBGL2_METHOD_SIMPLE(drawArraysInstanced, glDrawArraysInstanced, mode, first, count, instancecount)
-  
+
   _WRAP_WEBGL2_METHOD(drawElementsInstanced, 5) {
     EXJS_UNPACK_ARGV(GLenum mode, GLsizei count, GLenum type, GLint offset, GLsizei instanceCount);
     addToNextBatch([=] {
@@ -1771,7 +1771,7 @@ private:
     });
     return nullptr;
   }
-  
+
   _WRAP_WEBGL2_METHOD(drawRangeElements, 6) {
     EXJS_UNPACK_ARGV(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLint offset);
     addToNextBatch([=] {
@@ -1779,14 +1779,14 @@ private:
     });
     return nullptr;
   }
-  
+
   _WRAP_WEBGL2_METHOD(drawBuffers, 1) {
     size_t length;
     auto data = jsValueToSharedArray(jsCtx, jsArgv[0], &length);
     addToNextBatch([=] { glDrawBuffers((GLsizei) length, (GLenum *) data.get()); });
     return nullptr;
   }
-  
+
 #define _WRAP_METHOD_CLEAR_BUFFER(suffix, Type)                         \
   _WRAP_WEBGL2_METHOD(clearBuffer##suffix, 4) {                         \
     EXJS_UNPACK_ARGV(GLenum buffer, GLint drawbuffer);                  \
@@ -1796,12 +1796,12 @@ private:
     });                                                                 \
     return nullptr;                                                     \
   }
-  
+
   _WRAP_METHOD_CLEAR_BUFFER(fv, GLfloat)
   _WRAP_METHOD_CLEAR_BUFFER(iv, GLint)
   _WRAP_METHOD_CLEAR_BUFFER(uiv, GLuint)
 #undef _WRAP_METHOD_CLEAR_BUFFER
-  
+
   _WRAP_WEBGL2_METHOD_SIMPLE(clearBufferfi, glClearBufferfi, buffer, drawbuffer, depth, stencil)
 
 
@@ -2065,7 +2065,7 @@ private:
 
   // Vertex Array Object (WebGL2)
   // ----------------------------
-  
+
   _WRAP_WEBGL2_METHOD(createVertexArray, 0) {
     return addFutureToNextBatch(jsCtx, [] {
       GLuint vertexArray;
@@ -2073,7 +2073,7 @@ private:
       return vertexArray;
     });
   }
-  
+
   _WRAP_WEBGL2_METHOD(deleteVertexArray, 1) {
     EXJS_UNPACK_ARGV(UEXGLObjectId fVertexArray);
     addToNextBatch([=] {
@@ -2082,9 +2082,9 @@ private:
     });
     return nullptr;
   }
-  
+
   _WRAP_WEBGL2_METHOD_IS_OBJECT(VertexArray)
-  
+
   _WRAP_WEBGL2_METHOD(bindVertexArray, 1) {
     EXJS_UNPACK_ARGV(UEXGLObjectId vertexArray);
     addToNextBatch([=] { glBindVertexArray(lookupObject(vertexArray)); });
@@ -2202,7 +2202,7 @@ private:
     _INSTALL_METHOD(getFramebufferAttachmentParameter);
     _INSTALL_METHOD(isFramebuffer);
     _INSTALL_METHOD(readPixels);
-    
+
     // Framebuffers (WebGL2)
     _INSTALL_METHOD(blitFramebuffer);
     _INSTALL_METHOD(framebufferTextureLayer);
@@ -2217,7 +2217,7 @@ private:
     _INSTALL_METHOD(getRenderbufferParameter);
     _INSTALL_METHOD(isRenderbuffer);
     _INSTALL_METHOD(renderbufferStorage);
-    
+
     // Renderbuffers (WebGL2)
     _INSTALL_METHOD(getInternalformatParameter);
     _INSTALL_METHOD(renderbufferStorageMultisample);
@@ -2339,7 +2339,7 @@ private:
     _INSTALL_METHOD(drawElements);
     _INSTALL_METHOD(finish);
     _INSTALL_METHOD(flush);
-    
+
     // Drawing buffers (WebGL2)
     _INSTALL_METHOD(vertexAttribDivisor);
     _INSTALL_METHOD(drawArraysInstanced);
@@ -2359,7 +2359,7 @@ private:
     _INSTALL_METHOD(endQuery);
     _INSTALL_METHOD(getQuery);
     _INSTALL_METHOD(getQueryParameter);
-    
+
     // Samplers (WebGL2)
     _INSTALL_METHOD(createSampler);
     _INSTALL_METHOD(deleteSampler);
@@ -3056,7 +3056,7 @@ void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(voi
     exglCtx->flushOnGLThread = flushMethod;
   }
 }
-  
+
 #ifdef __APPLE__
 void UEXGLContextSetFlushMethodObjc(UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod) {
   UEXGLContextSetFlushMethod(exglCtxId, [flushMethod] {

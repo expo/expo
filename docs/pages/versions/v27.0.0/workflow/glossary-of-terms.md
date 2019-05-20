@@ -2,10 +2,6 @@
 title: Glossary of terms
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### app.json
 
 `app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json"](../configuration/)
@@ -34,9 +30,9 @@ The command-line tool for working with Expo. [Read more](../exp-cli/).
 
 A synonym for app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
 
-### Expo Client
+### Expo client
 
-The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
 
 ### Expo SDK
 

@@ -2,14 +2,15 @@
 title: AR
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 > ARCore is not yet supported. This lib is iOS only right now.
 > Augmented Reality with ARKit for iOS
 > This library is generally used with [expo-three](https://github.com/expo/expo-three) to generate a camera, and manage a 3D scene.
+
+## Warning
+
+This API can only be used in ejected projects and is considered experimental.
 
 ## API
 
@@ -664,3 +665,4 @@ The internal ID used to render the camera texture.
     framesPerSecond: 60
 }
 ```
+

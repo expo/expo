@@ -1,31 +1,25 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSegment/EXSegment.h>
-#import <EXConstantsInterface/EXConstantsInterface.h>
-#import <SEGAnalytics.h>
+#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <Analytics/SEGAnalytics.h>
 
 static NSString *const EXSegmentOptOutKey = @"EXSegmentOptOutKey";
 
 @interface EXSegment ()
 
 @property (nonatomic, strong) SEGAnalytics *instance;
-@property (nonatomic, weak) id<EXConstantsInterface> constants;
 
 @end
 
 @implementation EXSegment
 
-EX_EXPORT_MODULE(ExponentSegment)
+UM_EXPORT_MODULE(ExponentSegment)
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
-{
-  _constants = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
-}
-
-EX_EXPORT_METHOD_AS(initializeIOS,
+UM_EXPORT_METHOD_AS(initializeIOS,
                     initializeIOS:(NSString *)writeKey
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   SEGAnalyticsConfiguration *configuration = [SEGAnalyticsConfiguration configurationWithWriteKey:writeKey];
   _instance = [[SEGAnalytics alloc] initWithConfiguration:configuration];
@@ -36,19 +30,19 @@ EX_EXPORT_METHOD_AS(initializeIOS,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(initializeAndroid,
+UM_EXPORT_METHOD_AS(initializeAndroid,
                     initializeAndroid:(NSString *)writeKey
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   // NO-OP. Need this here because Segment has different keys for iOS and Android.
   reject(@"E_WRONG_PLATFORM", @"Method initializeAndroid should not be called on iOS, please file an issue on GitHub.", nil);
 }
 
-EX_EXPORT_METHOD_AS(identify,
+UM_EXPORT_METHOD_AS(identify,
                     identify:(NSString *)userId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance identify:userId];
@@ -57,11 +51,11 @@ EX_EXPORT_METHOD_AS(identify,
 }
 
 
- EX_EXPORT_METHOD_AS(identifyWithTraits,
+ UM_EXPORT_METHOD_AS(identifyWithTraits,
                      identifyWithTraits:(NSString *)userId
                      withTraits:(NSDictionary *)traits
-                     resolver:(EXPromiseResolveBlock)resolve
-                     rejecter:(EXPromiseRejectBlock)reject)
+                     resolver:(UMPromiseResolveBlock)resolve
+                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance identify:userId traits:traits];
@@ -69,10 +63,10 @@ EX_EXPORT_METHOD_AS(identify,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(track,
+UM_EXPORT_METHOD_AS(track,
                     track:(NSString *)event
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance track:event];
@@ -80,10 +74,10 @@ EX_EXPORT_METHOD_AS(track,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(trackWithProperties,
+UM_EXPORT_METHOD_AS(trackWithProperties,
                     trackWithProperties:(NSString *)event withProperties:(NSDictionary *)properties
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance track:event properties:properties];
@@ -91,10 +85,10 @@ EX_EXPORT_METHOD_AS(trackWithProperties,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(group,
+UM_EXPORT_METHOD_AS(group,
                     group:(NSString *)groupId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance group:groupId];
@@ -102,11 +96,11 @@ EX_EXPORT_METHOD_AS(group,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(groupWithTraits,
+UM_EXPORT_METHOD_AS(groupWithTraits,
                     groupWithTraits:(NSString *)groupId
                     withTraits:(NSDictionary *)traits
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance group:groupId traits:traits];
@@ -114,11 +108,11 @@ EX_EXPORT_METHOD_AS(groupWithTraits,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(alias,
+UM_EXPORT_METHOD_AS(alias,
                     alias:(NSString *)newId
                     withOptions:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   SEGAnalytics *analytics = _instance;
   if (analytics) {
@@ -127,16 +121,16 @@ EX_EXPORT_METHOD_AS(alias,
     } else {
       [analytics alias:newId];
     }
-    resolve(EXNullIfNil(nil));
+    resolve(UMNullIfNil(nil));
   } else {
     reject(@"E_NO_SEG", @"Segment instance has not been initialized yet, have you tried calling Segment.initialize prior to calling Segment.alias?", nil);
   }
 }
 
-EX_EXPORT_METHOD_AS(screen,
+UM_EXPORT_METHOD_AS(screen,
                     screen:(NSString *)screenName
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance screen:screenName];
@@ -144,11 +138,11 @@ EX_EXPORT_METHOD_AS(screen,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(screenWithProperties,
+UM_EXPORT_METHOD_AS(screenWithProperties,
                     screenWithProperties:(NSString *)screenName
                     withProperties:(NSDictionary *)properties
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance screen:screenName properties:properties];
@@ -156,9 +150,9 @@ EX_EXPORT_METHOD_AS(screenWithProperties,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(reset,
-                    resetWithResolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(reset,
+                    resetWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance reset];
@@ -166,9 +160,9 @@ EX_EXPORT_METHOD_AS(reset,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(flush,
-                    flushWithResolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(flush,
+                    flushWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance flush];
@@ -176,23 +170,19 @@ EX_EXPORT_METHOD_AS(flush,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(getEnabledAsync,
-                    getEnabledWithResolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getEnabledAsync,
+                    getEnabledWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   NSNumber *optOutSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentOptOutKey];
   resolve(optOutSetting ?: @(YES));
 }
 
-EX_EXPORT_METHOD_AS(setEnabledAsync,
+UM_EXPORT_METHOD_AS(setEnabledAsync,
                     setEnabled:(BOOL)enabled
-                    withResolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    withResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if ([_constants.appOwnership isEqualToString:@"expo"]) {
-    reject(@"E_UNSUPPORTED", @"Setting Segment's `enabled` is not supported in Expo Client.", nil);
-    return;
-  }
   [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:EXSegmentOptOutKey];
   if (_instance) {
     if (enabled) {

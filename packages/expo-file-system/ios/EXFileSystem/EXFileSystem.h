@@ -1,27 +1,23 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
-#import <EXCore/EXEventEmitter.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
+#import <UMCore/UMEventEmitter.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 
-@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXFileSystemInterface>
+@interface EXFileSystem : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, UMFileSystemInterface>
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
+@property (nonatomic, readonly) NSString *bundleDirectory;
 
-- (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
+- (instancetype)initWithDocumentDirectory:(NSString *)documentDirectory cachesDirectory:(NSString *)cachesDirectory bundleDirectory:(NSString *)bundleDirectory;
+
+- (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 
 - (BOOL)ensureDirExistsWithPath:(NSString *)path;
-- (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;
-- (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId;
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
-
-+ (BOOL)ensureDirExistsWithPath:(NSString *)path;
-+ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;
-+ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId;
-+ (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
 
 @end
 
@@ -29,12 +25,12 @@
 
 + (void)getInfoForFile:(NSURL *)fileUri
            withOptions:(NSDictionary *)optionxs
-              resolver:(EXPromiseResolveBlock)resolve
-              rejecter:(EXPromiseRejectBlock)reject;
+              resolver:(UMPromiseResolveBlock)resolve
+              rejecter:(UMPromiseRejectBlock)reject;
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
-        resolver:(EXPromiseResolveBlock)resolve
-        rejecter:(EXPromiseRejectBlock)reject;
+        resolver:(UMPromiseResolveBlock)resolve
+        rejecter:(UMPromiseRejectBlock)reject;
 
 
 @end

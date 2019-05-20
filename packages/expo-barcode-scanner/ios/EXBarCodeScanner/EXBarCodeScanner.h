@@ -2,9 +2,9 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <EXBarCodeScannerInterface/EXBarCodeScannerInterface.h>
+#import <UMBarCodeScannerInterface/UMBarCodeScannerInterface.h>
 
-@interface EXBarCodeScanner : NSObject <EXBarCodeScannerInterface>
+@interface EXBarCodeScanner : NSObject <UMBarCodeScannerInterface>
 
 - (void)setSession:(AVCaptureSession *)session;
 - (void)setSessionQueue:(dispatch_queue_t)sessionQueue;

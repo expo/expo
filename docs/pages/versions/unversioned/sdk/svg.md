@@ -2,12 +2,19 @@
 title: Svg
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-export default withDocumentationElements(meta);
+## Installation
 
-### `Expo.Svg()`
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow the [react-native-svg installation instructions](https://github.com/react-native-community/react-native-svg).
+
+## API
+
+```js
+import * as Svg from 'react-native-svg';
+```
+
+### `Svg`
 
 A set of drawing primitives such as `Circle`, `Rect`, `Path`,
 `ClipPath`, and `Polygon`. It supports most SVG elements and properties.

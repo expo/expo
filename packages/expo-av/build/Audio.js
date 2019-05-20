@@ -2,6 +2,7 @@ import ExponentAV from './ExponentAV';
 export * from './Audio/Recording';
 export * from './Audio/Sound';
 export { setIsEnabledAsync } from './Audio/AudioAvailability';
+export { PitchCorrectionQuality } from './AV';
 export const INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS = 0;
 export const INTERRUPTION_MODE_IOS_DO_NOT_MIX = 1;
 export const INTERRUPTION_MODE_IOS_DUCK_OTHERS = 2;
@@ -20,6 +21,7 @@ export async function setAudioModeAsync(mode) {
         'allowsRecordingIOS',
         'interruptionModeIOS',
         'playsInSilentModeIOS',
+        'staysActiveInBackground',
         'interruptionModeAndroid',
         'shouldDuckAndroid',
         'playThroughEarpieceAndroid',
@@ -42,9 +44,10 @@ export async function setAudioModeAsync(mode) {
     }
     if (typeof mode.allowsRecordingIOS !== 'boolean' ||
         typeof mode.playsInSilentModeIOS !== 'boolean' ||
+        typeof mode.staysActiveInBackground !== 'boolean' ||
         typeof mode.shouldDuckAndroid !== 'boolean' ||
         typeof mode.playThroughEarpieceAndroid !== 'boolean') {
-        throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", and "shouldDuckAndroid" must be booleans.');
+        throw new Error('"allowsRecordingIOS", "playsInSilentModeIOS", "playThroughEarpieceAndroid", "staysActiveInBackground" and "shouldDuckAndroid" must be booleans.');
     }
     return await ExponentAV.setAudioMode(mode);
 }

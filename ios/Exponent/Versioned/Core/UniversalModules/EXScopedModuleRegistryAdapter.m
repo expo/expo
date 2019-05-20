@@ -3,11 +3,14 @@
 #import "EXScopedModuleRegistry.h"
 
 #import "EXScopedModuleRegistryAdapter.h"
-#import "EXFileSystemBinding.h"
 #import "EXSensorsManagerBinding.h"
 #import "EXConstantsBinding.h"
+#import "EXScopedFileSystemModule.h"
 #import "EXUnversioned.h"
 #import "EXScopedFilePermissionModule.h"
+#import "EXScopedSecureStore.h"
+#import "EXScopedAmplitude.h"
+#import "EXScopedPermissions.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -15,18 +18,18 @@
 
 @implementation EXScopedModuleRegistryAdapter
 
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForParams:(NSDictionary *)params andExperience:(NSString *)experienceId withScopedModulesArray:(NSArray<id<RCTBridgeModule>> *)scopedModulesArray withKernelServices:(NSDictionary *)kernelServices
+- (UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params forExperienceId:(NSString *)experienceId withKernelServices:(NSDictionary *)kernelServices
 {
-  EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistryForExperienceId:experienceId];
+  UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
-  EXFileSystemBinding *fileSystemBinding = [[EXFileSystemBinding alloc] init];
-  [moduleRegistry registerInternalModule:fileSystemBinding];
+  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
+  [moduleRegistry registerInternalModule:constantsBinding];
+
+  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+  [moduleRegistry registerExportedModule:fileSystemModule];
 
   EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];
   [moduleRegistry registerInternalModule:sensorsManagerBinding];
-  
-  EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
-  [moduleRegistry registerInternalModule:constantsBinding];
 
   EXScopedReactNativeAdapter *reactNativeAdapter = [[EXScopedReactNativeAdapter alloc] init];
   [moduleRegistry registerInternalModule:reactNativeAdapter];
@@ -37,17 +40,22 @@
   EXScopedFilePermissionModule *filePermissionModule = [[EXScopedFilePermissionModule alloc] init];
   [moduleRegistry registerInternalModule:filePermissionModule];
 
-  NSArray<id<RCTBridgeModule>> *bridgeModules = [self extraModulesForModuleRegistry:moduleRegistry];
-  return [bridgeModules arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];
+  EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:secureStoreModule];
+
+  EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:amplitudeModule];
+
+  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:permissionsModule];
+  [moduleRegistry registerInternalModule:permissionsModule];
+
+  return moduleRegistry;
 }
 
-- (NSDictionary<Class, id> *)dictionaryFromScopedModulesArray:(NSArray<id<RCTBridgeModule>> *)scopedModulesArray
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  NSMutableDictionary<Class, id> *scopedModulesDictionary = [NSMutableDictionary dictionaryWithCapacity:[scopedModulesArray count]];
-  for (id<RCTBridgeModule> module in scopedModulesArray) {
-    scopedModulesDictionary[(id<NSCopying>)[module class]] = module;
-  }
-  return scopedModulesDictionary;
+  return [[super extraModulesForModuleRegistry:moduleRegistry] arrayByAddingObject:[[EXModuleRegistryBinding alloc] initWithModuleRegistry:moduleRegistry]];
 }
 
 @end

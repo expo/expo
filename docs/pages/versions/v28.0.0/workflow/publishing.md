@@ -2,10 +2,6 @@
 title: Publishing
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 While you’re developing your project, you’re writing code on your
 computer, and when you use XDE or exp, a server and the React Native
 packager run on your machine and bundle up all your source code and make
@@ -24,7 +20,7 @@ turn off your laptop or close XDE, you won’t be able to load your
 project from that URL. "Publish" is the term we use for deploying your
 project. It makes your project available at a persistent URL, for
 example https://expo.io/@community/native-component-list, which can be
-opened with the Expo Client app. It also uploads all of your app images,
+opened with the Expo client app. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
 here](../how-expo-works/#publishingdeploying-an-expo-app-in-production)).
 
@@ -59,6 +55,10 @@ is built into Expo so you don't need to install anything.
 
 To configure the way your app handles JS updates, see [Offline Support](../../guides/offline-support).
 
+## Uploading Assets to the CDN
+
+In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the packager being unable to detect them and therefore they will not be uploaded when you publish your project. A great way to ensure your assets will be uploaded is to make use of [pre-loading and caching assets](../../guides/preloading-and-caching-assets/).
+
 ## Limitations
 
 ### Some native configuration can't be updated by publishing
@@ -77,7 +77,7 @@ re-build the binaries for your app for the change to take effect:
 
 ### On iOS, you can't share your published link
 
-When you publish, any Android user can open your app inside Expo Client immediately.
+When you publish, any Android user can open your app inside Expo client immediately.
 
 Due to restrictions imposed by Apple, the best way to share your published app is
 to build a native binary with Expo's build service. You can use Apple TestFlight to

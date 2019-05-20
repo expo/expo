@@ -8,6 +8,7 @@ export type ImageInfo = {
   uri: string;
   width: number;
   height: number;
+  type?: 'image' | 'video';
 };
 
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);

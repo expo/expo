@@ -2,10 +2,6 @@
 title: Frequently Asked Questions
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 In addition to the questions below, see the [Expo Forum](http://forums.expo.io/) or [Expo AMA on Hashnode](https://hashnode.com/ama/with-exponent-ciw1qxry118wl4353o9kxaowl) for more common questions and answers.
 
 ## How much does Expo cost?
@@ -34,7 +30,7 @@ Here are some of the things Expo gives you out of the box that work right away:
 
 -   **Support for iOS and Android**
 
-    You can use apps written in Expo on both iOS and Android right out of the box. You don't need to go through a separate build process for each one. Just open any Expo app in the Expo Client app from the App Store on either iOS or Android (or in a simulator or emulator on your computer).
+    You can use apps written in Expo on both iOS and Android right out of the box. You don't need to go through a separate build process for each one. Just open any Expo app in the Expo client app from the App Store on either iOS or Android (or in a simulator or emulator on your computer).
 
 -   **Push Notifications**
 
@@ -68,9 +64,9 @@ TL;DR you can do it, but most people never need to.
 
 Standard Expo projects don't support custom native code, including third-party libraries which require custom native components. In an Expo project, you only write pure JS. Expo is designed this way on purpose and we think it's better this way.
 
-In [our SDK](../../sdk/), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JS as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Expo SDK updates. Especially in the case of UI components, there is pretty much always a better option written in JS.
+In [our SDK](../../sdk/overview/), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JS as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Expo SDK updates. Especially in the case of UI components, there is pretty much always a better option written in JS.
 
-However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--we do have early/alpha support for [using Expo in native Xcode and Android Studio projects](../../expokit/).
+However, if you need something very custom--like on-the-fly video processing or low level control over the Bluetooth radio to do a firmware update--we do have early/alpha support for [using Expo in native Xcode and Android Studio projects](../../expokit/overview/).
 
 ## Is Expo similar to React for web development?
 
@@ -78,7 +74,7 @@ Expo and React Native are similar to React. You'll have to learn a new set of co
 
 ## How do I share my Expo project? Can I submit it to the app stores?
 
-The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in Expo Dev Tools or running `expo publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo Client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight.
+The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in Expo Dev Tools or running `expo publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight.
 
 When you're ready, you can create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../../distribution/building-standalone-apps/#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 

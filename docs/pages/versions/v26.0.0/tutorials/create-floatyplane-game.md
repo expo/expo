@@ -2,10 +2,7 @@
 title: Creating A 2D Game
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 > **Notice** This tutorial is written for Expo v22.
 

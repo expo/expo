@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.interfaces.Package;
+import org.unimodules.core.interfaces.Package;
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;

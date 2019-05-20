@@ -2,15 +2,21 @@
 title: Expo CLI
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+Expo CLI is a command line app that is the main interface between a developer and Expo tools. You'll use it for a variety of tasks, such as:
 
-export default withDocumentationElements(meta);
+- Creating new projects
+- Developing your app: running the project server, viewing logs, opening your app in a simulator 
+- [Publishing](../publishing/) your app JavaScript and other assets and managing releasing them over the air
+- [Building binaries](../../distribution/building-standalone-apps/) (`apk` and `ipa` files) to be [uploaded to the App Store and Play Store](../../distribution/uploading-apps/)
+- Managing Apple Credentials and Google Keystores
 
-Expo CLI is a command line interface for developing Expo apps. It also includes a web-based inteface (Expo Dev Tools) for using some of the most often used features also from a quick to use graphical interface.
+You may use the CLI in your terminal or use the web based interface (it opens automatically by default, or you can press d from the CLI to open it on demand). The web interface you to use some of the most often used features from a quick-to-use graphical interface. We’ve only scratched the surface of what expo-cli can do so far. Be sure to check out all the possible commands below!
 
 ## Installation
 
-See [Installation](../../introduction/installation).
+```
+npm install -g expo-cli
+```
 
 ## Commands
 
@@ -40,8 +46,8 @@ Commands:
   fetch:android:keystore [options] [project-dir]  Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.
   fetch:android:hashes [options] [project-dir]    Fetch this project's Android key hashes needed to setup Google/Facebook authentication.
   init|i [options] [project-dir]                  Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
-  install:ios [options]                           Install the latest version of Expo Client for iOS on the simulator
-  install:android [options]                       Install the latest version of Expo Client for Android on a connected device or emulator
+  install:ios [options]                           Install the latest version of Expo client for iOS on the simulator
+  install:android [options]                       Install the latest version of Expo client for Android on a connected device or emulator
   ios [options] [project-dir]                     Opens your app in Expo in an iOS simulator on your computer
   login|signin [options]                          Login with your Expo account
   logout [options]                                Logout from your Expo account

@@ -13,6 +13,20 @@ import android.view.View;
 import com.google.android.cameraview.CameraView;
 import com.google.android.cameraview.Size;
 
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.interfaces.camera.CameraViewInterface;
+import org.unimodules.interfaces.facedetector.FaceDetector;
+import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
+import org.unimodules.interfaces.permissions.Permissions;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,19 +36,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.barcodescanner.BarCodeScanner;
-import expo.interfaces.barcodescanner.BarCodeScannerProvider;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
-import expo.interfaces.camera.ExpoCameraViewInterface;
-import expo.interfaces.facedetector.FaceDetector;
-import expo.interfaces.facedetector.FaceDetectorProvider;
-import expo.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.BarCodeScannerAsyncTask;
 import expo.modules.camera.tasks.BarCodeScannerAsyncTaskDelegate;
 import expo.modules.camera.tasks.FaceDetectorAsyncTask;
@@ -44,7 +45,7 @@ import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 import expo.modules.camera.utils.FileSystemUtils;
 import expo.modules.camera.utils.ImageDimensions;
 
-public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, ExpoCameraViewInterface {
+public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, CameraViewInterface {
   private static final String MUTE_KEY = "mute";
   private static final String QUALITY_KEY = "quality";
   private static final String FAST_MODE_KEY = "fastMode";
@@ -76,6 +77,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     super(themedReactContext, true);
     mModuleRegistry = moduleRegistry;
     initBarCodeScanner();
+    setChildrenDrawingOrderEnabled(true);
 
     mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
 
@@ -161,11 +163,34 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onViewAdded(View child) {
-    if (this.getView() == child || this.getView() == null) return;
-    // remove and readd view to make sure it is in the back.
-    // @TODO figure out why there was a z order issue in the first place and fix accordingly.
-    this.removeView(this.getView());
-    this.addView(this.getView(), 0);
+    // react adds children to containers at the beginning of children list and that moves pre-react added preview to the end of that list
+    // above would cause preview (TextureView that covers all available space) to be rendered at the top of children stack
+    // while we need this preview to be rendered last beneath all other children
+
+    // child is not preview
+    if (this.getView() == child || this.getView() == null) {
+      return;
+    }
+
+    // bring to front all non-preview children
+    List<View> childrenToBeReordered = new ArrayList<>();
+    for (int i = 0; i < this.getChildCount(); i++) {
+      View childView = this.getChildAt(i);
+      if (i == 0 && childView == this.getView()) {
+        // preview is already first in children list - do not reorder anything
+        return;
+      }
+      if (childView != this.getView()) {
+        childrenToBeReordered.add(childView);
+      }
+    }
+
+    for (View childView : childrenToBeReordered) {
+      bringChildToFront(childView);
+    }
+
+    requestLayout();
+    invalidate();
   }
 
   public void takePicture(Map<String, Object> options, final Promise promise, File cacheDirectory) {
@@ -279,7 +304,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         }
       }
     } else {
-      CameraViewHelper.emitMountErrorEvent(mModuleRegistry.getModule(EventEmitter.class), this,  "Camera permissions not granted - component could not be rendered.");
+      CameraViewHelper.emitMountErrorEvent(mModuleRegistry.getModule(EventEmitter.class), this, "Camera permissions not granted - component could not be rendered.");
     }
   }
 
@@ -303,7 +328,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   private boolean hasCameraPermissions() {
-    int[] permissions = mModuleRegistry.getModule(Permissions.class).getPermissions(new String[]{ Manifest.permission.CAMERA });
+    int[] permissions = mModuleRegistry.getModule(Permissions.class).getPermissions(new String[]{Manifest.permission.CAMERA});
     return permissions.length == 1 && permissions[0] == PackageManager.PERMISSION_GRANTED;
   }
 

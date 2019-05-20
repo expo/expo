@@ -2,7 +2,7 @@
 
 @implementation EXAdIconViewManager
 
-EX_EXPORT_MODULE(AdIconViewManager)
+UM_EXPORT_MODULE(AdIconViewManager)
 
 - (NSString *)viewName
 {

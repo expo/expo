@@ -4,8 +4,16 @@ platform :ios, '10.0'
 target '${TARGET_NAME}' do
 ${EXPONENT_CLIENT_DEPS}
 
-  # Local CocoaPods
-${PODFILE_UNVERSIONED_EXPO_MODULES_DEPENDENCIES}
+  # Universal modules
+  require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+  use_unimodules!({
+    modules_paths: ['../packages'],
+    exclude: [
+      'expo-module-template',
+      'expo-payments-stripe',
+    ]
+  })
+
 ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 ${PODFILE_VERSIONED_RN_DEPENDENCIES}
 

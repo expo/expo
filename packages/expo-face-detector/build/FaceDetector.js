@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoFaceDetector from './ExpoFaceDetector';
 export async function detectFacesAsync(uri, options = {}) {
     if (!ExpoFaceDetector.detectFaces) {

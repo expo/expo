@@ -3,10 +3,6 @@ id: keyboard
 title: Keyboard
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `Keyboard` module to control keyboard events.
 
 ### Usage

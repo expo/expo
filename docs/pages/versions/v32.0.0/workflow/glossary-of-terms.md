@@ -2,17 +2,13 @@
 title: Glossary of terms
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ### app.json
 
 `app.json` is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json"](../configuration/)
 
 ### create-react-native-app
 
-The React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). Gets you set up and creating a React Native app with no build configuration required, and it uses Expo to accomplish this. [Read more in "Expo & Create React Native App"](../create-react-native-app/).
+Formerly the React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). This has since been replaced with `expo-cli`.
 
 ### detach
 
@@ -37,9 +33,9 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 The command-line tool for working with Expo. [Read more](../expo-cli/).
 
-### Expo Client
+### Expo client
 
-The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
 
 ### Expo Dev Tools
 
@@ -47,7 +43,7 @@ Expo Developer Tools is a web browser based UI included in [Expo CLI](#expo-cli)
 
 ### Expo SDK
 
-The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](../../sdk/). [Find it on Github](https://github.com/expo/expo-sdk).
+The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](../../sdk/overview/). [Find it on Github](https://github.com/expo/expo-sdk).
 
 ### ExpoKit
 

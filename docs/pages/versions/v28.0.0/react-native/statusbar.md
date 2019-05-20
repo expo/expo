@@ -3,10 +3,6 @@ id: statusbar
 title: StatusBar
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Component to control the app status bar.
 
 ### Usage with Navigator

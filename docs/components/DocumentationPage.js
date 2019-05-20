@@ -29,21 +29,6 @@ const STYLES_DOCUMENT = css`
   }
 `;
 
-const STYLES_ALERT = css`
-  padding: 16px;
-  border-radius: 4px;
-  margin-bottom: 24px;
-  line-height: 1.4;
-  color: ${Constants.colors.white};
-  background: ${Constants.colors.black};
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-`;
-
-const STYLES_ALERT_BOLD = css`
-  color: ${Constants.colors.white};
-  font-family: ${Constants.fontFamilies.demi};
-`;
-
 const mutateRouteDataForRender = data => {
   data.forEach(element => {
     if (element.href) {
@@ -99,7 +84,7 @@ export default class DocumentationPage extends React.Component {
 
     // TODO: Find what's stripping trailing slashes from these
     if (version.startsWith('v')) {
-      newPath += '/'
+      newPath += '/';
     }
 
     Router.push(newPath + '/');
@@ -162,22 +147,9 @@ export default class DocumentationPage extends React.Component {
 
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
-            <div className={STYLES_ALERT}>
-              <span style={{ fontSize: 17 }}>
-                <strong className={STYLES_ALERT_BOLD}>Hi friend!</strong>{' '}
-                Meet us at App.js Conf in Krakow, Poland on April 4th and 5th with workshops and talks.{' '}
-                <a
-                  className={STYLES_ALERT_BOLD}
-                  style={{ color: Constants.colors.lila }}
-                  href="https://appjs.co/"
-                  target="blank">
-                  Learn more
-                </a>
-              </span>
-            </div>
             <H1>{this.props.title}</H1>
             {this.props.children}
-            <DocumentationFooter />
+            <DocumentationFooter title={this.props.title} asPath={this.props.asPath} />
           </div>
         ) : (
           <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />

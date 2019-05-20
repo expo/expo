@@ -4,6 +4,7 @@ import ExpoKeepAwake from './ExpoKeepAwake';
 // NOTE(brentvatne): in tests this value won't be reset because we
 // can render a component and never unmount it.
 let __keepAwakeMountedCount = 0;
+const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
 export default class KeepAwake extends React.PureComponent {
   static activate = activate;
@@ -28,10 +29,10 @@ export default class KeepAwake extends React.PureComponent {
   }
 }
 
-export function activate() {
-  ExpoKeepAwake.activate();
+export function activate(tag?: string) {
+  ExpoKeepAwake.activate(tag || ExpoKeepAwakeTag);
 }
 
-export function deactivate() {
-  ExpoKeepAwake.deactivate();
+export function deactivate(tag?: string) {
+  ExpoKeepAwake.deactivate(tag || ExpoKeepAwakeTag);
 }

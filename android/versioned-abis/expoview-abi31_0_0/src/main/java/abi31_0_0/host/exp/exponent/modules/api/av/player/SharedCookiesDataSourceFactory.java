@@ -4,8 +4,8 @@ import android.net.Uri;
 
 import abi31_0_0.com.facebook.react.bridge.ReactContext;
 import abi31_0_0.com.facebook.react.modules.network.NetworkingModule;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import expolib_v1.com.google.android.exoplayer2.upstream.DataSource;
+import expolib_v1.com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 import java.util.Map;
 

@@ -2,10 +2,6 @@
 title: Using Custom Fonts
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Both iOS and Android come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. In this guide we'll walk you through adding a custom font to your Expo app. We'll use [Open Sans](https://fonts.google.com/specimen/Open+Sans) from [Google Fonts](https://fonts.google.com/) in the example, and the process is identical for any other font, so feel free to adapt it to your use case. Before proceeding, go ahead and download [Open Sans](https://fonts.google.com/specimen/Open+Sans)
 
 ## Starting code
@@ -40,7 +36,7 @@ Take the Open Sans zipfile that you downloaded, extract it and copy `OpenSans-Bo
 
 ## Loading the font in your app
 
-To load and use fonts we will use the [Expo SDK](../../sdk/), which comes pre-installed when you create a new Expo project, but if for some reason you don't have it, you can install with `npm install --save expo` in your project directory. Add the following `import` in your application code:
+To load and use fonts we will use the [Expo SDK](../../sdk/overview/), which comes pre-installed when you create a new Expo project, but if for some reason you don't have it, you can install with `npm install --save expo` in your project directory. Add the following `import` in your application code:
 
 ```javascript
 import { Font } from 'expo';

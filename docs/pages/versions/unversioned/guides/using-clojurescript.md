@@ -5,9 +5,7 @@ previous___FILE: ./upgrading-expo.md
 next___FILE: ./using-firebase.md
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
+> **Note:** ClojureScript is not officially supported by the Expo team, this guide was written by [@tiensonqin](https://github.com/tiensonqin)!
 
 ## Quickstart
 
@@ -24,9 +22,7 @@ lein figwheel
 expo start --ios
 ```
 
-> **Note:** This guide was written by [@tiensonqin](https://github.com/tiensonqin), feel free to reach out to him on the [Expo Slack](http://slack.expo.io/) if you have questions!
-
-## Why Clojurescript?
+## Why ClojureScript?
 
 -   First-class immutable data structures
 -   Minimizing state and side-effects

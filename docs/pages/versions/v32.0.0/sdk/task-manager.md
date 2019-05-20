@@ -2,21 +2,19 @@
 title: TaskManager
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 An API that allows to manage tasks, especially these running while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of modules using TaskManager:
 
 - [Location](../location)
 - [BackgroundFetch](../background-fetch)
 
-*Even though this module is a universal module, it is **not compatible** with vanilla React Native applications yet.*
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
 
 ## Configuration for standalone apps
 
-`TaskManager` works out of the box in the Expo Client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+`TaskManager` works out of the box in the Expo client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
 Example of `app.json` that enables background location and background fetch:
 
 ```json
@@ -37,7 +35,11 @@ Example of `app.json` that enables background location and background fetch:
 }
 ```
 
-## Methods
+## API
+
+```js
+import { TaskManager } from 'expo';
+```
 
 ### `TaskManager.defineTask(taskName, task)`
 
@@ -47,8 +49,8 @@ This limitation is due to the fact that when the application is launched in the 
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task.
--   **task : `function`** -- A function that will be invoked when the task with given **taskName** is executed.
+-   **taskName (_string_)** -- Name of the task.
+-   **task (_function_)** -- A function that will be invoked when the task with given **taskName** is executed.
 
 ### `TaskManager.isTaskRegisteredAsync(taskName)`
 
@@ -56,7 +58,7 @@ Determine whether the task is registered. Registered tasks are stored in a persi
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task.
+-   **taskName (_string_)** -- Name of the task.
 
 #### Returns
 
@@ -68,7 +70,7 @@ Retrieves options associated with the task, that were passed to the function reg
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task.
+-   **taskName (_string_)** -- Name of the task.
 
 #### Returns
 
@@ -110,7 +112,7 @@ Unregisters task from the app, so the app will not be receiving updates for that
 
 #### Arguments
 
--   **taskName : `string`** -- Name of the task to unregister.
+-   **taskName (_string_)** -- Name of the task to unregister.
 
 #### Returns
 
@@ -160,3 +162,4 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   }
 });
 ```
+

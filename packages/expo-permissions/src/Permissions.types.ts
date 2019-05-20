@@ -8,9 +8,7 @@ export type PermissionType =
   | 'contacts'
   | 'calendar'
   | 'reminders'
-  | 'systemBrightness'
-  // Allow other permissions for this API to be extensible
-  | string;
+  | 'systemBrightness';
 
 export type PermissionResponse = {
   status: PermissionStatus;

@@ -2,10 +2,6 @@
 title: Already used React Native?
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
 
 ## What is Expo?
@@ -64,8 +60,7 @@ If you prefer to build your app on your own machine, you can [follow these steps
 - [Expo Forums](https://forums.expo.io)
   - The fastest way to get help from the Expo team or community
 - [Expo Github](https://github.com/expo)
-  - The Expo Client and SDK are all open source. If there's something you'd like to fix, or figure out how we implement our native modules, you're welcome to look through the code yourself!
-- [Expo Slack](https://slack.expo.io)
+  - The Expo client and SDK are all open source. If there's something you'd like to fix, or figure out how we implement our native modules, you're welcome to look through the code yourself!
 
 ## Useful Commands
 

@@ -1,15 +1,15 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-#import <EXCore/EXUIManager.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <UMCore/UMUIManager.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 
-@interface EXGLObjectManager : EXExportedModule <EXModuleRegistryConsumer>
+@interface EXGLObjectManager : UMExportedModule <UMModuleRegistryConsumer>
 
-@property (nonatomic, weak) id<EXUIManager> uiManager;
-@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<UMUIManager> uiManager;
+@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
 
 - (void)saveContext:(nonnull id)glContext;
 - (void)deleteContextWithId:(nonnull NSNumber *)contextId;

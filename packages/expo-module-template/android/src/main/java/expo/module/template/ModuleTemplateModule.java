@@ -1,15 +1,18 @@
 package expo.module.template;
 
+import java.util.Map;
+
 import android.content.Context;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 public class ModuleTemplateModule extends ExportedModule implements ModuleRegistryConsumer {
-  private static final String TAG = "ExpoModuleTemplateModule";
+  private static final String NAME = "ExpoModuleTemplate";
+  private static final String TAG = ModuleTemplateModule.class.getSimpleName();
 
   private ModuleRegistry mModuleRegistry;
 
@@ -19,7 +22,7 @@ public class ModuleTemplateModule extends ExportedModule implements ModuleRegist
 
   @Override
   public String getName() {
-    return TAG;
+    return NAME;
   }
 
   @Override

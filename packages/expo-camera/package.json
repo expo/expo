@@ -1,9 +1,10 @@
 {
   "name": "expo-camera",
-  "version": "2.0.0",
-  "description": "Expo Camera standalone universal module",
+  "version": "5.0.0-rc.0",
+  "description": "A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -21,30 +22,29 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-camera",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/camera/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "expo-core": "~2.0.0",
-    "expo-camera-interface": "~2.0.0",
-    "expo-barcode-scanner-interface": "~2.0.0",
-    "expo-file-system-interface": "~2.0.0",
-    "expo-face-detector-interface": "~2.0.0",
-    "expo-permissions-interface": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "unimodules-camera-interface": "*",
+    "unimodules-barcode-scanner-interface": "*",
+    "unimodules-file-system-interface": "*",
+    "unimodules-face-detector-interface": "*",
+    "unimodules-permissions-interface": "*"
   },
   "dependencies": {
-    "expo-errors": "^1.0.0-rc.2",
-    "lodash.mapvalues": "^4.6.0",
+    "lodash": "^4.6.0",
     "prop-types": "^15.6.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "211a7a3ce4007e7aa10ccf6efac4b5333ec31d0a"
 }

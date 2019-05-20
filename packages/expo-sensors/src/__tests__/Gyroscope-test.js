@@ -1,6 +1,6 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 
-import { mockPlatformAndroid, mockPlatformIOS } from '../../test/mocking';
+import { mockPlatformIOS } from '../../test/mocking';
 import Gyroscope from '../Gyroscope';
 
 afterEach(() => {

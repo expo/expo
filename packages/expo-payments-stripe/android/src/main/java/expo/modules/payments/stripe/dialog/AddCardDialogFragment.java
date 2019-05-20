@@ -20,7 +20,7 @@ import com.devmarvel.creditcardentry.fields.SecurityCodeText;
 import com.devmarvel.creditcardentry.library.CreditCard;
 import com.devmarvel.creditcardentry.library.CreditCardForm;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 import expo.modules.payments.stripe.R;
 import expo.modules.payments.stripe.StripeModule;
 import expo.modules.payments.stripe.util.CardFlipAnimator;

@@ -2,10 +2,6 @@
 title: Hosting An App on Your Servers
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 > **WARNING:** This feature is in beta.
 
 Normally, when over-the-air (OTA) updates are enabled, your app will fetch JS bundles and assets from Expo’s CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, OTA updates are slow or unusable in countries that have blocked Expo’s CDN providers on AWS and Google Cloud. In these cases, you can host your app on your own servers to better suit your use case.

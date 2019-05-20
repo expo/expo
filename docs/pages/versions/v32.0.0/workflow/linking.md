@@ -2,10 +2,7 @@
 title: Linking
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-
-export default withDocumentationElements(meta);
 
 ## Introduction
 
@@ -90,7 +87,7 @@ On iOS, `Linking.canOpenURL` requires additional configuration to query other ap
   }
 ```
 
-If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in standalone apps, because it requires native changes that will not be applied when testing in Expo Client.
+If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in standalone apps, because it requires native changes that will not be applied when testing in Expo client.
 
 ## Linking to your app
 
@@ -219,7 +216,7 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
     "data": [
       {
         "scheme": "https",
-        "host": "*.myapp.io"
+        "host": "*.myapp.io",
         "pathPrefix": "/records"
       },
     ],
@@ -241,7 +238,7 @@ It may be desirable for links to your domain to always open your app (without pr
     "data": [
       {
         "scheme": "https",
-        "host": "*.myapp.io"
+        "host": "*.myapp.io",
         "pathPrefix": "/records"
       },
     ],

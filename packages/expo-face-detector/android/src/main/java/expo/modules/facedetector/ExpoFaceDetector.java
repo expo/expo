@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExpoFaceDetector implements expo.interfaces.facedetector.FaceDetector {
+public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.FaceDetector {
   private static final String RUN_CLASSIFICATIONS_KEY = "runClassifications";
   private static final String DETECT_LANDMARKS_KEY = "detectLandmarks";
   private static final String TRACKING_KEY = "tracking";

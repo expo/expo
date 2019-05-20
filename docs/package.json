@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "node server.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
-    "export": "yarn run build && cross-env NODE_OPTIONS=--max-old-space-size=8192 next export",
-    "export-server": "cd out && python -m SimpleHTTPServer 8000",
+    "export": "yarn run build && next export",
+    "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
-    "test-links": "blc --recursive --exclude-external --filter-level 2"
+    "test-links": "./scripts/test-links"
   },
   "dependencies": {
     "@mdx-js/loader": "^0.16.8",
@@ -23,16 +23,17 @@
     "fs-extra": "^6.0.1",
     "github-slugger": "^1.2.0",
     "hotshot": "^1.0.5",
-    "next": "^7.0.2",
+    "next": "^8.0.0",
     "nprogress": "0.2.0",
     "prismjs": "^1.11.0",
     "prop-types": "15.6.2",
-    "react": "16.4.2",
-    "react-dom": "16.4.2",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
     "react-emotion": "^9.2.9"
   },
   "devDependencies": {
     "broken-link-checker": "^0.7.8",
+    "http-server": "^0.11.1",
     "minimist": "^1.2.0",
     "prettier": "^1.15.3"
   }

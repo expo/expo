@@ -1,0 +1,112 @@
+package expo.modules.ads.facebook;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+
+import com.facebook.ads.AdOptionsView;
+import com.facebook.ads.NativeAdLayout;
+
+import java.lang.ref.WeakReference;
+
+public class AdOptionsWrapperView extends LinearLayout {
+  private int mIconSize = -1;
+  private Integer mColor = null;
+  private AdOptionsView.Orientation mOrientation = null;
+
+  private WeakReference<NativeAdView> mNativeAdViewWeakReference = new WeakReference<>(null);
+  private WeakReference<AdOptionsView> mAdOptionsViewWeakReference = new WeakReference<>(null);
+
+  public AdOptionsWrapperView(Context context) {
+    super(context);
+  }
+
+  public void setNativeAdView(NativeAdView nativeAdView) {
+    mNativeAdViewWeakReference = new WeakReference<>(nativeAdView);
+    maybeSetUpOptionsView();
+  }
+
+  public void setIconSize(int iconSize) {
+    mIconSize = iconSize;
+    maybeSetUpOptionsView();
+  }
+
+  public void setOrientation(AdOptionsView.Orientation orientation) {
+    mOrientation = orientation;
+    maybeSetUpOptionsView();
+  }
+
+  public void setIconColor(Integer color) {
+    mColor = color;
+    AdOptionsView adOptionsView = mAdOptionsViewWeakReference.get();
+    if (adOptionsView != null && color != null) {
+      adOptionsView.setIconColor(mColor);
+    }
+  }
+
+  private void maybeSetUpOptionsView() {
+    NativeAdView nativeAdView = mNativeAdViewWeakReference.get();
+
+    if (mIconSize == -1 ||
+        mOrientation == null ||
+        nativeAdView == null) {
+      return;
+    }
+
+    removeAllViews();
+
+    AdOptionsView adOptionsView = createNewAdOptionsView(nativeAdView);
+    addView(adOptionsView);
+
+    mAdOptionsViewWeakReference = new WeakReference<>(adOptionsView);
+  }
+
+  private AdOptionsView createNewAdOptionsView(NativeAdView nativeAdView) {
+    AdOptionsView adOptionsView = new AdOptionsView(
+        getContext(),
+        nativeAdView.getNativeAd(),
+        getNativeAdLayout(nativeAdView),
+        mOrientation,
+        mIconSize
+    );
+
+    if (mColor != null) {
+      adOptionsView.setIconColor(mColor);
+    }
+
+    return adOptionsView;
+  }
+
+  private NativeAdLayout getNativeAdLayout(NativeAdView nativeAdView) {
+    View currentView = nativeAdView;
+
+    try {
+      while (!(currentView instanceof NativeAdLayout)) {
+        currentView = (View) currentView.getParent();
+      }
+    } catch (Exception e) {
+      System.out.println();
+      Log.e("AdOptionsView","NativeAdLayout is not an ancestor of nativeAdView!", e);
+    }
+    return (NativeAdLayout) currentView;
+  }
+
+  @Override
+  public void requestLayout() {
+    super.requestLayout();
+
+    // Relayout child
+    post(mMeasureAndLayout);
+  }
+
+  private final Runnable mMeasureAndLayout = new Runnable() {
+    @Override
+    public void run() {
+      measure(
+          MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+      layout(getLeft(), getTop(), getRight(), getBottom());
+    }
+  };
+}

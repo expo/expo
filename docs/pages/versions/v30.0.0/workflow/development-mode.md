@@ -5,10 +5,6 @@ previous___FILE: ./up-and-running.md
 next___FILE: ./configuration.md
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 React Native includes some very useful tools for development: remote JavaScript debugging in Chrome, live reload, hot reloading, and an element inspector similar to the beloved inspector that you use in Chrome. It also performs bunch of validations while your app is running to give you warnings if you're using a deprecated property or if you forgot to pass a required property into a component, for example.
 
 ![Screenshots of development mode in action](/static/images/development-mode.png)
@@ -27,4 +23,4 @@ In the terminal with your project running in Expo CLI, press `p` to toggle the p
 
 ## Showing the Developer Menu
 
-When in Development Mode, depending on your settings of the Expo Client, you will either shake your device or use a two-finger force touch to reveal the Developer Menu. When using an emulator, use the key command ⌘+D for iOS and Ctrl+M for Android.
+When in Development Mode, depending on your settings of the Expo client, you will either shake your device or use a two-finger force touch to reveal the Developer Menu. When using an emulator, use the key command ⌘+D for iOS and Ctrl+M for Android.

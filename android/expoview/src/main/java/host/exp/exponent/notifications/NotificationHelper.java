@@ -16,9 +16,9 @@ import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 
 import de.greenrobot.event.EventBus;
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.fcm.FcmRegistrationIntentService;

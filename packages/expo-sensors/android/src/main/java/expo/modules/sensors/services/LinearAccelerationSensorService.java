@@ -8,9 +8,9 @@ import android.hardware.Sensor;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.InternalModule;
 
-public class LinearAccelerationSensorService extends SubscribableSensorService implements InternalModule, expo.interfaces.sensors.services.LinearAccelerationSensorService {
+public class LinearAccelerationSensorService extends SubscribableSensorService implements InternalModule, org.unimodules.interfaces.sensors.services.LinearAccelerationSensorService {
   public LinearAccelerationSensorService(Context reactContext) {
     super(reactContext);
   }
@@ -22,6 +22,6 @@ public class LinearAccelerationSensorService extends SubscribableSensorService i
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(expo.interfaces.sensors.services.LinearAccelerationSensorService.class);
+    return Collections.<Class>singletonList(org.unimodules.interfaces.sensors.services.LinearAccelerationSensorService.class);
   }
 }

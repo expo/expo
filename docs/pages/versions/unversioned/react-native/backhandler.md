@@ -3,10 +3,6 @@ id: backhandler
 title: BackHandler
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Detect hardware button presses for back navigation.
 
 Android: Detect hardware back button presses, and programmatically invoke the default back button functionality to exit the app if there are no listeners or if none of the listeners return true.

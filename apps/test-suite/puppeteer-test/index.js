@@ -3,17 +3,20 @@ const puppeteer = require('puppeteer');
 
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const path = require('path');
-const config = require('../webpack.config');
+const getConfig = require('../webpack.ci');
+
+const config = getConfig({ development: true });
+
+const { devServer = {} } = config;
 
 const options = {
-  ...config.devServer,
+  ...devServer,
   hot: true,
   inline: true,
   stats: { colors: true },
 };
 
-const port = 8080;
+const port = 19003;
 
 const manuallyRunWebpack = true;
 
@@ -55,7 +58,7 @@ async function runPuppeteerAsync() {
   page.on('console', async msg => {
     // 2. Filter the results into a list of objects
     const args = await Promise.all(msg.args().map(arg => parseHandle(arg)));
-    console.log(msg);
+    console.log(args);
 
     // 4. Ignore anything that isn't an object - in test-suite we are sending the results as an object.
     const jsonObjects = args.filter(({ type }) => type === 'object');
@@ -83,7 +86,7 @@ async function runPuppeteerAsync() {
     }
   });
 
-  await page.goto(`http://localhost:${port}`, {
+  await page.goto(`http://localhost:${port}/all`, {
     timeout: 3000000,
   });
   console.log('Start observing test-suite');
@@ -103,8 +106,8 @@ function listenToServerAsync(server) {
 
 async function main(args) {
   if (manuallyRunWebpack) {
-    server = new WebpackDevServer(webpack(config), options);
     try {
+      server = new WebpackDevServer(webpack(config), options);
       await listenToServerAsync(server);
       console.log('WebpackDevServer listening at localhost:', port);
     } catch (error) {

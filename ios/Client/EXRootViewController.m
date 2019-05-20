@@ -217,11 +217,10 @@ NS_ASSUME_NONNULL_BEGIN
         if (viewControllerToHide) {
           // backgrounds and then dismisses all modals that are presented by the app
           [viewControllerToHide backgroundControllers];
-          [viewControllerToHide dismissViewControllerAnimated:NO completion:^{
-            [viewControllerToHide willMoveToParentViewController:nil];
-            [viewControllerToHide.view removeFromSuperview];
-            [viewControllerToHide didMoveToParentViewController:nil];
-          }];
+          [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
+          [viewControllerToHide willMoveToParentViewController:nil];
+          [viewControllerToHide.view removeFromSuperview];
+          [viewControllerToHide didMoveToParentViewController:nil];
         }
         if (viewControllerToShow) {
           [viewControllerToShow didMoveToParentViewController:strongSelf];

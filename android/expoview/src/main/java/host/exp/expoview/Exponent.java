@@ -48,13 +48,13 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import expo.core.interfaces.Package;
-import expo.core.interfaces.SingletonModule;
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
+import okhttp3.CacheControl;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;

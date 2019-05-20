@@ -1,6 +1,3 @@
-declare const _default: {
-    [propertyName: string]: any;
-    addListener: (eventName: string) => void;
-    removeListeners: (count: number) => void;
-};
+import { ExponentFileSystemModule } from './FileSystem.types';
+declare const _default: ExponentFileSystemModule;
 export default _default;

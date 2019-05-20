@@ -2,10 +2,6 @@
 title: Why not Expo?
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo isn't ready to be used for all apps yet. There are plenty of cases where its current constraints may not be appropriate for your project. The intention of this document is to outline some of those cases, so that you don't end up building an app with Expo and getting frustrated when you encounter an obstacle that you can't overcome without ejecting to ExpoKit or ejecting to using React Native without Expo at all. We are either planning on or actively working on building solutions to all of the features listed below, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests).
 
 - **Expo apps don't support background code execution** (running code when the app is not foregrounded or the device is sleeping). This means you cannot use background geolocation, play audio in the background, handle push notifications in the background, and more. This is a work in progress.
@@ -14,4 +10,4 @@ Expo isn't ready to be used for all apps yet. There are plenty of cases where it
 - **If you know that you want to use a particular push notification service** (such as OneSignal) instead of Expo's [Push Notification service/API](../../guides/push-notifications/), you will need to use ExpoKit or React Native without Expo.
 - **JS and assets managed by Expo require connectivity to Google Cloud Platform and AWS.** Each device must be able to connect to GCP and AWS (two of the most common cloud services) to receive updates to published projects and to download remote assets hosted by Expo. Note that standalone apps embed the project manifest, JS, and specified assets so they don't require network connectivity to run, but do need to connect to GCP and AWS for updates. You also need to connect to GCP to develop and publish your projects.
 
-Are we missing something here? Let us know [on Slack](http://slack.expo.io/) or on our [feature requests board](https://expo.canny.io/feature-requests).
+Are we missing something here? Let us know on our [forums](http://forums.expo.io/) or on our [feature requests board](https://expo.canny.io/feature-requests).

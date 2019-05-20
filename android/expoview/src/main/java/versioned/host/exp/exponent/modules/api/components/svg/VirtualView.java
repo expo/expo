@@ -8,7 +8,6 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.facebook.common.logging.FLog;
@@ -94,26 +93,46 @@ abstract public class VirtualView extends ReactViewGroup {
 
     @Override
     public void invalidate() {
+        if (this instanceof RenderableView && mPath == null) {
+            return;
+        }
+        clearCache();
+        clearParentCache();
         super.invalidate();
-        clearPath();
     }
 
-    private void clearPath() {
+    void clearCache() {
         canvasDiagonal = -1;
         canvasHeight = -1;
         canvasWidth = -1;
         fontSize = -1;
+        mStrokeRegion = null;
         mRegion = null;
         mPath = null;
     }
 
-    void releaseCachedPath() {
-        clearPath();
+    void clearChildCache() {
+        clearCache();
         for (int i = 0; i < getChildCount(); i++) {
             View node = getChildAt(i);
             if (node instanceof VirtualView) {
-                ((VirtualView)node).releaseCachedPath();
+                ((VirtualView)node).clearChildCache();
             }
+        }
+    }
+
+    private void clearParentCache() {
+        VirtualView node = this;
+        while (true) {
+            ViewParent parent = node.getParent();
+            if (!(parent instanceof VirtualView)) {
+                return;
+            }
+            node = (VirtualView)parent;
+            if (node.mPath == null) {
+                return;
+            }
+            node.clearCache();
         }
     }
 
@@ -254,6 +273,7 @@ abstract public class VirtualView extends ReactViewGroup {
         }
 
         super.invalidate();
+        clearParentCache();
     }
 
     @ReactProp(name = "responsible")
@@ -465,8 +485,6 @@ abstract public class VirtualView extends ReactViewGroup {
      * @param pright Right position, relative to parent
      * @param pbottom Bottom position, relative to parent
      */
-
-    RectF layoutRect = new RectF();
     protected void onLayout(boolean changed, int pleft, int ptop, int pright, int pbottom) {
         if (mClientRect == null) {
             return;
@@ -526,52 +544,4 @@ abstract public class VirtualView extends ReactViewGroup {
         return mClientRect;
     }
 
-    SVGLength getLengthFromDynamic(Dynamic dynamic) {
-        switch (dynamic.getType()) {
-            case Number:
-                return new SVGLength(dynamic.asDouble());
-            case String:
-                return new SVGLength(dynamic.asString());
-            default:
-                return new SVGLength();
-        }
-    }
-
-    String getStringFromDynamic(Dynamic dynamic) {
-        switch (dynamic.getType()) {
-            case Number:
-                return String.valueOf(dynamic.asDouble());
-            case String:
-                return dynamic.asString();
-            default:
-                return null;
-        }
-    }
-
-    ArrayList<SVGLength> getLengthArrayFromDynamic(Dynamic dynamic) {
-        switch (dynamic.getType()) {
-            case Number: {
-                ArrayList<SVGLength> list = new ArrayList<>(1);
-                list.add(new SVGLength(dynamic.asDouble()));
-                return list;
-            }
-            case Array: {
-                ReadableArray arr = dynamic.asArray();
-                int size = arr.size();
-                ArrayList<SVGLength> list = new ArrayList<>(size);
-                for (int i = 0; i < size; i++) {
-                    Dynamic val = arr.getDynamic(i);
-                    list.add(getLengthFromDynamic(val));
-                }
-                return list;
-            }
-            case String: {
-                ArrayList<SVGLength> list = new ArrayList<>(1);
-                list.add(new SVGLength(dynamic.asString()));
-                return list;
-            }
-            default:
-                return null;
-        }
-    }
 }

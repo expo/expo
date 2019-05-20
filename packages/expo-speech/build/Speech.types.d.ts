@@ -20,8 +20,8 @@ export declare enum VoiceQuality {
     Enhanced = "Enhanced"
 }
 export declare type Voice = {
-    identifier?: string;
-    name?: string;
-    quality?: VoiceQuality;
-    language?: string;
+    identifier: string;
+    name: string;
+    quality: VoiceQuality;
+    language: string;
 };

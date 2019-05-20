@@ -3,10 +3,6 @@ id: pixelratio
 title: PixelRatio
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 PixelRatio class gives access to the device pixel density.
 
 ## Fetching a correctly sized image

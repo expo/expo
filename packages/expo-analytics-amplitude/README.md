@@ -1,5 +1,32 @@
 # expo-analytics-amplitude
 
-`expo-analytics-amplitude` provides access to [Amplitude](https://amplitude.com/) mobile analytics which basically lets you log various events to the Cloud. This module wraps Amplitude's [iOS](https://github.com/amplitude/Amplitude-iOS) and [Android](https://github.com/amplitude/Amplitude-Android) SDKs. For a great example of usage, see the [Expo app source code](https://github.com/expo/expo/blob/master/home/api/Analytics.js).
+Provides access to Amplitude (https://amplitude.com/) mobile analytics. This module wraps Amplitude-iOS (https://github.com/amplitude/Amplitude-iOS) and Android (https://github.com/amplitude/Amplitude-Android) SDKs.
 
-See [Amplitude docs](https://docs.expo.io/versions/latest/sdk/amplitude) for this universal module API documentation.
+# API documentation
+
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/amplitude.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/amplitude/)
+
+# Installation
+
+This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
+
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+
+### Add the package to your npm dependencies
+
+```
+npm install expo-analytics-amplitude
+```
+
+### Configure for iOS
+
+Run `pod install` in the ios directory after installing the npm package.
+
+### Configure for Android
+
+No additional set up necessary.
+
+# Contributing
+
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

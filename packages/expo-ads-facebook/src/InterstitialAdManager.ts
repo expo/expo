@@ -1,12 +1,18 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 
-const { CTKInterstitialAdManager } = NativeModulesProxy;
+const {
+  CTKInterstitialAdManager = {
+    async showAd() {
+      return false;
+    },
+  },
+} = NativeModulesProxy;
 
 export default {
   /**
    * Shows interstitial ad for a given placementId
    */
-  showAd(placementId: string): Promise<boolean> {
-    return CTKInterstitialAdManager.showAd(placementId);
+  async showAd(placementId: string): Promise<boolean> {
+    return await CTKInterstitialAdManager.showAd(placementId);
   },
 };

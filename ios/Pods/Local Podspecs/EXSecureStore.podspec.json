@@ -1,11 +1,11 @@
 {
   "name": "EXSecureStore",
-  "version": "1.0.0",
-  "summary": "Expo SecureStore universal module",
-  "description": "Expo SecureStore universal module",
+  "version": "5.0.0-rc.0",
+  "summary": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
+  "description": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-secure-store",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/securestore/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,7 +16,7 @@
   "preserve_paths": "EXSecureStore/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

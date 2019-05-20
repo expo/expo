@@ -31,10 +31,10 @@
 ##### Expo Universal Modules #####
 
 -keepclassmembers class * {
-  @expo.core.interfaces.ExpoProp *;
+  @org.unimodules.core.interfaces.ExpoProp *;
 }
 -keepclassmembers class * {
-  @expo.core.interfaces.ExpoMethod *;
+  @org.unimodules.core.interfaces.ExpoMethod *;
 }
 
 -keepclassmembers class * {
@@ -44,7 +44,7 @@
   @**.expo.core.interfaces.ExpoMethod *;
 }
 
--keep class * extends expo.core.ExportedModule { *; }
+-keep class * extends org.unimodules.core.ExportedModule { *; }
 -keep class * extends **.expo.core.ExportedModule { *; }
 
 ##### React Native #####

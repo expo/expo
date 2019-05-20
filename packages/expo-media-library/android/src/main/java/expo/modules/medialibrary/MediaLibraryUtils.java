@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
@@ -231,13 +231,13 @@ final class MediaLibraryUtils {
       if (item instanceof String) {
         String key = convertSortByKey((String) item);
         result.add(key + " DESC");
-      } else if (item instanceof Object[]) {
-        Object array[] = (Object[]) item;
-        if (array.length != 2) {
+      } else if (item instanceof ArrayList) {
+        ArrayList array = (ArrayList) item;
+        if (array.size() != 2) {
           throw new IllegalArgumentException("Array sortBy in assetsOptions has invalid layout.");
         }
-        String key = convertSortByKey((String) array[0]);
-        boolean order = (boolean) array[1];
+        String key = convertSortByKey((String) array.get(0));
+        boolean order = (boolean) array.get(1);
         result.add(key + (order ? " ASC" : " DESC"));
       } else {
         throw new IllegalArgumentException("Array sortBy in assetsOptions contains invalid items.");

@@ -5,9 +5,10 @@
     "slug": "test-suite",
     "version": "1.0.0",
     "sdkVersion": "UNVERSIONED",
+    "platforms": ["android", "ios"],
     "packagerOpts": {
       "assetExts": ["db"],
-      "config": "rn-cli.config.js"
+      "config": "metro.config.js"
     },
     "ios": {
       "bundleIdentifier": "io.expo.testsuite"

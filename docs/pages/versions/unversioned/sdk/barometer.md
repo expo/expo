@@ -2,11 +2,17 @@
 title: Barometer
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Access the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+import { Barometer } from 'expo-sensors';
+```
 
 | OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -14,14 +20,6 @@ Access the device barometer sensor to respond to changes in air pressure. `press
 | Android | _`hPa`_ | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
 | Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
 |         |
-
-## Usage
-
-> This module was introduced in Expo v33
-
-Barometer can be used outside of the Expo client with the `expo-sensors` & `expo-sensors-interface` libraries.
-
-## Methods
 
 ### `Barometer.isAvailableAsync()`
 
@@ -49,7 +47,7 @@ const subscription = Barometer.addListener(({ pressure, relativeAltitude }) => {
 
 #### Arguments
 
-- **listener : `function`** -- A callback that is invoked when an barometer update is available. When invoked, the listener is provided a single argument that is an object containing: `pressure: number` (_`hPa`_). On **iOS** the `relativeAltitude: number` (_`meters`_) value will also be available.
+- **listener (_function_)** -- A callback that is invoked when an barometer update is available. When invoked, the listener is provided a single argument that is an object containing: `pressure: number` (_`hPa`_). On **iOS** the `relativeAltitude: number` (_`meters`_) value will also be available.
 
 #### Returns
 

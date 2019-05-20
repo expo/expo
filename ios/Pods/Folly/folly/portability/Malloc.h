@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@
 
 #include <stdlib.h>
 
-#ifdef USE_JEMALLOC
+#include <folly/CPortability.h>
+#include <folly/portability/Config.h>
+
+#if (defined(USE_JEMALLOC) || defined(FOLLY_USE_JEMALLOC)) && !FOLLY_SANITIZE
 // JEMalloc provides it's own implementation of
 // malloc_usable_size, and that's what we should be using.
 #include <jemalloc/jemalloc.h>
@@ -26,8 +29,6 @@
 #ifndef __APPLE__
 #include <malloc.h>
 #endif
-
-#include <folly/portability/Config.h>
 
 #if defined(__APPLE__) && !defined(FOLLY_HAVE_MALLOC_USABLE_SIZE)
 // MacOS doesn't have malloc_usable_size()

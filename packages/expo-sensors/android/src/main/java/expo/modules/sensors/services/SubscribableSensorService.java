@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import expo.core.interfaces.InternalModule;
-import expo.interfaces.sensors.SensorService;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.interfaces.sensors.SensorService;
 
 public abstract class SubscribableSensorService extends BaseSensorService implements SensorService {
   protected static int DEFAULT_UPDATE_INTERVAL = 100;
@@ -38,7 +38,7 @@ public abstract class SubscribableSensorService extends BaseSensorService implem
 
   // Modules API
 
-  public expo.interfaces.sensors.SensorServiceSubscription createSubscriptionForListener(SensorEventListener2 listener) {
+  public org.unimodules.interfaces.sensors.SensorServiceSubscription createSubscriptionForListener(SensorEventListener2 listener) {
     SensorServiceSubscription sensorServiceSubscription = new SensorServiceSubscription(this, listener);
     mSensorEventListenerLastUpdateMap.put(sensorServiceSubscription, 0L);
     return sensorServiceSubscription;

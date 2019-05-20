@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,9 +9,10 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 import com.facebook.common.logging.FLog;
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
@@ -36,17 +37,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.ConnectionPool;
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.OkHttpClient;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.RequestBody;
-import expolib_v1.okhttp3.Response;
-import expolib_v1.okhttp3.ResponseBody;
-import expolib_v1.okio.Okio;
-import expolib_v1.okio.Sink;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.ConnectionPool;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.Okio;
+import okio.Sink;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -151,7 +152,7 @@ public class DevServerHelper {
         mBundlerStatusProvider = bundleStatusProvider;
         mClient = new OkHttpClient.Builder().connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS).readTimeout(0, TimeUnit.MILLISECONDS).writeTimeout(0, TimeUnit.MILLISECONDS).build();
         mBundleDownloader = new BundleDownloader(mClient);
-        mRestartOnChangePollingHandler = new Handler();
+        mRestartOnChangePollingHandler = new Handler(Looper.getMainLooper());
         mPackageName = packageName;
     }
 

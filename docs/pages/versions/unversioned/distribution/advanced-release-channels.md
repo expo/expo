@@ -2,10 +2,6 @@
 title: Advanced Release Channels
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ## Introduction
 
 For a quick introduction to release channels, read [this](../release-channels/).

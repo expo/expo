@@ -17,21 +17,67 @@ const STYLES_FOOTER_LINK = css`
   margin-bottom: 12px;
 `;
 
+// Remove trailing slash and append .md
+function githubUrl(path) {
+  if (path.includes('/versions/latest/')) {
+    if (path === '/versions/latest') {
+      path = '/versions/unversioned/index';
+    } else {
+      path = path.replace('/versions/latest/', '/versions/unversioned/');
+    }
+  } else if (path.match(/v\d+\.\d+\.\d+\/?$/)) {
+    if (path[path.length - 1] === '/') {
+      path = `${path}index`;
+    } else {
+      path = `${path}/index`;
+    }
+  }
+
+  let pathAsMarkdown = path.replace(/\/$/, '') + '.md';
+  if (pathAsMarkdown.startsWith('/versions/latest')) {
+    pathAsMarkdown = pathAsMarkdown.replace('/versions/unversioned');
+  }
+  return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
+}
+
+// Add any page in the /sdk/ section that should not have an issues link to this
+const ISSUES_BLACKLIST = ['Overview'];
+
 export default class DocumentationFooter extends React.PureComponent {
   render() {
     return (
       <footer className={STYLES_FOOTER}>
-        <P>Want to contribute? Still need help?</P>
-        <a className={STYLES_FOOTER_LINK} target="_blank" href="https://forums.expo.io/">
-          Ask on our forums
-        </a>
         <a
           className={STYLES_FOOTER_LINK}
           target="_blank"
-          href="https://github.com/expo/expo/tree/master/docs">
-          Send us a pull request
+          rel="noopener"
+          href="https://forums.expo.io/">
+          Ask a question on the forums
+        </a>
+        {this.maybeRenderIssuesLink()}
+        <a
+          className={STYLES_FOOTER_LINK}
+          target="_blank"
+          rel="noopener"
+          href={githubUrl(this.props.asPath)}>
+          Edit this page
         </a>
       </footer>
     );
   }
+
+  maybeRenderIssuesLink = () => {
+    if (!this.props.asPath.includes('/sdk/') || ISSUES_BLACKLIST.includes(this.props.title)) {
+      return;
+    }
+
+    return (
+      <a
+        className={STYLES_FOOTER_LINK}
+        target="_blank"
+        href={`https://github.com/expo/expo/labels/${this.props.title}`}>
+        View open issues for {this.props.title}
+      </a>
+    );
+  };
 }

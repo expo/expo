@@ -1,5 +1,32 @@
 # expo-calendar
 
-`expo-calendar` module provides an API for interacting with the device's system calendars, events, reminders, and associated records.
+Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
-See [`Calendar` docs](https://docs.expo.io/versions/latest/sdk/calendar) for documentation of this universal module's API.
+# API documentation
+
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/calendar.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/calendar/)
+
+# Installation
+
+This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
+
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+
+### Add the package to your npm dependencies
+
+```
+npm install expo-calendar
+```
+
+### Configure for iOS
+
+Run `pod install` in the ios directory after installing the npm package.
+
+### Configure for Android
+
+No additional set up necessary.
+
+# Contributing
+
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

@@ -2,11 +2,17 @@
 title: Gyroscope
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Access the device gyroscope sensor to respond to changes in rotation in 3d space.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+
+## API
+
+```js
+import { Gyroscope } from 'expo-sensors';
+```
 
 ### `Gyroscope.isAvailableAsync()`
 
@@ -22,13 +28,12 @@ Subscribe for updates to the gyroscope.
 
 #### Arguments
 
-- **listener : `function`** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
+- **listener (_function_)** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
 
 #### Returns
 
-- A subscription that you can call `remove()` on when you
-  would like to unsubscribe the listener.
-  
+- An EventSubscription object that you can call `remove()` on when you would like to unsubscribe the listener.
+
 ### `Gyroscope.removeAllListeners()`
 
 Remove all listeners.
@@ -39,13 +44,13 @@ Subscribe for updates to the gyroscope.
 
 #### Arguments
 
-- **intervalMs : `number`** -- Desired interval in milliseconds between gyroscope updates.
+- **intervalMs (_number_)** -- Desired interval in milliseconds between gyroscope updates.
 
 ## Example: basic subscription
 
 ```javascript
 import React from 'react';
-import { Gyroscope } from 'expo';
+import { Gyroscope } from 'expo-sensors';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default class GyroscopeSensor extends React.Component {

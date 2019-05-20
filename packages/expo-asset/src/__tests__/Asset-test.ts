@@ -18,6 +18,7 @@ jest.mock('react-native/Libraries/Image/AssetRegistry', () => {
 
 jest.mock('react-native/Libraries/Image/resolveAssetSource', () => {
   return {
+    default: jest.fn(),
     setCustomSourceTransformer: jest.fn(),
   };
 });
@@ -177,7 +178,7 @@ it(`coalesces downloads`, async () => {
 
 describe('web', () => {
   beforeEach(() => {
-    const { Platform } = require('expo-core');
+    const { Platform } = require('@unimodules/core');
     Platform.OS = 'web';
   });
 
@@ -203,6 +204,7 @@ describe('embedding', () => {
       return {
         ...Constants,
         appOwnership: 'standalone',
+        manifest: {},
       };
     });
     // @ts-ignore: the type declaration marks __DEV__ as read-only

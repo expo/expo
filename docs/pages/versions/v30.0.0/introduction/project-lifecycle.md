@@ -2,10 +2,6 @@
 title: Project Lifecycle
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo makes it easy to get started writing apps, but Expo can also take your project all the way to production. Here's an overview of the tools and services you might use along the way.
 
 This guide is meant to give a high-level explanation of what Expo offers. For the curious, the technical implementation of these topics is covered in way more detail [here](../../workflow/how-expo-works/).
@@ -22,13 +18,13 @@ Expo apps are React Native apps. The fastest way to get started is using the [Up
 
 When you work on an Expo project, we serve an instance of your project from your local computer. If you close the project or turn off your computer, your development project stops being served.
 
-During this time, you test your project using a pre-built iOS/Android app called [Expo Client](../installation/). It asks your computer for a local copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), inspecting elements, hot module reloading, and more.
+During this time, you test your project using a pre-built iOS/Android app called [Expo client](../installation/). It asks your computer for a local copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), inspecting elements, hot module reloading, and more.
 
 ## Publishing your Project
 
 If you click the **Publish** button in Expo Dev Tools, we upload a minified copy of your app to our CDN, and give you a shareable url of the form `expo.io/@your-username/your-app-slug`.
 
-You can share this link immediately with anybody who has the Expo Client app for Android. [Read more about Publishing here](../../workflow/publishing/).
+You can share this link immediately with anybody who has the Expo client app for Android. [Read more about Publishing here](../../workflow/publishing/).
 
 On iOS, you'll need to use Apple TestFlight to share your app with others.
 

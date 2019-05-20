@@ -4,7 +4,7 @@
 #include <sys/sysctl.h>
 #include <sys/utsname.h>
 
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 #import <EXConstants/EXConstantsService.h>
 
 @interface EXConstantsService ()
@@ -15,19 +15,11 @@
 
 @implementation EXConstantsService
 
-EX_REGISTER_MODULE();
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-{
-  if (self = [super init]) {
-    _experienceId = experienceId;
-  }
-  return self;
-}
+UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXConstantsInterface)];
+  return @[@protocol(UMConstantsInterface)];
 }
 
 - (NSDictionary *)constants
@@ -50,9 +42,11 @@ EX_REGISTER_MODULE();
            @"systemFonts": [self systemFontNames],
            @"debugMode": @(isDebugXCodeScheme),
            @"isHeadless": @(NO),
+           @"nativeAppVersion": [self appVersion],
+           @"nativeBuildVersion": [self buildVersion],
            @"platform": @{
                @"ios": @{
-                   @"buildNumber": [self buildNumber],
+                   @"buildNumber": [self buildVersion],
                    @"platform": [[self class] devicePlatform],
                    @"model": [[self class] deviceModel],
                    @"userInterfaceIdiom": [self userInterfaceIdiom],
@@ -62,7 +56,12 @@ EX_REGISTER_MODULE();
            };
 }
 
-- (NSString *)buildNumber
+- (NSString *)appVersion
+{
+  return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+}
+                            
+- (NSString *)buildVersion
 {
   return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 }
@@ -70,7 +69,7 @@ EX_REGISTER_MODULE();
 - (CGFloat)statusBarHeight
 {
   __block CGSize statusBarSize;
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
   }];
   return MIN(statusBarSize.width, statusBarSize.height);
@@ -397,5 +396,6 @@ EX_REGISTER_MODULE();
 {
   return [UIDevice currentDevice].name;
 }
+
 
 @end

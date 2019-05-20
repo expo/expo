@@ -2,10 +2,6 @@
 title: Release Channels
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 ## Introduction
 
 Use release channels in Expo to send out different versions of your application to your users by giving them a URL or configuring your standalone app. You should use release channels if:
@@ -34,11 +30,11 @@ with the `exp` cli. The binary produced will only pull releases published under 
 
 You can access the channel your release is published under with the `releaseChannel` field in the [manifest object](../../sdk/constants/#expoconstantsmanifest).
 
-> `Expo.Constants.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
+> `Constants.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
 
 ## Example Workflow
 
-Consider a situation where you have a Staging stack for testing on Expo Client, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
+Consider a situation where you have a Staging stack for testing on Expo client, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
 
 On the staging stack, run `expo publish --release-channel staging`. Your test users can see the staging version of your app by specifying the channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo client. Alternatively, they can open that URL directly on their mobile device.
 

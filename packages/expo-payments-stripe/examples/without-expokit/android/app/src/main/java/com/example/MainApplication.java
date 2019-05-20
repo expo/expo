@@ -7,11 +7,11 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import expo.adapters.react.ModuleRegistryAdapter;
-import expo.adapters.react.ReactAdapterPackage;
-import expo.adapters.react.ReactModuleRegistryProvider;
-import expo.core.ModuleRegistryProvider;
-import expo.core.interfaces.Package;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactAdapterPackage;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.ModuleRegistryProvider;
+import org.unimodules.core.interfaces.Package;
 import expo.modules.payments.stripe.StripePackage;
 
 import java.util.Arrays;

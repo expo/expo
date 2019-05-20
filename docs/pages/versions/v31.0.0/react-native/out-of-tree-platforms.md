@@ -3,10 +3,6 @@ id: out-of-tree-platforms
 title: Out-of-Tree Platforms
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 React Native is not just for Android and iOS - there are community-supported projects that bring it to other platforms, such as:
 
 * [React Native Windows](https://github.com/Microsoft/react-native-windows) - React Native support for Microsoft's Universal Windows Platform (UWP) and the Windows Presentation Foundation (WPF)

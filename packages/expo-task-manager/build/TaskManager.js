@@ -1,5 +1,5 @@
-import { EventEmitter } from 'expo-core';
-import { UnavailabilityError } from 'expo-errors';
+import { EventEmitter } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoTaskManager from './ExpoTaskManager';
 const eventEmitter = new EventEmitter(ExpoTaskManager);
 const tasks = new Map();

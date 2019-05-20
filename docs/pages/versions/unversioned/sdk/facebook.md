@@ -2,13 +2,17 @@
 title: Facebook
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Provides Facebook integration for Expo apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
 
-## Registering your app with Facebook
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-facebook).
+
+For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
+
+## Configuration
+
+### Registering your app with Facebook
 
 Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call. Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/):
 
@@ -26,13 +30,17 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
 - **Android standalone app**
 
-    -   [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
-    -   Run `expo fetch:android:hashes`.
-    -   Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
+  - [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
+  - Run `expo fetch:android:hashes`.
+  - Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
 
 You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in.
 
-## Usage
+## API
+
+```js
+import * as Facebook from 'expo-facebook';
+```
 
 ### `Facebook.logInWithReadPermissionsAsync(appId, options)`
 
@@ -47,8 +55,8 @@ Your Facebook application ID. [Facebook's developer documentation](https://devel
 
 A map of options:
 
-- **permissions : `array`** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email']`.
-- **behavior : `string`** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
+- **permissions (_array_)** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/facebook-login/permissions). The default permissions are `['public_profile', 'email']`.
+- **behavior (_string_)** -- The type of login prompt to show. Currently this is only supported on iOS, and must be one of the following values:
 
   - `'system'` (default) -- Attempts to log in through the Facebook account currently signed in through the device Settings. This will fallback to `native` behavior on iOS 11+ as Facebook has been removed from iOS's Settings.
   - `'web'` -- Attempts to log in through a modal `UIWebView` pop up.
@@ -89,3 +97,5 @@ async function logIn() {
 ```
 
 Given a valid Facebook application ID in place of `<APP_ID>`, the code above will prompt the user to log into Facebook then display the user's name. This uses React Native's [fetch](https://facebook.github.io/react-native/docs/network.html#fetch) to query Facebook's [Graph API](https://developers.facebook.com/docs/graph-api).
+
+#

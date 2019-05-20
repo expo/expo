@@ -8,10 +8,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.interfaces.sensors.SensorService;
-import expo.interfaces.sensors.services.MagnetometerService;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.interfaces.sensors.SensorService;
+import org.unimodules.interfaces.sensors.services.MagnetometerService;
 
 public class MagnetometerModule extends BaseSensorModule {
   public MagnetometerModule(Context reactContext) {

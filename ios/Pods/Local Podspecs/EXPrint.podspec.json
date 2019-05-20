@@ -1,11 +1,11 @@
 {
   "name": "EXPrint",
-  "version": "2.0.0",
-  "summary": "Expo universal module for printing",
-  "description": "Expo universal module for printing",
+  "version": "5.0.0-rc.0",
+  "summary": "Provides an API for iOS (AirPrint) and Android printing functionality.",
+  "description": "Provides an API for iOS (AirPrint) and Android printing functionality.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/print/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,7 +16,10 @@
   "preserve_paths": "EXPrint/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
+
+    ],
+    "UMFileSystemInterface": [
 
     ]
   }

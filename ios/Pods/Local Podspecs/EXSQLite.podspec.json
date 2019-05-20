@@ -1,11 +1,11 @@
 {
   "name": "EXSQLite",
-  "version": "1.0.0",
-  "summary": "SQLite module",
-  "description": "SQLite module",
+  "version": "5.0.0-rc.0",
+  "summary": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
+  "description": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/sqlite/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,7 +16,10 @@
   "preserve_paths": "EXSQLite/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
+
+    ],
+    "UMFileSystemInterface": [
 
     ]
   }

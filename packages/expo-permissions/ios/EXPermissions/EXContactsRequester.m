@@ -34,7 +34,7 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   CNContactStore *contactStore = [CNContactStore new];
 

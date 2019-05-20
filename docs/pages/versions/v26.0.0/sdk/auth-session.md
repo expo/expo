@@ -2,10 +2,6 @@
 title: AuthSession
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).
 
 ## How web browser based authentication flows work
@@ -103,13 +99,13 @@ Initiate an authentication session with the given options. Only one `AuthSession
 
 #### Arguments
 
--   **options : `object`** --
+-   **options (_object_)** --
 
       A map of options:
 
-    -   **authUrl : `string`** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
+    -   **authUrl (_string_)** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
 
-    -   **returnUrl : `string`** -- The URL to return to the application. Defaults to `${Expo.Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
+    -   **returnUrl (_string_)** -- The URL to return to the application. Defaults to `${Expo.Constants.linkingUrl}expo-auth-session`, for example `exp://expo.io/@yourname/your-app-slug+expo-auth-session`.
 
 
 #### Returns
@@ -135,3 +131,5 @@ Get the URL that your authentication provider needs to redirect to. For example:
 ### Filtering out AuthSession events in Linking handlers
 
 There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
+
+#

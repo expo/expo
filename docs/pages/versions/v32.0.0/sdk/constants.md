@@ -2,11 +2,21 @@
 title: Constants
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 System information that remains constant throughout the lifetime of your app.
+
+## Installation
+
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-constants).
+
+## API
+
+```js
+// in managed apps:
+import { Constants } from 'expo';
+
+// in bare apps:
+import Constants from 'expo-constants';
+```
 
 ### `Constants.appOwnership`
 
@@ -84,3 +94,4 @@ A list of the system font names available on the current device.
 ### `Constants.manifest`
 
 The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
+

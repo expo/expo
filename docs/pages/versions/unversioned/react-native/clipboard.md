@@ -3,10 +3,6 @@ id: clipboard
 title: Clipboard
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
 
 ### Methods

@@ -2,10 +2,6 @@
 title: Universal Modules and ExpoKit
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Universal Modules are pieces of the Expo SDK with some special properties:
 
 - They are optional; you can remove them from your ExpoKit build if you don't need their native code.
@@ -15,7 +11,7 @@ Not all Expo SDK modules are Universal Modules. Right now, only a small part of 
 
 # Omitting Unneeded Modules
 
-When you [create an ExpoKit project](../eject/), we automatically add most of the same native APIs that are available in the Expo Client app. Each of these APIs is supported by some native code which increases the size of your native binary.
+When you [create an ExpoKit project](../eject/), we automatically add most of the same native APIs that are available in the Expo client app. Each of these APIs is supported by some native code which increases the size of your native binary.
 
 You can remove any Expo Universal Module from your ExpoKit project if you don't think you need it. This means it will no longer be available in your native binary; if you write some JS which tries to import this API, you might cause a fatal error in your app. If you send an [OTA update](../../guides/configuring-ota-updates/) to your app which contains API calls that aren't present in your native binary, you might cause a fatal error.
 

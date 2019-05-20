@@ -33,7 +33,7 @@ static NSString *const kABI31_0_0RCTDevSettingStartSamplingProfilerOnLaunch = @"
 
 static NSString *const kABI31_0_0RCTDevSettingsUserDefaultsKey = @"ABI31_0_0RCTDevMenu";
 
-#if ENABLE_PACKAGER_CONNECTION
+#if ABI31_0_0ENABLE_PACKAGER_CONNECTION
 #import "ABI31_0_0RCTPackagerClient.h"
 #import "ABI31_0_0RCTPackagerConnection.h"
 #endif
@@ -110,7 +110,7 @@ static NSString *const kABI31_0_0RCTDevSettingsUserDefaultsKey = @"ABI31_0_0RCTD
   NSURLSessionDataTask *_liveReloadUpdateTask;
   NSURL *_liveReloadURL;
   BOOL _isJSLoaded;
-#if ENABLE_PACKAGER_CONNECTION
+#if ABI31_0_0ENABLE_PACKAGER_CONNECTION
   ABI31_0_0RCTHandlerToken _reloadToken;
   ABI31_0_0RCTHandlerToken _pokeSamplingProfilerToken;
 #endif
@@ -165,7 +165,7 @@ ABI31_0_0RCT_EXPORT_MODULE()
   ABI31_0_0RCTAssert(_bridge == nil, @"ABI31_0_0RCTDevSettings module should not be reused");
   _bridge = bridge;
 
-#if ENABLE_PACKAGER_CONNECTION
+#if ABI31_0_0ENABLE_PACKAGER_CONNECTION
   ABI31_0_0RCTBridge *__weak weakBridge = bridge;
   _reloadToken =
   [[ABI31_0_0RCTPackagerConnection sharedPackagerConnection]
@@ -201,7 +201,7 @@ ABI31_0_0RCT_EXPORT_MODULE()
 #endif
 }
 
-#if ENABLE_PACKAGER_CONNECTION
+#if ABI31_0_0ENABLE_PACKAGER_CONNECTION
 static void pokeSamplingProfiler(ABI31_0_0RCTBridge *const bridge, ABI31_0_0RCTPackagerClientResponder *const responder)
 {
   if (!bridge) {
@@ -235,7 +235,7 @@ static void pokeSamplingProfiler(ABI31_0_0RCTBridge *const bridge, ABI31_0_0RCTP
 - (void)invalidate
 {
   [_liveReloadUpdateTask cancel];
-#if ENABLE_PACKAGER_CONNECTION
+#if ABI31_0_0ENABLE_PACKAGER_CONNECTION
   [[ABI31_0_0RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
   [[ABI31_0_0RCTPackagerConnection sharedPackagerConnection] removeHandler:_pokeSamplingProfilerToken];
 #endif
@@ -456,7 +456,7 @@ ABI31_0_0RCT_EXPORT_METHOD(toggleElementInspector)
 
 - (void)addHandler:(id<ABI31_0_0RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
-#if ENABLE_PACKAGER_CONNECTION
+#if ABI31_0_0ENABLE_PACKAGER_CONNECTION
   [[ABI31_0_0RCTPackagerConnection sharedPackagerConnection] addHandler:handler forMethod:name];
 #endif
 }

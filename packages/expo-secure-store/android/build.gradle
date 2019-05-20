@@ -13,7 +13,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '1.0.0'
+version = '5.0.0-rc.0'
+
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -41,12 +45,12 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
-    versionCode 1
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    versionCode 4
     versionName '1.0.0'
   }
   lintOptions {
@@ -54,16 +58,14 @@ android {
   }
 }
 
-if (new File(rootProject.projectDir.parentFile, 'pubspec.yaml').exists()) {
-  apply from: project(':expo_core').file('../expo-core.gradle')
-} else if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(':expo-core').file('../expo-core.gradle')
+if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
+  apply from: project(':unimodules-core').file('../unimodules-core.gradle')
 } else {
   throw new GradleException(
-      '\'expo-core.gradle\' was not found in the usual Flutter or React Native dependency locations. ' +
+      '\'unimodules-core.gradle\' was not found in the usual Flutter or React Native dependency locations. ' +
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
 dependencies {
-  expendency 'expo-core'
+  unimodule 'unimodules-core'
 }

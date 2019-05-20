@@ -1,6 +1,6 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoImageManipulator from './ExpoImageManipulator';
-import { FlipType, SaveFormat, } from './ImageManipulator.types';
+import { SaveFormat } from './ImageManipulator.types';
 export async function manipulateAsync(uri, actions = [], { format = SaveFormat.JPEG, ...rest } = {}) {
     if (!ExpoImageManipulator.manipulateAsync) {
         throw new UnavailabilityError('ImageManipulator', 'manipulateAsync');
@@ -10,5 +10,5 @@ export async function manipulateAsync(uri, actions = [], { format = SaveFormat.J
     }
     return await ExpoImageManipulator.manipulateAsync(uri, actions, { format, ...rest });
 }
-export { FlipType, SaveFormat, };
+export * from './ImageManipulator.types';
 //# sourceMappingURL=ImageManipulator.js.map

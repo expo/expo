@@ -57,6 +57,12 @@ export default {
         const { browser, engine, os: OS } = parser.getResult();
         return browser.name || engine.name || OS.name || undefined;
     },
+    get nativeAppVersion() {
+        return null;
+    },
+    get nativeBuildVersion() {
+        return null;
+    },
     get systemFonts() {
         // TODO: Bacon: Maybe possible.
         return [];
@@ -66,7 +72,6 @@ export default {
     },
     get deviceYearClass() {
         // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
-        console.log(`ExponentConstants.deviceYearClass: is unimplemented on web.`);
         return null;
     },
     get manifest() {

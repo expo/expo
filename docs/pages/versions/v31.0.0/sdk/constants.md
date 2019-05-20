@@ -2,10 +2,6 @@
 title: Constants
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 System information that remains constant throughout the lifetime of your app.
 
 ### `Expo.Constants.appOwnership`
@@ -84,3 +80,4 @@ A list of the system font names available on the current device.
 ### `Expo.Constants.manifest`
 
 The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
+

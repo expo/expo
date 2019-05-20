@@ -19,6 +19,7 @@
 
 - (void)parseReference
 {
+    self.dirty = false;
     [self.svgView defineMask:self maskName:self.name];
 }
 

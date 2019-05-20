@@ -4,7 +4,7 @@
 
 @implementation EXScopedModuleRegistry (ModuleRegistry)
 
-- (EXModuleRegistry *)moduleRegistry
+- (UMModuleRegistry *)moduleRegistry
 {
   return [[self.bridge moduleForClass:[EXModuleRegistryBinding class]] moduleRegistry];
 }
@@ -13,13 +13,13 @@
 
 @interface EXModuleRegistryBinding ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXModuleRegistryBinding
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     _moduleRegistry = moduleRegistry;
@@ -27,7 +27,7 @@
   return self;
 }
 
-- (EXModuleRegistry *)moduleRegistry
+- (UMModuleRegistry *)moduleRegistry
 {
   return _moduleRegistry;
 }

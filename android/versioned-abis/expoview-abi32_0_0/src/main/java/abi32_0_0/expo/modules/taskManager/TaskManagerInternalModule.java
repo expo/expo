@@ -15,9 +15,9 @@ import abi32_0_0.expo.core.interfaces.InternalModule;
 import abi32_0_0.expo.core.interfaces.ModuleRegistryConsumer;
 import abi32_0_0.expo.core.interfaces.services.EventEmitter;
 import abi32_0_0.expo.interfaces.constants.ConstantsInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskServiceInterface;
-import expo.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 public class TaskManagerInternalModule implements InternalModule, ModuleRegistryConsumer, TaskManagerInterface {
   private EventEmitter mEventEmitter;

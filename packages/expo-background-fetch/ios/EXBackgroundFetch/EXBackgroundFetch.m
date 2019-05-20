@@ -1,38 +1,38 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXDefines.h>
+#import <UMCore/UMDefines.h>
 #import <EXBackgroundFetch/EXBackgroundFetch.h>
 #import <EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h>
-#import <EXTaskManagerInterface/EXTaskManagerInterface.h>
+#import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
 @interface EXBackgroundFetch ()
 
-@property (nonatomic, weak) id<EXTaskManagerInterface> taskManager;
+@property (nonatomic, weak) id<UMTaskManagerInterface> taskManager;
 
 @end
 
 @implementation EXBackgroundFetch
 
-EX_EXPORT_MODULE(ExpoBackgroundFetch);
+UM_EXPORT_MODULE(ExpoBackgroundFetch);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXTaskManagerInterface)];
+  _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
 }
 
-EX_EXPORT_METHOD_AS(getStatusAsync,
-                    getStatus:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getStatusAsync,
+                    getStatus:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     resolve(@([self _getStatus]));
   });
 }
 
-EX_EXPORT_METHOD_AS(setMinimumIntervalAsync,
+UM_EXPORT_METHOD_AS(setMinimumIntervalAsync,
                     setMinimumInterval:(nonnull NSNumber *)minimumInterval
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     NSTimeInterval timeInterval = [minimumInterval doubleValue];
@@ -41,11 +41,11 @@ EX_EXPORT_METHOD_AS(setMinimumIntervalAsync,
   });
 }
 
-EX_EXPORT_METHOD_AS(registerTaskAsync,
+UM_EXPORT_METHOD_AS(registerTaskAsync,
                     registerTaskWithName:(nonnull NSString *)taskName
                     options:(nullable NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![_taskManager hasBackgroundModeEnabled:@"fetch"]) {
     return reject(
@@ -66,10 +66,10 @@ EX_EXPORT_METHOD_AS(registerTaskAsync,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(unregisterTaskAsync,
+UM_EXPORT_METHOD_AS(unregisterTaskAsync,
                     unregisterTaskWithName:(nonnull NSString *)taskName
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   @try {
     [_taskManager unregisterTaskWithName:taskName consumerClass:[EXBackgroundFetchTaskConsumer class]];

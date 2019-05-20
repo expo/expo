@@ -1,9 +1,10 @@
 {
   "name": "expo-permissions",
-  "version": "2.0.0",
-  "description": "An Expo universal module to prompt for permission to access device sensors and personal data",
+  "version": "5.0.0-rc.0",
+  "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "main": "build/Permissions.js",
   "types": "build/Permissions.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -21,21 +22,21 @@
     "type": "git",
     "url": "https://github.com/expo/expo.git"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-permissions",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/permissions/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "expo-core": "~2.0.0",
-    "expo-permissions-interface": "~2.0.0"
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "unimodules-permissions-interface": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "f15abc53c111bd0438cd36dc456c59cfa7c56a58"
+  "gitHead": "f04f6c038278daf9d4536da5ef651dbccf95c7b2"
 }

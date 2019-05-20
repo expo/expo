@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI29_0_0/EXReactNativeAdapter/ABI29_0_0EXReactNativeAdapter/Services/ABI29_0_0EXReactNativeEventEmitter.h

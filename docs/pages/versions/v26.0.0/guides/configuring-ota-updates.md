@@ -2,10 +2,6 @@
 title: Configuring OTA Updates
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Expo provides various settings to configure how your app receives over-the-air (OTA) JavaScript updates. OTA updates allow you to publish a new version of your app JavaScript and assets without building a new version of your standalone app and re-submitting to app stores ([read more about the limitations](../../workflow/publishing/)).
 
 OTA updates are controlled by the [`updates` settings in app.json](../../workflow/configuration/#updates), which handle the initial app load, and the [Updates SDK module](../../sdk/updates/), which allows you to fetch updates asynchronously from your JS.

@@ -1,11 +1,11 @@
 {
   "name": "EXHaptics",
-  "version": "1.0.0",
-  "summary": "Expo Haptics standalone module",
-  "description": "Expo Haptics standalone module",
+  "version": "5.0.0-rc.0",
+  "summary": "Provides access to the system's haptics engine on iOS and vibration effects on Android.",
+  "description": "Provides access to the system's haptics engine on iOS and vibration effects on Android.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-haptics",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/haptics/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,7 +16,7 @@
   "preserve_paths": "EXHaptics/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

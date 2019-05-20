@@ -1,11 +1,11 @@
 {
   "name": "EXSpeech",
-  "version": "1.0.0",
-  "summary": "Expo speech module",
-  "description": "Expo speech module",
+  "version": "5.0.0-rc.0",
+  "summary": "Provides text-to-speech functionality.",
+  "description": "Provides text-to-speech functionality.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/speech/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,7 +16,7 @@
   "preserve_paths": "EXSpeech/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }

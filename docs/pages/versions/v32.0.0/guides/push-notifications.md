@@ -2,10 +2,6 @@
 title: Push Notifications
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Expo. Spoiler alert: it's almost too easy.
 
 > **Note:** iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
@@ -82,7 +78,7 @@ Push notifications have to come from somewhere, and that somewhere is your serve
 
 Check out the source if you would like to implement it in another language.
 
-> **Note:** For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo Client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key,and upload the key to Expo.
+> **Note:** For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key,and upload the key to Expo.
 
 The [Expo push notification tool](https://expo.io/dashboard/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
 
@@ -92,7 +88,7 @@ For Android, this step is entirely optional -- if your notifications are purely 
 
 For iOS, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app are foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
 
-Thankfully, handling push notifications is straightforward with Expo, all you need to do is add a listener to the `Notifications` object.
+Thankfully, handling push notifications is straightforward with Expo, all you need to do is add a listener using the `Notifications` API.
 
 ```javascript
 import React from 'react';
@@ -138,17 +134,17 @@ export default class AppContainer extends React.Component {
 }
 ```
 
-### Notification handling timing
+### Determining `origin` of the notification
 
-It's not entirely clear from the above when your app will be able to handle the notification depending on it's state at the time the notification is received. For clarification, see the following table:
+Event listeners added using `Notifications.addListener` will receive an object when a notification is received ([docs](../../sdk/notifications/#eventsubscription)). The `origin` of the object will vary based on the app's state at the time the notification was received and the user's subsequent action. The table below summarizes the different possibilities and what the `origin` will be in each case.
 
-| Push was received when...                       | Android           | iOS               |
-| ------------------------------------------------|:-----------------:| -----------------:|
-| App is open and foregrounded                    | Exponent.notification: origin: "received", data: Object | Same as Android
-| App is open and backgrounded                    | Can only be handled if the notification is selected. If it is dismissed, app cannot know it was received. | Same as Android
-| App is open and backgrounded, then foregrounded by selecting the notification | Exponent.notification: origin: "selected" | Exponent.notification: origin: "received" |
-| App was not open, and then opened by selecting the push notification | Passed as props.exp.notification on app root component | props.exp.notification: origin: "selected" | props.exp.notification | props.exp.notification: origin: "received" |
-| App was not open, and then opened by tapping the home screen icon | Can only be handled if the notification is selected. If it is dismissed, the app cannot know it was received. | Same as Android
+| Push was received when...                       | `origin` will be...               |
+| ------------------------------------------------|:-----------------:|
+| App is open and foregrounded                    | `'received'` |
+| App is open and backgrounded, then notification not selected | n/a, no notification is passed to listener |
+| App is open and backgrounded, then notification is selected | `'selected'` |
+| App was not open, and then opened by selecting the push notification | `'selected'` |
+| App was not open, and then opened by tapping the home screen icon | n/a, no notification is passed to listener |
 
 ## HTTP/2 API
 
@@ -271,10 +267,17 @@ type PushMessage = {
 
   /**
    * Time to Live: the number of seconds for which the message may be kept
-   * around for redelivery if it hasn't been delivered yet. Defaults to 0.
+   * around for redelivery if it hasn't been delivered yet. Defaults to
+   * `undefined` in order to use the respective defaults of each provider.
+   * These are 0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM.
    *
    * On Android, we make a best effort to deliver messages with zero TTL
-   * immediately and do not throttle them
+   * immediately and do not throttle them.
+   *
+   * However, note that setting TTL to a low value (e.g. zero) can prevent
+   * normal-priority notifications from ever reaching Android devices that are
+   * in doze mode. In order to guarantee that a notification will be delivered,
+   * TTL must be long enough for the device to wake from doze mode.
    *
    * This field takes precedence over `expiration` when both are specified.
    */
@@ -308,6 +311,11 @@ type PushMessage = {
   // iOS-specific fields
 
   /**
+   * The subtitle to display in the notification below the title
+   */
+  subtitle?: string,
+
+  /**
    * A sound to play when the recipient receives this notification. Specify
    * "default" to play the device's default notification sound, or omit this
    * field to play no sound.
@@ -323,6 +331,15 @@ type PushMessage = {
    * badge.
    */
   badge?: number,
+  
+  /**
+   * ID of the Notification Category through which to display this notification.
+   * 
+   * To send a notification with category to the Expo client, prefix the string
+   * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
+   * applications, use plain `yourCategoryId`.
+   */
+  _category?: string
 
   // Android-specific fields
 
@@ -429,3 +446,11 @@ If Expo couldn't deliver the message to the Android or iOS push notification ser
 ### Expired Credentials
 
 When your push notification credentials have expired, simply run `expo build:ios -c --no-publish` to clear your expired credentials and generate new ones. The new credentials will take effect within a few minutes of being generated. You do not have to submit a new build!
+
+# FAQ
+
+- **Does Expo store the contents of push notifications?** Expo does not store the contents of push notifications any longer than it takes to deliver the notifications to the push notification services operated by Apple, Google, etc... Push notifications are stored only in memory and in message queues and **not** stored in databases.
+
+- **Does Expo read or share the contents of push notifications?** Expo does not read or share the contents of push notifications and our services keep push notifications only as long as needed to deliver them to push notification services run by Apple and Google. If the Expo team is actively debugging the push notifications service, we may see notification contents (ex: at a breakpoint) but Expo cannot see push notification contents otherwise.
+
+- **How does Expo encrypt connections to push notification services, like Apple's and Google's?** Expo's connections to Apple and Google are encrypted and use HTTPS.

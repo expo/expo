@@ -1,28 +1,48 @@
 package expo.modules.webbrowser;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
+import android.text.TextUtils;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ActivityEventListener;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.errors.CurrentActivityNotFoundException;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+import java.util.ArrayList;
+import java.util.List;
+
+import expo.modules.webbrowser.error.NoPreferredPackageFound;
+import expo.modules.webbrowser.error.PackageManagerNotFoundException;
+
+public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer {
+
+  private final static String BROWSER_PACKAGE_KEY = "browserPackage";
+  private final static String SERVICE_PACKAGE_KEY = "servicePackage";
+  private final static String BROWSER_PACKAGES_KEY = "browserPackages";
+  private final static String SERVICE_PACKAGES_KEY = "servicePackages";
+  private final static String PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage";
+  private final static String DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage";
+
+  private final static String TOOLBAR_COLOR_KEY = "toolbarColor";
   private final static String ERROR_CODE = "EXWebBrowser";
   private static final String TAG = "ExpoWebBrowser";
-  private Promise mOpenBrowserPromise;
-  protected static int OPEN_BROWSER_REQUEST_CODE = 873;
+  private static final String SHOW_TITLE_KEY = "showTitle";
+  private static final String ENABLE_BAR_COLLAPSING_KEY = "enableBarCollapsing";
 
-  private ModuleRegistry mModuleRegistry;
+  private final static String NO_PREFERRED_PACKAGE_MSG = "Cannot determine preferred package without satisfying it.";
+
+  private CustomTabsActivitiesHelper mCustomTabsResolver;
+  private CustomTabsConnectionHelper mConnectionHelper;
 
   public WebBrowserModule(Context context) {
     super(context);
@@ -35,81 +55,136 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
 
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
-    if (moduleRegistry != null) {
-      moduleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
+    mCustomTabsResolver = new CustomTabsActivitiesHelper(moduleRegistry);
+    mConnectionHelper = new CustomTabsConnectionHelper(getContext());
+  }
+
+  @ExpoMethod
+  public void warmUpAsync(@Nullable String packageName, final Promise promise) {
+    try {
+      packageName = givenOfPreferredPackageName(packageName);
+      mConnectionHelper.warmUp(packageName);
+      Bundle result = new Bundle();
+      result.putString(SERVICE_PACKAGE_KEY, packageName);
+      promise.resolve(result);
+    } catch (NoPreferredPackageFound ex) {
+      promise.reject(ex);
     }
   }
 
   @ExpoMethod
-  public void openBrowserAsync(final String url, final Promise promise) {
-    if (mOpenBrowserPromise != null) {
+  public void coolDownAsync(@Nullable String packageName, final Promise promise) {
+    try {
+      packageName = givenOfPreferredPackageName(packageName);
+      if (mConnectionHelper.coolDown(packageName)) {
+        Bundle result = new Bundle();
+        result.putString(SERVICE_PACKAGE_KEY, packageName);
+        promise.resolve(result);
+      } else {
+        promise.resolve(new Bundle());
+      }
+    } catch (NoPreferredPackageFound ex) {
+      promise.reject(ex);
+    }
+  }
+
+  @ExpoMethod
+  public void mayInitWithUrlAsync(@Nullable final String url, String packageName, final Promise promise) {
+    try {
+      packageName = givenOfPreferredPackageName(packageName);
+      mConnectionHelper.mayInitWithUrl(packageName, Uri.parse(url));
       Bundle result = new Bundle();
-      result.putString("type", "cancel");
-      mOpenBrowserPromise.resolve(result);
-      return;
+      result.putString(SERVICE_PACKAGE_KEY, packageName);
+      promise.resolve(result);
+    } catch (NoPreferredPackageFound ex) {
+      promise.reject(ex);
     }
-    mOpenBrowserPromise = promise;
+  }
 
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    if (activityProvider == null || activityProvider.getCurrentActivity() == null) {
-      promise.reject(ERROR_CODE, "No activity");
-      mOpenBrowserPromise = null;
-      return;
+  @ExpoMethod
+  public void getCustomTabsSupportingBrowsersAsync(final Promise promise) {
+    try {
+      ArrayList<String> activities = mCustomTabsResolver.getCustomTabsResolvingActivities();
+      ArrayList<String> services = mCustomTabsResolver.getCustomTabsResolvingServices();
+      String preferredPackage = mCustomTabsResolver.getPreferredCustomTabsResolvingActivity(activities);
+      String defaultPackage = mCustomTabsResolver.getDefaultCustomTabsResolvingActivity();
+
+      String defaultCustomTabsPackage = null;
+      if (activities.contains(defaultPackage)) { // It might happen, that default activity does not support Chrome Tabs. Then it will be ResolvingActivity and we don't want to return it as a result.
+        defaultCustomTabsPackage = defaultPackage;
+      }
+
+      Bundle result = new Bundle();
+      result.putStringArrayList(BROWSER_PACKAGES_KEY, activities);
+      result.putStringArrayList(SERVICE_PACKAGES_KEY, services);
+      result.putString(PREFERRED_BROWSER_PACKAGE, preferredPackage);
+      result.putString(DEFAULT_BROWSER_PACKAGE, defaultCustomTabsPackage);
+
+      promise.resolve(result);
+    } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
+      promise.reject(ex);
     }
+  }
 
-    Activity activity = activityProvider.getCurrentActivity();
+  @ExpoMethod
+  public void openBrowserAsync(final String url, ReadableArguments arguments, final Promise promise) {
 
-    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-    CustomTabsIntent customTabsIntent = builder.build();
-
-    Intent intent = customTabsIntent.intent;
+    Intent intent = createCustomTabsIntent(arguments);
     intent.setData(Uri.parse(url));
-    intent.putExtra(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.NO_TITLE);
 
-    activity.startActivityForResult(
-        ChromeTabsManagerActivity.createStartIntent(activity, intent),
-        OPEN_BROWSER_REQUEST_CODE);
-  }
-
-  @ExpoMethod
-  public void dismissBrowser(Promise promise) {
-    if (mOpenBrowserPromise == null) {
-      promise.resolve(null);
-      return;
+    try {
+      List<ResolveInfo> activities = mCustomTabsResolver.getResolvingActivities(intent);
+      if (activities.size() > 0) {
+        mCustomTabsResolver.startCustomTabs(intent);
+        Bundle result = new Bundle();
+        result.putString("type", "opened");
+        promise.resolve(result);
+      } else {
+        promise.reject(ERROR_CODE, "No matching activity!");
+      }
+    } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
+      promise.reject(ex);
     }
 
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    if (activityProvider == null || activityProvider.getCurrentActivity() == null) {
-      promise.reject("E_NO_OPEN_BROWSER", "No browser to dismiss.");
-      mOpenBrowserPromise.reject(ERROR_CODE, "No activity");
-      mOpenBrowserPromise = null;
-      return;
+  }
+
+  private Intent createCustomTabsIntent(ReadableArguments arguments) {
+    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+    String color = arguments.getString(TOOLBAR_COLOR_KEY);
+    String packageName = arguments.getString(BROWSER_PACKAGE_KEY);
+    try {
+      if (!TextUtils.isEmpty(color)) {
+        int intColor = Color.parseColor(color);
+        builder.setToolbarColor(intColor);
+      }
+    } catch (IllegalArgumentException ignored) {
     }
 
-    Activity activity = activityProvider.getCurrentActivity();
+    builder.setShowTitle(arguments.getBoolean(SHOW_TITLE_KEY, false));
 
-    Bundle result = new Bundle();
-    result.putString("type", "dismiss");
-    mOpenBrowserPromise.resolve(result);
-    promise.resolve(null);
-    mOpenBrowserPromise = null;
+    Intent intent = builder.build().intent;
 
-    activity.startActivity(ChromeTabsManagerActivity.createDismissIntent(activity));
-  }
-
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    if (requestCode == OPEN_BROWSER_REQUEST_CODE && resultCode == ChromeTabsManagerActivity.DISMISSED_CODE && mOpenBrowserPromise != null) {
-      Bundle result = new Bundle();
-      result.putString("type", "cancel");
-      mOpenBrowserPromise.resolve(result);
-      mOpenBrowserPromise = null;
+    // We cannot use builder's method enableUrlBarHiding, because there is no corresponding disable method and some browsers enables it by default.
+    intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, arguments.getBoolean(ENABLE_BAR_COLLAPSING_KEY, false));
+    if (!TextUtils.isEmpty(packageName)) {
+      intent.setPackage(packageName);
     }
+
+    return intent;
   }
 
-  @Override
-  public void onNewIntent(Intent intent) {
-    // do nothing
+  private String givenOfPreferredPackageName(@Nullable String packageName) throws NoPreferredPackageFound {
+    try {
+      if (TextUtils.isEmpty(packageName)) {
+        packageName = mCustomTabsResolver.getPreferredCustomTabsResolvingActivity(null);
+      }
+    } catch (CurrentActivityNotFoundException | PackageManagerNotFoundException ex) {
+      throw new NoPreferredPackageFound(NO_PREFERRED_PACKAGE_MSG);
+    }
+    if (TextUtils.isEmpty(packageName)) {
+      throw new NoPreferredPackageFound(NO_PREFERRED_PACKAGE_MSG);
+    }
+    return packageName;
   }
+
 }

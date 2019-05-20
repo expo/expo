@@ -2,21 +2,23 @@
 title: FacebookAds
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+**Facebook Audience SDK** integration.
 
-export default withDocumentationElements(meta);
+## Installation
 
-**Facebook Audience SDK** integration for Expo apps.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-ads-facebook).
 
-## Creating the placement ID
+## Configuration
+
+### Creating the placement ID
 
 You need to create a placement ID to display ads. Follow steps 1 and 3 from the [Getting Started Guide for Facebook Audience](https://developers.facebook.com/docs/audience-network/getting-started) to create the placement ID.
 
-## Configuring app.json
+### Configuring app.json
 
 In your project's [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
-## Development vs Production
+### Development vs Production
 
 When using Facebook Ads in development, you'll need to register your device to be able to show ads. You can add the following at the top of your file to register your device:
 
@@ -198,6 +200,14 @@ function ViewWithBanner(props) {
 
 ## API
 
+```js
+// in managed apps:
+import { FacebookAds } from 'expo';
+
+// in bare apps:
+import * as FacebookAds from 'expo-ads-facebook';
+```
+
 ### NativeAdsManager
 
 A wrapper for [`FBNativeAdsManager`](https://developers.facebook.com/docs/reference/ios/current/class/FBNativeAdsManager/). It provides a mechanism to fetch a set of ads and use them.
@@ -302,3 +312,5 @@ FacebookAds.AdSettings.setUrlPrefix('...');
 ```
 
 **Note:** This method should never be used in production
+
+#

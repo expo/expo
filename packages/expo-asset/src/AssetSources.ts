@@ -1,9 +1,9 @@
 import Constants from 'expo-constants';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
-import AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
 import URL from 'url-parse';
+import AssetSourceResolver from './AssetSourceResolver';
 
 import { getManifestBaseUrl } from './AssetUris';
 

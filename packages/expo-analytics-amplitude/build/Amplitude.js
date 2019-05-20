@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoAmplitude from './ExpoAmplitude';
 export function initialize(apiKey) {
     if (!ExpoAmplitude.initialize) {

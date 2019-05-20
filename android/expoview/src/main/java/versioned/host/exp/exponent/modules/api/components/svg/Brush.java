@@ -33,7 +33,7 @@ class Brush {
 
     // TODO implement pattern units
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private boolean mUseContentObjectBoundingBox;
+    private boolean mUseContentObjectBoundingBoxUnits;
 
     private Matrix mMatrix;
     private Rect mUserSpaceBoundingBox;
@@ -46,7 +46,7 @@ class Brush {
     }
 
     void setContentUnits(BrushUnits units) {
-        mUseContentObjectBoundingBox = units == BrushUnits.OBJECT_BOUNDING_BOX;
+        mUseContentObjectBoundingBoxUnits = units == BrushUnits.OBJECT_BOUNDING_BOX;
     }
 
     void setPattern(PatternView pattern) {
@@ -65,15 +65,13 @@ class Brush {
     }
 
     private static void parseGradientStops(ReadableArray value, int stopsCount, float[] stops, int[] stopsColors, float opacity) {
-        int startStops = value.size() - stopsCount;
         for (int i = 0; i < stopsCount; i++) {
-            stops[i] = (float) value.getDouble(startStops + i);
-            stopsColors[i] = Color.argb(
-                    (int) (value.getDouble(i * 4 + 3) * 255 * opacity),
-                    (int) (value.getDouble(i * 4) * 255),
-                    (int) (value.getDouble(i * 4 + 1) * 255),
-                    (int) (value.getDouble(i * 4 + 2) * 255));
-
+            int stopIndex = i * 2;
+            stops[i] = (float) value.getDouble(stopIndex);
+            int color = value.getInt(stopIndex + 1);
+            int alpha = color >>> 24;
+            int combined = Math.round((float)alpha * opacity);
+            stopsColors[i] = combined << 24 | (color & 0x00ffffff);
         }
     }
 
@@ -104,6 +102,11 @@ class Brush {
         return new RectF(x, y, x + width, y + height);
     }
 
+    private double getVal(SVGLength length, double relative, float scale, float textSize) {
+        return PropHelper.fromRelative(length, relative, 0, mUseObjectBoundingBox &&
+                length.unit == SVGLengthUnitType.SVG_LENGTHTYPE_NUMBER ? relative : scale, textSize);
+    }
+
     void setupPaint(Paint paint, RectF pathBoundingBox, float scale, float opacity) {
         RectF rect = getPaintRect(pathBoundingBox);
         float width = rect.width();
@@ -113,21 +116,32 @@ class Brush {
 
         float textSize = paint.getTextSize();
         if (mType == BrushType.PATTERN) {
-            double x = PropHelper.fromRelative(mPoints[0], width, offsetX, scale, textSize);
-            double y = PropHelper.fromRelative(mPoints[1], height, offsetY, scale, textSize);
-            double w = PropHelper.fromRelative(mPoints[2], width, offsetX, scale, textSize);
-            double h = PropHelper.fromRelative(mPoints[3], height, offsetY, scale, textSize);
+            double x = getVal(mPoints[0], width, scale, textSize);
+            double y = getVal(mPoints[1], height, scale, textSize);
+            double w = getVal(mPoints[2], width, scale, textSize);
+            double h = getVal(mPoints[3], height, scale, textSize);
 
-            RectF vbRect = mPattern.getViewBox();
-            RectF eRect = new RectF((float)x, (float)y, (float)w, (float)h);
-            Matrix mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mPattern.mAlign, mPattern.mMeetOrSlice);
+            if (!(w > 1 && h > 1)) {
+                return;
+            }
 
             Bitmap bitmap = Bitmap.createBitmap(
                     (int) w,
                     (int) h,
                     Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
-            canvas.concat(mViewBoxMatrix);
+
+            RectF vbRect = mPattern.getViewBox();
+            if (vbRect != null && vbRect.width() > 0 && vbRect.height() > 0) {
+                RectF eRect = new RectF((float) x, (float) y, (float) w, (float) h);
+                Matrix mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mPattern.mAlign, mPattern.mMeetOrSlice);
+                canvas.concat(mViewBoxMatrix);
+            }
+
+            if (mUseContentObjectBoundingBoxUnits) {
+                canvas.scale(width / scale, height / scale);
+            }
+
             mPattern.draw(canvas, new Paint(), opacity);
 
             Matrix patternMatrix = new Matrix();
@@ -141,7 +155,7 @@ class Brush {
             return;
         }
 
-        int stopsCount = mColors.size() / 5;
+        int stopsCount = mColors.size() / 2;
         int[] stopsColors = new int[stopsCount];
         float[] stops = new float[stopsCount];
         parseGradientStops(mColors, stopsCount, stops, stopsColors, opacity);

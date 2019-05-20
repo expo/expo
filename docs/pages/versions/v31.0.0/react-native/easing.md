@@ -3,10 +3,6 @@ id: easing
 title: Easing
 ---
 
-import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
-
-export default withDocumentationElements(meta);
-
 The `Easing` module implements common easing functions. This module is used by [Animated.timing()](../animated/#timing) to convey physically believable motion in animations.
 
 You can find a visualization of some common easing functions at http://easings.net/

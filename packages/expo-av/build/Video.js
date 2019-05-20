@@ -8,6 +8,7 @@ import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
 import ExpoVideoManager from './ExpoVideoManager';
 import { ResizeMode, } from './Video.types';
+export { ResizeMode, };
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -161,7 +162,7 @@ export default class Video extends React.Component {
         };
         this._renderPoster = () => this.props.usePoster && this.state.showPoster ? (
         // @ts-ignore: the react-native type declarations are overly restrictive
-        <Image style={_STYLES.poster} source={this.props.posterSource}/>) : null;
+        <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource}/>) : null;
         this.state = {
             showPoster: !!props.usePoster,
         };
@@ -204,7 +205,7 @@ export default class Video extends React.Component {
         // Replace selected native props
         // @ts-ignore: TypeScript thinks "children" is not in the list of props
         const nativeProps = {
-            ...omit(this.props, 'source', ...Object.keys(status)),
+            ...omit(this.props, 'source', 'onPlaybackStatusUpdate', ...Object.keys(status)),
             style: StyleSheet.flatten([_STYLES.base, this.props.style]),
             source,
             resizeMode: nativeResizeMode,
@@ -248,6 +249,7 @@ Video.propTypes = {
         }),
         PropTypes.number,
     ]),
+    posterStyle: ViewPropTypes.style,
     // Callbacks
     onPlaybackStatusUpdate: PropTypes.func,
     onLoadStart: PropTypes.func,

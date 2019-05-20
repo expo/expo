@@ -1,5 +1,5 @@
 import { Localization } from './Localization.types';
-export declare const locale: any;
+export declare const locale: string;
 export declare const locales: any;
 export declare const timezone: any;
 export declare const isoCurrencyCodes: any;

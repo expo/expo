@@ -1,11 +1,11 @@
 {
   "name": "EXFacebook",
-  "version": "1.0.0",
+  "version": "5.0.0-rc.0",
   "summary": "Expo universal module for Facebook SDK",
   "description": "Expo universal module for Facebook SDK",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-facebook",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/facebook/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,10 +16,10 @@
   "preserve_paths": "EXFacebook/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ],
     "FBSDKCoreKit": [

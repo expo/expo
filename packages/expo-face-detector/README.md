@@ -1,94 +1,32 @@
-
 # expo-face-detector
 
-## Installation
+Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
-### iOS (Cocoapods)
+# API documentation
 
-If you're using Cocoapods, add the dependency to your `Podfile`:
+- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/facedetector.md)
+- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/facedetector/)
 
-`pod 'EXFaceDetector'`
+# Installation
 
-and run `pod install`.
+This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
 
-### Android
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
-1.  Append the following lines to `android/settings.gradle`:
-    ```gradle
-    include ':expo-face-detector'
-    project(':expo-face-detector').projectDir = new File(rootProject.projectDir, '../node_modules/expo-face-detector/android')
+### Add the package to your npm dependencies
 
-    include ':expo-face-detector-interface'
-    project(':expo-face-detector-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-face-detector-interface/android')
-    ```
-2.  Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-    ```gradle
-    compile project(':expo-face-detector')
-    compile project(':expo-face-detector-interface')
-    ```
-
-## Introduction
-
-`FaceDetector` lets you use the power of [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
-
-## Known issues
-
-- Android does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
-
-## Methods
-
-### `detectFaces`
-
-Detect faces on a picture.
-
-#### Arguments
-
-- **uri (_string_)** -- `file://` URI to the image.
-- **options? (_object_)** -- A map of options:
-  - **mode? (_FaceDetector.Constants.Mode_)** -- Whether to detect faces in fast or accurate mode. Use `FaceDetector.Constants.Mode.{fast, accurate}`.
-  - **detectLandmarks? (_FaceDetector.Constants.Landmarks_)** -- Whether to detect and return landmarks positions on the face (ears, eyes, mouth, cheeks, nose). Use `FaceDetector.Constants.Landmarks.{all, none}`.
-  - **runClassifications? (_FaceDetector.Constants.Classifications_)** -- Whether to run additional classifications on detected faces (smiling probability, open eye probabilities). Use `FaceDetector.Constants.Classifications.{all, none}`.
-
-#### Returns
-
-Returns a Promise that resolves to an object: `{ faces, image }` where `faces` is an array of the detected faces and `image` is an object containing `uri: string` of the image, `width: number` of the image in pixels, `height: number` of the image in pixels and `orientation: number` of the image (value conforms to the EXIF orientation tag standard).
-
-#### Example
-
-```javascript
-import { FaceDetector } from 'expo-face-detector';
-
-// ...
-detectFaces = async (imageUri) => {
-  const options = { mode: FaceDetector.Constants.Mode.fast };
-  return await FaceDetector.detectFaces(imageUri, options);
-};
-// ...
+```
+npm install expo-face-detector
 ```
 
-##### Detected face schema
+### Configure for iOS
 
-A detected face is an object containing at most following fields:
+Run `pod install` in the ios directory after installing the npm package.
 
-- **bounds (_object_)** -- an object containing:
-  - **origin (`{ x: number, y: number }`)** -- position of the top left corner of a square containing the face in image coordinates,
-  - **size (`{ width: number, height: number }`)** -- size of the square containing the face in image coordinates,
-- **rollAngle (_number_)** -- roll angle of the face (bank),
-- **yawAngle (_number_)** -- yaw angle of the face (heading, turning head left or right),
-- **smilingProbability (_number_)** -- probability that the face is smiling,
-- **leftEarPosition (`{ x: number, y: number}`)** -- position of the left ear in image coordinates,
-- **rightEarPosition (`{ x: number, y: number}`)** -- position of the right ear in image coordinates,
-- **leftEyePosition (`{ x: number, y: number}`)** -- position of the left eye in image coordinates,
-- **leftEyeOpenProbability (_number_)** -- probability that the left eye is open,
-- **rightEyePosition (`{ x: number, y: number}`)** -- position of the right eye in image coordinates,
-- **rightEyeOpenProbability (_number_)** -- probability that the right eye is open,
-- **leftCheekPosition (`{ x: number, y: number}`)** -- position of the left cheek in image coordinates,
-- **rightCheekPosition (`{ x: number, y: number}`)** -- position of the right cheek in image coordinates,
-- **mouthPosition (`{ x: number, y: number}`)** -- position of the center of the mouth in image coordinates,
-- **leftMouthPosition (`{ x: number, y: number}`)** -- position of the left edge of the mouth in image coordinates,
-- **rightMouthPosition (`{ x: number, y: number}`)** -- position of the right edge of the mouth in image coordinates,
-- **noseBasePosition (`{ x: number, y: number}`)** -- position of the nose base in image coordinates.
+### Configure for Android
 
-`smilingProbability`, `leftEyeOpenProbability` and `rightEyeOpenProbability` are returned only if `runClassifications` option is set to `.all`.
+No additional set up necessary.
 
-Positions of face landmarks are returned only if `detectLandmarks` option is set to `.all`.
+# Contributing
+
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

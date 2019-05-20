@@ -1,11 +1,11 @@
 {
   "name": "EXAmplitude",
-  "version": "1.0.0",
-  "summary": "Amplitude standalone module",
-  "description": "Amplitude standalone module",
+  "version": "5.0.0-rc.0",
+  "summary": "Provides access to Amplitude (https://amplitude.com/) mobile analytics. This module wraps Amplitude-iOS (https://github.com/amplitude/Amplitude-iOS) and Android (https://github.com/amplitude/Amplitude-Android) SDKs.",
+  "description": "Provides access to Amplitude (https://amplitude.com/) mobile analytics. This module wraps Amplitude-iOS (https://github.com/amplitude/Amplitude-iOS) and Android (https://github.com/amplitude/Amplitude-Android) SDKs.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/amplitude/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,10 +16,10 @@
   "preserve_paths": "EXAmplitude/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXConstantsInterface": [
+    "UMConstantsInterface": [
 
     ],
     "Amplitude-iOS": [
