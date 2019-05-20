@@ -5,7 +5,7 @@ import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 
 public interface SchedulerInterface {
 
-  public void schedule(String action) throws UnableToScheduleException; // return false if not successful
+  public void schedule(String action) throws UnableToScheduleException;
 
   public String getIdAsString();
 

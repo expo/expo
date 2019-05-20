@@ -416,7 +416,7 @@ export default {
     } = {}
   ): Promise<string> {
     const areOptionsValid: boolean =
-      (options.month == null || isInRange(options.month,1,12)) &&
+      (options.month == null || isInRange(options.month, 1, 12)) &&
       (options.day == null || isInRange(options.day, 1, 31)) &&
       (options.hour == null || isInRange(options.hour, 0, 23)) &&
       (options.minute == null || isInRange(options.minute, 0, 59)) &&
@@ -425,8 +425,7 @@ export default {
       (options.weekDay == null || options.day == null);
 
     if (!areOptionsValid) {
-      console.warn('Options in scheduleNotificationWithCalendarAsync call were incorrect!');
-      return "unsuccessful";
+      throw 'Options in scheduleNotificationWithCalendarAsync call were incorrect!';
     }
 
     return ExponentNotifications.scheduleNotificationWithCalendar(notification, options);
@@ -437,11 +436,10 @@ export default {
     options: {
       interval: number;
       repeat?: boolean;
-    } 
+    }
   ): Promise<string> {
     if (options.interval < 1) {
-      console.warn('Interval must be not less then 1');
-      return "unsuccessful";
+      throw 'Interval must be not less then 1';
     }
     return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
   },

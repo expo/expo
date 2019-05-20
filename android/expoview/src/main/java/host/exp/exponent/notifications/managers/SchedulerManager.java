@@ -133,14 +133,14 @@ class SchedulerManager implements SchedulersManagerInterface {
   private void fetchSchedulersMap() {
     if (!mFetchedFromDB) {
       mFetchedFromDB = true;
-      // fetch from db
+
       for (Class schedulerClass : getSchedulerClasses()) {
         List<SchedulerInterface> schedulers = new Select().from(schedulerClass).queryList();
         for (SchedulerInterface scheduler : schedulers) {
           mSchedulersMap.put(scheduler.getIdAsString(), scheduler);
         }
       }
-      //
+
       for (SchedulerInterface scheduler : mSchedulersMap.values()) {
         scheduler.setApplicationContext(mApplicationContext);
       }
