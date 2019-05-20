@@ -41,7 +41,7 @@ do
 done < $TOOLS_DIR/android-packages-to-rename.txt
 
 # Rename packages in jars
-java -jar $TOOLS_DIR/jarjar-1.4.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
+java -jar $TOOLS_DIR/jarjar-1.4.1.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
 
 # fix annotations
 unzip expoview/libs/ReactAndroid-temp/annotations.zip -d expoview/libs/ReactAndroid-temp/annotations
@@ -69,7 +69,7 @@ do
   echo "rule temporarydontversion.$PACKAGE.** $PACKAGE.@1" >> jarjar-rules.txt
 done < $TOOLS_DIR/android-packages-to-keep.txt
 
-java -jar $TOOLS_DIR/jarjar-1.4.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
+java -jar $TOOLS_DIR/jarjar-1.4.1.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
 
 
 pushd expoview/libs/ReactAndroid-temp
