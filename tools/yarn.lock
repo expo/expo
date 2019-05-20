@@ -827,7 +827,7 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/config@^1.0.3", "@expo/config@^1.0.4":
+"@expo/config@^1.0.4":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@expo/config/-/config-1.0.4.tgz#d615f4a24f617f42ba3664bf28bb0b381084335e"
   integrity sha512-LcyOAWMRHnXmKs8q6J9ajmEdhJoqceHrA9wmNoOYcytJCM+iP0o+o3Z3t0JDGMRYppHBhnjRPmIB08TFyh+T9g==
@@ -941,10 +941,10 @@
     babel-runtime "^6.23.0"
     exec-async "^2.2.0"
 
-"@expo/schemer@^1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@expo/schemer/-/schemer-1.2.4.tgz#b54296add1a0d6bdffa706cd9747f5ba28773def"
-  integrity sha512-mc6FAknziXnh5vu/RKD7LKp9qPwOTlGSFcu3foR+eoDHg2OZNeQKVMoGv0eQHtQOoYQj1XGm4R3rPCV1aT9Whg==
+"@expo/schemer@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@expo/schemer/-/schemer-1.2.5.tgz#f2d457ee7aeae3edf29dd98d3dfa84af6b11dfc3"
+  integrity sha512-j74QDjk5gka5yeIgdiBFg1YQB3upnOedct6Ji8K1+iIQ1OErN4grf1YxCH/v81rhrsbBjKT5wgn0eKH7wqdsRw==
   dependencies:
     ajv "^5.2.2"
     babel-polyfill "^6.23.0"
@@ -962,16 +962,16 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/webpack-config@^0.5.3":
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.5.5.tgz#35f18e2b237fbbc7cf1b704a9dc98a7b37121434"
-  integrity sha512-o2BsmCB42nabMSQJtju30ASJmQd3m7cgeR9dYzvW7Mu3g3FuIG68MfxA2MWYGs6jOsiDssg80dxLFij35WAdFg==
+"@expo/webpack-config@^0.5.6":
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.5.6.tgz#476229b6cc854d041415cef6c84f8dd1f51a0007"
+  integrity sha512-4Whn6eCs+gxLBaKuIKpkMG1VJyddffoKDljQXXFI+25H6nTL5JDASCbW3OyKzVwdWbBraUI8xJYZ7AcpEZH6yg==
   dependencies:
     "@babel/core" "^7.0.0"
     "@babel/polyfill" "^7.2.5"
     "@babel/runtime" "^7.3.4"
     "@expo/config" "^1.0.4"
-    "@expo/webpack-pwa-manifest-plugin" "^1.0.4"
+    "@expo/webpack-pwa-manifest-plugin" "^1.0.5"
     babel-loader "^8.0.5"
     babel-preset-expo "^5.1.1"
     brotli-webpack-plugin "^1.1.0"
@@ -1002,15 +1002,88 @@
     webpack-merge "^4.2.1"
     workbox-webpack-plugin "^3.6.3"
 
-"@expo/webpack-pwa-manifest-plugin@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@expo/webpack-pwa-manifest-plugin/-/webpack-pwa-manifest-plugin-1.0.4.tgz#ddec2b4402024169050ae41c83d94ed905855168"
-  integrity sha512-pU6tTvaX0JJVO3IdLO18R6a+/lTd92wkqunxMU1Qbks6Qy8bgXDyECbHetIfXrPQjYkcew55AYRRbjkNRiV4gg==
+"@expo/webpack-pwa-manifest-plugin@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@expo/webpack-pwa-manifest-plugin/-/webpack-pwa-manifest-plugin-1.0.5.tgz#06690219769ca77171f94cf4fb1a8723e28333c0"
+  integrity sha512-x2XqTi4g8dQlW//83HB+asI3BCxGJ6Y9WHu2tHS9HjciLi93r2kuplrkJA2cttyRnM04meQM/Of2tjXn6MZMRg==
   dependencies:
     css-color-names "^1.0.1"
-    dot-object "^1.7.1"
     jimp "^0.6.0"
     mime "^2.4.0"
+
+"@expo/xdl@^54.0.0":
+  version "54.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-54.0.0.tgz#e4ccd0383aa4cbb03c4ca68a5f0c32e5ebcd085b"
+  integrity sha512-JqmnE+SUJoA80B8r9BDLCjv47hSAEnrZaA9dRDt5JuFPvBlPSjorbMdax+zYJrfhOMHF5RJFDWWOiMCOLHvzYA==
+  dependencies:
+    "@expo/bunyan" "3.0.2"
+    "@expo/config" "^1.0.4"
+    "@expo/json-file" "^8.1.2"
+    "@expo/ngrok" "2.4.3"
+    "@expo/osascript" "^1.9.2"
+    "@expo/schemer" "^1.2.5"
+    "@expo/spawn-async" "1.4.2"
+    "@expo/webpack-config" "^0.5.6"
+    analytics-node "^2.1.0"
+    axios v0.19.0-beta.1
+    chalk "2.4.1"
+    concat-stream "1.6.2"
+    decache "4.4.0"
+    delay-async "1.1.0"
+    es6-error "4.1.1"
+    escape-string-regexp "1.0.5"
+    express "4.16.4"
+    form-data "2.3.2"
+    freeport-async "1.1.1"
+    fs-extra "6.0.1"
+    getenv "0.7.0"
+    glob "7.1.2"
+    glob-promise "3.4.0"
+    globby "6.1.0"
+    hasbin "1.2.3"
+    hashids "1.1.4"
+    home-dir "1.0.0"
+    idx "2.4.0"
+    indent-string "3.2.0"
+    inquirer "5.2.0"
+    invariant "2.2.4"
+    joi "14.0.4"
+    latest-version "4.0.0"
+    lodash "4.17.10"
+    md5hex "1.0.0"
+    minimatch "3.0.4"
+    minipass "2.3.5"
+    mv "2.1.1"
+    ncp "2.0.0"
+    node-forge "0.7.6"
+    opn "5.4.0"
+    p-timeout "2.0.1"
+    pacote "9.3.0"
+    plist "2.1.0"
+    probe-image-size "^4.0.0"
+    querystring "0.2.0"
+    raven "2.6.3"
+    read-chunk "2.1.0"
+    read-last-lines "1.6.0"
+    replace-string "1.1.0"
+    request "2.88.0"
+    request-promise-native "1.0.5"
+    resolve-from "4.0.0"
+    semver "5.5.0"
+    sharp "^0.22.1"
+    slugid "1.1.0"
+    slugify "1.3.1"
+    source-map-support "0.4.18"
+    split "1.0.1"
+    tar "4.4.6"
+    tree-kill "1.2.0"
+    url "0.11.0"
+    url-join "4.0.0"
+    util.promisify "1.0.0"
+    uuid "3.3.2"
+    webpack "4.24.0"
+    webpack-dev-server "3.2.0"
+    xmldom "0.1.27"
 
 "@exponent/spawn-async@^1.2.8":
   version "1.2.8"
@@ -2788,7 +2861,7 @@ color-support@^1.1.3:
   resolved "https://registry.yarnpkg.com/color-support/-/color-support-1.1.3.tgz#93834379a1cc9a0c61f82f52f0d04322251bd5a2"
   integrity sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==
 
-color@^3.0.0:
+color@^3.0.0, color@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/color/-/color-3.1.1.tgz#7abf5c0d38e89378284e873c207ae2172dcc8a61"
   integrity sha512-PvUltIXRjehRKPSy89VnDWFKY58xyhTLyxIg21vwQBI6qLwZNPmC8k3C1uytIgFKEpOIzN4y32iPm8231zFHIg==
@@ -3624,14 +3697,6 @@ domutils@^1.5.1, domutils@^1.7.0:
     dom-serializer "0"
     domelementtype "1"
 
-dot-object@^1.7.1:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/dot-object/-/dot-object-1.7.1.tgz#ec2bc9aeeb86bdeecf3d78235c1ee09bb93992e6"
-  integrity sha512-XJWGenQT/O9TOOip9JzY6Gtk73Cp8qnGnObeSvwdHA9h3YHXgma6qobPRHc8fxHugRpXiHWJ9XiWasXn+Dk2Kg==
-  dependencies:
-    commander "^2.19.0"
-    glob "^7.1.3"
-
 dot-prop@^4.1.1:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.0.tgz#1f19e0c2e1aa0e32797c49799f2837ac6af69c57"
@@ -4394,6 +4459,11 @@ fs-constants@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs-constants/-/fs-constants-1.0.0.tgz#6be0de9be998ce16af8afc24497b9ee9b7ccd9ad"
   integrity sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==
+
+fs-copy-file-sync@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/fs-copy-file-sync/-/fs-copy-file-sync-1.1.1.tgz#11bf32c096c10d126e5f6b36d06eece776062918"
+  integrity sha512-2QY5eeqVv4m2PfyMiEuy9adxNP+ajf+8AR05cEi+OAzPcOj90hvFImeZhTmKLBgSd9EvG33jsD7ZRxsx9dThkQ==
 
 fs-extra@6.0.1:
   version "6.0.1"
@@ -8948,6 +9018,22 @@ sha.js@^2.4.0, sha.js@^2.4.8:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
+sharp@^0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.22.1.tgz#a67c0e75567f03dd5a7861b901fec04072c5b0f4"
+  integrity sha512-lXzSk/FL5b/MpWrT1pQZneKe25stVjEbl6uhhJcTULm7PhmJgKKRbTDM/vtjyUuC/RLqL2PRyC4rpKwbv3soEw==
+  dependencies:
+    color "^3.1.1"
+    detect-libc "^1.0.3"
+    fs-copy-file-sync "^1.1.1"
+    nan "^2.13.2"
+    npmlog "^4.1.2"
+    prebuild-install "^5.3.0"
+    semver "^6.0.0"
+    simple-get "^3.0.3"
+    tar "^4.4.8"
+    tunnel-agent "^0.6.0"
+
 shebang-command@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/shebang-command/-/shebang-command-1.2.0.tgz#44aac65b695b03398968c39f363fee5deafdf1ea"
@@ -8993,6 +9079,15 @@ simple-get@^2.7.0:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/simple-get/-/simple-get-2.8.1.tgz#0e22e91d4575d87620620bc91308d57a77f44b5d"
   integrity sha512-lSSHRSw3mQNUGPAYRqo7xy9dhKmxFXIjLjp4KHpf99GEH2VH7C3AM+Qfx6du6jhfUi6Vm7XnbEVEf7Wb6N8jRw==
+  dependencies:
+    decompress-response "^3.3.0"
+    once "^1.3.1"
+    simple-concat "^1.0.0"
+
+simple-get@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/simple-get/-/simple-get-3.0.3.tgz#924528ac3f9d7718ce5e9ec1b1a69c0be4d62efa"
+  integrity sha512-Wvre/Jq5vgoz31Z9stYWPLn0PqRqmBDpFSdypAnHu5AvRVCYPRYGnvryNLiXu8GOBNDH82J2FRHUGMjjHUpXFw==
   dependencies:
     decompress-response "^3.3.0"
     once "^1.3.1"
@@ -10595,79 +10690,6 @@ ws@^6.0.0:
   integrity sha512-GIyAXC2cB7LjvpgMt9EKS2ldqr0MTrORaleiOno6TweZ6r3TKtoFQWay/2PceJ3RuBasOHzXNn5Lrw1X0bEjqA==
   dependencies:
     async-limiter "~1.0.0"
-
-xdl@53.5.5-alpha.0:
-  version "53.5.5-alpha.0"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-53.5.5-alpha.0.tgz#388a696702617a9747e3c040a191540c62853271"
-  integrity sha512-+EB04pMh8jKOfAqbCMROhEBTPX/HUBuBTckyphy4rLAF6yKWBMAoyaLKjsX4At08BhVSxwZwrz/3DdwKG7cHyg==
-  dependencies:
-    "@expo/bunyan" "3.0.2"
-    "@expo/config" "^1.0.3"
-    "@expo/json-file" "^8.1.2"
-    "@expo/ngrok" "2.4.3"
-    "@expo/osascript" "^1.9.2"
-    "@expo/schemer" "^1.2.4"
-    "@expo/spawn-async" "1.4.2"
-    "@expo/webpack-config" "^0.5.3"
-    analytics-node "^2.1.0"
-    axios v0.19.0-beta.1
-    chalk "2.4.1"
-    concat-stream "1.6.2"
-    decache "4.4.0"
-    delay-async "1.1.0"
-    es6-error "4.1.1"
-    escape-string-regexp "1.0.5"
-    express "4.16.4"
-    form-data "2.3.2"
-    freeport-async "1.1.1"
-    fs-extra "6.0.1"
-    getenv "0.7.0"
-    glob "7.1.2"
-    glob-promise "3.4.0"
-    globby "6.1.0"
-    hasbin "1.2.3"
-    hashids "1.1.4"
-    home-dir "1.0.0"
-    idx "2.4.0"
-    indent-string "3.2.0"
-    inquirer "5.2.0"
-    invariant "2.2.4"
-    joi "14.0.4"
-    latest-version "4.0.0"
-    lodash "4.17.10"
-    md5hex "1.0.0"
-    minimatch "3.0.4"
-    minipass "2.3.5"
-    mv "2.1.1"
-    ncp "2.0.0"
-    node-forge "0.7.6"
-    opn "5.4.0"
-    p-timeout "2.0.1"
-    pacote "9.3.0"
-    plist "2.1.0"
-    probe-image-size "^4.0.0"
-    querystring "0.2.0"
-    raven "2.6.3"
-    read-chunk "2.1.0"
-    read-last-lines "1.6.0"
-    replace-string "1.1.0"
-    request "2.88.0"
-    request-promise-native "1.0.5"
-    resolve-from "4.0.0"
-    semver "5.5.0"
-    slugid "1.1.0"
-    slugify "1.3.1"
-    source-map-support "0.4.18"
-    split "1.0.1"
-    tar "4.4.6"
-    tree-kill "1.2.0"
-    url "0.11.0"
-    url-join "4.0.0"
-    util.promisify "1.0.0"
-    uuid "3.3.2"
-    webpack "4.24.0"
-    webpack-dev-server "3.2.0"
-    xmldom "0.1.27"
 
 xhr@^2.0.1:
   version "2.5.0"
