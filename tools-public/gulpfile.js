@@ -14,7 +14,7 @@ const {
   AndroidKeystore,
   IosKeychain,
   IosIPABuilder: createIPABuilder,
-} = require('xdl');
+} = require('@expo/xdl');
 
 const logger = require('./logger');
 

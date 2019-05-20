@@ -8,7 +8,7 @@ const JsonFile = require('@expo/json-file').default;
 const shell = require('shelljs');
 const semver = require('semver');
 const inquirer = require('inquirer');
-const { Modules } = require('xdl');
+const { Modules } = require('@expo/xdl');
 const argv = require('minimist')(process.argv.slice(2));
 
 const defaultOptions = {
