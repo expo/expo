@@ -144,12 +144,12 @@ function PlatformIcon({ platform }) {
   let icon = null;
   if (platform === 'native') {
     icon = Platform.select({
-      android: <Ionicons name="logo-android" size={17} style={{ marginTop: 1.5 }} />,
-      ios: <Ionicons name="logo-apple" size={17} style={{ marginTop: 1 }} />,
-      default: <Ionicons name="md-tablet-portrait" size={15} style={{ marginTop: 2.5 }} />,
+      android: <Ionicons name="logo-android" size={17} style={{ marginTop: 1 }} />,
+      ios: <Ionicons name="logo-apple" size={17} style={{ marginTop: 0.5 }} />,
+      default: <Ionicons name="md-tablet-portrait" size={15} style={{ marginTop: 1.5 }} />,
     });
   } else if (platform === 'web') {
-    icon = <Ionicons name="ios-globe" size={15} style={{ marginTop: 3 }} />;
+    icon = <Ionicons name="ios-globe" size={15} style={{ marginTop: 2 }} />;
   }
 
   return <View style={styles.platformIconContainer}>{icon}</View>;
