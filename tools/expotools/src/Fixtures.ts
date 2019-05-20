@@ -14,7 +14,7 @@ import qrcodeTerminal from 'qrcode-terminal';
 import enableDestroy from 'server-destroy';
 import transformerProxy from 'transformer-proxy';
 import WebSocket from 'ws';
-import { Api, Exp, ProjectSettings, UrlUtils, User } from 'xdl';
+import { Api, Exp, ProjectSettings, UrlUtils, User } from '@expo/xdl';
 import spawnAsync from '@expo/spawn-async';
 
 import sleepAsync from './utils/sleepAsync';

@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { AndroidShellApp } = require('xdl');
+const { AndroidShellApp } = require('@expo/xdl');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 

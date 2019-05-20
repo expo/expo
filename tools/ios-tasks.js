@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const glob = require('glob-promise');
 const path = require('path');
 const shell = require('shelljs');
-const { Modules } = require('xdl');
+const { Modules } = require('@expo/xdl');
 
 const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
 const RELATIVE_RN_PATH = './react-native-lab/react-native';
