@@ -50,16 +50,11 @@ export default class SmallProjectCard extends React.PureComponent {
 
         <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
           <View style={styles.projectNameContainer}>
-            <View style={{ flex: 1, flexGrow: 4 }}>
-              { platform ?
-                <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-                  [{platform}]{projectName}
-                </Text> 
-              : 
-                <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-                  {projectName}
-                </Text>
-              } 
+            <View style={{ flex: 1, flexDirection: 'row', flexGrow: 4 }}>
+              {platform ? <PlatformIcon platform={platform} /> : null}
+              <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                {projectName}
+              </Text>
             </View>
             {releaseChannel && releaseChannel !== 'default' ? (
               <View style={{ flex: 1, flexGrow: 2 }}>
@@ -145,6 +140,21 @@ export default class SmallProjectCard extends React.PureComponent {
   };
 }
 
+function PlatformIcon({ platform }) {
+  let icon = null;
+  if (platform === 'native') {
+    icon = Platform.select({
+      android: <Ionicons name="logo-android" size={17} style={{ marginTop: 1.5 }} />,
+      ios: <Ionicons name="logo-apple" size={17} style={{ marginTop: 1 }} />,
+      default: <Ionicons name="md-tablet-portrait" size={15} style={{ marginTop: 2.5 }} />,
+    });
+  } else if (platform === 'web') {
+    icon = <Ionicons name="ios-globe" size={15} style={{ marginTop: 3 }} />;
+  }
+
+  return <View style={styles.platformIconContainer}>{icon}</View>;
+}
+
 // note(brentvatne): we need to know this value so we can set the width of
 // extra info container so it properly sizes the url / likes, otherwise it
 // just overflows. I think this is a yoga bug
@@ -207,6 +217,9 @@ const styles = StyleSheet.create({
         marginTop: 1,
       },
     }),
+  },
+  platformIconContainer: {
+    width: 17,
   },
   releaseChannelContainer: {
     alignSelf: 'flex-end',
