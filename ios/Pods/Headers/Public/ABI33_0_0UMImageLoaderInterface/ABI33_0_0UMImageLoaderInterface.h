@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI33_0_0/UMImageLoaderInterface/ABI33_0_0UMImageLoaderInterface/ABI33_0_0UMImageLoaderInterface.h

@@ -401,7 +401,7 @@ async function generateYogaPodspecAsync(
 }
 
 function getCFlagsToPrefixGlobals(prefix, globals) {
-  return globals.map(val => `'-D${val}=${prefix}${val}'`).join(',');
+  return globals.map(val => `-D${val}=${prefix}${val}`);
 }
 
 /**
@@ -436,7 +436,7 @@ async function generatePodfileDepsAsync(
   const expoDepsTemplateParam = '${REACT_NATIVE_EXPO_SUBSPECS}';
   let dep = `
     # Generated dependency: ${versionedPodNames.React}
-    pod '${versionedPodNames.React}', inhibit_warnings => true, :path => '${versionedReactPodPath}', :subspecs => [
+    pod '${versionedPodNames.React}', :inhibit_warnings => true, :path => '${versionedReactPodPath}', :subspecs => [
       'Core',
       'ART',
       'DevSupport',
@@ -499,20 +499,24 @@ async function generatePodfileDepsAsync(
     versionedPodNames.React,
     globals.React.concat(globals.yoga)
   );
+  const indent = '  '.repeat(6);
   let config = `
-    # Generated postinstall: ${versionedPodNames.React}
-    if pod_name == '${versionedPodNames.React}'
-    target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['OTHER_CFLAGS'] = [${configValues}]
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_DEV=1'
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_ENABLE_INSPECTOR=0'
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}ENABLE_PACKAGER_CONNECTION=0'
-        # Enable Google Maps support
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'HAVE_GOOGLE_MAPS=1'
+      # Generated postinstall: ${versionedPodNames.React}
+      if pod_name == '${versionedPodNames.React}'
+      target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['OTHER_CFLAGS'] = %w[
+            ${configValues.join(`\n${indent}`)}
+          ]
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_DEV=1'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_ENABLE_INSPECTOR=0'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}ENABLE_PACKAGER_CONNECTION=0'
+          # Enable Google Maps support
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}HAVE_GOOGLE_MAPS=1'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}HAVE_GOOGLE_MAPS_UTILS=1'
+        end
       end
-    end
-    # End generated postinstall`;
+      # End generated postinstall`;
   await fs.writeFile(
     path.join(
       templatesPath,
