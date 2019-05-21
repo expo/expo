@@ -52,7 +52,11 @@ The password is only used to authenticate with Apple and never stored.
 We ask you if you'd like us to handle your Distribution Certificate or use your own. If you have previously used `expo-cli` for building a standalone app for a different project, then we'll ask you if you'd like to reuse your existing Distribution Certificate. If you don't know what a Distribution Certificate is, just let us handle it for you. If you do need to upload your own certificates, we recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/).
 **Note:** this guide recommends leaving the P12's password blank, but a P12 password is required to upload your own certificate to Expo's service. Please enter a password when prompted.
 
-(Optional) We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well.
+#### Push Notification Credentials
+
+We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well.
+
+**Note:** Push Notifications will be disabled on the Expo client if you choose not to upload your credentials. See [here](#push-notifications-arent-working) for more details.
 
 ### 1b. Determine UDID of your iOS Device
 
@@ -111,3 +115,9 @@ https://expo.io/client/XXXXXXXXXX
 ![Install Workflow](/static/images/adhoc-builds-install.png)
 
 Once your build is complete, open the status page on your iOS device and tap the `Install` button.
+
+# Troubleshooting
+
+## Push Notifications aren't working
+
+If you choose not to upload your Push Notifications credentials, Push Notifications will not work on the Expo client. In order to get an Expo client with Push Notifications enabled, you will need to submit another build request and upload your push credentials at the prompt.
