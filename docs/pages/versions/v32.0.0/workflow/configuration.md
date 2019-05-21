@@ -354,8 +354,8 @@ Configuration for how and when the app should request OTA JavaScript updates
     "infoPlist": OBJECT,
 
     /*
-      An array that contains Associated Domains for the standalone app. See apple's docs for config: https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links
-      Entries must be prefixed with "www."
+      An array that contains Associated Domains for the standalone app. See apple's docs for config: https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links and https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains.
+      Entries must follow the form <service>:<fully qualified domain>[:port number], where <service> can be applinks, webcredentials, or activitycontinuation. Domains must be prefixed with "www."
 
       ExpoKit: use Xcode to set this.
     */
