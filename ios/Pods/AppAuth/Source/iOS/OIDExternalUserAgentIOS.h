@@ -47,7 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
     @param factory The @c OIDSafariViewControllerFactory to use for creating new instances of
         @c SFSafariViewController.
  */
-+ (void)setSafariViewControllerFactory:(id<OIDSafariViewControllerFactory>)factory;
++ (void)setSafariViewControllerFactory:(id<OIDSafariViewControllerFactory>)factory
+    __deprecated_msg("SFSafariViewController customization has been removed. If you need to "
+                     "customize the external user-agent, suggest you create your own version of "
+                     "OIDExternalUserAgentIOS and customize it as you need");
 
 /*! @internal
     @brief Unavailable. Please use @c initWithPresentingViewController:

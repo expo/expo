@@ -4,7 +4,7 @@ const gulp = require('gulp');
 const { resolve } = require('path');
 const shell = require('gulp-shell');
 const argv = require('minimist')(process.argv.slice(2));
-const { Modules } = require('xdl');
+const { Modules } = require('@expo/xdl');
 const chalk = require('chalk');
 const fs = require('fs-extra');
 

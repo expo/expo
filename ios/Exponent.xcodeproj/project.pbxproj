@@ -2386,7 +2386,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
@@ -2419,7 +2419,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Exponent/Pods-Exponent-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A1289FB6F840103038A16BFA /* [CP] Check Pods Manifest.lock */ = {

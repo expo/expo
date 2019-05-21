@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const glob = require('glob-promise');
 const path = require('path');
 const shell = require('shelljs');
-const { Modules } = require('xdl');
+const { Modules } = require('@expo/xdl');
 const inquirer = require('inquirer');
 
 const { runTransformPipelineIOSAsync } = require('./ios-versioning');
@@ -423,12 +423,12 @@ async function generatePodfileDepsAsync(
   }
   let yogaPodDependency = '';
   if (versionedPodNames.yoga) {
-    yogaPodDependency = `pod '${versionedPodNames.yoga}', :path => '${versionedReactPodPath}/ReactCommon/${versionName}yoga'`;
+    yogaPodDependency = `pod '${versionedPodNames.yoga}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/ReactCommon/${versionName}yoga'`;
   }
   const versionableUniversalModulesPods = Modules.getVersionableModulesForPlatform('ios', versionNumber)
     .map(
       ({ podName }) =>
-        `pod '${versionedPodNames[podName]}', :path => '${versionedReactPodPath}/${podName}'`
+        `pod '${versionedPodNames[podName]}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/${podName}'`
     )
     .join('\n    ');
 
@@ -499,19 +499,17 @@ async function generatePodfileDepsAsync(
     versionedPodNames.React,
     globals.React.concat(globals.yoga)
   );
-  let podsRootSub = '${PODS_ROOT}';
   let config = `
     # Generated postinstall: ${versionedPodNames.React}
-    if target.pod_name == '${versionedPodNames.React}'
-      target.native_target.build_configurations.each do |config|
+    if pod_name == '${versionedPodNames.React}'
+    target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['OTHER_CFLAGS'] = [${configValues}]
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_DEV=1'
-        # needed for GoogleMaps 2.x
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}RCT_ENABLE_INSPECTOR=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '${versionName}ENABLE_PACKAGER_CONNECTION=0'
+        # Enable Google Maps support
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'HAVE_GOOGLE_MAPS=1'
-        config.build_settings['FRAMEWORK_SEARCH_PATHS'] ||= []
-        config.build_settings['FRAMEWORK_SEARCH_PATHS'] << '${podsRootSub}/GoogleMaps/Base/Frameworks'
-        config.build_settings['FRAMEWORK_SEARCH_PATHS'] << '${podsRootSub}/GoogleMaps/Maps/Frameworks'
       end
     end
     # End generated postinstall`;

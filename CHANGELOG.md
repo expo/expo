@@ -65,6 +65,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `GoogleSignInOptions.offlineAccess` is now corrected `GoogleSignInOptions.isOfflineEnabled`
 - fix `SMS.sendSMSAsync` crash on android for empty addresses list. Promise won't be rejected when there is no TELEPHONY feature on Android device, only when there is no SMS app by [@mczernek](https://github.com/mczernek) ([#3656](https://github.com/expo/expo/pull/3656))
 - fix MediaPlayer not working on Android. by [@mczernek](https://github.com/mczernek) ([#3768](https://github.com/expo/expo/pull/3768))
+- fix big `OkHttpClient` memory usage on Android (reuse instances) by [@sjchmiela](https://github.com/sjchmiela) ([#4264](https://github.com/expo/expo/pull/4264))
 - fixed `Localization.isRTL` always being `true` on iOS by [@sjchmiela](https://github.com/sjchmiela) ([#3792](https://github.com/expo/expo/pull/3792))
 - fixed adding/removing react children to `Camera` preview on Android by [@bbarthec](https://github.com/bbarthec) ([#3904](https://github.com/expo/expo/pull/3904))
 - changed `FileSystem` requests timeout for downloading resumables from 10 seconds to 60 seconds on Android (now the timeout is 60s on both platforms) by [@Szymon20000](https://github.com/Szymon20000) ([#3872](https://github.com/expo/expo/pull/3872))
@@ -78,6 +79,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed `MediaLibrary.createAssetAsync` crashing when supplying local asset URIs without `file://` protocol by [@tsapeta](https://github.com/tsapeta) ([#4189](https://github.com/expo/expo/pull/4189))
 - fixed `EXC_BAD_ACCESS` crashes on startup on iOS below 12.0 by [@tsapeta](https://github.com/tsapeta) ([#4227](https://github.com/expo/expo/pull/4227))
 - fix `jest-expo` Jest executable not starting Node on Windows by [@Artorp](https://github.com/Artorp) ([#3477](https://github.com/expo/expo/pull/3477))
+- fixed crashes in `TaskManager` due to jobs queue being full by [@tsapeta](https://github.com/tsapeta) ([#4247](https://github.com/expo/expo/pull/4247))
 
 ## 32.0.0
 
