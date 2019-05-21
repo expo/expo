@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.10.5</string>
+	<string>2.11.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -53,11 +53,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.10.5</string>
+	<string>2.11.0</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
-    <string>a25fafe9f9edee11a9882b32e0cd7a26df6e2c42</string>
+		<string>a25fafe9f9edee11a9882b32e0cd7a26df6e2c42</string>
 		<key>Kits</key>
 		<array>
 			<dict>
