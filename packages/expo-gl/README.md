@@ -23,6 +23,9 @@ expo-gl requires that you also install and configure [expo-gl-cpp](https://githu
 npm install expo-gl
 ```
 
+### Compability
+expo-gl requires React Native version 0.57.x.
+
 ### Configure for iOS
 
 Run `pod install` in the ios directory after installing the npm package.
