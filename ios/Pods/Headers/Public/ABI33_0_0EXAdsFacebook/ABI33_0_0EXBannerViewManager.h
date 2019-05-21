@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI33_0_0/EXAdsFacebook/ABI33_0_0EXAdsFacebook/ABI33_0_0EXBannerViewManager.h
