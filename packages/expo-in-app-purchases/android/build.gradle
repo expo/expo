@@ -62,6 +62,13 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
+allprojects {
+  repositories {
+    google()
+    jcenter()
+  }
+}
+
 dependencies {
   unimodule 'unimodules-core'
   implementation 'com.android.billingclient:billing:2.0.0'

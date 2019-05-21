@@ -1,0 +1,4 @@
+include ':app'
+
+include ':unimodules-core'
+project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../../../node_modules/@unimodules/core/android')
