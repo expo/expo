@@ -91,9 +91,15 @@ https://expo.io/udid/XXXXXXXXXXXXX
 After you register your device, we'll start building your client, and you'll receive an email when it's ready to install.
 ```
 
-You will need to open this QR code on the iOS device you wish to register. If you aren't taken to the `Installing Profile` page after pressing the `Register` button, try quitting your `Settings` app and try again.
+You will need to open this QR code on the iOS device you wish to register.
+
+On iOS versions earlier than 12.2, if you aren't taken to the `Installing Profile` page after pressing the `Register` button, try quitting your `Settings` app and try again.
 
 ![UDID Workflow](/static/images/adhoc-builds-udid.png)
+
+On iOS versions 12.2 or later, a window will popup saying `Profile Downloaded`. Close the popup, go to the `Settings` app and navigate to the `Profile Downloaded` option to download the device enrollment challenge.
+
+![UDID Workflow](/static/images/adhoc-builds-udid2.png)
 
 ### 2. Wait for it to finish building
 
