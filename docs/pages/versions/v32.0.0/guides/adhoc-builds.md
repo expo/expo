@@ -120,4 +120,4 @@ Once your build is complete, open the status page on your iOS device and tap the
 
 ## Push Notifications aren't working
 
-If you choose not to upload your Push Notifications credentials, Push Notifications will not work on the Expo client. In order to get an Expo client with Push Notifications enabled, you will need to submit another build request and upload your push credentials at the prompt.
+If you choose not to upload your Push Notifications credentials, Push Notifications will not work on the Expo client. In order to get an Expo client with Push Notifications enabled, you will need to submit another build request and upload or create your push credentials at the prompt.
