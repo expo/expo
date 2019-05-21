@@ -22,6 +22,7 @@ class MainScreen extends React.Component<NavigationScreenProps> {
         style={styles.list}
         data={data}
         ItemSeparatorComponent={ItemSeparator}
+        keyExtractor={item => item}
         renderItem={props => (
           <MainScreenItem
             item={props.item}
