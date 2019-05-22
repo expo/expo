@@ -10,9 +10,9 @@ Alright, let's get started.
 
 ## Creating the project
 
-Run `expo init` to create a project. You'll be asked to name your project. The project will be created in a new directory with that name in the current working directory. I'll call mine `first-project`, and press Enter.
+Run `expo init` to create a project. You'll be asked to choose which template to use. Choose the `tabs` option since that will give us a good starting point. 
 
-Next you can choose which project template to use. Choose the `tabs` option since that will give us a good starting point.
+The project will be created in a new directory with the name you type. I'll call mine `first-project`, and press Enter.
 
 Expo CLI is now initializing a new project: it copies a basic template and installs `react`, `react-native` and `expo`.
 
