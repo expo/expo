@@ -1,5 +1,6 @@
 package expo.modules.inapppurchases;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import android.content.Context;
 import android.app.Activity;
 import android.util.Log;
 
-import expo.modules.inapppurchases.BillingManager;
+import com.android.billingclient.api.SkuDetails;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -39,11 +40,15 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void connectToAppStoreAsync(Map<String, Object> options, final Promise promise) {
+  public void queryPurchasableItemsAsync(String billingType, List<String> itemList, final Promise promise) {
     Activity activity = getCurrentActivity();
-    mBillingManager = new BillingManager(activity);
-    promise.resolve(null);
+    if (mBillingManager == null) {
+      mBillingManager = new BillingManager(activity);
+    }
+    // Billing type must be 'subs' or 'inapp'
+    mBillingManager.queryPurchasableItems(itemList, billingType, promise);
   }
+
 
   private Activity getCurrentActivity() {
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);

@@ -1,8 +1,12 @@
 import { NativeModulesProxy } from '@unimodules/core';
 const { ExpoInAppPurchases } = NativeModulesProxy;
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
-export async function connectToAppStoreAsync(options) {
-    console.log('calling connectToAppStoreAsync from TS');
-    return await ExpoInAppPurchases.connectToAppStoreAsync(options);
+const VALID_TYPES = ['subs', 'inapp'];
+export async function queryPurchasableItemsAsync(itemType, itemList) {
+    console.log('calling queryPurchasableItemsAsync from TS');
+    if (!VALID_TYPES.includes(itemType)) {
+        return new Error('Invalid type!');
+    }
+    return await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
 }
 //# sourceMappingURL=index.js.map

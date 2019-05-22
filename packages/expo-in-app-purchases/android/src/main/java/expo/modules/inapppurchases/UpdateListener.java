@@ -46,8 +46,14 @@ public class UpdateListener implements BillingUpdatesListener {
 
     @Override
     public void onPurchasesUpdated(List<Purchase> purchaseList) {
+        Log.i(TAG, "Size of purchaseList: " + purchaseList.size());
+        Log.i(TAG, "Purchase List: " + purchaseList);
 
         for (Purchase purchase : purchaseList) {
+            // The user needs to save the state of what has and has not been purchased
+            // As an API it would be best to simply return the result of getSku()
+            // and have the user handle that since we cannot determine their SKU_IDs
+            // ahead of time.
             switch (purchase.getSku()) {
                 /*
                 case PremiumDelegate.SKU_ID:

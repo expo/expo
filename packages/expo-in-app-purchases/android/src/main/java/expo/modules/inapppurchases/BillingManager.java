@@ -2,6 +2,8 @@ package expo.modules.inapppurchases;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.support.annotation.StringRes;
 import android.util.Log;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingResult;
@@ -17,6 +19,9 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+import org.unimodules.core.Promise;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -115,6 +120,7 @@ public class BillingManager implements PurchasesUpdatedListener {
                 handlePurchase(purchase);
             }
             mBillingUpdatesListener.onPurchasesUpdated(mPurchases);
+            Log.d(TAG, "Done updating purchases");
         } else if (resultCode.getResponseCode() == BillingResponseCode.USER_CANCELED) {
             Log.i(TAG, "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
         } else {
@@ -152,33 +158,33 @@ public class BillingManager implements PurchasesUpdatedListener {
         Runnable queryToExecute = new Runnable() {
             @Override
             public void run() {
-                long time = System.currentTimeMillis();
-                PurchasesResult purchasesResult = mBillingClient.queryPurchases(SkuType.INAPP);
-                Log.i(TAG, "Querying purchases elapsed time: " + (System.currentTimeMillis() - time)
-                        + "ms");
-                // If there are subscriptions supported, we add subscription rows as well
-                if (areSubscriptionsSupported()) {
-                    PurchasesResult subscriptionResult
-                            = mBillingClient.queryPurchases(SkuType.SUBS);
-                    Log.i(TAG, "Querying purchases and subscriptions elapsed time: "
-                            + (System.currentTimeMillis() - time) + "ms");
-                    Log.i(TAG, "Querying subscriptions result code: "
-                            + subscriptionResult.getResponseCode()
-                            + " res: " + subscriptionResult.getPurchasesList().size());
+            long time = System.currentTimeMillis();
+            PurchasesResult purchasesResult = mBillingClient.queryPurchases(SkuType.INAPP);
+            Log.i(TAG, "Querying purchases elapsed time: " + (System.currentTimeMillis() - time)
+                    + "ms");
+            // If there are subscriptions supported, we add subscription rows as well
+            if (areSubscriptionsSupported()) {
+                PurchasesResult subscriptionResult
+                        = mBillingClient.queryPurchases(SkuType.SUBS);
+                Log.i(TAG, "Querying purchases and subscriptions elapsed time: "
+                        + (System.currentTimeMillis() - time) + "ms");
+                Log.i(TAG, "Querying subscriptions result code: "
+                        + subscriptionResult.getResponseCode()
+                        + " res: " + subscriptionResult.getPurchasesList().size());
 
-                    if (subscriptionResult.getResponseCode() == BillingResponseCode.OK) {
-                        purchasesResult.getPurchasesList().addAll(
-                                subscriptionResult.getPurchasesList());
-                    } else {
-                        Log.e(TAG, "Got an error response trying to query subscription purchases");
-                    }
-                } else if (purchasesResult.getResponseCode() == BillingResponseCode.OK) {
-                    Log.i(TAG, "Skipped subscription purchases query since they are not supported");
+                if (subscriptionResult.getResponseCode() == BillingResponseCode.OK) {
+                    purchasesResult.getPurchasesList().addAll(
+                            subscriptionResult.getPurchasesList());
                 } else {
-                    Log.w(TAG, "queryPurchases() got an error response code: "
-                            + purchasesResult.getResponseCode());
+                    Log.e(TAG, "Got an error response trying to query subscription purchases");
                 }
-                onQueryPurchasesFinished(purchasesResult);
+            } else if (purchasesResult.getResponseCode() == BillingResponseCode.OK) {
+                Log.i(TAG, "Skipped subscription purchases query since they are not supported");
+            } else {
+                Log.w(TAG, "queryPurchases() got an error response code: "
+                        + purchasesResult.getResponseCode());
+            }
+            onQueryPurchasesFinished(purchasesResult);
             }
         };
 
@@ -209,22 +215,53 @@ public class BillingManager implements PurchasesUpdatedListener {
         Runnable queryRequest = new Runnable() {
             @Override
             public void run() {
-                // Query the purchase async
-                SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-                params.setSkusList(skuList).setType(itemType);
-                mBillingClient.querySkuDetailsAsync(params.build(),
-                        new SkuDetailsResponseListener() {
-                            @Override
-                            public void onSkuDetailsResponse(BillingResult billingResult,
-                                                             List<SkuDetails> skuDetailsList) {
-                                listener.onSkuDetailsResponse(billingResult, skuDetailsList);
-                            }
-                        });
+            // Query the purchase async
+            SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+            params.setSkusList(skuList).setType(itemType);
+            mBillingClient.querySkuDetailsAsync(params.build(),
+                new SkuDetailsResponseListener() {
+                @Override
+                public void onSkuDetailsResponse(BillingResult billingResult,
+                                                 List<SkuDetails> skuDetailsList) {
+                    listener.onSkuDetailsResponse(billingResult, skuDetailsList);
+                }
+            });
             }
         };
 
         executeServiceRequest(queryRequest);
     }
+
+    public void queryPurchasableItems(
+            List<String> itemList,
+            final @SkuType String billingType,
+            final Promise promise
+    ) {
+        Log.d(TAG, "Calling queryPurchasableItems");
+        Log.d(TAG, "Billing Type: " + billingType);
+        Log.d(TAG, "Item List: " + itemList);
+        final HashMap<String, Object> response = new HashMap<>();
+        querySkuDetailsAsync(billingType, itemList,
+            new SkuDetailsResponseListener() {
+                @Override
+                public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
+                    final int responseCode = billingResult.getResponseCode();
+                    Log.d(TAG, "Got a SkuDetailsResponse with code: " + responseCode);
+                    response.put("responseCode", responseCode);
+                    if(responseCode != BillingResponseCode.OK) {
+                        Log.w(TAG, "Unsuccessful query for type: " + billingType
+                                + ". Error code: " + responseCode);
+                    } else if (skuDetailsList != null && skuDetailsList.size() > 0) {
+                        Log.d(TAG, "Successfully got results back: " + skuDetailsList);
+                        response.put("results", skuDetailsList);
+                    }
+                    promise.resolve(response);
+                }
+            }
+        );
+    }
+
+
 
     private void executeServiceRequest(Runnable runnable) {
         if (mIsServiceConnected) {
