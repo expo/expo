@@ -1,9 +1,7 @@
 package expo.modules.inapppurchases;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
-import android.support.annotation.StringRes;
+import android.os.Bundle;
 import android.util.Log;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingResult;
@@ -11,8 +9,6 @@ import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.BillingClient.FeatureType;
 import com.android.billingclient.api.BillingClient.SkuType;
 import com.android.billingclient.api.BillingClientStateListener;
-import com.android.billingclient.api.BillingFlowParams;
-import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchasesUpdatedListener;
@@ -20,8 +16,6 @@ import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import org.unimodules.core.Promise;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -69,7 +63,9 @@ public class BillingManager implements PurchasesUpdatedListener {
                         .enablePendingPurchases()
                         .setListener(this)
                         .build();
+    }
 
+    public void startConnection(final Promise promise) {
         Log.d(TAG, "Starting setup.");
 
         // Start setup. This is asynchronous and the specified listener will be called
@@ -82,7 +78,7 @@ public class BillingManager implements PurchasesUpdatedListener {
                 mBillingUpdatesListener.onBillingClientSetupFinished();
                 // IAB is fully set up. Now, let's get an inventory of stuff we own.
                 Log.d(TAG, "Setup successful. Querying inventory.");
-                queryPurchases();
+                queryPurchases(promise);
             }
         });
     }
@@ -154,7 +150,7 @@ public class BillingManager implements PurchasesUpdatedListener {
      * Query purchases across various use cases and deliver the result in a formalized way through
      * a listener
      */
-    public void queryPurchases() {
+    public void queryPurchases(final Promise promise) {
         Runnable queryToExecute = new Runnable() {
             @Override
             public void run() {
@@ -184,7 +180,7 @@ public class BillingManager implements PurchasesUpdatedListener {
                 Log.w(TAG, "queryPurchases() got an error response code: "
                         + purchasesResult.getResponseCode());
             }
-            onQueryPurchasesFinished(purchasesResult);
+            onQueryPurchasesFinished(purchasesResult, promise);
             }
         };
 
@@ -194,7 +190,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     /**
      * Handle a result from querying of purchases and report an updated list to the listener
      */
-    private void onQueryPurchasesFinished(PurchasesResult result) {
+    private void onQueryPurchasesFinished(PurchasesResult result, final Promise promise) {
         // Have we been disposed of in the meantime? If so, or bad result code, then quit
         if (mBillingClient == null || result.getResponseCode() != BillingResponseCode.OK) {
             Log.w(TAG, "Billing client was null or result code (" + result.getResponseCode()
@@ -204,9 +200,23 @@ public class BillingManager implements PurchasesUpdatedListener {
 
         Log.d(TAG, "Query inventory was successful.");
 
-        // Update the UI and purchases inventory with new list of purchases
+        BillingResult billingResult = result.getBillingResult();
+        List<Purchase> purchasesList = result.getPurchasesList();
+        ArrayList<String> jsonStrings = new ArrayList<>();
+        for (Purchase purchase : purchasesList) {
+            jsonStrings.add(purchase.getOriginalJson());
+        }
+
+        // Update purchases inventory with new list of purchases
         mPurchases.clear();
-        onPurchasesUpdated(result.getBillingResult(), result.getPurchasesList());
+        onPurchasesUpdated(billingResult, purchasesList);
+
+        final Bundle response = new Bundle();
+        response.putInt("responseCode", billingResult.getResponseCode());
+        response.putStringArrayList("results", jsonStrings);
+        Log.d(TAG, "Resolving connectToAppStoreAsync promise with response code: "
+                + billingResult.getResponseCode() + " and purchases list: " + purchasesList);
+        promise.resolve(response);
     }
 
     public void querySkuDetailsAsync(final String itemType, final List<String> skuList,
@@ -240,20 +250,25 @@ public class BillingManager implements PurchasesUpdatedListener {
         Log.d(TAG, "Calling queryPurchasableItems");
         Log.d(TAG, "Billing Type: " + billingType);
         Log.d(TAG, "Item List: " + itemList);
-        final HashMap<String, Object> response = new HashMap<>();
+        final Bundle response = new Bundle();
         querySkuDetailsAsync(billingType, itemList,
             new SkuDetailsResponseListener() {
                 @Override
                 public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
                     final int responseCode = billingResult.getResponseCode();
                     Log.d(TAG, "Got a SkuDetailsResponse with code: " + responseCode);
-                    response.put("responseCode", responseCode);
+                    response.putInt("responseCode", responseCode);
                     if(responseCode != BillingResponseCode.OK) {
                         Log.w(TAG, "Unsuccessful query for type: " + billingType
                                 + ". Error code: " + responseCode);
                     } else if (skuDetailsList != null && skuDetailsList.size() > 0) {
                         Log.d(TAG, "Successfully got results back: " + skuDetailsList);
-                        response.put("results", skuDetailsList);
+                        ArrayList<String> jsonStrings = new ArrayList<>();
+                        for (SkuDetails skuDetails : skuDetailsList) {
+                            jsonStrings.add(skuDetails.getOriginalJson());
+                        }
+
+                        response.putStringArrayList("results", jsonStrings);
                     }
                     promise.resolve(response);
                 }
