@@ -7,3 +7,4 @@ interface QueryResponse {
 export declare function connectToAppStoreAsync(): Promise<QueryResponse>;
 export declare function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<QueryResponse>;
 export declare function initiatePurchaseFlowAsync(itemId: String, oldItem?: String): Promise<void>;
+export declare function disconnectAsync(): Promise<void>;

@@ -56,6 +56,14 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
     mBillingManager.initiatePurchaseFlow(skuId, oldSku, promise);
   }
 
+  @ExpoMethod
+  public void disconnectAsync(final Promise promise) {
+    if (mBillingManager != null) {
+      mBillingManager.destroy();
+    }
+    promise.resolve(null);
+  }
+
 
   private Activity getCurrentActivity() {
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);

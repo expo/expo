@@ -15,7 +15,7 @@ let connected = false;
 export async function connectToAppStoreAsync(): Promise<QueryResponse> {
   console.log('calling connectToAppStoreAsync from TS');
   if (connected) {
-    throw new Error('Cannot connect twice!');
+    throw new ConnectionError('Already connected to App Store');
   }
 
   connected = true;
@@ -26,7 +26,7 @@ export async function connectToAppStoreAsync(): Promise<QueryResponse> {
 export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<QueryResponse> {
   console.log('calling queryPurchasableItemsAsync from TS');
   if (!connected) {
-    throw new Error('Must connect to app store first!');
+    throw new ConnectionError('Must be connected to App Store');
   }
 
   const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
@@ -36,14 +36,33 @@ export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemLi
 export async function initiatePurchaseFlowAsync(itemId: String, oldItem?: String): Promise<void> {
   console.log('calling initiatePurchaseFlowAsync from TS');
   if (!connected) {
-    throw new Error('Must be connected!');
+    throw new ConnectionError('Must be connected to App Store');
   }
 
   return await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
+}
+
+export async function disconnectAsync(): Promise<void> {
+  console.log('calling disconnectAsync from TS');
+  if (!connected) {
+    throw new ConnectionError('Already disconnected from App Store');
+  }
+  connected = false;
+
+  return await ExpoInAppPurchases.disconnectAsync();
 }
 
 function convertStringsToObjects(response : any) {
   const { responseCode, results: jsonStrings } = response;
   const results = jsonStrings.map(string => JSON.parse(string));
   return { responseCode, results };
+}
+ class ConnectionError extends Error {
+  constructor(...args) {
+    super(...args);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ConnectionError);
+    }
+    this.name = 'ConnectionError';
+  }
 }
