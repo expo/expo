@@ -16,7 +16,7 @@ NSNotificationName EXTestSuiteCompletedNotification = @"EXTestSuiteCompletedNoti
 
 @implementation EXTest
 
-+ (NSString *)moduleName { return @"ExponentTest"; }
+RCT_EXPORT_MODULE(ExponentTest);
 
 + (os_log_t)log {
   static os_log_t log;
@@ -33,6 +33,18 @@ NSNotificationName EXTestSuiteCompletedNotification = @"EXTestSuiteCompletedNoti
     _environment = environment;
   }
   return self;
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+           @"isInCI": @(_environment == EXTestEnvironmentCI),
+           };
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 RCT_EXPORT_METHOD(log:(NSString *)message)
