@@ -2,25 +2,18 @@ import { Linking, Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
 import ExponentWebBrowser from './ExpoWebBrowser';
 
-type RedirectEvent = {
-  url: string;
-};
-
-type OpenBrowserParams = {
-  toolbarColor?: string;
-  browserPackage?: string;
-  enableBarCollapsing?: boolean;
-  showTitle?: boolean;
-};
-
-type AuthSessionResult = RedirectResult | BrowserResult;
-
-type CustomTabsBrowsersResults = {
-  defaultBrowserPackage?: string;
-  preferredBrowserPackage?: string;
-  browserPackages: string[];
-  servicePackages: string[];
-};
+import {
+  RedirectEvent,
+  OpenBrowserParams,
+  AuthSessionResult,
+  CustomTabsBrowsersResults,
+  BrowserResult,
+  RedirectResult,
+  ServiceActionResult,
+  MayInitWithUrlResult,
+  WarmUpResult,
+  CoolDownResult,
+} from './WebBrowser.types';
 
 const emptyCustomTabsPackages: CustomTabsBrowsersResults = {
   defaultBrowserPackage: undefined,
@@ -28,23 +21,6 @@ const emptyCustomTabsPackages: CustomTabsBrowsersResults = {
   browserPackages: [],
   servicePackages: [],
 };
-
-type BrowserResult = {
-  type: 'cancel' | 'dismiss';
-};
-
-type RedirectResult = {
-  type: 'success';
-  url: string;
-};
-
-type ServiceActionResult = {
-  servicePackage?: string;
-};
-
-type MayInitWithUrlResult = ServiceActionResult;
-type WarmUpResult = ServiceActionResult;
-type CoolDownResult = ServiceActionResult;
 
 export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults> {
   if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
