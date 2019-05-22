@@ -52,6 +52,14 @@ export async function disconnectAsync(): Promise<void> {
   return await ExpoInAppPurchases.disconnectAsync();
 }
 
+export async function getBillingResponseCodeAsync(): Promise<Number> {
+  if (!connected) {
+    return -1;
+  }
+
+  return await ExpoInAppPurchases.getBillingResponseCodeAsync();
+}
+
 function convertStringsToObjects(response : any) {
   const { responseCode, results: jsonStrings } = response;
   const results = jsonStrings.map(string => JSON.parse(string));

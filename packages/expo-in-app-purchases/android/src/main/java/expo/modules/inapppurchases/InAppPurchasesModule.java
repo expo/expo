@@ -57,6 +57,11 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
+  public void getBillingResponseCodeAsync(final Promise promise) {
+    promise.resolve(mBillingManager.getBillingClientResponseCode());
+  }
+
+  @ExpoMethod
   public void disconnectAsync(final Promise promise) {
     if (mBillingManager != null) {
       mBillingManager.destroy();

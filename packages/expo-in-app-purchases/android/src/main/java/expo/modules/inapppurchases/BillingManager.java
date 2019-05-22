@@ -180,6 +180,14 @@ public class BillingManager implements PurchasesUpdatedListener {
     }
 
     /**
+     * Returns the value Billing client response code or BILLING_MANAGER_NOT_INITIALIZED if the
+     * client connection response was not received yet.
+     */
+    public int getBillingClientResponseCode() {
+        return mBillingClientResponseCode;
+    }
+
+    /**
      * Query purchases across various use cases and deliver the result in a formalized way through
      * a listener
      */
