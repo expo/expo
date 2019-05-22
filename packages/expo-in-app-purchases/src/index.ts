@@ -4,7 +4,7 @@ const { ExpoInAppPurchases } = NativeModulesProxy;
 
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 
-const VALID_TYPES: string[] = ['subs', 'inapp'];
+type ValidItemType = 'inapp' | 'subs';
 
 let connected = false;
 
@@ -19,16 +19,23 @@ export async function connectToAppStoreAsync(): Promise<any> {
   return convertStringsToObjects(response);
 }
 
-export async function queryPurchasableItemsAsync(itemType: string, itemList: string[]): Promise<any> {
+export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<any> {
   console.log('calling queryPurchasableItemsAsync from TS');
   if (!connected) {
     throw new Error('Must connect to app store first!');
   }
-  if (!VALID_TYPES.includes(itemType)) {
-    throw new Error('Invalid type!');
-  }
+
   const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
   return convertStringsToObjects(response);
+}
+
+export async function initiatePurchaseFlowAsync(itemId: String, oldItem?: String): Promise<any> {
+  console.log('calling initiatePurchaseFlowAsync from TS');
+  if (!connected) {
+    throw new Error('Must be connected!');
+  }
+
+  return await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
 }
 
 function convertStringsToObjects(response : any) {

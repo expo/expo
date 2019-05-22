@@ -1,9 +1,11 @@
 package expo.modules.inapppurchases;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.BillingClient.FeatureType;
@@ -16,6 +18,8 @@ import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import org.unimodules.core.Promise;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -33,8 +37,10 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     private BillingClient mBillingClient;
     private boolean mIsServiceConnected;
+    private final Activity mActivity;
     private BillingUpdatesListener mBillingUpdatesListener;
     private final List<Purchase> mPurchases = new ArrayList<>();
+    private final HashMap<String, SkuDetails> mSkuDetailsMap = new HashMap<>();
     private Set<String> mTokensToBeConsumed;
 
     /**
@@ -56,6 +62,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     public BillingManager(Activity activity) {
         Log.d(TAG, "Creating Billing client.");
+        mActivity = activity;
         mBillingUpdatesListener = new UpdateListener();
         mBillingClient =
                 BillingClient
@@ -65,7 +72,7 @@ public class BillingManager implements PurchasesUpdatedListener {
                         .build();
     }
 
-    public void startConnection(final Promise promise) {
+    public void startConnectionAndQueryHistory(final Promise promise) {
         Log.d(TAG, "Starting setup.");
 
         // Start setup. This is asynchronous and the specified listener will be called
@@ -104,6 +111,32 @@ public class BillingManager implements PurchasesUpdatedListener {
                 mIsServiceConnected = false;
             }
         });
+    }
+
+    /**
+     * Start a purchase or subscription replace flow
+     */
+    public void initiatePurchaseFlow(final String skuId, final String oldSku, final Promise promise) {
+        // Oldsku is for subscription replacements and may be null.
+        Runnable purchaseFlowRequest = new Runnable() {
+            @Override
+            public void run() {
+            Log.d(TAG, "Launching in-app purchase flow. Replace old SKU? " + (oldSku != null));
+
+            SkuDetails skuDetails = mSkuDetailsMap.get(skuId);
+            BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
+                    .setSkuDetails(skuDetails).setOldSku(oldSku).build();
+            mBillingClient.launchBillingFlow(mActivity, purchaseParams);
+            // TODO: resolve from within the listener?
+            promise.resolve(null);
+            }
+        };
+
+        executeServiceRequest(purchaseFlowRequest);
+    }
+
+    public Context getContext() {
+        return mActivity;
     }
 
     /**
@@ -265,6 +298,7 @@ public class BillingManager implements PurchasesUpdatedListener {
                         Log.d(TAG, "Successfully got results back: " + skuDetailsList);
                         ArrayList<String> jsonStrings = new ArrayList<>();
                         for (SkuDetails skuDetails : skuDetailsList) {
+                            mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
                             jsonStrings.add(skuDetails.getOriginalJson());
                         }
 

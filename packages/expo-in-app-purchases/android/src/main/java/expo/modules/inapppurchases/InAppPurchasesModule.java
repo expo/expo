@@ -43,16 +43,17 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   public void connectToAppStoreAsync(final Promise promise) {
     Activity activity = getCurrentActivity();
     mBillingManager = new BillingManager(activity);
-    mBillingManager.startConnection(promise);
+    mBillingManager.startConnectionAndQueryHistory(promise);
   }
 
-  /*
-    Returns all purchasable items available in Google Play Console.
-    Billing type must be 'subs' or 'inapp'.
-   */
   @ExpoMethod
   public void queryPurchasableItemsAsync(String billingType, List<String> itemList, final Promise promise) {
     mBillingManager.queryPurchasableItems(itemList, billingType, promise);
+  }
+
+  @ExpoMethod
+  public void initiatePurchaseFlowAsync(String skuId, String oldSku, final Promise promise) {
+    mBillingManager.initiatePurchaseFlow(skuId, oldSku, promise);
   }
 
 
