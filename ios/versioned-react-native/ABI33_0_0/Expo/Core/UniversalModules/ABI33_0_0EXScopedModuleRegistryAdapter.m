@@ -27,6 +27,7 @@
 
   ABI33_0_0EXScopedFileSystemModule *fileSystemModule = [[ABI33_0_0EXScopedFileSystemModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:fileSystemModule];
+  [moduleRegistry registerInternalModule:fileSystemModule];
 
   ABI33_0_0EXSensorsManagerBinding *sensorsManagerBinding = [[ABI33_0_0EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[@"EXSensorManager"]];
   [moduleRegistry registerInternalModule:sensorsManagerBinding];
