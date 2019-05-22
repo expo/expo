@@ -8,7 +8,6 @@ apply plugin: 'com.jakewharton.butterknife'
 group = 'host.exp.exponent'
 version = '33.0.0'
 
-
 //Upload android library to maven with javadoc and android sources
 configurations {
   deployerJars
@@ -123,9 +122,10 @@ configurations.all {
   }
 }
 
-
+// WHEN_VERSIONING_REMOVE_FROM_HERE
 // Import gradle helpers for unimodules.
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+// WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
