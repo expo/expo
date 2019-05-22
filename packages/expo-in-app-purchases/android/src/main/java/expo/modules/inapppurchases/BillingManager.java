@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
@@ -18,6 +21,7 @@ import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +40,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
 
     private BillingClient mBillingClient;
+    private EventEmitter mEventEmitter;
     private boolean mIsServiceConnected;
     private final Activity mActivity;
     private BillingUpdatesListener mBillingUpdatesListener;
@@ -60,9 +65,10 @@ public class BillingManager implements PurchasesUpdatedListener {
         void onServiceConnected(BillingResult resultCode);
     }
 
-    public BillingManager(Activity activity) {
+    public BillingManager(Activity activity, EventEmitter eventEmitter) {
         Log.d(TAG, "Creating Billing client.");
         mActivity = activity;
+        mEventEmitter = eventEmitter;
         mBillingUpdatesListener = new UpdateListener();
         mBillingClient =
                 BillingClient
@@ -157,25 +163,30 @@ public class BillingManager implements PurchasesUpdatedListener {
         }
     }
 
+    private AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = new AcknowledgePurchaseResponseListener() {
+        @Override
+        public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+            final String eventName = "purchaseAcknowledged";
+            Bundle response = new Bundle();
+            response.putInt("responseCode", billingResult.getResponseCode());
+            mEventEmitter.emit(eventName, response);
+        }
+    };
+
+    public void acknowledgePurchaseAsync(String purchaseToken) {
+        AcknowledgePurchaseParams acknowledgePurchaseParams =
+                AcknowledgePurchaseParams.newBuilder()
+                        .setPurchaseToken(purchaseToken)
+                        .build();
+        mBillingClient.acknowledgePurchase(acknowledgePurchaseParams, acknowledgePurchaseResponseListener);
+    }
+
     /**
      * Handles the purchase
-     * <p>Note: Notice that for each purchase, we check if signature is valid on the client.
-     * It's recommended to move this check into your backend.
-     * See {@link Security#verifyPurchase(String, String, String)}
-     * </p>
      * @param purchase Purchase to be handled
      */
     private void handlePurchase(Purchase purchase) {
-        /*
-        TODO: Verify signature
-        if (!verifyValidSignature(purchase.getOriginalJson(), purchase.getSignature())) {
-            Log.i(TAG, "Got a purchase: " + purchase + "; but signature is bad. Skipping...");
-            return;
-        }
-        */
-
         Log.d(TAG, "Got a verified purchase: " + purchase);
-
         mPurchases.add(purchase);
     }
 

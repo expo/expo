@@ -16,14 +16,15 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class InAppPurchasesModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String TAG = InAppPurchasesModule.class.getSimpleName();
   private static final String NAME = "ExpoInAppPurchases";
 
   private BillingManager mBillingManager;
-
   private ModuleRegistry mModuleRegistry;
+  private EventEmitter mEventEmitter;
 
   public InAppPurchasesModule(Context context) {
     super(context);
@@ -42,7 +43,8 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   @ExpoMethod
   public void connectToAppStoreAsync(final Promise promise) {
     Activity activity = getCurrentActivity();
-    mBillingManager = new BillingManager(activity);
+    mEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
+    mBillingManager = new BillingManager(activity, mEventEmitter);
     mBillingManager.startConnectionAndQueryHistory(promise);
   }
 
@@ -59,6 +61,12 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   @ExpoMethod
   public void getBillingResponseCodeAsync(final Promise promise) {
     promise.resolve(mBillingManager.getBillingClientResponseCode());
+  }
+
+  @ExpoMethod
+  public void acknowledgePurchaseAsync(String purchaseToken, final Promise promise) {
+    mBillingManager.acknowledgePurchaseAsync(purchaseToken);
+    promise.resolve(null);
   }
 
   @ExpoMethod
