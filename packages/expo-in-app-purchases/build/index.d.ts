@@ -1,5 +1,9 @@
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 declare type ValidItemType = 'inapp' | 'subs';
-export declare function connectToAppStoreAsync(): Promise<any>;
-export declare function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<any>;
-export declare function initiatePurchaseFlowAsync(itemId: String, oldItem?: String): Promise<any>;
+interface QueryResponse {
+    responseCode: Number;
+    results: Array<object>;
+}
+export declare function connectToAppStoreAsync(): Promise<QueryResponse>;
+export declare function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<QueryResponse>;
+export declare function initiatePurchaseFlowAsync(itemId: String, oldItem?: String): Promise<void>;

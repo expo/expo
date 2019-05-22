@@ -5,10 +5,14 @@ const { ExpoInAppPurchases } = NativeModulesProxy;
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 
 type ValidItemType = 'inapp' | 'subs';
+interface QueryResponse {
+  responseCode: Number,
+  results: Array<object>,
+}
 
 let connected = false;
 
-export async function connectToAppStoreAsync(): Promise<any> {
+export async function connectToAppStoreAsync(): Promise<QueryResponse> {
   console.log('calling connectToAppStoreAsync from TS');
   if (connected) {
     throw new Error('Cannot connect twice!');
@@ -19,7 +23,7 @@ export async function connectToAppStoreAsync(): Promise<any> {
   return convertStringsToObjects(response);
 }
 
-export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<any> {
+export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<QueryResponse> {
   console.log('calling queryPurchasableItemsAsync from TS');
   if (!connected) {
     throw new Error('Must connect to app store first!');
@@ -29,7 +33,7 @@ export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemLi
   return convertStringsToObjects(response);
 }
 
-export async function initiatePurchaseFlowAsync(itemId: String, oldItem?: String): Promise<any> {
+export async function initiatePurchaseFlowAsync(itemId: String, oldItem?: String): Promise<void> {
   console.log('calling initiatePurchaseFlowAsync from TS');
   if (!connected) {
     throw new Error('Must be connected!');
