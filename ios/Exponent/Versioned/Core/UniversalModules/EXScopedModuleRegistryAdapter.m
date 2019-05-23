@@ -11,6 +11,7 @@
 #import "EXScopedSecureStore.h"
 #import "EXScopedAmplitude.h"
 #import "EXScopedPermissions.h"
+#import "EXScopedSegment.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -50,6 +51,9 @@
   EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
+
+  EXScopedSegment *segmentModule = [[EXScopedSegment alloc] init];
+  [moduleRegistry registerExportedModule:segmentModule];
 
   return moduleRegistry;
 }
