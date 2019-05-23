@@ -36,22 +36,20 @@ export async function purchaseItemAsync(itemId, oldItem) {
     const result = await getResultFromListener(EVENTS.purchasesUpdated);
     return convertStringsToObjects(result);
 }
-export async function acknowledgePurchaseAsync(purchaseToken) {
+export async function acknowledgePurchaseAsync(purchaseToken, consumeItem) {
     console.log('calling acknowledgePurchaseAsync from TS');
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
     }
+    if (consumeItem) {
+        console.log('Consuming...');
+        await ExpoInAppPurchases.consumeAsync(purchaseToken);
+        const { responseCode } = await getResultFromListener(EVENTS.itemConsumed);
+        return responseCode;
+    }
+    console.log('Acknowledging...');
     await ExpoInAppPurchases.acknowledgePurchaseAsync(purchaseToken);
     const { responseCode } = await getResultFromListener(EVENTS.itemAcknowledged);
-    return responseCode;
-}
-export async function consumeAsync(purchaseToken) {
-    console.log('calling consumeAsync from TS');
-    if (!connected) {
-        throw new ConnectionError('Must be connected to App Store');
-    }
-    await ExpoInAppPurchases.consumeAsync(purchaseToken);
-    const { responseCode } = await getResultFromListener(EVENTS.itemConsumed);
     return responseCode;
 }
 async function getResultFromListener(eventName) {
