@@ -1,29 +1,30 @@
 package expo.modules.inapppurchases;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import expo.modules.inapppurchases.BillingManager.BillingUpdatesListener;
-
-import android.app.Activity;
+import android.os.Bundle;
 import android.util.Log;
 
-import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.Purchase;
 
+import org.unimodules.core.interfaces.services.EventEmitter;
+
 /**
  * Handler to billing updates
  */
-public class UpdateListener implements BillingUpdatesListener {
+public class UpdateListener implements BillingManager.BillingUpdatesListener {
     private static final String TAG = "UpdateListener";
+    private EventEmitter mEventEmitter;
+
+    public UpdateListener(EventEmitter eventEmitter) {
+        mEventEmitter = eventEmitter;
+    }
 
     @Override
-    public void onBillingClientSetupFinished() {
-        //Activity activity = InAppPurchasesModule.getCurrentActivity();
-        // Do something with the activity
-        // mActivity.onBillingManagerSetupFinished();
-    }
+    public void onBillingClientSetupFinished() {}
 
     @Override
     public void onConsumeFinished(String token, BillingResult result) {
@@ -46,35 +47,13 @@ public class UpdateListener implements BillingUpdatesListener {
 
     @Override
     public void onPurchasesUpdated(List<Purchase> purchaseList) {
-        Log.i(TAG, "Size of purchaseList: " + purchaseList.size());
-        Log.i(TAG, "Purchase List: " + purchaseList);
-
+        Bundle response = new Bundle();
+        ArrayList<String> results = new ArrayList<>();
         for (Purchase purchase : purchaseList) {
-            // The user needs to save the state of what has and has not been purchased
-            // As an API it would be best to simply return the result of getSku()
-            // and have the user handle that since we cannot determine their SKU_IDs
-            // ahead of time.
-            switch (purchase.getSku()) {
-                /*
-                case PremiumDelegate.SKU_ID:
-                    Log.d(TAG, "You are Premium! Congratulations!!!");
-                    mIsPremium = true;
-                    break;
-                case GasDelegate.SKU_ID:
-                    Log.d(TAG, "We have gas. Consuming it.");
-                    // We should consume the purchase and fill up the tank once it was consumed
-                    mActivity.getBillingManager().consumeAsync(purchase.getPurchaseToken());
-                    break;
-                case GoldMonthlyDelegate.SKU_ID:
-                    mGoldMonthly = true;
-                    break;
-                case GoldYearlyDelegate.SKU_ID:
-                    mGoldYearly = true;
-                    break;
-                */
-            }
+            results.add(purchase.getOriginalJson());
         }
-
-        // mActivity.showRefreshedUi();
+        response.putStringArrayList("results", results);
+        response.putInt("responseCode", BillingResponseCode.OK);
+        mEventEmitter.emit(BillingManager.PURCHASES_UPDATED_EVENT, response);
     }
 }

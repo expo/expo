@@ -1,6 +1,10 @@
 import { NativeModulesProxy, CodedError, EventEmitter } from '@unimodules/core';
 const { ExpoInAppPurchases } = NativeModulesProxy;
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
+const EVENTS = {
+    purchasesUpdated: 'Purchases Updated',
+    purchaseAcknowledged: 'purchaseAcknowledged'
+};
 let connected = false;
 const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 export async function connectToAppStoreAsync() {
@@ -20,12 +24,14 @@ export async function queryPurchasableItemsAsync(itemType, itemList) {
     const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
     return convertStringsToObjects(response);
 }
-export async function initiatePurchaseFlowAsync(itemId, oldItem) {
-    console.log('calling initiatePurchaseFlowAsync from TS');
+export async function purchaseItemAsync(itemId, oldItem) {
+    console.log('calling purchaseItemAsync from TS');
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
     }
-    return await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
+    await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
+    const result = await getResultFromListener(EVENTS.purchasesUpdated);
+    return convertStringsToObjects(result);
 }
 export async function acknowledgePurchaseAsync(purchaseToken) {
     console.log('calling acknowledgePurchaseAsync from TS');
@@ -33,18 +39,14 @@ export async function acknowledgePurchaseAsync(purchaseToken) {
         throw new ConnectionError('Must be connected to App Store');
     }
     await ExpoInAppPurchases.acknowledgePurchaseAsync(purchaseToken);
-    // Set a listener that resolves the promise when it gets the response back from the native code
-    console.log('Adding listener...');
-    const eventName = 'purchaseAcknowledged';
-    return await getAcknowledgePurchaseResponse(eventName);
+    const { responseCode } = await getResultFromListener(EVENTS.purchaseAcknowledged);
+    return responseCode;
 }
-async function getAcknowledgePurchaseResponse(eventName) {
+async function getResultFromListener(eventName) {
     return new Promise(resolve => {
-        eventEmitter.addListener(eventName, res => {
-            const jsonString = JSON.stringify(res);
-            const result = JSON.parse(jsonString);
+        eventEmitter.addListener(eventName, result => {
             eventEmitter.removeAllListeners(eventName);
-            resolve(result.responseCode);
+            resolve(result);
         });
     });
 }

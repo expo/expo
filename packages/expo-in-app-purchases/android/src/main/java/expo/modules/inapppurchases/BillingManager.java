@@ -37,6 +37,8 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     // Default value of mBillingClientResponseCode until BillingManager was not yet initialized
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
+    public static final String PURCHASES_UPDATED_EVENT = "Purchases Updated";
+    public static final String CONSUME_FINISHED_EVENT = "Consume Finished";
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
 
     private BillingClient mBillingClient;
@@ -69,7 +71,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         Log.d(TAG, "Creating Billing client.");
         mActivity = activity;
         mEventEmitter = eventEmitter;
-        mBillingUpdatesListener = new UpdateListener();
+        mBillingUpdatesListener = new UpdateListener(mEventEmitter);
         mBillingClient =
                 BillingClient
                         .newBuilder(activity)
@@ -123,7 +125,7 @@ public class BillingManager implements PurchasesUpdatedListener {
      * Start a purchase or subscription replace flow
      */
     public void initiatePurchaseFlow(final String skuId, final String oldSku, final Promise promise) {
-        // Oldsku is for subscription replacements and may be null.
+        // oldSku is for subscription replacements and may be null.
         Runnable purchaseFlowRequest = new Runnable() {
             @Override
             public void run() {
@@ -133,7 +135,6 @@ public class BillingManager implements PurchasesUpdatedListener {
             BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(skuDetails).setOldSku(oldSku).build();
             mBillingClient.launchBillingFlow(mActivity, purchaseParams);
-            // TODO: resolve from within the listener?
             promise.resolve(null);
             }
         };
@@ -149,17 +150,22 @@ public class BillingManager implements PurchasesUpdatedListener {
      * Handle a callback that purchases were updated from the Billing library
      */
     @Override
-    public void onPurchasesUpdated(BillingResult resultCode, List<Purchase> purchases) {
-        if (resultCode.getResponseCode() == BillingResponseCode.OK) {
+    public void onPurchasesUpdated(BillingResult result, List<Purchase> purchases) {
+        if (result.getResponseCode() == BillingResponseCode.OK) {
             for (Purchase purchase : purchases) {
                 handlePurchase(purchase);
             }
             mBillingUpdatesListener.onPurchasesUpdated(mPurchases);
             Log.d(TAG, "Done updating purchases");
-        } else if (resultCode.getResponseCode() == BillingResponseCode.USER_CANCELED) {
-            Log.i(TAG, "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
         } else {
-            Log.w(TAG, "onPurchasesUpdated() got unknown resultCode: " + resultCode);
+            if (result.getResponseCode() == BillingResponseCode.USER_CANCELED) {
+                Log.i(TAG, "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
+            } else {
+                Log.w(TAG, "onPurchasesUpdated() got unknown resultCode: " + result);
+            }
+            Bundle response = new Bundle();
+            response.putInt("responseCode", result.getResponseCode());
+            mEventEmitter.emit(PURCHASES_UPDATED_EVENT, response);
         }
     }
 
@@ -328,8 +334,6 @@ public class BillingManager implements PurchasesUpdatedListener {
             }
         );
     }
-
-
 
     private void executeServiceRequest(Runnable runnable) {
         if (mIsServiceConnected) {

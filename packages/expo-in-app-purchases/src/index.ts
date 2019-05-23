@@ -9,6 +9,11 @@ interface QueryResponse {
   results: Array<object>,
 }
 
+const EVENTS = {
+  purchasesUpdated: 'Purchases Updated',
+  purchaseAcknowledged: 'purchaseAcknowledged'
+}
+
 let connected = false;
 const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 
@@ -33,13 +38,16 @@ export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemLi
   return convertStringsToObjects(response);
 }
 
-export async function initiatePurchaseFlowAsync(itemId: String, oldItem?: String): Promise<void> {
-  console.log('calling initiatePurchaseFlowAsync from TS');
+export async function purchaseItemAsync(itemId: String, oldItem?: String): Promise<QueryResponse> {
+  console.log('calling purchaseItemAsync from TS');
   if (!connected) {
     throw new ConnectionError('Must be connected to App Store');
   }
 
-  return await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
+  await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
+
+  const result = await getResultFromListener(EVENTS.purchasesUpdated);
+  return convertStringsToObjects(result);
 }
 
 export async function acknowledgePurchaseAsync(purchaseToken: string): Promise<Number> {
@@ -49,21 +57,16 @@ export async function acknowledgePurchaseAsync(purchaseToken: string): Promise<N
   }
 
   await ExpoInAppPurchases.acknowledgePurchaseAsync(purchaseToken);
-  // Set a listener that resolves the promise when it gets the response back from the native code
 
-  console.log('Adding listener...');
-  const eventName = 'purchaseAcknowledged';
-  return await getAcknowledgePurchaseResponse(eventName);
+  const { responseCode } = await getResultFromListener(EVENTS.purchaseAcknowledged);
+  return responseCode;
 }
 
-async function getAcknowledgePurchaseResponse(eventName: string): Promise<Number> {
+async function getResultFromListener(eventName: string): Promise<any> {
   return new Promise(resolve => {
-    eventEmitter.addListener(eventName, res => {
-      const jsonString = JSON.stringify(res);
-      const result = JSON.parse(jsonString);
-
+    eventEmitter.addListener<Object>(eventName, result => {
       eventEmitter.removeAllListeners(eventName);
-      resolve(result.responseCode);
+      resolve(result);
     })
   });
 }
