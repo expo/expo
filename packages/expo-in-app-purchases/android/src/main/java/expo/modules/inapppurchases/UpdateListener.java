@@ -33,7 +33,7 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
         response.putInt("responseCode", result.getResponseCode());
         response.putString("token", token);
 
-        mEventEmitter.emit(BillingManager.CONSUME_ITEM_EVENT, response);
+        mEventEmitter.emit(BillingManager.ACKNOWLEDGE_ITEM_EVENT, response);
         Log.d(TAG, "End consumption flow.");
     }
 

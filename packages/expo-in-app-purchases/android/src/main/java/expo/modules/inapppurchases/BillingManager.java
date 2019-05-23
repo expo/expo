@@ -42,7 +42,6 @@ public class BillingManager implements PurchasesUpdatedListener {
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
     public static final String PURCHASES_UPDATED_EVENT = "Purchases Updated";
     public static final String ACKNOWLEDGE_ITEM_EVENT = "Item Acknowledged";
-    public static final String CONSUME_ITEM_EVENT = "Item Consumed";
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
 
     private BillingClient mBillingClient;
