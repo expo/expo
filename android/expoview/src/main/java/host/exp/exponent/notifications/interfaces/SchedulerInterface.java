@@ -15,8 +15,6 @@ public interface SchedulerInterface {
 
   public boolean canBeRescheduled();
 
-  public void onPostSchedule();
-
   public String saveAndGetId();
 
   public void setApplicationContext(Context context);
