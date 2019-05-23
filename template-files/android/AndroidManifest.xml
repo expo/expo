@@ -220,6 +220,30 @@
         </intent-filter>
     </activity>
     <!-- Versioned Activity for Stripe -->
+	<activity
+		android:exported="true"
+		android:launchMode="singleTask"
+		android:name="abi33_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
+		android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+		<intent-filter>
+			<action android:name="android.intent.action.VIEW" />
+	      <category android:name="android.intent.category.DEFAULT" />
+	      <category android:name="android.intent.category.BROWSABLE" />
+	      <data android:scheme="abi33_0_0.expo.modules.payments.stripe" />
+		</intent-filter>
+	</activity>
+	<activity
+		android:exported="true"
+		android:launchMode="singleTask"
+		android:name="abi32_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
+		android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+		<intent-filter>
+			<action android:name="android.intent.action.VIEW" />
+	      <category android:name="android.intent.category.DEFAULT" />
+	      <category android:name="android.intent.category.BROWSABLE" />
+	      <data android:scheme="abi32_0_0.expo.modules.payments.stripe" />
+		</intent-filter>
+	</activity>
     <activity
         android:exported="true"
         android:launchMode="singleTask"
