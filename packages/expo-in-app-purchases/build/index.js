@@ -8,6 +8,8 @@ const EVENTS = {
 };
 let connected = false;
 const eventEmitter = new EventEmitter(ExpoInAppPurchases);
+export const billingResponseCodes = ExpoInAppPurchases.responseCodes;
+export const purchaseStates = ExpoInAppPurchases.purchaseStates;
 export async function connectToAppStoreAsync() {
     console.log('calling connectToAppStoreAsync from TS');
     if (connected) {

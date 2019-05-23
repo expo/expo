@@ -4,6 +4,8 @@ interface QueryResponse {
     responseCode: Number;
     results: Array<object>;
 }
+export declare const billingResponseCodes: any;
+export declare const purchaseStates: any;
 export declare function connectToAppStoreAsync(): Promise<QueryResponse>;
 export declare function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<QueryResponse>;
 export declare function purchaseItemAsync(itemId: String, oldItem?: String): Promise<QueryResponse>;
