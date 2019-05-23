@@ -11,6 +11,7 @@
 #import "ABI33_0_0EXScopedSecureStore.h"
 #import "ABI33_0_0EXScopedAmplitude.h"
 #import "ABI33_0_0EXScopedPermissions.h"
+#import "ABI33_0_0EXScopedSegment.h"
 
 #import "ABI33_0_0EXScopedReactNativeAdapter.h"
 #import "ABI33_0_0EXModuleRegistryBinding.h"
@@ -50,6 +51,9 @@
   ABI33_0_0EXScopedPermissions *permissionsModule = [[ABI33_0_0EXScopedPermissions alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
+
+  ABI33_0_0EXScopedSegment *segmentModule = [[ABI33_0_0EXScopedSegment alloc] init];
+  [moduleRegistry registerExportedModule:segmentModule];
 
   return moduleRegistry;
 }
