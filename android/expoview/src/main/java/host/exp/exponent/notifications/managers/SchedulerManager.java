@@ -12,9 +12,11 @@ import java.util.Map;
 
 import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 import host.exp.exponent.notifications.interfaces.SchedulerInterface;
+import host.exp.exponent.notifications.interfaces.SchedulerModelInterface;
 import host.exp.exponent.notifications.interfaces.SchedulersManagerInterface;
-import host.exp.exponent.notifications.schedulers.CalendarScheduler;
-import host.exp.exponent.notifications.schedulers.IntervalScheduler;
+import host.exp.exponent.notifications.schedulers.CalendarSchedulerModel;
+import host.exp.exponent.notifications.schedulers.IntervalSchedulerModel;
+import host.exp.exponent.notifications.schedulers.Scheduler;
 
 class SchedulerManager implements SchedulersManagerInterface {
 
@@ -86,7 +88,6 @@ class SchedulerManager implements SchedulersManagerInterface {
       return;
     }
 
-    scheduler.onPostSchedule();
     if (!scheduler.canBeRescheduled()) {
       this.removeScheduler(id);
     } else {
@@ -127,7 +128,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   private List<Class> getSchedulerClasses() {
-    return Arrays.asList(CalendarScheduler.class, IntervalScheduler.class);
+    return Arrays.asList(CalendarSchedulerModel.class, IntervalSchedulerModel.class);
   }
 
   private void fetchSchedulersMap() {
@@ -135,8 +136,9 @@ class SchedulerManager implements SchedulersManagerInterface {
       mFetchedFromDB = true;
 
       for (Class schedulerClass : getSchedulerClasses()) {
-        List<SchedulerInterface> schedulers = new Select().from(schedulerClass).queryList();
-        for (SchedulerInterface scheduler : schedulers) {
+        List<SchedulerModelInterface> schedulers = new Select().from(schedulerClass).queryList();
+        for (SchedulerModelInterface schedulerModel : schedulers) {
+          Scheduler scheduler = new Scheduler(schedulerModel);
           mSchedulersMap.put(scheduler.getIdAsString(), scheduler);
         }
       }

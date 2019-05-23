@@ -1,6 +1,5 @@
 package host.exp.exponent.notifications.schedulers;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 
@@ -20,23 +19,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.helpers.ExpoCronDefinitionBuilder;
-import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
+import host.exp.exponent.notifications.interfaces.SchedulerModelInterface;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
-import host.exp.exponent.notifications.interfaces.SchedulerInterface;
 import host.exp.exponent.notifications.managers.SchedulersDatabase;
 
 @Table(databaseName = SchedulersDatabase.NAME)
-public class CalendarScheduler extends BaseModel implements SchedulerInterface {
+public class CalendarSchedulerModel extends BaseModel implements SchedulerModelInterface {
 
   private static List<String> triggeringActions = Arrays.asList(null,
       Intent.ACTION_BOOT_COMPLETED,
       Intent.ACTION_REBOOT,
       Intent.ACTION_TIME_CHANGED,
       Intent.ACTION_TIMEZONE_CHANGED);
-
-  private Context mApplicationContext;
 
   private HashMap<String, Object> details;
 
@@ -56,40 +51,12 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
   boolean repeat;
 
   @Column
-  boolean scheduled = false;
-
-  @Column
   String serializedDetails;
 
   @Column
   String calendarData;
 
   // -- scheduler methods --
-
-  @Override
-  public void setApplicationContext(Context context) {
-    mApplicationContext = context.getApplicationContext();
-  }
-
-  @Override
-  public void schedule(String action) throws UnableToScheduleException {
-    if (!CalendarScheduler.triggeringActions.contains(action)) {
-      return;
-    }
-    long nextAppearanceTime = 0;
-
-    try {
-      nextAppearanceTime = getNextAppearanceTime();
-    } catch (IllegalArgumentException e) {
-      throw new UnableToScheduleException();
-    }
-
-    try {
-      getManager().schedule(experienceId, notificationId, details, nextAppearanceTime, null);
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
 
   @Override
   public String getIdAsString() {
@@ -102,19 +69,8 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
   }
 
   @Override
-  public void cancel() {
-    getManager().cancel(experienceId, notificationId);
-  }
-
-  @Override
   public boolean canBeRescheduled() {
-    return repeat || (!scheduled);
-  }
-
-  @Override
-  public void onPostSchedule() {
-    this.scheduled = true;
-    save();
+    return repeat;
   }
 
   @Override
@@ -128,11 +84,10 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
 
   @Override
   public void remove() {
-    cancel();
     delete();
   }
 
-  private long getNextAppearanceTime() { // elapsedTime
+  public long getNextAppearanceTime() { // elapsedTime
     CronDefinition cronDefinition = ExpoCronDefinitionBuilder.getCronDefinition();
     CronParser parser = new CronParser(cronDefinition);
     Cron cron = parser.parse(calendarData);
@@ -144,8 +99,9 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
     return whenShouldAppear - bootTime;
   }
 
-  private ExponentNotificationManager getManager() {
-    return new ExponentNotificationManager(mApplicationContext);
+  @Override
+  public boolean shouldBeTriggeredByAction(String action) {
+    return CalendarSchedulerModel.triggeringActions.contains(action);
   }
 
   // model getters and setters
@@ -180,14 +136,6 @@ public class CalendarScheduler extends BaseModel implements SchedulerInterface {
 
   public void setRepeat(boolean repeat) {
     this.repeat = repeat;
-  }
-
-  public boolean isScheduled() {
-    return scheduled;
-  }
-
-  public void setScheduled(boolean scheduled) {
-    this.scheduled = scheduled;
   }
 
   public String getSerializedDetails() {
