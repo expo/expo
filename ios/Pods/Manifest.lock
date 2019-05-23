@@ -374,7 +374,7 @@ PODS:
     - AppAuth
     - UMCore
   - EXAppLoaderProvider (5.0.0-rc.0)
-  - EXAV (5.0.0-rc.0):
+  - EXAV (5.0.0-rc.1):
     - UMCore
     - UMPermissionsInterface
   - EXBackgroundFetch (5.0.0-rc.0):
@@ -489,7 +489,7 @@ PODS:
     - UMPermissionsInterface
   - EXSpeech (5.0.0-rc.0):
     - UMCore
-  - EXSQLite (5.0.0-rc.0):
+  - EXSQLite (5.0.0-rc.1):
     - UMCore
     - UMFileSystemInterface
   - EXTaskManager (5.0.0-rc.0):
@@ -1839,7 +1839,7 @@ SPEC CHECKSUMS:
   EXAmplitude: 045dcb9d348a97e849de6c47b3a3f510c5fdb3ca
   EXAppAuth: 35d0b33cdbda3a3d1032c523ae24cdbfdb92f50b
   EXAppLoaderProvider: 2aa91ff62be5c207a78914abe8b83ac4bc9ebd82
-  EXAV: 9aba34f004fffe8d67f0f677434c26cba59c9a90
+  EXAV: 575749984515575eaa5dab95927cc9941b55ab58
   EXBackgroundFetch: 7c0725d8617d0d2bcd8ba93135d8de59154ebe99
   EXBarCodeScanner: e96d4e9c5a63ba857672224ea7670d9aa05d8546
   EXBlur: 9d2c221bf92271af40043ac2f58bff162e33e35e
@@ -1876,7 +1876,7 @@ SPEC CHECKSUMS:
   EXSharing: b01f40371b97d57adc48f15315289fde4c760e9c
   EXSMS: ab22df196f24b151115857a27074d63a3aa5090c
   EXSpeech: cb623acf6654d926373bd98e2c82071bf73bff77
-  EXSQLite: 4807ad4977eaa7809f3d2ec2968c302b38851ebd
+  EXSQLite: 4603790851846b831591ed98f736093bd83c5dbd
   EXTaskManager: d227e029a6cdb871d5042f884fc234536a9840e2
   EXVideoThumbnails: da67fad3894cbe6bbc82824cc771e84fded3180a
   EXWebBrowser: 22ddb3a976410b61f1f1488985034b2b80051235
@@ -1920,6 +1920,6 @@ SPEC CHECKSUMS:
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: 001d3b496dd75743cc674a72b3a379a7be5270ca
+PODFILE CHECKSUM: 358169f20a3a30d9ecf4786b4504d8c73f17ac33
 
 COCOAPODS: 1.6.2
