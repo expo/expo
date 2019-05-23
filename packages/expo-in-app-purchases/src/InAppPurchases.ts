@@ -1,6 +1,5 @@
-import { NativeModulesProxy, CodedError, EventEmitter } from '@unimodules/core';
-const { ExpoInAppPurchases } = NativeModulesProxy;
-
+import { CodedError, EventEmitter } from '@unimodules/core';
+import ExpoInAppPurchases from './ExpoInAppPurchases';
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 
 type ValidItemType = 'inapp' | 'subs';

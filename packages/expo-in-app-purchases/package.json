@@ -2,8 +2,8 @@
   "name": "expo-in-app-purchases",
   "version": "1.0.0",
   "description": "ExpoInAppPurchases standalone module",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "build/InAppPurchases.js",
+  "types": "build/InAppPurchases.d.ts",
    "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
