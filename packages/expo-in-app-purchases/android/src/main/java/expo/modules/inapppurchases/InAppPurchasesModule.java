@@ -64,6 +64,15 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
+  public void queryPurchaseHistoryAsync(String itemType, final Promise promise) {
+    if (itemType == null) {
+      mBillingManager.queryPurchases(promise);
+    } else {
+      mBillingManager.queryPurchaseHistoryAsync(itemType, promise);
+    }
+  }
+
+  @ExpoMethod
   public void initiatePurchaseFlowAsync(String skuId, String oldSku, final Promise promise) {
     mBillingManager.initiatePurchaseFlow(skuId, oldSku, promise);
   }

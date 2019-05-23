@@ -23,16 +23,23 @@ interface ItemDetails {
     title: string;
     type: ValidItemType;
 }
-export declare const events: {
-    PURCHASES_UPDATED: string;
-    ITEM_ACKNOWLEDGED: string;
+export declare const constants: {
+    events: {
+        PURCHASES_UPDATED: string;
+        ITEM_ACKNOWLEDGED: string;
+    };
+    billingResponseCodes: any;
+    purchaseStates: any;
+    validTypes: {
+        INAPP: string;
+        SUBS: string;
+    };
 };
-export declare const billingResponseCodes: any;
-export declare const purchaseStates: any;
 export declare function connectToAppStoreAsync(): Promise<QueryResponse>;
 export declare function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<QueryResponse>;
+export declare function queryPurchaseHistoryAsync(refresh?: boolean, itemType?: ValidItemType): Promise<QueryResponse>;
 export declare function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void>;
 export declare function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void>;
 export declare function setPurchaseListener(eventName: string, callback: (result: any) => void): void;
-export declare function disconnectAsync(): Promise<void>;
 export declare function getBillingResponseCodeAsync(): Promise<number>;
+export declare function disconnectAsync(): Promise<void>;

@@ -18,6 +18,8 @@ import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
+import com.android.billingclient.api.PurchaseHistoryResponseListener;
+import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
@@ -280,6 +282,38 @@ public class BillingManager implements PurchasesUpdatedListener {
                         + purchasesResult.getResponseCode());
             }
             onQueryPurchasesFinished(purchasesResult, promise);
+            }
+        };
+
+        executeServiceRequest(queryToExecute);
+    }
+
+    /**
+     * Does the same thing as queryPurchases except makes a network request (instead of using Google Play cache)
+     * and returns all records for every SKU of a given type, even if they're expired/consumed
+     */
+    public void queryPurchaseHistoryAsync(final String itemType, final Promise promise) {
+        Runnable queryToExecute = new Runnable() {
+            @Override
+            public void run() {
+                mBillingClient.queryPurchaseHistoryAsync(itemType,
+                new PurchaseHistoryResponseListener() {
+                    @Override
+                    public void onPurchaseHistoryResponse(BillingResult billingResult,
+                                                          List<PurchaseHistoryRecord> purchasesList) {
+                        Bundle response = new Bundle();
+                        response.putInt("responseCode", billingResult.getResponseCode());
+                        if (billingResult.getResponseCode() == BillingResponseCode.OK
+                                && purchasesList != null) {
+                            ArrayList<String> jsonStrings = new ArrayList<>();
+                            for (PurchaseHistoryRecord record : purchasesList) {
+                                jsonStrings.add(record.getOriginalJson());
+                            }
+                            response.putStringArrayList("results", jsonStrings);
+                        }
+                        promise.resolve(response);
+                    }
+                });
             }
         };
 

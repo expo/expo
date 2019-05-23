@@ -1,16 +1,26 @@
 import { CodedError, EventEmitter } from '@unimodules/core';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
-export const events = {
+const events = {
     PURCHASES_UPDATED: 'Purchases Updated',
     ITEM_ACKNOWLEDGED: 'Item Acknowledged',
+};
+const validTypes = {
+    INAPP: 'inapp',
+    SUBS: 'subs',
+};
+const billingResponseCodes = ExpoInAppPurchases.responseCodes;
+const purchaseStates = ExpoInAppPurchases.purchaseStates;
+export const constants = {
+    events,
+    billingResponseCodes,
+    purchaseStates,
+    validTypes,
 };
 let connected = false;
 let purchasesUpdateSubscription;
 let itemAcknowledgedSubscription;
 const eventEmitter = new EventEmitter(ExpoInAppPurchases);
-export const billingResponseCodes = ExpoInAppPurchases.responseCodes;
-export const purchaseStates = ExpoInAppPurchases.purchaseStates;
 export async function connectToAppStoreAsync() {
     console.log('calling connectToAppStoreAsync from TS');
     if (connected) {
@@ -27,6 +37,17 @@ export async function queryPurchasableItemsAsync(itemType, itemList) {
     }
     const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
     return convertStringsToObjects(response);
+}
+export async function queryPurchaseHistoryAsync(refresh, itemType) {
+    console.log('calling queryPurchaseHistoryAsync from TS');
+    if (!connected) {
+        throw new ConnectionError('Must be connected to App Store');
+    }
+    if (refresh && !itemType) {
+        throw new Error('Must define item type if querying updated history');
+    }
+    const history = await ExpoInAppPurchases.queryPurchaseHistoryAsync(refresh ? itemType : null);
+    return convertStringsToObjects(history);
 }
 export async function purchaseItemAsync(itemId, oldItem) {
     console.log('calling purchaseItemAsync from TS');
@@ -63,6 +84,12 @@ export function setPurchaseListener(eventName, callback) {
         itemAcknowledgedSubscription = eventEmitter.addListener(eventName, callback);
     }
 }
+export async function getBillingResponseCodeAsync() {
+    if (!connected) {
+        return billingResponseCodes.SERVICE_DISCONNECTED;
+    }
+    return await ExpoInAppPurchases.getBillingResponseCodeAsync();
+}
 export async function disconnectAsync() {
     console.log('calling disconnectAsync from TS');
     if (!connected) {
@@ -74,12 +101,6 @@ export async function disconnectAsync() {
         eventEmitter.removeAllListeners(events[key]);
     }
     return await ExpoInAppPurchases.disconnectAsync();
-}
-export async function getBillingResponseCodeAsync() {
-    if (!connected) {
-        return billingResponseCodes.SERVICE_DISCONNECTED;
-    }
-    return await ExpoInAppPurchases.getBillingResponseCodeAsync();
 }
 function convertStringsToObjects(response) {
     const { responseCode, results: jsonStrings } = response;

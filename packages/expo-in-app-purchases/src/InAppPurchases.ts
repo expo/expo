@@ -29,18 +29,28 @@ interface ItemDetails {
   type: ValidItemType
 }
 
-export const events = {
+const events = {
   PURCHASES_UPDATED: 'Purchases Updated',
   ITEM_ACKNOWLEDGED: 'Item Acknowledged',
+}
+const validTypes = {
+  INAPP: 'inapp',
+  SUBS: 'subs',
+}
+const billingResponseCodes = ExpoInAppPurchases.responseCodes;
+const purchaseStates = ExpoInAppPurchases.purchaseStates;
+
+export const constants = {
+  events,
+  billingResponseCodes,
+  purchaseStates,
+  validTypes,
 }
 
 let connected = false;
 let purchasesUpdateSubscription: Subscription;
 let itemAcknowledgedSubscription: Subscription;
 const eventEmitter = new EventEmitter(ExpoInAppPurchases);
-
-export const billingResponseCodes = ExpoInAppPurchases.responseCodes;
-export const purchaseStates = ExpoInAppPurchases.purchaseStates;
 
 export async function connectToAppStoreAsync(): Promise<QueryResponse> {
   console.log('calling connectToAppStoreAsync from TS');
@@ -61,6 +71,18 @@ export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemLi
 
   const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
   return convertStringsToObjects(response);
+}
+
+export async function queryPurchaseHistoryAsync(refresh?: boolean, itemType?: ValidItemType): Promise<QueryResponse> {
+  console.log('calling queryPurchaseHistoryAsync from TS');
+  if (!connected) {
+    throw new ConnectionError('Must be connected to App Store');
+  }
+  if (refresh && !itemType) {
+    throw new Error('Must define item type if querying updated history');
+  }
+  const history = await ExpoInAppPurchases.queryPurchaseHistoryAsync(refresh ? itemType : null);
+  return convertStringsToObjects(history);
 }
 
 export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void> {
@@ -103,6 +125,14 @@ export function setPurchaseListener(eventName: string, callback: (result) => voi
   }
 }
 
+export async function getBillingResponseCodeAsync(): Promise<number> {
+  if (!connected) {
+    return billingResponseCodes.SERVICE_DISCONNECTED;
+  }
+
+  return await ExpoInAppPurchases.getBillingResponseCodeAsync();
+}
+
 export async function disconnectAsync(): Promise<void> {
   console.log('calling disconnectAsync from TS');
   if (!connected) {
@@ -116,14 +146,6 @@ export async function disconnectAsync(): Promise<void> {
   }
 
   return await ExpoInAppPurchases.disconnectAsync();
-}
-
-export async function getBillingResponseCodeAsync(): Promise<number> {
-  if (!connected) {
-    return billingResponseCodes.SERVICE_DISCONNECTED;
-  }
-
-  return await ExpoInAppPurchases.getBillingResponseCodeAsync();
 }
 
 function convertStringsToObjects(response : any) {
