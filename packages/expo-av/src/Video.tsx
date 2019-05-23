@@ -1,4 +1,4 @@
-import omit from 'lodash.omit';
+import omit from 'lodash/omit';
 import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
