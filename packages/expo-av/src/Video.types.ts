@@ -66,7 +66,7 @@ export type VideoProps = {
 } & React.ComponentProps<typeof View>;
 
 export type NativeProps = {
-  source: PlaybackNativeSource | null;
+  source?: PlaybackNativeSource | null;
   resizeMode?: unknown;
   status?: PlaybackStatusToSet;
   onLoadStart?: () => void;
