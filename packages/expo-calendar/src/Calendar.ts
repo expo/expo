@@ -5,7 +5,7 @@ import ExpoCalendar from './ExpoCalendar';
 
 type RecurringEventOptions = {
   futureEvents?: boolean;
-  instanceStartDate?: string;
+  instanceStartDate?: string | Date;
 }; // iOS
 
 export interface Calendar {
@@ -41,17 +41,17 @@ export type Event = {
   calendarId?: string;
   title?: string;
   location?: string;
-  creationDate?: string; // iOS
-  lastModifiedDate?: string; // iOS
+  creationDate?: string | Date; // iOS
+  lastModifiedDate?: string | Date; // iOS
   timeZone?: string;
   endTimeZone?: string; // Android
   url?: string; // iOS
   notes?: string;
   alarms?: Alarm[];
   recurrenceRule?: RecurrenceRule;
-  startDate?: string;
-  endDate?: string;
-  originalStartDate?: string; // iOS
+  startDate?: string | Date;
+  endDate?: string | Date;
+  originalStartDate?: string | Date; // iOS
   isDetached?: boolean; // iOS
   allDay?: boolean;
   availability?: string; // Availability
@@ -71,8 +71,8 @@ export interface Reminder {
   calendarId?: string;
   title?: string;
   location?: string;
-  creationDate?: string;
-  lastModifiedDate?: string;
+  creationDate?: string | Date;
+  lastModifiedDate?: string | Date;
   timeZone?: string;
   url?: string;
   notes?: string;
@@ -81,7 +81,7 @@ export interface Reminder {
   startDate?: string | Date;
   dueDate?: string | Date;
   completed?: boolean;
-  completionDate?: string;
+  completionDate?: string | Date;
 }
 
 type Attendee = {
@@ -256,7 +256,7 @@ export async function createEventAsync(calendarId: string, details: Event = {}):
     id: undefined,
     calendarId: calendarId === DEFAULT ? undefined : calendarId,
   };
-  return ExpoCalendar.saveEventAsync(newDetails, {});
+  return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
 
 export async function updateEventAsync(
@@ -287,7 +287,7 @@ export async function updateEventAsync(
   }
 
   const newDetails = { ...details, id, instanceStartDate };
-  return ExpoCalendar.saveEventAsync(newDetails, { futureEvents });
+  return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), { futureEvents });
 }
 
 export async function deleteEventAsync(
@@ -392,8 +392,8 @@ export async function getRemindersAsync(
     );
   }
   return ExpoCalendar.getRemindersAsync(
-    startDate || null,
-    endDate || null,
+    stringifyIfDate(startDate) || null,
+    stringifyIfDate(endDate) || null,
     calendarIds,
     status || null
   );
@@ -426,7 +426,7 @@ export async function createReminderAsync(
     id: undefined,
     calendarId: calendarId === DEFAULT ? undefined : calendarId,
   };
-  return ExpoCalendar.saveReminderAsync(newDetails);
+  return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
 
 export async function updateReminderAsync(id: string, details: Reminder = {}): Promise<string> {
@@ -446,7 +446,7 @@ export async function updateReminderAsync(id: string, details: Reminder = {}): P
   }
 
   const newDetails = { ...details, id };
-  return ExpoCalendar.saveReminderAsync(newDetails);
+  return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
 
 export async function deleteReminderAsync(id: string): Promise<void> {
@@ -617,3 +617,14 @@ export const ReminderStatus = {
 };
 
 export const DEFAULT = 'default';
+
+function stringifyIfDate(date: any): any {
+  return date instanceof Date ? date.toISOString() : date;
+}
+
+function stringifyDateValues(obj: object): object {
+  return Object.keys(obj).reduce((acc, key) => {
+    acc[key] = stringifyIfDate(obj[key]);
+    return acc;
+  }, {});
+}
