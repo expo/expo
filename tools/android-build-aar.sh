@@ -88,7 +88,9 @@ popd
 
 # Put aar into local maven repo
 mvn install:install-file -e -Dfile=expoview/libs/ReactAndroid-release-$ABI_VERSION.aar -DgroupId=host.exp -DartifactId=reactandroid-$ABI_VERSION -Dversion=1.0.0 -Dpackaging=aar
-cp -r ~/.m2/repository/host/exp/reactandroid-$ABI_VERSION/ maven/host/exp/reactandroid-$ABI_VERSION
+mkdir -p versioned-abis/expoview-$ABI_VERSION/maven/host/exp/reactandroid-$ABI_VERSION
+cp -r ~/.m2/repository/host/exp/reactandroid-$ABI_VERSION/ versioned-abis/expoview-$ABI_VERSION/maven/host/exp/reactandroid-$ABI_VERSION
+rm expoview/libs/ReactAndroid-release-$ABI_VERSION.aar
 
 # Add new aar to expoview/build.gradle
 NEWLINE='\
