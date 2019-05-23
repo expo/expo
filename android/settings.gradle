@@ -6,6 +6,7 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi33_0_0",
     "abi32_0_0",
     "abi31_0_0",
 ].forEach({ abiVariant ->
