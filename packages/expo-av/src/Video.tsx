@@ -369,7 +369,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     ) : null;
 
   render() {
-    const source = getNativeSourceFromSource(this.props.source || null);
+    const source = getNativeSourceFromSource(this.props.source) || undefined;
 
     let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
     if (this.props.resizeMode) {
@@ -403,7 +403,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     // Replace selected native props
     // @ts-ignore: TypeScript thinks "children" is not in the list of props
     const nativeProps: NativeProps = {
-      ...omit(this.props, 'source', 'onPlaybackStatusUpdate', ...Object.keys(status)),
+      ...omit(this.props, 'source', 'onPlaybackStatusUpdate', 'usePoster', 'posterSource', ...Object.keys(status)),
       style: StyleSheet.flatten([_STYLES.base, this.props.style]),
       source,
       resizeMode: nativeResizeMode,
