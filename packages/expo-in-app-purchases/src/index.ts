@@ -63,7 +63,7 @@ export async function acknowledgePurchaseAsync(purchaseToken: string): Promise<N
   return responseCode;
 }
 
-export async function consumeAsync(purchaseToken: string): Promise<Object> {
+export async function consumeAsync(purchaseToken: string): Promise<Number> {
   console.log('calling consumeAsync from TS');
   if (!connected) {
     throw new ConnectionError('Must be connected to App Store');
@@ -71,7 +71,8 @@ export async function consumeAsync(purchaseToken: string): Promise<Object> {
 
   await ExpoInAppPurchases.consumeAsync(purchaseToken);
 
-  return await getResultFromListener(EVENTS.itemConsumed);
+  const { responseCode } = await getResultFromListener(EVENTS.itemConsumed);
+  return responseCode;
 }
 
 async function getResultFromListener(eventName: string): Promise<any> {
@@ -103,7 +104,7 @@ export async function getBillingResponseCodeAsync(): Promise<Number> {
 
 function convertStringsToObjects(response : any) {
   const { responseCode, results: jsonStrings } = response;
-  const results = jsonStrings.map(string => JSON.parse(string));
+  const results = jsonStrings ? jsonStrings.map(string => JSON.parse(string)) : [];
   return { responseCode, results };
 }
 

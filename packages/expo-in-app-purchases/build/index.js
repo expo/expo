@@ -49,7 +49,8 @@ export async function consumeAsync(purchaseToken) {
         throw new ConnectionError('Must be connected to App Store');
     }
     await ExpoInAppPurchases.consumeAsync(purchaseToken);
-    return await getResultFromListener(EVENTS.itemConsumed);
+    const { responseCode } = await getResultFromListener(EVENTS.itemConsumed);
+    return responseCode;
 }
 async function getResultFromListener(eventName) {
     return new Promise(resolve => {
@@ -75,7 +76,7 @@ export async function getBillingResponseCodeAsync() {
 }
 function convertStringsToObjects(response) {
     const { responseCode, results: jsonStrings } = response;
-    const results = jsonStrings.map(string => JSON.parse(string));
+    const results = jsonStrings ? jsonStrings.map(string => JSON.parse(string)) : [];
     return { responseCode, results };
 }
 class ConnectionError extends CodedError {
