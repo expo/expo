@@ -4,8 +4,29 @@ export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 
 type ValidItemType = 'inapp' | 'subs';
 interface QueryResponse {
-  responseCode: Number,
-  results: Array<object>,
+  responseCode: number,
+  results: Array<Purchase | ItemDetails>,
+}
+
+interface Purchase {
+  acknowledged: boolean,
+  orderId: string,
+  packageName: string,
+  productId: string,
+  purchaseState: number,
+  purchaseTime: number,
+  purchaseToken: string
+}
+
+interface ItemDetails {
+  description: string,
+  price: string,
+  price_amount_micros: number,
+  price_currency_code: string,
+  productId: string,
+  skuDetailsToken: string,
+  title: string,
+  type: ValidItemType
 }
 
 export const events = {
@@ -42,7 +63,7 @@ export async function queryPurchasableItemsAsync(itemType: ValidItemType, itemLi
   return convertStringsToObjects(response);
 }
 
-export async function purchaseItemAsync(itemId: String, oldItem?: String): Promise<void> {
+export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void> {
   console.log('calling purchaseItemAsync from TS');
   if (!connected) {
     throw new ConnectionError('Must be connected to App Store');
@@ -51,7 +72,7 @@ export async function purchaseItemAsync(itemId: String, oldItem?: String): Promi
   return await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
 }
 
-export async function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: Boolean): Promise<void> {
+export async function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {
   console.log('calling acknowledgePurchaseAsync from TS');
   if (!connected) {
     throw new ConnectionError('Must be connected to App Store');
@@ -78,7 +99,7 @@ export function setPurchaseListener(eventName: string, callback: (result) => voi
     if (itemAcknowledgedSubscription) {
       itemAcknowledgedSubscription.remove();
     }
-    itemAcknowledgedSubscription = eventEmitter.addListener<Number>(eventName, callback);
+    itemAcknowledgedSubscription = eventEmitter.addListener<number>(eventName, callback);
   }
 }
 
@@ -97,7 +118,7 @@ export async function disconnectAsync(): Promise<void> {
   return await ExpoInAppPurchases.disconnectAsync();
 }
 
-export async function getBillingResponseCodeAsync(): Promise<Number> {
+export async function getBillingResponseCodeAsync(): Promise<number> {
   if (!connected) {
     return billingResponseCodes.SERVICE_DISCONNECTED;
   }
