@@ -11,6 +11,16 @@ export async function test(t) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   t.describe(`Brightness`, () => {
+    let originalBrightness;
+
+    t.beforeAll(async () => {
+      originalBrightness = await Brightness.getBrightnessAsync();
+    });
+
+    t.afterAll(async () => {
+      await Brightness.setBrightnessAsync(originalBrightness);
+    });
+
     t.describe(`Brightness.getBrightnessAsync(), Brightness.setBrightnessAsync()`, () => {
       t.it(`gets and sets the current brightness of the app screen`, async () => {
         const originalValue = 0.2;
