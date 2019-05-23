@@ -3,7 +3,8 @@ const { ExpoInAppPurchases } = NativeModulesProxy;
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 const EVENTS = {
     purchasesUpdated: 'Purchases Updated',
-    purchaseAcknowledged: 'purchaseAcknowledged'
+    itemAcknowledged: 'Item Acknowledged',
+    itemConsumed: 'Item Consumed'
 };
 let connected = false;
 const eventEmitter = new EventEmitter(ExpoInAppPurchases);
@@ -39,8 +40,16 @@ export async function acknowledgePurchaseAsync(purchaseToken) {
         throw new ConnectionError('Must be connected to App Store');
     }
     await ExpoInAppPurchases.acknowledgePurchaseAsync(purchaseToken);
-    const { responseCode } = await getResultFromListener(EVENTS.purchaseAcknowledged);
+    const { responseCode } = await getResultFromListener(EVENTS.itemAcknowledged);
     return responseCode;
+}
+export async function consumeAsync(purchaseToken) {
+    console.log('calling consumeAsync from TS');
+    if (!connected) {
+        throw new ConnectionError('Must be connected to App Store');
+    }
+    await ExpoInAppPurchases.consumeAsync(purchaseToken);
+    return await getResultFromListener(EVENTS.itemConsumed);
 }
 async function getResultFromListener(eventName) {
     return new Promise(resolve => {

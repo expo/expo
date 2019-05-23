@@ -29,19 +29,11 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
     @Override
     public void onConsumeFinished(String token, BillingResult result) {
         Log.d(TAG, "Consumption finished. Purchase token: " + token + ", result: " + result);
+        Bundle response = new Bundle();
+        response.putInt("responseCode", result.getResponseCode());
+        response.putString("token", token);
 
-        // If you have more than one sku, you probably need to validate that the token matches
-        // the SKU you expect.
-        // It could be done by maintaining a map (updating it every time you call consumeAsync)
-        // of all tokens into SKUs which were scheduled to be consumed and then looking through
-        // it here to check which SKU corresponds to a consumed token.
-        if (result.getResponseCode() == BillingResponseCode.OK) {
-            // Successfully consumed, so we apply the effects of the item in our
-            // game world's logic, which in our case means filling the gas tank a bit
-            Log.d(TAG, "Consumption successful. Provisioning.");
-        }
-
-        // mActivity.showRefreshedUi();
+        mEventEmitter.emit(BillingManager.CONSUME_ITEM_EVENT, response);
         Log.d(TAG, "End consumption flow.");
     }
 

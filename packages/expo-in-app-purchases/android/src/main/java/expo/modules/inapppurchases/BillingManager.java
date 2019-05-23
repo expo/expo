@@ -14,6 +14,8 @@ import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.BillingClient.FeatureType;
 import com.android.billingclient.api.BillingClient.SkuType;
 import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchasesUpdatedListener;
@@ -24,6 +26,7 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -38,7 +41,8 @@ public class BillingManager implements PurchasesUpdatedListener {
     // Default value of mBillingClientResponseCode until BillingManager was not yet initialized
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
     public static final String PURCHASES_UPDATED_EVENT = "Purchases Updated";
-    public static final String CONSUME_FINISHED_EVENT = "Consume Finished";
+    public static final String ACKNOWLEDGE_ITEM_EVENT = "Item Acknowledged";
+    public static final String CONSUME_ITEM_EVENT = "Item Consumed";
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
 
     private BillingClient mBillingClient;
@@ -169,22 +173,60 @@ public class BillingManager implements PurchasesUpdatedListener {
         }
     }
 
-    private AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = new AcknowledgePurchaseResponseListener() {
-        @Override
-        public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
-            final String eventName = "purchaseAcknowledged";
-            Bundle response = new Bundle();
-            response.putInt("responseCode", billingResult.getResponseCode());
-            mEventEmitter.emit(eventName, response);
-        }
-    };
-
     public void acknowledgePurchaseAsync(String purchaseToken) {
+        AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = new AcknowledgePurchaseResponseListener() {
+            @Override
+            public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+                Bundle response = new Bundle();
+                response.putInt("responseCode", billingResult.getResponseCode());
+                mEventEmitter.emit(ACKNOWLEDGE_ITEM_EVENT, response);
+            }
+        };
+
         AcknowledgePurchaseParams acknowledgePurchaseParams =
                 AcknowledgePurchaseParams.newBuilder()
                         .setPurchaseToken(purchaseToken)
                         .build();
         mBillingClient.acknowledgePurchase(acknowledgePurchaseParams, acknowledgePurchaseResponseListener);
+    }
+
+    public void consumeAsync(final String purchaseToken) {
+        // If we've already scheduled to consume this token - no action is needed (this could happen
+        // if you received the token when querying purchases inside onReceive() and later from
+        // onActivityResult()
+        if (mTokensToBeConsumed == null) {
+            mTokensToBeConsumed = new HashSet<>();
+        } else if (mTokensToBeConsumed.contains(purchaseToken)) {
+            Log.i(TAG, "Token was already scheduled to be consumed - skipping...");
+            return;
+        }
+        mTokensToBeConsumed.add(purchaseToken);
+
+        // Generating Consume Response listener
+        final ConsumeResponseListener onConsumeListener = new ConsumeResponseListener() {
+            @Override
+            public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
+                // If billing service was disconnected, we try to reconnect 1 time
+                // (feel free to introduce your retry policy here).
+                mBillingUpdatesListener.onConsumeFinished(purchaseToken, billingResult);
+            }
+        };
+
+        // Creating a runnable from the request to use it inside our connection retry policy below
+        Runnable consumeRequest = new Runnable() {
+            @Override
+            public void run() {
+                ConsumeParams consumeParams =
+                        ConsumeParams.newBuilder()
+                                .setPurchaseToken(purchaseToken)
+                                .setDeveloperPayload(null)
+                                .build();
+                // Consume the purchase async
+                mBillingClient.consumeAsync(consumeParams, onConsumeListener);
+            }
+        };
+
+        executeServiceRequest(consumeRequest);
     }
 
     /**

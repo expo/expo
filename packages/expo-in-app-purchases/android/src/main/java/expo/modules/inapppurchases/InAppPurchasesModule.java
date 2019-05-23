@@ -70,6 +70,12 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
+  public void consumeAsync(String purchaseToken, final Promise promise) {
+    mBillingManager.consumeAsync(purchaseToken);
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
   public void disconnectAsync(final Promise promise) {
     if (mBillingManager != null) {
       mBillingManager.destroy();

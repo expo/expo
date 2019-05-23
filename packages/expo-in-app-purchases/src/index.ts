@@ -11,7 +11,8 @@ interface QueryResponse {
 
 const EVENTS = {
   purchasesUpdated: 'Purchases Updated',
-  purchaseAcknowledged: 'purchaseAcknowledged'
+  itemAcknowledged: 'Item Acknowledged',
+  itemConsumed: 'Item Consumed'
 }
 
 let connected = false;
@@ -58,8 +59,19 @@ export async function acknowledgePurchaseAsync(purchaseToken: string): Promise<N
 
   await ExpoInAppPurchases.acknowledgePurchaseAsync(purchaseToken);
 
-  const { responseCode } = await getResultFromListener(EVENTS.purchaseAcknowledged);
+  const { responseCode } = await getResultFromListener(EVENTS.itemAcknowledged);
   return responseCode;
+}
+
+export async function consumeAsync(purchaseToken: string): Promise<Object> {
+  console.log('calling consumeAsync from TS');
+  if (!connected) {
+    throw new ConnectionError('Must be connected to App Store');
+  }
+
+  await ExpoInAppPurchases.consumeAsync(purchaseToken);
+
+  return await getResultFromListener(EVENTS.itemConsumed);
 }
 
 async function getResultFromListener(eventName: string): Promise<any> {
