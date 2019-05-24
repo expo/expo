@@ -105,14 +105,14 @@ ABI33_0_0RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(
   if (newModuleListenersCount == 0) {
     [eventEmitter stopObserving];
   } else if (newModuleListenersCount < 0) {
-    ABI33_0_0UMLogError(@"Attemted to remove more `%@` listeners than added", moduleName);
+    ABI33_0_0UMLogError(@"Attempted to remove more `%@` listeners than added", moduleName);
     newModuleListenersCount = 0;
   }
   _modulesListenersCounts[moduleName] = [NSNumber numberWithInt:newModuleListenersCount];
 
   // Global observing state
   if (_listenersCount - 1 < 0) {
-    ABI33_0_0UMLogError(@"Attemted to remove more proxied event emitter listeners than added");
+    ABI33_0_0UMLogError(@"Attempted to remove more proxied event emitter listeners than added");
     _listenersCount = 0;
   } else {
     _listenersCount -= 1;
