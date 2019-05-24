@@ -1,14 +1,12 @@
 import React from 'react';
 import { Notifications } from 'expo';
-import Branch from 'react-native-branch';
 import { Alert, Platform } from 'react-native';
 import { EventSubscription } from 'fbemitter';
-
 import ComponentListScreen from './ComponentListScreen';
 import { Screens } from '../navigation/ExpoApis';
 
 try {
-  Branch.subscribe((bundle: any) => {
+  require('react-native-branch').default.subscribe((bundle: any) => {
     if (bundle && bundle.params && !bundle.error) {
       Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
     }
