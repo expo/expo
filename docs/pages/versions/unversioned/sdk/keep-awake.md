@@ -2,7 +2,7 @@
 title: KeepAwake
 ---
 
-A React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.
+A React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
 
 ## Installation
 
@@ -14,33 +14,31 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import KeepAwake from 'expo-keep-awake';
 ```
 
-### Example: component
+### Example: hook
 
 ```javascript
+import { useKeepAwake } from 'expo-keep-awake';
 import React from 'react';
 import { Text, View } from 'react-native';
-import KeepAwake from 'expo-keep-awake';
 
-export default class KeepAwakeExample extends React.Component {
-  render() {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        /* @info As long as this component is mounted, the screen will not turn off from being idle.
-        */ <KeepAwake />
-        /* @end */
-        <Text>This screen will never sleep!</Text>
-      </View>
-    );
-  }
+export default function KeepAwakeExample {
+  /* @info As long as this component is mounted, the screen will not turn off from being idle. */
+  useKeepAwake();
+  /* @end */
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>This screen will never sleep!</Text>
+    </View>
+  );
 }
 ```
 
-### Example: static methods
+### Example: functions
 
 ```javascript
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import React from 'react';
 import { Button, View } from 'react-native';
-import { KeepAwake } from 'expo';
 
 export default class KeepAwakeExample extends React.Component {
   render() {
@@ -53,28 +51,33 @@ export default class KeepAwakeExample extends React.Component {
   }
 
   _activate = () => {
-    /* @info Screen will remain on after called until <strong>KeepAwake.deactivate()</strong> is called. */ KeepAwake.activate(); /* @end */
+    /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */ activateKeepAwake(); /* @end */
   };
 
   _deactivate = () => {
-    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */ KeepAwake.deactivate(); /* @end */
+    /* @info Deactivates KeepAwake, or does nothing if it was never activated. */ deactivateKeepAwake(); /* @end */
   };
 }
 ```
 
-### `KeepAwake.activate(tag?: string)`
+### `useKeepAwake(tag?: string): void`
 
-Prevents screen from sleeping, until `deactivate` is called.
-If `tag` argument is used, sleep will be prevented until `deactivate` call with the same `tag` argument. When using multiple `tags` for activation you'll have to deactivate every one in order to reenable screen sleep.
+A React hook to keep the screen awake for as long as the owner component is mounted. The optionally provided `tag` argument is used when activating and deactivating the keep-awake feature. If unspecified, the default tag is used. See the documentation for `activateKeepAwake` below to learn more about the `tag` argument.
 
-#### Arguments
+### `activateKeepAwake(tag?: string): void`
 
-- **tag (_string_)** -- **optional** -- Tag to lock screen sleep prevention. If not provided, default one is used.
+Prevents the screen from sleeping until `deactivateKeepAwake` is called with the same `tag` value.
 
-### `KeepAwake.deactivate(tag?: string)`
-
-Releases lock of screen sleep prevention on specified `tag`.
+If the `tag` argument is specified, the screen will not sleep until you call `deactivateKeepAwake` with the same `tag` argument. When using multiple `tags` for activation you'll have to deactivate each one in order to re-enable screen sleep. If `tag` is unspecified, the default tag is used.
 
 #### Arguments
 
-- **tag (_string_)** -- **optional** -- Tag to release the lock on screen sleep prevention. If not provided, default one is used.
+- **tag (_string_)** -- **optional** -- Tag to lock screen sleep prevention. If not provided, the default tag is used.
+
+### `deactivateKeepAwake(tag?: string): void`
+
+Releases the lock on screen-sleep prevention associated with the given `tag` value. If `tag` is unspecified, it defaults to the same default tag that `activateKeepAwake` uses.
+
+#### Arguments
+
+- **tag (_string_)** -- **optional** -- Tag to release the lock on screen sleep prevention. If not provided, the default tag is used.
