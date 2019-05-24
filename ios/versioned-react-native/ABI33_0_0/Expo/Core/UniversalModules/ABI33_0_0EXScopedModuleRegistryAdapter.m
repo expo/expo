@@ -12,6 +12,7 @@
 #import "ABI33_0_0EXScopedAmplitude.h"
 #import "ABI33_0_0EXScopedPermissions.h"
 #import "ABI33_0_0EXScopedSegment.h"
+#import <ABI33_0_0EXTaskManager/ABI33_0_0EXTaskManager.h>
 
 #import "ABI33_0_0EXScopedReactNativeAdapter.h"
 #import "ABI33_0_0EXModuleRegistryBinding.h"
@@ -54,6 +55,11 @@
 
   ABI33_0_0EXScopedSegment *segmentModule = [[ABI33_0_0EXScopedSegment alloc] init];
   [moduleRegistry registerExportedModule:segmentModule];
+
+  // TODO: Make scoped task manager when adding support for bare React Native
+  ABI33_0_0EXTaskManager *taskManagerModule = [[ABI33_0_0EXTaskManager alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:taskManagerModule];
+  [moduleRegistry registerInternalModule:taskManagerModule];
 
   return moduleRegistry;
 }
