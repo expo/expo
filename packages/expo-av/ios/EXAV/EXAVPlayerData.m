@@ -444,6 +444,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                                           
                                           EXAVPlayerDataStatusRateKeyPath: _rate,
                                           EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
+                                          EXAVPlayerDataStatusPitchCorrectionQualityKeyPath: _pitchCorrectionQuality,
                                           EXAVPlayerDataStatusVolumeKeyPath: @(_player.volume),
                                           EXAVPlayerDataStatusIsMutedKeyPath: @(_player.muted),
                                           EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),
