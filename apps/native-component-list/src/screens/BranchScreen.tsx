@@ -1,16 +1,8 @@
 import React from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import { DangerZone } from 'expo';
+import Branch from 'react-native-branch';
 
 import Constants from 'expo-constants';
-
-let Branch: any = null;
-
-try {
-  Branch = DangerZone.Branch;
-} catch (e) {
-  // do nothing
-}
 
 export default class BranchScreen extends React.Component {
   static navigationOptions = {
