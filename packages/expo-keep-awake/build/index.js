@@ -30,11 +30,11 @@ KeepAwake.deactivate = (tag) => {
     console.warn(`The "KeepAwake.deactivate" static method has been deprecated in favor of the "deactivateKeepAwake" function exported from expo-keep-awake and will be removed in SDK 35`);
     deactivateKeepAwake(tag);
 };
-export function useKeepAwake(tag = generateUniqueTag()) {
+export function useKeepAwake(tag = ExpoKeepAwakeTag) {
     useEffect(() => {
         activateKeepAwake(tag);
         return () => deactivateKeepAwake(tag);
-    }, []);
+    }, [tag]);
 }
 export function activateKeepAwake(tag = ExpoKeepAwakeTag) {
     ExpoKeepAwake.activate(tag);
@@ -49,8 +49,5 @@ export function activate(tag) {
 export function deactivate(tag) {
     console.warn(`"deactivate" from expo-keep-awake has been deprecated in favor of "deactivateKeepAwake" and will be removed in SDK 35`);
     deactivateKeepAwake(tag);
-}
-function generateUniqueTag() {
-    return `random-${Math.floor(Math.random() * (2 ** 53 - 1))}`;
 }
 //# sourceMappingURL=index.js.map
