@@ -195,7 +195,7 @@ module.exports = {
           { key: 2, argumentsCount: 4, name: 'registerViewsForInteraction' },
           { key: 3, argumentsCount: 2, name: 'init' },
         ],
-        EXLinearGradientManager: [],
+        ExpoLinearGradientManager: [],
         ExpoAdsAdMobBannerView: [],
         ExpoAdsAdMobInterstitialManager: [
           { key: 0, argumentsCount: 1, name: 'setTestDeviceID' },
