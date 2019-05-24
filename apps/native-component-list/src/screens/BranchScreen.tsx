@@ -1,8 +1,13 @@
 import React from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import Branch from 'react-native-branch';
-
 import Constants from 'expo-constants';
+
+let Branch = null;
+try {
+  Branch = require('react-native-branch').default;
+} catch (e) {
+  console.log('Branch is not supported on this platform.', e);
+}
 
 export default class BranchScreen extends React.Component {
   static navigationOptions = {
