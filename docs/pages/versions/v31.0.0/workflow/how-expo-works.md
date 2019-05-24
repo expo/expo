@@ -17,7 +17,7 @@ There are two pieces here: the Expo app and Expo CLI. When you start an app with
 
 ![](/static/images/fetch-app-from-xde.png)
 
-> **Note:** Expo CLI also spawns a tunnel process, which allows devices outside of your LAN to access the the above servers without you needing to change your firewall settings. If you want to learn more, see [ngrok](https://ngrok.com/).
+> **Note:** Expo CLI also spawns a tunnel process, which allows devices outside of your LAN to access the above servers without you needing to change your firewall settings. If you want to learn more, see [ngrok](https://ngrok.com/).
 
 ### `Expo Development Server`
 
