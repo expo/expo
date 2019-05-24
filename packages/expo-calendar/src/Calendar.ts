@@ -214,7 +214,11 @@ export async function getEventsAsync(
       'getEventsAsync must be called with a non-empty array of calendarIds to search'
     );
   }
-  return ExpoCalendar.getEventsAsync(startDate, endDate, calendarIds);
+  return ExpoCalendar.getEventsAsync(
+    stringifyIfDate(startDate),
+    stringifyIfDate(endDate),
+    calendarIds
+  );
 }
 
 export async function getEventAsync(

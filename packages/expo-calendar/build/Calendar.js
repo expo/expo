@@ -75,7 +75,7 @@ export async function getEventsAsync(calendarIds, startDate, endDate) {
     if (!calendarIds || !calendarIds.length) {
         throw new Error('getEventsAsync must be called with a non-empty array of calendarIds to search');
     }
-    return ExpoCalendar.getEventsAsync(startDate, endDate, calendarIds);
+    return ExpoCalendar.getEventsAsync(stringifyIfDate(startDate), stringifyIfDate(endDate), calendarIds);
 }
 export async function getEventAsync(id, { futureEvents = false, instanceStartDate } = {}) {
     if (!ExpoCalendar.getEventByIdAsync) {
