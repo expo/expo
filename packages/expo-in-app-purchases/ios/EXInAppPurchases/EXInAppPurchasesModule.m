@@ -4,23 +4,23 @@
 
 @interface EXInAppPurchasesModule ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXInAppPurchasesModule
 
-EX_EXPORT_MODULE(ExpoInAppPurchases);
+UM_EXPORT_MODULE(ExpoInAppPurchases);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-EX_EXPORT_METHOD_AS(someGreatMethodAsync,
+UM_EXPORT_METHOD_AS(someGreatMethodAsync,
                     options:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
 }
 

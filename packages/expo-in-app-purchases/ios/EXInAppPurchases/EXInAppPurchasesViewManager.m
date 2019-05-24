@@ -5,13 +5,13 @@
 
 @interface EXInAppPurchasesViewManager ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXInAppPurchasesViewManager
 
-EX_EXPORT_MODULE(ExpoInAppPurchasesViewManager);
+UM_EXPORT_MODULE(ExpoInAppPurchasesViewManager);
 
 - (UIView *)view
 {
@@ -28,7 +28,7 @@ EX_EXPORT_MODULE(ExpoInAppPurchasesViewManager);
   return @[@"onSomethingHappened"];
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
