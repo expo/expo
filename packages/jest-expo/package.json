@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "33.0.0-rc.0",
+  "version": "33.0.0-rc.1",
   "license": "MIT",
   "main": "src",
   "repository": {
@@ -10,7 +10,7 @@
   "files": [
     "bin",
     "src",
-    "jest-preset.json"
+    "jest-preset.js"
   ],
   "bin": {
     "jest": "bin/jest.js"
