@@ -11,7 +11,7 @@
 
 @implementation EXModuleTemplateViewManager
 
-UM_EXPORT_MODULE((UmViewManager *)ExpoModuleTemplateViewManager);
+UM_EXPORT_MODULE(ExpoModuleTemplateViewManager);
 
 - (UIView *)view
 {

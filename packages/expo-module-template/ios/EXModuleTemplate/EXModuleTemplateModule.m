@@ -10,7 +10,7 @@
 
 @implementation EXModuleTemplateModule
 
-UM_EXPORT_MODULE((UMExportedModule *)ExpoModuleTemplateModule);
+UM_EXPORT_MODULE(ExpoModuleTemplate);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
