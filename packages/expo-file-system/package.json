@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0",
-    "jest-expo": "^32.0.0"
+    "jest-expo": "^33.0.0-rc.1"
   },
   "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
 }
