@@ -99,11 +99,7 @@ In development, your app will live at a url like `exp://wg-qka.community.app.exp
 
 ### In a standalone app
 
-<<<<<<< HEAD
-To link to your standalone app, you need to specify a scheme for your app. You can register for a scheme in your `app.json` by adding a string under the `scheme` key (use only lower case!):
-=======
 To link to your standalone app, you need to specify a scheme for your app. You can register for a scheme in your `app.json` by adding a string under the `scheme` key (use only lower case):
->>>>>>> [dcos] Apply changes from PR #4229 to remaining versions
 
 ```
 {
