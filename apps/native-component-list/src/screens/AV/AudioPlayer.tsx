@@ -55,10 +55,16 @@ export default class AudioPlayer extends React.Component<Props, State> {
     }
   }
 
+  componentWillUnmount() {
+    if (this._sound) {
+      this._sound.unloadAsync();
+    }
+  }
+
   _loadSoundAsync = async (source: PlaybackSource) => {
     const soundObject = new Audio.Sound();
     try {
-      await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 100 });
+      await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 150 });
       soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
       const status = await soundObject.getStatusAsync();
       this._updateStateToStatus(status);
