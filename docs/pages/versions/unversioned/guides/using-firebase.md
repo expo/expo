@@ -24,7 +24,9 @@ See also [the full list of available Expo Firebase packages](https://github.com/
 
 First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
 
-`npm install --save firebase`.
+> **Notice:** There is currently, as of the 27th of May 2019, a bug which causes the Firebase package to crash. This bug was introduced in version 6.0.4 of Firebase, so we will be downloading version 6.0.3 in this example. You can find more information about this issue [here](https://github.com/firebase/firebase-js-sdk/issues/1824).
+
+`npm install --save firebase@6.0.3`.
 
 The Firebase console will provide you with an api key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
 
