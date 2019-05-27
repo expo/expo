@@ -8,6 +8,11 @@ export default class AdMobScreen extends React.Component {
     title: 'AdMob',
   };
 
+  state = {
+    isInterstitialReady: false,
+    isRewardedReady: false,
+  }
+
   constructor(props: object) {
     super(props);
     AdMobRewarded.setTestDeviceID('EMULATOR');
@@ -17,17 +22,62 @@ export default class AdMobScreen extends React.Component {
   }
 
   componentDidMount() {
-    AdMobRewarded.requestAdAsync();
-    AdMobInterstitial.requestAdAsync();
+    AdMobRewarded.addEventListener('rewardedVideoDidClose', this.reloadRewarded);
+    AdMobInterstitial.addEventListener('interstitialDidClose', this.reloadInterstitial);
+    this.reloadRewarded();
+    this.reloadInterstitial();
   }
 
-  onPress() {
+  componentWillUnmount() {
+    AdMobRewarded.removeEventListener('rewardedVideoDidClose', this.reloadRewarded);
+    AdMobInterstitial.removeEventListener('interstitialDidClose', this.reloadInterstitial);
+  }
+
+  onPress = () => {
     AdMobRewarded.showAdAsync();
+    this.setState({ isRewardedReady: false });
   }
 
-  onInterstitialPress() {
+  onInterstitialPress = () => {
     AdMobInterstitial.showAdAsync();
+    this.setState({ isInterstitialReady: false });
   }
+
+  reloadRewarded = async () => {
+    if (!(await AdMobRewarded.getIsReadyAsync())) {
+      let isRewardedReady = false;
+      try {
+        await AdMobRewarded.requestAdAsync();
+        isRewardedReady = true;
+      } catch (e) {
+        if (e.code === "E_AD_ALREADY_LOADED") {
+          isRewardedReady = true;
+        } else {
+          console.warn('AdMobRewarded.requestAdAsync', e);
+        }
+      } finally {
+        this.setState({ isRewardedReady });
+      }
+    }
+  };
+
+  reloadInterstitial = async () => {
+    if (!(await AdMobInterstitial.getIsReadyAsync())) {
+      let isInterstitialReady = false;
+      try {
+        await AdMobInterstitial.requestAdAsync();
+        isInterstitialReady = true;
+      } catch (e) {
+        if (e.code === "E_AD_ALREADY_LOADED") {
+          isInterstitialReady = true;
+        } else {
+          console.warn('AdMobInterstitial.requestAdAsync', e);
+        }
+      } finally {
+        this.setState({ isInterstitialReady });
+      }
+    }
+  };
 
   render() {
     return (
@@ -37,11 +87,13 @@ export default class AdMobScreen extends React.Component {
             style={styles.button}
             onPress={this.onPress}
             title="Show Rewarded Interstitial Ad"
+            disabled={!this.state.isRewardedReady}
           />
           <Button
             style={styles.button}
-            onPress={this.onInterstitialPress}
             title="Show Interstitial Ad"
+            onPress={this.onInterstitialPress}
+            disabled={!this.state.isInterstitialReady}
           />
           <AdMobBanner
             bannerSize="banner"
