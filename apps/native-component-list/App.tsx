@@ -44,6 +44,9 @@ export default class App extends React.Component<{}, State> {
         Font.loadAsync({
           'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
         }),
+        Font.loadAsync({
+          Roboto: 'https://github.com/google/fonts/raw/master/apache/roboto/Roboto-Regular.ttf',
+        }),
       ]);
     } catch (e) {
       console.log({ e });
