@@ -10,6 +10,7 @@ import com.facebook.ads.InterstitialAdListener;
 import abi33_0_0.org.unimodules.core.ExportedModule;
 import abi33_0_0.org.unimodules.core.ModuleRegistry;
 import abi33_0_0.org.unimodules.core.Promise;
+import abi33_0_0.org.unimodules.core.interfaces.ActivityProvider;
 import abi33_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import abi33_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 import abi33_0_0.org.unimodules.core.interfaces.ModuleRegistryConsumer;
@@ -21,6 +22,7 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
   private boolean mDidClick = false;
   private InterstitialAd mInterstitial;
   private UIManager mUIManager;
+  private ActivityProvider mActivityProvider;
 
   public InterstitialAdManager(Context reactContext) {
     super(reactContext);
@@ -32,6 +34,7 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
       mUIManager.unregisterLifecycleEventListener(this);
     }
     mUIManager = moduleRegistry.getModule(UIManager.class);
+    mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mUIManager.registerLifecycleEventListener(this);
   }
 
@@ -43,7 +46,7 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
     }
 
     mPromise = p;
-    mInterstitial = new InterstitialAd(getContext(), placementId);
+    mInterstitial = new InterstitialAd(mActivityProvider.getCurrentActivity(), placementId);
     mInterstitial.setAdListener(this);
     mInterstitial.loadAd();
   }
@@ -89,8 +92,6 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
   private void cleanUp() {
     mPromise = null;
     mDidClick = false;
-    mUIManager.unregisterLifecycleEventListener(this);
-    mUIManager = null;
 
     if (mInterstitial != null) {
       mInterstitial.destroy();
@@ -111,5 +112,7 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
   @Override
   public void onHostDestroy() {
     cleanUp();
+    mUIManager.unregisterLifecycleEventListener(this);
+    mUIManager = null;
   }
 }
