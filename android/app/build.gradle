@@ -116,7 +116,7 @@ dependencies {
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   implementation "com.android.support:appcompat-v7:$supportLibVersion"
-  implementation 'com.facebook.android:facebook-android-sdk:4.37.0'
+  implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
   }
