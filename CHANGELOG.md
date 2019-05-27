@@ -53,6 +53,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added support for headers in `downloadAsync` method in `FileSystem` by [@mczernek](https://github.com/mczernek) ([#3911](https://github.com/expo/expo/pull/3911))
 - added support for custom poster styles in `Video` by [@sjchmiela](https://github.com/sjchmiela) ([#4165](https://github.com/expo/expo/issues/4165))
 - added `pausesUpdatesAutomatically` option to automatically pause background location updates based on the `activityType` by [@tsapeta](https://github.com/tsapeta) ([#4167](https://github.com/expo/expo/pull/4167))
+- added ability to load fonts by remote URI by [@seekshiva](https://github.com/seekshiva) ([#2745](https://github.com/expo/expo/pull/2745))
 
 ### 🐛 Bug fixes
 
