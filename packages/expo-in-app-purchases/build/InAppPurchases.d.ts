@@ -13,7 +13,7 @@ export declare const constants: {
     };
 };
 export declare function connectToAppStoreAsync(): Promise<QueryResponse>;
-export declare function queryPurchasableItemsAsync(itemType: ValidItemType, itemList: string[]): Promise<QueryResponse>;
+export declare function queryPurchasableItemsAsync(itemList: string[], itemType?: ValidItemType): Promise<QueryResponse>;
 export declare function queryPurchaseHistoryAsync(refresh?: boolean, itemType?: ValidItemType): Promise<QueryResponse>;
 export declare function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void>;
 export declare function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void>;

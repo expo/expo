@@ -1,5 +1,6 @@
 import { CodedError, EventEmitter } from '@unimodules/core';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
+import { Platform } from 'react-native';
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 const events = {
     PURCHASES_UPDATED: 'Purchases Updated',
@@ -30,10 +31,14 @@ export async function connectToAppStoreAsync() {
     const response = await ExpoInAppPurchases.connectToAppStoreAsync();
     return convertStringsToObjects(response);
 }
-export async function queryPurchasableItemsAsync(itemType, itemList) {
+export async function queryPurchasableItemsAsync(itemList, itemType) {
     console.log('calling queryPurchasableItemsAsync from TS');
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
+    }
+    if (Platform.OS === 'ios') {
+        const response = ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
+        return response;
     }
     const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
     return convertStringsToObjects(response);

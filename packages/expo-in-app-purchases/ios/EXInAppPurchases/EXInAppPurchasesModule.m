@@ -2,12 +2,6 @@
 
 #import <EXInAppPurchases/EXInAppPurchasesModule.h>
 
-@interface EXInAppPurchasesModule ()
-
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-
-@end
-
 @implementation EXInAppPurchasesModule
 
 UM_EXPORT_MODULE(ExpoInAppPurchases);
@@ -30,10 +24,50 @@ UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Connecting to iOS app store!");
+  //[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+
   NSMutableArray *results = [[NSMutableArray alloc] initWithObjects:@"{}", nil];
   NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithObjectsAndKeys:@0, @"responseCode", results, @"results", nil];
 
   resolve(response);
+}
+
+UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
+                    queryPurchasableItemsAsync:(NSArray *)productIdentifiers
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  NSLog(@"Calling queryPurchasableItemsAsync!");
+  [self validateProductIdentifiers:productIdentifiers resolve:resolve];
+}
+
+- (void)validateProductIdentifiers:(NSArray *)productIdentifiers resolve: (UMPromiseResolveBlock)resolve
+{
+
+  SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
+                                        initWithProductIdentifiers:[NSSet setWithArray:productIdentifiers]];
+
+  // Keep a strong reference to the request.
+  self.request = productsRequest;
+  productsRequest.delegate = self;
+  self->resolve = resolve;
+
+  [productsRequest start];
+}
+
+- (void)productsRequest:(SKProductsRequest *)request
+     didReceiveResponse:(SKProductsResponse *)response
+{
+
+  self.products = response.products;
+
+  for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
+    NSLog(@"Invalid identifier:");
+    NSLog(@"%@", invalidIdentifier);
+    // Handle any invalid product identifiers.
+  }
+
+  self->resolve(self.products);
 }
 
 @end
