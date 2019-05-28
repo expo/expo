@@ -215,7 +215,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:32.0.0'
+  api 'com.facebook.react:react-native:33.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
