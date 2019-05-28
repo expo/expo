@@ -10,7 +10,6 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../components/PrimaryButton';
 import Colors from '../constants/Colors';
-import Environment from '../utils/Environment';
 
 const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';
@@ -25,6 +24,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
   mapViewRef = React.createRef();
 
   state = {
+    isBackgroundLocationAvailable: null,
     accuracy: Location.Accuracy.High,
     isTracking: false,
     showsBackgroundLocationIndicator: false,
@@ -32,6 +32,15 @@ export default class LocationDiagnosticsScreen extends React.Component {
     initialRegion: null,
     error: null,
   };
+
+  componentDidMount() {
+    this.checkBackgroundLocationAvailability();
+  }
+
+  async checkBackgroundLocationAvailability() {
+    const isBackgroundLocationAvailable = await Location.isBackgroundLocationAvailableAsync();
+    this.setState({ isBackgroundLocationAvailable });
+  }
 
   didFocus = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -204,7 +213,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
         <View style={styles.buttons} pointerEvents="box-none">
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>
-              {Platform.OS === 'android' || Environment.IsIOSRestrictedBuild ? null : (
+              {this.state.isBackgroundLocationAvailable && (
                 <Button style={styles.button} onPress={this.toggleLocationIndicator}>
                   <Text>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
                   <Text> background </Text>
@@ -227,7 +236,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
             <Button style={styles.button} onPress={this.clearLocations}>
               Clear locations
             </Button>
-            {Environment.IsIOSRestrictedBuild ? null : (
+            {this.state.isBackgroundLocationAvailable && (
               <Button style={styles.button} onPress={this.toggleTracking}>
                 {this.state.isTracking ? 'Stop tracking' : 'Start tracking'}
               </Button>
