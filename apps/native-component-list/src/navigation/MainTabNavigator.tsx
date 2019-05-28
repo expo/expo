@@ -50,6 +50,9 @@ const MainTabNavigator = createTabNavigator(
         tabBarLabel = Layout.isSmallDevice ? 'APIs' : 'Expo APIs';
       }
 
+      // TODO: write it nicer
+      const tabBarVisible = navigation.state.routes[navigation.state.index].routeName !== 'Camera2';
+
       return {
         header: null,
         tabBarLabel,
@@ -65,6 +68,7 @@ const MainTabNavigator = createTabNavigator(
               return <TabIcon name="exponent-box" focused={focused} />;
           }
         },
+        tabBarVisible,
       };
     },
     // @ts-ignore

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, Button, StatusBar } from 'react-native';
+import { NavigationScreenOptions } from 'react-navigation';
 import * as Permissions from 'expo-permissions';
 
 import Camera from './Camera';
@@ -9,8 +10,10 @@ interface State {
 }
 
 export default class CameraScreen extends React.Component<{}, State> {
-  static navigationOptions = {
+  static navigationOptions: NavigationScreenOptions = {
     title: 'Camera2Screen',
+    headerStyle: { display: 'none' },
+    // tabBar is set hidden via `defaultNavigationOptions` passed in MainTabNavigator component.
   };
 
   readonly state: State = {}
@@ -18,6 +21,10 @@ export default class CameraScreen extends React.Component<{}, State> {
   componentDidMount() {
     this.askForPermissions();
     StatusBar.setHidden(true);
+  }
+
+  componentWillUnmount() {
+    StatusBar.setHidden(false);
   }
 
   askForPermissions = async () => {
