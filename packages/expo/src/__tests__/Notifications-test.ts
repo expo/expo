@@ -213,7 +213,7 @@ describe('Notifications', () => {
     );
   });
 
-  it('properly passes time as Date when scheduling notification on Android', async () => {
+  it('properly passes time as millis when scheduling notification on Android', async () => {
     mockPlatformAndroid();
     const spy = jest.fn();
     NativeModules.ExponentNotifications.scheduleLocalNotification = spy;
@@ -222,8 +222,7 @@ describe('Notifications', () => {
     await Notifications.scheduleLocalNotificationAsync(
       { title: 'Android notification' },
       {
-        // we pass time as number, but below it should be passed as date
-        time: notifDate.getTime(),
+        time: notifDate,
         repeat: 'minute',
       }
     );
@@ -232,7 +231,7 @@ describe('Notifications', () => {
 
     expect(spy).toHaveBeenCalledWith(
       { data: {}, title: 'Android notification' },
-      { repeat: 'minute', time: notifDate }
+      { repeat: 'minute', time: notifDate.getTime() }
     );
   });
 
@@ -245,7 +244,6 @@ describe('Notifications', () => {
     await Notifications.scheduleLocalNotificationAsync(
       { title: 'Android notification' },
       {
-        // we pass time as number, but below it should be passed as date
         time: notifDate.getTime(),
         intervalMs: 1000,
       }
@@ -255,7 +253,7 @@ describe('Notifications', () => {
 
     expect(spy).toHaveBeenCalledWith(
       { data: {}, title: 'Android notification' },
-      { intervalMs: 1000, time: notifDate }
+      { intervalMs: 1000, time: notifDate.getTime() }
     );
   });
 
