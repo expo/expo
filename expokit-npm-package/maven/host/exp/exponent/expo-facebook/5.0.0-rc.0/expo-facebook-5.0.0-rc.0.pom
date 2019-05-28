@@ -10,7 +10,7 @@
     <dependency>
       <groupId>com.facebook.android</groupId>
       <artifactId>facebook-android-sdk</artifactId>
-      <version>4.39.0</version>
+      <version>5.0.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

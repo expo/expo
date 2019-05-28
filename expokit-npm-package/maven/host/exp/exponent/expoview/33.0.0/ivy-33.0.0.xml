@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="33.0.0" status="integration" publication="20190523093341"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="33.0.0" status="integration" publication="20190528110631"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -241,7 +241,7 @@
     <dependency org="host.exp.exponent" name="expo-analytics-segment" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-app-auth" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-app-loader-provider" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-av" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-av" rev="5.0.0-rc.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-background-fetch" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-brightness" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
@@ -278,7 +278,7 @@
     <dependency org="host.exp.exponent" name="expo-sharing" rev="3.0.0-rc.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-sms" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-speech" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sqlite" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sqlite" rev="5.0.0-rc.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-task-manager" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-video-thumbnails" rev="1.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-web-browser" rev="5.0.0-rc.0" conf="compileOnly-&gt;default"/>

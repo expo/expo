@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-facebook" revision="5.0.0-rc.0" status="integration" publication="20190523092911"/>
+  <info organisation="host.exp.exponent" module="expo-facebook" revision="5.0.0-rc.0" status="integration" publication="20190528110155"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -110,11 +110,11 @@
     <dependency org="com.android.tools.build" name="aapt2" rev="3.3.2-5309881" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
-    <dependency org="com.facebook.android" name="facebook-android-sdk" rev="4.39.0" conf="api-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-android-sdk" rev="5.0.1" conf="api-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-core" rev="2.0.0-rc.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.3.2" conf="lintClassPath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-android-sdk" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-core" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-android-sdk" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-core" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.parse.bolts" name="bolts-android" rev="1.4.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.parse.bolts" name="bolts-tasks" rev="1.4.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.parse.bolts" name="bolts-applinks" rev="1.4.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
@@ -124,7 +124,7 @@
     <dependency org="android.arch.lifecycle" name="runtime" rev="1.0.3" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="android.arch.lifecycle" name="common" rev="1.0.3" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="android.arch.core" name="common" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-common" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-common" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-v4" rev="27.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-media-compat" rev="27.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-core-ui" rev="27.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
@@ -135,11 +135,10 @@
     <dependency org="com.android.support" name="cardview-v7" rev="27.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="customtabs" rev="27.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.zxing" name="core" rev="3.3.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-login" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-share" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-places" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-applinks" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-messenger" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.facebook.android" name="facebook-marketing" rev="4.39.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-login" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-share" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-places" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-applinks" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.facebook.android" name="facebook-messenger" rev="5.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
   </dependencies>
 </ivy-module>

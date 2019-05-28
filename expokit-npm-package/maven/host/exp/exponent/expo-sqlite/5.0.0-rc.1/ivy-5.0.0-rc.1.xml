@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-av" revision="5.0.0-rc.0" status="integration" publication="20190523092807"/>
+  <info organisation="host.exp.exponent" module="expo-sqlite" revision="5.0.0-rc.1" status="integration" publication="20190528110424"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -103,37 +103,14 @@
     <conf name="wearApp" visibility="private"/>
   </configurations>
   <publications>
-    <artifact name="expo-av" type="jar" ext="jar" conf="archives" m:classifier="sources"/>
-    <artifact name="expo-av" type="aar" ext="aar" conf="archives,default"/>
+    <artifact name="expo-sqlite" type="jar" ext="jar" conf="archives" m:classifier="sources"/>
+    <artifact name="expo-sqlite" type="aar" ext="aar" conf="archives,default"/>
   </publications>
   <dependencies>
     <dependency org="com.android.tools.build" name="aapt2" rev="3.3.2-5309881" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
-    <dependency org="com.google.android.exoplayer" name="exoplayer" rev="2.9.2" conf="api-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="extension-okhttp" rev="2.9.2" conf="api-&gt;default"/>
-    <dependency org="com.yqritc" name="android-scalablevideoview" rev="1.0.1" conf="api-&gt;default"/>
-    <dependency org="com.squareup.okhttp3" name="okhttp" rev="3.10.0" conf="api-&gt;default"/>
-    <dependency org="com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.10.0" conf="api-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-core" rev="2.0.0-rc.0" conf="implementation-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="2.0.0-rc.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.3.2" conf="lintClassPath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="exoplayer" rev="2.9.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="exoplayer-core" rev="2.9.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-annotations" rev="27.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="exoplayer-dash" rev="2.9.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="exoplayer-hls" rev="2.9.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="exoplayer-smoothstreaming" rev="2.9.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="exoplayer-ui" rev="2.9.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-media-compat" rev="27.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-compat" rev="27.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="runtime" rev="1.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="common" rev="1.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.core" name="common" rev="1.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.exoplayer" name="extension-okhttp" rev="2.9.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.squareup.okhttp3" name="okhttp" rev="3.11.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.squareup.okio" name="okio" rev="1.14.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.yqritc" name="android-scalablevideoview" rev="1.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.10.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
   </dependencies>
 </ivy-module>
