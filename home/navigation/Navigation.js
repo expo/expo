@@ -12,8 +12,8 @@ import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
-import BackgroundLocationScreen from '../screens/BackgroundLocationScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
+import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SearchScreen from '../screens/SearchScreen';
@@ -124,7 +124,7 @@ const ProfileStack = createStackNavigator(
 const DiagnosticsStack = createStackNavigator(
   {
     Diagnostics: DiagnosticsScreen,
-    BackgroundLocation: BackgroundLocationScreen,
+    Location: LocationDiagnosticsScreen,
     Geofencing: GeofencingScreen,
   },
   {

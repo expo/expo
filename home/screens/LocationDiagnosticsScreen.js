@@ -10,15 +10,16 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../components/PrimaryButton';
 import Colors from '../constants/Colors';
+import Environment from '../utils/Environment';
 
 const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';
 
 const locationEventsEmitter = new EventEmitter();
 
-export default class BackgroundLocationScreen extends React.Component {
+export default class LocationDiagnosticsScreen extends React.Component {
   static navigationOptions = {
-    title: 'Background location',
+    title: 'Location Diagnostics',
   };
 
   mapViewRef = React.createRef();
@@ -203,7 +204,7 @@ export default class BackgroundLocationScreen extends React.Component {
         <View style={styles.buttons} pointerEvents="box-none">
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>
-              {Platform.OS === 'android' ? null : (
+              {Platform.OS === 'android' || Environment.IsIOSRestrictedBuild ? null : (
                 <Button style={styles.button} onPress={this.toggleLocationIndicator}>
                   <Text>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
                   <Text> background </Text>
@@ -226,9 +227,11 @@ export default class BackgroundLocationScreen extends React.Component {
             <Button style={styles.button} onPress={this.clearLocations}>
               Clear locations
             </Button>
-            <Button style={styles.button} onPress={this.toggleTracking}>
-              {this.state.isTracking ? 'Stop tracking' : 'Start tracking'}
-            </Button>
+            {Environment.IsIOSRestrictedBuild ? null : (
+              <Button style={styles.button} onPress={this.toggleTracking}>
+                {this.state.isTracking ? 'Stop tracking' : 'Start tracking'}
+              </Button>
+            )}
           </View>
         </View>
       </View>
