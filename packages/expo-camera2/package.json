@@ -1,0 +1,37 @@
+{
+  "name": "expo-camera2",
+  "version": "0.1.0",
+  "description": "ExpoCamera2 standalone module",
+  "main": "build/ExpoCamera2.js",
+  "types": "build/ExpoCamera2.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-camera2"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-camera2",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  },
+  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+}

@@ -21,6 +21,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 const ScreensScreens = optionalRequire(() => require('../screens/Screens'));
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
+const Camera2 = optionalRequire(() => require('../screens/Camera2/CameraScreen'));
 const FacebookAds = optionalRequire(() =>
   require('../screens/FacebookAdsScreen')
 );
@@ -43,6 +44,7 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   BarCodeScanner,
   BlurView,
   Camera,
+  Camera2,
   GL,
   ...GLScreens,
   GestureHandlerPinch,

@@ -21,6 +21,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'BarCodeScanner',
       'BlurView',
       'Camera',
+      'Camera2',
       'FacebookAds',
       'GestureHandlerList',
       'GestureHandlerPinch',

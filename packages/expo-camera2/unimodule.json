@@ -1,0 +1,4 @@
+{
+  "name": "expo-camera2",
+  "platforms": ["ios", "android"]
+}

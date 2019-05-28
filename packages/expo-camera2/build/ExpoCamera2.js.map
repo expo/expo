@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoCamera2.js","sourceRoot":"","sources":["../src/ExpoCamera2.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,IAAI,IAAI,EAAE,MAAM,mBAAmB,CAAC;AACpD,cAAc,qBAAqB,CAAC","sourcesContent":["export { default as View } from './ExpoCamera2View';\nexport * from './ExpoCamera2.types';\n"]}
