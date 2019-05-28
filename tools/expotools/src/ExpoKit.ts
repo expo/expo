@@ -119,7 +119,7 @@ export async function updateExpoKitAndroidAsync(
   const expokitNpmPackageDir = path.join(expoDir, `expokit-npm-package`);
   const npmVersionArg = expokitVersion || 'patch';
 
-  await spawnAsync(`npm`, ['version', npmVersionArg], {
+  await spawnAsync(`npm`, ['version', npmVersionArg, '--allow-same-version'], {
     stdio: 'inherit',
     cwd: expokitNpmPackageDir,
   });
