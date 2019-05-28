@@ -160,7 +160,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
         try {
           Integer eventID = saveEvent(details);
           promise.resolve(eventID.toString());
-        } catch (ParseException e) {
+        } catch (ParseException | EventNotSavedException e) {
           promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e);
         }
       }
@@ -591,7 +591,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
     return rows > 0;
   }
 
-  private int saveEvent(ReadableArguments details) throws ParseException, SecurityException {
+  private int saveEvent(ReadableArguments details) throws EventNotSavedException, ParseException, SecurityException {
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -742,6 +742,9 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
 
       Uri eventsUri = CalendarContract.Events.CONTENT_URI;
       Uri eventUri = cr.insert(eventsUri, eventValues);
+      if (eventUri == null) {
+        throw new EventNotSavedException();
+      }
       int eventID = Integer.parseInt(eventUri.getLastPathSegment());
 
       if (details.containsKey("alarms")) {
