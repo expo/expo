@@ -1,0 +1,1 @@
+../../../../../packages/expo-camera2/ios/EXCamera2/Delegates/EXCamera2CapturePhotoDelegate.h
