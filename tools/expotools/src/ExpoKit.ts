@@ -57,11 +57,6 @@ export async function updateExpoKitAndroidAsync(
 
   await S3.uploadDirectoriesAsync(BUCKET, key, [
     {
-      isFile: true,
-      source: path.join(androidDir, 'android.iml'),
-      destination: 'android.iml',
-    },
-    {
       source: path.join(androidDir, 'app'),
       destination: 'app',
     },
