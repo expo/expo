@@ -17,11 +17,11 @@ export default class ExpoComponentsScreen extends React.Component {
 
   _getApis = () => {
     const screens = [
+      'Camera2',
       'AdMob',
       'BarCodeScanner',
       'BlurView',
       'Camera',
-      'Camera2',
       'FacebookAds',
       'GestureHandlerList',
       'GestureHandlerPinch',

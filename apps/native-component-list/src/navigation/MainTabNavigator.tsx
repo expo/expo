@@ -34,8 +34,8 @@ ReactNativeCoreStackNavigator.navigationOptions = {
 
 const MainTabNavigator = createTabNavigator(
   {
-    ExpoApis: ExpoApisStackNavigator,
     ExpoComponents: ExpoComponentsStackNavigator,
+    ExpoApis: ExpoApisStackNavigator,
     ReactNativeCore: ReactNativeCoreStackNavigator,
   },
   {
