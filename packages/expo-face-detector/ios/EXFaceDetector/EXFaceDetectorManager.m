@@ -122,6 +122,13 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
   if (!_session) {
     return;
   }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+  });
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleInterfaceOrientation:)
+                                               name:UIApplicationDidChangeStatusBarOrientationNotification
+                                             object:nil];
   [_session beginConfiguration];
   self.faceDetector = [[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions];
   
@@ -147,9 +154,15 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
   [_session commitConfiguration];
 }
 
+- (void)handleInterfaceOrientation:(NSNotification *)notificacion
+{
+  self.interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+}
+
 - (void)stopFaceDetection
 {
   [self setFaceDetectionRunning:NO];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   if (!_session) {
     return;
   }
@@ -211,10 +224,6 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
 }
 
 - (void)captureOutput:(AVCaptureVideoDataOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-  
-  dispatch_async(dispatch_get_main_queue(), ^{
-    self.interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-  });
   
   NSDate* currentTime = [NSDate new];
   double timePassedMillis = [currentTime timeIntervalSinceDate:self.startDetect] * 1000;
