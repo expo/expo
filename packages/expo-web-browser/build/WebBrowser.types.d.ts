@@ -1,0 +1,32 @@
+export declare type RedirectEvent = {
+    url: string;
+};
+export declare type OpenBrowserParams = {
+    toolbarColor?: string;
+    browserPackage?: string;
+    enableBarCollapsing?: boolean;
+    showTitle?: boolean;
+    windowName?: string;
+    windowFeatures?: string;
+    replace?: boolean;
+};
+export declare type AuthSessionResult = RedirectResult | BrowserResult;
+export declare type CustomTabsBrowsersResults = {
+    defaultBrowserPackage?: string;
+    preferredBrowserPackage?: string;
+    browserPackages: string[];
+    servicePackages: string[];
+};
+export declare type BrowserResult = {
+    type: 'cancel' | 'dismiss';
+};
+export declare type RedirectResult = {
+    type: 'success';
+    url: string;
+};
+export declare type ServiceActionResult = {
+    servicePackage?: string;
+};
+export declare type MayInitWithUrlResult = ServiceActionResult;
+export declare type WarmUpResult = ServiceActionResult;
+export declare type CoolDownResult = ServiceActionResult;
