@@ -16,6 +16,7 @@
     "bin",
     "build",
     "tools",
+    "bundledNativeModules.json",
     "AppEntry.js"
   ],
   "scripts": {
