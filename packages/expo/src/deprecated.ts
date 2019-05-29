@@ -706,7 +706,7 @@ Object.defineProperties(module.exports, {
     enumerable: true,
     get() {
       deprecatedModule(
-        `import { takeSnapshotAsync } from 'expo' -> import { captureRef as takeSnapshotAsync } 'react-native-view-shot'`,
+        `import { takeSnapshotAsync } from 'expo' -> import { captureRef as takeSnapshotAsync } from 'react-native-view-shot'`,
         'react-native-view-shot'
       );
       return require('react-native-view-shot').captureRef;

@@ -41,6 +41,7 @@ import * as GestureHandler from 'react-native-gesture-handler';
 import * as Random from 'expo-random';
 import * as Icon from '@expo/vector-icons';
 export { default as Animated, Easing, Transitioning, Transition } from './Animated';
+export { default as takeSnapshotAsync } from './takeSnapshotAsync/captureRef';
 export { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 export { Segment };
 export { Asset } from 'expo-asset';
@@ -59,10 +60,10 @@ const GLView = GL.GLView;
 export { GL, GLView };
 export { GoogleSignIn };
 export { ImageManipulator };
-export { Haptics };
+export { Haptics, Haptics as Haptic };
 export { ImagePicker };
 export { LocalAuthentication };
-export { IntentLauncher };
+export { IntentLauncher, IntentLauncher as IntentLauncherAndroid };
 export { Localization };
 export { Crypto };
 export { Location };
@@ -70,6 +71,13 @@ export { MediaLibrary };
 export { Permissions };
 export { Print };
 export { Sensors };
+export {
+  Accelerometer,
+  Barometer,
+  Gyroscope,
+  Magnetometer,
+  MagnetometerUncalibrated,
+} from 'expo-sensors';
 export { SQLite } from 'expo-sqlite';
 export { SMS };
 export { Speech };
@@ -92,3 +100,4 @@ export { BlurView };
 export { LinearGradient } from 'expo-linear-gradient';
 export { FacebookAds };
 export { WebView } from './WebView';
+
