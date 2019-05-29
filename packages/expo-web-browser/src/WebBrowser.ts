@@ -4,7 +4,7 @@ import ExponentWebBrowser from './ExpoWebBrowser';
 
 import {
   RedirectEvent,
-  OpenBrowserParams,
+  OpenBrowserOptions,
   AuthSessionResult,
   CustomTabsBrowsersResults,
   BrowserResult,
@@ -71,7 +71,7 @@ export async function coolDownAsync(browserPackage?: string): Promise<CoolDownRe
 
 export async function openBrowserAsync(
   url: string,
-  browserParams: OpenBrowserParams = {}
+  browserParams: OpenBrowserOptions = {}
 ): Promise<BrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
