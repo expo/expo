@@ -231,12 +231,20 @@ dependencies {
   // WHEN_DETACHING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DETACHING
-  addMavenUnimodulesDependencies([
+  addUnimodulesDependencies([
       modulesPaths : [
         '../../node_modules'
       ],
       configuration: 'api',
-      target       : 'react-native'
+      target       : 'react-native',
+      exclude      : [
+        // You can exclude unneeded modules here, eg.
+        // 'unimodules-face-detector-interface',
+        // 'expo-face-detector'
+
+        // Adding a name here will also remove the package
+        // from auto-generated BasePackageList.java
+      ]
   ])
   END UNCOMMENT WHEN DETACHING */
 }
