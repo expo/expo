@@ -9,8 +9,8 @@ export type OpenBrowserParams = {
   showTitle?: boolean;
 
   // Web
-  target?: string;
-  features?: string;
+  windowName?: string;
+  windowFeatures?: string;
   replace?: boolean;
 };
 
