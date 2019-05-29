@@ -206,7 +206,7 @@ The rest of the API on the `Video` component ref is the same as the API for `Aud
 
 - `videoRef.setPositionAsync(millis)`
 
-- `videoRef.setRateAsync(value, shouldCorrectPitch)`
+- `videoRef.setRateAsync(value, shouldCorrectPitch, pitchCorrectionQuality)`
 
 - `videoRef.setVolumeAsync(value)`
 

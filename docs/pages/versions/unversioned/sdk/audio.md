@@ -192,7 +192,7 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 
 - `soundObject.setPositionAsync(millis)`
 
-- `soundObject.setRateAsync(value, shouldCorrectPitch)`
+- `soundObject.setRateAsync(value, shouldCorrectPitch, pitchCorrectionQuality)`
 
 - `soundObject.setVolumeAsync(value)`
 
