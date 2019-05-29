@@ -1,6 +1,6 @@
-import { BrowserResult, OpenBrowserParams } from './WebBrowser.types';
+import { BrowserResult, OpenBrowserOptions } from './WebBrowser.types';
 declare const _default: {
     readonly name: string;
-    openBrowserAsync(url: string, browserParams?: OpenBrowserParams): Promise<BrowserResult>;
+    openBrowserAsync(url: string, browserParams?: OpenBrowserOptions): Promise<BrowserResult>;
 };
 export default _default;
