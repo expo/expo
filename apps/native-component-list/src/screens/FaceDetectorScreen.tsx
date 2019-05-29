@@ -129,7 +129,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
     if (faceDetection && faceDetection.detecting) {
       return (
         <View style={styles.infoContainer}>
-          <MonoText>Detecting faces.</MonoText>
+          <MonoText>Detecting faces…</MonoText>
         </View>
       );
     }
