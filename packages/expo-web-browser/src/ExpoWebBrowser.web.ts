@@ -1,4 +1,4 @@
-import { BrowserResult, OpenBrowserParams } from './WebBrowser.types';
+import { BrowserResult, OpenBrowserOptions } from './WebBrowser.types';
 
 export default {
   get name() {
@@ -6,7 +6,7 @@ export default {
   },
   async openBrowserAsync(
     url: string,
-    browserParams: OpenBrowserParams = {}
+    browserParams: OpenBrowserOptions = {}
   ): Promise<BrowserResult> {
     const { windowName = '_blank', windowFeatures, replace } = browserParams;
     window.open(url, windowName, windowFeatures, replace);
