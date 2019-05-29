@@ -1,7 +1,7 @@
 export declare type RedirectEvent = {
     url: string;
 };
-export declare type OpenBrowserParams = {
+export declare type OpenBrowserOptions = {
     toolbarColor?: string;
     browserPackage?: string;
     enableBarCollapsing?: boolean;
