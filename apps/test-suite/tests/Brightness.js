@@ -1,4 +1,5 @@
-import { Brightness, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Brightness from 'expo-brightness';
 import { Platform } from 'react-native';
 import * as TestUtils from '../TestUtils';
 

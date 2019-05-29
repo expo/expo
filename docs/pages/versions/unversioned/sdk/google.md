@@ -157,7 +157,7 @@ if (type === 'success') {
 
 ## Using it inside of the Expo app
 
-In the Expo Client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser).
+In the Expo client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser).
 
 To use Google Sign In, you will need to create a project on the Google Developer Console and create an OAuth 2.0 client ID. This is, unfortunately, super annoying to do and we wish there was a way we could automate this for you, but at the moment the Google Developer Console does not expose an API. _You also need to register a separate set of Client IDs for a standalone app, the process for this is described later in this document_.
 

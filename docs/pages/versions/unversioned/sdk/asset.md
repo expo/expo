@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Asset } from 'expo';
-
-// in bare apps:
 import { Asset } from 'expo-asset';
 ```
 
@@ -50,7 +46,7 @@ If the asset is an image, the height of the image data divided by the scale fact
 
 - `downloadAsync()`
 
-Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#expoassetlocaluri "Asset.localUri") field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
+Downloads the asset data to a local file in the device's cache directory. Once the returned promise is fulfilled without error, the [`localUri`](#expoassetlocaluri 'Asset.localUri') field of this asset points to a local file containing the asset data. The asset is only downloaded if an up-to-date local file for the asset isn't already present due to an earlier download.
 
 ### `Asset.loadAsync(modules)`
 
@@ -58,7 +54,7 @@ A helper that wraps `Asset.fromModule(module).downloadAsync` for convenience.
 
 #### Arguments
 
--   **modules (_Array\<number\>|number_)** -- An array of `require('path/to/file')`. Can also be just one module without an Array.
+- **modules (_Array\<number\>|number_)** -- An array of `require('path/to/file')`. Can also be just one module without an Array.
 
 #### Returns
 
@@ -70,7 +66,7 @@ Returns the [`Asset`](#asset) instance representing an asset given its module
 
 #### Arguments
 
--   **module (_number_)** -- The value of `require('path/to/file')` for the asset
+- **module (_number_)** -- The value of `require('path/to/file')` for the asset
 
 #### Returns
 

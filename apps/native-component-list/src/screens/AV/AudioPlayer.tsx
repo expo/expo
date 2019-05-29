@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { Asset, Audio } from 'expo';
+import { Asset } from 'expo-asset';
 
 import Player from './Player';
 

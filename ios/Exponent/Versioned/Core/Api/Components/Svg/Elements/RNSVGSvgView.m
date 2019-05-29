@@ -247,11 +247,26 @@
     return nil;
 }
 
-
 - (NSString *)getDataURL
 {
     UIGraphicsBeginImageContextWithOptions(_boundingBox.size, NO, 0);
+    [self clearChildCache];
     [self drawRect:_boundingBox];
+    [self clearChildCache];
+    [self invalidate];
+    NSData *imageData = UIImagePNGRepresentation(UIGraphicsGetImageFromCurrentImageContext());
+    NSString *base64 = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    UIGraphicsEndImageContext();
+    return base64;
+}
+
+- (NSString *)getDataURLwithBounds:(CGRect)bounds
+{
+    UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
+    [self clearChildCache];
+    [self drawRect:bounds];
+    [self clearChildCache];
+    [self invalidate];
     NSData *imageData = UIImagePNGRepresentation(UIGraphicsGetImageFromCurrentImageContext());
     NSString *base64 = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
     UIGraphicsEndImageContext();

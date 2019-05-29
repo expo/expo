@@ -13,10 +13,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Amplitude } from 'expo';
-
-// in bare apps:
 import * as Amplitude from 'expo-analytics-amplitude';
 ```
 
@@ -26,7 +22,7 @@ Initializes Amplitude with your Amplitude API key. If you're having trouble find
 
 #### Arguments
 
--   **apiKey (_string_)** -- Your Amplitude application's API key.
+- **apiKey (_string_)** -- Your Amplitude application's API key.
 
 ### `Amplitude.setUserId(userId)`
 
@@ -34,7 +30,7 @@ Assign a user ID to the current user. If you don't have a system for user IDs yo
 
 #### Arguments
 
--   **userId (_string_)** -- User ID for the current user.
+- **userId (_string_)** -- User ID for the current user.
 
 ### `Amplitude.setUserProperties(userProperties)`
 
@@ -42,11 +38,11 @@ Set properties for the current user. See [here for details](https://amplitude.ze
 
 #### Arguments
 
--   **userProperties (_object_)** -- A map of custom properties.
+- **userProperties (_object_)** -- A map of custom properties.
 
 ### `Amplitude.clearUserProperties()`
 
-Clear properties set by [`Amplitude.setUserProperties()`](#expoamplitudesetuserproperties "Amplitude.setUserProperties").
+Clear properties set by [`Amplitude.setUserProperties()`](#expoamplitudesetuserproperties 'Amplitude.setUserProperties').
 
 ### `Amplitude.logEvent(eventName)`
 
@@ -54,7 +50,7 @@ Log an event to Amplitude. For more information about what kind of events to tra
 
 #### Arguments
 
--   **eventName (_string_)** -- The event name.
+- **eventName (_string_)** -- The event name.
 
 ### `Amplitude.logEventWithProperties(eventName, properties)`
 
@@ -62,14 +58,14 @@ Log an event to Amplitude with custom properties. For more information about wha
 
 #### Arguments
 
--   **eventName (_string_)** -- The event name.
--   **properties (_object_)** -- A map of custom properties.
+- **eventName (_string_)** -- The event name.
+- **properties (_object_)** -- A map of custom properties.
 
 ### `Amplitude.setGroup(groupType, groupNames)`
 
-Add the current user to a group. For more  information, see here for [iOS](https://github.com/amplitude/Amplitude-iOS#setting-groups) and see here for [Android](https://github.com/amplitude/Amplitude-Android#setting-groups).
+Add the current user to a group. For more information, see here for [iOS](https://github.com/amplitude/Amplitude-iOS#setting-groups) and see here for [Android](https://github.com/amplitude/Amplitude-Android#setting-groups).
 
 #### Arguments
 
--   **groupType (_string_)** -- The group name, e.g. "sports".
--   **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.
+- **groupType (_string_)** -- The group name, e.g. "sports".
+- **groupNames (_object_)** -- An array of group names, e.g. \["tennis", "soccer"]. Note: the iOS and Android Amplitude SDKs allow you to use a string or an array of strings. We only support an array of strings. Just use an array with one element if you only want one group name.

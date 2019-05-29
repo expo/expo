@@ -3,11 +3,8 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <EXPermissions/EXPermissions.h>
 #import <UMCore/UMUtilitiesInterface.h>
-
-#import "EXCameraPermissionRequester.h"
-#import "EXCameraRollRequester.h"
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 @import MobileCoreServices;
 @import Photos;

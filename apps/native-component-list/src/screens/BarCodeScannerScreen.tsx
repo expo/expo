@@ -2,7 +2,11 @@ import React from 'react';
 import { NavigationEvents } from 'react-navigation';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 
-import { BarCodeScanner, Permissions, Svg, ScreenOrientation } from 'expo';
+import { ScreenOrientation } from 'expo';
+
+import * as Svg from 'react-native-svg';
+import * as Permissions from 'expo-permissions';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const BUTTON_COLOR = Platform.OS === 'ios' ? '#fff' : '#666';
 
@@ -51,9 +55,9 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
 
   toggleScreenOrientationState = () => {
     if (this.canChangeOrientation) {
-      ScreenOrientation.allowAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
     } else {
-      ScreenOrientation.allowAsync(ScreenOrientation.OrientationLock.ALL);
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
     }
     this.canChangeOrientation = !this.canChangeOrientation;
   }
@@ -108,7 +112,7 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
         />
 
         {this.state.haveDimensions && (
-          <Svg height={this.state.canvasHeight} width={this.state.canvasWidth} style={styles.svg}>
+          <Svg.Svg height={this.state.canvasHeight} width={this.state.canvasWidth} style={styles.svg}>
             <Svg.Circle
               cx={this.state.canvasWidth! / 2}
               cy={this.state.canvasHeight! / 2}
@@ -129,7 +133,7 @@ export default class BarcodeScannerExample extends React.Component<{}, State> {
               />
             )}
             {circles}
-          </Svg>
+          </Svg.Svg>
         )}
 
         <View style={styles.toolbar}>

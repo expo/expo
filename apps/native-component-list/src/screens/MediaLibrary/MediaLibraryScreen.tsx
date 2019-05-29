@@ -1,5 +1,6 @@
 import React from 'react';
-import { Permissions, MediaLibrary } from 'expo';
+import * as MediaLibrary from 'expo-media-library';
+import * as Permissions from 'expo-permissions';
 import {
   ActivityIndicator,
   Button as RNButton,

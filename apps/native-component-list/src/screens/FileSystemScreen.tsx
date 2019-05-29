@@ -8,7 +8,8 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import { Asset, FileSystem } from 'expo';
+import * as FileSystem from 'expo-file-system';
+import { Asset } from 'expo-asset';
 import ListButton from '../components/ListButton';
 
 interface State {

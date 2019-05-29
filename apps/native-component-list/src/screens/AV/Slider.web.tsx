@@ -10,7 +10,6 @@
 import applyNativeMethods from 'react-native-web/dist/modules/applyNativeMethods';
 import {
   View,
-  ViewPropTypes,
   StyleSheet,
   Animated,
   PanResponder,

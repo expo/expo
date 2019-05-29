@@ -5,7 +5,7 @@ import {
   PanResponderGestureState,
   GestureResponderEvent,
 } from 'react-native';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { Path, Text, G, Line, Polyline } = Svg;
@@ -62,7 +62,7 @@ class PanExample extends React.Component {
 
   render() {
     return (
-      <Svg height="200" width="200">
+      <Svg.Svg height="200" width="200">
         <G
           ref={ele => {
             this.root = ele;
@@ -82,13 +82,13 @@ class PanExample extends React.Component {
             STAR
           </Text>
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <G strokeWidth="1" stroke="#ccc" fill="#ccc">
       <Line x1="4" y1="5" x2="16" y2="5" />
       <Polyline points="6,2 4,5 6,8" />
@@ -113,7 +113,7 @@ c0.2-0.4,0.5-0.7,1-0.7c0.3,0,0.5,0,0.6,0l0.1,0v0.5c0,0,0,0,0,0l0,1.1l0,0.2 M6.2,
       `}
       // tslint:enable max-line-length
     />
-  </Svg>
+  </Svg.Svg>
 );
 
 const PanResponder: Example = {

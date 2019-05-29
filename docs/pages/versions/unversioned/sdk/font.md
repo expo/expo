@@ -11,20 +11,16 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Font } from 'expo';
-
-// in bare apps:
 import * as Font from 'expo-font';
 ```
 
 ### `Font.loadAsync(object)`
 
-Convenience form of [`Font.loadAsync()`](#expofontloadasync "Font.loadAsync") that loads multiple fonts at once.
+Convenience form of [`Font.loadAsync()`](#expofontloadasync 'Font.loadAsync') that loads multiple fonts at once.
 
 #### Arguments
 
--   **map (_object_)** -- A map of names to `require` statements as in [`Font.loadAsync()`](#expofontloadasync "Font.loadAsync").
+- **map (_object_)** -- A map of names to `require` statements as in [`Font.loadAsync()`](#expofontloadasync 'Font.loadAsync').
 
 #### Example
 
@@ -38,4 +34,3 @@ Font.loadAsync({
 #### Returns
 
 Returns a promise. The promise will be resolved when the fonts have finished loading.
-

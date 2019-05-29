@@ -3,14 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ../../react-native-lab/react-native/local-cli/cli.js start --config ../../../../apps/standalone-ncl/metro.config.js"
+    "start": "node ../../react-native-lab/react-native/local-cli/cli.js start --config ../../apps/standalone-ncl/metro.config.js"
   },
   "dependencies": {
-    "@unimodules/core": "^2.0.0-alpha.0",
-    "@unimodules/react-native-adapter": "^2.0.0-alpha.0",
     "native-component-list": "*",
     "react": "16.8.3",
-    "react-native": "0.59.5"
+    "react-native": "0.59.8"
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.1.0",

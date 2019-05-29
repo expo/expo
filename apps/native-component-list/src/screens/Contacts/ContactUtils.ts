@@ -1,4 +1,4 @@
-import { Contacts } from 'expo';
+import * as Contacts from 'expo-contacts';
 
 export function parseDate({ year, month, day }: { year: number; month: number; day: number }) {
   const nYear = year || new Date().getFullYear();

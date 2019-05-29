@@ -33,9 +33,9 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 The command-line tool for working with Expo. [Read more](../expo-cli/).
 
-### Expo Client
+### Expo client
 
-The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
 
 ### Expo Dev Tools
 

@@ -14,7 +14,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ## Configuration for standalone apps
 
-`TaskManager` works out of the box in the Expo Client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+`TaskManager` works out of the box in the Expo client, but some extra configuration is needed for standalone apps. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
 Example of `app.json` that enables background location and background fetch:
 
 ```json
@@ -38,7 +38,7 @@ Example of `app.json` that enables background location and background fetch:
 ## API
 
 ```js
-import { TaskManager } from 'expo';
+import * as TaskManager from 'expo-task-manager';
 ```
 
 ### `TaskManager.defineTask(taskName, task)`
@@ -49,8 +49,8 @@ This limitation is due to the fact that when the application is launched in the 
 
 #### Arguments
 
--   **taskName (_string_)** -- Name of the task.
--   **task (_function_)** -- A function that will be invoked when the task with given **taskName** is executed.
+- **taskName (_string_)** -- Name of the task.
+- **task (_function_)** -- A function that will be invoked when the task with given **taskName** is executed.
 
 ### `TaskManager.isTaskRegisteredAsync(taskName)`
 
@@ -58,7 +58,7 @@ Determine whether the task is registered. Registered tasks are stored in a persi
 
 #### Arguments
 
--   **taskName (_string_)** -- Name of the task.
+- **taskName (_string_)** -- Name of the task.
 
 #### Returns
 
@@ -70,7 +70,7 @@ Retrieves options associated with the task, that were passed to the function reg
 
 #### Arguments
 
--   **taskName (_string_)** -- Name of the task.
+- **taskName (_string_)** -- Name of the task.
 
 #### Returns
 
@@ -108,11 +108,11 @@ Example:
 ### `TaskManager.unregisterTaskAsync(taskName)`
 
 Unregisters task from the app, so the app will not be receiving updates for that task anymore.
-*It is recommended to use methods specialized by modules that registered the task, eg. [Location.stopLocationUpdatesAsync](../location#expolocationstoplocationupdatesasynctaskname).*
+_It is recommended to use methods specialized by modules that registered the task, eg. [Location.stopLocationUpdatesAsync](../location#expolocationstoplocationupdatesasynctaskname)._
 
 #### Arguments
 
--   **taskName (_string_)** -- Name of the task to unregister.
+- **taskName (_string_)** -- Name of the task to unregister.
 
 #### Returns
 
@@ -162,4 +162,3 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   }
 });
 ```
-

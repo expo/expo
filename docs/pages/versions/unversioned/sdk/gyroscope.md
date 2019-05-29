@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Gyroscope } from 'expo';
-
-// in bare apps:
 import { Gyroscope } from 'expo-sensors';
 ```
 
@@ -37,7 +33,7 @@ Subscribe for updates to the gyroscope.
 #### Returns
 
 - An EventSubscription object that you can call `remove()` on when you would like to unsubscribe the listener.
-  
+
 ### `Gyroscope.removeAllListeners()`
 
 Remove all listeners.
@@ -54,7 +50,7 @@ Subscribe for updates to the gyroscope.
 
 ```javascript
 import React from 'react';
-import { Gyroscope } from 'expo';
+import { Gyroscope } from 'expo-sensors';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default class GyroscopeSensor extends React.Component {
@@ -158,4 +154,3 @@ const styles = StyleSheet.create({
   },
 });
 ```
-

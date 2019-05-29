@@ -32,10 +32,6 @@ For more advanced examples, check out the [Playlist example](https://github.com/
 ## API
 
 ```js
-// in managed apps:
-import { Video } from 'expo';
-
-// in bare apps:
 import { Video } from 'expo-av';
 ```
 
@@ -51,10 +47,10 @@ The `source` and `posterSource` props customize the source of the video content.
 
   The following forms for the source are supported:
 
-  -   A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a video file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
-      The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
-  -   `require('path/to/file')` for a video file asset in the source code directory.
-  -   An [`Asset`](../asset/) object for a video file asset.
+  - A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL pointing to a video file on the web, an optional headers object passed in a network request to the `uri` and an optional Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
+    The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type of the media and use proper media file reader.
+  - `require('path/to/file')` for a video file asset in the source code directory.
+  - An [`Asset`](../asset/) object for a video file asset.
 
   The [iOS developer documentation](https://developer.apple.com/library/ios/documentation/Miscellaneous/Conceptual/iPhoneOSTechOverview/MediaLayer/MediaLayer.html) lists the video formats supported on iOS.
 
@@ -64,8 +60,12 @@ The `source` and `posterSource` props customize the source of the video content.
 
   The source of an optional image to display over the video while it is loading. The following forms are supported:
 
-  -   A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to a image file on the web.
-  -   `require('path/to/file')` for an image file asset in the source code directory.
+  - A dictionary of the form `{ uri: 'http://path/to/file' }` with a network URL pointing to a image file on the web.
+  - `require('path/to/file')` for an image file asset in the source code directory.
+
+- `posterStyle`
+
+  An optional property to pass custom styles to the poster image.
 
 The `useNativeControls`, `resizeMode`, and `usePoster` props customize the UI of the component.
 
@@ -98,9 +98,9 @@ The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` p
   The function is passed a dictionary with the following key-value pairs:
 
   - `naturalSize`: a dictionary with the following key-value pairs:
-      - `width`: a number describing the width in pixels of the video data
-      - `height`: a number describing the height in pixels of the video data
-      - `orientation`: a string describing the natural orientation of the video data, either `'portrait'` or `'landscape'`
+    - `width`: a number describing the width in pixels of the video data
+    - `height`: a number describing the height in pixels of the video data
+    - `orientation`: a string describing the natural orientation of the video data, either `'portrait'` or `'landscape'`
   - `status`: the `PlaybackStatus` of the video; see the [AV documentation](../av/) for further information.
 
 - `onFullscreenUpdate`
@@ -110,10 +110,10 @@ The `onPlaybackStatusUpdate`, `onReadyForDisplay`, and `onIOSFullscreenUpdate` p
   The function is passed a dictionary with the following key-value pairs:
 
   - `fullscreenUpdate`: a number taking one of the following values:
-      - `Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT`: describing that the fullscreen player is about to present
-      - `Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT`: describing that the fullscreen player just finished presenting
-      - `Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`: describing that the fullscreen player is about to dismiss
-      - `Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS`: describing that the fullscreen player just finished dismissing
+    - `Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT`: describing that the fullscreen player is about to present
+    - `Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT`: describing that the fullscreen player just finished presenting
+    - `Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`: describing that the fullscreen player is about to dismiss
+    - `Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS`: describing that the fullscreen player just finished dismissing
   - `status`: the `PlaybackStatus` of the video; see the [AV documentation](../av/) for further information.
 
 - `onLoadStart`
@@ -178,41 +178,40 @@ Finally, the following props are available to control the playback of the video,
 
 - `videoRef.dismissFullscreenPlayer()`
 
- This dismisses the fullscreen video view.
+This dismisses the fullscreen video view.
 
-  #### Returns
+#### Returns
 
-  A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
+A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
 
 The rest of the API on the `Video` component ref is the same as the API for `Audio.Sound`-- see the [AV documentation](../av/) for further information:
 
--   `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
+- `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
--   `videoRef.unloadAsync()`
+- `videoRef.unloadAsync()`
 
--   `videoRef.getStatusAsync()`
+- `videoRef.getStatusAsync()`
 
--   `videoRef.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
+- `videoRef.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
 
--   `videoRef.setStatusAsync(statusToSet)`
+- `videoRef.setStatusAsync(statusToSet)`
 
--   `videoRef.playAsync()`
+- `videoRef.playAsync()`
 
--   `videoRef.replayAsync()`
+- `videoRef.replayAsync()`
 
--   `videoRef.pauseAsync()`
+- `videoRef.pauseAsync()`
 
--   `videoRef.stopAsync()`
+- `videoRef.stopAsync()`
 
--   `videoRef.setPositionAsync(millis)`
+- `videoRef.setPositionAsync(millis)`
 
--   `videoRef.setRateAsync(value, shouldCorrectPitch)`
+- `videoRef.setRateAsync(value, shouldCorrectPitch)`
 
--   `videoRef.setVolumeAsync(value)`
+- `videoRef.setVolumeAsync(value)`
 
--   `videoRef.setIsMutedAsync(value)`
+- `videoRef.setIsMutedAsync(value)`
 
--   `videoRef.setIsLoopingAsync(value)`
+- `videoRef.setIsLoopingAsync(value)`
 
--   `videoRef.setProgressUpdateIntervalAsync(millis)`
-
+- `videoRef.setProgressUpdateIntervalAsync(millis)`

@@ -1,6 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { Path, Rect, G, Defs, Stop, RadialGradient, Polyline, ClipPath, Circle, Text } = Svg;
@@ -9,13 +9,13 @@ class StrokeExample extends React.Component {
   static title = 'The stroke property defines the color of a line, text or outline of an element';
   render() {
     return (
-      <Svg height="80" width="225">
+      <Svg.Svg height="80" width="225">
         <G strokeWidth="1">
           <Path stroke="red" d="M5 20 l215 0" />
           <Path stroke="black" d="M5 40 l215 0" />
           <Path stroke="blue" d="M5 60 l215 0" />
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -24,7 +24,7 @@ class StrokeLinecap extends React.Component {
   static title = 'The strokeLinecap property defines different types of endings to an open path';
   render() {
     return (
-      <Svg height="80" width="225">
+      <Svg.Svg height="80" width="225">
         <G stroke="red">
           <G strokeWidth="8">
             <Path strokeLinecap="butt" d="M5 20 l215 0" />
@@ -32,7 +32,7 @@ class StrokeLinecap extends React.Component {
             <Path strokeLinecap="square" d="M5 60 l215 0" />
           </G>
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -41,13 +41,13 @@ class StrokeDasharray extends React.Component {
   static title = 'strokeDasharray';
   render() {
     return (
-      <Svg height="80" width="225">
+      <Svg.Svg height="80" width="225">
         <G fill="none" stroke="black" strokeWidth="4">
           <Path strokeDasharray="5,5" d="M5 20 l215 0" />
           <Path strokeDasharray="10,10" d="M5 40 l215 0" />
           <Path strokeDasharray="20,10,5,5,5,10" d="M5 60 l215 0" />
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -57,7 +57,7 @@ class StrokeDashoffset extends React.Component {
     'the strokeDashoffset attribute specifies the distance into the dash pattern to start the dash.';
   render() {
     return (
-      <Svg height="80" width="200">
+      <Svg.Svg height="80" width="200">
         <Circle
           cx="100"
           cy="40"
@@ -82,7 +82,7 @@ class StrokeDashoffset extends React.Component {
         >
           STROKE
         </Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -91,7 +91,7 @@ class StrokePattern extends React.Component {
   static title = 'Advanced stroke example.';
   render() {
     return (
-      <Svg height="80" width="200">
+      <Svg.Svg height="80" width="200">
         <Defs>
           <RadialGradient id="grad" cx="50%" cy="50%" rx="80%" ry="80%" fx="50%" fy="50%">
             <Stop offset="50%" stopColor="#fff" stopOpacity="0.5" />
@@ -121,19 +121,19 @@ class StrokePattern extends React.Component {
           strokeLinecap="round"
           strokeWidth="5"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <G fill="none" stroke="black" strokeWidth="2">
       <Path strokeDasharray="2,2" d="M0 4 h20" />
       <Path strokeDasharray="4,4" d="M0 10 h20" />
       <Path strokeDasharray="4,2,1,1,1,6" d="M0 19 h20" />
     </G>
-  </Svg>
+  </Svg.Svg>
 );
 
 const Stroking: Example = {

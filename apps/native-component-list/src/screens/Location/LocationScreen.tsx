@@ -1,7 +1,8 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, Switch, Text, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
-import { Location, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
 import ListButton from '../../components/ListButton';
 
 type OmitNested<T, K1 extends keyof T, K2 extends keyof T[K1]> = Pick<T, Exclude<keyof T, K1>> &

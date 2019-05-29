@@ -1,7 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 
 import Example from './Example';
 
@@ -23,10 +23,10 @@ class SvgExample extends React.Component {
   static title = 'SVG';
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Circle cx="50" cy="50" r="45" stroke="blue" strokeWidth="2.5" fill="green" />
         <Rect x="15" y="15" width="70" height="70" stroke="red" strokeWidth="2" fill="yellow" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -36,10 +36,10 @@ class SvgOpacity extends React.Component {
   render() {
     return (
       // @ts-ignore
-      <Svg height="100" width="100" opacity="0.2">
+      <Svg.Svg height="100" width="100" opacity="0.2">
         <Circle cx="50" cy="50" r="45" stroke="blue" strokeWidth="2.5" fill="green" />
         <Rect x="15" y="15" width="70" height="70" stroke="red" strokeWidth="2" fill="yellow" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -48,7 +48,7 @@ class SvgViewbox extends React.Component {
   static title = 'SVG with `viewBox="40 20 100 40" and preserveAspectRatio="none"`';
   render() {
     return (
-      <Svg height="100" width="100" viewBox="40 20 100 40" preserveAspectRatio="none">
+      <Svg.Svg height="100" width="100" viewBox="40 20 100 40" preserveAspectRatio="none">
         <G>
           <Rect x="0" y="0" width="100" height="100" fill="red" />
           <Circle cx="50" cy="50" r="30" fill="yellow" />
@@ -56,7 +56,7 @@ class SvgViewbox extends React.Component {
           <Circle cx="60" cy="40" r="4" fill="black" />
           <Path d="M 40 60 A 10 10 0 0 0 60 60" stroke="black" />
         </G>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -72,7 +72,7 @@ class SvgLayout extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Svg style={styles.svg}>
+        <Svg.Svg style={styles.svg}>
           <G>
             <NullComponent />
           </G>
@@ -88,7 +88,7 @@ class SvgLayout extends React.Component {
           />
           <Line x1="10%" y1="10%" x2="90%" y2="90%" stroke="yellow" strokeWidth="4" />
           <Line x1="10%" y1="90%" x2="90%" y2="10%" stroke="yellow" strokeWidth="4" />
-        </Svg>
+        </Svg.Svg>
       </View>
     );
   }
@@ -112,7 +112,7 @@ class SvgNativeMethods extends React.Component {
   render() {
     return (
       <View>
-        <Svg
+        <Svg.Svg
           height="100"
           width="150"
           ref={ele => {
@@ -127,7 +127,7 @@ class SvgNativeMethods extends React.Component {
               fill="blue"
             />
           </G>
-        </Svg>
+        </Svg.Svg>
         <View style={{ width: 150, height: 100, borderWidth: 1, marginTop: 5 }}>
           {this.state.base64 && (
             <Image
@@ -142,10 +142,10 @@ class SvgNativeMethods extends React.Component {
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Circle cx="10" cy="10" r="8" stroke="blue" strokeWidth="1" fill="green" />
     <Rect x="4" y="4" width="12" height="12" stroke="red" strokeWidth="1" fill="yellow" />
-  </Svg>
+  </Svg.Svg>
 );
 
 const SVG: Example = {

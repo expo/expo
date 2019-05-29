@@ -76,7 +76,7 @@ A promise resolving when the task is fully unregistered.
 
 Sets the minimum number of seconds that must elapse before another background fetch can be initiated. This value is advisory only and does not indicate the exact amount of time expected between fetch operations.
 
-*It is a global value which means that it can overwrite settings from another application opened through Expo Client.*
+*It is a global value which means that it can overwrite settings from another application opened through Expo client.*
 
 #### Arguments
 

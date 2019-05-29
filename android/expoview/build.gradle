@@ -6,8 +6,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '32.0.0'
-
+version = '33.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -64,6 +63,11 @@ repositories {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
@@ -118,9 +122,10 @@ configurations.all {
   }
 }
 
-
+// WHEN_VERSIONING_REMOVE_FROM_HERE
 // Import gradle helpers for unimodules.
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+// WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
@@ -134,7 +139,7 @@ dependencies {
   // WHEN_VERSIONING_REMOVE_FROM_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:32.0.0'
+  api 'com.facebook.react:react-native:33.0.0'
   addMavenUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
@@ -156,6 +161,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_33
+  api 'host.exp:reactandroid-abi33_0_0:1.0.0'
+  // END_SDK_33
   // BEGIN_SDK_32
   api 'host.exp:reactandroid-abi32_0_0:1.0.0'
   // END_SDK_32

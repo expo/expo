@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include <fabric/components/root/RootProps.h>
-#include <fabric/components/view/ConcreteViewShadowNode.h>
-#include <fabric/core/LayoutContext.h>
+#include <react/components/root/RootProps.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+#include <react/core/LayoutContext.h>
 
 namespace facebook {
 namespace react {
@@ -29,14 +29,9 @@ extern const char RootComponentName[];
  * props which represent external layout constraints and context of the
  * shadow tree.
  */
-class RootShadowNode final:
-  public ConcreteViewShadowNode<
-    RootComponentName,
-    RootProps
-  > {
-
-public:
-
+class RootShadowNode final
+    : public ConcreteViewShadowNode<RootComponentName, RootProps> {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   /*
@@ -44,8 +39,24 @@ public:
    */
   void layout();
 
-private:
+  /*
+   * Clones the node with given `layoutConstraints` and `layoutContext`.
+   */
+  UnsharedRootShadowNode clone(
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
+  /*
+   * Clones the node replacing a given old shadow node with a new one in the
+   * tree by cloning all nodes on the path to the root node and then complete
+   * the tree. Returns `nullptr` if the operation cannot be finished
+   * successfully.
+   */
+  UnsharedRootShadowNode clone(
+      const SharedShadowNode &oldShadowNode,
+      const SharedShadowNode &newShadowNode) const;
+
+ private:
   using YogaLayoutableShadowNode::layout;
 };
 

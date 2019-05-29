@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, StyleProp, ViewStyle } from 'react-native';
 import { PlaybackNativeSource, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 export declare type NaturalSize = {
     width: number;
@@ -19,11 +19,12 @@ export declare type FullscreenUpdateEvent = {
     fullscreenUpdate: 0 | 1 | 2 | 3;
     status: PlaybackStatus;
 };
-export declare type VideoPlaybackProps = {
+export declare type VideoProps = {
     source?: PlaybackSource;
     posterSource?: {
         uri: string;
     } | number;
+    posterStyle?: StyleProp<ViewStyle>;
     onPlaybackStatusUpdate?: (status: PlaybackStatus) => void;
     onLoadStart?: () => void;
     onLoad?: (status: PlaybackStatus) => void;
@@ -73,7 +74,7 @@ export declare type NativeProps = {
     }) => void;
     useNativeControls?: boolean;
 } & React.ComponentProps<typeof View>;
-export declare type VideoPlaybackState = {
+export declare type VideoState = {
     showPoster: boolean;
 };
 export declare type ExponentVideoComponent = React.ComponentClass<NativeProps>;

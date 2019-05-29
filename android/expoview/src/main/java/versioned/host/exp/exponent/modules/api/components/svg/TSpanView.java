@@ -21,6 +21,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.view.View;
 import android.view.ViewParent;
 
 import com.facebook.react.bridge.ReactContext;
@@ -47,6 +48,7 @@ class TSpanView extends TextView {
     private static final String OTF = ".otf";
     private static final String TTF = ".ttf";
 
+    private Path mCachedPath;
     @Nullable String mContent;
     private TextPathView textPath;
     ArrayList<String> emoji = new ArrayList<>();
@@ -60,6 +62,17 @@ class TSpanView extends TextView {
     public void setContent(@Nullable String content) {
         mContent = content;
         invalidate();
+    }
+
+    @Override
+    public void invalidate() {
+        mCachedPath = null;
+        super.invalidate();
+    }
+
+    void clearCache() {
+        mCachedPath = null;
+        super.clearCache();
     }
 
     @Override
@@ -88,22 +101,73 @@ class TSpanView extends TextView {
 
     @Override
     Path getPath(Canvas canvas, Paint paint) {
-        if (mPath != null) {
-            return mPath;
+        if (mCachedPath != null) {
+            return mCachedPath;
         }
 
         if (mContent == null) {
-            mPath = getGroupPath(canvas, paint);
-            return mPath;
+            mCachedPath = getGroupPath(canvas, paint);
+            return mCachedPath;
         }
 
         setupTextPath();
 
         pushGlyphContext();
-        mPath = getLinePath(mContent, paint, canvas);
+        mCachedPath = getLinePath(mContent, paint, canvas);
         popGlyphContext();
 
-        return mPath;
+        return mCachedPath;
+    }
+
+    double getSubtreeTextChunksTotalAdvance(Paint paint) {
+        if (!Double.isNaN(cachedAdvance)) {
+            return cachedAdvance;
+        }
+        double advance = 0;
+
+        if (mContent == null) {
+            for (int i = 0; i < getChildCount(); i++) {
+                View child = getChildAt(i);
+                if (child instanceof TextView) {
+                    TextView text = (TextView)child;
+                    advance += text.getSubtreeTextChunksTotalAdvance(paint);
+                }
+            }
+            cachedAdvance = advance;
+            return advance;
+        }
+
+        String line = mContent;
+        final int length = line.length();
+
+        if (length == 0) {
+            cachedAdvance = 0;
+            return advance;
+        }
+
+        GlyphContext gc = getTextRootGlyphContext();
+        FontData font = gc.getFont();
+        applyTextPropertiesToPaint(paint, font);
+
+        double letterSpacing = font.letterSpacing;
+        final boolean allowOptionalLigatures = letterSpacing == 0 &&
+                font.fontVariantLigatures == FontVariantLigatures.normal;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String required = "'rlig', 'liga', 'clig', 'calt', 'locl', 'ccmp', 'mark', 'mkmk',";
+            String defaultFeatures = required + "'kern', ";
+            if (allowOptionalLigatures) {
+                String additionalLigatures = "'hlig', 'cala', ";
+                paint.setFontFeatureSettings(defaultFeatures + additionalLigatures + font.fontFeatureSettings);
+            } else {
+                String disableDiscretionaryLigatures = "'liga' 0, 'clig' 0, 'dlig' 0, 'hlig' 0, 'cala' 0, ";
+                paint.setFontFeatureSettings(defaultFeatures + disableDiscretionaryLigatures + font.fontFeatureSettings);
+            }
+            paint.setLetterSpacing((float)(letterSpacing / (font.fontSize * mScale)));
+        }
+
+        cachedAdvance = paint.measureText(line);
+        return cachedAdvance;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -311,8 +375,10 @@ class TSpanView extends TextView {
             attributes, such as a ‘dx’ attribute value on a ‘tspan’ element.
          */
         final TextAnchor textAnchor = font.textAnchor;
-        final double textMeasure = paint.measureText(line);
+        TextView anchorRoot = getTextAnchorRoot();
+        final double textMeasure = anchorRoot.getSubtreeTextChunksTotalAdvance(paint);
         double offset = getTextAnchorOffset(textAnchor, textMeasure);
+        applyTextPropertiesToPaint(paint, font);
 
         int side = 1;
         double startOfRendering = 0;
@@ -563,7 +629,7 @@ class TSpanView extends TextView {
                     // this will just retrieve the bounding rect for 'x'
                     paint.getTextBounds("x", 0, 1, bounds);
                     int xHeight = bounds.height();
-                    baselineShift = xHeight / 2;
+                    baselineShift = xHeight / 2.0;
                     break;
 
                 case central:
@@ -691,7 +757,6 @@ class TSpanView extends TextView {
         final Matrix end = new Matrix();
 
         final float[] startPointMatrixData = new float[9];
-        final float[] midPointMatrixData = new float[9];
         final float[] endPointMatrixData = new float[9];
 
         emoji.clear();
@@ -961,6 +1026,9 @@ class TSpanView extends TextView {
         paint.setTypeface(typeface);
         paint.setTextSize((float) fontSize);
         paint.setTextAlign(Paint.Align.LEFT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            paint.setLetterSpacing(0);
+        }
 
         // Do these have any effect for anyone? Not for me (@msand) at least.
         // paint.setUnderlineText(underlineText);
@@ -999,6 +1067,9 @@ class TSpanView extends TextView {
 
         if (mRegion == null && mFillPath != null) {
             mRegion = getRegion(mFillPath);
+        }
+        if (mRegion == null && mPath != null) {
+            mRegion = getRegion(mPath);
         }
         if (mStrokeRegion == null && mStrokePath != null) {
             mStrokeRegion = getRegion(mStrokePath);

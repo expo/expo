@@ -17,10 +17,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Pedometer } from 'expo';
-
-// in bare apps:
 import { Pedometer } from 'expo-sensors';
 ```
 
@@ -64,5 +60,5 @@ Subscribe to pedometer updates.
 - An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
 
 ## Standalone Applications
-You'll need to configure an Android OAuth client for your app on the Google Play console for it to work as a standalone application on the Android platform. See https://developers.google.com/fit/android/get-api-key
 
+You'll need to configure an Android OAuth client for your app on the Google Play console for it to work as a standalone application on the Android platform. See https://developers.google.com/fit/android/get-api-key

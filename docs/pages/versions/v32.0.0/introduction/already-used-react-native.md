@@ -59,7 +59,7 @@ If you prefer to build your app on your own machine, you can [follow these steps
 - [forums.expo.io](https://forums.expo.io)
   - The fastest way to get help from the Expo team or community
 - [github.com/expo](https://github.com/expo)
-  - The Expo Client and SDK are all open source. If there's something you'd like to fix, or figure out how we implement our native modules, you're welcome to look through the code yourself!
+  - The Expo client and SDK are all open source. If there's something you'd like to fix, or figure out how we implement our native modules, you're welcome to look through the code yourself!
 
 ## Useful Commands
 

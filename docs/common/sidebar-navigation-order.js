@@ -60,6 +60,7 @@ const GUIDES = [
   'Using Firebase',
   'Using GraphQL',
   'Using Sentry',
+  'User Interface Component Libraries',
   'Crafting Educational Materials',
 ];
 
@@ -70,6 +71,7 @@ const FUNDAMENTALS = [
   'Debugging',
   'Development Mode',
   'Common Development Errors',
+  'iOS Simulator',
   'Android Studio Emulator',
   'Configuration with app.json',
   'Publishing',

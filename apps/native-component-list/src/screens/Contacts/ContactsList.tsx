@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, StyleProp, ViewStyle, ListRenderItem, FlatListProps } from 'react-native';
-import { Contacts } from 'expo';
+import * as Contacts from 'expo-contacts';
 
 import ContactsListItem from './ContactsListItem';
 

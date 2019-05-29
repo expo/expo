@@ -36,6 +36,46 @@ Object.defineProperties(module.exports, {
       return require('expo-ads-admob').AdMobRewarded;
     },
   },
+  Animated: {
+    enumerable: true,
+    get() {
+      deprecatedModule(
+        `import { Animated } from 'expo' -> import Animated from 'react-native-reanimated'`,
+        'react-native-reanimated'
+      );
+      return require('./Animated').default;
+    },
+  },
+  Easing: {
+    enumerable: true,
+    get() {
+      deprecatedModule(
+        `import { Easing } from 'expo' -> import { Easing } from 'react-native-reanimated'`,
+        'react-native-reanimated'
+      );
+      return require('./Animated').Easing;
+    },
+  },
+  Transition: {
+    enumerable: true,
+    get() {
+      deprecatedModule(
+        `import { Transition } from 'expo' -> import { Transition } from 'react-native-reanimated'`,
+        'react-native-reanimated'
+      );
+      return require('./Animated').Transition;
+    },
+  },
+  Transitioning: {
+    enumerable: true,
+    get() {
+      deprecatedModule(
+        `import { Transitioning } from 'expo' -> import { Transitioning } from 'react-native-reanimated'`,
+        'react-native-reanimated'
+      );
+      return require('./Animated').Transitioning;
+    },
+  },
   PublisherBanner: {
     enumerable: true,
     get() {
@@ -311,7 +351,7 @@ Object.defineProperties(module.exports, {
     enumerable: true,
     get() {
       deprecatedModule(
-        `import { Haptic } from 'expo' -> import * as Haptics from 'expo-haptics'`,
+        `import { Haptic } from 'expo' -> import * as Haptic from 'expo-haptics'`,
         'expo-haptics'
       );
       return require('expo-haptics');
@@ -364,7 +404,7 @@ Object.defineProperties(module.exports, {
     enumerable: true,
     get() {
       deprecatedModule(
-        `import { IntentLauncherAndroid } from 'expo' -> import * as IntentLauncher from 'expo-intent-launcher'`,
+        `import { IntentLauncherAndroid } from 'expo' -> import * as IntentLauncherAndroid from 'expo-intent-launcher'`,
         'expo-intent-launcher'
       );
       return require('expo-intent-launcher');
@@ -633,7 +673,7 @@ Object.defineProperties(module.exports, {
     enumerable: true,
     get() {
       deprecatedModule(
-        `import { Icon } from 'expo' -> import * as Icons from '@expo/vector-icons'`,
+        `import { Icon } from 'expo' -> import * as Icon from '@expo/vector-icons'`,
         '@expo/vector-icons'
       );
       return require('@expo/vector-icons');
@@ -659,6 +699,17 @@ Object.defineProperties(module.exports, {
         'react-native-svg'
       );
       return require('./Svg').default;
+    },
+  },
+
+  takeSnapshotAsync: {
+    enumerable: true,
+    get() {
+      deprecatedModule(
+        `import { takeSnapshotAsync } from 'expo' -> import { captureRef as takeSnapshotAsync } 'react-native-view-shot'`,
+        'react-native-view-shot'
+      );
+      return require('react-native-view-shot').captureRef;
     },
   },
 

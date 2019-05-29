@@ -1,4 +1,7 @@
-import { AppLoading, Asset, Constants, Font } from 'expo';
+import { AppLoading } from 'expo';
+import { Asset } from 'expo-asset';
+import Constants from 'expo-constants';
+import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Assets as StackAssets } from 'react-navigation-stack';

@@ -34,7 +34,7 @@ You can access the channel your release is published under with the `releaseChan
 
 ## Example Workflow
 
-Consider a situation where you have a Staging stack for testing on Expo Client, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
+Consider a situation where you have a Staging stack for testing on Expo client, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
 
 On the staging stack, run `exp publish --release-channel staging`. Your test users can see the staging version of your app by specifying the channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo client. Alternatively, they can open that URL directly on their mobile device.
 

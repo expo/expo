@@ -1,4 +1,4 @@
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
 
