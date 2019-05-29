@@ -1,7 +1,8 @@
 import React from 'react';
-import { Image, Platform, View, ScrollView, StyleSheet } from 'react-native';
-import { ImagePicker, FaceDetector, Permissions } from 'expo';
-import { FaceFeature } from 'expo-face-detector';
+import { Image, Platform, View, ScrollView, StyleSheet, Alert } from 'react-native';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+import * as FaceDetector from 'expo-face-detector';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
@@ -19,13 +20,13 @@ interface State {
   selection?: ImagePicker.ImagePickerResult;
   faceDetection?: {
     detecting: boolean;
-    faces: FaceFeature[];
+    faces: FaceDetector.FaceFeature[];
     image?: FaceDetector.Image;
     error?: any;
   };
 }
 
-export default class ImagePickerScreen extends React.Component<{}, State> {
+export default class FeceDetectorScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'FaceDetector',
   };
@@ -65,23 +66,30 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
   };
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    await requestPermissionAsync(Permissions.CAMERA_ROLL);
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes,
-      allowsEditing,
-    });
-    if (result.cancelled) {
-      this.setState({ selection: undefined });
+    const permission = await requestPermissionAsync(Permissions.CAMERA_ROLL);
+    if (permission) {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes,
+        allowsEditing,
+      });
+      if (result.cancelled) {
+        this.setState({ selection: undefined });
+      } else {
+        this.setState({ selection: result });
+        this.detectFaces(result.uri);
+      }
     } else {
-      this.setState({ selection: result });
-      this.detectFaces(result.uri);
+      Alert.alert('Permission required!', 'You must allow accessing images in order to proceed.');
     }
   };
+
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
         <ListButton
-          onPress={() => this.showPicker(ImagePicker.MediaTypeOptions.Images)}
+          onPress={() => {
+            this.showPicker(ImagePicker.MediaTypeOptions.Images);
+          }}
           title="Pick photo"
         />
         {this._maybeRenderSelection()}

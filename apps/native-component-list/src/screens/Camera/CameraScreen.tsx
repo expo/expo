@@ -385,7 +385,7 @@ export default class CameraScreen extends React.Component<{}, State> {
         onMountError={this.handleMountError}
         onFacesDetected={this.state.faceDetecting ? this.onFacesDetected : undefined}
         faceDetectorSettings={{
-          minDetectionInterval: 1000,
+          tracking: true,
         }}
         barCodeScannerSettings={{
           barCodeTypes: [
