@@ -205,7 +205,7 @@ The following convenience methods built on top of `setStatusAsync()` are also pr
 
     `High` - equivalent to `AVAudioTimePitchAlgorithmSpectral`
 
-    Check official apple docs for more info https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithmlowqualityzerolatency
+    Check official Apple docs for more info https://developer.apple.com/documentation/avfoundation/avaudiotimepitchalgorithmlowqualityzerolatency
 
 - `playbackObject.setVolumeAsync(value)`
 
@@ -265,6 +265,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
   - `isBuffering` : a boolean describing if the media is currently buffering.
   - `rate` : the current rate of the media.
   - `shouldCorrectPitch` : a boolean describing if we are correcting the pitch for a changed rate.
+  - `pitchCorrectionQuality` : iOS time pitch algorithm setting. See `setRateAsync` for details.
   - `volume` : the current volume of the audio for this media.
   - `isMuted` : a boolean describing if the audio of this media is currently muted.
   - `isLooping` : a boolean describing if the media is currently looping.
@@ -281,6 +282,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
   - `shouldPlay` : a boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`.
   - `rate` : the desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
   - `shouldCorrectPitch` : a boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected (so a rate different than `1.0` will timestretch the audio).
+  - `pitchCorrectionQuality` : iOS time pitch algorithm setting. Values: `Audio.PitchCorrectionQuality.Low`, `Audio.PitchCorrectionQuality.Medium`, or `Audio.PitchCorrectionQuality.High`.
   - `volume` : the desired volume of the audio for this media. This value must be between `0.0` (silence) and `1.0` (maximum volume).
   - `isMuted` : a boolean describing if the audio of this media should be muted.
   - `isLooping` : a boolean describing if the media should play once (`false`) or loop indefinitely (`true`).
