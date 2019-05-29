@@ -36,7 +36,6 @@
 @property(nonatomic, readonly, copy) NSString *deviceDataVersion;
 @property(nonatomic, readonly, copy) NSString *digest;
 @property(nonatomic, readonly, copy) NSString *versionInfo;
-@property(nonatomic, readonly, strong) NSMutableDictionary *gServicesData;
 @property(nonatomic, readonly, assign) int64_t lastCheckinTimestampMillis;
 
 /**

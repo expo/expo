@@ -1,1 +1,0 @@
-../../../../FirebaseMLVision/Frameworks/FirebaseMLVision.framework/Headers/FIRVisionCloudDocumentTextRecognizerOptions.h

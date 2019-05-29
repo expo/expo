@@ -25,13 +25,6 @@
 @interface FIRInstanceID (Private)
 
 /**
- *  Return the cached checkin preferences on the disk. This is used internally only by Messaging.
- *
- *  @return The cached checkin preferences on the client.
- */
-- (nullable FIRInstanceIDCheckinPreferences *)cachedCheckinPreferences;
-
-/**
  *  Fetches checkin info for the app. If the app has valid cached checkin preferences
  *  they are returned instead of making a network request.
  *

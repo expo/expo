@@ -16,8 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class UIApplication;
-@protocol UIApplicationDelegate;
+#import <GoogleUtilities/GULApplication.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,13 +28,13 @@ typedef NSString *const GULAppDelegateInterceptorID;
 /** Registers an app delegate interceptor whose methods will be invoked as they're invoked on the
  *  original app delegate.
  *
- *  @param interceptor An instance of a class that conforms to the UIApplicationDelegate protocol.
+ *  @param interceptor An instance of a class that conforms to the application delegate protocol.
  *      The interceptor is NOT retained.
  *  @return A unique GULAppDelegateInterceptorID if interceptor was successfully registered; nil
  *      if it fails.
  */
 + (nullable GULAppDelegateInterceptorID)registerAppDelegateInterceptor:
-    (id<UIApplicationDelegate>)interceptor;
+    (id<GULApplicationDelegate>)interceptor;
 
 /** Unregisters an interceptor with the given ID if it exists.
  *
@@ -95,9 +94,10 @@ typedef NSString *const GULAppDelegateInterceptorID;
 
 /** Returns the current sharedApplication.
  *
- *  @return the current UIApplication if in an app, or nil if in extension or if it doesn't exist.
+ *  @return the current application instance if in an app, or nil if in extension or if it doesn't
+ * exist.
  */
-+ (nullable UIApplication *)sharedApplication;
++ (nullable GULApplication *)sharedApplication;
 
 /** Do not initialize this class. */
 - (instancetype)init NS_UNAVAILABLE;

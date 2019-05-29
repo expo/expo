@@ -24,6 +24,7 @@
 #import <GoogleUtilities/GULAppEnvironmentUtil.h>
 #import "FIRInstanceID+Private.h"
 #import "FIRInstanceIDAuthService.h"
+#import "FIRInstanceIDCheckinPreferences.h"
 #import "FIRInstanceIDCombinedHandler.h"
 #import "FIRInstanceIDConstants.h"
 #import "FIRInstanceIDDefines.h"
@@ -609,6 +610,26 @@ static FIRInstanceID *gInstanceID;
                                     }];
                               }];
   }];
+}
+
+#pragma mark - Checkin
+
+- (BOOL)tryToLoadValidCheckinInfo {
+  FIRInstanceIDCheckinPreferences *checkinPreferences =
+      [self.tokenManager.authService checkinPreferences];
+  return [checkinPreferences hasValidCheckinInfo];
+}
+
+- (NSString *)deviceAuthID {
+  return [self.tokenManager.authService checkinPreferences].deviceID;
+}
+
+- (NSString *)secretToken {
+  return [self.tokenManager.authService checkinPreferences].secretToken;
+}
+
+- (NSString *)versionInfo {
+  return [self.tokenManager.authService checkinPreferences].versionInfo;
 }
 
 #pragma mark - Config

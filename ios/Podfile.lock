@@ -228,11 +228,6 @@ PODS:
     - ABI33_0_0UMCore
     - FBSDKCoreKit
     - FBSDKLoginKit
-  - ABI33_0_0EXFaceDetector (5.0.0-rc.0):
-    - ABI33_0_0UMCore
-    - ABI33_0_0UMFaceDetectorInterface
-    - GoogleMobileVision/FaceDetector (~> 1.1.0)
-    - GoogleMobileVision/MVDataOutput (~> 1.1.0)
   - ABI33_0_0EXFileSystem (5.0.0-rc.0):
     - ABI33_0_0UMCore
     - ABI33_0_0UMFileSystemInterface
@@ -436,7 +431,7 @@ PODS:
   - EXImagePicker (5.0.0-rc.1):
     - UMCore
     - UMFileSystemInterface
-  - EXKeepAwake (5.0.0-rc.0):
+  - EXKeepAwake (5.0.0-rc.1):
     - UMCore
   - EXLinearGradient (5.0.0-rc.0):
     - UMCore
@@ -499,30 +494,30 @@ PODS:
     - Bolts (~> 1.9)
   - FBSDKLoginKit (4.40.0):
     - FBSDKCoreKit
-  - Firebase/Core (6.0.0):
+  - Firebase/Core (6.1.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 6.0.0)
-  - Firebase/CoreOnly (6.0.0):
-    - FirebaseCore (= 6.0.0)
-  - Firebase/MLVision (6.0.0):
+    - FirebaseAnalytics (= 6.0.1)
+  - Firebase/CoreOnly (6.1.0):
+    - FirebaseCore (= 6.0.1)
+  - Firebase/MLVision (6.1.0):
     - Firebase/CoreOnly
     - FirebaseMLVision (~> 0.16.0)
-  - Firebase/MLVisionFaceModel (6.0.0):
+  - Firebase/MLVisionFaceModel (6.1.0):
     - Firebase/CoreOnly
     - FirebaseMLVisionFaceModel (~> 0.16.0)
-  - FirebaseAnalytics (6.0.0):
+  - FirebaseAnalytics (6.0.1):
     - FirebaseCore (~> 6.0)
-    - FirebaseInstanceID (~> 4.0)
-    - GoogleAppMeasurement (= 6.0.0)
+    - FirebaseInstanceID (~> 4.1)
+    - GoogleAppMeasurement (= 6.0.1)
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (~> 0.3)
-  - FirebaseCore (6.0.0):
+  - FirebaseCore (6.0.1):
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/Logger (~> 6.0)
-  - FirebaseInstanceID (4.0.0):
+  - FirebaseInstanceID (4.1.0):
     - FirebaseCore (~> 6.0)
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/UserDefaults (~> 6.0)
@@ -561,12 +556,12 @@ PODS:
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
   - Google-Mobile-Ads-SDK (7.22.0)
-  - GoogleAPIClientForREST/Core (1.3.8):
+  - GoogleAPIClientForREST/Core (1.3.9):
     - GTMSessionFetcher (>= 1.1.7)
-  - GoogleAPIClientForREST/Vision (1.3.8):
+  - GoogleAPIClientForREST/Vision (1.3.9):
     - GoogleAPIClientForREST/Core
     - GTMSessionFetcher (>= 1.1.7)
-  - GoogleAppMeasurement (6.0.0):
+  - GoogleAppMeasurement (6.0.1):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
@@ -600,31 +595,37 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.2.0)
     - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.0)"
   - "GoogleToolboxForMac/NSString+URLArguments (2.2.0)"
-  - GoogleUtilities/AppDelegateSwizzler (6.0.0):
+  - GoogleUtilities/AppDelegateSwizzler (6.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (6.0.0)
-  - GoogleUtilities/Logger (6.0.0):
+  - GoogleUtilities/Environment (6.1.0)
+  - GoogleUtilities/Logger (6.1.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (6.0.0):
+  - GoogleUtilities/MethodSwizzler (6.1.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (6.0.0):
+  - GoogleUtilities/Network (6.1.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (6.0.0)"
-  - GoogleUtilities/Reachability (6.0.0):
+  - "GoogleUtilities/NSData+zlib (6.1.0)"
+  - GoogleUtilities/Reachability (6.1.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (6.0.0):
+  - GoogleUtilities/UserDefaults (6.1.0):
     - GoogleUtilities/Logger
-  - GTMSessionFetcher (1.2.1):
-    - GTMSessionFetcher/Full (= 1.2.1)
-  - GTMSessionFetcher/Core (1.2.1)
-  - GTMSessionFetcher/Full (1.2.1):
-    - GTMSessionFetcher/Core (= 1.2.1)
+  - GTMSessionFetcher (1.2.2):
+    - GTMSessionFetcher/Full (= 1.2.2)
+  - GTMSessionFetcher/Core (1.2.2)
+  - GTMSessionFetcher/Full (1.2.2):
+    - GTMSessionFetcher/Core (= 1.2.2)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.3)
+  - nanopb (0.3.901):
+    - nanopb/decode (= 0.3.901)
+    - nanopb/encode (= 0.3.901)
+  - nanopb/decode (0.3.901)
+  - nanopb/encode (0.3.901)
+  - Protobuf (3.7.0)
   - React (0.59.8):
     - React/Core (= 0.59.8)
   - React/ART (0.59.8):
@@ -925,7 +926,6 @@ PODS:
     - ABI33_0_0EXCrypto
     - ABI33_0_0EXDocumentPicker
     - ABI33_0_0EXFacebook
-    - ABI33_0_0EXFaceDetector
     - ABI33_0_0EXFileSystem
     - ABI33_0_0EXFont
     - ABI33_0_0EXGL
@@ -1108,7 +1108,6 @@ DEPENDENCIES:
   - ABI33_0_0EXCrypto (from `./versioned-react-native/ABI33_0_0/EXCrypto`)
   - ABI33_0_0EXDocumentPicker (from `./versioned-react-native/ABI33_0_0/EXDocumentPicker`)
   - ABI33_0_0EXFacebook (from `./versioned-react-native/ABI33_0_0/EXFacebook`)
-  - ABI33_0_0EXFaceDetector (from `./versioned-react-native/ABI33_0_0/EXFaceDetector`)
   - ABI33_0_0EXFileSystem (from `./versioned-react-native/ABI33_0_0/EXFileSystem`)
   - ABI33_0_0EXFont (from `./versioned-react-native/ABI33_0_0/EXFont`)
   - ABI33_0_0EXGL (from `./versioned-react-native/ABI33_0_0/EXGL`)
@@ -1485,8 +1484,6 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI33_0_0/EXDocumentPicker"
   ABI33_0_0EXFacebook:
     :path: "./versioned-react-native/ABI33_0_0/EXFacebook"
-  ABI33_0_0EXFaceDetector:
-    :path: "./versioned-react-native/ABI33_0_0/EXFaceDetector"
   ABI33_0_0EXFileSystem:
     :path: "./versioned-react-native/ABI33_0_0/EXFileSystem"
   ABI33_0_0EXFont:
@@ -1772,7 +1769,6 @@ SPEC CHECKSUMS:
   ABI31_0_0EXConstantsInterface: babdffdfa63b056998f8cb7eda4a10b4e8b1c5a5
   ABI31_0_0EXContacts: c226de56b6240558bd46f17f653bb910d2416888
   ABI31_0_0EXCore: d6685085c3346c0dec5b0bdb6ac65e55a4f26cdb
-  ABI31_0_0EXFaceDetector: 5dd5c2f68859e7751f44807c7e6bd9c1d3e925df
   ABI31_0_0EXFaceDetectorInterface: 48df63e61f8ec50abac6733ef3e24904e88641e8
   ABI31_0_0EXFileSystem: d2c52470aff0a802f95e56b12fc7fd81a6a8a3a0
   ABI31_0_0EXFileSystemInterface: ee048380f979e6c37d4ddbf29a21caea476030b6
@@ -1805,7 +1801,6 @@ SPEC CHECKSUMS:
   ABI32_0_0EXContacts: aa3aea274773749c67777346e59c08bf0d028f11
   ABI32_0_0EXCore: 16714eea6089865d6cb727a3c42091fc08180a75
   ABI32_0_0EXErrors: 114b2ad0cce7ee3c9478d33700120b81138ef3ca
-  ABI32_0_0EXFaceDetector: 047fe5bf19afb42d828bf9e47ece5c3348817443
   ABI32_0_0EXFaceDetectorInterface: 8ac9d29f978a10da31cc29c3734c23a6b6456ce4
   ABI32_0_0EXFileSystem: 2950774f227e702a0414245de062ddbd226c9db4
   ABI32_0_0EXFileSystemInterface: b316089856abe9fba4e2686a0509309dc6f1caa5
@@ -1845,7 +1840,6 @@ SPEC CHECKSUMS:
   ABI33_0_0EXCrypto: 46fb5b770688d245122da1d8b27cf1ae44562680
   ABI33_0_0EXDocumentPicker: 8b30881a46271ad2a3b85b7aae6a67e65b2ee035
   ABI33_0_0EXFacebook: f369211a9d5dbdc0aec650eb1fdf4efe84752a06
-  ABI33_0_0EXFaceDetector: 4e64cb39b7a7f821263828cc7bfff4f9911c79c2
   ABI33_0_0EXFileSystem: 6f8e931d4d281fac1fb04897552ebb4361147536
   ABI33_0_0EXFont: 853a0d33e3d3658e41eb704184302bf230f0ed18
   ABI33_0_0EXGL: 3011993b8fe7360f494a35a272059e31cff18692
@@ -1911,7 +1905,7 @@ SPEC CHECKSUMS:
   EXCrypto: c94315abf3e2d5869fb8d1818aeffde5941e1e07
   EXDocumentPicker: a829fb7bbbce9c7f38e3a7cfe0cf270b0ed58ae8
   EXFacebook: 0fa051f027746b347396d11a4217fee0b4f740cd
-  EXFaceDetector: bf46521cec9a4ff2fc7b3e6be4d846007de83a2d
+  EXFaceDetector: a4b43401aa93344d70338299b3b8d5427ae1d57b
   EXFileSystem: 798c9935cd36836aad6cb658cfcfe081c04177bd
   EXFont: 1bb6916864ffbba224edb4ee5c8d3d23255ebd04
   EXGL: 68dae945a893552aa514da3247a9ccc4f9ff7398
@@ -1920,7 +1914,7 @@ SPEC CHECKSUMS:
   EXHaptics: e2111193dd4365199f452c1647083f05c558b6b2
   EXImageManipulator: e9fa08765ed4bd28ebcb5583d485fbd21dfb58b7
   EXImagePicker: 5d630b700ee1621ef9cb3627cfa82bd232f8456b
-  EXKeepAwake: a8ff927e2336a015f38e50bd0e5cc080b27630dd
+  EXKeepAwake: 760f66cc13a065ae5420337e776320b6926aa185
   EXLinearGradient: 04e9ad673ed22da36b525288e35dd8abdc80be67
   EXLocalAuthentication: 7297dd3ab7863006244b224257d2c80f4fdfe0df
   EXLocalization: d32ed8407f260f49e65bbdbdcbc86d2770fb3e5b
@@ -1944,10 +1938,10 @@ SPEC CHECKSUMS:
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
   FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
-  Firebase: fa80b9d987ca014a1ba9357496ef2a0178b28b12
-  FirebaseAnalytics: 1743c5f4de3687d0745709dfdc4b1dea1484f44c
-  FirebaseCore: e38f025287b413255a53acc1945d048a112047f7
-  FirebaseInstanceID: 0e0348a3c00a734fa376a070f5ad4533ad975cb5
+  Firebase: 8d77bb33624ae9b62d745d82ec023de5f70f7e4f
+  FirebaseAnalytics: 629301c2b9925f3537d4093a17a72751ae5b7084
+  FirebaseCore: 66bdef3b310a026880e2a5bc8aa586ab62ce4543
+  FirebaseInstanceID: 27bed93a59b6685f5c3e0c028a878a764fd75c33
   FirebaseMLCommon: d430756ba2a16bac8fefc81ea416e7f822f052fd
   FirebaseMLVision: 35d0a720334b141d70a55e7e817c1cac23f32285
   FirebaseMLVisionFaceModel: 897589c0a1d967739cdbb495cf4ca296f8750f75
@@ -1955,20 +1949,22 @@ SPEC CHECKSUMS:
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
-  GoogleAPIClientForREST: 5447a194eae517986cafe6421a5330b80b820591
-  GoogleAppMeasurement: 7f028ea162b72c8f326daec74afc95d94f7a47d6
+  GoogleAPIClientForREST: 44c7b678cbab11d26a47eab7309d6179b1a61f0c
+  GoogleAppMeasurement: 51d8d9ea48f0ca44484d29cfbdef976fbd4fc336
   GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
   GoogleMobileVision: 31cfb4319fd0c03d80105680abd9eae9da5e3b47
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
-  GoogleUtilities: f1faafc033ea203adf1783ce00af455bb99d0e5b
-  GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
+  GoogleUtilities: 84df567c76ca84f67b7bb40e769fdd4acc746a10
+  GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  Protobuf: 7a877b7f3e5964e3fce995e2eb323dbc6831bb5a
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
-  ReactABI31_0_0: 652618b7156380a24dcd1383aed1155dd4fdd5c4
-  ReactABI32_0_0: 82c6098bf1e2733b64b7145abff6a61d72b9af96
-  ReactABI33_0_0: 9372fb26376d854c380a885b84227d39a167e56c
+  ReactABI31_0_0: 762390cfcc0328c935446e6df87eeaab618fd511
+  ReactABI32_0_0: 75b3eb018616fd283bd5694756690d55385158ae
+  ReactABI33_0_0: 7d8a8186d588a7c43e7ec78da70918607ec3452a
   UMBarCodeScannerInterface: d9a24ff5756675bc975fac082937ea80de51201e
   UMCameraInterface: 61ac4f95595f8dc334d9a844aaa155400eab3106
   UMConstantsInterface: 0427b454145b0c97b02616d4f9be3a498d7686b6
@@ -1986,6 +1982,6 @@ SPEC CHECKSUMS:
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: 001d3b496dd75743cc674a72b3a379a7be5270ca
+PODFILE CHECKSUM: dd106bfa835efbc6388b3d0b07257484e3c92ff8
 
 COCOAPODS: 1.6.2

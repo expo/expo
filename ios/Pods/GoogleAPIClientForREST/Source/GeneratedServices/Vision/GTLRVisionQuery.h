@@ -22,6 +22,8 @@
 
 @class GTLRVision_AddProductToProductSetRequest;
 @class GTLRVision_AsyncBatchAnnotateFilesRequest;
+@class GTLRVision_AsyncBatchAnnotateImagesRequest;
+@class GTLRVision_BatchAnnotateFilesRequest;
 @class GTLRVision_BatchAnnotateImagesRequest;
 @class GTLRVision_CancelOperationRequest;
 @class GTLRVision_ImportProductSetsRequest;
@@ -44,6 +46,43 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** Selector specifying which fields to include in a partial response. */
 @property(nonatomic, copy, nullable) NSString *fields;
+
+@end
+
+/**
+ *  Service that performs image detection and annotation for a batch of files.
+ *  Now only "application/pdf", "image/tiff" and "image/gif" are supported.
+ *  This service will extract at most 5 (customers can specify which 5 in
+ *  AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
+ *  file provided and perform detection and annotation for each image
+ *  extracted.
+ *
+ *  Method: vision.files.annotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_FilesAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForFilesAnnotateWithObject:]
+
+/**
+ *  Fetches a @c GTLRVision_BatchAnnotateFilesResponse.
+ *
+ *  Service that performs image detection and annotation for a batch of files.
+ *  Now only "application/pdf", "image/tiff" and "image/gif" are supported.
+ *  This service will extract at most 5 (customers can specify which 5 in
+ *  AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
+ *  file provided and perform detection and annotation for each image
+ *  extracted.
+ *
+ *  @param object The @c GTLRVision_BatchAnnotateFilesRequest to include in the
+ *    query.
+ *
+ *  @return GTLRVisionQuery_FilesAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateFilesRequest *)object;
 
 @end
 
@@ -108,6 +147,45 @@ NS_ASSUME_NONNULL_BEGIN
  *  @return GTLRVisionQuery_ImagesAnnotate
  */
 + (instancetype)queryWithObject:(GTLRVision_BatchAnnotateImagesRequest *)object;
+
+@end
+
+/**
+ *  Run asynchronous image detection and annotation for a list of images.
+ *  Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).
+ *  This service will write image annotation outputs to json files in customer
+ *  GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
+ *
+ *  Method: vision.images.asyncBatchAnnotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ImagesAsyncBatchAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForImagesAsyncBatchAnnotateWithObject:]
+
+/**
+ *  Fetches a @c GTLRVision_Operation.
+ *
+ *  Run asynchronous image detection and annotation for a list of images.
+ *  Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).
+ *  This service will write image annotation outputs to json files in customer
+ *  GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
+ *
+ *  @param object The @c GTLRVision_AsyncBatchAnnotateImagesRequest to include
+ *    in the query.
+ *
+ *  @return GTLRVisionQuery_ImagesAsyncBatchAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateImagesRequest *)object;
 
 @end
 
@@ -321,6 +399,39 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
+ *  Gets the latest state of a long-running operation. Clients can use this
+ *  method to poll the operation result at intervals as recommended by the API
+ *  service.
+ *
+ *  Method: vision.projects.locations.operations.get
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsLocationsOperationsGet : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsLocationsOperationsGetWithname:]
+
+/** The name of the operation resource. */
+@property(nonatomic, copy, nullable) NSString *name;
+
+/**
+ *  Fetches a @c GTLRVision_Operation.
+ *
+ *  Gets the latest state of a long-running operation. Clients can use this
+ *  method to poll the operation result at intervals as recommended by the API
+ *  service.
+ *
+ *  @param name The name of the operation resource.
+ *
+ *  @return GTLRVisionQuery_ProjectsLocationsOperationsGet
+ */
++ (instancetype)queryWithName:(NSString *)name;
+
+@end
+
+/**
  *  Creates and returns a new product resource.
  *  Possible errors:
  *  * Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
@@ -380,8 +491,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  Metadata of the product and all its images will be deleted right away, but
  *  search queries against ProductSets containing the product may still work
  *  until all related caches are refreshed.
- *  Possible errors:
- *  * Returns NOT_FOUND if the product does not exist.
  *
  *  Method: vision.projects.locations.products.delete
  *
@@ -407,8 +516,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  Metadata of the product and all its images will be deleted right away, but
  *  search queries against ProductSets containing the product may still work
  *  until all related caches are refreshed.
- *  Possible errors:
- *  * Returns NOT_FOUND if the product does not exist.
  *
  *  @param name Resource name of product to delete.
  *    Format is:
@@ -519,8 +626,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  Permanently deletes a ProductSet. Products and ReferenceImages in the
  *  ProductSet are not deleted.
  *  The actual image files are not deleted from Google Cloud Storage.
- *  Possible errors:
- *  * Returns NOT_FOUND if the ProductSet does not exist.
  *
  *  Method: vision.projects.locations.productSets.delete
  *
@@ -545,8 +650,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  Permanently deletes a ProductSet. Products and ReferenceImages in the
  *  ProductSet are not deleted.
  *  The actual image files are not deleted from Google Cloud Storage.
- *  Possible errors:
- *  * Returns NOT_FOUND if the ProductSet does not exist.
  *
  *  @param name Resource name of the ProductSet to delete.
  *    Format is:
@@ -812,8 +915,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  *  Removes a Product from the specified ProductSet.
- *  Possible errors:
- *  * Returns NOT_FOUND If the Product is not found under the ProductSet.
  *
  *  Method: vision.projects.locations.productSets.removeProduct
  *
@@ -836,8 +937,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  Fetches a @c GTLRVision_Empty.
  *
  *  Removes a Product from the specified ProductSet.
- *  Possible errors:
- *  * Returns NOT_FOUND If the Product is not found under the ProductSet.
  *
  *  @param object The @c GTLRVision_RemoveProductFromProductSetRequest to
  *    include in the query.
@@ -1093,8 +1192,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  against ProductSets containing the image may still work until all related
  *  caches are refreshed.
  *  The actual image files are not deleted from Google Cloud Storage.
- *  Possible errors:
- *  * Returns NOT_FOUND if the reference image does not exist.
  *
  *  Method: vision.projects.locations.products.referenceImages.delete
  *
@@ -1121,8 +1218,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  against ProductSets containing the image may still work until all related
  *  caches are refreshed.
  *  The actual image files are not deleted from Google Cloud Storage.
- *  Possible errors:
- *  * Returns NOT_FOUND if the reference image does not exist.
  *
  *  @param name The resource name of the reference image to delete.
  *    Format is:
@@ -1227,6 +1322,39 @@ NS_ASSUME_NONNULL_BEGIN
  *        information.
  */
 + (instancetype)queryWithParent:(NSString *)parent;
+
+@end
+
+/**
+ *  Gets the latest state of a long-running operation. Clients can use this
+ *  method to poll the operation result at intervals as recommended by the API
+ *  service.
+ *
+ *  Method: vision.projects.operations.get
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsOperationsGet : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsOperationsGetWithname:]
+
+/** The name of the operation resource. */
+@property(nonatomic, copy, nullable) NSString *name;
+
+/**
+ *  Fetches a @c GTLRVision_Operation.
+ *
+ *  Gets the latest state of a long-running operation. Clients can use this
+ *  method to poll the operation result at intervals as recommended by the API
+ *  service.
+ *
+ *  @param name The name of the operation resource.
+ *
+ *  @return GTLRVisionQuery_ProjectsOperationsGet
+ */
++ (instancetype)queryWithName:(NSString *)name;
 
 @end
 

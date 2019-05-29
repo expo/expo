@@ -806,10 +806,9 @@ static NSDictionary *MergeDictionaries(NSDictionary *recessiveDict, NSDictionary
                 [NSJSONSerialization JSONObjectWithData:(NSData * _Nonnull)data
                                                 options:NSJSONReadingMutableContainers
                                                   error:&parseError];
-            if (parseError) {
-              // We could not parse the JSON payload
-              error = parseError;
-            } else {
+            // If the json parse worked, then extract potentially better
+            // information.
+            if (!parseError) {
               // HTTP Streaming defined by Google services is is an array
               // of requests and replies. This code never makes one of
               // these requests; but, some GET apis can actually be to

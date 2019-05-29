@@ -139,6 +139,17 @@ static NSMutableDictionary *sLibraryVersions;
   [FIRApp configureWithName:kFIRDefaultAppName options:options];
 }
 
++ (NSCharacterSet *)applicationNameAllowedCharacters {
+  static NSCharacterSet *applicationNameAllowedCharacters;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSMutableCharacterSet *allowedNameCharacters = [NSMutableCharacterSet alphanumericCharacterSet];
+    [allowedNameCharacters addCharactersInString:@"-_"];
+    applicationNameAllowedCharacters = [allowedNameCharacters copy];
+  });
+  return applicationNameAllowedCharacters;
+}
+
 + (void)configureWithName:(NSString *)name options:(FIROptions *)options {
   if (!name || !options) {
     [NSException raise:kFirebaseCoreErrorDomain format:@"Neither name nor options can be nil."];
@@ -156,14 +167,12 @@ static NSMutableDictionary *sLibraryVersions;
     FIRLogDebug(kFIRLoggerCore, @"I-COR000001", @"Configuring the default app.");
   } else {
     // Validate the app name and ensure it hasn't been configured already.
-    for (NSUInteger charIndex = 0; charIndex < name.length; charIndex++) {
-      char character = [name characterAtIndex:charIndex];
-      if (!((character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') ||
-            (character >= '0' && character <= '9') || character == '_' || character == '-')) {
-        [NSException raise:kFirebaseCoreErrorDomain
-                    format:@"App name can only contain alphanumeric (A-Z,a-z,0-9), "
-                           @"hyphen (-), and underscore (_) characters"];
-      }
+    NSCharacterSet *nameCharacters = [NSCharacterSet characterSetWithCharactersInString:name];
+
+    if (![[self applicationNameAllowedCharacters] isSupersetOfSet:nameCharacters]) {
+      [NSException raise:kFirebaseCoreErrorDomain
+                  format:@"App name can only contain alphanumeric, "
+                         @"hyphen (-), and underscore (_) characters"];
     }
 
     @synchronized(self) {

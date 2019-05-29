@@ -1,1 +1,0 @@
-../../../../FirebaseMLCommon/Frameworks/FirebaseMLCommon.framework/Headers/FIRRemoteModel.h

@@ -16,15 +16,22 @@
 
 #import <FirebaseInstanceID/FIRInstanceID.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
+@class FIRInstanceIDCheckinPreferences;
 /**
  * Private API used by other Firebase SDKs.
  */
 @interface FIRInstanceID ()
 
+@property(nonatomic, readonly, strong) NSString *deviceAuthID;
+@property(nonatomic, readonly, strong) NSString *secretToken;
+@property(nonatomic, readonly, strong) NSString *versionInfo;
+
 /**
  *  Private initializer.
  */
-- (nonnull instancetype)initPrivately;
+- (instancetype)initPrivately;
 
 /**
  *  Returns a Firebase Messaging scoped token for the firebase app.
@@ -34,4 +41,27 @@
  */
 - (nullable NSString *)token;
 
+/**
+ *  Verify if valid checkin preferences have been loaded in memory.
+ *
+ *  @return YES if valid checkin preferences exist in memory else NO.
+ */
+- (BOOL)hasValidCheckinInfo;
+
+/**
+ *  Try to load prefetched checkin preferences from the cache. This supports the use case where
+ *  InstanceID library has already obtained a valid checkin and we should be using that.
+ *
+ *  This should be used as a last gasp effort to retreive any cached checkin preferences before
+ *  hitting the FIRMessaging backend to retrieve new preferences.
+ *
+ *  Note this is only required because InstanceID and FIRMessaging both require checkin preferences
+ * which need to be synced with each other.
+ *
+ *  @return YES if successfully loaded cached checkin preferences into memory else NO.
+ */
+- (BOOL)tryToLoadValidCheckinInfo;
+
 @end
+
+NS_ASSUME_NONNULL_END
