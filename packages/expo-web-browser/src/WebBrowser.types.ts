@@ -2,7 +2,7 @@ export type RedirectEvent = {
   url: string;
 };
 
-export type OpenBrowserParams = {
+export type OpenBrowserOptions = {
   toolbarColor?: string;
   browserPackage?: string;
   enableBarCollapsing?: boolean;
