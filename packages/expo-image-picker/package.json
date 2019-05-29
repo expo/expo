@@ -1,6 +1,6 @@
 {
   "name": "expo-image-picker",
-  "version": "5.0.0-rc.1",
+  "version": "5.0.0",
   "description": "Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.",
   "main": "build/ImagePicker.js",
   "types": "build/ImagePicker.d.ts",
@@ -39,5 +39,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "4b2c983d14b728f59f8f3f3f898f9c9780b2d55c"
+  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
 }
