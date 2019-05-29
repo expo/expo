@@ -73,9 +73,7 @@ function _getAssetForSource(source) {
         return source;
     }
     if (!isWeb && typeof source === 'string') {
-        // TODO(nikki): need to implement Asset.fromUri(...)
-        // asset = Asset.fromUri(uriOrModuleOrAsset);
-        throw new Error('Loading fonts from remote URIs is temporarily not supported. Please download the font file and load it using require. See: https://docs.expo.io/versions/latest/guides/using-custom-fonts.html#downloading-the-font');
+        return Asset.fromURI(source);
     }
     if (isWeb || typeof source === 'number') {
         return Asset.fromModule(source);
