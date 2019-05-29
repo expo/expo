@@ -137,7 +137,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
     if (faceDetection && faceDetection.error) {
       return (
         <View style={styles.infoContainer}>
-          <MonoText>Somerthing went wrong: {JSON.stringify(faceDetection.error)}</MonoText>
+          <MonoText>Something went wrong: {JSON.stringify(faceDetection.error)}</MonoText>
         </View>
       );
     }
