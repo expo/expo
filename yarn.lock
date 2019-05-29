@@ -2231,10 +2231,10 @@ expo-web-browser@^5.0.0-rc.0:
   resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-5.0.0-rc.0.tgz#a0af3591da8accb3086daee7b4998b86a902b2f5"
   integrity sha512-g6NX5hphElpulLMqsVgD6b4kEO2xiE5LiJfzz9QbWAerASPMeCjrxnbTaPwhdbQ94Xyz2FNII7f+VbCnYRnoeg==
 
-expo@^33.0.0-rc.4:
-  version "33.0.0-rc.4"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-33.0.0-rc.4.tgz#190ea2a2060b6f0deceb7b2949e351a5d92777fc"
-  integrity sha512-+AujI1yO2fQJ28c87FCuDOpyDZiDvsN1OpPZVA5BqAdLfPlOk0lHC2wN4i1A3fvziM+ok7WbdCEqztqRHwHMqA==
+expo@^33.0.0-rc.5:
+  version "33.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-33.0.0-rc.5.tgz#04b74d9f75c94ab13461fdc95549d96436b12d99"
+  integrity sha512-mqT+hh6OO/EdHibXBoPA11WS26FRSl+PywV0KyMEgJV/batzQZ6b4FiWHYf6HX1IC1YShnJiW1w0I/AZWSpr8g==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@expo/vector-icons" "^9.0.0"
@@ -4607,15 +4607,15 @@ react-transform-hmr@^1.0.4:
     global "^4.3.0"
     react-proxy "^1.1.7"
 
-react@16.8.6:
-  version "16.8.6"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.8.6.tgz#ad6c3a9614fd3a4e9ef51117f54d888da01f2bbe"
-  integrity sha512-pC0uMkhLaHm11ZSJULfOBqV4tIZkx87ZLvbbQYunNixAAvjnC+snJCg0XQXn9VIsttVsbZP/H/ewzgsd5fxKXw==
+react@16.8.3:
+  version "16.8.3"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.8.3.tgz#c6f988a2ce895375de216edcfaedd6b9a76451d9"
+  integrity sha512-3UoSIsEq8yTJuSu0luO1QQWYbgGEILm+eJl2QN/VLDi7hL+EN18M3q3oVZwmVzzBJ3DkM7RMdRwBmZZ+b4IzSA==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
-    scheduler "^0.13.6"
+    scheduler "^0.13.3"
 
 read-pkg-up@^2.0.0:
   version "2.0.0"
@@ -4880,7 +4880,7 @@ sax@~1.1.1:
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.1.6.tgz#5d616be8a5e607d54e114afae55b7eaf2fcc3240"
   integrity sha1-XWFr6KXmB9VOEUr65Vt+ry/MMkA=
 
-scheduler@^0.13.6:
+scheduler@^0.13.3, scheduler@^0.13.6:
   version "0.13.6"
   resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.13.6.tgz#466a4ec332467b31a91b9bf74e5347072e4cd889"
   integrity sha512-IWnObHt413ucAYKsD9J1QShUKkbKLQQHdxRyw73sw4FN26iWr3DY/H34xGPe4nmL1DwXyWmSWmMrA9TfQbE/XQ==
