@@ -4,7 +4,9 @@ title: Installing a Custom iOS Expo client
 
 > **WARNING:** This feature is in alpha release and is not released to production yet.
 
-Build and install a custom version of the [Expo client](https://docs.expo.io/versions/latest/introduction/installation/#mobile-client-expo-for-ios-and-android) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website (see a [gif of what this looks like](/static/images/adhoc-builds-overview.gif)).
+Build and install a custom version of the [Expo client](https://docs.expo.io/versions/latest/introduction/installation/#mobile-client-expo-for-ios-and-android) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website.
+
+![Adhoc Builds Overview](/static/images/adhoc-builds-overview.jpg)
 
 ## 0. Prerequisites
 
