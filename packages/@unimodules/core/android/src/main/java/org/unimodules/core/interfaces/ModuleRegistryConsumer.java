@@ -4,4 +4,7 @@ import org.unimodules.core.ModuleRegistry;
 
 public interface ModuleRegistryConsumer {
   void setModuleRegistry(ModuleRegistry moduleRegistry);
+  default void onDestroy() {
+    // do nothing
+  }
 }

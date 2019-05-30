@@ -157,4 +157,13 @@ public class ModuleRegistry {
     }
     mRegistryConsumers.removeAll(emptyReferences);
   }
+
+  public void onDestroy() {
+    for (WeakReference<ModuleRegistryConsumer> consumerWeakReference : mRegistryConsumers) {
+      ModuleRegistryConsumer consumer = consumerWeakReference.get();
+      if (consumer != null) {
+        consumer.onDestroy();
+      }
+    }
+  }
 }
