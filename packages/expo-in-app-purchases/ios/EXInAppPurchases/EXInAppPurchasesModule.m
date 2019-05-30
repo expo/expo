@@ -2,6 +2,8 @@
 
 #import <EXInAppPurchases/EXInAppPurchasesModule.h>
 
+#define QUERY_KEY @"queryPurchasableItems"
+
 @implementation EXInAppPurchasesModule
 
 UM_EXPORT_MODULE(ExpoInAppPurchases);
@@ -25,6 +27,7 @@ UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
 {
   NSLog(@"Connecting to iOS app store!");
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+  promises = [NSMutableDictionary dictionary];
   //[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 
   NSMutableArray *results = [[NSMutableArray alloc] initWithObjects:@"{}", nil];
@@ -39,8 +42,8 @@ UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Calling queryPurchasableItemsAsync!");
-  self->resolve = resolve;
-  self->reject = reject;
+
+  [self setPromise:QUERY_KEY resolve:resolve reject:reject];
 
   [self requestProducts:productIDs];
 }
@@ -56,8 +59,8 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
 
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:productIdentifier]];
     productsRequest.delegate = self;
-    self->resolve = resolve;
-    self->reject = reject;
+
+    [self setPromise:productIdentifier resolve:resolve reject:reject];
     [productsRequest start];
   }
   else{
@@ -65,10 +68,20 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
   }
 }
 
+UM_EXPORT_METHOD_AS(disconnectAsync,
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject) {
+  NSLog(@"Calling disconnectAsync!");
+  [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+  resolve(nil);
+}
+
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
 
   for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
     NSLog(@"Invalid identifier: %@", invalidIdentifier);
+    // TODO: Reject promise?
+    [self resolvePromise: invalidIdentifier value:nil];
   }
   NSInteger count = [response.products count];
   if(count == 0){
@@ -78,9 +91,45 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
   for (SKProduct *validProduct in response.products) {
     NSLog(@"Purchasing %@", validProduct.productIdentifier);
     [self purchase:validProduct];
+    [self resolvePromise:validProduct.productIdentifier value: validProduct];
   }
 
-  self->resolve(response.products);
+  [self resolvePromise:QUERY_KEY value:response.products];
+}
+
+-(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject {
+  NSMutableArray* promise = [promises valueForKey:key];
+
+  if (promise == nil) {
+    promise = [NSMutableArray array];
+    [promises setValue:promise forKey:key];
+  }
+
+  [promise addObject:@[resolve, reject]];
+}
+
+-(void)resolvePromise:(NSString*)key value:(id)value {
+  NSMutableArray* currentPromise = [promises valueForKey:key];
+
+  if (currentPromise != nil) {
+    for (NSMutableArray *tuple in currentPromise) {
+      UMPromiseResolveBlock resolve = tuple[0];
+      resolve(value);
+    }
+    [promises removeObjectForKey:key];
+  }
+}
+
+-(void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error {
+  NSMutableArray* currentPromise = [promises valueForKey:key];
+
+  if (currentPromise != nil) {
+    for (NSMutableArray *tuple in currentPromise) {
+      UMPromiseRejectBlock reject = tuple[1];
+      reject(code, message, error);
+    }
+    [promises removeObjectForKey:key];
+  }
 }
 
 - (void)purchase:(SKProduct *)product{
@@ -118,7 +167,6 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
         NSLog(@"Made a purchase!");
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         NSLog(@"Transaction state -> Purchased");
-        //self->resolve(@0);
         break;
       case SKPaymentTransactionStateRestored:
         NSLog(@"Transaction state -> Restored");
@@ -131,7 +179,6 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
           NSLog(@"Transaction state -> Cancelled");
         }
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-        //self->resolve(@1);
         break;
     }
   }

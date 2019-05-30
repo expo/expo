@@ -5,10 +5,9 @@
 #import <StoreKit/StoreKit.h>
 
 @interface EXInAppPurchasesModule : UMExportedModule <UMModuleRegistryConsumer, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
-  UMPromiseResolveBlock resolve;
-  UMPromiseRejectBlock reject;
+  NSMutableDictionary *promises;
 }
-  @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+  @property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
   @property (strong, nonatomic) SKProductsRequest *request;
   @property (strong, nonatomic) NSArray<SKProduct*> *products;
 @end

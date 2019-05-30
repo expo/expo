@@ -46,11 +46,11 @@ export async function queryPurchasableItemsAsync(itemList: string[], itemType?: 
   if (!connected) {
     throw new ConnectionError('Must be connected to App Store');
   }
-
   if (Platform.OS === 'ios') {
-    const response = ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
+    const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
     return response;
   }
+
   const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
   return convertStringsToObjects(response);
 }
@@ -125,15 +125,21 @@ export async function disconnectAsync(): Promise<void> {
   }
   connected = false;
 
-  for(const key in events) {
-    console.log('Removing listeners for ' + events[key]);
-    eventEmitter.removeAllListeners(events[key]);
+  if(Platform.OS === 'android') {
+    for(const key in events) {
+      console.log('Removing listeners for ' + events[key]);
+      eventEmitter.removeAllListeners(events[key]);
+    }
   }
 
   return await ExpoInAppPurchases.disconnectAsync();
 }
 
 function convertStringsToObjects(response : any) {
+  if (Platform.OS !== 'android') {
+    return response;
+  }
+  // Android returns stringified JSON objects
   const { responseCode, results: jsonStrings } = response;
   const results = jsonStrings ? jsonStrings.map(string => JSON.parse(string)) : [];
   return { responseCode, results };
