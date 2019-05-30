@@ -6,6 +6,8 @@ title: Installing a Custom iOS Expo client
 
 Build and install a custom version of the [Expo client](https://docs.expo.io/versions/latest/introduction/installation/#mobile-client-expo-for-ios-and-android) with your own Apple Credentials using our build service. This custom version of the Expo client contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo client, and you can install it to your iOS device directly from our website.
 
+#### Installation overview
+
 ![Adhoc Builds Overview](/static/images/adhoc-builds-overview.jpg)
 
 ## 0. Prerequisites
@@ -99,6 +101,8 @@ You will need to open this QR code on the iOS device you wish to register. Read 
 On iOS versions earlier than 12.2, if you aren't taken to the `Installing Profile` page after pressing the `Register` button, try quitting your `Settings` app and try again.
 
 ![UDID Workflow](/static/images/adhoc-builds-udid.png)
+
+#### iOS 12.2+
 
 On iOS versions 12.2 or later, a window will popup saying `Profile Downloaded`. Close the popup, go to the `Settings` app and navigate to the `Profile Downloaded` option to download the device enrollment challenge.
 
