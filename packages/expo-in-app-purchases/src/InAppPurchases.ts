@@ -72,6 +72,9 @@ export async function purchaseItemAsync(itemId: string, oldItem?: string): Promi
   if (!connected) {
     throw new ConnectionError('Must be connected to App Store');
   }
+  if (Platform.OS === 'ios') {
+    return await ExpoInAppPurchases.purchaseItemAsync(itemId);
+  }
 
   return await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
 }

@@ -59,6 +59,9 @@ export async function purchaseItemAsync(itemId, oldItem) {
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
     }
+    if (Platform.OS === 'ios') {
+        return await ExpoInAppPurchases.purchaseItemAsync(itemId);
+    }
     return await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
 }
 export async function acknowledgePurchaseAsync(purchaseToken, consumeItem) {
