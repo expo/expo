@@ -5,7 +5,6 @@ package expo.modules.gl;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.view.View;
 
 import java.util.Map;
 
@@ -13,11 +12,10 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.camera.CameraViewInterface;
 
-public class GLObjectManagerModule extends ExportedModule implements ModuleRegistryConsumer {
+public class GLObjectManagerModule extends ExportedModule {
   private SparseArray<GLObject> mGLObjects = new SparseArray<>();
   private SparseArray<GLContext> mGLContextMap = new SparseArray<>();
 
@@ -33,7 +31,7 @@ public class GLObjectManagerModule extends ExportedModule implements ModuleRegis
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

@@ -12,7 +12,6 @@ import java.util.Map;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.constants.ConstantsInterface;
@@ -20,7 +19,7 @@ import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
-public class TaskManagerInternalModule implements InternalModule, ModuleRegistryConsumer, TaskManagerInterface, LifecycleEventListener {
+public class TaskManagerInternalModule implements InternalModule, TaskManagerInterface, LifecycleEventListener {
   private UIManager mUIManager;
   private EventEmitter mEventEmitter;
   private ConstantsInterface mConstants;
@@ -43,11 +42,7 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
   //region ModuleRegistryConsumer
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    if (mUIManager != null) {
-      mUIManager.unregisterLifecycleEventListener(this);
-    }
-
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mUIManager = moduleRegistry.getModule(UIManager.class);
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mConstants = moduleRegistry.getModule(ConstantsInterface.class);
@@ -56,9 +51,12 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
     // Register in TaskService.
     mTaskService.setTaskManager(this, getAppId(), getAppUrl());
 
-    if (mUIManager != null) {
-      mUIManager.registerLifecycleEventListener(this);
-    }
+    mUIManager.registerLifecycleEventListener(this);
+  }
+
+  @Override
+  public void onDestroy() {
+      mUIManager.unregisterLifecycleEventListener(this);
   }
 
   //endregion

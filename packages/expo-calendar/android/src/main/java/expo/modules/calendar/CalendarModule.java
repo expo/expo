@@ -20,7 +20,7 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.interfaces.permissions.Permissions;
 
 import java.text.ParseException;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-public class CalendarModule extends ExportedModule implements ModuleRegistryConsumer {
+public class CalendarModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String TAG = CalendarModule.class.getSimpleName();
 
   private Context mContext;
@@ -48,7 +48,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mPermissionsModule = moduleRegistry.getModule(Permissions.class);
   }
 
