@@ -1,5 +1,6 @@
 // Copyright © 2019-present 650 Industries. All rights reserved.
 
+#if __has_include(<EXAmplitude/EXAmplitude.h>)
 #import "EXScopedAmplitude.h"
 #import <Amplitude-iOS/Amplitude.h>
 
@@ -38,3 +39,4 @@
 }
 
 @end
+#endif
