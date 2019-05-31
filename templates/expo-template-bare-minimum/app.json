@@ -1,4 +1,7 @@
 {
   "name": "HelloWorld",
-  "displayName": "Hello App Display Name"
+  "displayName": "Hello App Display Name",
+  "expo": {
+    "sdkVersion": "33.0.0"
+  }
 }
