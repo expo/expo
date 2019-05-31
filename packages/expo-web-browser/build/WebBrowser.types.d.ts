@@ -8,7 +8,6 @@ export declare type OpenBrowserOptions = {
     showTitle?: boolean;
     windowName?: string;
     windowFeatures?: string;
-    replace?: boolean;
 };
 export declare type AuthSessionResult = RedirectResult | BrowserResult;
 export declare type CustomTabsBrowsersResults = {
