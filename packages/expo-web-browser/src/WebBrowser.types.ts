@@ -11,7 +11,6 @@ export type OpenBrowserOptions = {
   // Web
   windowName?: string;
   windowFeatures?: string;
-  replace?: boolean;
 };
 
 export type AuthSessionResult = RedirectResult | BrowserResult;
