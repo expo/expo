@@ -1,5 +1,6 @@
 // Copyright © 2019-present 650 Industries. All rights reserved.
 
+#if __has_include(<EXSecureStore/EXSecureStore.h>)
 #import "EXScopedSecureStore.h"
 
 @interface EXSecureStore (Protected)
@@ -33,3 +34,4 @@
 }
 
 @end
+#endif

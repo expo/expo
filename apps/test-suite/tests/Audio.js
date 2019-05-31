@@ -65,6 +65,7 @@ export function test(t) {
             shouldDuckAndroid: false,
             interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
             playThroughEarpieceAndroid: false,
+            staysActiveInBackground: false,
           };
           let error = null;
           try {

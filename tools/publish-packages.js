@@ -29,12 +29,7 @@ const ROOT_DIR = path.dirname(__dirname);
 const SED = os.platform() === 'linux' ? 'sed' : 'gsed';
 
 // configs for other packages that are not unimodules
-const otherPackages = [
-  {
-    libName: 'expo',
-    dir: `${ROOT_DIR}/packages/expo`,
-  },
-];
+const otherPackages = [{ libName: 'expo' }, { libName: 'jest-expo' }];
 
 // list of teams owning the packages - script will ensure all of these teams are owning published packages
 const TEAMS_WITH_RW_ACCESS = [
@@ -734,7 +729,7 @@ async function publishPackagesAsync() {
   const { exp: { sdkVersion } } = JSON.parse(await fs.readFile('../package.json'));
 
   const publishConfigs = new Map();
-  const modules = Modules.getPublishableModules(argv.abi || sdkVersion).map(module => {
+  const modules = Modules.getPublishableModules(argv.abi || sdkVersion).concat(...otherPackages).map(module => {
     const dir = `${ROOT_DIR}/packages/${module.libName}`;
     const unimoduleConfig = _requireUnimoduleConfig(dir);
 
@@ -744,9 +739,6 @@ async function publishPackagesAsync() {
       dir,
     };
   });
-
-  // add other packages that are not unimodules (e.g. expo)
-  modules.push(...otherPackages);
 
   modules.forEach(module => {
     publishConfigs.set(module.libName, module);

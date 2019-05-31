@@ -116,7 +116,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
           }}
         >
           {selection.type === 'video' ? (
-            <Video.VideoPlayback
+            <Video
               source={{ uri: selection.uri }}
               style={{ width: 300, height: 300 }}
               resizeMode="contain"

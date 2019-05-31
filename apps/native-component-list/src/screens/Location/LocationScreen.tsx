@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, ScrollView, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
@@ -13,7 +13,8 @@ type CleanedPosition = OmitNested<Position, 'coords', 'altitudeAccuracy'>;
 interface State {
   singleLocation?: CleanedPosition;
   singleHeading?: Location.HeadingData;
-  searching: boolean;
+  searchingLocation: boolean;
+  searchingHeading: boolean;
   watchLocation?: CleanedPosition;
   watchHeading?: Location.HeadingData;
   polyfill: boolean;
@@ -29,7 +30,8 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
   };
 
   readonly state: State = {
-    searching: false,
+    searchingLocation: false,
+    searchingHeading: false,
     polyfill: false,
     checkingProviderStatus: false,
   };
@@ -46,15 +48,15 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
   }
 
   _findSingleLocationWithPolyfill = () => {
-    this.setState({ searching: true });
+    this.setState({ searchingLocation: true });
     navigator.geolocation.getCurrentPosition(
       location => {
-        this.setState({ singleLocation: this._cleanPosition(location), searching: false });
+        this.setState({ singleLocation: this._cleanPosition(location), searchingLocation: false });
       },
       err => {
         // tslint:disable-next-line no-console
         console.log({ err });
-        this.setState({ searching: false });
+        this.setState({ searchingLocation: false });
       },
       { enableHighAccuracy: true }
     );
@@ -95,13 +97,13 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     }
 
     try {
-      this.setState({ searching: true });
+      this.setState({ searchingLocation: true });
       const result = await Location.getCurrentPositionAsync({
-        enableHighAccuracy: true,
+        accuracy: Location.Accuracy.High,
       });
-      this.setState({ singleLocation: result });
+      this.setState({ singleLocation: result, searchingLocation: false });
     } finally {
-      this.setState({ searching: false });
+      this.setState({ searchingLocation: false });
     }
   }
 
@@ -113,7 +115,7 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
 
     const subscription = await Location.watchPositionAsync(
       {
-        enableHighAccuracy: true,
+        accuracy: Location.Accuracy.High,
         timeInterval: 1000,
         distanceInterval: 1,
       },
@@ -138,8 +140,13 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
       return;
     }
 
-    const heading = await Location.getHeadingAsync();
-    this.setState({ singleHeading: heading });
+    try {
+      this.setState({ searchingHeading: true });
+      const heading = await Location.getHeadingAsync();
+      this.setState({ singleHeading: heading, searchingHeading: false });
+    } finally {
+      this.setState({ searchingHeading: false });
+    }
   }
 
   _startWatchingHeading = async () => {
@@ -205,36 +212,36 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
   }
 
   renderSingleLocation = () => {
-    if (this.state.searching) {
+    if (this.state.searchingLocation) {
       return (
-        <View style={{ padding: 10 }}>
+        <View style={styles.activityIndicatorWrapper}>
           <ActivityIndicator />
-        </View>
-      );
-    }
-
-    if (this.state.singleLocation) {
-      return (
-        <View style={{ padding: 10 }}>
-          <Text>
-            {this.state.polyfill
-              ? 'navigator.geolocation.getCurrentPosition'
-              : 'Location.getCurrentPositionAsync'}
-            :
-          </Text>
-          <Text>Latitude: {this.state.singleLocation.coords.latitude}</Text>
-          <Text>Longitude: {this.state.singleLocation.coords.longitude}</Text>
+          <Text>Searching for location...</Text>
         </View>
       );
     }
 
     return (
-      <ListButton
-        onPress={
-          this.state.polyfill ? this._findSingleLocationWithPolyfill : this._findSingleLocation
-        }
-        title="Find my location once"
-      />
+      <View>
+        {this.state.singleLocation && (
+          <View style={{ padding: 10 }}>
+            <Text>
+              {this.state.polyfill
+                ? 'navigator.geolocation.getCurrentPosition'
+                : 'Location.getCurrentPositionAsync'}
+              :
+            </Text>
+            <Text>Latitude: {this.state.singleLocation.coords.latitude}</Text>
+            <Text>Longitude: {this.state.singleLocation.coords.longitude}</Text>
+          </View>
+        )}
+        <ListButton
+          onPress={
+            this.state.polyfill ? this._findSingleLocationWithPolyfill : this._findSingleLocation
+          }
+          title="Find my location once"
+        />
+      </View>
     );
   }
 
@@ -313,19 +320,27 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
   }
 
   renderSingleCompass = () => {
-    if (this.state.singleHeading) {
+    if (this.state.searchingHeading) {
       return (
-        <View style={{ padding: 10 }}>
-          <Text>Location.getHeadingAsync:</Text>
-          <Text>Magnetic North: {this.state.singleHeading.magHeading}</Text>
-          <Text>True North: {this.state.singleHeading.trueHeading}</Text>
-          <Text>Accuracy: {this.state.singleHeading.accuracy}</Text>
+        <View style={styles.activityIndicatorWrapper}>
+          <ActivityIndicator />
+          <Text>Searching for heading...</Text>
         </View>
       );
     }
 
     return (
-      <ListButton onPress={this._getSingleHeading} title="Find my heading (compass) heading" />
+      <View>
+        {this.state.singleHeading && (
+          <View style={{ padding: 10 }}>
+            <Text>Location.getHeadingAsync:</Text>
+            <Text>Magnetic North: {this.state.singleHeading.magHeading}</Text>
+            <Text>True North: {this.state.singleHeading.trueHeading}</Text>
+            <Text>Accuracy: {this.state.singleHeading.accuracy}</Text>
+          </View>
+        )}
+        <ListButton onPress={this._getSingleHeading} title="Find my heading (compass) heading" />
+      </View>
     );
   }
 
@@ -352,3 +367,11 @@ export default class LocationScreen extends React.Component<NavigationScreenProp
     );
   }
 }
+
+const styles = StyleSheet.create({
+  activityIndicatorWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 10,
+  },
+});

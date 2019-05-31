@@ -16,7 +16,7 @@ NSNotificationName ABI33_0_0EXTestSuiteCompletedNotification = @"ABI33_0_0EXTest
 
 @implementation ABI33_0_0EXTest
 
-+ (NSString *)moduleName { return @"ExponentTest"; }
+ABI33_0_0RCT_EXPORT_MODULE(ExponentTest);
 
 + (os_log_t)log {
   static os_log_t log;
@@ -33,6 +33,18 @@ NSNotificationName ABI33_0_0EXTestSuiteCompletedNotification = @"ABI33_0_0EXTest
     _environment = environment;
   }
   return self;
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+           @"isInCI": @(_environment == ABI33_0_0EXTestEnvironmentCI),
+           };
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 ABI33_0_0RCT_EXPORT_METHOD(log:(NSString *)message)

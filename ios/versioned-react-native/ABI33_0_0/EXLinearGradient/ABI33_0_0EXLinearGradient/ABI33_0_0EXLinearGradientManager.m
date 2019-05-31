@@ -10,7 +10,7 @@
 
 @implementation ABI33_0_0EXLinearGradientManager
 
-ABI33_0_0UM_EXPORT_MODULE(ABI33_0_0EXLinearGradientManager);
+ABI33_0_0UM_EXPORT_MODULE(ExpoLinearGradientManager);
 
 - (NSString *)viewName
 {

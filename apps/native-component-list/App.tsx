@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { AppLoading, Asset, Font } from 'expo';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+import { Asset } from 'expo-asset';
 import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';

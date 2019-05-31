@@ -51,7 +51,7 @@ export declare type VideoProps = {
     rotation?: number;
 } & React.ComponentProps<typeof View>;
 export declare type NativeProps = {
-    source: PlaybackNativeSource | null;
+    source?: PlaybackNativeSource | null;
     resizeMode?: unknown;
     status?: PlaybackStatusToSet;
     onLoadStart?: () => void;

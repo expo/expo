@@ -140,7 +140,7 @@ dependencies {
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:33.0.0'
-  addMavenUnimodulesDependencies([
+  addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
       target       : 'react-native'

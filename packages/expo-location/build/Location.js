@@ -304,6 +304,10 @@ export async function hasServicesEnabledAsync() {
 function _validateTaskName(taskName) {
     invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
 }
+export async function isBackgroundLocationAvailableAsync() {
+    const providerStatus = await getProviderStatusAsync();
+    return providerStatus.backgroundModeEnabled;
+}
 export async function startLocationUpdatesAsync(taskName, options = { accuracy: LocationAccuracy.Balanced }) {
     _validateTaskName(taskName);
     await ExpoLocation.startLocationUpdatesAsync(taskName, options);

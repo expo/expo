@@ -11,6 +11,8 @@
 #import "ABI33_0_0EXScopedSecureStore.h"
 #import "ABI33_0_0EXScopedAmplitude.h"
 #import "ABI33_0_0EXScopedPermissions.h"
+#import "ABI33_0_0EXScopedSegment.h"
+#import <ABI33_0_0EXTaskManager/ABI33_0_0EXTaskManager.h>
 
 #import "ABI33_0_0EXScopedReactNativeAdapter.h"
 #import "ABI33_0_0EXModuleRegistryBinding.h"
@@ -27,6 +29,7 @@
 
   ABI33_0_0EXScopedFileSystemModule *fileSystemModule = [[ABI33_0_0EXScopedFileSystemModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:fileSystemModule];
+  [moduleRegistry registerInternalModule:fileSystemModule];
 
   ABI33_0_0EXSensorsManagerBinding *sensorsManagerBinding = [[ABI33_0_0EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[@"EXSensorManager"]];
   [moduleRegistry registerInternalModule:sensorsManagerBinding];
@@ -49,6 +52,14 @@
   ABI33_0_0EXScopedPermissions *permissionsModule = [[ABI33_0_0EXScopedPermissions alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
+
+  ABI33_0_0EXScopedSegment *segmentModule = [[ABI33_0_0EXScopedSegment alloc] init];
+  [moduleRegistry registerExportedModule:segmentModule];
+
+  // TODO: Make scoped task manager when adding support for bare React Native
+  ABI33_0_0EXTaskManager *taskManagerModule = [[ABI33_0_0EXTaskManager alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:taskManagerModule];
+  [moduleRegistry registerInternalModule:taskManagerModule];
 
   return moduleRegistry;
 }

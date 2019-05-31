@@ -1,4 +1,7 @@
-include ':app', ':expoview'
+include ':app'
+
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+include ':expoview'
 project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
 include ':ReactAndroid'
@@ -13,15 +16,20 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 // Import gradle helpers for unimodules.
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
 // Include unimodules.
-includeUnimodulesProjects([
+includeUnimodulesProjects(
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+[
     modulesPaths: ['../../packages'],
     target: 'react-native',
     exclude: [
         'expo-module-template',
     ]
-])
+]
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
+)
