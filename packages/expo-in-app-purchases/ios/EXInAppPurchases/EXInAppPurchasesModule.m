@@ -3,7 +3,7 @@
 #import <EXInAppPurchases/EXInAppPurchasesModule.h>
 
 #define CONNECT_KEY @"connectToAppStoreAsync"
-#define QUERY_KEY @"queryPurchasableItems"
+#define QUERY_KEY @"queryPurchasableItemsAsync"
 
 @implementation EXInAppPurchasesModule
 
@@ -189,33 +189,31 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [price appendString:product.priceLocale.currencySymbol];
   [price appendString:priceString];
 
-  NSMutableDictionary *productData = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                      product.localizedDescription, @"description",
-                                      price, @"price",
-                                      priceAmountMicros, @"price_amount_micros", // TODO: Change to micros?
-                                      product.priceLocale.currencyCode, @"price_currency_code",
-                                      product.productIdentifier, @"productId",
-                                      [NSNull null], @"skuDetailsToken",
-                                      product.localizedTitle, @"title",
-                                      type, @"type",
-                                      nil];
+  NSDictionary *productData = @{
+                                @"description": product.localizedDescription,
+                                @"price": price,
+                                @"price_amount_micros": priceAmountMicros,
+                                @"price_currency_code": product.priceLocale.currencyCode,
+                                @"productId": product.productIdentifier,
+                                @"skuDetailsToken": [NSNull null],
+                                @"title": product.localizedTitle,
+                                @"type": type
+                                };
   return productData;
 }
 
 - (NSDictionary *)getTransactionData: (SKPaymentTransaction *) transaction {
   NSData * receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
 
-  NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                   @YES, @"acknowledged",
-                                   transaction.transactionIdentifier, @"orderId",
-                                   [NSNull null], @"packageName",
-                                   transaction.payment.productIdentifier, @"productId",
-                                   transaction.transactionState, @"purchaseState",
-                                   @(transaction.transactionDate.timeIntervalSince1970 * 1000), @"purchaseTime",
-                                   [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
-                                   nil];
-
-  return purchase;
+  NSDictionary *transactionData = @{
+                                    @"acknowledged": @YES,
+                                    @"orderId": transaction.transactionIdentifier,
+                                    @"productId": transaction.payment.productIdentifier,
+                                    @"purchaseState": @(transaction.transactionState),
+                                    @"purchaseTime": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
+                                    @"transactionReceipt": [receiptData base64EncodedStringWithOptions:0]
+                                    };
+  return transactionData;
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions{
