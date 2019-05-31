@@ -140,10 +140,10 @@ public class TestSuiteTests extends BaseTestClass {
 
   @Rule
   public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
-    Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS,
-    Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
+      Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS,
+      Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
+      Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+      Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
   );
 
   @Test
@@ -156,6 +156,14 @@ public class TestSuiteTests extends BaseTestClass {
 
     KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = true;
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
+  }
+
+  @Ignore
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("33.0.0")
+  public void sdk33TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-33-0-0", false);
   }
 
   @Ignore
@@ -176,5 +184,6 @@ public class TestSuiteTests extends BaseTestClass {
 
   @Test
   @ExpoAlwaysPassThroughFilter
-  public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {}
+  public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {
+  }
 }

@@ -13,9 +13,12 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
     // BEGIN_SDK_32
     abi32_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
     // END_SDK_32
+    // BEGIN_SDK_33
+    abi33_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
+    // END_SDK_33
+    // ADD_NEW_SDKS_HERE
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-    com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
-{
+    com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
 
 }

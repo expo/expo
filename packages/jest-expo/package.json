@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "33.0.0-rc.1",
+  "version": "33.0.0",
   "license": "MIT",
   "main": "src",
   "repository": {
@@ -25,5 +25,6 @@
   },
   "devDependencies": {
     "react": "16.8.3"
-  }
+  },
+  "gitHead": "49f285013c22996f5d03958708761be385e6cab4"
 }

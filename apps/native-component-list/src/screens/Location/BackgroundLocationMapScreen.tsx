@@ -1,6 +1,6 @@
 import React from 'react';
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import { NavigationEvents } from 'react-navigation';
+import { NavigationEvents, NavigationScreenProp } from 'react-navigation';
 import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
@@ -34,6 +34,10 @@ const locationActivityTypes: { [key in Location.ActivityType]: Location.Activity
   [Location.ActivityType.Airborne]: undefined,
 };
 
+interface Props {
+  navigation: NavigationScreenProp<{}, any>;
+}
+
 interface State {
   accuracy: Location.Accuracy;
   activityType?: Location.ActivityType;
@@ -45,7 +49,7 @@ interface State {
   error?: string;
 }
 
-export default class BackgroundLocationMapScreen extends React.Component<{}, State> {
+export default class BackgroundLocationMapScreen extends React.Component<Props, State> {
   static navigationOptions = {
     title: 'Background location',
   };
@@ -63,6 +67,12 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
   eventSubscription?: EventSubscription;
 
   didFocus = async () => {
+    if (!await Location.isBackgroundLocationAvailableAsync()) {
+      alert('Background location is not available in this application.');
+      this.props.navigation.goBack();
+      return;
+    }
+
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (status !== 'granted') {

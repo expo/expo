@@ -155,21 +155,6 @@
     <!-- BEGIN_SDK_31 -->
     <activity android:name="abi31_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_31 -->
-    <!-- BEGIN_SDK_30 -->
-    <activity android:name="abi30_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_30 -->
-    <!-- BEGIN_SDK_29 -->
-    <activity android:name="abi29_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_29 -->
-    <!-- BEGIN_SDK_28 -->
-    <activity android:name="abi28_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_28 -->
-    <!-- BEGIN_SDK_27 -->
-    <activity android:name="abi27_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_27 -->
-    <!-- BEGIN_SDK_26 -->
-    <activity android:name="abi26_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_26 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity

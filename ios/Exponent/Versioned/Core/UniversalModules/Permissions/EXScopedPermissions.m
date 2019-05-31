@@ -1,5 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
+#if __has_include(<EXPermissions/EXPermissions.h>)
 #import "EXScopedPermissions.h"
 #import <UMCore/UMUtilities.h>
 #import <UMCore/UMDefines.h>
@@ -212,3 +213,4 @@
 }
 
 @end
+#endif

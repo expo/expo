@@ -29,30 +29,29 @@ const ASSET_KEYS = [
   'creationTime',
   'modificationTime',
   'duration',
-  Platform.OS == 'ios' ? 'mediaSubtypes' : 'albumId',
+  Platform.OS === 'ios' ? 'mediaSubtypes' : 'albumId',
 ];
 
 const INFO_KEYS = [
   'localUri',
   'location',
   'exif',
-  ...(Platform != 'ios' ? [] : ['orientation', 'isFavorite']),
+  ...(Platform !== 'ios' ? [] : ['orientation', 'isFavorite']),
 ];
 
 const ALBUM_KEYS = [
   'id',
   'title',
   'assetCount',
-  ...(Platform != 'ios'
+  ...(Platform !== 'ios'
     ? []
     : ['type', 'startTime', 'endTime', 'approximateLocation', 'locationNames']),
 ];
 
 const GET_ASSETS_KEYS = ['assets', 'endCursor', 'hasNextPage', 'totalCount'];
-const ALBUM_NAME = '__tseTyrarbiLaidem__';
+const ALBUM_NAME = 'Expo Test-Suite Album #1';
+const SECOND_ALBUM_NAME = 'Expo Test-Suite Album #2';
 const WRONG_NAME = 'wertyuiopdfghjklvbnhjnftyujn';
-const FIRST_ALBUM = '__iosTestAlbum__';
-const SECOND_ALBUM = '__mublAtseTsoi__';
 const WRONG_ID = '1234567890';
 
 async function getFiles() {
@@ -123,7 +122,7 @@ export async function test(t) {
     t.describe('Small tests', async () => {
       t.it('Function getAlbums returns test album', async () => {
         const albums = await MediaLibrary.getAlbumsAsync();
-        t.expect(albums.filter(elem => elem.id == album.id).length).toBe(1);
+        t.expect(albums.filter(elem => elem.id === album.id).length).toBe(1);
       });
 
       t.it('getAlbum returns test album', async () => {
@@ -209,7 +208,7 @@ export async function test(t) {
     });
 
     t.describe('Delete tests', async () => {
-      t.it('deleteAsstetsAsync', async () => {
+      t.it('deleteAssetsAsync', async () => {
         const { assets } = await MediaLibrary.getAssetsAsync({ album, mediaType: MEDIA_TYPES });
         const result = await MediaLibrary.deleteAssetsAsync(assets.slice(0, 2));
         const { assets: rest } = await MediaLibrary.getAssetsAsync({
@@ -227,11 +226,11 @@ export async function test(t) {
       });
       t.it('deleteManyAlbums', async () => {
         const assets = await getAssets(files.slice(0, 2));
-        let firstAlbum = await MediaLibrary.createAlbumAsync(FIRST_ALBUM, assets[0], false);
-        let secondAlbum = await MediaLibrary.createAlbumAsync(SECOND_ALBUM, assets[1], false);
+        let firstAlbum = await MediaLibrary.createAlbumAsync(ALBUM_NAME, assets[0], false);
+        let secondAlbum = await MediaLibrary.createAlbumAsync(SECOND_ALBUM_NAME, assets[1], false);
         await MediaLibrary.deleteAlbumsAsync([firstAlbum, secondAlbum], true);
-        firstAlbum = await MediaLibrary.getAlbumAsync(FIRST_ALBUM);
-        secondAlbum = await MediaLibrary.getAlbumAsync(SECOND_ALBUM);
+        firstAlbum = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
+        secondAlbum = await MediaLibrary.getAlbumAsync(SECOND_ALBUM_NAME);
         const firstAsset = await MediaLibrary.getAssetInfoAsync(assets[0]);
         const secondAsset = await MediaLibrary.getAssetInfoAsync(assets[1]);
         t.expect(firstAlbum).toBeNull();

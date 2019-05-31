@@ -215,6 +215,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     map.putBoolean("gpsAvailable", state.isGpsAvailable()); // If GPS provider is enabled
     map.putBoolean("networkAvailable", state.isNetworkAvailable()); // If network provider is enabled
     map.putBoolean("passiveAvailable", state.isPassiveAvailable()); // If passive provider is enabled
+    map.putBoolean("backgroundModeEnabled", state.locationServicesEnabled()); // background mode is always available if location services are on
 
     promise.resolve(map);
   }

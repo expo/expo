@@ -16,14 +16,15 @@ const LOCATION_UPDATES_TASK = 'location-updates';
 
 const locationEventsEmitter = new EventEmitter();
 
-export default class BackgroundLocationScreen extends React.Component {
+export default class LocationDiagnosticsScreen extends React.Component {
   static navigationOptions = {
-    title: 'Background location',
+    title: 'Location Diagnostics',
   };
 
   mapViewRef = React.createRef();
 
   state = {
+    isBackgroundLocationAvailable: null,
     accuracy: Location.Accuracy.High,
     isTracking: false,
     showsBackgroundLocationIndicator: false,
@@ -31,6 +32,15 @@ export default class BackgroundLocationScreen extends React.Component {
     initialRegion: null,
     error: null,
   };
+
+  componentDidMount() {
+    this.checkBackgroundLocationAvailability();
+  }
+
+  async checkBackgroundLocationAvailability() {
+    const isBackgroundLocationAvailable = await Location.isBackgroundLocationAvailableAsync();
+    this.setState({ isBackgroundLocationAvailable });
+  }
 
   didFocus = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -203,7 +213,7 @@ export default class BackgroundLocationScreen extends React.Component {
         <View style={styles.buttons} pointerEvents="box-none">
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>
-              {Platform.OS === 'android' ? null : (
+              {this.state.isBackgroundLocationAvailable && (
                 <Button style={styles.button} onPress={this.toggleLocationIndicator}>
                   <Text>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
                   <Text> background </Text>
@@ -226,9 +236,11 @@ export default class BackgroundLocationScreen extends React.Component {
             <Button style={styles.button} onPress={this.clearLocations}>
               Clear locations
             </Button>
-            <Button style={styles.button} onPress={this.toggleTracking}>
-              {this.state.isTracking ? 'Stop tracking' : 'Start tracking'}
-            </Button>
+            {this.state.isBackgroundLocationAvailable && (
+              <Button style={styles.button} onPress={this.toggleTracking}>
+                {this.state.isTracking ? 'Stop tracking' : 'Start tracking'}
+              </Button>
+            )}
           </View>
         </View>
       </View>
