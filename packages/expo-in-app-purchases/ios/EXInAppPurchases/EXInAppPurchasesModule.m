@@ -68,6 +68,7 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
     NSArray *productArray = [NSArray arrayWithObjects:productIdentifier,nil];
     [self setPromise:productIdentifier resolve:resolve reject:reject];
 
+    self->queryingItems = NO;
     [self requestProducts:productArray];
   }
   else{
@@ -107,7 +108,6 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
       // Making a purchase
       NSLog(@"Purchasing %@", validProduct.productIdentifier);
       [self purchase:validProduct];
-      [self resolvePromise:validProduct.productIdentifier value: validProduct];
     }
   }
   self->queryingItems = NO;
@@ -229,6 +229,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
         NSLog(@"Made a purchase!");
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         NSLog(@"Transaction state -> Purchased");
+        [self resolvePromise:transaction.payment.productIdentifier value: nil];
         break;
       case SKPaymentTransactionStateRestored:
         NSLog(@"Transaction state -> Restored");
