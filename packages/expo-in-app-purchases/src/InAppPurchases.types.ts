@@ -22,7 +22,7 @@ export interface ItemDetails {
   price_amount_micros: number,
   price_currency_code: string,
   productId: string,
-  skuDetailsToken: string,
   title: string,
-  type: ValidItemType
+  type: ValidItemType,
+  skuDetailsToken?: string // Android only
 }

@@ -6,6 +6,7 @@
 
 @interface EXInAppPurchasesModule : UMExportedModule <UMModuleRegistryConsumer, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
   NSMutableDictionary *promises;
+  Boolean queryingItems;
 }
   @property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
   @property (strong, nonatomic) SKProductsRequest *request;

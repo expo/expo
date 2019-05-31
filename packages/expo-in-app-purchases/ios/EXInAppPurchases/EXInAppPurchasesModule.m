@@ -36,6 +36,7 @@ UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
   // Initialize listener and promises dictionary
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
   promises = [NSMutableDictionary dictionary];
+  queryingItems = NO;
   [self setPromise:CONNECT_KEY resolve:resolve reject:reject];
 
   // Request history
@@ -51,6 +52,7 @@ UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
 
   [self setPromise:QUERY_KEY resolve:resolve reject:reject];
 
+  self->queryingItems = YES;
   [self requestProducts:productIDs];
 }
 
@@ -63,11 +65,10 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
   if([SKPaymentQueue canMakePayments]){
     NSLog(@"User can make payments");
 
-    SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithObject:productIdentifier]];
-    productsRequest.delegate = self;
-
+    NSArray *productArray = [NSArray arrayWithObjects:productIdentifier,nil];
     [self setPromise:productIdentifier resolve:resolve reject:reject];
-    [productsRequest start];
+
+    [self requestProducts:productArray];
   }
   else{
     NSLog(@"User cannot make purchases");
@@ -94,13 +95,23 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
     NSLog(@"No products available");
   }
   self.products = response.products;
-  for (SKProduct *validProduct in response.products) {
-    NSLog(@"Purchasing %@", validProduct.productIdentifier);
-    [self purchase:validProduct];
-    [self resolvePromise:validProduct.productIdentifier value: validProduct];
-  }
+  NSMutableArray *result = [NSMutableArray array];
 
-  [self resolvePromise:QUERY_KEY value:response.products];
+  for (SKProduct *validProduct in response.products) {
+    if(self->queryingItems) {
+      // Calling queryPurchasableItemsAsync
+      NSLog(@"Querying items. Getting data for %@", validProduct.productIdentifier);
+      NSDictionary *productData = [self getProductData:validProduct];
+      [result addObject:productData];
+    } else {
+      // Making a purchase
+      NSLog(@"Purchasing %@", validProduct.productIdentifier);
+      [self purchase:validProduct];
+      [self resolvePromise:validProduct.productIdentifier value: validProduct];
+    }
+  }
+  self->queryingItems = NO;
+  [self resolvePromise:QUERY_KEY value:result];
 }
 
 -(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject {
@@ -164,6 +175,31 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
   NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithObjectsAndKeys:@0, @"responseCode", results, @"results", nil];
   [self resolvePromise:CONNECT_KEY value:response];
+}
+
+- (NSDictionary *)getProductData: (SKProduct *) product {
+  // Format item type and price_amount_micros for platform consistency
+  NSString * type = product.subscriptionPeriod.numberOfUnits == nil ? @"inapp" : @"subs";
+  NSDecimalNumber *oneMillion = [[NSDecimalNumber alloc] initWithInt:1000000];
+  NSDecimalNumber *priceAmountMicros = [product.price decimalNumberByMultiplyingBy:oneMillion];
+
+  // Format price string
+  NSMutableString *price = [NSMutableString string];
+  NSString *priceString = [NSString stringWithFormat:@"%@", product.price];
+  [price appendString:product.priceLocale.currencySymbol];
+  [price appendString:priceString];
+
+  NSMutableDictionary *productData = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                      product.localizedDescription, @"description",
+                                      price, @"price",
+                                      priceAmountMicros, @"price_amount_micros", // TODO: Change to micros?
+                                      product.priceLocale.currencyCode, @"price_currency_code",
+                                      product.productIdentifier, @"productId",
+                                      [NSNull null], @"skuDetailsToken",
+                                      product.localizedTitle, @"title",
+                                      type, @"type",
+                                      nil];
+  return productData;
 }
 
 - (NSDictionary *)getTransactionData: (SKPaymentTransaction *) transaction {
