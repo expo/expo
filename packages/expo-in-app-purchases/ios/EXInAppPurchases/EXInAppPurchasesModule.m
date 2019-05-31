@@ -2,6 +2,7 @@
 
 #import <EXInAppPurchases/EXInAppPurchasesModule.h>
 
+#define CONNECT_KEY @"connectToAppStoreAsync"
 #define QUERY_KEY @"queryPurchasableItems"
 
 @implementation EXInAppPurchasesModule
@@ -17,7 +18,13 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 {
   return @{
      @"responseCodes": [[NSDictionary alloc] initWithObjectsAndKeys:@"OK", 0, @"USER_CANCELED", 1, nil],
-     @"purchaseStates": [[NSDictionary alloc] initWithObjectsAndKeys:@"PURCHASED", 1, @"PENDING", 2, nil],
+     @"purchaseStates": [[NSDictionary alloc] initWithObjectsAndKeys:
+                         @"PURCHASED", SKPaymentTransactionStatePurchased,
+                         @"PENDING", SKPaymentTransactionStatePurchasing,
+                         @"FAILED", SKPaymentTransactionStateFailed,
+                         @"RESTORED", SKPaymentTransactionStateRestored,
+                         @"DEFERRED", SKPaymentTransactionStateDeferred,
+                         nil],
    };
 }
 
@@ -26,14 +33,13 @@ UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Connecting to iOS app store!");
+  // Initialize listener and promises dictionary
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
   promises = [NSMutableDictionary dictionary];
-  //[[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+  [self setPromise:CONNECT_KEY resolve:resolve reject:reject];
 
-  NSMutableArray *results = [[NSMutableArray alloc] initWithObjects:@"{}", nil];
-  NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithObjectsAndKeys:@0, @"responseCode", results, @"results", nil];
-
-  resolve(response);
+  // Request history
+  [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
 UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
@@ -137,23 +143,43 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 
-- (void) restore {
-  [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
-}
-
 - (void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
 {
   NSLog(@"received restored transactions: %lu", queue.transactions.count);
-  for(SKPaymentTransaction *transaction in queue.transactions){
-    if(transaction.transactionState == SKPaymentTransactionStateRestored){
-      //called when the user successfully restores a purchase
-      NSLog(@"Transaction state -> Restored");
+  NSMutableArray *results = [NSMutableArray array];
+
+  for(SKPaymentTransaction *transaction in queue.transactions) {
+    SKPaymentTransactionState transactionState = transaction.transactionState;
+    NSLog(@"%ld", transactionState);
+    if(transactionState == SKPaymentTransactionStateRestored || transactionState == SKPaymentTransactionStatePurchased){
+      NSLog(@"Transaction state -> Restored or Purchased");
+
+      NSDictionary * transactionData = [self getTransactionData:transaction];
+      [results addObject:transactionData];
 
       NSLog(@"Restoring transaction %@", transaction.payment.productIdentifier);
       [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-      break;
     }
   }
+
+  NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithObjectsAndKeys:@0, @"responseCode", results, @"results", nil];
+  [self resolvePromise:CONNECT_KEY value:response];
+}
+
+- (NSDictionary *)getTransactionData: (SKPaymentTransaction *) transaction {
+  NSData * receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
+
+  NSMutableDictionary *purchase = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                   @YES, @"acknowledged",
+                                   transaction.transactionIdentifier, @"orderId",
+                                   [NSNull null], @"packageName",
+                                   transaction.payment.productIdentifier, @"productId",
+                                   transaction.transactionState, @"purchaseState",
+                                   @(transaction.transactionDate.timeIntervalSince1970 * 1000), @"purchaseTime",
+                                   [receiptData base64EncodedStringWithOptions:0], @"transactionReceipt",
+                                   nil];
+
+  return purchase;
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions{

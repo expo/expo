@@ -9,5 +9,6 @@
 }
   @property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
   @property (strong, nonatomic) SKProductsRequest *request;
+  @property (strong, nonatomic) SKReceiptRefreshRequest *receiptRequest;
   @property (strong, nonatomic) NSArray<SKProduct*> *products;
 @end

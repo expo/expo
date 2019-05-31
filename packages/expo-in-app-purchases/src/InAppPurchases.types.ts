@@ -12,7 +12,8 @@ export interface Purchase {
   productId: string,
   purchaseState: number,
   purchaseTime: number,
-  purchaseToken: string
+  purchaseToken?: string // Android only
+  transactionReceipt?: string // iOS only
 }
 
 export interface ItemDetails {

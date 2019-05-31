@@ -10,7 +10,8 @@ export interface Purchase {
     productId: string;
     purchaseState: number;
     purchaseTime: number;
-    purchaseToken: string;
+    purchaseToken?: string;
+    transactionReceipt?: string;
 }
 export interface ItemDetails {
     description: string;
