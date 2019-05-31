@@ -751,7 +751,6 @@ EX_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(EXPromiseResolveBlock)
                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                        timeoutInterval:60.0];
     [request addValue:graphqlGatewayUrl forHTTPHeaderField:@"Origin"];
-    [request addValue:graphqlHeaders[@"accountId"] forHTTPHeaderField:@"authorization"];
     [request addValue:graphqlHeaders[@"fwid"] forHTTPHeaderField:@"fwid"];
     
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
