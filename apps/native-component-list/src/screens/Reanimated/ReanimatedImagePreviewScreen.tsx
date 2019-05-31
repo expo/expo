@@ -1,8 +1,8 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Animated, Easing } from 'expo';
 import { PanGestureHandler, State, PinchGestureHandler } from 'react-native-gesture-handler';
+import Animated, { Easing } from 'react-native-reanimated';
 
 const {
   set,

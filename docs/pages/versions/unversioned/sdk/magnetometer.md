@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Magnetometer } from 'expo';
-
-// in bare apps:
 import { Magnetometer } from 'expo-sensors';
 ```
 
@@ -59,7 +55,7 @@ Subscribe for updates to the Magnetometer.
 
 ```javascript
 import React from 'react';
-import { Magnetometer } from 'expo';
+import { Magnetometer } from 'expo-sensors';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default class MagnetometerSensor extends React.Component {
@@ -163,4 +159,3 @@ const styles = StyleSheet.create({
   },
 });
 ```
-

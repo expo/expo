@@ -16,7 +16,7 @@ import {
   AdMobInterstitial,
   PublisherBanner,
   AdMobRewarded
-} from 'expo';
+} from 'expo-ads-admob';
 
 // Display a banner
 <AdMobBanner
@@ -44,16 +44,6 @@ AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/5224354917'); // Test ID,
 AdMobRewarded.setTestDeviceID('EMULATOR');
 await AdMobRewarded.requestAdAsync();
 await AdMobRewarded.showAdAsync();
-```
-
-## API
-
-```js
-// in managed apps:
-import { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo';
-
-// in bare apps:
-import { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
 ```
 
 ### AdMobBanner

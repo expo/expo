@@ -1,4 +1,6 @@
-import { Asset, Permissions, MediaLibrary } from 'expo';
+import * as MediaLibrary from 'expo-media-library';
+import * as Permissions from 'expo-permissions';
+import { Asset } from 'expo-asset';
 import { Platform } from 'react-native';
 
 export const name = 'MediaLibrary';

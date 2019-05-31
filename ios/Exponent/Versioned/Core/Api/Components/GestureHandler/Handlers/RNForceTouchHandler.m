@@ -76,9 +76,13 @@
 
 - (void)performFeedbackIfRequired
 {
+#if !TARGET_OS_TV
   if (_feedbackOnActivation) {
-    [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
+    if (@available(iOS 10.0, *)) {
+      [[[UIImpactFeedbackGenerator alloc] initWithStyle:(UIImpactFeedbackStyleMedium)] impactOccurred];
+    }
   }
+#endif
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event

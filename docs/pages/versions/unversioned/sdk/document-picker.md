@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { DocumentPicker } from 'expo';
-
-// in bare apps:
 import * as DocumentPicker from 'expo-document-picker';
 ```
 
@@ -24,12 +20,12 @@ Display the system UI for choosing a document. By default, the chosen file is co
 
 #### Arguments
 
--   **options (_object_)** --
+- **options (_object_)** --
 
-      A map of options:
+  A map of options:
 
-    -   **type (_string_)** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
-    -   **copyToCacheDirectory (_boolean_)** -- If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](../filesystem/#expofilesystemcachedirectory), which allows other Expo APIs to read the file immediately. Defaults to `true`. This may impact performance for large files, so you should consider setting this to `false` if you expect users to pick particularly large files and your app does not need immediate read access.
+  - **type (_string_)** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
+  - **copyToCacheDirectory (_boolean_)** -- If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](../filesystem/#expofilesystemcachedirectory), which allows other Expo APIs to read the file immediately. Defaults to `true`. This may impact performance for large files, so you should consider setting this to `false` if you expect users to pick particularly large files and your app does not need immediate read access.
 
 #### Returns
 
@@ -50,4 +46,3 @@ Enable iCloud service with CloudKit support, create one iCloud Container, and na
 And finally, to apply those changes, you'll need to revoke your existing provisioning profile and run `expo build:ios -c`
 
 For ExpoKit apps, you need to open the project in Xcode and follow the [Using DocumentPicker instructions](../../expokit/advanced-expokit-topics/#using-documentpicker) in the Advanced ExpoKit Topics guide.
-

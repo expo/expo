@@ -88,7 +88,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
     }>;
     render(): JSX.Element;
     onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
-    convertNativeProps(props: BarCodeScannerProps): any;
+    convertNativeProps(props: BarCodeScannerProps): import("lodash").Dictionary<any>;
     convertProp(value: any, key: string): any;
 }
 export declare const Constants: {

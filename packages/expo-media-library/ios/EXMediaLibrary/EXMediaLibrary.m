@@ -1,13 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXMediaLibrary/EXMediaLibrary.h>
-#import <EXPermissions/EXCameraRollRequester.h>
-#import <UMCore/UMDefines.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <EXPermissions/EXPermissions.h>
 #import <Photos/Photos.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+
+#import <EXMediaLibrary/EXMediaLibrary.h>
+
+#import <UMCore/UMDefines.h>
 #import <UMCore/UMEventEmitterService.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 NSString *const EXAssetMediaTypeAudio = @"audio";
 NSString *const EXAssetMediaTypePhoto = @"photo";
@@ -59,7 +60,6 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
                },
            @"SortBy": @{
                @"default": @"default",
-               @"id": @"id",
                @"creationTime": @"creationTime",
                @"modificationTime": @"modificationTime",
                @"mediaType": @"mediaType",
@@ -92,7 +92,7 @@ UM_EXPORT_METHOD_AS(createAssetAsync,
     return;
   }
   
-  NSURL *assetUrl = [NSURL URLWithString:localUri];
+  NSURL *assetUrl = [self.class _normalizeAssetURLFromUri:localUri];
   
   if (assetUrl == nil) {
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
@@ -756,7 +756,6 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   }
   
   NSDictionary *conversionDict = @{
-                                   @"id": @"localIdentifier",
                                    @"creationTime": @"creationDate",
                                    @"modificationTime": @"modificationDate",
                                    @"mediaType": @"mediaType",
@@ -858,6 +857,13 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   return sortDescriptors;
 }
 
++ (NSURL *)_normalizeAssetURLFromUri:(NSString *)uri
+{
+  if ([uri hasPrefix:@"/"]) {
+    return [NSURL URLWithString:[@"file://" stringByAppendingString:uri]];
+  }
+  return [NSURL URLWithString:uri];
+}
 
 - (BOOL)_checkPermissions:(UMPromiseRejectBlock)reject
 {

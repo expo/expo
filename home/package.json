@@ -24,7 +24,18 @@
     "apollo-cache-inmemory": "^1.5.1",
     "dedent": "^0.7.0",
     "es6-error": "^4.0.1",
-    "expo": "^33.0.0-alpha.web.1",
+    "expo": "^33.0.0-alpha.web.3",
+    "expo-analytics-amplitude": "^5.0.0-rc.0",
+    "expo-asset": "^5.0.0-rc.0",
+    "expo-barcode-scanner": "^5.0.0-rc.0",
+    "expo-camera": "^5.0.0-rc.0",
+    "expo-constants": "^5.0.0-rc.0",
+    "expo-font": "^5.0.0-rc.0",
+    "expo-linear-gradient": "^5.0.0-rc.0",
+    "expo-location": "^5.0.0-rc.0",
+    "expo-permissions": "^5.0.0-rc.0",
+    "expo-task-manager": "^5.0.0-rc.0",
+    "expo-web-browser": "^5.0.0-rc.0",
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
     "immutable": "^3.8.1",
@@ -33,8 +44,9 @@
     "querystring": "^0.2.0",
     "react": "16.8.3",
     "react-apollo": "^2.5.5",
-    "react-native": "0.59.5",
+    "react-native": "0.59.8",
     "react-native-infinite-scroll-view": "^0.4.5",
+    "react-native-maps": "0.24.2",
     "react-navigation": "^3.9.0",
     "react-navigation-material-bottom-tabs": "1.0.0",
     "react-redux": "^6.0.1",
@@ -44,9 +56,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "hashids": "^1.1.1",
-    "jest-expo": "^32.0.0",
-    "node-fetch": "^2.0.0",
+    "jest-expo": "^33.0.0-rc.1",
     "uuid": "^3.0.1"
   }
 }

@@ -8,6 +8,8 @@ Provides Facebook integration for Expo apps. Expo exposes a minimal native API s
 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-facebook).
 
+For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
+
 ## Configuration
 
 ### Registering your app with Facebook
@@ -28,19 +30,15 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
 - **Android standalone app**
 
-  -   [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
-  -   Run `expo fetch:android:hashes`.
-  -   Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
+  - [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
+  - Run `expo fetch:android:hashes`.
+  - Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
 
 You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in.
 
 ## API
 
 ```js
-// in managed apps:
-import { Facebook } from 'expo';
-
-// in bare apps:
 import * as Facebook from 'expo-facebook';
 ```
 

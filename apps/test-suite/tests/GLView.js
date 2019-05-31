@@ -1,5 +1,6 @@
 'use strict';
-import { Asset, GLView } from 'expo';
+import { GLView } from 'expo-gl';
+import { Asset } from 'expo-asset';
 import React from 'react';
 
 import { Platform } from '@unimodules/core';

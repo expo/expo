@@ -33,31 +33,32 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 | upc_ean         | No    | Yes     |
 | qr              | Yes   | Yes     |
 
-* sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
+- sometimes when an ITF-14 barcode is recognized it's type is set to `interleaved2of5`.
 
 ## Usage
 
 You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
 ```javascript
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { BarCodeScanner, Permissions } from 'expo';
+import * as React from 'react';
+import { Text, View, StyleSheet, Button } from 'react-native';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default class BarcodeScannerExample extends React.Component {
   state = {
     hasCameraPermission: null,
-  }
+    scanned: false,
+  };
 
   async componentDidMount() {
-    /* @info Before we can use the BarCodeScanner we need to ask the user for permission to access their camera. <a href='permissions.html'>Read more about Permissions.</a> */
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
-    /* @end */
   }
 
   render() {
-    const { hasCameraPermission } = this.state;
+    const { hasCameraPermission, scanned } = this.state;
 
     if (hasCameraPermission === null) {
       return <Text>Requesting for camera permission</Text>;
@@ -66,22 +67,28 @@ export default class BarcodeScannerExample extends React.Component {
       return <Text>No access to camera</Text>;
     }
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <BarCodeScanner
-          onBarCodeScanned={this.handleBarCodeScanned}
-          style={StyleSheet.absoluteFill}
+          onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
         />
+        {scanned && (
+          <Button title={'Tap to Scan Again'} onPress={() => this.setState({ scanned: false })} />
+        )}
       </View>
     );
   }
 
   handleBarCodeScanned = ({ type, data }) => {
+    this.setState({ scanned: true });
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-  }
+  };
 }
 ```
 
-[Try this example on Snack](https://snack.expo.io/Skxzn6-5b).
+> Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
+
+[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example).
 
 ## API
 
@@ -109,11 +116,10 @@ Scan bar codes from the image given by the URL.
 
 #### Arguments
 
--   **url (_string_)** -- URL to get the image from.
--   **barCodeTypes (_Array\<BarCodeScanner.Constants.BarCodeType\>_)** -- (as in prop) An array of bar code types. Default: all supported bar code types.
-> Note: Only QR codes are supported on iOS.
+- **url (_string_)** -- URL to get the image from.
+- **barCodeTypes (_Array\<BarCodeScanner.Constants.BarCodeType\>_)** -- (as in prop) An array of bar code types. Default: all supported bar code types.
+  > Note: Only QR codes are supported on iOS.
 
 #### Returns
 
 A possibly empty array of objects of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code.
-

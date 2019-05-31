@@ -6,7 +6,7 @@ const os = require('os');
 const path = require('path');
 const process = require('process');
 const { mkdir } = require('shelljs');
-const { IosPlist, IosPodsTools, ExponentTools, UrlUtils, Project } = require('xdl');
+const { IosPlist, IosPodsTools, ExponentTools, UrlUtils, Project, Modules } = require('@expo/xdl');
 const JsonFile = require('@expo/json-file').default;
 const spawnAsync = require('@exponent/spawn-async');
 const request = require('request-promise-native').defaults({
@@ -14,7 +14,6 @@ const request = require('request-promise-native').defaults({
 });
 const ip = require('ip');
 const uuidv4 = require('uuid/v4');
-const { Modules } = require('xdl');
 
 const { renderExpoKitPodspecAsync, renderPodfileAsync } = IosPodsTools;
 

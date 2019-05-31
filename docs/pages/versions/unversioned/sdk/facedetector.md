@@ -27,10 +27,6 @@ Other modules, like eg. [Camera](../camera/) are able to use this `FaceDetector`
 ## API
 
 ```js
-// in managed apps:
-import { FaceDetector } from 'expo';
-
-// in bare apps:
 import * as FaceDetector from 'expo-face-detector';
 ```
 
@@ -45,7 +41,7 @@ In order to configure detector's behavior modules pass a settings object which i
 Eg. you could use the following snippet to detect faces in fast mode without detecting landmarks or whether face is smiling:
 
 ```js
-import { FaceDetector } from 'expo';
+import * as FaceDetector from 'expo-face-detector';
 
 <Camera
   // ... other props
@@ -55,7 +51,7 @@ import { FaceDetector } from 'expo';
     detectLandmarks: FaceDetector.Constants.Landmarks.none,
     runClassifications: FaceDetector.Constants.Classifications.none,
   }}
-/>
+/>;
 ```
 
 ### Event shape
@@ -92,10 +88,10 @@ Positions of face landmarks are returned only if `faceDetectionLandmarks` proper
 To use methods that `FaceDetector` exposes one just has to import the module. (In ejected apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](../payments/#adding-the-payments-module-on-ios) for an example of adding a subspec to your ejected project.)
 
 ```javascript
-import { FaceDetector } from 'expo';
+import * as FaceDetector from 'expo-face-detector';
 
 // ...
-detectFaces = async (imageUri) => {
+detectFaces = async imageUri => {
   const options = { mode: FaceDetector.Constants.Mode.fast };
   return await FaceDetector.detectFacesAsync(imageUri, options);
 };

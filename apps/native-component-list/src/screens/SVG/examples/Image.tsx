@@ -1,6 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 const { Defs, Circle, ClipPath, Rect, Text } = Svg;
@@ -10,7 +10,7 @@ class ImageExample extends React.Component {
 
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Defs>
           <ClipPath id="clip">
             <Circle cx="50%" cy="50%" r="40%" />
@@ -33,7 +33,7 @@ class ImageExample extends React.Component {
         <Text x="50" y="50" textAnchor="middle" fontWeight="bold" fontSize="16" fill="blue">
           HOGWARTS
         </Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -43,7 +43,7 @@ class ClipImage extends React.Component {
 
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Defs>
           <ClipPath id="clip">
             <Circle cx="50%" cy="50%" r="40%" />
@@ -64,7 +64,7 @@ class ClipImage extends React.Component {
         <Text x="50" y="50" textAnchor="middle" fontWeight="bold" fontSize="16" fill="red">
           HOGWARTS
         </Text>
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -74,7 +74,7 @@ class DataURI extends React.Component {
 
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Svg.Image
           x="5%"
           y="5%"
@@ -88,15 +88,15 @@ class DataURI extends React.Component {
           // tslint:enable max-line-length
           opacity="0.6"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Svg.Image x="5%" y="5%" width="90%" height="90%" href={require('./image.jpg')} />
-  </Svg>
+  </Svg.Svg>
 );
 
 const Image: Example = {

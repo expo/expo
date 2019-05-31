@@ -28,7 +28,7 @@ The "React packager" is a simple HTTP server that compiles our app JavaScript co
 
 ## Open the app on your phone or simulator
 
-The fastest way to see your app on your device is to open the Expo Client mobile app and log in to the same account you're using in XDE. Once you log in, a link to your project will automatically appear inside Expo Client on your phone.
+The fastest way to see your app on your device is to open the Expo client mobile app and log in to the same account you're using in XDE. Once you log in, a link to your project will automatically appear inside Expo client on your phone.
 
 Alternatively, press `Share`, enter your phone number, and press `Send Link`. Open the message on your phone and tap on the link to open it in Expo. You can share this link with anybody else who has the Expo app installed, but it will only be available as long as you have the project open in XDE.
 

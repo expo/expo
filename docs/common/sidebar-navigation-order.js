@@ -60,6 +60,7 @@ const GUIDES = [
   'Using Firebase',
   'Using GraphQL',
   'Using Sentry',
+  'User Interface Component Libraries',
   'Crafting Educational Materials',
 ];
 
@@ -69,12 +70,13 @@ const FUNDAMENTALS = [
   'Viewing Logs',
   'Debugging',
   'Development Mode',
+  'Common Development Errors',
+  'iOS Simulator',
   'Android Studio Emulator',
   'Configuration with app.json',
   'Publishing',
   'Release Channels',
   'Building Standalone Apps',
-  'Upgrading Expo',
   'Upgrading Expo SDK Walkthrough',
   'Linking',
   'How Expo Works',
@@ -93,6 +95,7 @@ const DISTRIBUTION = [
   'Building Standalone Apps on Your CI',
   'Uploading Apps to the Apple App Store and Google Play',
   'App Transfers',
+  'Security',
 ];
 
 const EXPOKIT = [

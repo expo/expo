@@ -13,10 +13,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Segment } from 'expo';
-
-// in bare apps:
 import * as Segment from 'expo-analytics-segment';
 ```
 
@@ -28,23 +24,23 @@ Segment requires separate write keys for iOS and Android. You will need to log i
 
 Accepts an object with the following keys:
 
--   **androidWriteKey (_string_)** – Write key for Android source.
--   **iosWriteKey (_string_)** – Write key for iOS source.
+- **androidWriteKey (_string_)** – Write key for Android source.
+- **iosWriteKey (_string_)** – Write key for iOS source.
 
 ### `Segment.identify(userId)`
 
-Associates the current user with a user ID. Call this after calling [`Segment.initialize()`](#exposegmentinitialize "Segment.initialize") but before other segment calls. See <https://segment.com/docs/spec/identify/>.
+Associates the current user with a user ID. Call this after calling [`Segment.initialize()`](#exposegmentinitialize 'Segment.initialize') but before other segment calls. See <https://segment.com/docs/spec/identify/>.
 
 #### Arguments
 
--   **userId (_string_)** – User ID for the current user.
+- **userId (_string_)** – User ID for the current user.
 
 ### `Segment.identifyWithTraits(userId, traits)`
 
 #### Arguments
 
--   **userId (_string_)** – User ID for the current user.
--   **traits (_object_)** – A map of custom properties.
+- **userId (_string_)** – User ID for the current user.
+- **traits (_object_)** – A map of custom properties.
 
 ### `Segment.reset()`
 
@@ -56,7 +52,7 @@ Log an event to Segment. See <https://segment.com/docs/spec/track/>.
 
 #### Arguments
 
--   **event (_string_)** – The event name.
+- **event (_string_)** – The event name.
 
 ### `Segment.trackWithProperties(event, properties)`
 
@@ -64,8 +60,8 @@ Log an event to Segment with custom properties. See <https://segment.com/docs/sp
 
 #### Arguments
 
--   **event (_string_)** – The event name.
--   **properties (_object_)** – A map of custom properties.
+- **event (_string_)** – The event name.
+- **properties (_object_)** – A map of custom properties.
 
 ### `Segment.group(groupId)`
 
@@ -73,7 +69,7 @@ Associate the user with a group. See <https://segment.com/docs/spec/group/>.
 
 #### Arguments
 
--   **groupId (_string_)** – ID of the group.
+- **groupId (_string_)** – ID of the group.
 
 ### `Segment.groupWithTraits(groupId, traits)`
 
@@ -81,8 +77,8 @@ Associate the user with a group with traits. See <https://segment.com/docs/spec/
 
 #### Arguments
 
--   **groupId (_string_)** – ID of the group.
--   **traits (_object_)** – free-form dictionary of traits of the group.
+- **groupId (_string_)** – ID of the group.
+- **traits (_object_)** – free-form dictionary of traits of the group.
 
 ### `Segment.alias(newId, [options])`
 
@@ -90,12 +86,12 @@ Associate current identity with a new identifier. See <https://segment.com/docs/
 
 #### Arguments
 
--   **newId (_string_)** – Identifier to associate with.
--   **options (_object_)** – _(optional)_ extra dictionary with options for the call. You could pass a dictionary of form `{ [integrationKey]: { enabled: boolean, options: object } }` to configure destinations of the call.
+- **newId (_string_)** – Identifier to associate with.
+- **options (_object_)** – _(optional)_ extra dictionary with options for the call. You could pass a dictionary of form `{ [integrationKey]: { enabled: boolean, options: object } }` to configure destinations of the call.
 
 #### Returns
 
--   A `Promise` resolving to a `boolean` indicating whether the method has been executed on the underlying Segment instance or not.
+- A `Promise` resolving to a `boolean` indicating whether the method has been executed on the underlying Segment instance or not.
 
 ### `Segment.screen(screenName)`
 
@@ -103,14 +99,14 @@ Record that a user has seen a screen to Segment. See <https://segment.com/docs/s
 
 #### Arguments
 
--   **screenName (_string_)** – Name of the screen.
+- **screenName (_string_)** – Name of the screen.
 
 ### `Segment.screenWithProperties(screenName, properties)`
 
 Record that a user has seen a screen to Segment with custom properties. See <https://segment.com/docs/spec/screen/>.
 
--   **screenName (_string_)** – Name of the screen.
--   **properties (_object_)** – A map of custom properties.
+- **screenName (_string_)** – Name of the screen.
+- **properties (_object_)** – A map of custom properties.
 
 ### `Segment.flush()`
 
@@ -132,7 +128,6 @@ Segment.setEnabledAsync(true);
 
 > **Note:** disabling the Segment SDK ensures that all data collection method invocations (eg. `track`, `identify`, etc) are ignored.
 
-This method is only supported in standalone and detached apps. In Expo Client the promise will reject.
+This method is only supported in standalone and detached apps. In Expo client the promise will reject.
 
 The setting value will be persisted across restarts, so once you call `setEnabledAsync(false)`, Segment won't track the users even when the app restarts. To check whether tracking is enabled, use `Segment.getEnabledAsync()` which returns a promise which should resolve to a boolean.
-

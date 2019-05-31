@@ -1,7 +1,7 @@
 'use strict';
 
 import { Platform, NativeModules } from 'react-native';
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
 
 const { ExponentTest } = NativeModules;
 

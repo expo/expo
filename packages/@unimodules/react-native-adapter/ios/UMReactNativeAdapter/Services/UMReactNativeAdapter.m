@@ -3,6 +3,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <UMReactNativeAdapter/UMReactNativeAdapter.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
 #import <UMImageLoaderInterface/UMImageLoaderInterface.h>
@@ -19,6 +20,7 @@
 @interface RCTBridge ()
 
 - (JSGlobalContextRef)jsContextRef;
+- (void *)runtime;
 - (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue;
 
 @end
@@ -102,6 +104,42 @@ UM_REGISTER_MODULE();
   [self.bridge dispatchBlock:block queue:RCTJSThread];
 }
 
+- (void)executeUIBlock:(void (^)(NSDictionary<id,UIView *> *))block {
+  __weak UMReactNativeAdapter *weakSelf = self;
+  dispatch_async(_bridge.uiManager.methodQueue, ^{
+    __strong UMReactNativeAdapter *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        block(viewRegistry);
+      }];
+      [strongSelf.bridge.uiManager setNeedsLayout];
+    }
+  });
+}
+
+
+- (void)executeUIBlock:(void (^)(id))block forView:(id)viewId implementingProtocol:(Protocol *)protocol {
+  [self executeUIBlock:^(UIView *view) {
+    if (![view.class conformsToProtocol:protocol]) {
+      block(nil);
+    } else {
+      block(view);
+    }
+  } forView:viewId];
+}
+
+
+- (void)executeUIBlock:(void (^)(id))block forView:(id)viewId ofClass:(Class)klass {
+  [self executeUIBlock:^(UIView *view) {
+    if (![view isKindOfClass:klass]) {
+      block(nil);
+    } else {
+      block(view);
+    }
+  } forView:viewId];
+}
+
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
@@ -130,7 +168,15 @@ UM_REGISTER_MODULE();
 
 - (JSGlobalContextRef)javaScriptContextRef
 {
-  return _bridge.jsContextRef;
+  if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
+    return _bridge.jsContextRef;
+  } else { 
+    // In react-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
+    // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
+    // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
+    // WARNING: This is temporary solution that may break with new react-native releases.
+    return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);
+  }
 }
 
 # pragma mark - UMImageLoader
@@ -213,6 +259,21 @@ UM_REGISTER_MODULE();
         UIView *view = viewRegistry[viewId];
         block(view);
       }];
+    }
+  });
+}
+
+- (void)executeUIBlock:(void (^)(UIView *view))block forView:(id)viewId
+{
+  __weak UMReactNativeAdapter *weakSelf = self;
+  dispatch_async(_bridge.uiManager.methodQueue, ^{
+    __strong UMReactNativeAdapter *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        UIView *view = viewRegistry[viewId];
+        block(view);
+      }];
+      [strongSelf.bridge.uiManager setNeedsLayout];
     }
   });
 }

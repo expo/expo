@@ -83,7 +83,7 @@ Adds a notification to your standalone app with refresh button and debug info.
 
 ## "scheme"
 
-**Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped. String beginning with a letter followed by any combination of letters, digits, "+", "." or "-"
+**Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped. String beginning with a **lowercase** letter followed by any combination of **lowercase** letters, digits, "+", "." or "-"
 
 ## "entryPoint"
 

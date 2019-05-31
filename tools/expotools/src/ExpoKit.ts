@@ -1,6 +1,6 @@
 import path from 'path';
 import uuid from 'uuid';
-import { Versions, Config } from 'xdl';
+import { Versions, Config } from '@expo/xdl';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 

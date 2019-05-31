@@ -27,6 +27,8 @@ redirects[versions/latest/guides/app-stores.html]=versions/latest/distribution/a
 redirects[versions/latest/guides/offline-support.html]=versions/latest/guides/offline-support/
 # xdl convert comment
 redirects[versions/latest/sdk/]=versions/latest/sdk/overview/
+# upgrading expo -> upgrading sdk walkthrough
+redirects[versions/latest/workflow/upgrading-expo]=versions/latest/workflow/upgrading-expo-sdk-walkthrough/
 
 for i in "${!redirects[@]}" # iterate over keys
 do

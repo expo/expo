@@ -1,7 +1,8 @@
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { NavigationScreenComponent, NavigationScreenProps } from 'react-navigation';
-import { Calendar, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Calendar from 'expo-calendar';
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
 import HeadingText from '../components/HeadingText';

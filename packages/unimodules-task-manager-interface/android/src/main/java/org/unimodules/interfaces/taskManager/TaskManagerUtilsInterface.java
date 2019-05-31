@@ -1,9 +1,11 @@
 package org.unimodules.interfaces.taskManager;
 
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
+import android.app.job.JobParameters;
 import android.content.Context;
 import android.os.PersistableBundle;
+
+import java.util.List;
 
 public interface TaskManagerUtilsInterface {
   /**
@@ -17,22 +19,17 @@ public interface TaskManagerUtilsInterface {
   void cancelTaskIntent(Context context, String appId, String taskName);
 
   /**
-   * Schedules a job with customizable job info param.
+   * Schedules a job for given task and with given list of extra data.
    */
-  void scheduleJob(Context context, JobInfo jobInfoArg);
-
-  /**
-   * Schedules a job for given task and with given extra data.
-   */
-  void scheduleJob(Context context, TaskInterface task, PersistableBundle extras);
-
-  /**
-   * Creates JobInfo.Builder that has jobId already set and is associated with given task.
-   */
-  JobInfo.Builder createJobInfoBuilder(Context context, TaskInterface task, PersistableBundle data);
+  void scheduleJob(Context context, TaskInterface task, List<PersistableBundle> data);
 
   /**
    * Cancels scheduled job with given identifier.
    */
   void cancelScheduledJob(Context context, int jobId);
+
+  /**
+   * Extracts data list from job parameters.
+   */
+  List<PersistableBundle> extractDataFromJobParams(JobParameters params);
 }

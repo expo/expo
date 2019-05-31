@@ -191,7 +191,7 @@ UM_EXPORT_METHOD_AS(takePicture,
 #if TARGET_IPHONE_SIMULATOR
   __weak EXCameraManager *weakSelf = self;
 #endif
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
 #if TARGET_IPHONE_SIMULATOR
       __strong EXCameraManager *strongSelf = weakSelf;
@@ -244,7 +244,7 @@ UM_EXPORT_METHOD_AS(record,
   reject(@"E_RECORDING_FAILED", @"Video recording is not supported on a simulator.", nil);
   return;
 #endif
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view record:options resolve:resolve reject:reject];
     } else {
@@ -259,7 +259,7 @@ UM_EXPORT_METHOD_AS(stopRecording,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view stopRecording];
       resolve(nil);
@@ -278,7 +278,7 @@ UM_EXPORT_METHOD_AS(resumePreview,
   reject(@"E_SIM_PREVIEW", @"Resuming preview is not supported on simulator.", nil);
   return;
 #endif
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view resumePreview];
       resolve(nil);
@@ -297,7 +297,7 @@ UM_EXPORT_METHOD_AS(pausePreview,
   reject(@"E_SIM_PREVIEW", @"Pausing preview is not supported on simulator.", nil);
   return;
 #endif
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view pausePreview];
       resolve(nil);

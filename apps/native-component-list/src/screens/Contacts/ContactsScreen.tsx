@@ -1,6 +1,7 @@
 import React from 'react';
 import { RefreshControl, StyleSheet, Text, View } from 'react-native';
-import { Contacts, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as Contacts from 'expo-contacts';
 import { NavigationEvents, NavigationScreenProps } from 'react-navigation';
 import HeaderButtons from 'react-navigation-header-buttons';
 import { Ionicons } from '@expo/vector-icons';

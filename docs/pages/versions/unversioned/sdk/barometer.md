@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Barometer } from 'expo';
-
-// in bare apps:
 import { Barometer } from 'expo-sensors';
 ```
 
@@ -159,4 +155,3 @@ const styles = StyleSheet.create({
   },
 });
 ```
-

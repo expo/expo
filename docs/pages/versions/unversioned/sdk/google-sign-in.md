@@ -2,11 +2,17 @@
 title: GoogleSignIn
 ---
 
-This library provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo Client, check out [Google](../google) or [AppAuth](../app-auth).
+This library provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [Google](../google) or [AppAuth](../app-auth).
 
 ## Installation
 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in). For a more in-depth guide, check out this [blog post](https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce)!
+
+## API
+
+```js
+import * as GoogleSignIn from 'expo-google-sign-in';
+```
 
 ## Setup
 
@@ -420,4 +426,3 @@ export default class AuthScreen extends React.Component {
   }
 }
 ```
-

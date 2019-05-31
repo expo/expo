@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Platform } from 'react-native';
-import { AdMobBanner, AdMobRewarded, AdMobInterstitial } from 'expo';
+import { AdMobBanner, AdMobInterstitial, AdMobRewarded } from 'expo-ads-admob';
 import Button from '../components/Button';
 
 export default class AdMobScreen extends React.Component {

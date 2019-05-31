@@ -1,7 +1,6 @@
-import './muteWarnings.fx';
 import Constants from 'expo-constants';
 
-import Logs from '../logs/Logs';
+import * as Logs from '../logs/Logs';
 import RemoteLogging from '../logs/RemoteLogging';
 
 if (Constants.manifest && Constants.manifest.logUrl) {

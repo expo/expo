@@ -296,9 +296,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
 
-    // remove job ID from pending jobs
-    TaskManagerUtils.removeFromPendingJobs(params.getJobId());
-
     if (consumer == null) {
       Log.w(TAG, "Task or consumer not found.");
       return false;
@@ -323,9 +320,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     String taskName = extras.getString("taskName");
 
     TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
-
-    // remove job ID from pending jobs
-    TaskManagerUtils.removeFromPendingJobs(params.getJobId());
 
     if (consumer == null) {
       return false;

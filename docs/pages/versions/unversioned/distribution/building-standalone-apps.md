@@ -19,8 +19,8 @@ Expo CLI is the tool for developing and building Expo apps. Run `npm install -g 
 
 If you haven't created an Expo account before, you'll be asked to create one when running the build command.
 
-**Windows users** must have WSL enabled. We recommend picking Ubuntu from the Windows Store. Be sure
-to Launch Ubuntu at least once. After that, use an Admin powershell to run:
+**Windows users** must have WSL enabled. You can follow the installation guide [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We recommend picking Ubuntu from the Windows Store. Be sure
+to launch Ubuntu at least once. After that, use an Admin powershell to run:
 `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux`
 
 ## 2. Configure app.json
@@ -86,7 +86,7 @@ If you don't know what this means, let us handle it! :)
 
 You are given a choice of letting the `expo` client create the
 necessary credentials for you, while still having a chance to provide
-your own overrides. Your Apple ID and password is used locally and
+your own overrides. Your Apple ID and password are used locally and
 never saved on Expo's servers.
 
 ```bash
@@ -120,9 +120,9 @@ a Distribution Certificate is, just let us handle it for you. If you do need
 to upload your own certificates, we recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/).
 **Note:** this guide recommends leaving the P12's password blank, but a P12 password
 is required to upload your own certificate to Expo's service. Please enter a password
-when prompted. We'll ask you similar questions about your choice regarding
+when prompted. We'll also help you handle your
 Push Notifications service key. Remember that Push Notifications service keys
-can be reused across different Expo apps as well.
+are shared across all apps published under the same Apple Developer account.
 
 > **Note:** The Expo build service supports both normal App Store distribution as well as enterprise
 > distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise
@@ -136,7 +136,7 @@ can be reused across different Expo apps as well.
 ### Switch to Push Notification Key on iOS
 
 If you are using Push Notifications Certificate and want to switch to Push Notifications Key you need
-to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifcations Key for you.
+to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifications Key for you.
 
 ## 4. Wait for it to finish building
 
@@ -161,7 +161,7 @@ import safeCompare from 'safe-compare';
 const app = express();
 app.use(bodyParser.text({ type: '*/*' }));
 app.post('/webhook', (req, res) => {
-  const expoSignature = req.headers['expo-signature'];
+  const expoSignature = req.headers['Expo-Signature'];
   // process.env.SECRET_WEBHOOK_KEY has to match <webhook-secret> value set with `expo webhooks:set ...` command
   const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
   hmac.update(req.body);

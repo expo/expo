@@ -134,7 +134,7 @@ The permission type for location access.
 > **Note:** iOS is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
 On iOS ask for this permission type individually.
 
-> **Note (iOS):** In Expo Client this permission will always ask the user for permission to access location data while the app is in use.
+> **Note (iOS):** In Expo client this permission will always ask the user for permission to access location data while the app is in use.
 
 > **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { location: { ios } } }` where `ios` which is an object containing: `{ scope: 'whenInUse' | 'always' | 'none' }`
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
@@ -175,7 +175,7 @@ The permissions type for changing brighness of the screen
 
 ## Android: permissions equivalents inside `app.json`
 
-In order to request permissions in a standalone Android app, you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Permissions` values and native permission types is as follows:
+In order to request permissions in a standalone Android app (Managed Workflow only), you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Permissions` values and native permission types is as follows:
 
 | Expo            | Android                                           |
 | --------------- | --------------------------------------------------|

@@ -1,8 +1,7 @@
-// tslint:disable max-classes-per-file
 import React from 'react';
-// @ts-ignore
-import { StyleSheet, Button, View, TextInput, DangerZone } from 'react-native';
-const { Screen, ScreenContainer } = DangerZone;
+
+import { StyleSheet, Button, View, TextInput } from 'react-native';
+import { Screen, ScreenContainer } from 'react-native-screens';
 
 export class LazyTabs extends React.Component<{ renderScreen: (key: string) => JSX.Element }> {
   state = {
@@ -16,7 +15,7 @@ export class LazyTabs extends React.Component<{ renderScreen: (key: string) => J
       screens = [...screens, key];
     }
     this.setState({ active: key, screens });
-  }
+  };
 
   renderScreen = (key: string) => {
     const active = key === this.state.active ? 1 : 0;
@@ -25,7 +24,7 @@ export class LazyTabs extends React.Component<{ renderScreen: (key: string) => J
         {this.props.renderScreen(key)}
       </Screen>
     );
-  }
+  };
 
   render() {
     return (
@@ -48,12 +47,11 @@ class App extends React.Component {
           backgroundColor: color,
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <TextInput placeholder="Hello" style={styles.textInput} />
       </View>
     );
-  }
+  };
 
   render() {
     return (

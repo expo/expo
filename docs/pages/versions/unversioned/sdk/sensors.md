@@ -11,17 +11,8 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import {
-  Accelerometer,
-  Barometer,
-  Gyroscope,
-  Magnetometer,
-  MagnetometerUncalibrated,
-  Pedometer,
-} from 'expo';
-
-// in bare apps:
+import * as Sensors from 'expo-sensors';
+// OR
 import {
   Accelerometer,
   Barometer,

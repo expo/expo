@@ -1,6 +1,7 @@
 'use strict';
 
-import { FileSystem as FS, Asset } from 'expo';
+import { Asset } from 'expo-asset';
+import * as FS from 'expo-file-system';
 
 export const name = 'FileSystem';
 
@@ -444,6 +445,34 @@ export async function test(t) {
 
         await FS.deleteAsync(localUri);
         await assertExists(false);
+      },
+      30000
+    );
+
+    t.it(
+      'download(nonexistent local path)',
+      async () => {
+        try {
+          const remoteUrl = 'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png';
+          const localUri = FS.documentDirectory + 'doesnt/exists/download1.png';
+          await FS.downloadAsync(remoteUrl, localUri);
+        } catch (err) {
+          t.expect(err.message).toMatch(/Directory for .* doesn't exist/);
+        }
+      },
+      30000
+    );
+
+    t.it(
+      'mkdir(multi-level) + download(multi-level local path)',
+      async () => {
+        const remoteUrl = 'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png';
+        const localDirUri = FS.documentDirectory + 'foo/bar/baz';
+        const localFileUri = localDirUri + 'download1.png';
+
+        await FS.makeDirectoryAsync(localDirUri, { intermediates: true });
+
+        await FS.downloadAsync(remoteUrl, localFileUri);
       },
       30000
     );

@@ -27,6 +27,15 @@ Run `pod install` in the ios directory after installing the npm package.
 
 No additional set up necessary.
 
+In `AndroidManifest.xml`, add the following element within your `<application>` element:
+
+```xml
+...
+      <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
+    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
+  </application>
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

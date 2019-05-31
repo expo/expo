@@ -16,15 +16,15 @@ Expo apps are React Native apps with the Expo SDK built-in. The fastest way to g
 
 ## Developing locally
 
-When you work on an Expo project, we serve an instance of your project from your local computer. If you close the project or turn off your computer, your development project stops being served.
+When you work on a managed Expo project, we serve an instance of your project from your local computer. If you close the project or turn off your computer, your development project stops being served.
 
-During this time, you test your project using a pre-built iOS/Android app called [Expo Client](../installation/). It asks your computer for a local copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), inspecting elements, hot module reloading, and more.
+During this time, you test your project using a pre-built iOS/Android app called [Expo client](../installation/). It asks your computer for a local copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), inspecting elements, hot module reloading, and more.
 
 ## Publishing your project
 
 If you click the **Publish** button in Expo Dev Tools, we upload a minified copy of your app to our CDN, and give you a shareable url of the form `expo.io/@your-username/your-app-slug`.
 
-You can share this link immediately with anybody who has the Expo Client app for Android. [Read more about Publishing here](../../workflow/publishing/).
+You can share this link immediately with anybody who has the Expo client app for Android. [Read more about Publishing here](../../workflow/publishing/).
 
 On iOS, you'll need to use Apple TestFlight to share your app with others.
 

@@ -32,10 +32,9 @@ UM_EXPORT_MODULE(AdOptionsViewManager)
 UM_VIEW_PROPERTY(nativeAdViewTag, NSNumber *, FBAdOptionsView)
 {
   id<UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
-  [uiManager addUIBlock:^(NSDictionary<id,UIView *> * viewRegistry) {
-    EXNativeAdView *nativeAdView = (EXNativeAdView *)viewRegistry[value];
-    [view setNativeAd:nativeAdView.nativeAd];
-  }];
+  [uiManager addUIBlock:^(EXNativeAdView *view) {
+    [view setNativeAd:view.nativeAd];
+  } forView:value ofClass:[EXNativeAdView class]];
 }
 
 UM_VIEW_PROPERTY(iconColor, NSString *, FBAdOptionsView)

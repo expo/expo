@@ -5,10 +5,10 @@ title: Camera
 A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
 
 > **Note**: Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
-<br/>
+> <br/>
 
 > **Note**: Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
-<br/>
+> <br/>
 
 > **Note**: The Camera API will not work on simulators or emulators.
 
@@ -27,7 +27,8 @@ In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording require
 ```javascript
 import React from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
-import { Camera, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import { Camera } from 'expo-camera';
 
 export default class CameraExample extends React.Component {
   state = {
@@ -64,15 +65,13 @@ export default class CameraExample extends React.Component {
                 }}
                 onPress={() => {
                   this.setState({
-                    type: this.state.type === Camera.Constants.Type.back
-                      ? Camera.Constants.Type.front
-                      : Camera.Constants.Type.back,
+                    type:
+                      this.state.type === Camera.Constants.Type.back
+                        ? Camera.Constants.Type.front
+                        : Camera.Constants.Type.back,
                   });
                 }}>
-                <Text
-                  style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
-                  {' '}Flip{' '}
-                </Text>
+                <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
               </TouchableOpacity>
             </View>
           </Camera>
@@ -166,7 +165,7 @@ Settings exposed by [`BarCodeScanner`](../bar-code-scanner/) module. Supported s
 ```javascript
 <Camera
   barCodeScannerSettings={{
-    barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr]
+    barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
   }}
 />
 ```
@@ -175,7 +174,7 @@ Settings exposed by [`BarCodeScanner`](../bar-code-scanner/) module. Supported s
 
 **Android only**. Whether to use Android's Camera2 API. See `Note` at the top of this page.
 
-* **videoStabilizationMode** (_Camera.Constants.VideoStabilization_)
+- **videoStabilizationMode** (_Camera.Constants.VideoStabilization_)
 
 **iOS only**. The video stabilization mode used for a video recording. Use one of `Camera.Constants.VideoStabilization.{off, standard, cinematic, auto}`.
 
@@ -187,7 +186,11 @@ To use methods that Camera exposes one has to create a components `ref` and invo
 
 ```javascript
 // ...
-<Camera ref={ref => { this.camera = ref; }} />
+<Camera
+  ref={ref => {
+    this.camera = ref;
+  }}
+/>;
 // ...
 snap = async () => {
   if (this.camera) {
@@ -202,17 +205,16 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 #### Arguments
 
--   **options (_object_)** --
+- **options (_object_)** --
 
-      A map of options:
+  A map of options:
 
-    -   **quality (_number_)** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
-    -   **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
-    -   **exif (_boolean_)** -- Whether to also include the EXIF data for the image.
-    -   **onPictureSaved (_function_)** -- A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured. The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it is not your case, this callback lets you skip waiting for it to be saved.
-    -   **skipProcessing (_boolean_)** - Android only. If set to `true`, camera skips orientation adjustment and returns an image straight from the device's camera. If enabled, `quality` option is discarded (processing pipeline is skipped as a whole). Although enabling this option reduces image delivery time significantly, it may cause the image to appear in a wrong orientation in the `Image` component (at the time of writing, it does not respect EXIF orientation of the images).
-    > **Note**: Enabling **skipProcessing** would cause orientation uncertainty. `Image` component does not respect EXIF stored orientation information, that means obtained image would be displayed wrongly (rotated by 90°, 180° or 270°). Different devices provide different orientations. For example some SonyExperia or Samosung devices don't provide correctly oriented images by default. To always obtain correctly oriented image disable **skipProcessing** option.
-
+  - **quality (_number_)** -- Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
+  - **base64 (_boolean_)** -- Whether to also include the image data in Base64 format.
+  - **exif (_boolean_)** -- Whether to also include the EXIF data for the image.
+  - **onPictureSaved (_function_)** -- A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured. The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it is not your case, this callback lets you skip waiting for it to be saved.
+  - **skipProcessing (_boolean_)** - Android only. If set to `true`, camera skips orientation adjustment and returns an image straight from the device's camera. If enabled, `quality` option is discarded (processing pipeline is skipped as a whole). Although enabling this option reduces image delivery time significantly, it may cause the image to appear in a wrong orientation in the `Image` component (at the time of writing, it does not respect EXIF orientation of the images).
+    > **Note**: Enabling **skipProcessing** would cause orientation uncertainty. `Image` component does not respect EXIF stored orientation information, that means obtained image would be displayed wrongly (rotated by 90°, 180° or 270°). Different devices provide different orientations. For example some Sony Xperia or Samsung devices don't provide correctly oriented images by default. To always obtain correctly oriented image disable **skipProcessing** option.
 
 #### Returns
 
@@ -226,14 +228,14 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
 
 #### Arguments
 
--   **options (_object_)** --
+- **options (_object_)** --
 
-      A map of options:
+  A map of options:
 
-    -   **quality (_VideoQuality_)** -- Specify the quality of recorded video. Usage: `Camera.Constants.VideoQuality['<value>']`, possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480). If the chosen quality is not available for a device, the highest available is chosen.
-    -   **maxDuration (_number_)** -- Maximum video duration in seconds.
-    -   **maxFileSize (_number_)** -- Maximum video file size in bytes.
-    -   **mute (_boolean_)** -- If present, video will be recorded with no sound.
+  - **quality (_VideoQuality_)** -- Specify the quality of recorded video. Usage: `Camera.Constants.VideoQuality['<value>']`, possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480). If the chosen quality is not available for a device, the highest available is chosen.
+  - **maxDuration (_number_)** -- Maximum video duration in seconds.
+  - **maxFileSize (_number_)** -- Maximum video file size in bytes.
+  - **mute (_boolean_)** -- If present, video will be recorded with no sound.
 
 #### Returns
 
@@ -257,7 +259,7 @@ Get picture sizes that are supported by the device for given `ratio`.
 
 #### Arguments
 
--   **ratio (_string_)** -- A string representing aspect ratio of sizes to be returned.
+- **ratio (_string_)** -- A string representing aspect ratio of sizes to be returned.
 
 #### Returns
 
@@ -270,4 +272,3 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 ### `resumePreview`
 
 Resumes the camera preview.
-

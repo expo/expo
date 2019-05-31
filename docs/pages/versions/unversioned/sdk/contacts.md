@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Contacts } from 'expo';
-
-// in bare apps:
 import * as Contacts from 'expo-contacts';
 ```
 
@@ -76,7 +72,7 @@ Returns a contact matching the input id. Used for gathering precise data about a
 **Example**
 
 ```js
-const contact = await Contacts.getContactByIdAsync("161A368D-D614-4A15-8DC6-665FDBCFAE55");
+const contact = await Contacts.getContactByIdAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
 if (contact) {
   console.log(contact);
 }
@@ -84,14 +80,13 @@ if (contact) {
 
 ### addContactAsync
 
-
 ```js
 addContactAsync(contact: Contact, containerId: string): Promise<string>
 ```
 
 Creates a new contact and adds it to the system.
 
-> **Note**: For Android users, the Expo Client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/) and add permission through there.
+> **Note**: For Android users, the Expo client App does not have the required `WRITE_CONTACTS` permission to write to Contacts. In order to do this, you must build a [standalone app](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/) and add permission through there.
 
 **Parameters**
 
@@ -110,10 +105,10 @@ Creates a new contact and adds it to the system.
 
 ```js
 const contact = {
-  [Contacts.Fields.FirstName]: "Bird",
-  [Contacts.Fields.LastName]: "Man",
-  [Contacts.Fields.Company]: "Young Money",
-}
+  [Contacts.Fields.FirstName]: 'Bird',
+  [Contacts.Fields.LastName]: 'Man',
+  [Contacts.Fields.Company]: 'Young Money',
+};
 const contactId = await Contacts.addContactAsync(contact);
 ```
 
@@ -150,8 +145,8 @@ Present a native form for manipulating contacts
 
 ```js
 // Edit contact
-await Contacts.presentFormAsync("161A368D-D614-4A15-8DC6-665FDBCFAE55");
-``` 
+await Contacts.presentFormAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
+```
 
 **Parameters**
 
@@ -169,10 +164,10 @@ await Contacts.presentFormAsync("161A368D-D614-4A15-8DC6-665FDBCFAE55");
 
 ```js
 const contact = {
-  id: "161A368D-D614-4A15-8DC6-665FDBCFAE55",
-  [Contacts.Fields.FirstName]: "Drake",
-  [Contacts.Fields.Company]: "Young Money",
-}
+  id: '161A368D-D614-4A15-8DC6-665FDBCFAE55',
+  [Contacts.Fields.FirstName]: 'Drake',
+  [Contacts.Fields.Company]: 'Young Money',
+};
 await Contacts.updateContactAsync(contact);
 ```
 
@@ -195,7 +190,7 @@ Delete a contact from the system.
 **Example**
 
 ```js
-await Contacts.removeContactAsync("161A368D-D614-4A15-8DC6-665FDBCFAE55");
+await Contacts.removeContactAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
 ### writeContactToFileAsync
@@ -221,8 +216,10 @@ Query a set of contacts and write them to a local uri that can be used for shari
 **Example**
 
 ```js
-const localUri = await Contacts.writeContactToFileAsync({ id: "161A368D-D614-4A15-8DC6-665FDBCFAE55" });
-Share.share({ url: localUri, message: "Call me!" });
+const localUri = await Contacts.writeContactToFileAsync({
+  id: '161A368D-D614-4A15-8DC6-665FDBCFAE55',
+});
+Share.share({ url: localUri, message: 'Call me!' });
 ```
 
 ---
@@ -249,7 +246,10 @@ Add a group to a container.
 **Example**
 
 ```js
-await Contacts.addExistingGroupToContainerAsync("161A368D-D614-4A15-8DC6-665FDBCFAE55", "665FDBCFAE55-D614-4A15-8DC6-161A368D");
+await Contacts.addExistingGroupToContainerAsync(
+  '161A368D-D614-4A15-8DC6-665FDBCFAE55',
+  '665FDBCFAE55-D614-4A15-8DC6-161A368D'
+);
 ```
 
 ### createGroupAsync
@@ -276,7 +276,7 @@ Create a group with a name, and add it to a container. If the container is undef
 **Example**
 
 ```js
-const groupId = await Contacts.createGroupAsync("Sailor Moon");
+const groupId = await Contacts.createGroupAsync('Sailor Moon');
 ```
 
 ### updateGroupNameAsync
@@ -297,7 +297,7 @@ Change the name of an existing group.
 **Example**
 
 ```js
-await Contacts.updateGroupName("Sailor Moon", "161A368D-D614-4A15-8DC6-665FDBCFAE55");
+await Contacts.updateGroupName('Sailor Moon', '161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
 ### removeGroupAsync
@@ -317,7 +317,7 @@ Delete a group from the device.
 **Example**
 
 ```js
-await Contacts.removeGroupAsync("161A368D-D614-4A15-8DC6-665FDBCFAE55");
+await Contacts.removeGroupAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
 ### addExistingContactToGroupAsync
@@ -338,7 +338,10 @@ Add a contact as a member to a group. A contact can be a member of multiple grou
 **Example**
 
 ```js
-await Contacts.addExistingContactToGroupAsync("665FDBCFAE55-D614-4A15-8DC6-161A368D", "161A368D-D614-4A15-8DC6-665FDBCFAE55");
+await Contacts.addExistingContactToGroupAsync(
+  '665FDBCFAE55-D614-4A15-8DC6-161A368D',
+  '161A368D-D614-4A15-8DC6-665FDBCFAE55'
+);
 ```
 
 ### removeContactFromGroupAsync
@@ -359,7 +362,10 @@ Remove a contact's membership from a given group. This will not delete the conta
 **Example**
 
 ```js
-await Contacts.removeContactFromGroupAsync("665FDBCFAE55-D614-4A15-8DC6-161A368D", "161A368D-D614-4A15-8DC6-665FDBCFAE55");
+await Contacts.removeContactFromGroupAsync(
+  '665FDBCFAE55-D614-4A15-8DC6-161A368D',
+  '161A368D-D614-4A15-8DC6-665FDBCFAE55'
+);
 ```
 
 ### getGroupsAsync
@@ -385,7 +391,7 @@ Query and return a list of system groups.
 **Example**
 
 ```js
-const groups = await Contacts.getGroupsAsync({ groupName: "sailor moon" });
+const groups = await Contacts.getGroupsAsync({ groupName: 'sailor moon' });
 const allGroups = await Contacts.getGroupsAsync({});
 ```
 
@@ -432,7 +438,9 @@ Query a list of system containers.
 **Example**
 
 ```js
-const allContainers = await getContainersAsync({ contactId: "665FDBCFAE55-D614-4A15-8DC6-161A368D" });
+const allContainers = await getContainersAsync({
+  contactId: '665FDBCFAE55-D614-4A15-8DC6-161A368D',
+});
 ```
 
 ## Types
@@ -485,9 +493,9 @@ To get a group's children you can query with `getContactsAsync({ groupId })`
 
 Here are some different query operations:
 
-* Child Contacts: `getContactsAsync({ groupId })`
-* Groups From Container: `getGroupsAsync({ containerId })`
-* Groups Named: `getContainersAsync({ groupName })`
+- Child Contacts: `getContactsAsync({ groupId })`
+- Groups From Container: `getGroupsAsync({ containerId })`
+- Groups Named: `getContainersAsync({ groupName })`
 
 | Name | Type     | Description                         |
 | ---- | -------- | ----------------------------------- |
@@ -501,11 +509,11 @@ Here are some different query operations:
 A parent to contacts and groups. You can query the default container with `getDefaultContainerIdAsync()`.
 Here are some different query operations:
 
-* Child Contacts: `getContactsAsync({ containerId })`
-* Child Groups: `getGroupsAsync({ containerId })`
-* Container from Contact: `getContainersAsync({ contactId })`
-* Container from Group: `getContainersAsync({ groupId })`
-* Container from ID: `getContainersAsync({ containerId })`
+- Child Contacts: `getContactsAsync({ containerId })`
+- Child Groups: `getGroupsAsync({ containerId })`
+- Container from Contact: `getContainersAsync({ contactId })`
+- Container from Group: `getContainersAsync({ groupId })`
+- Container from ID: `getContainersAsync({ containerId })`
 
 | Name | Type     | Description                         |
 | ---- | -------- | ----------------------------------- |
@@ -820,10 +828,9 @@ This table illustrates what fields will be added on demand to every contact.
 
 ### SDK 29
 
-* The `thumnail` field has been deprecated, use `image` on both platforms instead.
-* On iOS `image` is now `rawImage`. There is no Android version of `rawImage`.
-* Images now return a localUri instead of Base64 string.
-* Base64 string is now returned in a encodable format.
-* Empty contact fields will no longer be returned as empty strings on iOS.
-* Passing no fields will now return all contact information.
-
+- The `thumnail` field has been deprecated, use `image` on both platforms instead.
+- On iOS `image` is now `rawImage`. There is no Android version of `rawImage`.
+- Images now return a localUri instead of Base64 string.
+- Base64 string is now returned in a encodable format.
+- Empty contact fields will no longer be returned as empty strings on iOS.
+- Passing no fields will now return all contact information.

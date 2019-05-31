@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.maps;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
 
@@ -11,10 +12,13 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
@@ -24,6 +28,128 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
   private static final int HIDE_INFO_WINDOW = 2;
   private static final int ANIMATE_MARKER_TO_COORDINATE = 3;
   private static final int REDRAW = 4;
+
+  public static class AirMapMarkerSharedIcon {
+    private BitmapDescriptor iconBitmapDescriptor;
+    private Bitmap bitmap;
+    private Map<AirMapMarker, Boolean> markers;
+    private boolean loadImageStarted;
+
+    public AirMapMarkerSharedIcon(){
+      this.markers = new WeakHashMap<>();
+      this.loadImageStarted = false;
+    }
+
+    /**
+     * check whether the load image process started.
+     * caller AirMapMarker will only need to load it when this returns true.
+     *
+     * @return true if it is not started, false otherwise.
+     */
+    public synchronized boolean shouldLoadImage(){
+      if (!this.loadImageStarted) {
+        this.loadImageStarted = true;
+        return true;
+      }
+      return false;
+    }
+
+    /**
+     * subscribe icon update for given marker.
+     *
+     * The marker is wrapped in weakReference, so no need to remove it explicitly.
+     *
+     * @param marker
+     */
+    public synchronized void addMarker(AirMapMarker marker) {
+      this.markers.put(marker, true);
+      if (this.iconBitmapDescriptor != null) {
+        marker.setIconBitmapDescriptor(this.iconBitmapDescriptor, this.bitmap);
+      }
+    }
+
+    /**
+     * Remove marker from this shared icon.
+     *
+     * Marker will only need to call it when the marker receives a different marker image uri.
+     *
+     * @param marker
+     */
+    public synchronized void removeMarker(AirMapMarker marker) {
+      this.markers.remove(marker);
+    }
+
+    /**
+     * check if there is markers still listening on this icon.
+     * when there are not markers listen on it, we can remove it.
+     *
+     * @return true if there is, false otherwise
+     */
+    public synchronized boolean hasMarker(){
+      return this.markers.isEmpty();
+    }
+
+    /**
+     * Update the bitmap descriptor and bitmap for the image uri.
+     * And notify all subscribers about the update.
+     *
+     * @param bitmapDescriptor
+     * @param bitmap
+     */
+    public synchronized void updateIcon(BitmapDescriptor bitmapDescriptor, Bitmap bitmap) {
+
+      this.iconBitmapDescriptor = bitmapDescriptor;
+      this.bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+      if (this.markers.isEmpty()) {
+        return;
+      }
+
+      for (Map.Entry<AirMapMarker, Boolean> markerEntry: markers.entrySet()) {
+        if (markerEntry.getKey() != null) {
+          markerEntry.getKey().setIconBitmapDescriptor(bitmapDescriptor, bitmap);
+        }
+      }
+    }
+  }
+
+  private Map<String, AirMapMarkerSharedIcon> sharedIcons = new ConcurrentHashMap<>();
+
+  /**
+   * get the shared icon object, if not existed, create a new one and store it.
+   *
+   * @param uri
+   * @return the icon object for the given uri.
+   */
+  public AirMapMarkerSharedIcon getSharedIcon(String uri) {
+    AirMapMarkerSharedIcon icon = this.sharedIcons.get(uri);
+    if (icon == null) {
+      synchronized (this) {
+        if((icon = this.sharedIcons.get(uri)) == null) {
+          icon = new AirMapMarkerSharedIcon();
+          this.sharedIcons.put(uri, icon);
+        }
+      }
+    }
+    return icon;
+  }
+
+  /**
+   * Remove the share icon object from our sharedIcons map when no markers are listening for it.
+   *
+   * @param uri
+   */
+  public void removeSharedIconIfEmpty(String uri) {
+    AirMapMarkerSharedIcon icon = this.sharedIcons.get(uri);
+    if (icon == null) {return;}
+    if (!icon.hasMarker()) {
+      synchronized (this) {
+        if((icon = this.sharedIcons.get(uri)) != null && !icon.hasMarker()) {
+          this.sharedIcons.remove(uri);
+        }
+      }
+    }
+  }
 
   public AirMapMarkerManager() {
   }
@@ -35,7 +161,7 @@ public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 
   @Override
   public AirMapMarker createViewInstance(ThemedReactContext context) {
-    return new AirMapMarker(context);
+    return new AirMapMarker(context, this);
   }
 
   @ReactProp(name = "coordinate")

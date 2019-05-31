@@ -1,6 +1,6 @@
 {
   "name": "EXSMS",
-  "version": "4.0.0",
+  "version": "5.0.0-rc.0",
   "summary": "Provides access to the system's UI/app for sending SMS messages.",
   "description": "Provides access to the system's UI/app for sending SMS messages.",
   "license": "MIT",
@@ -17,6 +17,9 @@
   "requires_arc": true,
   "dependencies": {
     "UMCore": [
+
+    ],
+    "UMPermissionsInterface": [
 
     ]
   }

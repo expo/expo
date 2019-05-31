@@ -2,11 +2,15 @@
 title: Upgrading Expo SDK Walkthrough
 ---
 
-If you are a couple of versions behind, upgrading your projects Expo SDK version can be difficult because of the amount of breaking changes and deprecations in each upgrade. Don't worry, here are all the breaking changes in each SDK version upgrade.
+If you are a couple of versions behind, upgrading your projects Expo SDK version can be difficult because of the amount of breaking changes and deprecations in each upgrade. Don't worry, here are all the breaking changes in each SDK version upgrade. We **strongly recommend** upgrading SDK versions incrementally if possible. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
 
-Expo only provides support for the last 6 versions since the latest version.
+Expo maintains ~6 months of backwards compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo client for development or build new binaries via `expo build`. You will still be able to publish OTA updates via `expo publish` however. Deprecations **will not** affect standalone apps you have in production.
+
+> **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../../expokit/expokit#upgrading-expokit). 
 
 ## SDK 29
+
+[Blog Post](https://blog.expo.io/expo-sdk-v29-0-0-is-now-available-f001d77fadf)
 
 #### Upgrade from SDK 28
 
@@ -28,6 +32,8 @@ Expo only provides support for the last 6 versions since the latest version.
 - Some field names in `Contacts` were changed. See the [documentation](../../sdk/contacts) for more information.
 
 ## SDK 28
+
+[Blog Post](https://blog.expo.io/expo-sdk-v28-0-0-is-now-available-f30e8253b530)
 
 #### Upgrade from SDK 27
 
@@ -52,6 +58,8 @@ Expo only provides support for the last 6 versions since the latest version.
 
 ## SDK 27
 
+[Blog Post](https://blog.expo.io/expo-sdk-v27-0-0-is-now-available-898bf1e5b0e4)
+
 #### Upgrade from SDK 26
 
 - In app.json, change sdkVersion to `"27.0.0"`
@@ -74,6 +82,8 @@ Expo only provides support for the last 6 versions since the latest version.
 - [Camera roll permissions](../../sdk/permissions/#expopermissionscamera_roll) are now required to use ImagePicker.launchCameraAsync() and ImagePicker.launchImageLibraryAsync(). You can ask for them by calling `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
 
 ## SDK 26
+
+[Blog Post](https://blog.expo.io/expo-sdk-v26-0-0-is-now-available-2be6d9805b31)
 
 #### Upgrade from SDK 25
 
@@ -102,7 +112,10 @@ Expo only provides support for the last 6 versions since the latest version.
 - On iOS, calling `Notifications.getExpoPushToken()` will throw an error if you don’t have permission to send notifications. We recommend call `Permissions.getAsync(Permissions.NOTIFICATIONS)` and, if needed and you haven’t asked before, `Permissions.askAsync(Permissions.NOTIFICATIONS)` before getting push token.
 - React native 0.53.0 removed the TextInput autoGrow prop. [Commit](https://github.com/facebook/react-native/commit/dabb78b1278d922e18b2a84059460689da12578b#diff-b48972356bc8dca4a00747d002fc3dd5).
 
-## SDK 25
+
+## SDK 25 [DEPRECATED]
+
+[Blog Post](https://blog.expo.io/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7)
 
 #### Upgrade from SDK 24
 
@@ -124,7 +137,9 @@ Expo only provides support for the last 6 versions since the latest version.
 - If you have any scripts in your project that depend on `metro-bundler`, you will need to change those to `metro` ([related commit](https://github.com/facebook/metro/commit/0f7ad193c75183eeff1b356644ccf22b0813bb04)). A likely place for this is in `rn-cli.config.js`.
 - Although not technically part of the SDK, React Navigation is commonly used by Expo users, and it’s worth mentioning that on Android React Navigation now properly accounts for the translucent status bar. This may require you to remove code that you have to workaround that (maybe a paddingTop somewhere to avoid the content from rendering underneath the status bar). [Read the React Navigation release notes for more information](https://github.com/react-navigation/react-navigation/releases/tag/v1.0.0-beta.26). Only applies to `react-navigation@1.0.0-beta.26` and higher.
 
-## SDK 24
+## SDK 24 [DEPRECATED]
+
+[Blog Post](https://blog.expo.io/expo-sdk-v24-0-0-is-now-available-bfcac3b50d51)
 
 #### Upgrade from SDK 23
 
@@ -149,7 +164,9 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 - `Expo.Font.style`
 - Passing an object into `Expo.SQLite.openDatabase()` instead of separate arguments is no longer supported.
 
-## SDK 23
+## SDK 23 [DEPRECATED]
+
+[Blog Post](https://blog.expo.io/expo-sdk-v23-0-0-is-now-available-be0a8c655414)
 
 #### Upgrade from SDK 22
 
@@ -172,7 +189,9 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 - React Native now defaults `enableBabelRCLookup` (recursive) to false in Metro bundler (the packager used by React Native / Expo). This is unlikely to cause any problems for your application — in our case, this lets us remove a script to delete nested `.babelrc` files from `node_modules` in our postinstall. If you run into transform errors when updating your app, [read this commit message for more information](https://github.com/facebook/react-native/commit/023ac57337b351959d443133c3c09607c4ffc800) and to see how to opt-in to the old behavior.
 
-## SDK 22
+## SDK 22 [DEPRECATED]
+
+[Blog Post](https://blog.expo.io/expo-sdk-v22-0-0-is-now-available-7745bfe97fc6)
 
 #### Upgrade from SDK 21
 
@@ -210,7 +229,9 @@ Several deprecated APIs have been removed. All of these APIs printed warning mes
 If you have not yet updated your imports of `PropTypes` as warned in deprecation warnings in previous releases, you will need to do this now. Install the `prop-types` package and `import PropTypes from 'prop-types'`; instead of `import { PropTypes } from React;`!
 Similarly, if you depend on `React.createClass`, you will need to install the `create-react-class` package and `import createReactClass from 'create-react-class';` [as described in the React documentation](https://reactjs.org/docs/react-without-es6.html).
 
-## SDK 21
+## SDK 21 [DEPRECATED]
+
+[Blog Post](https://blog.expo.io/expo-sdk-21-0-0-is-now-available-be33b79921b7)
 
 #### Upgrade from SDK 20
 
