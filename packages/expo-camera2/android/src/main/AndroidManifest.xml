@@ -1,0 +1,6 @@
+<manifest package="expo.modules.camera2"
+          xmlns:tools="http://schemas.android.com/tools"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application />
+</manifest>

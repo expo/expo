@@ -17,6 +17,7 @@ import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
+import expo.modules.camera2.Camera2Package;
 import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -64,6 +65,7 @@ public class ExperiencePackagePicker {
       new BrightnessPackage(),
       new CalendarPackage(),
       new CameraPackage(),
+      new Camera2Package(),
       new ConstantsPackage(),
       new ContactsPackage(),
       new CryptoPackage(),
