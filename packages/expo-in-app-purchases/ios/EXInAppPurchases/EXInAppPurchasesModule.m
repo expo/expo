@@ -79,6 +79,18 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
   }
 }
 
+UM_EXPORT_METHOD_AS(queryPurchaseHistoryAsync,
+                    queryPurchaseHistoryAsync:(NSArray *)productIDs
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  NSLog(@"Calling queryPurchasableHistoryAsync!");
+  [self setPromise:CONNECT_KEY resolve:resolve reject:reject];
+
+  // Request history
+  [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+}
+
 UM_EXPORT_METHOD_AS(disconnectAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
