@@ -4,6 +4,9 @@
 
 #define CONNECT_KEY @"connectToAppStoreAsync"
 #define QUERY_KEY @"queryPurchasableItemsAsync"
+#define OK 0
+#define USER_CANCELLED 1
+#define ERROR 2
 
 @implementation EXInAppPurchasesModule
 
@@ -17,7 +20,7 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 - (NSDictionary *)constantsToExport
 {
   return @{
-     @"responseCodes": [[NSDictionary alloc] initWithObjectsAndKeys:@"OK", 0, @"USER_CANCELED", 1, nil],
+     @"responseCodes": [[NSDictionary alloc] initWithObjectsAndKeys:@"OK", OK, @"USER_CANCELED", USER_CANCELLED, @"ERROR", ERROR, nil],
      @"purchaseStates": [[NSDictionary alloc] initWithObjectsAndKeys:
                          @"PURCHASED", SKPaymentTransactionStatePurchased,
                          @"PENDING", SKPaymentTransactionStatePurchasing,
@@ -173,7 +176,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
     }
   }
 
-  NSMutableDictionary *response = [[NSMutableDictionary alloc] initWithObjectsAndKeys:@0, @"responseCode", results, @"results", nil];
+  NSDictionary *response = [self formatResults:results withResponseCode:OK];
   [self resolvePromise:CONNECT_KEY value:response];
 }
 
@@ -203,8 +206,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 }
 
 - (NSDictionary *)getTransactionData: (SKPaymentTransaction *) transaction {
-  NSData * receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
-
+  NSData *receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
   NSDictionary *transactionData = @{
                                     @"acknowledged": @YES,
                                     @"orderId": transaction.transactionIdentifier,
@@ -219,30 +221,46 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions{
   for(SKPaymentTransaction *transaction in transactions){
 
-    switch(transaction.transactionState){
-      case SKPaymentTransactionStatePurchasing:
+    switch(transaction.transactionState) {
+      case SKPaymentTransactionStatePurchasing: {
         NSLog(@"Transaction state -> Purchasing");
         break;
-      case SKPaymentTransactionStatePurchased:
+      }
+      case SKPaymentTransactionStatePurchased: {
         NSLog(@"Made a purchase!");
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         NSLog(@"Transaction state -> Purchased");
-        [self resolvePromise:transaction.payment.productIdentifier value: nil];
+        NSArray *results = [NSArray arrayWithObjects: [self getTransactionData:transaction], nil];
+        NSDictionary *response = [self formatResults:results withResponseCode:OK];
+        [self resolvePromise:transaction.payment.productIdentifier value:response];
         break;
-      case SKPaymentTransactionStateRestored:
+      }
+      case SKPaymentTransactionStateRestored: {
         NSLog(@"Transaction state -> Restored");
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         break;
-      case SKPaymentTransactionStateDeferred:
+      }
+      case SKPaymentTransactionStateDeferred: {
         break;
-      case SKPaymentTransactionStateFailed:
+      }
+      case SKPaymentTransactionStateFailed: {
         if(transaction.error.code == SKErrorPaymentCancelled){
           NSLog(@"Transaction state -> Cancelled");
         }
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+        NSDictionary *response = [self formatResults:[NSArray array] withResponseCode:transaction.error.code];
+        [self resolvePromise:transaction.payment.productIdentifier value:response];
         break;
+      }
     }
   }
+}
+
+-(NSDictionary *) formatResults:(NSArray *)results withResponseCode:(NSInteger)responseCode {
+  return @{
+           @"results": results,
+           @"responseCode": [NSNumber numberWithInteger:responseCode],
+           };
 }
 
 - (void)requestProducts:(NSArray *)productIdentifiers

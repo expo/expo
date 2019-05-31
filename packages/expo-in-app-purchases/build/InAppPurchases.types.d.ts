@@ -6,10 +6,10 @@ export interface QueryResponse {
 export interface Purchase {
     acknowledged: boolean;
     orderId: string;
-    packageName: string;
     productId: string;
     purchaseState: number;
     purchaseTime: number;
+    packageName: string;
     purchaseToken?: string;
     transactionReceipt?: string;
 }
