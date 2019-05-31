@@ -8,8 +8,8 @@ export default {
     url: string,
     browserParams: OpenBrowserOptions = {}
   ): Promise<BrowserResult> {
-    const { windowName = '_blank', windowFeatures, replace } = browserParams;
-    window.open(url, windowName, windowFeatures, replace);
+    const { windowName = '_blank', windowFeatures } = browserParams;
+    window.open(url, windowName, windowFeatures);
     return { type: 'dismiss' };
   },
 };
