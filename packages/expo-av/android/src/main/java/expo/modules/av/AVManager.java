@@ -247,7 +247,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       throw new AudioFocusNotAcquiredException("Expo Audio is disabled, so audio focus could not be acquired.");
     }
 
-    if (mAppIsPaused) {
+    if (mAppIsPaused && !mStaysActiveInBackground) {
       throw new AudioFocusNotAcquiredException("This experience is currently in the background, so audio focus could not be acquired.");
     }
 
