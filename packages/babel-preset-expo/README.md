@@ -5,11 +5,11 @@ at https://github.com/expo/expo. Thanks!
 
 ## Options
 
-### `web.allowCommonJS`
+### `web.dangerouslyTransformModules`
 
-Enabling this will enable your project to run with CommonJS syntax (i.e.: `module.exports`). By enabling this you will also disable tree shaking and your bundle will be much larger than it could be. When CommonJS syntax is in
+Enabling this option will allow your project to run with older JavaScript syntax (i.e. `module.exports`). This option will break tree shaking and increase your bundle size, but will eliminate the following error when `module.exports` is used:
 
-> Enabling `common.js` will eliminate this error: `TypeError: Cannot assign to read only property 'exports' of object '#<Object>'`
+> `TypeError: Cannot assign to read only property 'exports' of object '#<Object>'`
 
 **default:** `false`
 
@@ -17,7 +17,7 @@ Enabling this will enable your project to run with CommonJS syntax (i.e.: `modul
 [
     'babel-preset-expo',
     {
-        web: { allowCommonJS: true }
+        web: { dangerouslyTransformModules: true }
     }
 ],
 ```
