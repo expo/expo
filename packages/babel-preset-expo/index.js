@@ -54,12 +54,7 @@ function getWebConfig(options = {}) {
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
     ['@babel/plugin-transform-react-display-name'],
     ['@babel/plugin-transform-react-jsx-source'],
-    options.allowCommonJS && [
-      '@babel/plugin-transform-modules-commonjs',
-      {
-        allowTopLevelThis: true,
-      },
-    ],
+    options.allowCommonJS && ['@babel/plugin-transform-modules-commonjs'],
   ].filter(Boolean);
 
   return {
