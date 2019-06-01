@@ -1425,13 +1425,12 @@
   resolved "https://registry.yarnpkg.com/@expo/traveling-fastlane-linux/-/traveling-fastlane-linux-1.9.4.tgz#2867093af2ae1eaf49c77a73681e42968bdee53f"
   integrity sha512-4DbD+OmXJSpYoV/DRP92y7/IzKP9bsExc1kF82PVcZIZqN66ZwExWmOyPoYeociY71GwptkVEQ0Dur+II5/g8A==
 
-"@expo/vector-icons@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-9.0.0.tgz#7f18e21d3edc8b99b76d7d1b8e26b212393e08b3"
-  integrity sha512-k5ndrW3oueW5jRDLt3o8iXKmiU+CvvCZPewOvxY7eRMivi8hIr6TkW6tMCGE1vS5fwmXffIkIpKGZkSbX7TxwA==
+"@expo/vector-icons@^10.0.1":
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-10.0.1.tgz#dbb0a9ab68b53aa6cbbc04b48421e4db862535d9"
+  integrity sha512-24m39O2aO2G67VlQOlUHxGr/qYhfuYNJewpSSSUSxZ+3nznfp5fzN0aHPaFXuxCCyJiF49QkbBiXKHAGZWhVJA==
   dependencies:
     lodash "^4.17.4"
-    react-native-vector-icons "6.0.0"
 
 "@expo/webpack-config@^0.1.4":
   version "0.1.6"
@@ -10691,7 +10690,7 @@ lodash@4.17.5:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
   integrity sha512-svL3uiZf1RwhH+cWrfZn3A4+U58wbP0tGVTLQPbjplZxZ8ROD9VLuNgsRniTlLe7OlSqR79RUehXgpBW/s0IQw==
 
-lodash@4.x, "lodash@>=3.5 <5", lodash@^4.0.0, lodash@^4.13.1, lodash@^4.16.2, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0, lodash@^4.6.1:
+lodash@4.x, "lodash@>=3.5 <5", lodash@^4.13.1, lodash@^4.16.2, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0, lodash@^4.5.0, lodash@^4.6.0, lodash@^4.6.1:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
@@ -13792,7 +13791,7 @@ react-native-branch@2.2.5:
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-2.2.5.tgz#4074dd63b4973e6397d9ce50e97b57c77a518e9d"
   integrity sha1-QHTdY7SXPmOX2c5Q6XtXx3pRjp0=
 
-react-native-gesture-handler@^1.2.1:
+react-native-gesture-handler@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.2.1.tgz#9c48fb1ab13d29cece24bbb77b1e847eebf27a2b"
   integrity sha512-c1+L72Vjc/bwHKcIJ8a2/88SW9l3/axcAIpg3zB1qTzwdCxHZJeQn6d58cQXHPepxFBbgfTCo60B7SipSfo+zw==
@@ -13899,15 +13898,6 @@ react-native-unimodules@~0.3.0:
     unimodules-permissions-interface "~1.0.0"
     unimodules-sensors-interface "~1.0.0"
     unimodules-task-manager-interface "~1.0.0"
-
-react-native-vector-icons@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-6.0.0.tgz#3a7076dbe244ea94c6d5e92802a870e64a4283c5"
-  integrity sha512-uF3oWb3TV42uXi2apVOZHw9oy9Nr5SXDVwOo1umQWo/yYCrDzXyVfq14DzezgEbJ9jfc/yghBelj0agkXmOKlg==
-  dependencies:
-    lodash "^4.0.0"
-    prop-types "^15.6.2"
-    yargs "^8.0.2"
 
 react-native-view-shot@2.6.0:
   version "2.6.0"
@@ -17921,25 +17911,6 @@ yargs@^12.0.2, yargs@^12.0.5:
     which-module "^2.0.0"
     y18n "^3.2.1 || ^4.0.0"
     yargs-parser "^11.1.1"
-
-yargs@^8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-8.0.2.tgz#6299a9055b1cefc969ff7e79c1d918dceb22c360"
-  integrity sha1-YpmpBVsc78lp/355wdkY3Osiw2A=
-  dependencies:
-    camelcase "^4.1.0"
-    cliui "^3.2.0"
-    decamelize "^1.1.1"
-    get-caller-file "^1.0.1"
-    os-locale "^2.0.0"
-    read-pkg-up "^2.0.0"
-    require-directory "^2.1.1"
-    require-main-filename "^1.0.1"
-    set-blocking "^2.0.0"
-    string-width "^2.0.0"
-    which-module "^2.0.0"
-    y18n "^3.2.1"
-    yargs-parser "^7.0.0"
 
 yargs@^9.0.0:
   version "9.0.1"
