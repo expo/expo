@@ -16,7 +16,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ModuleRegistryConsumer;
-import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class InAppPurchasesModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String TAG = InAppPurchasesModule.class.getSimpleName();
@@ -24,7 +23,6 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
 
   private BillingManager mBillingManager;
   private ModuleRegistry mModuleRegistry;
-  private EventEmitter mEventEmitter;
 
   public InAppPurchasesModule(Context context) {
     super(context);
@@ -53,8 +51,7 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   @ExpoMethod
   public void connectToAppStoreAsync(final Promise promise) {
     Activity activity = getCurrentActivity();
-    mEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-    mBillingManager = new BillingManager(activity, mEventEmitter);
+    mBillingManager = new BillingManager(activity);
     mBillingManager.startConnectionAndQueryHistory(promise);
   }
 
@@ -73,8 +70,8 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void initiatePurchaseFlowAsync(String skuId, String oldSku, final Promise promise) {
-    mBillingManager.initiatePurchaseFlow(skuId, oldSku, promise);
+  public void purchaseItemAsync(String skuId, String oldSku, final Promise promise) {
+    mBillingManager.purchaseItemAsync(skuId, oldSku, promise);
   }
 
   @ExpoMethod
@@ -84,14 +81,12 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
 
   @ExpoMethod
   public void acknowledgePurchaseAsync(String purchaseToken, final Promise promise) {
-    mBillingManager.acknowledgePurchaseAsync(purchaseToken);
-    promise.resolve(null);
+    mBillingManager.acknowledgePurchaseAsync(purchaseToken, promise);
   }
 
   @ExpoMethod
   public void consumeAsync(String purchaseToken, final Promise promise) {
-    mBillingManager.consumeAsync(purchaseToken);
-    promise.resolve(null);
+    mBillingManager.consumeAsync(purchaseToken, promise);
   }
 
   @ExpoMethod

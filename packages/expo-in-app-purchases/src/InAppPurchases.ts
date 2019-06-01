@@ -67,16 +67,13 @@ export async function queryPurchaseHistoryAsync(refresh?: boolean, itemType?: Va
   return convertStringsToObjects(history);
 }
 
-export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void> {
+export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<QueryResponse> {
   console.log('calling purchaseItemAsync from TS');
   if (!connected) {
     throw new ConnectionError('Must be connected to App Store');
   }
-  if (Platform.OS === 'ios') {
-    return await ExpoInAppPurchases.purchaseItemAsync(itemId);
-  }
 
-  return await ExpoInAppPurchases.initiatePurchaseFlowAsync(itemId, oldItem);
+  return await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
 }
 
 export async function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {

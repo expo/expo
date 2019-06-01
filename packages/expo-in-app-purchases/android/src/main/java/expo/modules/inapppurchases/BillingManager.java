@@ -25,7 +25,6 @@ import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.services.EventEmitter;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,17 +41,18 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     // Default value of mBillingClientResponseCode until BillingManager was not yet initialized
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
-    public static final String PURCHASES_UPDATED_EVENT = "Purchases Updated";
-    public static final String ACKNOWLEDGE_ITEM_EVENT = "Item Acknowledged";
+    public static final String PURCHASING_ITEM = "Purchasing Item";
+    public static final String ACKNOWLEDGING_PURCHASE = "Acknowledging Item";
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
 
+    protected static final HashMap<String, Promise> promises = new HashMap<>();
+    private final List<Purchase> mPurchases = new ArrayList<>();
+    private final HashMap<String, SkuDetails> mSkuDetailsMap = new HashMap<>();
     private BillingClient mBillingClient;
-    private EventEmitter mEventEmitter;
     private boolean mIsServiceConnected;
     private final Activity mActivity;
     private BillingUpdatesListener mBillingUpdatesListener;
-    private final List<Purchase> mPurchases = new ArrayList<>();
-    private final HashMap<String, SkuDetails> mSkuDetailsMap = new HashMap<>();
+
     private Set<String> mTokensToBeConsumed;
 
     /**
@@ -72,11 +72,10 @@ public class BillingManager implements PurchasesUpdatedListener {
         void onServiceConnected(BillingResult resultCode);
     }
 
-    public BillingManager(Activity activity, EventEmitter eventEmitter) {
+    public BillingManager(Activity activity) {
         Log.d(TAG, "Creating Billing client.");
         mActivity = activity;
-        mEventEmitter = eventEmitter;
-        mBillingUpdatesListener = new UpdateListener(mEventEmitter);
+        mBillingUpdatesListener = new UpdateListener();
         mBillingClient =
                 BillingClient
                         .newBuilder(activity)
@@ -129,7 +128,10 @@ public class BillingManager implements PurchasesUpdatedListener {
     /**
      * Start a purchase or subscription replace flow
      */
-    public void initiatePurchaseFlow(final String skuId, final String oldSku, final Promise promise) {
+    public void purchaseItemAsync(final String skuId, final String oldSku, final Promise promise) {
+        // Save promise to HashMap to resolve later
+        promises.put(PURCHASING_ITEM, promise);
+
         // oldSku is for subscription replacements and may be null.
         Runnable purchaseFlowRequest = new Runnable() {
             @Override
@@ -140,7 +142,6 @@ public class BillingManager implements PurchasesUpdatedListener {
             BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(skuDetails).setOldSku(oldSku).build();
             mBillingClient.launchBillingFlow(mActivity, purchaseParams);
-            promise.resolve(null);
             }
         };
 
@@ -170,17 +171,22 @@ public class BillingManager implements PurchasesUpdatedListener {
             }
             Bundle response = new Bundle();
             response.putInt("responseCode", result.getResponseCode());
-            mEventEmitter.emit(PURCHASES_UPDATED_EVENT, response);
+            Promise promise = promises.get(PURCHASING_ITEM);
+            if (promise != null) {
+                promises.put(PURCHASING_ITEM, null);
+                promise.resolve(response);
+            }
         }
     }
 
-    public void acknowledgePurchaseAsync(String purchaseToken) {
+    public void acknowledgePurchaseAsync(String purchaseToken, final Promise promise) {
         AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = new AcknowledgePurchaseResponseListener() {
             @Override
             public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
                 Bundle response = new Bundle();
                 response.putInt("responseCode", billingResult.getResponseCode());
-                mEventEmitter.emit(ACKNOWLEDGE_ITEM_EVENT, response);
+
+                promise.resolve(response);
             }
         };
 
@@ -191,7 +197,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         mBillingClient.acknowledgePurchase(acknowledgePurchaseParams, acknowledgePurchaseResponseListener);
     }
 
-    public void consumeAsync(final String purchaseToken) {
+    public void consumeAsync(final String purchaseToken, final Promise promise) {
         // If we've already scheduled to consume this token - no action is needed (this could happen
         // if you received the token when querying purchases inside onReceive() and later from
         // onActivityResult()
@@ -199,8 +205,13 @@ public class BillingManager implements PurchasesUpdatedListener {
             mTokensToBeConsumed = new HashSet<>();
         } else if (mTokensToBeConsumed.contains(purchaseToken)) {
             Log.i(TAG, "Token was already scheduled to be consumed - skipping...");
+            Bundle response = new Bundle();
+            response.putInt("responseCode", BillingClient.BillingResponseCode.OK);
+            promise.resolve(response);
             return;
         }
+
+        promises.put(ACKNOWLEDGING_PURCHASE, promise);
         mTokensToBeConsumed.add(purchaseToken);
 
         // Generating Consume Response listener
@@ -415,7 +426,6 @@ public class BillingManager implements PurchasesUpdatedListener {
             runnable.run();
         } else {
             // If billing service was disconnected, we try to reconnect 1 time.
-            // (feel free to introduce your retry policy here).
             startServiceConnection(runnable);
         }
     }

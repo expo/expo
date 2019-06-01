@@ -10,18 +10,13 @@ import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.Purchase;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.Promise;
 
 /**
  * Handler to billing updates
  */
 public class UpdateListener implements BillingManager.BillingUpdatesListener {
     private static final String TAG = "UpdateListener";
-    private EventEmitter mEventEmitter;
-
-    public UpdateListener(EventEmitter eventEmitter) {
-        mEventEmitter = eventEmitter;
-    }
 
     @Override
     public void onBillingClientSetupFinished() {}
@@ -33,7 +28,11 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
         response.putInt("responseCode", result.getResponseCode());
         response.putString("token", token);
 
-        mEventEmitter.emit(BillingManager.ACKNOWLEDGE_ITEM_EVENT, response);
+        Promise promise = BillingManager.promises.get(BillingManager.ACKNOWLEDGING_PURCHASE);
+        if (promise != null) {
+            BillingManager.promises.put(BillingManager.ACKNOWLEDGING_PURCHASE, null);
+            promise.resolve(response);
+        }
         Log.d(TAG, "End consumption flow.");
     }
 
@@ -46,6 +45,11 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
         }
         response.putStringArrayList("results", results);
         response.putInt("responseCode", BillingResponseCode.OK);
-        mEventEmitter.emit(BillingManager.PURCHASES_UPDATED_EVENT, response);
+
+        Promise promise = BillingManager.promises.get(BillingManager.PURCHASING_ITEM);
+        if (promise != null) {
+            BillingManager.promises.put(BillingManager.PURCHASING_ITEM, null);
+            promise.resolve(response);
+        }
     }
 }
