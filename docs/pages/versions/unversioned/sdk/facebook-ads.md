@@ -23,7 +23,7 @@ In your project's [app.json](../../workflow/configuration/), add your [Facebook 
 When using Facebook Ads in development, you'll need to register your device to be able to show ads. You can add the following at the top of your file to register your device:
 
 ```js
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 
 FacebookAds.AdSettings.addTestDevice(FacebookAds.AdSettings.currentDeviceHash);
 ```
@@ -41,11 +41,11 @@ Interstitial Ad is a type of ad that displays a full-screen modal dialog with me
 Example:
 
 ```js
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 
 FacebookAds.InterstitialAdManager.showAd(placementId)
   .then(didClick => {})
-  .catch(error => {})
+  .catch(error => {});
 ```
 
 The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dimisses or interacts with the displayed ad.
@@ -59,7 +59,7 @@ Native ads can be customized to match the design of your app. To display a nativ
 The `NativeAdManager` is responsible for fetching and caching ads as you request them.
 
 ```js
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 
 const adsManager = new FacebookAds.NativeAdsManager(placementId, numberOfAdsToRequest);
 ```
@@ -74,7 +74,7 @@ The constructor accepts two parameters:
 Next, you need to wrap the component you want to use to show your add with the `withNativeAd` higher-order component. The wrapped component will receive a prop named `nativeAd`, which you can use to render an ad.
 
 ```js
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 
 class AdComponent extends React.Component {
   render() {
@@ -110,7 +110,7 @@ More information on how the properties correspond to an exemplary ad can be foun
 > ** Note: ** Don't use more than one `AdMediaView` and `AdIconView` component (each) within one native ad. If you use more, only the last mounted one will be populated with ad content.
 
 ```js
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 const { AdIconView, AdMediaView } = FacebookAds;
 
 class AdComponent extends React.Component {
@@ -132,7 +132,7 @@ export default FacebookAds.withNativeAd(AdComponent);
 > ** Note:** In order for elements wrapped with `AdTriggerView` to trigger the ad, you also must include `AdMediaView` in the children tree.
 
 ```js
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 const { AdTriggerView, AdMediaView } = FacebookAds;
 
 class AdComponent extends React.Component {
@@ -169,7 +169,7 @@ class MyApp extends React.Component {
 
 ### BannerAd
 
-The `BannerAd` component allows you to display native as banners (known as *AdView*).
+The `BannerAd` component allows you to display native as banners (known as _AdView_).
 
 Banners are available in 3 sizes:
 
@@ -182,7 +182,7 @@ Banners are available in 3 sizes:
 In order to show an ad, you first have to import `BannerAd` from the package:
 
 ```js
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 
 function ViewWithBanner(props) {
   return (
@@ -191,7 +191,7 @@ function ViewWithBanner(props) {
         placementId="YOUR_BANNER_PLACEMENT_ID"
         type="standard"
         onPress={() => console.log('click')}
-        onError={(error) => console.log('error', error)}
+        onError={error => console.log('error', error)}
       />
     </View>
   );
@@ -201,10 +201,6 @@ function ViewWithBanner(props) {
 ## API
 
 ```js
-// in managed apps:
-import { FacebookAds } from 'expo';
-
-// in bare apps:
 import * as FacebookAds from 'expo-ads-facebook';
 ```
 
@@ -282,7 +278,9 @@ FacebookAds.AdSettings.clearTestDevices();
 Sets current SDK log level.
 
 ```js
-FacebookAds.AdSettings.setLogLevel('none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification');
+FacebookAds.AdSettings.setLogLevel(
+  'none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification'
+);
 ```
 
 **Note:** This method is a no-op on Android.

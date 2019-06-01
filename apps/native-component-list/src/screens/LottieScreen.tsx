@@ -11,8 +11,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { DangerZone } from 'expo';
-const { Lottie: Animation } = DangerZone;
+import Animation from 'lottie-react-native';
 
 const makeExample = (name: string, getJson: () => any) => ({ name, getJson });
 const EXAMPLES = [

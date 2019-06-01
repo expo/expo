@@ -25,6 +25,12 @@ const LIB_NAMES = [
   'privatedata',
   'yogafastmath',
   'fabricjscjni',
+  'jscexecutor',
+  'libjscexecutor',
+  'jsinspector',
+  'libjsinspector',
+  'fabricjni',
+  'turbomodulejsijni',
 ];
 
 function renameLib(lib, abiVersion) {
@@ -83,9 +89,9 @@ exports.renameJNILibsAsync = async function renameJNILibsAsync(abiVersion) {
   lineReader.on('line', line => {
     let pathForPackage = line.replace(/\./g, '\\/');
     let reactCommonPath = '../android/versioned-react-native/ReactCommon';
-    let reactAndroidJNIPath = '../android/versioned-react-native/ReactAndroid/src/main/jni';
+    let reactAndroidJNIPath = '../android/versioned-react-native/ReactAndroid/src/main';
     shell.exec(
-      `find ${reactCommonPath} ${reactAndroidJNIPath} -type f -print0 | ` +
+      `find ${reactCommonPath} ${reactAndroidJNIPath} -type f \\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
         `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`
     );
   });
@@ -93,7 +99,7 @@ exports.renameJNILibsAsync = async function renameJNILibsAsync(abiVersion) {
   // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
   let [reactCommonMkFiles, reactAndroidMkFiles] = await Promise.all([
     glob('../android/versioned-react-native/ReactCommon/**/*.mk'),
-    glob('../android/versioned-react-native/ReactAndroid/src/main/jni/**/*.mk'),
+    glob('../android/versioned-react-native/ReactAndroid/src/main/**/*.mk'),
   ]);
   let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles];
   await Promise.all(filenames.map(filename => processMkFileAsync(filename, abiVersion)));
@@ -172,8 +178,8 @@ async function findUnimodules(pkgDir) {
       const buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
 
       const name = unimoduleJson.name;
-      const version = buildGradle.match(/^version ?= ?'([0-9]+.[0-9]+.[0-9]+)'\n/m)[1] || pkgJson.version;
-      const group = buildGradle.match(/^group ?= ?'([a-zA-Z]+.[a-zA-Z]+.[a-zA-Z]+)'\n/m)[1];
+      const version = buildGradle.match(/^version ?= ?'([\w.-]+)'\n/m)[1] || pkgJson.version;
+      const group = buildGradle.match(/^group ?= ?'([\w.]+)'\n/m)[1];
 
       console.log(`Found module ${group}:${name}:${version}`);
 

@@ -1,6 +1,7 @@
 'use strict';
 
-import { Asset, Audio } from 'expo';
+import { Audio } from 'expo-av';
+import { Asset } from 'expo-asset';
 import { Platform } from 'react-native';
 
 import { retryForStatus, waitFor } from './helpers';
@@ -64,6 +65,7 @@ export function test(t) {
             shouldDuckAndroid: false,
             interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
             playThroughEarpieceAndroid: false,
+            staysActiveInBackground: false,
           };
           let error = null;
           try {

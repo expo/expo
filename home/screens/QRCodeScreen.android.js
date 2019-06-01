@@ -1,9 +1,9 @@
 /* @flow */
 
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BarCodeScanner } from 'expo';
-import { throttle } from 'lodash';
 
 import Layout from '../constants/Layout';
 

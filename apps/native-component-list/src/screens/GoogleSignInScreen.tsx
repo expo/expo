@@ -1,4 +1,4 @@
-import { GoogleSignIn } from 'expo';
+import * as GoogleSignIn from 'expo-google-sign-in';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
@@ -29,7 +29,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
   _configureAsync = async () => {
     try {
       await GoogleSignIn.initAsync({
-        isOfflineEnabled: true,
+        isOfflineEnabled: false,
         isPromptEnabled: true,
         clientId:
           '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',

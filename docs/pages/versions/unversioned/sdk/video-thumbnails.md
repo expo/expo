@@ -9,10 +9,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { VideoThumbnails } from 'expo';
-
-// in bare apps:
 import * as VideoThumbnails from 'expo-video-thumbnails';
 ```
 

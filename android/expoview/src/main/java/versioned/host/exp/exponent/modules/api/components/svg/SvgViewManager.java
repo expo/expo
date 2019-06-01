@@ -28,9 +28,19 @@ class SvgViewManager extends ReactViewManager {
     private static final String REACT_CLASS = "RNSVGSvgView";
 
     private static final SparseArray<SvgView> mTagToSvgView = new SparseArray<>();
+    private static final SparseArray<Runnable> mTagToRunnable = new SparseArray<>();
 
     static void setSvgView(int tag, SvgView svg) {
         mTagToSvgView.put(tag, svg);
+        Runnable task = mTagToRunnable.get(tag);
+        if (task != null) {
+            task.run();
+            mTagToRunnable.delete(tag);
+        }
+    }
+
+    static void runWhenViewIsAvailable(int tag, Runnable task) {
+        mTagToRunnable.put(tag, task);
     }
 
     static @Nullable SvgView getSvgViewByTag(int tag) {

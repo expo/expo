@@ -308,18 +308,10 @@ export default {
         );
       }
 
-      // If iOS, pass time as milliseconds
-      if (Platform.OS === 'ios') {
-        options = {
-          ...options,
-          time: timeAsDateObj.getTime(),
-        };
-      } else {
-        options = {
-          ...options,
-          time: timeAsDateObj,
-        };
-      }
+      options = {
+        ...options,
+        time: timeAsDateObj.getTime(),
+      };
     }
 
     if (options.intervalMs != null && options.repeat != null) {

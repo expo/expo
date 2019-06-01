@@ -15,17 +15,7 @@ module.exports = function updateVendoredNativeModule(options) {
     : options.installableInManagedApps;
 
   const TMP_DIR = path.join(os.tmpdir(), options.name);
-  const TMP_IOS_DIR = path.join(TMP_DIR, options.sourceIosPath);
-  const TMP_ANDROID_DIR = path.join(TMP_DIR, options.sourceAndroidPath);
   const REPO_URL = options.repoUrl;
-  const TARGET_IOS_DIR = path.resolve(
-    __filename,
-    `../../ios/Exponent/Versioned/Core/${options.targetIosPath}`
-  );
-  const TARGET_ANDROID_DIR = path.resolve(
-    __filename,
-    `../../android/expoview/src/main/java/versioned/host/exp/exponent/${options.targetAndroidPath}`
-  );
 
   function findObjcFiles(dir, recursive) {
     const regex = recursive
@@ -76,6 +66,9 @@ module.exports = function updateVendoredNativeModule(options) {
 
   let { argv } = options;
 
+  const executeAndroid = (argv.android || argv.allPlatforms) && options.sourceAndroidPath && options.targetAndroidPath;
+  const executeIOS = (argv.ios || argv.allPlatforms) && options.sourceIosPath && options.sourceIosPath;
+
   if (!(argv.ios || argv.android || argv.allPlatforms)) {
     echo(`Must specify --ios, --android, or --allPlatforms`);
     return Promise.reject();
@@ -86,14 +79,6 @@ module.exports = function updateVendoredNativeModule(options) {
   // Cleanup
   if (!options.skipCleanup) {
     rm('-rf', TMP_DIR);
-    if (argv.ios || argv.allPlatforms) {
-      rm('-rf', TARGET_IOS_DIR);
-      mkdir('-p', TARGET_IOS_DIR);
-    }
-    if (argv.android || argv.allPlatforms) {
-      rm('-rf', TARGET_ANDROID_DIR);
-      mkdir('-p', TARGET_ANDROID_DIR);
-    }
   }
 
   exec(`git clone ${REPO_URL} ${TMP_DIR}`);
@@ -103,7 +88,19 @@ module.exports = function updateVendoredNativeModule(options) {
   echo(`Using version at ${argv.commit || 'master'}`);
 
   // iOS
-  if (argv.ios || argv.allPlatforms) {
+  if (executeIOS) {
+
+    const TMP_IOS_DIR = path.join(TMP_DIR, options.sourceIosPath);
+    const TARGET_IOS_DIR = path.resolve(
+      __filename,
+      `../../ios/Exponent/Versioned/Core/${options.targetIosPath}`
+    );
+
+    if(!options.skipCleanup) {
+      echo(`Removing iOS files...`);
+      rm('-rf', TARGET_IOS_DIR);
+      mkdir('-p', TARGET_IOS_DIR);
+    }
     echo(`Copying iOS files...`);
     let objcFiles = findObjcFiles(TMP_IOS_DIR, options.recursive);
     for (let objcFile of objcFiles) {
@@ -122,7 +119,19 @@ module.exports = function updateVendoredNativeModule(options) {
   }
 
   // Android
-  if (argv.android || argv.allPlatforms) {
+  if (executeAndroid) {
+    
+    const TMP_ANDROID_DIR = path.join(TMP_DIR, options.sourceAndroidPath);
+    const TARGET_ANDROID_DIR = path.resolve(
+      __filename,
+      `../../android/expoview/src/main/java/versioned/host/exp/exponent/${options.targetAndroidPath}`
+    );
+
+    if(!options.skipCleanup) {
+      echo(`Removing Android files...`);
+      rm('-rf', TARGET_ANDROID_DIR);
+      mkdir('-p', TARGET_ANDROID_DIR);
+    }
     echo(`Copying Android files...`);
     let javaFiles = findAndroidFiles(TMP_ANDROID_DIR);
     for (let javaFile of javaFiles) {

@@ -56,6 +56,14 @@ abstract public class RenderableView extends VirtualView {
     private static final int FILL_RULE_EVENODD = 0;
     static final int FILL_RULE_NONZERO = 1;
 
+    // vectorEffect
+    static final int VECTOR_EFFECT_DEFAULT = 0;
+    static final int VECTOR_EFFECT_NON_SCALING_STROKE = 1;
+    static final int VECTOR_EFFECT_INHERIT = 2;
+    static final int VECTOR_EFFECT_URI = 3;
+
+    public int vectorEffect = VECTOR_EFFECT_DEFAULT;
+
     /*
     Used in mergeProperties, keep public
     */
@@ -85,6 +93,12 @@ abstract public class RenderableView extends VirtualView {
     @Nullable ArrayList<String> mAttributeList;
 
     private static final Pattern regex = Pattern.compile("[0-9.-]+");
+
+    @ReactProp(name = "vectorEffect", defaultInt = VECTOR_EFFECT_DEFAULT)
+    public void setVectorEffect(int vectorEffect) {
+        this.vectorEffect = vectorEffect;
+        invalidate();
+    }
 
     @ReactProp(name = "fill")
     public void setFill(@Nullable Dynamic fill) {
@@ -322,7 +336,14 @@ abstract public class RenderableView extends VirtualView {
                 mPath = getPath(canvas, paint);
                 mPath.setFillType(fillRule);
             }
+            boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
             Path path = mPath;
+            if (nonScalingStroke) {
+                Path scaled = new Path();
+                mPath.transform(canvas.getMatrix(), scaled);
+                canvas.setMatrix(null);
+                path = scaled;
+            }
 
             RectF clientRect = new RectF();
             path.computeBounds(clientRect, true);

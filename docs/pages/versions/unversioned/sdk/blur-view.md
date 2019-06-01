@@ -21,19 +21,15 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 ## API
 
 ```js
-// in managed apps:
-import { BlurView } from 'expo';
-
-// in bare apps:
 import { BlurView } from 'expo-blur';
 ```
 
 ## props
 
- `tint`
+`tint`
 A string: `light`, `default`, or `dark`.
 
- `intensity`
+`intensity`
 A number from 1 to 100 to control the intensity of the blur effect.
 
 #

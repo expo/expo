@@ -36,7 +36,7 @@
       </option>
     </JavaCodeStyleSettings>
     <Objective-C-extensions>
-      <file>
+        <file>
         <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Import" />
         <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Macro" />
         <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Typedef" />

@@ -7,6 +7,7 @@ const LocationEventEmitter = new EventEmitter(ExpoLocation);
 
 export interface ProviderStatus {
   locationServicesEnabled: boolean;
+  backgroundModeEnabled: boolean;
   gpsAvailable?: boolean;
   networkAvailable?: boolean;
   passiveAvailable?: boolean;
@@ -63,6 +64,11 @@ interface LocationTaskOptions {
   deferredUpdatesDistance?: number;
   deferredUpdatesTimeout?: number;
   deferredUpdatesInterval?: number;
+
+  // iOS only
+  activityType?: LocationActivityType;
+  pausesUpdatesAutomatically?: boolean;
+
   foregroundService?: {
     notificationTitle: string;
     notificationBody: string;
@@ -93,7 +99,19 @@ enum LocationAccuracy {
   Highest = 5,
   BestForNavigation = 6,
 }
-export { LocationAccuracy as Accuracy };
+
+enum LocationActivityType {
+  Other = 1,
+  AutomotiveNavigation = 2,
+  Fitness = 3,
+  OtherNavigation = 4,
+  Airborne = 5,
+}
+
+export {
+  LocationAccuracy as Accuracy,
+  LocationActivityType as ActivityType,
+};
 
 export enum GeofencingEventType {
   Enter = 1,
@@ -448,6 +466,11 @@ export async function hasServicesEnabledAsync(): Promise<boolean> {
 
 function _validateTaskName(taskName: string) {
   invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
+}
+
+export async function isBackgroundLocationAvailableAsync(): Promise<boolean> {
+  const providerStatus = await getProviderStatusAsync();
+  return providerStatus.backgroundModeEnabled;
 }
 
 export async function startLocationUpdatesAsync(

@@ -3,16 +3,18 @@ title: Haptics
 ---
 
 Provides haptic feedback for
+
 - iOS 10+ devices using the Taptic Engine
 - Android devices using Vibrator system service.
 
-On iOS, *the Taptic engine will do nothing if any of the following conditions are true on a user's device:*
-* Low Power Mode is enabled ([Feature Request](https://expo.canny.io/feature-requests/p/expose-low-power-mode-ios-battery-saver-android))
-* User disabled the Taptic Engine in settings ([Feature Request](https://expo.canny.io/feature-requests/p/react-native-settings))
-* Haptic engine generation is too low (less than 2nd gen) - Private API
-  * Using private API will get your app rejected: `[[UIDevice currentDevice] valueForKey: @"_feedbackSupportLevel"]` so this is not added in Expo
-* iOS version is less than 10 (iPhone 7 is the first phone to support this)
-  * This could be found through: `Constants.platform.ios.systemVersion` or `Constants.platform.ios.platform`
+On iOS, _the Taptic engine will do nothing if any of the following conditions are true on a user's device:_
+
+- Low Power Mode is enabled ([Feature Request](https://expo.canny.io/feature-requests/p/expose-low-power-mode-ios-battery-saver-android))
+- User disabled the Taptic Engine in settings ([Feature Request](https://expo.canny.io/feature-requests/p/react-native-settings))
+- Haptic engine generation is too low (less than 2nd gen) - Private API
+  - Using private API will get your app rejected: `[[UIDevice currentDevice] valueForKey: @"_feedbackSupportLevel"]` so this is not added in Expo
+- iOS version is less than 10 (iPhone 7 is the first phone to support this)
+  - This could be found through: `Constants.platform.ios.systemVersion` or `Constants.platform.ios.platform`
 
 ## Installation
 
@@ -21,10 +23,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { Haptics } from 'expo';
-
-// in bare apps:
 import * as Haptics from 'expo-haptics';
 ```
 
@@ -35,7 +33,6 @@ Used to let a user know when a selection change has been registered
 #### Returns
 
 A `Promise` resolving once native size haptics functionality is triggered.
-
 
 ### `Haptics.notificationAsync(type)`
 
@@ -49,7 +46,6 @@ The kind of notification response used in the feedback
 
 A `Promise` resolving once native size haptics functionality is triggered.
 
-
 ### `Haptics.impactAsync(style)`
 
 #### Arguments
@@ -59,4 +55,3 @@ A `Promise` resolving once native size haptics functionality is triggered.
 #### Returns
 
 A `Promise` resolving once native size haptics functionality is triggered.
-

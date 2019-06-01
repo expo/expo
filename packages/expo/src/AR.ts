@@ -271,7 +271,7 @@ export enum PlaneDetection {
    */
   Horizontal = 'horizontal',
   /**
-   * Plane detection determines horizontal planes in the scene
+   * Plane detection determines vertical planes in the scene
    */
   Vertical = 'vertical',
 }

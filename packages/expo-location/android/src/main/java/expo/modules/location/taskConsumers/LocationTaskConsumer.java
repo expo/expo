@@ -42,6 +42,8 @@ import expo.modules.location.LocationHelpers;
 import expo.modules.location.services.LocationTaskService;
 
 public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
+  public static int VERSION = 1;
+
   private static final String TAG = "LocationTaskConsumer";
   private static final String FOREGROUND_SERVICE_KEY = "foregroundService";
   private static long sLastTimestamp = 0;
@@ -130,12 +132,10 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
 
   @Override
   public boolean didExecuteJob(final JobService jobService, final JobParameters params) {
-    PersistableBundle data = params.getExtras().getPersistableBundle("data");
-    int length = data != null ? data.getInt("length", 0) : 0;
+    List<PersistableBundle> data = getTaskManagerUtils().extractDataFromJobParams(params);
     ArrayList<Bundle> locationBundles = new ArrayList<>();
 
-    for (int i = 0; i < length; i++) {
-      PersistableBundle persistableLocationBundle = data.getPersistableBundle(String.valueOf(i));
+    for (PersistableBundle persistableLocationBundle : data) {
       Bundle locationBundle = new Bundle();
       Bundle coordsBundle = new Bundle();
 
@@ -276,8 +276,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
     }
 
     Context context = getContext().getApplicationContext();
-    PersistableBundle data = new PersistableBundle();
-    int length = 0;
+    List<PersistableBundle> data = new ArrayList<>();
 
     for (Location location : mDeferredLocations) {
       long timestamp = location.getTime();
@@ -286,16 +285,13 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       // so only one location at the specific timestamp can schedule a job.
       if (timestamp > sLastTimestamp) {
         PersistableBundle bundle = LocationHelpers.locationToBundle(location, PersistableBundle.class);
-        data.putPersistableBundle(Integer.valueOf(length).toString(), bundle);
 
+        data.add(bundle);
         sLastTimestamp = timestamp;
-        ++length;
       }
     }
 
-    data.putInt("length", length);
-
-    if (length > 0) {
+    if (data.size() > 0) {
       // Save last reported location, reset the distance and clear a list of locations.
       mLastReportedLocation = mDeferredLocations.get(mDeferredLocations.size() - 1);
       mDeferredDistance = 0.0;

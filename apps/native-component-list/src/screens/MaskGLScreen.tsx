@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, MaskedViewIOS, View } from 'react-native';
-import { GL } from 'expo';
+import * as GL from 'expo-gl';
 
 const vertSrc = `
 attribute vec2 position;

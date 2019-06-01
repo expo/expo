@@ -1,6 +1,7 @@
 import './Expo.fx';
 
 import * as AR from './AR';
+import * as ErrorRecovery from './ErrorRecovery/ErrorRecovery';
 import * as Google from './Google';
 import * as Logs from './logs/Logs';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
@@ -9,6 +10,7 @@ import * as Updates from './Updates/Updates';
 import * as SplashScreen from './launch/SplashScreen';
 
 export { AR };
+export { ErrorRecovery };
 export { Google };
 export { Logs };
 export { ScreenOrientation };
@@ -20,12 +22,10 @@ export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as AppLoading } from './launch/AppLoading';
 export { default as AuthSession } from './AuthSession';
 export { default as DangerZone } from './DangerZone';
-export { default as ErrorRecovery } from './ErrorRecovery/ErrorRecovery';
 export { default as Linking } from './Linking/Linking';
 export { default as Notifications } from './Notifications/Notifications';
 export { default as Pedometer } from './Pedometer';
 export { default as registerRootComponent } from './launch/registerRootComponent';
-export { default as takeSnapshotAsync } from './takeSnapshotAsync/takeSnapshotAsync';
 
 // @ts-ignore
 export {
@@ -37,6 +37,8 @@ export {
   AdMobInterstitial,
   // @ts-ignore
   AdMobRewarded,
+  // @ts-ignore
+  Animated,
   // @ts-ignore
   Amplitude,
   // @ts-ignore
@@ -67,6 +69,8 @@ export {
   Crypto,
   // @ts-ignore
   DocumentPicker,
+  // @ts-ignore
+  Easing,
   // @ts-ignore
   Facebook,
   // @ts-ignore
@@ -146,7 +150,13 @@ export {
   // @ts-ignore
   Svg,
   // @ts-ignore
+  takeSnapshotAsync,
+  // @ts-ignore
   TaskManager,
+  // @ts-ignore
+  Transition,
+  // @ts-ignore
+  Transitioning,
   // @ts-ignore
   Video,
   // @ts-ignore

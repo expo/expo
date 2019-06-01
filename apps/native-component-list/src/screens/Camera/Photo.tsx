@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
-import { FaceDetector } from 'expo';
+import * as FaceDetector from 'expo-face-detector';
 import { Ionicons } from '@expo/vector-icons';
 
 const pictureSize = 150;

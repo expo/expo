@@ -4,7 +4,7 @@ title: Using FCM for Push Notifications
 
 Firebase Cloud Messaging is a popular option for delivering push notifications reliably. If you want your Expo Android app to get push notifications using your own FCM credentials, rather than our default option, you can do this with a couple of extra steps.
 
-Note that FCM cannot be used to send messages to the Android Expo Client. Also, FCM is not currently available for Expo iOS apps.
+Note that FCM cannot be used to send messages to the Android Expo client. Also, FCM is not currently available for Expo iOS apps.
 
 ## Client Setup
 

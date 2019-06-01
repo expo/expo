@@ -1,6 +1,6 @@
 import path from 'path';
 import uuid from 'uuid';
-import { Versions, Config } from 'xdl';
+import { Versions, Config } from '@expo/xdl';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 
@@ -40,6 +40,26 @@ export async function updateExpoKitIosAsync(
   await Versions.setVersionsAsync(versions);
 }
 
+export async function updateReactNativeUnimodulesAsync(
+  expoDir: string,
+  reactNativeUnimodulesVersion: string,
+  sdkVersion: string
+): Promise<void> {
+  process.env.EXPO_STAGING = '1';
+  Config.api.host = 'staging.exp.host';
+  let versions = await Versions.versionsAsync();
+  if (!versions.sdkVersions[sdkVersion]) {
+    throw new Error(`SDK version ${sdkVersion} not found in versions JSON`);
+  }
+
+  if (!versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting) {
+    versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting = {};
+  }
+
+  versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting['react-native-unimodules'] = reactNativeUnimodulesVersion;
+  await Versions.setVersionsAsync(versions);
+}
+
 export async function updateExpoKitAndroidAsync(
   expoDir: string,
   appVersion: string,
@@ -56,11 +76,6 @@ export async function updateExpoKitAndroidAsync(
   });
 
   await S3.uploadDirectoriesAsync(BUCKET, key, [
-    {
-      isFile: true,
-      source: path.join(androidDir, 'android.iml'),
-      destination: 'android.iml',
-    },
     {
       source: path.join(androidDir, 'app'),
       destination: 'app',
@@ -124,7 +139,7 @@ export async function updateExpoKitAndroidAsync(
   const expokitNpmPackageDir = path.join(expoDir, `expokit-npm-package`);
   const npmVersionArg = expokitVersion || 'patch';
 
-  await spawnAsync(`npm`, ['version', npmVersionArg], {
+  await spawnAsync(`npm`, ['version', npmVersionArg, '--allow-same-version'], {
     stdio: 'inherit',
     cwd: expokitNpmPackageDir,
   });

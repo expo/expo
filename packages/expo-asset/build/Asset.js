@@ -1,6 +1,7 @@
 import { Platform } from '@unimodules/core';
 import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';
+import computeMd5 from 'blueimp-md5';
 import { getAssetByID } from './AssetRegistry';
 import resolveAssetSource, { setCustomSourceTransformer } from './resolveAssetSource';
 import * as AssetSources from './AssetSources';
@@ -110,6 +111,7 @@ export class Asset {
         const asset = new Asset({
             name: '',
             type,
+            hash: null,
             uri,
         });
         Asset.byUri[uri] = asset;
@@ -128,15 +130,16 @@ export class Asset {
         this.localUri = this.uri;
     }
     async _downloadAsyncManagedEnv() {
-        const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
+        const cacheFileId = this.hash || computeMd5(this.uri);
+        const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${this.type}`;
         let { exists, md5 } = await FileSystem.getInfoAsync(localUri, {
             md5: true,
         });
-        if (!exists || md5 !== this.hash) {
+        if (!exists || (this.hash !== null && md5 !== this.hash)) {
             ({ md5 } = await FileSystem.downloadAsync(this.uri, localUri, {
                 md5: true,
             }));
-            if (md5 !== this.hash) {
+            if (this.hash !== null && md5 !== this.hash) {
                 throw new Error(`Downloaded file for asset '${this.name}.${this.type}' ` +
                     `Located at ${this.uri} ` +
                     `failed MD5 integrity check`);
@@ -150,7 +153,8 @@ export class Asset {
             this.localUri = this.uri;
             return;
         }
-        const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${this.hash}.${this.type}`;
+        const cacheFileId = this.hash || computeMd5(this.uri);
+        const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${this.type}`;
         // We don't check the FileSystem for an existing version of the asset and we
         // also don't perform an integrity check!
         await FileSystem.downloadAsync(this.uri, localUri);

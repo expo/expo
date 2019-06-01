@@ -77,7 +77,7 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
   }
 
   @Override
-  public void executeTaskWithBody(Bundle body) {
+  public synchronized void executeTaskWithBody(Bundle body) {
     if (mEventsQueue != null) {
       // `startObserving` on TaskManagerModule wasn't called yet - add event body to the queue.
       mEventsQueue.add(body);
@@ -96,7 +96,7 @@ public class TaskManagerInternalModule implements InternalModule, ModuleRegistry
   }
 
   @Override
-  public void flushQueuedEvents() {
+  public synchronized void flushQueuedEvents() {
     // Execute any events that came before this call.
     if (mEventsQueue != null) {
       for (Bundle body : mEventsQueue) {

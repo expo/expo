@@ -2,7 +2,7 @@ import i18n from 'i18n-js';
 import chunk from 'lodash/chunk';
 import React from 'react';
 import { Picker, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Localization } from 'expo';
+import * as Localization from 'expo-localization';
 
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';

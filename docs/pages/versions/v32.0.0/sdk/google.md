@@ -44,7 +44,7 @@ logInAsync(config: LogInConfig): Promise<LogInResult>
 This method uses `AppAuth` to authenticate; for even more native functionality see `expo-google-sign-in`.
 
 Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
-The difference between this method and native authentication are very sparce. Google has done a very good job at making the web auth flow work consistently. The biggest difference is that you cannot use `expo-google-sign-in` in the Expo Client (standalone apps only), which makes `Expo.Google.logInAsync` your best solution for testing in development.
+The difference between this method and native authentication are very sparce. Google has done a very good job at making the web auth flow work consistently. The biggest difference is that you cannot use `expo-google-sign-in` in the Expo client (standalone apps only), which makes `Expo.Google.logInAsync` your best solution for testing in development.
 
 **Parameters**
 
@@ -160,7 +160,7 @@ if (type === 'success') {
 
 ## Using it inside of the Expo app
 
-In the Expo Client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser). If you build a standalone app, you can use the native login with the package `expo-google-sign-in`.
+In the Expo client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser). If you build a standalone app, you can use the native login with the package `expo-google-sign-in`.
 
 To use Google Sign In, you will need to create a project in Firebase (or on the Google Developer Console).
 In Firebase create a project, then enable Google Sign-In in the Authentication tab on the left side of the page.

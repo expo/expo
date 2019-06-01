@@ -11,21 +11,7 @@ Provides access to the local file system on the device.
 
 This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
 
-For bare React Native projects, this package is included in [`react-native-unimodules`](https://github.com/unimodules/react-native-unimodules), so if you use that then you already have this! If you are intentionally not using that package, follow the stpes below to install `expo-file-system` manually.
-
-### Add the package to your npm dependencies
-
-```
-npm install expo-file-system
-```
-
-### Configure for iOS
-
-Run `pod install` in the ios directory after installing the npm package.
-
-### Configure for Android
-
-No additional set up necessary.
+For bare React Native projects, this package is included in [`react-native-unimodules`](https://github.com/unimodules/react-native-unimodules). Please refer to those installation instructions to install this package.
 
 # Contributing
 

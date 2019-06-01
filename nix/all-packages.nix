@@ -8,6 +8,14 @@ self: super:
     exes = [ "pod" ];
   };
 
+  fastlane =
+    assert (builtins.compareVersions "2.123.0" super.fastlane.version) == 1;
+    super.bundlerApp {
+      pname = "fastlane";
+      gemdir = ./fastlane;
+      exes = [ "fastlane" ];
+    };
+
   nodejs = super.nodejs-10_x;
 
   yarn2nix-src = super.fetchFromGitHub {

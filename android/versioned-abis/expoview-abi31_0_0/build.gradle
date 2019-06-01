@@ -86,7 +86,7 @@ dependencies {
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
-  api 'com.facebook.android:facebook-android-sdk:4.38.0'
+  api 'com.facebook.android:facebook-android-sdk:5.0.1'
   api('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
   }

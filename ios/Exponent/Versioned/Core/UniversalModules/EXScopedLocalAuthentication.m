@@ -1,5 +1,6 @@
 // Copyright © 2019-present 650 Industries. All rights reserved.
 
+#if __has_include(<EXLocalAuthentication/EXLocalAuthentication.h>)
 #import "EXScopedLocalAuthentication.h"
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <UMCore/UMUtilities.h>
@@ -41,3 +42,4 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
 }
 
 @end
+#endif

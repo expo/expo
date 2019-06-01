@@ -1,6 +1,6 @@
 import React from 'react';
 import { PixelRatio, View, Text, Switch } from 'react-native';
-import { Audio } from 'expo';
+import { Audio } from 'expo-av';
 
 import Button from '../../components/Button';
 import ListButton from '../../components/ListButton';

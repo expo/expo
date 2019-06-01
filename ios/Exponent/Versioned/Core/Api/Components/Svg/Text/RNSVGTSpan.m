@@ -25,6 +25,7 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     BOOL isClosed;
     NSMutableArray *emoji;
     NSMutableArray *emojiTransform;
+    CGFloat cachedAdvance;
 }
 
 - (id)init
@@ -39,6 +40,12 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     emojiTransform = [NSMutableArray arrayWithCapacity:0];
 
     return self;
+}
+
+- (void)clearPath
+{
+    [super clearPath];
+    cachedAdvance = NAN;
 }
 
 - (void)setContent:(NSString *)content
@@ -98,6 +105,69 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     [self popGlyphContext];
 
     return path;
+}
+
+- (CGFloat)getSubtreeTextChunksTotalAdvance
+{
+    if (!isnan(cachedAdvance)) {
+        return cachedAdvance;
+    }
+    CGFloat advance = 0;
+
+    NSString *str = self.content;
+    if (!str) {
+        for (UIView *node in self.subviews) {
+            if ([node isKindOfClass:[RNSVGText class]]) {
+                RNSVGText *text = (RNSVGText*)node;
+                advance += [text getSubtreeTextChunksTotalAdvance];
+            }
+        }
+        cachedAdvance = advance;
+        return advance;
+    }
+
+    // Create a dictionary for this font
+    CTFontRef fontRef = [self getFontFromContext];
+    RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
+    RNSVGFontData* font = [gc getFont];
+
+    CGFloat letterSpacing = font->letterSpacing;
+    CGFloat kerning = font->kerning;
+
+    bool allowOptionalLigatures = letterSpacing == 0 && font->fontVariantLigatures == RNSVGFontVariantLigaturesNormal;
+
+    NSMutableDictionary *attrs = [[NSMutableDictionary alloc] init];
+
+    NSNumber *lig = [NSNumber numberWithInt:allowOptionalLigatures ? 2 : 1];
+    attrs[NSLigatureAttributeName] = lig;
+    CFDictionaryRef attributes;
+    if (fontRef != nil) {
+        attrs[NSFontAttributeName] = (__bridge id)fontRef;
+    }
+    float kern = (float)(letterSpacing + kerning);
+    NSNumber *kernAttr = [NSNumber numberWithFloat:kern];
+
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+    if (___useiOS6Attributes)
+    {
+        [attrs setObject:kernAttr forKey:NSKernAttributeName];
+    }
+    else
+#endif
+    {
+        [attrs setObject:kernAttr forKey:(id)kCTKernAttributeName];
+    }
+
+    attributes = (__bridge CFDictionaryRef)attrs;
+
+    CFStringRef string = (__bridge CFStringRef)str;
+    CFAttributedStringRef attrString = CFAttributedStringCreate(kCFAllocatorDefault, string, attributes);
+    CTLineRef line = CTLineCreateWithAttributedString(attrString);
+
+    CGRect textBounds = CTLineGetBoundsWithOptions(line, 0);
+    CGFloat textMeasure = CGRectGetWidth(textBounds);
+    cachedAdvance = textMeasure;
+    return textMeasure;
 }
 
 - (CGPathRef)getLinePath:(NSString *)str context:(CGContextRef)context
@@ -292,8 +362,8 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
      attributes, such as a ‘dx’ attribute value on a ‘tspan’ element.
      */
     enum RNSVGTextAnchor textAnchor = font->textAnchor;
-    CGRect textBounds = CTLineGetBoundsWithOptions(line, 0);
-    CGFloat textMeasure = CGRectGetWidth(textBounds);
+    RNSVGText *anchorRoot = [self getTextAnchorRoot];
+    CGFloat textMeasure = [anchorRoot getSubtreeTextChunksTotalAdvance];
     CGFloat offset = [RNSVGTSpan getTextAnchorOffset:textAnchor width:textMeasure];
 
     bool hasTextPath = textPath != nil;

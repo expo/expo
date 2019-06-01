@@ -2,6 +2,7 @@ import { EventEmitter } from '@unimodules/core';
 declare const LocationEventEmitter: EventEmitter;
 export interface ProviderStatus {
     locationServicesEnabled: boolean;
+    backgroundModeEnabled: boolean;
     gpsAvailable?: boolean;
     networkAvailable?: boolean;
     passiveAvailable?: boolean;
@@ -52,6 +53,8 @@ interface LocationTaskOptions {
     deferredUpdatesDistance?: number;
     deferredUpdatesTimeout?: number;
     deferredUpdatesInterval?: number;
+    activityType?: LocationActivityType;
+    pausesUpdatesAutomatically?: boolean;
     foregroundService?: {
         notificationTitle: string;
         notificationBody: string;
@@ -76,7 +79,14 @@ declare enum LocationAccuracy {
     Highest = 5,
     BestForNavigation = 6
 }
-export { LocationAccuracy as Accuracy };
+declare enum LocationActivityType {
+    Other = 1,
+    AutomotiveNavigation = 2,
+    Fitness = 3,
+    OtherNavigation = 4,
+    Airborne = 5
+}
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, };
 export declare enum GeofencingEventType {
     Enter = 1,
     Exit = 2
@@ -105,6 +115,7 @@ export declare function watchPositionAsync(options: LocationOptions, callback: L
 }>;
 export declare function requestPermissionsAsync(): Promise<void>;
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
+export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
 export declare function stopLocationUpdatesAsync(taskName: string): Promise<void>;
 export declare function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean>;

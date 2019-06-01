@@ -53,7 +53,7 @@ const pixelRatio = PixelRatio.get(); // The pixel ratio of the device
 const pixels = targetPixelCount / pixelRatio;
 
 const result = await takeSnapshotAsync(this.imageContainer, {
-  result: 'file',
+  result: 'tmpfile',
   height: pixels,
   width: pixels,
   quality: 1,

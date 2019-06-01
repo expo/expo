@@ -78,7 +78,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
       TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
 
       if (context != null) {
-        taskManagerUtils.scheduleJob(context, mTask, new PersistableBundle());
+        taskManagerUtils.scheduleJob(context, mTask, null);
       }
     }
   }

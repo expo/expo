@@ -24,13 +24,13 @@ We think if we can make Expo good enough, we can eventually help developers make
 
 Expo is kind of like Rails for React Native. Lots of things are set up for you, so it's quicker to get started and on the right path.
 
-With Expo, you don't need Xcode or Android Studio. You just write JavaScript using whatever text editor you are comfortable with (Atom, vim, emacs, Sublime, VS Code, whatever you like). You can run Expo CLI (our command line tool and web UI) on Mac, Windows, and Linux.
+With a managed Expo project, you don't need Xcode or Android Studio. You just write JavaScript using whatever text editor you are comfortable with (Atom, vim, emacs, Sublime, VS Code, whatever you like). You can run Expo CLI (our command line tool and web UI) on Mac, Windows, and Linux.
 
-Here are some of the things Expo gives you out of the box that work right away:
+Here are some of the things the managed workflow gives you out of the box that work right away:
 
 -   **Support for iOS and Android**
 
-    You can use apps written in Expo on both iOS and Android right out of the box. You don't need to go through a separate build process for each one. Just open any Expo app in the Expo Client app from the App Store on either iOS or Android (or in a simulator or emulator on your computer).
+    You can use apps written in Expo on both iOS and Android right out of the box. You don't need to go through a separate build process for each one. Just open any managed app in the Expo client app from the App Store on either iOS or Android (or in a simulator or emulator on your computer).
 
 -   **Push Notifications**
 
@@ -42,7 +42,7 @@ Here are some of the things Expo gives you out of the box that work right away:
 
 -   **Instant Updating**
 
-    All Expo apps can be updated in seconds by just clicking Publish in Expo Dev Tools. You don't have to set anything up; it just works this way. If you aren't using Expo, you'd either use Microsoft Code Push or roll your own solution for this problem.
+    All Managed apps can be updated in seconds by just clicking Publish in Expo Dev Tools. You don't have to set anything up; it just works this way. If you aren't on a Managed project, you'd either use Microsoft Code Push or roll your own solution for this problem.
 
 -   **Asset Management**
 
@@ -56,13 +56,13 @@ Here are some of the things Expo gives you out of the box that work right away:
 
 **But no native modules...**
 
-The most limiting thing about Expo is that you can't add in your own native modules without `detach`ing and using ExpoKit. Continue reading the next question for a full explanation.
+The most limiting thing about managed Expo projects is that you can't add in your own native modules without `detach`ing and using ExpoKit. Continue reading the next question for a full explanation.
 
 ## How do I add custom native code to my Expo project?
 
 TL;DR you can do it, but most people never need to.
 
-Standard Expo projects don't support custom native code, including third-party libraries which require custom native components. In an Expo project, you only write pure JS. Expo is designed this way on purpose and we think it's better this way.
+Managed Expo projects don't support custom native code, including third-party libraries which require custom native components. In a managed project, you only write pure JS. The managed workflow is designed this way on purpose and we think it's better this way.
 
 In [our SDK](../../sdk/overview/), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JS as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Expo SDK updates. Especially in the case of UI components, there is pretty much always a better option written in JS.
 
@@ -74,7 +74,7 @@ Expo and React Native are similar to React. You'll have to learn a new set of co
 
 ## How do I share my Expo project? Can I submit it to the app stores?
 
-The fastest way to share your Expo project is to publish it. You can do this by clicking 'Publish' in Expo Dev Tools or running `expo publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo Client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight.
+The fastest way to share your managed Expo project is to publish it. You can do this by clicking 'Publish' in Expo Dev Tools or running `expo publish` in your project. This gives your app a URL; you can share this URL with anybody who has the Expo client for Android and they can open your app immediately. [Read more about publishing on Expo](https://blog.expo.io/publishing-on-exponent-790493660d24). To share with iOS users, you can use Apple TestFlight.
 
 When you're ready, you can create a standalone app (`.ipa` and `.apk`) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](../../distribution/building-standalone-apps/#building-standalone-apps). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store.
 
@@ -92,9 +92,9 @@ If you are using native libraries that aren't supported by Expo, you will either
 
 _N.B. We used to maintain a tool `exp convert` but it is not currently working or maintained so the above method is the best way to get an existing React Native project working on Expo_
 
-## How do I remove an Expo project that I published?
+## How do I remove a Managed Expo project that I published?
 
-The default [privacy setting](../../workflow/configuration/) for Expo apps is `unlisted` so nobody can find your app unless you share the link with them.
+The default [privacy setting](../../workflow/configuration/) for managed apps is `unlisted` so nobody can find your app unless you share the link with them.
 
 If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../../distribution/advanced-release-channels/), which explains how to roll back.
 

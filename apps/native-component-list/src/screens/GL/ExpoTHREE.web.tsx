@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Asset } from 'expo';
+import { Asset } from 'expo-asset';
 
 class Renderer extends THREE.WebGLRenderer {
   constructor({

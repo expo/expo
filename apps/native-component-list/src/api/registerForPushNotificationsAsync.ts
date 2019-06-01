@@ -1,4 +1,6 @@
-import { Constants, Notifications } from 'expo';
+import { Notifications } from 'expo';
+
+import Constants from 'expo-constants';
 
 // In this test app we contact the Expo push service directly. You *never*
 // should do this in a real app. You should always store the push tokens on your

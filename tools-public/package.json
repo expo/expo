@@ -18,6 +18,7 @@
     "@expo/bunyan": "^1.8.10",
     "@expo/json-file": "^8.0.0",
     "@expo/mux": "^1.0.6",
+    "@expo/xdl": "^54.0.0",
     "@exponent/spawn-async": "^1.2.4",
     "expo-cli": "^2.6.14",
     "fs-extra": "^4.0.2",
@@ -34,8 +35,7 @@
     "rimraf": "^2.6.2",
     "sharp": "^0.21.0",
     "shelljs": "^0.7.0",
-    "uuid": "^3.1.0",
-    "xdl": "53.5.5-alpha.0"
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "jest": "^23.5.0"

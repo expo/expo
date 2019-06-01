@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import { MapView } from 'expo';
+import MapView from 'react-native-maps';
 import Layout from '../constants/Layout';
 import ListButton from '../components/ListButton';
 

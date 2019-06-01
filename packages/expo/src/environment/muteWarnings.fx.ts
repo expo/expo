@@ -6,12 +6,15 @@ const _unusedAppRegistry = AppRegistry;
 
 // NOTE(2018-10-29): temporarily filter out cyclic dependency warnings here since they are noisy and
 // each warning symbolicates a stack trace, which is slow when there are many warnings
+// NOTE(2019-05-27): temporarily filter out LottieAnimationView warnings triggered by
+// unmaintained react-native-safe-module dependency.
 const originalWarn = console.warn;
 console.warn = function warn(...args) {
   if (
     args.length > 0 &&
     typeof args[0] === 'string' &&
-    /^Require cycle: .*node_modules/.test(args[0])
+    (/^Require cycle: .*node_modules/.test(args[0]) ||
+      /Use UIManager\.getViewManagerConfig\('LottieAnimationView'\) instead\./.test(args[0]))
   ) {
     return;
   }

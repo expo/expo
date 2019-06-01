@@ -11,10 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { LocalAuthentication } from 'expo';
-
-// in bare apps:
 import * as LocalAuthentication from 'expo-local-authentication';
 ```
 
@@ -32,7 +28,7 @@ Determine what kinds of authentications are available on the device.
 
 #### Returns
 
-Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported.
+Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported. If neither authentication type is supported, returns an empty array.
 
 ### `LocalAuthentication.isEnrolledAsync()`
 
@@ -61,4 +57,3 @@ Returns a promise resolving to an object containing `success`, a boolean indicat
 ### `LocalAuthentication.cancelAuthenticate() - (Android Only)`
 
 Cancels the fingerprint authentication flow.
-

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert, ScrollView } from 'react-native';
-import { Permissions, Notifications } from 'expo';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 
