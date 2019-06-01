@@ -5,7 +5,7 @@ at https://github.com/expo/expo. Thanks!
 
 ## Options
 
-### `web.dangerouslyTransformModules`
+### `web.transformImportExport`
 
 Enabling this option will allow your project to run with older JavaScript syntax (i.e. `module.exports`). This option will break tree shaking and increase your bundle size, but will eliminate the following error when `module.exports` is used:
 
@@ -17,7 +17,7 @@ Enabling this option will allow your project to run with older JavaScript syntax
 [
     'babel-preset-expo',
     {
-        web: { dangerouslyTransformModules: true }
+        web: { transformImportExport: true }
     }
 ],
 ```
