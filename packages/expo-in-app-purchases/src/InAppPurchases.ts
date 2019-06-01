@@ -114,6 +114,9 @@ export async function getBillingResponseCodeAsync(): Promise<number> {
   if (!connected) {
     return billingResponseCodes.SERVICE_DISCONNECTED;
   }
+  if (Platform.OS !== 'android') {
+    return billingResponseCodes.OK;
+  }
 
   return await ExpoInAppPurchases.getBillingResponseCodeAsync();
 }

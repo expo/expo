@@ -96,6 +96,9 @@ export async function getBillingResponseCodeAsync() {
     if (!connected) {
         return billingResponseCodes.SERVICE_DISCONNECTED;
     }
+    if (Platform.OS !== 'android') {
+        return billingResponseCodes.OK;
+    }
     return await ExpoInAppPurchases.getBillingResponseCodeAsync();
 }
 export async function disconnectAsync() {

@@ -4,6 +4,7 @@
 
 #define CONNECT_KEY @"connectToAppStoreAsync"
 #define QUERY_KEY @"queryPurchasableItemsAsync"
+#define SERVICE_DISCONNECTED -1
 #define OK 0
 #define USER_CANCELLED 1
 #define ERROR 2
@@ -20,14 +21,19 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 - (NSDictionary *)constantsToExport
 {
   return @{
-     @"responseCodes": [[NSDictionary alloc] initWithObjectsAndKeys:@"OK", OK, @"USER_CANCELED", USER_CANCELLED, @"ERROR", ERROR, nil],
-     @"purchaseStates": [[NSDictionary alloc] initWithObjectsAndKeys:
-                         @"PURCHASED", SKPaymentTransactionStatePurchased,
-                         @"PENDING", SKPaymentTransactionStatePurchasing,
-                         @"FAILED", SKPaymentTransactionStateFailed,
-                         @"RESTORED", SKPaymentTransactionStateRestored,
-                         @"DEFERRED", SKPaymentTransactionStateDeferred,
-                         nil],
+       @"responseCodes": @{
+         @"OK": @OK,
+         @"USER_CANCELLED": @USER_CANCELLED,
+         @"ERROR": @ERROR,
+         @"SERVICE_DISCONNECTED": @SERVICE_DISCONNECTED
+      },
+      @"purchaseStates": @{
+         @"PURCHASED": [NSNumber numberWithInteger:SKPaymentTransactionStatePurchased],
+         @"PENDING": [NSNumber numberWithInteger:SKPaymentTransactionStatePurchasing],
+         @"FAILED": [NSNumber numberWithInteger:SKPaymentTransactionStateFailed],
+         @"RESTORED": [NSNumber numberWithInteger:SKPaymentTransactionStateRestored],
+         @"DEFERRED": [NSNumber numberWithInteger:SKPaymentTransactionStateDeferred]
+      }
    };
 }
 
@@ -125,8 +131,10 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
       [self purchase:validProduct];
     }
   }
+
   self->queryingItems = NO;
-  [self resolvePromise:QUERY_KEY value:result];
+  NSDictionary *res = [self formatResults:result withResponseCode:OK];
+  [self resolvePromise:QUERY_KEY value:res];
 }
 
 -(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject {
