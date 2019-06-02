@@ -6,6 +6,7 @@ title: View Style Props
 ### Props
 
 - [Animation Prop Types](../animation-prop-types/#props)
+- [Interaction Prop Types](../interaction-prop-types/#props)
 - [Layout Props](../layout-props/#props)
 - [Shadow Props](../shadow-props/#props)
 - [Transforms](../transforms/#props)
