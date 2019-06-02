@@ -63,6 +63,8 @@ export async function purchaseItemAsync(itemId, oldItem) {
     return convertStringsToObjects(response);
 }
 export async function acknowledgePurchaseAsync(purchaseToken, consumeItem) {
+    if (Platform.OS !== 'android')
+        return;
     console.log('calling acknowledgePurchaseAsync from TS');
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
