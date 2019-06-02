@@ -5,7 +5,7 @@
   "main": "__generated__/AppEntry.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "start": "start-storybook --port 50713",
+    "start": "start-storybook --port 6006",
     "build": "build-storybook",
     "test:web": "BABEL_ENV=test:web jest --config=./test/jest.config.web.js",
     "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js"
