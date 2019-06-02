@@ -5,6 +5,7 @@ title: View Style Props
 
 ### Props
 
+- [Animation Prop Types](../animation-prop-types/#props)
 - [Layout Props](../layout-props/#props)
 - [Shadow Props](../shadow-props/#props)
 - [Transforms](../transforms/#props)
@@ -34,6 +35,30 @@ title: View Style Props
 - [`borderWidth`](../view-style-props/#borderwidth)
 - [`opacity`](../view-style-props/#opacity)
 - [`elevation`](../view-style-props/#elevation)
+- [`backdropFilter`](../view-style-props/#backdropFilter)
+- [`backgroundAttachment`](../view-style-props/#backgroundAttachment)
+- [`backgroundBlendMode`](../view-style-props/#backgroundBlendMode)
+- [`backgroundClip`](../view-style-props/#backgroundClip)
+- [`backgroundImage`](../view-style-props/#backgroundImage)
+- [`backgroundOrigin`](../view-style-props/#backgroundOrigin)
+- [`backgroundPosition`](../view-style-props/#backgroundPosition)
+- [`backgroundRepeat`](../view-style-props/#backgroundRepeat)
+- [`backgroundSize`](../view-style-props/#backgroundSize)
+- [`boxShadow`](../view-style-props/#boxShadow)
+- [`clip`](../view-style-props/#clip)
+- [`filter`](../view-style-props/#filter)
+- [`outlineColor`](../view-style-props/#outlineColor)
+- [`outlineOffset`](../view-style-props/#outlineOffset)
+- [`outlineStyle`](../view-style-props/#outlineStyle)
+- [`outlineWidth`](../view-style-props/#outlineWidth)
+- [`overscrollBehavior`](../view-style-props/#overscrollBehavior)
+- [`overscrollBehaviorX`](../view-style-props/#overscrollBehaviorX)
+- [`overscrollBehaviorY`](../view-style-props/#overscrollBehaviorY)
+- [`scrollbarWidth`](../view-style-props/#scrollbarWidth)
+- [`scrollSnapAlign`](../view-style-props/#scrollSnapAlign)
+- [`scrollSnapType`](../view-style-props/#scrollSnapType)
+- [`WebkitMaskImage`](../view-style-props/#WebkitMaskImage)
+- [`WebkitOverflowScrolling`](../view-style-props/#WebkitOverflowScrolling)
 
 ---
 
