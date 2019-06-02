@@ -24,6 +24,15 @@ title: Text Style Props
 - [`textDecorationStyle`](../text-style-props/#textdecorationstyle)
 - [`textTransform`](../text-style-props/#texttransform)
 - [`writingDirection`](../text-style-props/#writingdirection)
+- [`textIndent`](../text-style-props/#textIndent)
+- [`textOverflow`](../text-style-props/#textOverflow)
+- [`textRendering`](../text-style-props/#textRendering)
+- [`unicodeBidi`](../text-style-props/#unicodeBidi)
+- [`whiteSpace`](../text-style-props/#whiteSpace)
+- [`wordBreak`](../text-style-props/#wordBreak)
+- [`wordWrap`](../text-style-props/#wordWrap)
+- [`MozOsxFontSmoothing`](../text-style-props/#MozOsxFontSmoothing)
+- [`WebkitFontSmoothing`](../text-style-props/#WebkitFontSmoothing)
 
 ---
 
@@ -186,3 +195,75 @@ Set to `false` to remove extra font padding intended to make space for certain a
 | Type                       | Required | Platform |
 | -------------------------- | -------- | -------- |
 | enum('auto', 'ltr', 'rtl') | No       | iOS      |
+
+### `textIndent`
+
+| Type                  | Required | Platform |
+| --------------------- | -------- | -------- |
+| enum(number, string), | No       | Web      |
+
+---
+
+### `textOverflow`
+
+| Type    | Required | Platform |
+| ------- | -------- | -------- |
+| string, | No       | Web      |
+
+---
+
+### `textRendering`
+
+| Type                                                                       | Required | Platform |
+| -------------------------------------------------------------------------- | -------- | -------- |
+| enum('auto', 'geometricPrecision', 'optimizeLegibility', 'optimizeSpeed'), | No       | Web      |
+
+---
+
+### `unicodeBidi`
+
+| Type                                                                             | Required | Platform |
+| -------------------------------------------------------------------------------- | -------- | -------- |
+| enum('normal','bidi-override','embed','isolate','isolate-override','plaintext'), | No       | Web      |
+
+---
+
+### `whiteSpace`
+
+| Type    | Required | Platform |
+| ------- | -------- | -------- |
+| string, | No       | Web      |
+
+---
+
+### `wordBreak`
+
+| Type                                                   | Required | Platform |
+| ------------------------------------------------------ | -------- | -------- |
+| enum('normal', 'break-all', 'break-word', 'keep-all'), | No       | Web      |
+
+---
+
+### `wordWrap`
+
+| Type    | Required | Platform |
+| ------- | -------- | -------- |
+| string, | No       | Web      |
+
+---
+
+### `MozOsxFontSmoothing`
+
+| Type    | Required | Platform |
+| ------- | -------- | -------- |
+| string, | No       | Web      |
+
+---
+
+### `WebkitFontSmoothing`
+
+| Type    | Required | Platform |
+| ------- | -------- | -------- |
+| string, | No       | Web      |
+
+---
