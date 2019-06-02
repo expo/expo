@@ -5,6 +5,11 @@ title: Image Style Props
 
 ### Props
 
+- [Animation Prop Types](../animation-prop-types/#props)
+- [Interaction Prop Types](../interaction-prop-types/#props)
+- [Layout Props](../layout-props/#props)
+- [Shadow Props](../shadow-props/#props)
+- [Transforms](../transforms/#props)
 - [`borderTopRightRadius`](../image-style-props/#bordertoprightradius)
 - [`backfaceVisibility`](../image-style-props/#backfacevisibility)
 - [`borderBottomLeftRadius`](../image-style-props/#borderbottomleftradius)
@@ -19,6 +24,8 @@ title: Image Style Props
 - [`resizeMode`](../image-style-props/#resizemode)
 - [`tintColor`](../image-style-props/#tintcolor)
 - [`overlayColor`](../image-style-props/#overlaycolor)
+- [`boxShadow`](../image-style-props/#boxShadow)
+- [`filter`](../image-style-props/#filter)
 
 ---
 
@@ -146,3 +153,19 @@ For details of how this works under the hood, see http://frescolib.org/rounded-c
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | string | No       | Android  |
+
+---
+
+### `boxShadow`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `filter`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
