@@ -5,25 +5,25 @@ title: Text Style Props
 
 ### Props
 
-* [`textShadowOffset`](../text-style-props/#textshadowoffset)
-* [`color`](../text-style-props/#color)
-* [`fontSize`](../text-style-props/#fontsize)
-* [`fontStyle`](../text-style-props/#fontstyle)
-* [`fontWeight`](../text-style-props/#fontweight)
-* [`lineHeight`](../text-style-props/#lineheight)
-* [`textAlign`](../text-style-props/#textalign)
-* [`textDecorationLine`](../text-style-props/#textdecorationline)
-* [`textShadowColor`](../text-style-props/#textshadowcolor)
-* [`fontFamily`](../text-style-props/#fontfamily)
-* [`textShadowRadius`](../text-style-props/#textshadowradius)
-* [`includeFontPadding`](../text-style-props/#includefontpadding)
-* [`textAlignVertical`](../text-style-props/#textalignvertical)
-* [`fontVariant`](../text-style-props/#fontvariant)
-* [`letterSpacing`](../text-style-props/#letterspacing)
-* [`textDecorationColor`](../text-style-props/#textdecorationcolor)
-* [`textDecorationStyle`](../text-style-props/#textdecorationstyle)
-* [`textTransform`](../text-style-props/#texttransform)
-* [`writingDirection`](../text-style-props/#writingdirection)
+- [`textShadowOffset`](../text-style-props/#textshadowoffset)
+- [`color`](../text-style-props/#color)
+- [`fontSize`](../text-style-props/#fontsize)
+- [`fontStyle`](../text-style-props/#fontstyle)
+- [`fontWeight`](../text-style-props/#fontweight)
+- [`lineHeight`](../text-style-props/#lineheight)
+- [`textAlign`](../text-style-props/#textalign)
+- [`textDecorationLine`](../text-style-props/#textdecorationline)
+- [`textShadowColor`](../text-style-props/#textshadowcolor)
+- [`fontFamily`](../text-style-props/#fontfamily)
+- [`textShadowRadius`](../text-style-props/#textshadowradius)
+- [`includeFontPadding`](../text-style-props/#includefontpadding)
+- [`textAlignVertical`](../text-style-props/#textalignvertical)
+- [`fontVariant`](../text-style-props/#fontvariant)
+- [`letterSpacing`](../text-style-props/#letterspacing)
+- [`textDecorationColor`](../text-style-props/#textdecorationcolor)
+- [`textDecorationStyle`](../text-style-props/#textdecorationstyle)
+- [`textTransform`](../text-style-props/#texttransform)
+- [`writingDirection`](../text-style-props/#writingdirection)
 
 ---
 
@@ -41,8 +41,8 @@ title: Text Style Props
 
 ### `color`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -101,8 +101,8 @@ Specifies text alignment. The value 'justify' is only supported on iOS and fallb
 
 ### `textShadowColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -159,8 +159,8 @@ Set to `false` to remove extra font padding intended to make space for certain a
 
 ### `textDecorationColor`
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | iOS      |
 
 ---
@@ -186,4 +186,3 @@ Set to `false` to remove extra font padding intended to make space for certain a
 | Type                       | Required | Platform |
 | -------------------------- | -------- | -------- |
 | enum('auto', 'ltr', 'rtl') | No       | iOS      |
-
