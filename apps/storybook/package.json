@@ -16,17 +16,20 @@
     "group": "client"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.10",
     "@reach/router": "^1.2.1",
     "@storybook/addon-actions": "5.0.11",
     "@storybook/addon-links": "5.0.11",
     "@storybook/addon-options": "5.0.11",
     "@storybook/addon-storyshots": "^5.0.11",
+    "@storybook/addon-storyshots-puppeteer": "^5.0.11",
     "@storybook/addons": "5.0.11",
     "@storybook/core": "^5.0.11",
     "@storybook/react": "^5.0.11",
     "@storybook/router": "^5.0.11",
     "@storybook/ui": "^5.0.11",
     "expo": "^33.0.0-alpha.web.3",
+    "expo-cli": "^2.17.3",
     "react": "16.6.0",
     "react-native": "0.59.8",
     "react-native-web": "^0.11.4"
