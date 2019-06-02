@@ -29,7 +29,7 @@
     "@storybook/addon-options": "^3.4.3",
     "@storybook/addon-storyshots": "^5.0.11",
     "@storybook/addons": "^5.0.8",
-    "@storybook/react": "^5.0.8",
+    "@storybook/react": "^5.0.11",
     "babel-loader": "^8.0.5",
     "babel-plugin-macros": "^2.6.0",
     "enzyme": "^3.9.0",
