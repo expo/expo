@@ -1,7 +1,8 @@
-import { BlurView } from 'expo';
+import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
+import image from '../../assets/roadster.jpg';
 import UIExplorer, {
   AppText,
   Code,
@@ -10,8 +11,6 @@ import UIExplorer, {
   Section,
   storiesOf,
 } from '../ui-explorer';
-
-import image from '../../assets/roadster.jpg';
 
 const Screen = () => (
   <View>
@@ -41,7 +40,7 @@ const Screen = () => (
             render: () => (
               <View style={{ flexDirection: 'row', flex: 1 }}>
                 {['no blur', 'light', 'default', 'dark'].map(tint => (
-                  <View style={{ alignItems: 'stretch', flex: 1 }}>
+                  <View key={tint} style={{ alignItems: 'stretch', flex: 1 }}>
                     <Code style={{ textAlign: 'center' }}>{tint}</Code>
 
                     <View style={{ flex: 1, margin: 8, height: 200 }}>
@@ -78,7 +77,7 @@ const Screen = () => (
                   ]}
                 />
                 {[0, 33, 66, 100].map(intensity => (
-                  <View style={{ alignItems: 'stretch', flex: 1 }}>
+                  <View key={intensity} style={{ alignItems: 'stretch', flex: 1 }}>
                     <BlurView style={{ flex: 1, margin: 8, height: 200 }} intensity={intensity} />
                     <Code style={{ textAlign: 'center' }}>{intensity}</Code>
                   </View>
