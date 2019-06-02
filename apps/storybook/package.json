@@ -8,6 +8,7 @@
     "start": "start-storybook --port 6006",
     "build": "build-storybook",
     "test:web": "BABEL_ENV=test:web jest --config=./test/jest.config.web.js",
+    "test:web:ci": "export IS_EXPO_CI=true && npm run build && npm run test:web",
     "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js"
   },
   "author": "Expo",
