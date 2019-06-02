@@ -58,6 +58,18 @@ title: Layout Props
 - [`top`](../layout-props/#top)
 - [`width`](../layout-props/#width)
 - [`zIndex`](../layout-props/#zindex)
+- [`gridAutoColumns`](../layout-props/#gridAutoColumns)
+- [`gridAutoFlow`](../layout-props/#gridAutoFlow)
+- [`gridAutoRows`](../layout-props/#gridAutoRows)
+- [`gridColumnEnd`](../layout-props/#gridColumnEnd)
+- [`gridColumnGap`](../layout-props/#gridColumnGap)
+- [`gridColumnStart`](../layout-props/#gridColumnStart)
+- [`gridRowEnd`](../layout-props/#gridRowEnd)
+- [`gridRowGap`](../layout-props/#gridRowGap)
+- [`gridRowStart`](../layout-props/#gridRowStart)
+- [`gridTemplateColumns`](../layout-props/#gridTemplateColumns)
+- [`gridTemplateRows`](../layout-props/#gridTemplateRows)
+- [`gridTemplateAreas`](../layout-props/#gridTemplateAreas)
 
 ---
 
@@ -652,5 +664,101 @@ On iOS, `zIndex` may require `View`s to be siblings of each other for it to work
 | Type   | Required |
 | ------ | -------- |
 | number | No       |
+
+---
+
+### `gridAutoColumns`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridAutoFlow`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridAutoRows`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridColumnEnd`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridColumnGap`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridColumnStart`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridRowEnd`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridRowGap`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridRowStart`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridTemplateColumns`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridTemplateRows`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `gridTemplateAreas`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
 
 ---
