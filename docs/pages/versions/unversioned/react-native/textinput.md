@@ -735,6 +735,11 @@ see [Issue#7070](https://github.com/facebook/react-native/issues/7070) for more 
 | ---------------------- | -------- |
 | [Text](../text/#style) | No       |
 
+The following web prop types are provided as well:
+
+- `caretColor`: ColorPropType
+- `resize`: enum('none', 'vertical', 'horizontal', 'both')
+
 ---
 
 ### `textBreakStrategy`
