@@ -1,4 +1,4 @@
-import { LinearGradient } from 'expo';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { View } from 'react-native';
 
@@ -25,7 +25,10 @@ const Screen = () => (
           description="An array of colors that represent stops in the gradient. At least two colors are required (otherwise it's not a gradient, it's just a fill!)."
           example={{
             render: () => (
-              <LinearGradient style={{ flex: 1, height: 200 }} colors={['red', 'purple', 'blue']} />
+              <LinearGradient
+                style={{ flex: 1, minHeight: 200 }}
+                colors={['red', 'purple', 'blue']}
+              />
             ),
           }}
         />
@@ -36,7 +39,7 @@ const Screen = () => (
           example={{
             render: () => (
               <LinearGradient
-                style={{ flex: 1, height: 200 }}
+                style={{ flex: 1, minHeight: 200 }}
                 start={[0.1, 0.2]}
                 colors={['green', 'orange']}
               />
@@ -50,7 +53,7 @@ const Screen = () => (
           example={{
             render: () => (
               <LinearGradient
-                style={{ flex: 1, height: 200 }}
+                style={{ flex: 1, minHeight: 200 }}
                 end={[0.1, 0.2]}
                 colors={['green', 'orange']}
               />
@@ -64,7 +67,7 @@ const Screen = () => (
           example={{
             render: () => (
               <LinearGradient
-                style={{ flex: 1, height: 200 }}
+                style={{ flex: 1, minHeight: 200 }}
                 colors={['red', 'blue']}
                 locations={[0.5, 0.6]}
               />
