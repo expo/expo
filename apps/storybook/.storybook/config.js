@@ -1,4 +1,4 @@
-import { setOptions } from '@storybook/addon-options';
+import { withOptions } from '@storybook/addon-options';
 import centered from './decorator-centered';
 import { configure, addDecorator } from '@storybook/react';
 import requireContext from 'require-context.macro';
@@ -7,7 +7,7 @@ const context = requireContext('../stories', true, /Screen\.js$/);
 
 addDecorator(centered);
 
-setOptions({
+withOptions({
   name: 'Expo',
   url: 'https://',
   goFullScreen: false,
