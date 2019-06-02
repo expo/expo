@@ -1,7 +1,8 @@
-import { BlurView } from 'expo';
+import { BlurView } from 'expo-blur';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
+import image from '../../assets/roadster.jpg';
 import UIExplorer, {
   AppText,
   Code,
@@ -10,8 +11,6 @@ import UIExplorer, {
   Section,
   storiesOf,
 } from '../ui-explorer';
-
-import image from '../../assets/roadster.jpg';
 
 const Screen = () => (
   <View>
