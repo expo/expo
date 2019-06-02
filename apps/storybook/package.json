@@ -6,13 +6,7 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "start": "start-storybook --port 50713",
-    "build": "build-storybook",
-    "loki": "loki",
-    "preloki:ci": "npm run test:loki:update",
-    "loki:ci": "build-storybook && loki --requireReference --reactUri file:./storybook-static",
-    "loki:start": "yarn loki test --configurationFilter chrome.laptop --port 50713",
-    "loki:update": "LOKI_FILE=`cd ../.. && echo \\`pwd\\`/\\`npm pack\\`` && npm install $LOKI_FILE --no-save --no-package-lock && rm $LOKI_FILE",
-    "loki:approve": "yarn loki approve --configurationFilter chrome.laptop --port 50713"
+    "build": "build-storybook"
   },
   "author": "Expo",
   "license": "MIT",
@@ -43,16 +37,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "loki": {
-    "chromeSelector": ".wrapper > *, #root > *",
-    "diffingEngine": "looks-same",
-    "configurations": {
-      "chrome.laptop": {
-        "target": "chrome.docker",
-        "width": 1366,
-        "height": 768
-      }
-    }
-  }
+  ]
 }
