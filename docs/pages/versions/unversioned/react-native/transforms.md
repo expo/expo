@@ -5,14 +5,18 @@ title: Transforms
 
 ### Props
 
-* [`decomposedMatrix`](../transforms/#decomposedmatrix)
-* [`rotation`](../transforms/#rotation)
-* [`scaleX`](../transforms/#scalex)
-* [`scaleY`](../transforms/#scaley)
-* [`transform`](../transforms/#transform)
-* [`transformMatrix`](../transforms/#transformmatrix)
-* [`translateX`](../transforms/#translatex)
-* [`translateY`](../transforms/#translatey)
+- [`decomposedMatrix`](../transforms/#decomposedmatrix)
+- [`rotation`](../transforms/#rotation)
+- [`scaleX`](../transforms/#scalex)
+- [`scaleY`](../transforms/#scaley)
+- [`transform`](../transforms/#transform)
+- [`transformMatrix`](../transforms/#transformmatrix)
+- [`translateX`](../transforms/#translatex)
+- [`translateY`](../transforms/#translatey)
+- [`perspective`](../transforms/#perspective)
+- [`perspectiveOrigin`](../transforms/#perspectiveOrigin)
+- [`transformOrigin`](../transforms/#transformOrigin)
+- [`transformStyle`](../transforms/#transformStyle)
 
 ---
 
@@ -96,3 +100,32 @@ Deprecated. Use the transform prop instead.
 | ---------------------------------------------------------------------------- | -------- |
 | deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.') | No       |
 
+### `perspective`
+
+| Type                 | Required | Platform |
+| -------------------- | -------- | -------- |
+| enum(number, string) | No       | Web      |
+
+---
+
+### `perspectiveOrigin`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `transformOrigin`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `transformStyle`
+
+| Type                        | Required | Platform |
+| --------------------------- | -------- | -------- |
+| enum('flat', 'preserve-3d') | No       | Web      |
