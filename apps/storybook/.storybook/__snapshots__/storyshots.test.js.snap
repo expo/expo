@@ -2478,3 +2478,815 @@ exports[`Storyshots Components BlurView 1`] = `
   </div>
 </div>
 `;
+
+exports[`Storyshots Components Linear Gradient 1`] = `
+<div
+  className="css-view-1dbjc4n"
+  style={
+    Object {
+      "marginLeft": "auto",
+      "marginRight": "auto",
+      "maxWidth": "680px",
+      "minHeight": "100vh",
+    }
+  }
+>
+  <div
+    className="css-view-1dbjc4n"
+  >
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxFlex": 1,
+          "WebkitFlexBasis": "auto",
+          "WebkitFlexGrow": 1,
+          "WebkitFlexShrink": 1,
+          "flexBasis": "auto",
+          "flexGrow": 1,
+          "flexShrink": 1,
+          "msFlexNegative": 1,
+          "msFlexPositive": 1,
+          "msFlexPreferredSize": "auto",
+          "paddingBottom": "1rem",
+          "paddingLeft": "1rem",
+          "paddingRight": "1rem",
+          "paddingTop": "1rem",
+        }
+      }
+    >
+      <h1
+        className="css-reset-4rbku5 css-text-76zvg2"
+        dir="auto"
+        role="heading"
+        style={
+          Object {
+            "fontSize": "2rem",
+          }
+        }
+      >
+        Linear Gradient
+      </h1>
+      <div
+        className="css-text-76zvg2"
+        dir="auto"
+        style={
+          Object {
+            "WebkitBoxDirection": "normal",
+            "WebkitBoxOrient": "vertical",
+            "WebkitFlexDirection": "column",
+            "color": "rgba(102,102,102,1.00)",
+            "display": "flex",
+            "flexDirection": "column",
+            "fontSize": "1.25rem",
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+            "marginTop": "calc(0.5 * 1.3125rem)",
+            "msFlexDirection": "column",
+          }
+        }
+      >
+        <span
+          className="css-text-76zvg2 css-textHasAncestor-16my406"
+          dir="auto"
+        >
+          A React component that renders a gradient view.
+        </span>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+          }
+        }
+      >
+        <div
+          className="css-text-76zvg2"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Importing the module
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-76zvg2"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "calc(0.5 * 1.3125rem)",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-text-76zvg2"
+            dir="auto"
+            style={
+              Object {
+                "fontFamily": "monospace, monospace",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125em",
+              }
+            }
+          >
+            import { LinearGradient } from 'expo-linear-gradient';
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+      >
+        <h2
+          aria-level="2"
+          className="css-reset-4rbku5 css-text-76zvg2"
+          dir="auto"
+          role="heading"
+          style={
+            Object {
+              "fontSize": "1.3125rem",
+              "fontWeight": "bold",
+              "marginBottom": "1.3125rem",
+            }
+          }
+        >
+          Props
+        </h2>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginBottom": "calc(1.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-76zvg2"
+            dir="auto"
+            style={
+              Object {
+                "fontSize": "1rem",
+              }
+            }
+          >
+            <span
+              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontWeight": "bold",
+                  }
+                }
+              >
+                ...View props
+              </span>
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginBottom": "calc(1.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-76zvg2"
+            dir="auto"
+            style={
+              Object {
+                "fontSize": "1rem",
+              }
+            }
+          >
+            <span
+              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontWeight": "bold",
+                  }
+                }
+              >
+                colors
+              </span>
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+              >
+                : 
+                <span
+                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  dir="auto"
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125em",
+                    }
+                  }
+                >
+                  string[]
+                </span>
+              </span>
+            </span>
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+            style={
+              Object {
+                "marginTop": "calc(0.5 * 1.3125rem)",
+              }
+            }
+          >
+            <div
+              className="css-text-76zvg2"
+              dir="auto"
+              style={
+                Object {
+                  "WebkitAlignItems": "stretch",
+                  "WebkitBoxAlign": "stretch",
+                  "WebkitBoxDirection": "normal",
+                  "WebkitBoxOrient": "vertical",
+                  "WebkitFlexDirection": "column",
+                  "alignItems": "stretch",
+                  "display": "flex",
+                  "flexDirection": "column",
+                  "fontSize": "1rem",
+                  "lineHeight": "1.3125em",
+                  "msFlexAlign": "stretch",
+                  "msFlexDirection": "column",
+                }
+              }
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+              >
+                An array of colors that represent stops in the gradient. At least two colors are required (otherwise it's not a gradient, it's just a fill!).
+              </span>
+            </div>
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+            style={
+              Object {
+                "borderBottomColor": "rgba(230,236,240,1.00)",
+                "borderBottomWidth": "1px",
+                "borderLeftColor": "rgba(230,236,240,1.00)",
+                "borderLeftWidth": "1px",
+                "borderRightColor": "rgba(230,236,240,1.00)",
+                "borderRightWidth": "1px",
+                "borderTopColor": "rgba(230,236,240,1.00)",
+                "borderTopWidth": "1px",
+                "marginTop": "1.3125rem",
+                "paddingBottom": "1.3125rem",
+                "paddingLeft": "1.3125rem",
+                "paddingRight": "1.3125rem",
+                "paddingTop": "1.3125rem",
+              }
+            }
+          >
+            <div
+              className="css-text-76zvg2"
+              dir="auto"
+              style={
+                Object {
+                  "color": "rgba(170,184,194,1.00)",
+                  "fontSize": "0.8rem",
+                  "fontWeight": "bold",
+                  "marginBottom": "calc(0.5 * 1.3125rem)",
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Example
+            </div>
+            <div
+              className="css-view-1dbjc4n"
+            >
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "backgroundImage": "linear-gradient(180deg, #ff0000ff,#800080ff,#0000ffff)",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "height": "200px",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginBottom": "calc(1.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-76zvg2"
+            dir="auto"
+            style={
+              Object {
+                "fontSize": "1rem",
+              }
+            }
+          >
+            <span
+              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontWeight": "bold",
+                  }
+                }
+              >
+                start
+              </span>
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+              >
+                : 
+                <span
+                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  dir="auto"
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125em",
+                    }
+                  }
+                >
+                  number[]
+                </span>
+              </span>
+            </span>
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+            style={
+              Object {
+                "marginTop": "calc(0.5 * 1.3125rem)",
+              }
+            }
+          >
+            <div
+              className="css-text-76zvg2"
+              dir="auto"
+              style={
+                Object {
+                  "WebkitAlignItems": "stretch",
+                  "WebkitBoxAlign": "stretch",
+                  "WebkitBoxDirection": "normal",
+                  "WebkitBoxOrient": "vertical",
+                  "WebkitFlexDirection": "column",
+                  "alignItems": "stretch",
+                  "display": "flex",
+                  "flexDirection": "column",
+                  "fontSize": "1rem",
+                  "lineHeight": "1.3125em",
+                  "msFlexAlign": "stretch",
+                  "msFlexDirection": "column",
+                }
+              }
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+              >
+                An array of [x, y] where x and y are floats. They represent the position that the gradient starts at, as a fraction of the overall size of the gradient. For example, [0.1, 0.2] means that the gradient will start 10% from the left and 20% from the top.
+              </span>
+            </div>
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+            style={
+              Object {
+                "borderBottomColor": "rgba(230,236,240,1.00)",
+                "borderBottomWidth": "1px",
+                "borderLeftColor": "rgba(230,236,240,1.00)",
+                "borderLeftWidth": "1px",
+                "borderRightColor": "rgba(230,236,240,1.00)",
+                "borderRightWidth": "1px",
+                "borderTopColor": "rgba(230,236,240,1.00)",
+                "borderTopWidth": "1px",
+                "marginTop": "1.3125rem",
+                "paddingBottom": "1.3125rem",
+                "paddingLeft": "1.3125rem",
+                "paddingRight": "1.3125rem",
+                "paddingTop": "1.3125rem",
+              }
+            }
+          >
+            <div
+              className="css-text-76zvg2"
+              dir="auto"
+              style={
+                Object {
+                  "color": "rgba(170,184,194,1.00)",
+                  "fontSize": "0.8rem",
+                  "fontWeight": "bold",
+                  "marginBottom": "calc(0.5 * 1.3125rem)",
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Example
+            </div>
+            <div
+              className="css-view-1dbjc4n"
+            >
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "backgroundImage": "linear-gradient(187.1250163489018deg, #008000ff,#ffa500ff)",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "height": "200px",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginBottom": "calc(1.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-76zvg2"
+            dir="auto"
+            style={
+              Object {
+                "fontSize": "1rem",
+              }
+            }
+          >
+            <span
+              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontWeight": "bold",
+                  }
+                }
+              >
+                end
+              </span>
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+              >
+                : 
+                <span
+                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  dir="auto"
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125em",
+                    }
+                  }
+                >
+                  number[]
+                </span>
+              </span>
+            </span>
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+            style={
+              Object {
+                "marginTop": "calc(0.5 * 1.3125rem)",
+              }
+            }
+          >
+            <div
+              className="css-text-76zvg2"
+              dir="auto"
+              style={
+                Object {
+                  "WebkitAlignItems": "stretch",
+                  "WebkitBoxAlign": "stretch",
+                  "WebkitBoxDirection": "normal",
+                  "WebkitBoxOrient": "vertical",
+                  "WebkitFlexDirection": "column",
+                  "alignItems": "stretch",
+                  "display": "flex",
+                  "flexDirection": "column",
+                  "fontSize": "1rem",
+                  "lineHeight": "1.3125em",
+                  "msFlexAlign": "stretch",
+                  "msFlexDirection": "column",
+                }
+              }
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+              >
+                Same as start but for the end of the gradient.
+              </span>
+            </div>
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+            style={
+              Object {
+                "borderBottomColor": "rgba(230,236,240,1.00)",
+                "borderBottomWidth": "1px",
+                "borderLeftColor": "rgba(230,236,240,1.00)",
+                "borderLeftWidth": "1px",
+                "borderRightColor": "rgba(230,236,240,1.00)",
+                "borderRightWidth": "1px",
+                "borderTopColor": "rgba(230,236,240,1.00)",
+                "borderTopWidth": "1px",
+                "marginTop": "1.3125rem",
+                "paddingBottom": "1.3125rem",
+                "paddingLeft": "1.3125rem",
+                "paddingRight": "1.3125rem",
+                "paddingTop": "1.3125rem",
+              }
+            }
+          >
+            <div
+              className="css-text-76zvg2"
+              dir="auto"
+              style={
+                Object {
+                  "color": "rgba(170,184,194,1.00)",
+                  "fontSize": "0.8rem",
+                  "fontWeight": "bold",
+                  "marginBottom": "calc(0.5 * 1.3125rem)",
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Example
+            </div>
+            <div
+              className="css-view-1dbjc4n"
+            >
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "backgroundImage": "linear-gradient(153.43494882292202deg, #008000ff,#ffa500ff)",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "height": "200px",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginBottom": "calc(1.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-76zvg2"
+            dir="auto"
+            style={
+              Object {
+                "fontSize": "1rem",
+              }
+            }
+          >
+            <span
+              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontWeight": "bold",
+                  }
+                }
+              >
+                locations
+              </span>
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+              >
+                : 
+                <span
+                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  dir="auto"
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125em",
+                    }
+                  }
+                >
+                  number[]
+                </span>
+              </span>
+            </span>
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+            style={
+              Object {
+                "marginTop": "calc(0.5 * 1.3125rem)",
+              }
+            }
+          >
+            <div
+              className="css-text-76zvg2"
+              dir="auto"
+              style={
+                Object {
+                  "WebkitAlignItems": "stretch",
+                  "WebkitBoxAlign": "stretch",
+                  "WebkitBoxDirection": "normal",
+                  "WebkitBoxOrient": "vertical",
+                  "WebkitFlexDirection": "column",
+                  "alignItems": "stretch",
+                  "display": "flex",
+                  "flexDirection": "column",
+                  "fontSize": "1rem",
+                  "lineHeight": "1.3125em",
+                  "msFlexAlign": "stretch",
+                  "msFlexDirection": "column",
+                }
+              }
+            >
+              <span
+                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                dir="auto"
+              >
+                An array of the same length as colors, where each element is a float with the same meaning as the start and  end values, but instead they indicate where the color at that index should be.
+              </span>
+            </div>
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+            style={
+              Object {
+                "borderBottomColor": "rgba(230,236,240,1.00)",
+                "borderBottomWidth": "1px",
+                "borderLeftColor": "rgba(230,236,240,1.00)",
+                "borderLeftWidth": "1px",
+                "borderRightColor": "rgba(230,236,240,1.00)",
+                "borderRightWidth": "1px",
+                "borderTopColor": "rgba(230,236,240,1.00)",
+                "borderTopWidth": "1px",
+                "marginTop": "1.3125rem",
+                "paddingBottom": "1.3125rem",
+                "paddingLeft": "1.3125rem",
+                "paddingRight": "1.3125rem",
+                "paddingTop": "1.3125rem",
+              }
+            }
+          >
+            <div
+              className="css-text-76zvg2"
+              dir="auto"
+              style={
+                Object {
+                  "color": "rgba(170,184,194,1.00)",
+                  "fontSize": "0.8rem",
+                  "fontWeight": "bold",
+                  "marginBottom": "calc(0.5 * 1.3125rem)",
+                  "textTransform": "uppercase",
+                }
+              }
+            >
+              Example
+            </div>
+            <div
+              className="css-view-1dbjc4n"
+            >
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "backgroundImage": "linear-gradient(180deg, #ff0000ff 50%,#0000ffff 60%)",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "height": "200px",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
