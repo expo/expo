@@ -24,6 +24,7 @@
     ]
   },
   "dependencies": {
+    "@storybook/react": "^5.0.11",
     "react-native-unimodules": "~0.3.0"
   },
   "devDependencies": {

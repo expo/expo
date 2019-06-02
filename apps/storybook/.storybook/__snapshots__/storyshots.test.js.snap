@@ -34,7 +34,7 @@ exports[`Storyshots APIs Constants 1`] = `
     }
   >
     <h1
-      className="css-reset-4rbku5 css-text-76zvg2"
+      className="css-reset-4rbku5 css-text-901oao"
       dir="auto"
       role="heading"
       style={
@@ -46,7 +46,7 @@ exports[`Storyshots APIs Constants 1`] = `
       Constants
     </h1>
     <div
-      className="css-text-76zvg2"
+      className="css-text-901oao"
       dir="auto"
       style={
         Object {
@@ -64,7 +64,7 @@ exports[`Storyshots APIs Constants 1`] = `
       }
     >
       <span
-        className="css-text-76zvg2 css-textHasAncestor-16my406"
+        className="css-text-901oao css-textHasAncestor-16my406"
         dir="auto"
       >
         System information that remains constant throughout the lifetime of your app.
@@ -75,7 +75,7 @@ exports[`Storyshots APIs Constants 1`] = `
     >
       <h2
         aria-level="2"
-        className="css-reset-4rbku5 css-text-76zvg2"
+        className="css-reset-4rbku5 css-text-901oao"
         dir="auto"
         role="heading"
         style={
@@ -97,7 +97,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -106,11 +106,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -143,7 +143,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -158,7 +158,7 @@ exports[`Storyshots APIs Constants 1`] = `
             Example
           </div>
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -181,7 +181,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -190,11 +190,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -205,12 +205,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.appOwnership
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -234,7 +234,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -254,7 +254,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               Returns expo, standalone, or guest. If expo, the experience is running inside of the Expo client. If standalone, it is a standalone app. If guest, it has been opened through a link from a standalone app.
@@ -271,7 +271,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -280,11 +280,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -295,12 +295,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.expoVersion
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -324,7 +324,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -344,7 +344,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               The version string of the Expo client currently running.
@@ -361,7 +361,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -370,11 +370,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -385,12 +385,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.installationId
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -414,7 +414,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -434,7 +434,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               An identifier that is unique to this particular device and installation of the Expo client.
@@ -451,7 +451,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -460,11 +460,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -475,12 +475,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.deviceName
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -504,7 +504,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -524,7 +524,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               A human-readable name for the device type.
@@ -541,7 +541,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -550,11 +550,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -565,12 +565,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.deviceYearClass
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -594,7 +594,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -614,7 +614,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               The device year class of this device.
@@ -631,7 +631,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -640,11 +640,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -655,12 +655,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.getWebViewUserAgentAsync()
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -684,7 +684,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -704,7 +704,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               Gets the user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS fetch requests.
@@ -721,7 +721,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -730,11 +730,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -745,12 +745,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.isDevice
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -774,7 +774,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -794,7 +794,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               true if the app is running on a device, false if running in a simulator or emulator.
@@ -811,7 +811,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -820,11 +820,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -835,12 +835,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.sessionId
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -864,7 +864,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -884,7 +884,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               A string that is unique to the current session of your app. It is different across apps and across multiple launches of the same app.
@@ -901,7 +901,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -910,11 +910,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -925,12 +925,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.statusBarHeight
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -954,7 +954,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -974,7 +974,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               The default status bar height for the device. Does not factor in changes when location tracking is in use or a phone call is active.
@@ -991,7 +991,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -1000,11 +1000,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -1015,12 +1015,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.systemFonts
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -1044,7 +1044,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -1064,7 +1064,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               A list of the system font names available on the current device.
@@ -1081,7 +1081,7 @@ exports[`Storyshots APIs Constants 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -1090,11 +1090,11 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -1105,12 +1105,12 @@ exports[`Storyshots APIs Constants 1`] = `
               Constants.manifest
             </span>
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               : 
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -1134,7 +1134,7 @@ exports[`Storyshots APIs Constants 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -1154,7 +1154,7 @@ exports[`Storyshots APIs Constants 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               The manifest object for the app.
@@ -1204,7 +1204,7 @@ exports[`Storyshots Components BlurView 1`] = `
       }
     >
       <h1
-        className="css-reset-4rbku5 css-text-76zvg2"
+        className="css-reset-4rbku5 css-text-901oao"
         dir="auto"
         role="heading"
         style={
@@ -1216,7 +1216,7 @@ exports[`Storyshots Components BlurView 1`] = `
         Blur View
       </h1>
       <div
-        className="css-text-76zvg2"
+        className="css-text-901oao"
         dir="auto"
         style={
           Object {
@@ -1234,7 +1234,7 @@ exports[`Storyshots Components BlurView 1`] = `
         }
       >
         <span
-          className="css-text-76zvg2 css-textHasAncestor-16my406"
+          className="css-text-901oao css-textHasAncestor-16my406"
           dir="auto"
         >
           A React component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars, tab bars, and modals.
@@ -1249,7 +1249,7 @@ exports[`Storyshots Components BlurView 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -1258,11 +1258,11 @@ exports[`Storyshots Components BlurView 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -1295,7 +1295,7 @@ exports[`Storyshots Components BlurView 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -1310,7 +1310,7 @@ exports[`Storyshots Components BlurView 1`] = `
             Example
           </div>
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -1329,7 +1329,7 @@ exports[`Storyshots Components BlurView 1`] = `
       >
         <h2
           aria-level="2"
-          className="css-reset-4rbku5 css-text-76zvg2"
+          className="css-reset-4rbku5 css-text-901oao"
           dir="auto"
           role="heading"
           style={
@@ -1351,7 +1351,7 @@ exports[`Storyshots Components BlurView 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -1360,11 +1360,11 @@ exports[`Storyshots Components BlurView 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -1386,7 +1386,7 @@ exports[`Storyshots Components BlurView 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -1395,11 +1395,11 @@ exports[`Storyshots Components BlurView 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -1420,7 +1420,7 @@ exports[`Storyshots Components BlurView 1`] = `
                 Safari
               </span>
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -1431,12 +1431,12 @@ exports[`Storyshots Components BlurView 1`] = `
                 tint
               </span>
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 : 
                 <span
-                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  className="css-text-901oao css-textHasAncestor-16my406"
                   dir="auto"
                   style={
                     Object {
@@ -1460,7 +1460,7 @@ exports[`Storyshots Components BlurView 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -1480,7 +1480,7 @@ exports[`Storyshots Components BlurView 1`] = `
               }
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 The filtered effect of the contents behind the BlurView. On Android and Chrome this is just the color of the low-opacity view.
@@ -1508,7 +1508,7 @@ exports[`Storyshots Components BlurView 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -2030,7 +2030,7 @@ exports[`Storyshots Components BlurView 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -2039,11 +2039,11 @@ exports[`Storyshots Components BlurView 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -2064,7 +2064,7 @@ exports[`Storyshots Components BlurView 1`] = `
                 Safari
               </span>
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -2075,12 +2075,12 @@ exports[`Storyshots Components BlurView 1`] = `
                 intensity
               </span>
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 : 
                 <span
-                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  className="css-text-901oao css-textHasAncestor-16my406"
                   dir="auto"
                   style={
                     Object {
@@ -2104,7 +2104,7 @@ exports[`Storyshots Components BlurView 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -2124,7 +2124,7 @@ exports[`Storyshots Components BlurView 1`] = `
               }
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 A number from 1 to 100 to control the intensity of the blur effect.
@@ -2152,7 +2152,7 @@ exports[`Storyshots Components BlurView 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -2516,7 +2516,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
       }
     >
       <h1
-        className="css-reset-4rbku5 css-text-76zvg2"
+        className="css-reset-4rbku5 css-text-901oao"
         dir="auto"
         role="heading"
         style={
@@ -2528,7 +2528,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
         Linear Gradient
       </h1>
       <div
-        className="css-text-76zvg2"
+        className="css-text-901oao"
         dir="auto"
         style={
           Object {
@@ -2546,7 +2546,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
         }
       >
         <span
-          className="css-text-76zvg2 css-textHasAncestor-16my406"
+          className="css-text-901oao css-textHasAncestor-16my406"
           dir="auto"
         >
           A React component that renders a gradient view.
@@ -2561,7 +2561,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
         }
       >
         <div
-          className="css-text-76zvg2"
+          className="css-text-901oao"
           dir="auto"
           style={
             Object {
@@ -2570,11 +2570,11 @@ exports[`Storyshots Components Linear Gradient 1`] = `
           }
         >
           <span
-            className="css-text-76zvg2 css-textHasAncestor-16my406"
+            className="css-text-901oao css-textHasAncestor-16my406"
             dir="auto"
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
               style={
                 Object {
@@ -2607,7 +2607,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -2622,7 +2622,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             Example
           </div>
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -2641,7 +2641,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
       >
         <h2
           aria-level="2"
-          className="css-reset-4rbku5 css-text-76zvg2"
+          className="css-reset-4rbku5 css-text-901oao"
           dir="auto"
           role="heading"
           style={
@@ -2663,7 +2663,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -2672,11 +2672,11 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -2698,7 +2698,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -2707,11 +2707,11 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -2722,12 +2722,12 @@ exports[`Storyshots Components Linear Gradient 1`] = `
                 colors
               </span>
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 : 
                 <span
-                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  className="css-text-901oao css-textHasAncestor-16my406"
                   dir="auto"
                   style={
                     Object {
@@ -2751,7 +2751,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -2771,7 +2771,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
               }
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 An array of colors that represent stops in the gradient. At least two colors are required (otherwise it's not a gradient, it's just a fill!).
@@ -2799,7 +2799,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -2828,7 +2828,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
                     "flexBasis": "0%",
                     "flexGrow": 1,
                     "flexShrink": 1,
-                    "height": "200px",
+                    "minHeight": "200px",
                     "msFlexNegative": 1,
                     "msFlexPositive": 1,
                     "msFlexPreferredSize": "0%",
@@ -2847,7 +2847,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -2856,11 +2856,11 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -2871,12 +2871,12 @@ exports[`Storyshots Components Linear Gradient 1`] = `
                 start
               </span>
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 : 
                 <span
-                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  className="css-text-901oao css-textHasAncestor-16my406"
                   dir="auto"
                   style={
                     Object {
@@ -2900,7 +2900,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -2920,7 +2920,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
               }
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 An array of [x, y] where x and y are floats. They represent the position that the gradient starts at, as a fraction of the overall size of the gradient. For example, [0.1, 0.2] means that the gradient will start 10% from the left and 20% from the top.
@@ -2948,7 +2948,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -2977,7 +2977,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
                     "flexBasis": "0%",
                     "flexGrow": 1,
                     "flexShrink": 1,
-                    "height": "200px",
+                    "minHeight": "200px",
                     "msFlexNegative": 1,
                     "msFlexPositive": 1,
                     "msFlexPreferredSize": "0%",
@@ -2996,7 +2996,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -3005,11 +3005,11 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -3020,12 +3020,12 @@ exports[`Storyshots Components Linear Gradient 1`] = `
                 end
               </span>
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 : 
                 <span
-                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  className="css-text-901oao css-textHasAncestor-16my406"
                   dir="auto"
                   style={
                     Object {
@@ -3049,7 +3049,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -3069,7 +3069,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
               }
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 Same as start but for the end of the gradient.
@@ -3097,7 +3097,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -3126,7 +3126,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
                     "flexBasis": "0%",
                     "flexGrow": 1,
                     "flexShrink": 1,
-                    "height": "200px",
+                    "minHeight": "200px",
                     "msFlexNegative": 1,
                     "msFlexPositive": 1,
                     "msFlexPreferredSize": "0%",
@@ -3145,7 +3145,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
           }
         >
           <div
-            className="css-text-76zvg2"
+            className="css-text-901oao"
             dir="auto"
             style={
               Object {
@@ -3154,11 +3154,11 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <span
-              className="css-text-76zvg2 css-textHasAncestor-16my406"
+              className="css-text-901oao css-textHasAncestor-16my406"
               dir="auto"
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
                 style={
                   Object {
@@ -3169,12 +3169,12 @@ exports[`Storyshots Components Linear Gradient 1`] = `
                 locations
               </span>
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 : 
                 <span
-                  className="css-text-76zvg2 css-textHasAncestor-16my406"
+                  className="css-text-901oao css-textHasAncestor-16my406"
                   dir="auto"
                   style={
                     Object {
@@ -3198,7 +3198,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -3218,7 +3218,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
               }
             >
               <span
-                className="css-text-76zvg2 css-textHasAncestor-16my406"
+                className="css-text-901oao css-textHasAncestor-16my406"
                 dir="auto"
               >
                 An array of the same length as colors, where each element is a float with the same meaning as the start and  end values, but instead they indicate where the color at that index should be.
@@ -3246,7 +3246,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
             }
           >
             <div
-              className="css-text-76zvg2"
+              className="css-text-901oao"
               dir="auto"
               style={
                 Object {
@@ -3275,7 +3275,7 @@ exports[`Storyshots Components Linear Gradient 1`] = `
                     "flexBasis": "0%",
                     "flexGrow": 1,
                     "flexShrink": 1,
-                    "height": "200px",
+                    "minHeight": "200px",
                     "msFlexNegative": 1,
                     "msFlexPositive": 1,
                     "msFlexPreferredSize": "0%",
