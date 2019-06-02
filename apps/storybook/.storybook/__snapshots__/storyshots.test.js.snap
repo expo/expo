@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Storyshots APIs Constants 1`] = `
+exports[`JSON APIs Constants 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -1167,7 +1167,7 @@ exports[`Storyshots APIs Constants 1`] = `
 </div>
 `;
 
-exports[`Storyshots Components BlurView 1`] = `
+exports[`JSON Components BlurView 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2479,7 +2479,7 @@ exports[`Storyshots Components BlurView 1`] = `
 </div>
 `;
 
-exports[`Storyshots Components Linear Gradient 1`] = `
+exports[`JSON Components Linear Gradient 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
