@@ -23,16 +23,24 @@ export async function connectToAppStoreAsync() {
     const response = await ExpoInAppPurchases.connectToAppStoreAsync();
     return convertStringsToObjects(response);
 }
-export async function queryPurchasableItemsAsync(itemList, itemType) {
+export async function queryPurchasableItemsAsync(itemList) {
     console.log('calling queryPurchasableItemsAsync from TS');
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
     }
-    if (Platform.OS === 'ios') {
-        const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
-        return response;
+    if (Platform.OS === 'android') {
+        // On Android you have to pass in the item type so we will combine the results of both inapp and subs
+        const { responseCode, results } = await ExpoInAppPurchases.queryPurchasableItemsAsync(validTypes.INAPP, itemList);
+        if (responseCode == billingResponseCodes.OK) {
+            const subs = await ExpoInAppPurchases.queryPurchasableItemsAsync(validTypes.SUBS, itemList);
+            subs.results.forEach(result => {
+                results.push(result);
+            });
+        }
+        const response = { responseCode, results };
+        return convertStringsToObjects(response);
     }
-    const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemType, itemList);
+    const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
     return convertStringsToObjects(response);
 }
 export async function queryPurchaseHistoryAsync(refresh, itemType) {
