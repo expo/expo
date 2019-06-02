@@ -82,6 +82,12 @@ For `View` responder props (e.g., `onResponderMove`), the synthetic touch event 
 - [`accessibilityElementsHidden`](../view/#accessibilityElementsHidden)
 - [`accessibilityIgnoresInvertColors`](../view/#accessibilityIgnoresInvertColors)
 - [`shouldRasterizeIOS`](../view/#shouldrasterizeios)
+- [`onContextMenu`](../view/#onContextMenu)
+- [`itemID`](../view/#itemID)
+- [`itemRef`](../view/#itemRef)
+- [`itemProp`](../view/#itemProp)
+- [`itemScope`](../view/#itemScope)
+- [`itemType`](../view/#itemType)
 
 ---
 
@@ -589,3 +595,51 @@ Rasterization incurs an off-screen drawing pass and the bitmap consumes memory. 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
+
+### `onContextMenu`
+
+| Type     | Required | Platform |
+| -------- | -------- | -------- |
+| Function | No       | Web      |
+
+---
+
+### `itemID`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `itemRef`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `itemProp`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `itemScope`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `itemType`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
