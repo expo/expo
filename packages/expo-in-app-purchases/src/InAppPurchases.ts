@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
+import { CodedError } from '@unimodules/core';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 import { Platform } from 'react-native';
 import {
@@ -7,10 +7,6 @@ import {
 } from './InAppPurchases.types';
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 
-const events = {
-  PURCHASES_UPDATED: 'Purchases Updated',
-  ITEM_ACKNOWLEDGED: 'Item Acknowledged',
-}
 const validTypes = {
   INAPP: 'inapp',
   SUBS: 'subs',
@@ -19,16 +15,12 @@ const billingResponseCodes = ExpoInAppPurchases.responseCodes;
 const purchaseStates = ExpoInAppPurchases.purchaseStates;
 
 export const constants = {
-  events,
   billingResponseCodes,
   purchaseStates,
   validTypes,
 }
 
 let connected = false;
-let purchasesUpdateSubscription: Subscription;
-let itemAcknowledgedSubscription: Subscription;
-const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 
 export async function connectToAppStoreAsync(): Promise<QueryResponse> {
   console.log('calling connectToAppStoreAsync from TS');
@@ -73,7 +65,8 @@ export async function purchaseItemAsync(itemId: string, oldItem?: string): Promi
     throw new ConnectionError('Must be connected to App Store');
   }
 
-  return await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+  const response = await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+  return convertStringsToObjects(response);
 }
 
 export async function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {
@@ -88,23 +81,6 @@ export async function acknowledgePurchaseAsync(purchaseToken: string, consumeIte
   }
   console.log('Acknowledging...');
   return await ExpoInAppPurchases.acknowledgePurchaseAsync(purchaseToken);
-}
-
-export function setPurchaseListener(eventName: string, callback: (result) => void): void {
-  if (eventName === events.PURCHASES_UPDATED) {
-    if (purchasesUpdateSubscription) {
-      purchasesUpdateSubscription.remove();
-    }
-
-    purchasesUpdateSubscription = eventEmitter.addListener<QueryResponse>(eventName, result => {
-      callback(convertStringsToObjects(result));
-    });
-  } else if (eventName === events.ITEM_ACKNOWLEDGED) {
-    if (itemAcknowledgedSubscription) {
-      itemAcknowledgedSubscription.remove();
-    }
-    itemAcknowledgedSubscription = eventEmitter.addListener<number>(eventName, callback);
-  }
 }
 
 export async function getBillingResponseCodeAsync(): Promise<number> {
@@ -124,14 +100,6 @@ export async function disconnectAsync(): Promise<void> {
     throw new ConnectionError('Already disconnected from App Store');
   }
   connected = false;
-
-  if(Platform.OS === 'android') {
-    for(const key in events) {
-      console.log('Removing listeners for ' + events[key]);
-      eventEmitter.removeAllListeners(events[key]);
-    }
-  }
-
   return await ExpoInAppPurchases.disconnectAsync();
 }
 
