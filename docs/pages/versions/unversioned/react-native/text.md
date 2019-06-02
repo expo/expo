@@ -236,6 +236,12 @@ We believe that this more constrained way to style text will yield better apps:
 - [`adjustsFontSizeToFit`](../text/#adjustsfontsizetofit)
 - [`minimumFontScale`](../text/#minimumfontscale)
 - [`suppressHighlighting`](../text/#suppresshighlighting)
+- [`onContextMenu`](../text/#onContextMenu)
+- [`itemID`](../text/#itemID)
+- [`itemRef`](../text/#itemRef)
+- [`itemProp`](../text/#itemProp)
+- [`itemScope`](../text/#itemScope)
+- [`itemType`](../text/#itemType)
 
 ---
 
@@ -509,3 +515,51 @@ When `true`, no visual change is made when text is pressed down. By default, a g
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
+
+### `onContextMenu`
+
+| Type     | Required | Platform |
+| -------- | -------- | -------- |
+| Function | No       | Web      |
+
+---
+
+### `itemID`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `itemRef`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `itemProp`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `itemScope`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
+
+### `itemType`
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| string | No       | Web      |
+
+---
