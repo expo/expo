@@ -21,10 +21,14 @@
       "packages/*",
       "packages/@unimodules/*",
       "react-native-lab/react-native"
+    ],
+    "nohoist": [
+      "**/@storybook/**",
+      "**/@emotion/**",
+      "apps/storybook/webpack-manifest-plugin"
     ]
   },
   "dependencies": {
-    "@storybook/react": "^5.0.11",
     "react-native-unimodules": "~0.3.0"
   },
   "devDependencies": {
