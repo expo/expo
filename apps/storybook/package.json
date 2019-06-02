@@ -8,13 +8,7 @@
     "start": "start-storybook --port 50713",
     "build": "build-storybook",
     "test:web": "BABEL_ENV=test:web jest --config=./test/jest.config.web.js",
-    "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js",
-    "loki": "loki",
-    "preloki:ci": "npm run test:loki:update",
-    "loki:ci": "build-storybook && loki --requireReference --reactUri file:./storybook-static",
-    "loki:start": "yarn loki test --configurationFilter chrome.laptop --port 50713",
-    "loki:update": "LOKI_FILE=`cd ../.. && echo \\`pwd\\`/\\`npm pack\\`` && npm install $LOKI_FILE --no-save --no-package-lock && rm $LOKI_FILE",
-    "loki:approve": "yarn loki approve --configurationFilter chrome.laptop --port 50713"
+    "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js"
   },
   "author": "Expo",
   "license": "MIT",
@@ -38,13 +32,11 @@
     "@storybook/react": "^5.0.8",
     "babel-loader": "^8.0.5",
     "babel-plugin-macros": "^2.6.0",
-    "babel-plugin-require-context-hook": "^1.0.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.10.0",
     "enzyme-to-json": "^3.3.5",
     "expo-yarn-workspaces": "^1.0.0",
     "jest": "^24.4.0",
-    "react-test-renderer": "^16.8.6",
     "require-context.macro": "^1.0.4",
     "webpack": "^4.8.1",
     "webpack-cli": "^3.3.0"
@@ -54,16 +46,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "loki": {
-    "chromeSelector": ".wrapper > *, #root > *",
-    "diffingEngine": "looks-same",
-    "configurations": {
-      "chrome.laptop": {
-        "target": "chrome.docker",
-        "width": 1366,
-        "height": 768
-      }
-    }
-  }
+  ]
 }
