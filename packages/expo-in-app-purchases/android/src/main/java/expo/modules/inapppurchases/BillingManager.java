@@ -316,11 +316,11 @@ public class BillingManager implements PurchasesUpdatedListener {
                         response.putInt("responseCode", billingResult.getResponseCode());
                         if (billingResult.getResponseCode() == BillingResponseCode.OK
                                 && purchasesList != null) {
-                            ArrayList<String> jsonStrings = new ArrayList<>();
+                            ArrayList<Bundle> bundles = new ArrayList<>();
                             for (PurchaseHistoryRecord record : purchasesList) {
-                                jsonStrings.add(record.getOriginalJson());
+                                bundles.add(convertPurchaseHistory(record));
                             }
-                            response.putStringArrayList("results", jsonStrings);
+                            response.putParcelableArrayList("results", bundles);
                         }
                         promise.resolve(response);
                     }
@@ -329,6 +329,46 @@ public class BillingManager implements PurchasesUpdatedListener {
         };
 
         executeServiceRequest(queryToExecute);
+    }
+
+    private static Bundle convertSku(SkuDetails skuDetails) {
+        Bundle bundle = new Bundle();
+
+        bundle.putString("description", skuDetails.getDescription());
+        bundle.putString("price", skuDetails.getPrice());
+        bundle.putLong("price_amount_micros", skuDetails.getPriceAmountMicros());
+        bundle.putString("price_currency_code", skuDetails.getPriceCurrencyCode());
+        bundle.putString("productId", skuDetails.getSku());
+        bundle.putString("title", skuDetails.getTitle());
+        bundle.putString("type", skuDetails.getType());
+        bundle.putString("subscriptionPeriod", skuDetails.getSubscriptionPeriod());
+
+        return bundle;
+    }
+
+    public static Bundle convertPurchase(Purchase purchase) {
+        Bundle bundle = new Bundle();
+
+        bundle.putBoolean("acknowledged", purchase.isAcknowledged());
+        bundle.putString("orderId", purchase.getOrderId());
+        bundle.putString("productId", purchase.getSku());
+        bundle.putInt("purchaseState", purchase.getPurchaseState());
+        bundle.putLong("purchaseTime", purchase.getPurchaseTime());
+        bundle.putString("packageName", purchase.getPackageName());
+        bundle.putString("purchaseToken", purchase.getPurchaseToken());
+
+        return bundle;
+    }
+
+    private static Bundle convertPurchaseHistory(PurchaseHistoryRecord purchaseRecord) {
+        Bundle bundle = new Bundle();
+
+        // PurchaseHistoryRecord is a subset of Purchase
+        bundle.putString("productId", purchaseRecord.getSku());
+        bundle.putLong("purchaseTime", purchaseRecord.getPurchaseTime());
+        bundle.putString("purchaseToken", purchaseRecord.getPurchaseToken());
+
+        return bundle;
     }
 
     /**
@@ -346,9 +386,9 @@ public class BillingManager implements PurchasesUpdatedListener {
 
         BillingResult billingResult = result.getBillingResult();
         List<Purchase> purchasesList = result.getPurchasesList();
-        ArrayList<String> jsonStrings = new ArrayList<>();
+        ArrayList<Bundle> results = new ArrayList<>();
         for (Purchase purchase : purchasesList) {
-            jsonStrings.add(purchase.getOriginalJson());
+            results.add(convertPurchase(purchase));
         }
 
         // Update purchases inventory with new list of purchases
@@ -357,7 +397,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 
         final Bundle response = new Bundle();
         response.putInt("responseCode", billingResult.getResponseCode());
-        response.putStringArrayList("results", jsonStrings);
+        response.putParcelableArrayList("results", results);
         Log.d(TAG, "Resolving connectToAppStoreAsync promise with response code: "
                 + billingResult.getResponseCode() + " and purchases list: " + purchasesList);
         promise.resolve(response);
@@ -407,13 +447,13 @@ public class BillingManager implements PurchasesUpdatedListener {
                                 + ". Error code: " + responseCode);
                     } else if (skuDetailsList != null && skuDetailsList.size() > 0) {
                         Log.d(TAG, "Successfully got results back: " + skuDetailsList);
-                        ArrayList<String> jsonStrings = new ArrayList<>();
+                        ArrayList<Bundle> results = new ArrayList<>();
                         for (SkuDetails skuDetails : skuDetailsList) {
                             mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
-                            jsonStrings.add(skuDetails.getOriginalJson());
+                            results.add(convertSku(skuDetails));
                         }
 
-                        response.putStringArrayList("results", jsonStrings);
+                        response.putParcelableArrayList("results", results);
                     }
                     promise.resolve(response);
                 }

@@ -29,8 +29,7 @@ export async function connectToAppStoreAsync(): Promise<QueryResponse> {
   }
 
   connected = true;
-  const response = await ExpoInAppPurchases.connectToAppStoreAsync();
-  return convertStringsToObjects(response);
+  return await ExpoInAppPurchases.connectToAppStoreAsync();
 }
 
 export async function queryPurchasableItemsAsync(itemList: string[]): Promise<QueryResponse> {
@@ -47,12 +46,10 @@ export async function queryPurchasableItemsAsync(itemList: string[]): Promise<Qu
         results.push(result);
       });
     }
-    const response = { responseCode, results };
-    return convertStringsToObjects(response);
+    return { responseCode, results };
   }
 
-  const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
-  return convertStringsToObjects(response);
+  return await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
 }
 
 export async function queryPurchaseHistoryAsync(refresh?: boolean, itemType?: ValidItemType): Promise<QueryResponse> {
@@ -63,8 +60,7 @@ export async function queryPurchaseHistoryAsync(refresh?: boolean, itemType?: Va
   if (refresh && !itemType) {
     throw new Error('Must define item type if querying updated history');
   }
-  const history = await ExpoInAppPurchases.queryPurchaseHistoryAsync(refresh ? itemType : null);
-  return convertStringsToObjects(history);
+  return await ExpoInAppPurchases.queryPurchaseHistoryAsync(refresh ? itemType : null);
 }
 
 export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<QueryResponse> {
@@ -73,8 +69,7 @@ export async function purchaseItemAsync(itemId: string, oldItem?: string): Promi
     throw new ConnectionError('Must be connected to App Store');
   }
 
-  const response = await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
-  return convertStringsToObjects(response);
+  return await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
 }
 
 export async function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {
@@ -110,16 +105,6 @@ export async function disconnectAsync(): Promise<void> {
   }
   connected = false;
   return await ExpoInAppPurchases.disconnectAsync();
-}
-
-function convertStringsToObjects(response : any) {
-  if (Platform.OS !== 'android') {
-    return response;
-  }
-  // Android returns stringified JSON objects
-  const { responseCode, results: jsonStrings } = response;
-  const results = jsonStrings ? jsonStrings.map(string => JSON.parse(string)) : [];
-  return { responseCode, results };
 }
 
 class ConnectionError extends CodedError {

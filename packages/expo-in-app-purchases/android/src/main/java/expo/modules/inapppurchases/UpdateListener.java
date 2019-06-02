@@ -39,11 +39,11 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
     @Override
     public void onPurchasesUpdated(List<Purchase> purchaseList) {
         Bundle response = new Bundle();
-        ArrayList<String> results = new ArrayList<>();
+        ArrayList<Bundle> results = new ArrayList<>();
         for (Purchase purchase : purchaseList) {
-            results.add(purchase.getOriginalJson());
+            results.add(BillingManager.convertPurchase(purchase));
         }
-        response.putStringArrayList("results", results);
+        response.putParcelableArrayList("results", results);
         response.putInt("responseCode", BillingResponseCode.OK);
 
         Promise promise = BillingManager.promises.get(BillingManager.PURCHASING_ITEM);

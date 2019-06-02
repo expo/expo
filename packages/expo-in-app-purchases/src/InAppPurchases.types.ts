@@ -24,5 +24,6 @@ export interface ItemDetails {
   productId: string,
   title: string,
   type: ValidItemType,
+  subscriptionPeriod?: string // Android only
   skuDetailsToken?: string // Android only
 }

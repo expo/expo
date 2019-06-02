@@ -21,5 +21,6 @@ export interface ItemDetails {
     productId: string;
     title: string;
     type: ValidItemType;
+    subscriptionPeriod?: string;
     skuDetailsToken?: string;
 }

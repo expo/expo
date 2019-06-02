@@ -20,8 +20,7 @@ export async function connectToAppStoreAsync() {
         throw new ConnectionError('Already connected to App Store');
     }
     connected = true;
-    const response = await ExpoInAppPurchases.connectToAppStoreAsync();
-    return convertStringsToObjects(response);
+    return await ExpoInAppPurchases.connectToAppStoreAsync();
 }
 export async function queryPurchasableItemsAsync(itemList) {
     console.log('calling queryPurchasableItemsAsync from TS');
@@ -37,11 +36,9 @@ export async function queryPurchasableItemsAsync(itemList) {
                 results.push(result);
             });
         }
-        const response = { responseCode, results };
-        return convertStringsToObjects(response);
+        return { responseCode, results };
     }
-    const response = await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
-    return convertStringsToObjects(response);
+    return await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
 }
 export async function queryPurchaseHistoryAsync(refresh, itemType) {
     console.log('calling queryPurchaseHistoryAsync from TS');
@@ -51,16 +48,14 @@ export async function queryPurchaseHistoryAsync(refresh, itemType) {
     if (refresh && !itemType) {
         throw new Error('Must define item type if querying updated history');
     }
-    const history = await ExpoInAppPurchases.queryPurchaseHistoryAsync(refresh ? itemType : null);
-    return convertStringsToObjects(history);
+    return await ExpoInAppPurchases.queryPurchaseHistoryAsync(refresh ? itemType : null);
 }
 export async function purchaseItemAsync(itemId, oldItem) {
     console.log('calling purchaseItemAsync from TS');
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
     }
-    const response = await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
-    return convertStringsToObjects(response);
+    return await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
 }
 export async function acknowledgePurchaseAsync(purchaseToken, consumeItem) {
     if (Platform.OS !== 'android')
@@ -92,15 +87,6 @@ export async function disconnectAsync() {
     }
     connected = false;
     return await ExpoInAppPurchases.disconnectAsync();
-}
-function convertStringsToObjects(response) {
-    if (Platform.OS !== 'android') {
-        return response;
-    }
-    // Android returns stringified JSON objects
-    const { responseCode, results: jsonStrings } = response;
-    const results = jsonStrings ? jsonStrings.map(string => JSON.parse(string)) : [];
-    return { responseCode, results };
 }
 class ConnectionError extends CodedError {
     constructor(message) {
