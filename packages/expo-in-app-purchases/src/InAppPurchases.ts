@@ -52,15 +52,22 @@ export async function queryPurchasableItemsAsync(itemList: string[]): Promise<Qu
   return await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
 }
 
-export async function queryPurchaseHistoryAsync(refresh?: boolean, itemType?: ValidItemType): Promise<QueryResponse> {
+export async function queryPurchaseHistoryAsync(refresh?: boolean): Promise<QueryResponse> {
   console.log('calling queryPurchaseHistoryAsync from TS');
   if (!connected) {
     throw new ConnectionError('Must be connected to App Store');
   }
-  if (refresh && !itemType) {
-    throw new Error('Must define item type if querying updated history');
+  if (refresh && Platform.OS === 'android') {
+    const { responseCode, results } = await ExpoInAppPurchases.queryPurchaseHistoryAsync(validTypes.INAPP);
+    if (responseCode === billingResponseCodes.OK) {
+      const subs = await await ExpoInAppPurchases.queryPurchaseHistoryAsync(validTypes.SUBS);
+      subs.results.forEach(result => {
+        results.push(result);
+      });
+    }
+    return { responseCode, results};
   }
-  return await ExpoInAppPurchases.queryPurchaseHistoryAsync(refresh ? itemType : null);
+  return await ExpoInAppPurchases.queryPurchaseHistoryAsync(null);
 }
 
 export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<QueryResponse> {
