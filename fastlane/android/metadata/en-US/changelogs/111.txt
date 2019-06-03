@@ -1,0 +1,3 @@
+Version 2.11.0 introduced support for Expo SDK 33.
+
+Version 2.11.1 fixes a bug that caused an error to be thrown when trying to play a sound while the app was in background.
