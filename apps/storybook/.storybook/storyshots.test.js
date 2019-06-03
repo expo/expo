@@ -8,7 +8,7 @@ initStoryshots({
 
 // In the build command we export a variable which helps us detect a web env.
 // visual regression testing only works in the browser
-if (process.env.BABEL_ENV === 'test:web') {
+if (process.env.BABEL_ENV === 'test:web' && !process.env.IS_EXPO_CI) {
   // Locally it's better to start the server and then run the tests.
   // In CI we want to build a static bundle and test against that.
   const storybookUrl = process.env.IS_EXPO_CI
