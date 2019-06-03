@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import AppText from './AppText';
 import ExternalLink from './ExternalLink';
 import insertBetween from './insertBetween';
+import rem from './rem';
 
 const Title = ({ children }) => (
   <AppText accessibilityRole="heading" style={styles.title}>
@@ -43,28 +44,28 @@ const UIExplorer = ({ children, description, sections, title, url }) => (
 
 const styles = StyleSheet.create({
   root: {
-    padding: '1rem',
+    padding: rem(1),
     flex: 1,
     flexBasis: 'auto',
   },
   divider: {
-    height: '1.3125rem',
+    height: rem(1.3125),
   },
   title: {
-    fontSize: '2rem',
+    fontSize: rem(2),
   },
   description: {
     color: '#666',
     display: 'flex',
     flexDirection: 'column',
-    fontSize: '1.25rem',
-    marginTop: 'calc(0.5 * 1.3125rem)',
-    marginBottom: 'calc(1.5 * 1.3125rem)',
+    fontSize: rem(1.25),
+    marginTop: rem(0.5 * 1.3125),
+    marginBottom: rem(1.5 * 1.3125),
   },
   link: {
     color: '#1B95E0',
-    fontSize: '1rem',
-    marginTop: 'calc(0.5 * 1.3125rem)',
+    fontSize: rem(1),
+    marginTop: rem(0.5 * 1.3125),
     textDecorationLine: 'underline',
   },
 });
