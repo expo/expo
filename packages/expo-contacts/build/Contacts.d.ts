@@ -155,7 +155,7 @@ export declare function getContactByIdAsync(id: string, fields?: FieldType): Pro
 export declare function addContactAsync(contact: Contact, containerId: string): Promise<string>;
 export declare function updateContactAsync(contact: Contact): Promise<string>;
 export declare function removeContactAsync(contactId: string): Promise<any>;
-export declare function writeContactToFileAsync(contactQuery?: ContactQuery): Promise<string | null>;
+export declare function writeContactToFileAsync(contactQuery?: ContactQuery): Promise<string | undefined>;
 export declare function presentFormAsync(contactId?: string | null, contact?: Contact | null, formOptions?: FormOptions): Promise<any>;
 export declare function addExistingGroupToContainerAsync(groupId: string, containerId: string): Promise<any>;
 export declare function createGroupAsync(name?: string, containerId?: string): Promise<string>;

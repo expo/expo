@@ -325,7 +325,7 @@ export async function removeContactAsync(contactId: string): Promise<any> {
 
 export async function writeContactToFileAsync(
   contactQuery: ContactQuery = {}
-): Promise<string | null> {
+): Promise<string | undefined> {
   if (!ExpoContacts.writeContactToFileAsync) {
     throw new UnavailabilityError('Contacts', 'writeContactToFileAsync');
   }
