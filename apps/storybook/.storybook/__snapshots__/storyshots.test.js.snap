@@ -1,0 +1,3292 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`JSON APIs Constants 1`] = `
+<div
+  className="css-view-1dbjc4n"
+  style={
+    Object {
+      "marginLeft": "auto",
+      "marginRight": "auto",
+      "maxWidth": "680px",
+      "minHeight": "100vh",
+      "paddingBottom": "1rem",
+      "paddingLeft": "1rem",
+      "paddingRight": "1rem",
+      "paddingTop": "1rem",
+    }
+  }
+>
+  <div
+    className="css-view-1dbjc4n"
+    style={
+      Object {
+        "WebkitBoxFlex": 1,
+        "WebkitFlexBasis": "auto",
+        "WebkitFlexGrow": 1,
+        "WebkitFlexShrink": 1,
+        "flexBasis": "auto",
+        "flexGrow": 1,
+        "flexShrink": 1,
+        "msFlexNegative": 1,
+        "msFlexPositive": 1,
+        "msFlexPreferredSize": "auto",
+      }
+    }
+  >
+    <h1
+      className="css-reset-4rbku5 css-text-901oao"
+      dir="auto"
+      role="heading"
+      style={
+        Object {
+          "fontSize": "2rem",
+        }
+      }
+    >
+      Constants
+    </h1>
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "vertical",
+          "WebkitFlexDirection": "column",
+          "color": "rgba(102,102,102,1.00)",
+          "display": "flex",
+          "flexDirection": "column",
+          "fontSize": "1.25rem",
+          "marginBottom": "1.96875rem",
+          "marginTop": "0.65625rem",
+          "msFlexDirection": "column",
+        }
+      }
+    >
+      <span
+        className="css-text-901oao css-textHasAncestor-16my406"
+        dir="auto"
+      >
+        System information that remains constant throughout the lifetime of your app.
+      </span>
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+    >
+      <h2
+        aria-level="2"
+        className="css-reset-4rbku5 css-text-901oao"
+        dir="auto"
+        role="heading"
+        style={
+          Object {
+            "fontSize": "1.3125rem",
+            "fontWeight": "bold",
+            "marginBottom": "1.3125rem",
+          }
+        }
+      >
+        API
+      </h2>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Importing the module
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "0.65625rem",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "fontFamily": "monospace, monospace",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+              }
+            }
+          >
+            import Constants from 'expo-constants';
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.appOwnership
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                'standalone' | 'expo' | 'guest'
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              Returns expo, standalone, or guest. If expo, the experience is running inside of the Expo client. If standalone, it is a standalone app. If guest, it has been opened through a link from a standalone app.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.expoVersion
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              The version string of the Expo client currently running.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.installationId
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              An identifier that is unique to this particular device and installation of the Expo client.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.deviceName
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              A human-readable name for the device type.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.deviceYearClass
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              The device year class of this device.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.getWebViewUserAgentAsync()
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                Promise&lt;string&gt;
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              Gets the user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS fetch requests.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.isDevice
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                boolean
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              true if the app is running on a device, false if running in a simulator or emulator.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.sessionId
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              A string that is unique to the current session of your app. It is different across apps and across multiple launches of the same app.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.statusBarHeight
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                number
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              The default status bar height for the device. Does not factor in changes when location tracking is in use or a phone call is active.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.systemFonts
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                string[]
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              A list of the system font names available on the current device.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              Constants.manifest
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                Object
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              The manifest object for the app.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`JSON Components BlurView 1`] = `
+<div
+  className="css-view-1dbjc4n"
+  style={
+    Object {
+      "marginLeft": "auto",
+      "marginRight": "auto",
+      "maxWidth": "680px",
+      "minHeight": "100vh",
+      "paddingBottom": "1rem",
+      "paddingLeft": "1rem",
+      "paddingRight": "1rem",
+      "paddingTop": "1rem",
+    }
+  }
+>
+  <div
+    className="css-view-1dbjc4n"
+    style={
+      Object {
+        "WebkitBoxFlex": 1,
+        "WebkitFlexBasis": "auto",
+        "WebkitFlexGrow": 1,
+        "WebkitFlexShrink": 1,
+        "flexBasis": "auto",
+        "flexGrow": 1,
+        "flexShrink": 1,
+        "msFlexNegative": 1,
+        "msFlexPositive": 1,
+        "msFlexPreferredSize": "auto",
+      }
+    }
+  >
+    <h1
+      className="css-reset-4rbku5 css-text-901oao"
+      dir="auto"
+      role="heading"
+      style={
+        Object {
+          "fontSize": "2rem",
+        }
+      }
+    >
+      Blur View
+    </h1>
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "vertical",
+          "WebkitFlexDirection": "column",
+          "color": "rgba(102,102,102,1.00)",
+          "display": "flex",
+          "flexDirection": "column",
+          "fontSize": "1.25rem",
+          "marginBottom": "1.96875rem",
+          "marginTop": "0.65625rem",
+          "msFlexDirection": "column",
+        }
+      }
+    >
+      <span
+        className="css-text-901oao css-textHasAncestor-16my406"
+        dir="auto"
+      >
+        A React component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars, tab bars, and modals.
+      </span>
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "marginBottom": "1.96875rem",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+        style={
+          Object {
+            "fontSize": "1rem",
+          }
+        }
+      >
+        <span
+          className="css-text-901oao css-textHasAncestor-16my406"
+          dir="auto"
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+            style={
+              Object {
+                "fontWeight": "bold",
+              }
+            }
+          >
+            Importing the module
+          </span>
+        </span>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "borderBottomColor": "rgba(230,236,240,1.00)",
+            "borderBottomWidth": "1px",
+            "borderLeftColor": "rgba(230,236,240,1.00)",
+            "borderLeftWidth": "1px",
+            "borderRightColor": "rgba(230,236,240,1.00)",
+            "borderRightWidth": "1px",
+            "borderTopColor": "rgba(230,236,240,1.00)",
+            "borderTopWidth": "1px",
+            "marginTop": "1.3125rem",
+            "paddingBottom": "1.3125rem",
+            "paddingLeft": "1.3125rem",
+            "paddingRight": "1.3125rem",
+            "paddingTop": "1.3125rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "color": "rgba(170,184,194,1.00)",
+              "fontSize": "0.8rem",
+              "fontWeight": "bold",
+              "marginBottom": "0.65625rem",
+              "textTransform": "uppercase",
+            }
+          }
+        >
+          Example
+        </div>
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontFamily": "monospace, monospace",
+              "fontSize": "1rem",
+              "lineHeight": "1.3125rem",
+            }
+          }
+        >
+          import { BlurView } from 'expo-blur';
+        </div>
+      </div>
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+    >
+      <h2
+        aria-level="2"
+        className="css-reset-4rbku5 css-text-901oao"
+        dir="auto"
+        role="heading"
+        style={
+          Object {
+            "fontSize": "1.3125rem",
+            "fontWeight": "bold",
+            "marginBottom": "1.3125rem",
+          }
+        }
+      >
+        Props
+      </h2>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              ...View props
+            </span>
+          </span>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "backgroundColor": "rgba(221,221,221,1.00)",
+                  "borderBottomLeftRadius": "1rem",
+                  "borderBottomRightRadius": "1rem",
+                  "borderTopLeftRadius": "1rem",
+                  "borderTopRightRadius": "1rem",
+                  "color": "rgba(85,85,85,1.00)",
+                  "marginRight": "0.5rem",
+                  "paddingBottom": "0.125rem",
+                  "paddingLeft": "0.5rem",
+                  "paddingRight": "0.5rem",
+                  "paddingTop": "0.125rem",
+                }
+              }
+            >
+              Safari
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              tint
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                'light' | 'default' | 'dark'
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              The filtered effect of the contents behind the BlurView. On Android and Chrome this is just the color of the low-opacity view.
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "0.65625rem",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <div
+              className="css-view-1dbjc4n"
+              style={
+                Object {
+                  "WebkitBoxDirection": "normal",
+                  "WebkitBoxFlex": 1,
+                  "WebkitBoxOrient": "horizontal",
+                  "WebkitFlexBasis": "0%",
+                  "WebkitFlexDirection": "row",
+                  "WebkitFlexGrow": 1,
+                  "WebkitFlexShrink": 1,
+                  "flexBasis": "0%",
+                  "flexDirection": "row",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "msFlexDirection": "row",
+                  "msFlexNegative": 1,
+                  "msFlexPositive": 1,
+                  "msFlexPreferredSize": "0%",
+                }
+              }
+            >
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitAlignItems": "stretch",
+                    "WebkitBoxAlign": "stretch",
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "alignItems": "stretch",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "msFlexAlign": "stretch",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              >
+                <code
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125rem",
+                      "textAlign": "center",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  no blur
+                </code>
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "WebkitBoxFlex": 1,
+                      "WebkitFlexBasis": "0%",
+                      "WebkitFlexGrow": 1,
+                      "WebkitFlexShrink": 1,
+                      "flexBasis": "0%",
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "height": "200px",
+                      "marginBottom": "8px",
+                      "marginLeft": "8px",
+                      "marginRight": "8px",
+                      "marginTop": "8px",
+                      "msFlexNegative": 1,
+                      "msFlexPositive": 1,
+                      "msFlexPreferredSize": "0%",
+                    }
+                  }
+                >
+                  <div
+                    className="css-view-1dbjc4n"
+                    style={
+                      Object {
+                        "WebkitFlexBasis": "auto",
+                        "backgroundColor": "rgba(128,128,128,1.00)",
+                        "bottom": "0px",
+                        "flexBasis": "auto",
+                        "left": "0px",
+                        "msFlexPreferredSize": "auto",
+                        "overflowX": "hidden",
+                        "overflowY": "hidden",
+                        "position": "absolute",
+                        "right": "0px",
+                        "top": "0px",
+                        "zIndex": 0,
+                      }
+                    }
+                  >
+                    <div
+                      className="css-view-1dbjc4n"
+                      style={
+                        Object {
+                          "backgroundColor": "rgba(0,0,0,0.00)",
+                          "backgroundImage": "url(\\"test-file-stub\\")",
+                          "backgroundPosition": "center",
+                          "backgroundRepeat": "no-repeat",
+                          "backgroundSize": "cover",
+                          "bottom": "0px",
+                          "height": "100%",
+                          "left": "0px",
+                          "position": "absolute",
+                          "right": "0px",
+                          "top": "0px",
+                          "width": "100%",
+                          "zIndex": -1,
+                        }
+                      }
+                    />
+                    <img
+                      alt=""
+                      className="css-accessibilityImage-9pa8cd"
+                      draggable={false}
+                      src="test-file-stub"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitAlignItems": "stretch",
+                    "WebkitBoxAlign": "stretch",
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "alignItems": "stretch",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "msFlexAlign": "stretch",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              >
+                <code
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125rem",
+                      "textAlign": "center",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  light
+                </code>
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "WebkitBoxFlex": 1,
+                      "WebkitFlexBasis": "0%",
+                      "WebkitFlexGrow": 1,
+                      "WebkitFlexShrink": 1,
+                      "flexBasis": "0%",
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "height": "200px",
+                      "marginBottom": "8px",
+                      "marginLeft": "8px",
+                      "marginRight": "8px",
+                      "marginTop": "8px",
+                      "msFlexNegative": 1,
+                      "msFlexPositive": 1,
+                      "msFlexPreferredSize": "0%",
+                    }
+                  }
+                >
+                  <div
+                    className="css-view-1dbjc4n"
+                    style={
+                      Object {
+                        "WebkitFlexBasis": "auto",
+                        "backgroundColor": "rgba(128,128,128,1.00)",
+                        "bottom": "0px",
+                        "flexBasis": "auto",
+                        "left": "0px",
+                        "msFlexPreferredSize": "auto",
+                        "overflowX": "hidden",
+                        "overflowY": "hidden",
+                        "position": "absolute",
+                        "right": "0px",
+                        "top": "0px",
+                        "zIndex": 0,
+                      }
+                    }
+                  >
+                    <div
+                      className="css-view-1dbjc4n"
+                      style={
+                        Object {
+                          "backgroundColor": "rgba(0,0,0,0.00)",
+                          "backgroundImage": "url(\\"test-file-stub\\")",
+                          "backgroundPosition": "center",
+                          "backgroundRepeat": "no-repeat",
+                          "backgroundSize": "cover",
+                          "bottom": "0px",
+                          "height": "100%",
+                          "left": "0px",
+                          "position": "absolute",
+                          "right": "0px",
+                          "top": "0px",
+                          "width": "100%",
+                          "zIndex": -1,
+                        }
+                      }
+                    />
+                    <img
+                      alt=""
+                      className="css-accessibilityImage-9pa8cd"
+                      draggable={false}
+                      src="test-file-stub"
+                    />
+                  </div>
+                  <div
+                    className="css-view-1dbjc4n"
+                    style={
+                      Object {
+                        "WebkitBoxFlex": 1,
+                        "WebkitFlexBasis": "0%",
+                        "WebkitFlexGrow": 1,
+                        "WebkitFlexShrink": 1,
+                        "backgroundColor": "rgba(255,255,255,0.70)",
+                        "flexBasis": "0%",
+                        "flexGrow": 1,
+                        "flexShrink": 1,
+                        "msFlexNegative": 1,
+                        "msFlexPositive": 1,
+                        "msFlexPreferredSize": "0%",
+                      }
+                    }
+                  />
+                </div>
+              </div>
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitAlignItems": "stretch",
+                    "WebkitBoxAlign": "stretch",
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "alignItems": "stretch",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "msFlexAlign": "stretch",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              >
+                <code
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125rem",
+                      "textAlign": "center",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  default
+                </code>
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "WebkitBoxFlex": 1,
+                      "WebkitFlexBasis": "0%",
+                      "WebkitFlexGrow": 1,
+                      "WebkitFlexShrink": 1,
+                      "flexBasis": "0%",
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "height": "200px",
+                      "marginBottom": "8px",
+                      "marginLeft": "8px",
+                      "marginRight": "8px",
+                      "marginTop": "8px",
+                      "msFlexNegative": 1,
+                      "msFlexPositive": 1,
+                      "msFlexPreferredSize": "0%",
+                    }
+                  }
+                >
+                  <div
+                    className="css-view-1dbjc4n"
+                    style={
+                      Object {
+                        "WebkitFlexBasis": "auto",
+                        "backgroundColor": "rgba(128,128,128,1.00)",
+                        "bottom": "0px",
+                        "flexBasis": "auto",
+                        "left": "0px",
+                        "msFlexPreferredSize": "auto",
+                        "overflowX": "hidden",
+                        "overflowY": "hidden",
+                        "position": "absolute",
+                        "right": "0px",
+                        "top": "0px",
+                        "zIndex": 0,
+                      }
+                    }
+                  >
+                    <div
+                      className="css-view-1dbjc4n"
+                      style={
+                        Object {
+                          "backgroundColor": "rgba(0,0,0,0.00)",
+                          "backgroundImage": "url(\\"test-file-stub\\")",
+                          "backgroundPosition": "center",
+                          "backgroundRepeat": "no-repeat",
+                          "backgroundSize": "cover",
+                          "bottom": "0px",
+                          "height": "100%",
+                          "left": "0px",
+                          "position": "absolute",
+                          "right": "0px",
+                          "top": "0px",
+                          "width": "100%",
+                          "zIndex": -1,
+                        }
+                      }
+                    />
+                    <img
+                      alt=""
+                      className="css-accessibilityImage-9pa8cd"
+                      draggable={false}
+                      src="test-file-stub"
+                    />
+                  </div>
+                  <div
+                    className="css-view-1dbjc4n"
+                    style={
+                      Object {
+                        "WebkitBoxFlex": 1,
+                        "WebkitFlexBasis": "0%",
+                        "WebkitFlexGrow": 1,
+                        "WebkitFlexShrink": 1,
+                        "backgroundColor": "rgba(255,255,255,0.40)",
+                        "flexBasis": "0%",
+                        "flexGrow": 1,
+                        "flexShrink": 1,
+                        "msFlexNegative": 1,
+                        "msFlexPositive": 1,
+                        "msFlexPreferredSize": "0%",
+                      }
+                    }
+                  />
+                </div>
+              </div>
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitAlignItems": "stretch",
+                    "WebkitBoxAlign": "stretch",
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "alignItems": "stretch",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "msFlexAlign": "stretch",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              >
+                <code
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125rem",
+                      "textAlign": "center",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  dark
+                </code>
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "WebkitBoxFlex": 1,
+                      "WebkitFlexBasis": "0%",
+                      "WebkitFlexGrow": 1,
+                      "WebkitFlexShrink": 1,
+                      "flexBasis": "0%",
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "height": "200px",
+                      "marginBottom": "8px",
+                      "marginLeft": "8px",
+                      "marginRight": "8px",
+                      "marginTop": "8px",
+                      "msFlexNegative": 1,
+                      "msFlexPositive": 1,
+                      "msFlexPreferredSize": "0%",
+                    }
+                  }
+                >
+                  <div
+                    className="css-view-1dbjc4n"
+                    style={
+                      Object {
+                        "WebkitFlexBasis": "auto",
+                        "backgroundColor": "rgba(128,128,128,1.00)",
+                        "bottom": "0px",
+                        "flexBasis": "auto",
+                        "left": "0px",
+                        "msFlexPreferredSize": "auto",
+                        "overflowX": "hidden",
+                        "overflowY": "hidden",
+                        "position": "absolute",
+                        "right": "0px",
+                        "top": "0px",
+                        "zIndex": 0,
+                      }
+                    }
+                  >
+                    <div
+                      className="css-view-1dbjc4n"
+                      style={
+                        Object {
+                          "backgroundColor": "rgba(0,0,0,0.00)",
+                          "backgroundImage": "url(\\"test-file-stub\\")",
+                          "backgroundPosition": "center",
+                          "backgroundRepeat": "no-repeat",
+                          "backgroundSize": "cover",
+                          "bottom": "0px",
+                          "height": "100%",
+                          "left": "0px",
+                          "position": "absolute",
+                          "right": "0px",
+                          "top": "0px",
+                          "width": "100%",
+                          "zIndex": -1,
+                        }
+                      }
+                    />
+                    <img
+                      alt=""
+                      className="css-accessibilityImage-9pa8cd"
+                      draggable={false}
+                      src="test-file-stub"
+                    />
+                  </div>
+                  <div
+                    className="css-view-1dbjc4n"
+                    style={
+                      Object {
+                        "WebkitBoxFlex": 1,
+                        "WebkitFlexBasis": "0%",
+                        "WebkitFlexGrow": 1,
+                        "WebkitFlexShrink": 1,
+                        "backgroundColor": "rgba(0,0,0,0.50)",
+                        "flexBasis": "0%",
+                        "flexGrow": 1,
+                        "flexShrink": 1,
+                        "msFlexNegative": 1,
+                        "msFlexPositive": 1,
+                        "msFlexPreferredSize": "0%",
+                      }
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "backgroundColor": "rgba(221,221,221,1.00)",
+                  "borderBottomLeftRadius": "1rem",
+                  "borderBottomRightRadius": "1rem",
+                  "borderTopLeftRadius": "1rem",
+                  "borderTopRightRadius": "1rem",
+                  "color": "rgba(85,85,85,1.00)",
+                  "marginRight": "0.5rem",
+                  "paddingBottom": "0.125rem",
+                  "paddingLeft": "0.5rem",
+                  "paddingRight": "0.5rem",
+                  "paddingTop": "0.125rem",
+                }
+              }
+            >
+              Safari
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              intensity
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                number
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              A number from 1 to 100 to control the intensity of the blur effect.
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "0.65625rem",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <div
+              className="css-view-1dbjc4n"
+              style={
+                Object {
+                  "WebkitBoxDirection": "normal",
+                  "WebkitBoxFlex": 1,
+                  "WebkitBoxOrient": "horizontal",
+                  "WebkitFlexBasis": "0%",
+                  "WebkitFlexDirection": "row",
+                  "WebkitFlexGrow": 1,
+                  "WebkitFlexShrink": 1,
+                  "flexBasis": "0%",
+                  "flexDirection": "row",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "msFlexDirection": "row",
+                  "msFlexNegative": 1,
+                  "msFlexPositive": 1,
+                  "msFlexPreferredSize": "0%",
+                }
+              }
+            >
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitFlexBasis": "auto",
+                    "backgroundColor": "rgba(128,128,128,1.00)",
+                    "bottom": "28px",
+                    "flexBasis": "auto",
+                    "left": "0px",
+                    "msFlexPreferredSize": "auto",
+                    "overflowX": "hidden",
+                    "overflowY": "hidden",
+                    "position": "absolute",
+                    "right": "0px",
+                    "top": "0px",
+                    "zIndex": 0,
+                  }
+                }
+              >
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "backgroundColor": "rgba(0,0,0,0.00)",
+                      "backgroundImage": "url(\\"test-file-stub\\")",
+                      "backgroundPosition": "center",
+                      "backgroundRepeat": "no-repeat",
+                      "backgroundSize": "cover",
+                      "bottom": "0px",
+                      "height": "100%",
+                      "left": "0px",
+                      "position": "absolute",
+                      "right": "0px",
+                      "top": "0px",
+                      "width": "100%",
+                      "zIndex": -1,
+                    }
+                  }
+                />
+                <img
+                  alt=""
+                  className="css-accessibilityImage-9pa8cd"
+                  draggable={false}
+                  src="test-file-stub"
+                />
+              </div>
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitAlignItems": "stretch",
+                    "WebkitBoxAlign": "stretch",
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "alignItems": "stretch",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "msFlexAlign": "stretch",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              >
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "WebkitBoxFlex": 1,
+                      "WebkitFlexBasis": "0%",
+                      "WebkitFlexGrow": 1,
+                      "WebkitFlexShrink": 1,
+                      "backgroundColor": "rgba(255,255,255,0.00)",
+                      "flexBasis": "0%",
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "marginBottom": "8px",
+                      "marginLeft": "8px",
+                      "marginRight": "8px",
+                      "marginTop": "8px",
+                      "maxHeight": "200px",
+                      "minHeight": "200px",
+                      "msFlexNegative": 1,
+                      "msFlexPositive": 1,
+                      "msFlexPreferredSize": "0%",
+                    }
+                  }
+                />
+                <code
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125rem",
+                      "textAlign": "center",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  0
+                </code>
+              </div>
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitAlignItems": "stretch",
+                    "WebkitBoxAlign": "stretch",
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "alignItems": "stretch",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "msFlexAlign": "stretch",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              >
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "WebkitBoxFlex": 1,
+                      "WebkitFlexBasis": "0%",
+                      "WebkitFlexGrow": 1,
+                      "WebkitFlexShrink": 1,
+                      "backgroundColor": "rgba(255,255,255,0.13)",
+                      "flexBasis": "0%",
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "marginBottom": "8px",
+                      "marginLeft": "8px",
+                      "marginRight": "8px",
+                      "marginTop": "8px",
+                      "maxHeight": "200px",
+                      "minHeight": "200px",
+                      "msFlexNegative": 1,
+                      "msFlexPositive": 1,
+                      "msFlexPreferredSize": "0%",
+                    }
+                  }
+                />
+                <code
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125rem",
+                      "textAlign": "center",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  33
+                </code>
+              </div>
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitAlignItems": "stretch",
+                    "WebkitBoxAlign": "stretch",
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "alignItems": "stretch",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "msFlexAlign": "stretch",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              >
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "WebkitBoxFlex": 1,
+                      "WebkitFlexBasis": "0%",
+                      "WebkitFlexGrow": 1,
+                      "WebkitFlexShrink": 1,
+                      "backgroundColor": "rgba(255,255,255,0.26)",
+                      "flexBasis": "0%",
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "marginBottom": "8px",
+                      "marginLeft": "8px",
+                      "marginRight": "8px",
+                      "marginTop": "8px",
+                      "maxHeight": "200px",
+                      "minHeight": "200px",
+                      "msFlexNegative": 1,
+                      "msFlexPositive": 1,
+                      "msFlexPreferredSize": "0%",
+                    }
+                  }
+                />
+                <code
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125rem",
+                      "textAlign": "center",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  66
+                </code>
+              </div>
+              <div
+                className="css-view-1dbjc4n"
+                style={
+                  Object {
+                    "WebkitAlignItems": "stretch",
+                    "WebkitBoxAlign": "stretch",
+                    "WebkitBoxFlex": 1,
+                    "WebkitFlexBasis": "0%",
+                    "WebkitFlexGrow": 1,
+                    "WebkitFlexShrink": 1,
+                    "alignItems": "stretch",
+                    "flexBasis": "0%",
+                    "flexGrow": 1,
+                    "flexShrink": 1,
+                    "msFlexAlign": "stretch",
+                    "msFlexNegative": 1,
+                    "msFlexPositive": 1,
+                    "msFlexPreferredSize": "0%",
+                  }
+                }
+              >
+                <div
+                  className="css-view-1dbjc4n"
+                  style={
+                    Object {
+                      "WebkitBoxFlex": 1,
+                      "WebkitFlexBasis": "0%",
+                      "WebkitFlexGrow": 1,
+                      "WebkitFlexShrink": 1,
+                      "backgroundColor": "rgba(255,255,255,0.40)",
+                      "flexBasis": "0%",
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "marginBottom": "8px",
+                      "marginLeft": "8px",
+                      "marginRight": "8px",
+                      "marginTop": "8px",
+                      "maxHeight": "200px",
+                      "minHeight": "200px",
+                      "msFlexNegative": 1,
+                      "msFlexPositive": 1,
+                      "msFlexPreferredSize": "0%",
+                    }
+                  }
+                />
+                <code
+                  style={
+                    Object {
+                      "fontFamily": "monospace, monospace",
+                      "fontSize": "1rem",
+                      "lineHeight": "1.3125rem",
+                      "textAlign": "center",
+                      "whiteSpace": "pre",
+                    }
+                  }
+                >
+                  100
+                </code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`JSON Components Linear Gradient 1`] = `
+<div
+  className="css-view-1dbjc4n"
+  style={
+    Object {
+      "marginLeft": "auto",
+      "marginRight": "auto",
+      "maxWidth": "680px",
+      "minHeight": "100vh",
+      "paddingBottom": "1rem",
+      "paddingLeft": "1rem",
+      "paddingRight": "1rem",
+      "paddingTop": "1rem",
+    }
+  }
+>
+  <div
+    className="css-view-1dbjc4n"
+    style={
+      Object {
+        "WebkitBoxFlex": 1,
+        "WebkitFlexBasis": "auto",
+        "WebkitFlexGrow": 1,
+        "WebkitFlexShrink": 1,
+        "flexBasis": "auto",
+        "flexGrow": 1,
+        "flexShrink": 1,
+        "msFlexNegative": 1,
+        "msFlexPositive": 1,
+        "msFlexPreferredSize": "auto",
+      }
+    }
+  >
+    <h1
+      className="css-reset-4rbku5 css-text-901oao"
+      dir="auto"
+      role="heading"
+      style={
+        Object {
+          "fontSize": "2rem",
+        }
+      }
+    >
+      Linear Gradient
+    </h1>
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "vertical",
+          "WebkitFlexDirection": "column",
+          "color": "rgba(102,102,102,1.00)",
+          "display": "flex",
+          "flexDirection": "column",
+          "fontSize": "1.25rem",
+          "marginBottom": "1.96875rem",
+          "marginTop": "0.65625rem",
+          "msFlexDirection": "column",
+        }
+      }
+    >
+      <span
+        className="css-text-901oao css-textHasAncestor-16my406"
+        dir="auto"
+      >
+        A React component that renders a gradient view.
+      </span>
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "marginBottom": "1.96875rem",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+        style={
+          Object {
+            "fontSize": "1rem",
+          }
+        }
+      >
+        <span
+          className="css-text-901oao css-textHasAncestor-16my406"
+          dir="auto"
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+            style={
+              Object {
+                "fontWeight": "bold",
+              }
+            }
+          >
+            Importing the module
+          </span>
+        </span>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "borderBottomColor": "rgba(230,236,240,1.00)",
+            "borderBottomWidth": "1px",
+            "borderLeftColor": "rgba(230,236,240,1.00)",
+            "borderLeftWidth": "1px",
+            "borderRightColor": "rgba(230,236,240,1.00)",
+            "borderRightWidth": "1px",
+            "borderTopColor": "rgba(230,236,240,1.00)",
+            "borderTopWidth": "1px",
+            "marginTop": "1.3125rem",
+            "paddingBottom": "1.3125rem",
+            "paddingLeft": "1.3125rem",
+            "paddingRight": "1.3125rem",
+            "paddingTop": "1.3125rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "color": "rgba(170,184,194,1.00)",
+              "fontSize": "0.8rem",
+              "fontWeight": "bold",
+              "marginBottom": "0.65625rem",
+              "textTransform": "uppercase",
+            }
+          }
+        >
+          Example
+        </div>
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontFamily": "monospace, monospace",
+              "fontSize": "1rem",
+              "lineHeight": "1.3125rem",
+            }
+          }
+        >
+          import { LinearGradient } from 'expo-linear-gradient';
+        </div>
+      </div>
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+    >
+      <h2
+        aria-level="2"
+        className="css-reset-4rbku5 css-text-901oao"
+        dir="auto"
+        role="heading"
+        style={
+          Object {
+            "fontSize": "1.3125rem",
+            "fontWeight": "bold",
+            "marginBottom": "1.3125rem",
+          }
+        }
+      >
+        Props
+      </h2>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              ...View props
+            </span>
+          </span>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              colors
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                string[]
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              An array of colors that represent stops in the gradient. At least two colors are required (otherwise it's not a gradient, it's just a fill!).
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "0.65625rem",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <div
+              className="css-view-1dbjc4n"
+              style={
+                Object {
+                  "WebkitBoxFlex": 1,
+                  "WebkitFlexBasis": "0%",
+                  "WebkitFlexGrow": 1,
+                  "WebkitFlexShrink": 1,
+                  "backgroundImage": "linear-gradient(180deg, #ff0000ff,#800080ff,#0000ffff)",
+                  "flexBasis": "0%",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "maxHeight": "200px",
+                  "minHeight": "200px",
+                  "msFlexNegative": 1,
+                  "msFlexPositive": 1,
+                  "msFlexPreferredSize": "0%",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              start
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                number[]
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              An array of [x, y] where x and y are floats. They represent the position that the gradient starts at, as a fraction of the overall size of the gradient. For example, [0.1, 0.2] means that the gradient will start 10% from the left and 20% from the top.
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "0.65625rem",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <div
+              className="css-view-1dbjc4n"
+              style={
+                Object {
+                  "WebkitBoxFlex": 1,
+                  "WebkitFlexBasis": "0%",
+                  "WebkitFlexGrow": 1,
+                  "WebkitFlexShrink": 1,
+                  "backgroundImage": "linear-gradient(187.1250163489018deg, #008000ff,#ffa500ff)",
+                  "flexBasis": "0%",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "maxHeight": "200px",
+                  "minHeight": "200px",
+                  "msFlexNegative": 1,
+                  "msFlexPositive": 1,
+                  "msFlexPreferredSize": "0%",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              end
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                number[]
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              Same as start but for the end of the gradient.
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "0.65625rem",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <div
+              className="css-view-1dbjc4n"
+              style={
+                Object {
+                  "WebkitBoxFlex": 1,
+                  "WebkitFlexBasis": "0%",
+                  "WebkitFlexGrow": 1,
+                  "WebkitFlexShrink": 1,
+                  "backgroundImage": "linear-gradient(153.43494882292202deg, #008000ff,#ffa500ff)",
+                  "flexBasis": "0%",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "maxHeight": "200px",
+                  "minHeight": "200px",
+                  "msFlexNegative": 1,
+                  "msFlexPositive": 1,
+                  "msFlexPreferredSize": "0%",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "1.96875rem",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              locations
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125rem",
+                  }
+                }
+              >
+                number[]
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "0.65625rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125rem",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              An array of the same length as colors, where each element is a float with the same meaning as the start and  end values, but instead they indicate where the color at that index should be.
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "0.65625rem",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <div
+              className="css-view-1dbjc4n"
+              style={
+                Object {
+                  "WebkitBoxFlex": 1,
+                  "WebkitFlexBasis": "0%",
+                  "WebkitFlexGrow": 1,
+                  "WebkitFlexShrink": 1,
+                  "backgroundImage": "linear-gradient(180deg, #ff0000ff 50%,#0000ffff 60%)",
+                  "flexBasis": "0%",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "maxHeight": "200px",
+                  "minHeight": "200px",
+                  "msFlexNegative": 1,
+                  "msFlexPositive": 1,
+                  "msFlexPreferredSize": "0%",
+                }
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
