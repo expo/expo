@@ -78,7 +78,10 @@ const Screen = () => (
                 />
                 {[0, 33, 66, 100].map(intensity => (
                   <View key={intensity} style={{ alignItems: 'stretch', flex: 1 }}>
-                    <BlurView style={{ flex: 1, margin: 8, height: 200 }} intensity={intensity} />
+                    <BlurView
+                      style={{ flex: 1, margin: 8, minHeight: 200, maxHeight: 200 }}
+                      intensity={intensity}
+                    />
                     <Code style={{ textAlign: 'center' }}>{intensity}</Code>
                   </View>
                 ))}
