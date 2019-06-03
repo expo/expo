@@ -25,6 +25,7 @@ if (process.env.BABEL_ENV === 'test:web') {
 
   const getScreenshotOptions = ({ context, url }) => ({
     fullPage: true, // Do not take the full page screenshot. Default is 'true' in Storyshots.
+    // omitBackground: true
   });
 
   const devices = require('puppeteer/DeviceDescriptors');
