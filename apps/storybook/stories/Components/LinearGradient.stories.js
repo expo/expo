@@ -6,8 +6,6 @@ import { StyleSheet } from 'react-native';
 import { DocItem, Section } from '../ui-explorer';
 
 export const title = 'Linear Gradient';
-// export const kind = 'Components';
-export const hasKnobs = true;
 export const packageJson = require('expo-linear-gradient/package.json');
 export const component = () => {
   const options = {
