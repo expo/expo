@@ -374,7 +374,7 @@ PODS:
     - AppAuth
     - UMCore
   - EXAppLoaderProvider (5.0.0)
-  - EXAV (5.0.0):
+  - EXAV (5.0.1):
     - UMCore
     - UMPermissionsInterface
   - EXBackgroundFetch (5.0.0):
@@ -1839,7 +1839,7 @@ SPEC CHECKSUMS:
   EXAmplitude: 8d5088a567dc29ddd634d407577fbc846bcf4423
   EXAppAuth: 68ba62a61348034f3017c784b2acd5e1fe3a87e9
   EXAppLoaderProvider: aa94f26f982453a23c69f382d2f013c9904df79a
-  EXAV: c2c4f27b9be48c3093f0b3ac659cddde28f82cb7
+  EXAV: da7c9cde24a2101d4c67f0002c6d4d3ff2db219e
   EXBackgroundFetch: 27a0f7edf94435ba0cae754c404d963018e98c39
   EXBarCodeScanner: 8f207ba31373d527408d7c8c4d197fdcdabe4444
   EXBlur: 6671e100cf2d844e24d5afac72dc88a0124cf381
