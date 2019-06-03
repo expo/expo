@@ -10,7 +10,7 @@
     "test:web": "BABEL_ENV=test:web jest --config=./test/jest.config.web.js",
     "pretest:web:ci": "npm run build",
     "test:web:ci": "export IS_EXPO_CI=true; npm run test:web",
-    "update:test:web:ci": "rm -rf .storybook/__image_snapshots__ && npm run test:web:ci",
+    "update:test:web:ci": "rm -rf .storybook/__image_snapshots__ && npm run test:web:ci -u",
     "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js"
   },
   "author": "Expo",
