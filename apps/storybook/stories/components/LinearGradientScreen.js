@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import UIExplorer, { AppText, Description, DocItem, Section, storiesOf } from '../ui-explorer';
 
@@ -25,10 +25,7 @@ const Screen = () => (
           description="An array of colors that represent stops in the gradient. At least two colors are required (otherwise it's not a gradient, it's just a fill!)."
           example={{
             render: () => (
-              <LinearGradient
-                style={{ flex: 1, minHeight: 200 }}
-                colors={['red', 'purple', 'blue']}
-              />
+              <LinearGradient style={styles.gradient} colors={['red', 'purple', 'blue']} />
             ),
           }}
         />
@@ -39,7 +36,7 @@ const Screen = () => (
           example={{
             render: () => (
               <LinearGradient
-                style={{ flex: 1, minHeight: 200 }}
+                style={styles.gradient}
                 start={[0.1, 0.2]}
                 colors={['green', 'orange']}
               />
@@ -53,7 +50,7 @@ const Screen = () => (
           example={{
             render: () => (
               <LinearGradient
-                style={{ flex: 1, minHeight: 200 }}
+                style={styles.gradient}
                 end={[0.1, 0.2]}
                 colors={['green', 'orange']}
               />
@@ -67,7 +64,7 @@ const Screen = () => (
           example={{
             render: () => (
               <LinearGradient
-                style={{ flex: 1, minHeight: 200 }}
+                style={styles.gradient}
                 colors={['red', 'blue']}
                 locations={[0.5, 0.6]}
               />
@@ -80,3 +77,11 @@ const Screen = () => (
 );
 
 storiesOf('Components', module).add('Linear Gradient', Screen);
+
+const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+    minHeight: 200,
+    maxHeight: 200,
+  },
+});
