@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Label } from './DocItem';
 import AppText from './AppText';
 import ExternalLink from './ExternalLink';
 import insertBetween from './insertBetween';
@@ -27,16 +28,26 @@ const Divider = () => <View style={styles.divider} />;
 
 const SourceLink = ({ uri }) => (
   <ExternalLink
-    href={`https://github.com/necolas/react-native-web/tree/master/packages/website/storybook/${uri}`}
+    href={`https://github.com/expo/expo/tree/master/apps/storybook/stories/${uri}.stories.js`}
     style={styles.link}>
     View source code on GitHub
   </ExternalLink>
 );
 
-const UIExplorer = ({ children, description, sections, title, url }) => (
+const UIExplorer = ({ children, packageName, description, sections, title, url }) => (
   <View style={styles.root}>
     <Title>{title}</Title>
-    {description}
+    {packageName && (
+      <View style={{ alignItems: 'flex-start', marginTop: 8 }}>
+        <Label
+          accessibilityRole="link"
+          target="_blank"
+          href={`https://npmjs.com/package/${packageName}`}>
+          {packageName}
+        </Label>
+      </View>
+    )}
+    {description && <Description>{description}</Description>}
     {children}
     {url && <SourceLink uri={url} />}
   </View>
