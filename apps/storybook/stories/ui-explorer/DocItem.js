@@ -1,7 +1,8 @@
-import AppText from './AppText';
-import insertBetween from './insertBetween';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import AppText from './AppText';
+import insertBetween from './insertBetween';
+import rem from './rem';
 
 const Divider = () => <View style={styles.verticalDivider} />;
 
@@ -51,29 +52,29 @@ const PropText = ({ label, name, typeInfo }) => (
 const styles = StyleSheet.create({
   code: {
     fontFamily: 'monospace, monospace',
-    fontSize: '1rem',
-    lineHeight: '1.3125em',
+    fontSize: rem(1),
+    lineHeight: rem(1.3125),
   },
   example: {
-    marginBottom: 'calc(1.5 * 1.3125rem)',
+    marginBottom: rem(1.5 * 1.3125),
   },
   title: {
-    fontSize: '1rem',
+    fontSize: rem(1),
   },
   text: {
     alignItems: 'stretch',
     display: 'flex',
     flexDirection: 'column',
-    fontSize: '1rem',
-    lineHeight: '1.3125em',
+    fontSize: rem(1),
+    lineHeight: rem(1.3125),
   },
   label: {
     backgroundColor: '#ddd',
-    borderRadius: '1rem',
+    borderRadius: rem(1),
     color: '#555',
-    marginRight: '0.5rem',
-    paddingVertical: '0.125rem',
-    paddingHorizontal: '0.5rem',
+    marginRight: rem(0.5),
+    paddingVertical: rem(0.125),
+    paddingHorizontal: rem(0.5),
   },
   propName: {
     fontWeight: 'bold',
@@ -83,23 +84,23 @@ const styles = StyleSheet.create({
     color: '#025268',
   },
   description: {
-    marginTop: 'calc(0.5 * 1.3125rem)',
+    marginTop: rem(0.5 * 1.3125),
   },
   renderBox: {
     borderColor: '#E6ECF0',
     borderWidth: 1,
-    padding: '1.3125rem',
-    marginTop: '1.3125rem',
+    padding: rem(1.3125),
+    marginTop: rem(1.3125),
   },
   exampleText: {
     color: '#AAB8C2',
-    fontSize: '0.8rem',
+    fontSize: rem(0.8),
     fontWeight: 'bold',
-    marginBottom: 'calc(0.5 * 1.3125rem)',
+    marginBottom: rem(0.5 * 1.3125),
     textTransform: 'uppercase',
   },
   verticalDivider: {
-    height: '1rem',
+    height: rem(1),
   },
 });
 
