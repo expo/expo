@@ -2,34 +2,27 @@
 # yarn lockfile v1
 
 
-"expo-core@file:../../expo-core", expo-core@~2.0.0:
+"@unimodules/core@file:../../@unimodules/core":
   version "2.0.0"
+  dependencies:
+    compare-versions "^3.4.0"
+
+compare-versions@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.4.0.tgz#e0747df5c9cb7f054d6d3dc3e1dbc444f9e92b26"
+  integrity sha512-tK69D7oNXXqUW3ZNo/z7NXTEz22TCF0pTE+YF9cxvaAM9XnkLo1fV621xCLrRR6aevJlKxExkss0vWqUCUpqdg==
 
 "expo-permissions-interface@file:../../expo-permissions-interface":
-  version "2.0.0"
-  dependencies:
-    expo-core "~2.0.0"
-
-expo-permissions-interface@~2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/expo-permissions-interface/-/expo-permissions-interface-2.0.0.tgz#563fd815925fd472a1b04f292afc9bef77f14774"
-  integrity sha512-hk9oR6CtV2MLONdtPkKvOfpfmbJ48BDbYjvW/Na31znVvUAPHs7owckqSgh5BVoIAz8tMgp7fptaifEhPOayvg==
-  dependencies:
-    expo-core "~2.0.0"
+  version "0.0.0"
 
 "expo-permissions@file:../../expo-permissions":
-  version "2.0.0"
-  dependencies:
-    expo-core "~2.0.0"
-    expo-permissions-interface "~2.0.0"
+  version "5.0.0"
 
 "expo-sensors-interface@file:../../expo-sensors-interface":
-  version "2.0.0"
-  dependencies:
-    expo-core "~2.0.0"
+  version "0.0.0"
 
 "expo-sensors@file:../../expo-sensors":
-  version "2.0.0"
+  version "5.0.0"
   dependencies:
     invariant "^2.2.4"
 

@@ -747,12 +747,12 @@
     xmldoc "^0.4.0"
 
 "@unimodules/core@file:../../../@unimodules/core":
-  version "2.0.0-rc.0"
+  version "2.0.0"
   dependencies:
     compare-versions "^3.4.0"
 
 "@unimodules/react-native-adapter@file:../../../@unimodules/react-native-adapter":
-  version "2.0.0-rc.0"
+  version "2.0.0"
   dependencies:
     invariant "^2.2.4"
     lodash "^4.5.0"
@@ -2191,10 +2191,10 @@ expand-range@^1.8.1:
     fill-range "^2.1.0"
 
 "expo-payments-stripe@file:../..":
-  version "5.0.0-rc.0"
+  version "5.0.0"
 
 "expo-permissions@file:../../../expo-permissions":
-  version "5.0.0-rc.0"
+  version "5.0.0"
 
 extend-shallow@^1.1.2:
   version "1.1.4"
@@ -5098,13 +5098,13 @@ unicode-property-aliases-ecmascript@^1.0.4:
   integrity sha512-2WSLa6OdYd2ng8oqiGIWnJqyFArvhn+5vgx5GTxMbUYjCYKUcuKS62YLFF0R/BDGlB1yzXjQOLtPAfHsgirEpg==
 
 "unimodules-font-interface@file:../../../unimodules-font-interface":
-  version "2.0.0-rc.0"
+  version "2.0.0"
 
 "unimodules-image-loader-interface@file:../../../unimodules-image-loader-interface":
-  version "2.0.0-rc.0"
+  version "2.0.0"
 
 "unimodules-permissions-interface@file:../../../unimodules-permissions-interface":
-  version "2.0.0-rc.0"
+  version "2.0.0"
 
 union-value@^1.0.0:
   version "1.0.0"
