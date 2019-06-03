@@ -2,7 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import AppText from './AppText';
 import insertBetween from './insertBetween';
-import rem from './rem';
+// import { Row, Rows, Table } from 'react-native-table-component';
+
+const Row = View;
+const Rows = View;
+const Table = View;
 
 const Divider = () => <View style={styles.verticalDivider} />;
 
@@ -36,9 +40,105 @@ const DocItem = ({ description, example = {}, name, typeInfo, label }) => (
   </View>
 );
 
+const ParametersTable = ({ data, header }) => {
+  return (
+    <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+      <Row
+        data={header || ['Name', 'Type', 'Description']}
+        style={{ height: 40, backgroundColor: '#f1f8ff' }}
+        textStyle={{ margin: 6 }}
+      />
+      <Rows
+        data={data.map(({ name, type, description }) => {
+          let outputType = type;
+          if (Array.isArray(type)) {
+            outputType = type.join(' | ');
+          }
+          return [name, outputType, description];
+        })}
+        textStyle={{ margin: 6 }}
+      />
+    </Table>
+  );
+};
+
+const ReturnsTable = ({ data, header }) => {
+  return (
+    <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+      <Row
+        data={header || ['Type', 'Description']}
+        style={{ height: 40, backgroundColor: '#f1f8ff' }}
+        textStyle={{ margin: 6 }}
+      />
+      <Rows
+        data={data.map(({ type, description }) => {
+          let outputType = type;
+          if (Array.isArray(type)) {
+            outputType = type.join(' | ');
+          }
+          return [outputType, description];
+        })}
+        textStyle={{ margin: 6 }}
+      />
+    </Table>
+  );
+};
+
+const Parameters = ({ title, data, header }) => {
+  return (
+    <View>
+      <AppText style={styles.title}>Parameters</AppText>
+      <ParametersTable data={data} />
+    </View>
+  );
+};
+const Returns = ({ title, data, header }) => {
+  return (
+    <View>
+      <AppText style={styles.title}>Returns</AppText>
+      <ReturnsTable data={data} />
+    </View>
+  );
+};
+
+export const DocFunctionItem = ({
+  description,
+  parameters,
+  returns,
+  example = {},
+  name,
+  typeInfo,
+  label,
+}) => (
+  <View style={styles.example}>
+    {name && (
+      <AppText style={styles.title}>
+        <PropText label={label} name={name} typeInfo={typeInfo} />
+      </AppText>
+    )}
+    {description && <View style={styles.description}>{createDescription(description)}</View>}
+    {parameters && <Parameters data={parameters} />}
+    {returns && <Returns data={returns} />}
+    {(example.render || example.code) && (
+      <View style={styles.renderBox}>
+        <AppText style={styles.exampleText}>Example</AppText>
+        {example.render && <View>{example.render()}</View>}
+        {example.render && example.code && <View style={styles.verticalDivider} />}
+        {example.code && <Text style={styles.code}>{example.code}</Text>}
+      </View>
+    )}
+  </View>
+);
+
+export const Label = ({ style, children, ...props }) => (
+  <Text {...props} style={[styles.label, children === 'web' && styles.webLabel, style]}>
+    {children}
+  </Text>
+);
+
 const PropText = ({ label, name, typeInfo }) => (
   <AppText>
-    {label && <Text style={[styles.label, label === 'web' && styles.webLabel]}>{label}</Text>}
+    {label && <Label>{label}</Label>}
     <Text style={styles.propName}>{name}</Text>
     {typeInfo && (
       <Text>
@@ -52,29 +152,29 @@ const PropText = ({ label, name, typeInfo }) => (
 const styles = StyleSheet.create({
   code: {
     fontFamily: 'monospace, monospace',
-    fontSize: rem(1),
-    lineHeight: rem(1.3125),
+    fontSize: '1rem',
+    lineHeight: '1.3125em',
   },
   example: {
-    marginBottom: rem(1.5 * 1.3125),
+    marginBottom: 'calc(1.5 * 1.3125rem)',
   },
   title: {
-    fontSize: rem(1),
+    fontSize: '1rem',
   },
   text: {
     alignItems: 'stretch',
     display: 'flex',
     flexDirection: 'column',
-    fontSize: rem(1),
-    lineHeight: rem(1.3125),
+    fontSize: '1rem',
+    lineHeight: '1.3125em',
   },
   label: {
     backgroundColor: '#ddd',
-    borderRadius: rem(1),
+    borderRadius: '1rem',
     color: '#555',
-    marginRight: rem(0.5),
-    paddingVertical: rem(0.125),
-    paddingHorizontal: rem(0.5),
+    marginRight: '0.5rem',
+    paddingVertical: '0.125rem',
+    paddingHorizontal: '0.5rem',
   },
   propName: {
     fontWeight: 'bold',
@@ -84,23 +184,23 @@ const styles = StyleSheet.create({
     color: '#025268',
   },
   description: {
-    marginTop: rem(0.5 * 1.3125),
+    marginTop: 'calc(0.5 * 1.3125rem)',
   },
   renderBox: {
     borderColor: '#E6ECF0',
     borderWidth: 1,
-    padding: rem(1.3125),
-    marginTop: rem(1.3125),
+    padding: '1.3125rem',
+    marginTop: '1.3125rem',
   },
   exampleText: {
     color: '#AAB8C2',
-    fontSize: rem(0.8),
+    fontSize: '0.8rem',
     fontWeight: 'bold',
-    marginBottom: rem(0.5 * 1.3125),
+    marginBottom: 'calc(0.5 * 1.3125rem)',
     textTransform: 'uppercase',
   },
   verticalDivider: {
-    height: rem(1),
+    height: '1rem',
   },
 });
 
