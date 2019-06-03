@@ -444,7 +444,7 @@ jobs:
           no_output_timeout: 30m
           command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - run:
-          name: Build and upload release tarball
+          name: Package and upload release tarball
           working_directory: ~/project
           no_output_timeout: 40m
           command: |
