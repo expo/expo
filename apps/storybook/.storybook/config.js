@@ -9,7 +9,7 @@ import centered from './decorator-centered';
 
 addDecorator(centered);
 
-// addDecorator(withKnobs({ escapeHTML: false, skipIfNoParametersOrOptions: true }));
+addDecorator(withKnobs({ escapeHTML: false, skipIfNoParametersOrOptions: true }));
 
 const colors = {
   purple: '#4630EB',
@@ -51,6 +51,7 @@ const expoTheme = {
   brandImage: require('../assets/brand-icon.png'),
 };
 
+export const theme = create(expoTheme);
 addParameters({
   options: {
     isFullscreen: false,
@@ -61,7 +62,7 @@ addParameters({
     hierarchySeparator: /\./,
     hierarchyRootSeparator: /\|/,
     enableShortcuts: true,
-    theme: create(expoTheme),
+    theme,
   },
 });
 
@@ -81,10 +82,10 @@ function loadStories() {
       component: Component,
       packageJson = {},
       notes,
+      label,
       description,
       title,
       kind,
-      hasKnobs,
       onStoryCreated,
     } = module;
 
@@ -97,6 +98,8 @@ function loadStories() {
     const screen = (props = {}) => (
       <UIExplorer
         title={title}
+        url={filename}
+        label={label}
         description={description || packageJson.description}
         packageName={packageJson.name}>
         <Component {...props} />
@@ -108,9 +111,6 @@ function loadStories() {
     if (!stories) {
       stories = storiesOf(storiesKind, global.module);
       storiesCache[storiesKind] = stories;
-    }
-    if (hasKnobs) {
-      stories.addDecorator(withKnobs({ escapeHTML: false, skipIfNoParametersOrOptions: true }));
     }
     stories.add(title, screen, {
       notes: { markdown },
