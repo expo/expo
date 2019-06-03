@@ -1,6 +1,78 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`JSON APIs AR 1`] = `
+exports[`JSON Getting Started Intro 1`] = `
+<div
+  className="css-view-1dbjc4n"
+  style={
+    Object {
+      "marginLeft": "auto",
+      "marginRight": "auto",
+      "maxWidth": "680px",
+      "minHeight": "100vh",
+      "paddingBottom": "1rem",
+      "paddingLeft": "1rem",
+      "paddingRight": "1rem",
+      "paddingTop": "1rem",
+    }
+  }
+>
+  <div
+    className="css-view-1dbjc4n"
+    style={
+      Object {
+        "WebkitBoxFlex": 1,
+        "WebkitFlexBasis": "auto",
+        "WebkitFlexGrow": 1,
+        "WebkitFlexShrink": 1,
+        "flexBasis": "auto",
+        "flexGrow": 1,
+        "flexShrink": 1,
+        "msFlexNegative": 1,
+        "msFlexPositive": 1,
+        "msFlexPreferredSize": "auto",
+      }
+    }
+  >
+    <h1
+      className="css-reset-4rbku5 css-text-901oao"
+      dir="auto"
+      role="heading"
+      style={
+        Object {
+          "fontSize": "2rem",
+        }
+      }
+    >
+      Intro
+    </h1>
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "vertical",
+          "WebkitFlexDirection": "column",
+          "color": "rgba(102,102,102,1.00)",
+          "display": "flex",
+          "flexDirection": "column",
+          "fontSize": "1.25rem",
+          "marginBottom": "1.96875rem",
+          "marginTop": "0.65625rem",
+          "msFlexDirection": "column",
+        }
+      }
+    >
+      The Expo SDK provides access to device and system functionality such as contacts, camera,
+and GPS location. It is provided by the npm package
+[expo](https://www.npmjs.com/package/expo) &mdash; this is installed by default in every
+managed Expo project. You can import modules from it in your JavaScript code as follows:
+    </div>
+  </div>
+</div>
+`;
+
+exports[`JSON apis AR 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -111,7 +183,7 @@ exports[`JSON APIs AR 1`] = `
 </div>
 `;
 
-exports[`JSON APIs AV 1`] = `
+exports[`JSON apis AV 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -222,7 +294,7 @@ exports[`JSON APIs AV 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Accelerometer 1`] = `
+exports[`JSON apis Accelerometer 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -1099,7 +1171,7 @@ space.
 </div>
 `;
 
-exports[`JSON APIs Amplitude SDK 1`] = `
+exports[`JSON apis Amplitude SDK 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -1210,7 +1282,7 @@ exports[`JSON APIs Amplitude SDK 1`] = `
 </div>
 `;
 
-exports[`JSON APIs App Auth 1`] = `
+exports[`JSON apis App Auth 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -1321,7 +1393,7 @@ exports[`JSON APIs App Auth 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Asset 1`] = `
+exports[`JSON apis Asset 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2035,7 +2107,7 @@ exports[`JSON APIs Asset 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Audio 1`] = `
+exports[`JSON apis Audio 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2146,7 +2218,7 @@ exports[`JSON APIs Audio 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Auth Session 1`] = `
+exports[`JSON apis Auth Session 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2257,7 +2329,7 @@ exports[`JSON APIs Auth Session 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Background Fetch 1`] = `
+exports[`JSON apis Background Fetch 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2368,7 +2440,7 @@ exports[`JSON APIs Background Fetch 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Barometer 1`] = `
+exports[`JSON apis Barometer 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2479,7 +2551,7 @@ exports[`JSON APIs Barometer 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Branch SDK 1`] = `
+exports[`JSON apis Branch SDK 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2590,7 +2662,7 @@ exports[`JSON APIs Branch SDK 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Brightness 1`] = `
+exports[`JSON apis Brightness 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2701,7 +2773,7 @@ exports[`JSON APIs Brightness 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Calendar 1`] = `
+exports[`JSON apis Calendar 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -2812,7 +2884,7 @@ exports[`JSON APIs Calendar 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Constants 1`] = `
+exports[`JSON apis Constants 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4013,7 +4085,7 @@ exports[`JSON APIs Constants 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Contacts 1`] = `
+exports[`JSON apis Contacts 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4124,7 +4196,7 @@ exports[`JSON APIs Contacts 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Device Motion 1`] = `
+exports[`JSON apis Device Motion 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4235,7 +4307,7 @@ exports[`JSON APIs Device Motion 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Document Picker 1`] = `
+exports[`JSON apis Document Picker 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4346,7 +4418,7 @@ exports[`JSON APIs Document Picker 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Facebook 1`] = `
+exports[`JSON apis Facebook 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4457,7 +4529,7 @@ exports[`JSON APIs Facebook 1`] = `
 </div>
 `;
 
-exports[`JSON APIs File System 1`] = `
+exports[`JSON apis File System 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4568,7 +4640,7 @@ exports[`JSON APIs File System 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Font 1`] = `
+exports[`JSON apis Font 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4679,7 +4751,7 @@ exports[`JSON APIs Font 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Google 1`] = `
+exports[`JSON apis Google 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4790,7 +4862,7 @@ exports[`JSON APIs Google 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Google Sign-In 1`] = `
+exports[`JSON apis Google Sign-In 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -4901,7 +4973,7 @@ exports[`JSON APIs Google Sign-In 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Gyroscope 1`] = `
+exports[`JSON apis Gyroscope 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -5012,7 +5084,7 @@ exports[`JSON APIs Gyroscope 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Haptics 1`] = `
+exports[`JSON apis Haptics 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -5123,7 +5195,7 @@ exports[`JSON APIs Haptics 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Image Manipulator 1`] = `
+exports[`JSON apis Image Manipulator 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -5234,7 +5306,7 @@ exports[`JSON APIs Image Manipulator 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Image Picker 1`] = `
+exports[`JSON apis Image Picker 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -5345,7 +5417,7 @@ exports[`JSON APIs Image Picker 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Intent Launcher 1`] = `
+exports[`JSON apis Intent Launcher 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -5456,7 +5528,7 @@ exports[`JSON APIs Intent Launcher 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Linking 1`] = `
+exports[`JSON apis Linking 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -5891,7 +5963,7 @@ exports[`JSON APIs Linking 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Local Authentication 1`] = `
+exports[`JSON apis Local Authentication 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6002,7 +6074,7 @@ exports[`JSON APIs Local Authentication 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Localization 1`] = `
+exports[`JSON apis Localization 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6113,7 +6185,7 @@ exports[`JSON APIs Localization 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Location 1`] = `
+exports[`JSON apis Location 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6224,7 +6296,7 @@ exports[`JSON APIs Location 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Lottie 1`] = `
+exports[`JSON apis Lottie 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6335,7 +6407,7 @@ exports[`JSON APIs Lottie 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Magnetometer 1`] = `
+exports[`JSON apis Magnetometer 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6446,7 +6518,7 @@ exports[`JSON APIs Magnetometer 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Mail Composer 1`] = `
+exports[`JSON apis Mail Composer 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6557,7 +6629,7 @@ exports[`JSON APIs Mail Composer 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Media Library 1`] = `
+exports[`JSON apis Media Library 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6668,7 +6740,7 @@ exports[`JSON APIs Media Library 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Notifications 1`] = `
+exports[`JSON apis Notifications 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6779,7 +6851,7 @@ exports[`JSON APIs Notifications 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Payments 1`] = `
+exports[`JSON apis Payments 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -6890,7 +6962,7 @@ exports[`JSON APIs Payments 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Pedometer 1`] = `
+exports[`JSON apis Pedometer 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -7001,7 +7073,7 @@ exports[`JSON APIs Pedometer 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Permissions 1`] = `
+exports[`JSON apis Permissions 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -8207,7 +8279,7 @@ Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 </div>
 `;
 
-exports[`JSON APIs SMS 1`] = `
+exports[`JSON apis SMS 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -8318,7 +8390,7 @@ exports[`JSON APIs SMS 1`] = `
 </div>
 `;
 
-exports[`JSON APIs SQLite 1`] = `
+exports[`JSON apis SQLite 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -8429,7 +8501,7 @@ exports[`JSON APIs SQLite 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Screen Orientation 1`] = `
+exports[`JSON apis Screen Orientation 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -9042,7 +9114,7 @@ exports[`JSON APIs Screen Orientation 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Secure Store 1`] = `
+exports[`JSON apis Secure Store 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -9153,7 +9225,7 @@ exports[`JSON APIs Secure Store 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Segment 1`] = `
+exports[`JSON apis Segment 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -9264,7 +9336,7 @@ exports[`JSON APIs Segment 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Sharing 1`] = `
+exports[`JSON apis Sharing 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -9375,7 +9447,7 @@ exports[`JSON APIs Sharing 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Speech 1`] = `
+exports[`JSON apis Speech 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -9486,7 +9558,7 @@ exports[`JSON APIs Speech 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Store Review 1`] = `
+exports[`JSON apis Store Review 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -9597,7 +9669,7 @@ exports[`JSON APIs Store Review 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Task Manager 1`] = `
+exports[`JSON apis Task Manager 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -9708,7 +9780,7 @@ exports[`JSON APIs Task Manager 1`] = `
 </div>
 `;
 
-exports[`JSON APIs Updates 1`] = `
+exports[`JSON apis Updates 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -10468,7 +10540,7 @@ exports[`JSON APIs Updates 1`] = `
 </div>
 `;
 
-exports[`JSON APIs registerRootComponent 1`] = `
+exports[`JSON apis registerRootComponent 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -10579,7 +10651,7 @@ exports[`JSON APIs registerRootComponent 1`] = `
 </div>
 `;
 
-exports[`JSON APIs takeSnapshotAsync 1`] = `
+exports[`JSON apis takeSnapshotAsync 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -10690,7 +10762,7 @@ exports[`JSON APIs takeSnapshotAsync 1`] = `
 </div>
 `;
 
-exports[`JSON Components AdMob 1`] = `
+exports[`JSON components AdMob 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -10801,7 +10873,7 @@ exports[`JSON Components AdMob 1`] = `
 </div>
 `;
 
-exports[`JSON Components App Loading 1`] = `
+exports[`JSON components App Loading 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -10912,7 +10984,7 @@ exports[`JSON Components App Loading 1`] = `
 </div>
 `;
 
-exports[`JSON Components Bar Code Scanner 1`] = `
+exports[`JSON components Bar Code Scanner 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -11023,7 +11095,7 @@ exports[`JSON Components Bar Code Scanner 1`] = `
 </div>
 `;
 
-exports[`JSON Components Blur View 1`] = `
+exports[`JSON components Blur View 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -12244,7 +12316,7 @@ exports[`JSON Components Blur View 1`] = `
 </div>
 `;
 
-exports[`JSON Components Camera 1`] = `
+exports[`JSON components Camera 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -12355,7 +12427,7 @@ exports[`JSON Components Camera 1`] = `
 </div>
 `;
 
-exports[`JSON Components Error Recovery 1`] = `
+exports[`JSON components Error Recovery 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -12653,7 +12725,7 @@ exports[`JSON Components Error Recovery 1`] = `
 </div>
 `;
 
-exports[`JSON Components Face Detector 1`] = `
+exports[`JSON components Face Detector 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -12764,7 +12836,7 @@ exports[`JSON Components Face Detector 1`] = `
 </div>
 `;
 
-exports[`JSON Components Facebook Ads 1`] = `
+exports[`JSON components Facebook Ads 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -12875,7 +12947,7 @@ exports[`JSON Components Facebook Ads 1`] = `
 </div>
 `;
 
-exports[`JSON Components GLView 1`] = `
+exports[`JSON components GLView 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -12986,7 +13058,7 @@ exports[`JSON Components GLView 1`] = `
 </div>
 `;
 
-exports[`JSON Components Gesture Handler 1`] = `
+exports[`JSON components Gesture Handler 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -13097,7 +13169,7 @@ exports[`JSON Components Gesture Handler 1`] = `
 </div>
 `;
 
-exports[`JSON Components Keep Awake 1`] = `
+exports[`JSON components Keep Awake 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -13208,7 +13280,7 @@ exports[`JSON Components Keep Awake 1`] = `
 </div>
 `;
 
-exports[`JSON Components Linear Gradient 1`] = `
+exports[`JSON components Linear Gradient 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -14065,7 +14137,7 @@ exports[`JSON Components Linear Gradient 1`] = `
 </div>
 `;
 
-exports[`JSON Components Map View 1`] = `
+exports[`JSON components Map View 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -14176,7 +14248,7 @@ exports[`JSON Components Map View 1`] = `
 </div>
 `;
 
-exports[`JSON Components SVG 1`] = `
+exports[`JSON components SVG 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -14323,7 +14395,7 @@ exports[`JSON Components SVG 1`] = `
 </div>
 `;
 
-exports[`JSON Components Splash Screen 1`] = `
+exports[`JSON components Splash Screen 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -14434,7 +14506,7 @@ exports[`JSON Components Splash Screen 1`] = `
 </div>
 `;
 
-exports[`JSON Components Video 1`] = `
+exports[`JSON components Video 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -14584,7 +14656,7 @@ exports[`JSON Components Video 1`] = `
 </div>
 `;
 
-exports[`JSON Components Web Browser 1`] = `
+exports[`JSON components Web Browser 1`] = `
 <div
   className="css-view-1dbjc4n"
   style={
@@ -14692,78 +14764,6 @@ On iOS, it uses \`SFSafariViewController\` or \`SFAuthenticationSession\`, depen
     <div
       className="css-view-1dbjc4n"
     />
-  </div>
-</div>
-`;
-
-exports[`JSON Getting Started Intro 1`] = `
-<div
-  className="css-view-1dbjc4n"
-  style={
-    Object {
-      "marginLeft": "auto",
-      "marginRight": "auto",
-      "maxWidth": "680px",
-      "minHeight": "100vh",
-      "paddingBottom": "1rem",
-      "paddingLeft": "1rem",
-      "paddingRight": "1rem",
-      "paddingTop": "1rem",
-    }
-  }
->
-  <div
-    className="css-view-1dbjc4n"
-    style={
-      Object {
-        "WebkitBoxFlex": 1,
-        "WebkitFlexBasis": "auto",
-        "WebkitFlexGrow": 1,
-        "WebkitFlexShrink": 1,
-        "flexBasis": "auto",
-        "flexGrow": 1,
-        "flexShrink": 1,
-        "msFlexNegative": 1,
-        "msFlexPositive": 1,
-        "msFlexPreferredSize": "auto",
-      }
-    }
-  >
-    <h1
-      className="css-reset-4rbku5 css-text-901oao"
-      dir="auto"
-      role="heading"
-      style={
-        Object {
-          "fontSize": "2rem",
-        }
-      }
-    >
-      Intro
-    </h1>
-    <div
-      className="css-text-901oao"
-      dir="auto"
-      style={
-        Object {
-          "WebkitBoxDirection": "normal",
-          "WebkitBoxOrient": "vertical",
-          "WebkitFlexDirection": "column",
-          "color": "rgba(102,102,102,1.00)",
-          "display": "flex",
-          "flexDirection": "column",
-          "fontSize": "1.25rem",
-          "marginBottom": "1.96875rem",
-          "marginTop": "0.65625rem",
-          "msFlexDirection": "column",
-        }
-      }
-    >
-      The Expo SDK provides access to device and system functionality such as contacts, camera,
-and GPS location. It is provided by the npm package
-[expo](https://www.npmjs.com/package/expo) &mdash; this is installed by default in every
-managed Expo project. You can import modules from it in your JavaScript code as follows:
-    </div>
   </div>
 </div>
 `;
