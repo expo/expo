@@ -1,6 +1,6 @@
+import { Platform } from 'react-native';
 import { CodedError } from '@unimodules/core';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
-import { Platform } from 'react-native';
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 const validTypes = {
     INAPP: 'inapp',
@@ -62,9 +62,12 @@ export async function purchaseItemAsync(itemId, oldItem) {
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
     }
-    return await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+    // Replacing old item is only supported on Android
+    const args = Platform.OS === 'android' ? [itemId, oldItem] : [itemId];
+    return await ExpoInAppPurchases.purchaseItemAsync(...args);
 }
 export async function acknowledgePurchaseAsync(purchaseToken, consumeItem) {
+    // No-op if not on Android since this is not applicable
     if (Platform.OS !== 'android')
         return;
     console.log('calling acknowledgePurchaseAsync from TS');

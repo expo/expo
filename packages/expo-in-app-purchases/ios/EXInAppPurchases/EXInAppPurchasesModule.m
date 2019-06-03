@@ -6,8 +6,8 @@
 #define QUERY_KEY @"queryPurchasableItemsAsync"
 #define SERVICE_DISCONNECTED -1
 #define OK 0
-#define USER_CANCELLED 1
-#define ERROR 2
+#define ERROR 1
+#define USER_CANCELED 2
 
 @implementation EXInAppPurchasesModule
 
@@ -23,7 +23,7 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
   return @{
        @"responseCodes": @{
          @"OK": @OK,
-         @"USER_CANCELLED": @USER_CANCELLED,
+         @"USER_CANCELED": @USER_CANCELED,
          @"ERROR": @ERROR,
          @"SERVICE_DISCONNECTED": @SERVICE_DISCONNECTED
       },
@@ -41,7 +41,7 @@ UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  NSLog(@"Connecting to iOS app store!");
+  NSLog(@"Calling ConnectToAppStoreAsync");
   // Initialize listener and promises dictionary
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
   promises = [NSMutableDictionary dictionary];
@@ -264,12 +264,15 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
         break;
       }
       case SKPaymentTransactionStateFailed: {
+        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         if(transaction.error.code == SKErrorPaymentCancelled){
           NSLog(@"Transaction state -> Cancelled");
+          NSDictionary *response = [self formatResults:[NSArray array] withResponseCode:USER_CANCELED];
+          [self resolvePromise:transaction.payment.productIdentifier value:response];
+        } else {
+          NSString *errorCode = [NSString stringWithFormat:@"%ld", (long)transaction.error.code];
+          [self rejectPromise:transaction.payment.productIdentifier code:errorCode message:transaction.error.localizedDescription error:transaction.error];
         }
-        [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-        NSDictionary *response = [self formatResults:[NSArray array] withResponseCode:transaction.error.code];
-        [self resolvePromise:transaction.payment.productIdentifier value:response];
         break;
       }
     }

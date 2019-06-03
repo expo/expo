@@ -1,10 +1,7 @@
+import { Platform } from 'react-native';
 import { CodedError } from '@unimodules/core';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
-import { Platform } from 'react-native';
-import {
-  ValidItemType,
-  QueryResponse
-} from './InAppPurchases.types';
+import { QueryResponse } from './InAppPurchases.types';
 export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 
 const validTypes = {
@@ -65,7 +62,7 @@ export async function queryPurchaseHistoryAsync(refresh?: boolean): Promise<Quer
         results.push(result);
       });
     }
-    return { responseCode, results};
+    return { responseCode, results };
   }
   return await ExpoInAppPurchases.queryPurchaseHistoryAsync(null);
 }
@@ -76,10 +73,13 @@ export async function purchaseItemAsync(itemId: string, oldItem?: string): Promi
     throw new ConnectionError('Must be connected to App Store');
   }
 
-  return await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+  // Replacing old item is only supported on Android
+  const args = Platform.OS === 'android' ? [itemId, oldItem] : [itemId];
+  return await ExpoInAppPurchases.purchaseItemAsync(...args);
 }
 
 export async function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {
+  // No-op if not on Android since this is not applicable
   if (Platform.OS !== 'android') return;
   console.log('calling acknowledgePurchaseAsync from TS');
   if (!connected) {
