@@ -2,8 +2,8 @@
 
 #import <EXInAppPurchases/EXInAppPurchasesModule.h>
 
-#define CONNECT_KEY @"connectToAppStoreAsync"
-#define QUERY_KEY @"queryPurchasableItemsAsync"
+#define QUERY_HISTORY_KEY @"QUERY_HISTORY"
+#define QUERY_PURCHASABLE_KEY @"QUERY_PURCHASABLE"
 #define SERVICE_DISCONNECTED -1
 #define OK 0
 #define ERROR 1
@@ -46,7 +46,7 @@ UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
   promises = [NSMutableDictionary dictionary];
   queryingItems = NO;
-  [self setPromise:CONNECT_KEY resolve:resolve reject:reject];
+  [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
 
   // Request history
   [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
@@ -59,7 +59,7 @@ UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
 {
   NSLog(@"Calling queryPurchasableItemsAsync!");
 
-  [self setPromise:QUERY_KEY resolve:resolve reject:reject];
+  [self setPromise:QUERY_PURCHASABLE_KEY resolve:resolve reject:reject];
 
   self->queryingItems = YES;
   [self requestProducts:productIDs];
@@ -91,7 +91,7 @@ UM_EXPORT_METHOD_AS(queryPurchaseHistoryAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Calling queryPurchasableHistoryAsync!");
-  [self setPromise:CONNECT_KEY resolve:resolve reject:reject];
+  [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
 
   // Request history
   [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
@@ -134,7 +134,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
   self->queryingItems = NO;
   NSDictionary *res = [self formatResults:result withResponseCode:OK];
-  [self resolvePromise:QUERY_KEY value:res];
+  [self resolvePromise:QUERY_PURCHASABLE_KEY value:res];
 }
 
 -(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject {
@@ -197,7 +197,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
 
   NSDictionary *response = [self formatResults:results withResponseCode:OK];
-  [self resolvePromise:CONNECT_KEY value:response];
+  [self resolvePromise:QUERY_HISTORY_KEY value:response];
 }
 
 - (NSDictionary *)getProductData: (SKProduct *) product {
