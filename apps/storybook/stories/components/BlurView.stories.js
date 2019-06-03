@@ -3,33 +3,13 @@ import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 import image from '../../assets/roadster.jpg';
-import UIExplorer, {
-  AppText,
-  Code,
-  Description,
-  DocItem,
-  Section,
-  storiesOf,
-} from '../ui-explorer';
+import { Code, DocItem, Section } from '../ui-explorer';
 
-const Screen = () => (
-  <UIExplorer title="Blur View">
-    <Description>
-      <AppText>
-        A React component that renders a native blur view on iOS and falls back to a
-        semi-transparent view on Android. A common usage of this is for navigation bars, tab bars,
-        and modals.
-      </AppText>
-    </Description>
-    <DocItem
-      name="Importing the module"
-      example={{
-        code: `import { BlurView } from 'expo-blur';`,
-      }}
-    />
-    <Section title="Props">
-      <DocItem name="...View props" />
-
+export const title = 'Blur View';
+export const packageJson = require('expo-blur/package.json');
+export const component = () => {
+  return (
+    <Section>
       <DocItem
         name="tint"
         label="Safari"
@@ -77,10 +57,7 @@ const Screen = () => (
               />
               {[0, 33, 66, 100].map(intensity => (
                 <View key={intensity} style={{ alignItems: 'stretch', flex: 1 }}>
-                  <BlurView
-                    style={{ flex: 1, margin: 8, minHeight: 200, maxHeight: 200 }}
-                    intensity={intensity}
-                  />
+                  <BlurView style={{ flex: 1, margin: 8, height: 200 }} intensity={intensity} />
                   <Code style={{ textAlign: 'center' }}>{intensity}</Code>
                 </View>
               ))}
@@ -89,7 +66,5 @@ const Screen = () => (
         }}
       />
     </Section>
-  </UIExplorer>
-);
-
-storiesOf('Components', module).add('BlurView', Screen);
+  );
+};
