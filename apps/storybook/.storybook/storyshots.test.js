@@ -30,8 +30,8 @@ if (process.env.BABEL_ENV === 'test:web') {
 
   const devices = require('puppeteer/DeviceDescriptors');
 
-  const device = devices['iPad Pro'];
-  // const device = devices['iPhone X'];
+  // const device = devices['iPad Pro'];
+  const device = devices['iPhone X'];
 
   function customizePage(page) {
     return page.emulate(device);

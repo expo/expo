@@ -9,6 +9,10 @@ exports[`JSON APIs Constants 1`] = `
       "marginRight": "auto",
       "maxWidth": "680px",
       "minHeight": "100vh",
+      "paddingBottom": "1rem",
+      "paddingLeft": "1rem",
+      "paddingRight": "1rem",
+      "paddingTop": "1rem",
     }
   }
 >
@@ -26,10 +30,6 @@ exports[`JSON APIs Constants 1`] = `
         "msFlexNegative": 1,
         "msFlexPositive": 1,
         "msFlexPreferredSize": "auto",
-        "paddingBottom": "1rem",
-        "paddingLeft": "1rem",
-        "paddingRight": "1rem",
-        "paddingTop": "1rem",
       }
     }
   >
@@ -1176,6 +1176,10 @@ exports[`JSON Components BlurView 1`] = `
       "marginRight": "auto",
       "maxWidth": "680px",
       "minHeight": "100vh",
+      "paddingBottom": "1rem",
+      "paddingLeft": "1rem",
+      "paddingRight": "1rem",
+      "paddingTop": "1rem",
     }
   }
 >
@@ -1193,10 +1197,6 @@ exports[`JSON Components BlurView 1`] = `
         "msFlexNegative": 1,
         "msFlexPositive": 1,
         "msFlexPreferredSize": "auto",
-        "paddingBottom": "1rem",
-        "paddingLeft": "1rem",
-        "paddingRight": "1rem",
-        "paddingTop": "1rem",
       }
     }
   >
@@ -2488,6 +2488,10 @@ exports[`JSON Components Linear Gradient 1`] = `
       "marginRight": "auto",
       "maxWidth": "680px",
       "minHeight": "100vh",
+      "paddingBottom": "1rem",
+      "paddingLeft": "1rem",
+      "paddingRight": "1rem",
+      "paddingTop": "1rem",
     }
   }
 >
@@ -2505,10 +2509,6 @@ exports[`JSON Components Linear Gradient 1`] = `
         "msFlexNegative": 1,
         "msFlexPositive": 1,
         "msFlexPreferredSize": "auto",
-        "paddingBottom": "1rem",
-        "paddingLeft": "1rem",
-        "paddingRight": "1rem",
-        "paddingTop": "1rem",
       }
     }
   >

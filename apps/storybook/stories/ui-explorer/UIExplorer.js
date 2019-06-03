@@ -44,7 +44,6 @@ const UIExplorer = ({ children, description, sections, title, url }) => (
 
 const styles = StyleSheet.create({
   root: {
-    padding: rem(1),
     flex: 1,
     flexBasis: 'auto',
   },
