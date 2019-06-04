@@ -92,7 +92,7 @@ Returns the scaling factor for font sizes. This is the ratio that is used to cal
 
 If a font scale is not set, this returns the device pixel ratio.
 
-Currently this is only implemented on Android and reflects the user preference set in Settings \> Display \> Font size, on iOS it will always return the default pixel ratio. @platform android
+Currently this is only implemented on Android and reflects the user preference set in Settings > Display > Font size, on iOS it will always return the default pixel ratio. @platform android
 
 ---
 

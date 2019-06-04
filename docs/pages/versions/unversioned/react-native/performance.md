@@ -159,7 +159,7 @@ After opening the trace in your browser (preferably Chrome), you should see some
 
 ![Example](https://facebook.github.io/react-native/docs/assets/SystraceExample.png)
 
-\> **HINT**: Use the WASD keys to strafe and zoom
+> **HINT**: Use the WASD keys to strafe and zoom
 
 If your trace .html file isn't opening correctly, check your browser console for the following:
 
@@ -171,13 +171,13 @@ Since `Object.observe` was deprecated in recent browsers, you may have to open t
 - Selecting load
 - Selecting the html file generated from the previous command.
 
-\> **Enable VSync highlighting**
-\>
-\> Check this checkbox at the top right of the screen to highlight the 16ms frame boundaries:
-\>
-\> ![Enable VSync Highlighting](https://facebook.github.io/react-native/docs/assets/SystraceHighlightVSync.png)
-\>
-\> You should see zebra stripes as in the screenshot above. If you don't, try profiling on a different device: Samsung has been known to have issues displaying vsyncs while the Nexus series is generally pretty reliable.
+> **Enable VSync highlighting**
+>
+> Check this checkbox at the top right of the screen to highlight the 16ms frame boundaries:
+>
+> ![Enable VSync Highlighting](https://facebook.github.io/react-native/docs/assets/SystraceHighlightVSync.png)
+>
+> You should see zebra stripes as in the screenshot above. If you don't, try profiling on a different device: Samsung has been known to have issues displaying vsyncs while the Nexus series is generally pretty reliable.
 
 #### 3. Find your process
 

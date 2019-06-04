@@ -90,7 +90,7 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 
 ### `tintColor`
 
-\> `tintColor` is deprecated, use [`trackColor`](switch.md/trackcolor) instead.
+> `tintColor` is deprecated, use [`trackColor`](switch.md/trackcolor) instead.
 
 Border color on iOS and background color on Android when the switch is turned off.
 

@@ -7,7 +7,7 @@ A React component for displaying different types of images, including network im
 
 This example shows fetching and displaying an image from local storage as well as one from network and even from data provided in the `'data:'` uri scheme.
 
-\> Note that for network and data images, you will need to manually specify the dimensions of your image!
+ Note that for network and data images, you will need to manually specify the dimensions of your image!
 
 
 ```javascript
@@ -292,7 +292,7 @@ Similarly to `source`, this property represents the resource used to render the 
 | ------------------------------------- | -------- |
 | array of ImageSourcePropTypes, number | No       |
 
-\> Can accept a number as returned by `require('./image.jpg')`
+ Can accept a number as returned by `require('./image.jpg')`
 
 ---
 
@@ -383,7 +383,7 @@ If passing a number:
 
 - `number` - Opaque type returned by something like `require('./image.jpg')`.
 
-\> **Note:** On Android, the default source prop is ignored on debug builds.
+ **Note:** On Android, the default source prop is ignored on debug builds.
 
 ---
 
@@ -558,5 +558,5 @@ Resolves an asset reference into an object which has the properties `uri`, `widt
 | ------ | -------------- | -------- | ---------------------------------------------------------------------------- |
 | source | number, object | Yes      | A number (opaque type returned by require('./foo.png')) or an `ImageSource`. |
 
-\> `ImageSource` is an object like `{ uri: '<http location || file path>' }`
+ `ImageSource` is an object like `{ uri: '<http location || file path>' }`
 

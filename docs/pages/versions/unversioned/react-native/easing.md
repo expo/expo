@@ -235,7 +235,7 @@ static elastic(bounciness)
 
 A simple elastic interaction, similar to a spring oscillating back and forth.
 
-Default bounciness is 1, which overshoots a little bit once. 0 bounciness doesn't overshoot at all, and bounciness of N \> 1 will overshoot about N times.
+Default bounciness is 1, which overshoots a little bit once. 0 bounciness doesn't overshoot at all, and bounciness of N > 1 will overshoot about N times.
 
 http://easings.net/#easeInElastic
 
