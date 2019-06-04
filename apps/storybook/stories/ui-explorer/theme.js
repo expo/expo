@@ -1,4 +1,4 @@
-var lightSyntaxColors = {
+const lightSyntaxColors = {
   green1: '#008000',
   red1: '#A31515',
   red2: '#9a050f',
