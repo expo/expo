@@ -51,6 +51,9 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   @ExpoMethod
   public void connectToAppStoreAsync(final Promise promise) {
     Activity activity = getCurrentActivity();
+    if (activity == null) {
+      promise.reject("E_ACTIVITY_UNAVAILABLE", "Activity is not available");
+    }
     mBillingManager = new BillingManager(activity);
     mBillingManager.startConnectionAndQueryHistory(promise);
   }
@@ -93,13 +96,14 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   public void disconnectAsync(final Promise promise) {
     if (mBillingManager != null) {
       mBillingManager.destroy();
+      mBillingManager = null;
     }
     promise.resolve(null);
   }
 
   private Activity getCurrentActivity() {
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider.getCurrentActivity();
+    return activityProvider != null ? activityProvider.getCurrentActivity() : null;
   }
 
   private Map<String, Integer> getBillingResponseCodes() {
