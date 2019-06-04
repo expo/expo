@@ -6,8 +6,7 @@ import { HeaderBackButton, withNavigation, withNavigationFocus } from 'react-nav
 
 import Colors from '../constants/Colors';
 
-const { ExponentKernel } = NativeModules;
-
+import ExponentKernel from '../utils/ExponentKernel';
 @withNavigation
 @withNavigationFocus
 export default class SearchBar extends React.Component {

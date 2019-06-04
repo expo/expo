@@ -1,8 +1,7 @@
 import { AsyncStorage, NativeModules } from 'react-native';
 import mapValues from 'lodash/mapValues';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
-const { ExponentKernel } = NativeModules;
-
+import ExponentKernel from '../utils/ExponentKernel';
 const Keys = mapValues(
   {
     AuthTokens: 'authTokens',

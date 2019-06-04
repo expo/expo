@@ -7,8 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
 
-let { ExponentKernel } = NativeModules;
-
+import ExponentKernel from '../utils/ExponentKernel';
 export default class OpenProjectByURLButton extends React.Component {
   render() {
     return (

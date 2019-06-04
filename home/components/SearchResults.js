@@ -22,7 +22,7 @@ import ProjectCard from '../components/ProjectCard';
 import SharedStyles from '../constants/SharedStyles';
 import UrlUtils from '../utils/UrlUtils';
 
-let { ExponentKernel } = NativeModules;
+import ExponentKernel from '../utils/ExponentKernel';
 
 const SectionIds = ['UserSearchResult', 'AppSearchResult'];
 

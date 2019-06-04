@@ -16,8 +16,7 @@ import { withNavigation, withNavigationFocus } from 'react-navigation';
 
 import Layout from '../constants/Layout';
 
-const { ExponentKernel } = NativeModules;
-
+import ExponentKernel from '../utils/ExponentKernel';
 const SearchContainerHorizontalMargin = 10;
 const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
 
@@ -166,7 +165,6 @@ export default class SearchBar extends React.Component {
       });
     });
   };
-
 }
 
 const styles = StyleSheet.create({

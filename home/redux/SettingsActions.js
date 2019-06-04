@@ -1,10 +1,9 @@
 import { NativeModules } from 'react-native';
 import LocalStorage from '../storage/LocalStorage';
-const { ExponentKernel } = NativeModules;
-
+import ExponentKernel from '../utils/ExponentKernel';
 export default {
   loadSettings() {
-    return async (dispatch) => {
+    return async dispatch => {
       const settings = await LocalStorage.getSettingsAsync();
 
       if (settings && settings.legacyMenuGesture) {
@@ -21,7 +20,7 @@ export default {
   },
 
   setIsLegacyMenuBehaviorEnabled(useLegacyGesture) {
-    return async (dispatch) => {
+    return async dispatch => {
       let finalGestureSetting = useLegacyGesture;
       try {
         await Promise.all([
