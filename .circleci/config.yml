@@ -108,6 +108,13 @@ executors:
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
+    environment:
+      # fastlane complains if these are not set
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+      FASTLANE_SKIP_UPDATE_CHECK: 1
+      FASTLANE_DISABLE_COLORS: 1
+      CI: 1
   android:
     <<: *nix
     resource_class: xlarge
@@ -131,6 +138,9 @@ executors:
       # fastlane complains if these are not set
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
+      FASTLANE_SKIP_UPDATE_CHECK: 1
+      FASTLANE_DISABLE_COLORS: 1
+      CI: 1
 
 workflows:
   docs:
@@ -154,7 +164,7 @@ workflows:
     jobs:
       - expo_sdk
       - web_test_suite
-      - web_storybook_ui
+      - web_storybook
       - babel_preset
 
   # Android and iOS clients
@@ -168,8 +178,6 @@ workflows:
       - android_test_suite:
           requires:
             - test_suite_publish
-      - shell_app_sim_base_ios
-      - shell_app_base_android
       - client_android_approve_google_play:
           type: approval
           requires:
@@ -186,6 +194,29 @@ workflows:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
+
+  shell_app:
+    jobs:
+      - shell_app_ios_approve_build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - shell_app_ios_build:
+          requires:
+            - shell_app_ios_approve_build
+      - shell_app_android_approve_build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - shell_app_android_build:
+          requires:
+            - shell_app_android_approve_build
 
   client_shell_app:
     jobs:
@@ -304,7 +335,7 @@ jobs:
           command: test:web:ci
           working_directory: ~/expo/apps/test-suite
 
-  web_storybook_ui:
+  web_storybook:
     executor: web
     steps:
       - install_nix
@@ -315,7 +346,7 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       - yarn:
-          command: build-storybook
+          command: test:web:ci
           working_directory: ~/expo/apps/storybook
 
   babel_preset:
@@ -395,12 +426,12 @@ jobs:
               -zcf "/tmp/$TARBALL" \
               expo-client-build/Exponent.xcarchive \
               ios
-            ~/project/bin/aws --version s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
       - run:
           name: Expo Client shell app url
           command: echo "Expo Client shell app tarball uploaded to s3://exp-artifacts/ios-expo-client-$CIRCLE_SHA1.tar.gz"
 
-  shell_app_sim_base_ios:
+  shell_app_ios_build:
     executor: mac
     steps:
       - install_nix
@@ -413,12 +444,33 @@ jobs:
       - run: ~/project/tools-public/generate-files-ios.js
       - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
-          name: Build ios shell app simulator
+          name: Build iOS shell app for real devices
+          working_directory: ~/project/tools-public
+          no_output_timeout: 30m
+          command: nix run expo.procps --command gulp ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+      - run:
+          name: Build iOS shell app for simulators
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
           command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+      - run:
+          name: Package and upload release tarball
+          working_directory: ~/project
+          no_output_timeout: 40m
+          command: |
+              export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+              tar \
+                -zcf "/tmp/$TARBALL" \
+                package.json \
+                exponent-view-template \
+                shellAppBase-builds \
+                shellAppWorkspaces \
+                ios
+              ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+              echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+              echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
 
-  shell_app_base_android:
+  shell_app_android_build:
     executor: android
     steps:
       - setup
@@ -449,6 +501,9 @@ jobs:
             --keep AWS_ACCESS_KEY_ID \
             --keep AWS_SECRET_ACCESS_KEY \
             --keep SSL_CERT_FILE \
+            --keep FASTLANE_SKIP_UPDATE_CHECK \
+            --keep FASTLANE_DISABLE_COLORS \
+            --keep CI \
             --run "fastlane android devicefarm"
       - save_gradle_cache
 
@@ -469,6 +524,9 @@ jobs:
             --keep ANDROID_KEYSTORE_PASSWORD \
             --keep ANDROID_KEY_ALIAS \
             --keep ANDROID_KEY_PASSWORD \
+            --keep FASTLANE_SKIP_UPDATE_CHECK \
+            --keep FASTLANE_DISABLE_COLORS \
+            --keep CI \
             --run "fastlane android build build_type:Release"
       - save_gradle_cache
       - save_cache:
