@@ -107,6 +107,25 @@ exports[`JSON APIs AR 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/AR.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -218,6 +237,25 @@ exports[`JSON APIs AV 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/AV.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -1095,6 +1133,45 @@ space.
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Accelerometer.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/labels/Accelerometer"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      View open issues for 
+      Accelerometer
+    </a>
   </div>
 </div>
 `;
@@ -1206,6 +1283,25 @@ exports[`JSON APIs Amplitude SDK 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Amplitude.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -1317,6 +1413,25 @@ exports[`JSON APIs App Auth 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/AppAuth.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -1427,10 +1542,32 @@ exports[`JSON APIs Asset 1`] = `
       <code
         style={
           Object {
-            "fontFamily": "monospace, monospace",
-            "fontSize": "1rem",
-            "lineHeight": "1.3125rem",
-            "whiteSpace": "pre",
+            "backgroundColor": "rgba(248,248,248,1.00)",
+            "borderBottomColor": "rgba(238,238,238,1.00)",
+            "borderBottomLeftRadius": "3px",
+            "borderBottomRightRadius": "3px",
+            "borderBottomStyle": "solid",
+            "borderBottomWidth": "1px",
+            "borderLeftColor": "rgba(238,238,238,1.00)",
+            "borderLeftStyle": "solid",
+            "borderLeftWidth": "1px",
+            "borderRightColor": "rgba(238,238,238,1.00)",
+            "borderRightStyle": "solid",
+            "borderRightWidth": "1px",
+            "borderTopColor": "rgba(238,238,238,1.00)",
+            "borderTopLeftRadius": "3px",
+            "borderTopRightRadius": "3px",
+            "borderTopStyle": "solid",
+            "borderTopWidth": "1px",
+            "color": "rgba(0,0,32,0.90)",
+            "fontFamily": "monospace,monospace",
+            "fontSize": "14px",
+            "lineHeight": "22.4px",
+            "marginLeft": "2px",
+            "marginRight": "2px",
+            "paddingLeft": "5px",
+            "paddingRight": "5px",
+            "whiteSpace": "nowrap",
           }
         }
       >
@@ -1440,10 +1577,32 @@ exports[`JSON APIs Asset 1`] = `
       <code
         style={
           Object {
-            "fontFamily": "monospace, monospace",
-            "fontSize": "1rem",
-            "lineHeight": "1.3125rem",
-            "whiteSpace": "pre",
+            "backgroundColor": "rgba(248,248,248,1.00)",
+            "borderBottomColor": "rgba(238,238,238,1.00)",
+            "borderBottomLeftRadius": "3px",
+            "borderBottomRightRadius": "3px",
+            "borderBottomStyle": "solid",
+            "borderBottomWidth": "1px",
+            "borderLeftColor": "rgba(238,238,238,1.00)",
+            "borderLeftStyle": "solid",
+            "borderLeftWidth": "1px",
+            "borderRightColor": "rgba(238,238,238,1.00)",
+            "borderRightStyle": "solid",
+            "borderRightWidth": "1px",
+            "borderTopColor": "rgba(238,238,238,1.00)",
+            "borderTopLeftRadius": "3px",
+            "borderTopRightRadius": "3px",
+            "borderTopStyle": "solid",
+            "borderTopWidth": "1px",
+            "color": "rgba(0,0,32,0.90)",
+            "fontFamily": "monospace,monospace",
+            "fontSize": "14px",
+            "lineHeight": "22.4px",
+            "marginLeft": "2px",
+            "marginRight": "2px",
+            "paddingLeft": "5px",
+            "paddingRight": "5px",
+            "whiteSpace": "nowrap",
           }
         }
       >
@@ -2031,6 +2190,25 @@ exports[`JSON APIs Asset 1`] = `
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Asset.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -2142,6 +2320,25 @@ exports[`JSON APIs Audio 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Audio.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -2253,6 +2450,25 @@ exports[`JSON APIs Auth Session 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/AuthSession.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -2364,6 +2580,25 @@ exports[`JSON APIs Background Fetch 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/BackgroundFetch.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -2475,6 +2710,25 @@ exports[`JSON APIs Barometer 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Barometer.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -2586,6 +2840,25 @@ exports[`JSON APIs Branch SDK 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Branch.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -2697,6 +2970,25 @@ exports[`JSON APIs Brightness 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Brightness.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -2808,6 +3100,25 @@ exports[`JSON APIs Calendar 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Calendar.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4009,6 +4320,25 @@ exports[`JSON APIs Constants 1`] = `
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Constants.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4120,6 +4450,25 @@ exports[`JSON APIs Contacts 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Contacts.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4231,6 +4580,25 @@ exports[`JSON APIs Device Motion 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/DeviceMotion.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4342,6 +4710,25 @@ exports[`JSON APIs Document Picker 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/DocumentPicker.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4453,6 +4840,25 @@ exports[`JSON APIs Facebook 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Facebook.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4564,6 +4970,25 @@ exports[`JSON APIs File System 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/FileSystem.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4675,6 +5100,25 @@ exports[`JSON APIs Font 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Font.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4786,6 +5230,25 @@ exports[`JSON APIs Google 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Google.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -4897,6 +5360,25 @@ exports[`JSON APIs Google Sign-In 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/GoogleSignIn.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -5008,6 +5490,25 @@ exports[`JSON APIs Gyroscope 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Gyroscope.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -5119,6 +5620,25 @@ exports[`JSON APIs Haptics 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Haptics.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -5230,6 +5750,25 @@ exports[`JSON APIs Image Manipulator 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/ImageManipulator.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -5341,6 +5880,25 @@ exports[`JSON APIs Image Picker 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/ImagePicker.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -5452,6 +6010,25 @@ exports[`JSON APIs Intent Launcher 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/IntentLauncher.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -5887,6 +6464,25 @@ exports[`JSON APIs Linking 1`] = `
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Linking.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -5998,6 +6594,25 @@ exports[`JSON APIs Local Authentication 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/LocalAuthentication.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6109,6 +6724,25 @@ exports[`JSON APIs Localization 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Localization.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6220,6 +6854,25 @@ exports[`JSON APIs Location 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Location.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6331,6 +6984,25 @@ exports[`JSON APIs Lottie 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Lottie.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6442,6 +7114,25 @@ exports[`JSON APIs Magnetometer 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Magnetometer.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6553,6 +7244,25 @@ exports[`JSON APIs Mail Composer 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/MailComposer.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6664,6 +7374,25 @@ exports[`JSON APIs Media Library 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/MediaLibrary.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6775,6 +7504,25 @@ exports[`JSON APIs Notifications 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Notifications.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6886,6 +7634,25 @@ exports[`JSON APIs Payments 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Payments.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -6997,6 +7764,25 @@ exports[`JSON APIs Pedometer 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Pedometer.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -8203,6 +8989,25 @@ Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Permissions.stories.jsx"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -8314,6 +9119,25 @@ exports[`JSON APIs SMS 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/SMS.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -8425,6 +9249,25 @@ exports[`JSON APIs SQLite 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/SQLite.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -9038,6 +9881,25 @@ exports[`JSON APIs Screen Orientation 1`] = `
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/ScreenOrientation.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -9149,6 +10011,25 @@ exports[`JSON APIs Secure Store 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/SecureStore.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -9260,6 +10141,25 @@ exports[`JSON APIs Segment 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Segment.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -9371,6 +10271,25 @@ exports[`JSON APIs Sharing 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Sharing.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -9482,6 +10401,25 @@ exports[`JSON APIs Speech 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Speech.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -9593,6 +10531,25 @@ exports[`JSON APIs Store Review 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/StoreReview.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -9704,6 +10661,25 @@ exports[`JSON APIs Task Manager 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/TaskManager.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -10348,10 +11324,32 @@ exports[`JSON APIs Updates 1`] = `
                     <code
                       style={
                         Object {
-                          "fontFamily": "monospace, monospace",
-                          "fontSize": "1rem",
-                          "lineHeight": "1.3125rem",
-                          "whiteSpace": "pre",
+                          "backgroundColor": "rgba(248,248,248,1.00)",
+                          "borderBottomColor": "rgba(238,238,238,1.00)",
+                          "borderBottomLeftRadius": "3px",
+                          "borderBottomRightRadius": "3px",
+                          "borderBottomStyle": "solid",
+                          "borderBottomWidth": "1px",
+                          "borderLeftColor": "rgba(238,238,238,1.00)",
+                          "borderLeftStyle": "solid",
+                          "borderLeftWidth": "1px",
+                          "borderRightColor": "rgba(238,238,238,1.00)",
+                          "borderRightStyle": "solid",
+                          "borderRightWidth": "1px",
+                          "borderTopColor": "rgba(238,238,238,1.00)",
+                          "borderTopLeftRadius": "3px",
+                          "borderTopRightRadius": "3px",
+                          "borderTopStyle": "solid",
+                          "borderTopWidth": "1px",
+                          "color": "rgba(0,0,32,0.90)",
+                          "fontFamily": "monospace,monospace",
+                          "fontSize": "14px",
+                          "lineHeight": "22.4px",
+                          "marginLeft": "2px",
+                          "marginRight": "2px",
+                          "paddingLeft": "5px",
+                          "paddingRight": "5px",
+                          "whiteSpace": "nowrap",
                         }
                       }
                     >
@@ -10397,10 +11395,32 @@ exports[`JSON APIs Updates 1`] = `
                     <code
                       style={
                         Object {
-                          "fontFamily": "monospace, monospace",
-                          "fontSize": "1rem",
-                          "lineHeight": "1.3125rem",
-                          "whiteSpace": "pre",
+                          "backgroundColor": "rgba(248,248,248,1.00)",
+                          "borderBottomColor": "rgba(238,238,238,1.00)",
+                          "borderBottomLeftRadius": "3px",
+                          "borderBottomRightRadius": "3px",
+                          "borderBottomStyle": "solid",
+                          "borderBottomWidth": "1px",
+                          "borderLeftColor": "rgba(238,238,238,1.00)",
+                          "borderLeftStyle": "solid",
+                          "borderLeftWidth": "1px",
+                          "borderRightColor": "rgba(238,238,238,1.00)",
+                          "borderRightStyle": "solid",
+                          "borderRightWidth": "1px",
+                          "borderTopColor": "rgba(238,238,238,1.00)",
+                          "borderTopLeftRadius": "3px",
+                          "borderTopRightRadius": "3px",
+                          "borderTopStyle": "solid",
+                          "borderTopWidth": "1px",
+                          "color": "rgba(0,0,32,0.90)",
+                          "fontFamily": "monospace,monospace",
+                          "fontSize": "14px",
+                          "lineHeight": "22.4px",
+                          "marginLeft": "2px",
+                          "marginRight": "2px",
+                          "paddingLeft": "5px",
+                          "paddingRight": "5px",
+                          "whiteSpace": "nowrap",
                         }
                       }
                     >
@@ -10446,10 +11466,32 @@ exports[`JSON APIs Updates 1`] = `
                     <code
                       style={
                         Object {
-                          "fontFamily": "monospace, monospace",
-                          "fontSize": "1rem",
-                          "lineHeight": "1.3125rem",
-                          "whiteSpace": "pre",
+                          "backgroundColor": "rgba(248,248,248,1.00)",
+                          "borderBottomColor": "rgba(238,238,238,1.00)",
+                          "borderBottomLeftRadius": "3px",
+                          "borderBottomRightRadius": "3px",
+                          "borderBottomStyle": "solid",
+                          "borderBottomWidth": "1px",
+                          "borderLeftColor": "rgba(238,238,238,1.00)",
+                          "borderLeftStyle": "solid",
+                          "borderLeftWidth": "1px",
+                          "borderRightColor": "rgba(238,238,238,1.00)",
+                          "borderRightStyle": "solid",
+                          "borderRightWidth": "1px",
+                          "borderTopColor": "rgba(238,238,238,1.00)",
+                          "borderTopLeftRadius": "3px",
+                          "borderTopRightRadius": "3px",
+                          "borderTopStyle": "solid",
+                          "borderTopWidth": "1px",
+                          "color": "rgba(0,0,32,0.90)",
+                          "fontFamily": "monospace,monospace",
+                          "fontSize": "14px",
+                          "lineHeight": "22.4px",
+                          "marginLeft": "2px",
+                          "marginRight": "2px",
+                          "paddingLeft": "5px",
+                          "paddingRight": "5px",
+                          "whiteSpace": "nowrap",
                         }
                       }
                     >
@@ -10464,6 +11506,25 @@ exports[`JSON APIs Updates 1`] = `
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/Updates.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -10575,6 +11636,25 @@ exports[`JSON APIs registerRootComponent 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/registerRootComponent.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -10686,6 +11766,25 @@ exports[`JSON APIs takeSnapshotAsync 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./APIs/takeSnapshotAsync.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -10797,6 +11896,25 @@ exports[`JSON Components AdMob 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/AdMob.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -10908,6 +12026,45 @@ exports[`JSON Components App Loading 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/AppLoading.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/labels/AppLoading"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      View open issues for 
+      AppLoading
+    </a>
   </div>
 </div>
 `;
@@ -11019,6 +12176,25 @@ exports[`JSON Components Bar Code Scanner 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/BarCodeScanner.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -11337,11 +12513,33 @@ exports[`JSON Components Blur View 1`] = `
                 <code
                   style={
                     Object {
-                      "fontFamily": "monospace, monospace",
-                      "fontSize": "1rem",
-                      "lineHeight": "1.3125rem",
+                      "backgroundColor": "rgba(248,248,248,1.00)",
+                      "borderBottomColor": "rgba(238,238,238,1.00)",
+                      "borderBottomLeftRadius": "3px",
+                      "borderBottomRightRadius": "3px",
+                      "borderBottomStyle": "solid",
+                      "borderBottomWidth": "1px",
+                      "borderLeftColor": "rgba(238,238,238,1.00)",
+                      "borderLeftStyle": "solid",
+                      "borderLeftWidth": "1px",
+                      "borderRightColor": "rgba(238,238,238,1.00)",
+                      "borderRightStyle": "solid",
+                      "borderRightWidth": "1px",
+                      "borderTopColor": "rgba(238,238,238,1.00)",
+                      "borderTopLeftRadius": "3px",
+                      "borderTopRightRadius": "3px",
+                      "borderTopStyle": "solid",
+                      "borderTopWidth": "1px",
+                      "color": "rgba(0,0,32,0.90)",
+                      "fontFamily": "monospace,monospace",
+                      "fontSize": "14px",
+                      "lineHeight": "22.4px",
+                      "marginLeft": "2px",
+                      "marginRight": "2px",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
                       "textAlign": "center",
-                      "whiteSpace": "pre",
+                      "whiteSpace": "nowrap",
                     }
                   }
                 >
@@ -11441,11 +12639,33 @@ exports[`JSON Components Blur View 1`] = `
                 <code
                   style={
                     Object {
-                      "fontFamily": "monospace, monospace",
-                      "fontSize": "1rem",
-                      "lineHeight": "1.3125rem",
+                      "backgroundColor": "rgba(248,248,248,1.00)",
+                      "borderBottomColor": "rgba(238,238,238,1.00)",
+                      "borderBottomLeftRadius": "3px",
+                      "borderBottomRightRadius": "3px",
+                      "borderBottomStyle": "solid",
+                      "borderBottomWidth": "1px",
+                      "borderLeftColor": "rgba(238,238,238,1.00)",
+                      "borderLeftStyle": "solid",
+                      "borderLeftWidth": "1px",
+                      "borderRightColor": "rgba(238,238,238,1.00)",
+                      "borderRightStyle": "solid",
+                      "borderRightWidth": "1px",
+                      "borderTopColor": "rgba(238,238,238,1.00)",
+                      "borderTopLeftRadius": "3px",
+                      "borderTopRightRadius": "3px",
+                      "borderTopStyle": "solid",
+                      "borderTopWidth": "1px",
+                      "color": "rgba(0,0,32,0.90)",
+                      "fontFamily": "monospace,monospace",
+                      "fontSize": "14px",
+                      "lineHeight": "22.4px",
+                      "marginLeft": "2px",
+                      "marginRight": "2px",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
                       "textAlign": "center",
-                      "whiteSpace": "pre",
+                      "whiteSpace": "nowrap",
                     }
                   }
                 >
@@ -11563,11 +12783,33 @@ exports[`JSON Components Blur View 1`] = `
                 <code
                   style={
                     Object {
-                      "fontFamily": "monospace, monospace",
-                      "fontSize": "1rem",
-                      "lineHeight": "1.3125rem",
+                      "backgroundColor": "rgba(248,248,248,1.00)",
+                      "borderBottomColor": "rgba(238,238,238,1.00)",
+                      "borderBottomLeftRadius": "3px",
+                      "borderBottomRightRadius": "3px",
+                      "borderBottomStyle": "solid",
+                      "borderBottomWidth": "1px",
+                      "borderLeftColor": "rgba(238,238,238,1.00)",
+                      "borderLeftStyle": "solid",
+                      "borderLeftWidth": "1px",
+                      "borderRightColor": "rgba(238,238,238,1.00)",
+                      "borderRightStyle": "solid",
+                      "borderRightWidth": "1px",
+                      "borderTopColor": "rgba(238,238,238,1.00)",
+                      "borderTopLeftRadius": "3px",
+                      "borderTopRightRadius": "3px",
+                      "borderTopStyle": "solid",
+                      "borderTopWidth": "1px",
+                      "color": "rgba(0,0,32,0.90)",
+                      "fontFamily": "monospace,monospace",
+                      "fontSize": "14px",
+                      "lineHeight": "22.4px",
+                      "marginLeft": "2px",
+                      "marginRight": "2px",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
                       "textAlign": "center",
-                      "whiteSpace": "pre",
+                      "whiteSpace": "nowrap",
                     }
                   }
                 >
@@ -11685,11 +12927,33 @@ exports[`JSON Components Blur View 1`] = `
                 <code
                   style={
                     Object {
-                      "fontFamily": "monospace, monospace",
-                      "fontSize": "1rem",
-                      "lineHeight": "1.3125rem",
+                      "backgroundColor": "rgba(248,248,248,1.00)",
+                      "borderBottomColor": "rgba(238,238,238,1.00)",
+                      "borderBottomLeftRadius": "3px",
+                      "borderBottomRightRadius": "3px",
+                      "borderBottomStyle": "solid",
+                      "borderBottomWidth": "1px",
+                      "borderLeftColor": "rgba(238,238,238,1.00)",
+                      "borderLeftStyle": "solid",
+                      "borderLeftWidth": "1px",
+                      "borderRightColor": "rgba(238,238,238,1.00)",
+                      "borderRightStyle": "solid",
+                      "borderRightWidth": "1px",
+                      "borderTopColor": "rgba(238,238,238,1.00)",
+                      "borderTopLeftRadius": "3px",
+                      "borderTopRightRadius": "3px",
+                      "borderTopStyle": "solid",
+                      "borderTopWidth": "1px",
+                      "color": "rgba(0,0,32,0.90)",
+                      "fontFamily": "monospace,monospace",
+                      "fontSize": "14px",
+                      "lineHeight": "22.4px",
+                      "marginLeft": "2px",
+                      "marginRight": "2px",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
                       "textAlign": "center",
-                      "whiteSpace": "pre",
+                      "whiteSpace": "nowrap",
                     }
                   }
                 >
@@ -12050,11 +13314,33 @@ exports[`JSON Components Blur View 1`] = `
                 <code
                   style={
                     Object {
-                      "fontFamily": "monospace, monospace",
-                      "fontSize": "1rem",
-                      "lineHeight": "1.3125rem",
+                      "backgroundColor": "rgba(248,248,248,1.00)",
+                      "borderBottomColor": "rgba(238,238,238,1.00)",
+                      "borderBottomLeftRadius": "3px",
+                      "borderBottomRightRadius": "3px",
+                      "borderBottomStyle": "solid",
+                      "borderBottomWidth": "1px",
+                      "borderLeftColor": "rgba(238,238,238,1.00)",
+                      "borderLeftStyle": "solid",
+                      "borderLeftWidth": "1px",
+                      "borderRightColor": "rgba(238,238,238,1.00)",
+                      "borderRightStyle": "solid",
+                      "borderRightWidth": "1px",
+                      "borderTopColor": "rgba(238,238,238,1.00)",
+                      "borderTopLeftRadius": "3px",
+                      "borderTopRightRadius": "3px",
+                      "borderTopStyle": "solid",
+                      "borderTopWidth": "1px",
+                      "color": "rgba(0,0,32,0.90)",
+                      "fontFamily": "monospace,monospace",
+                      "fontSize": "14px",
+                      "lineHeight": "22.4px",
+                      "marginLeft": "2px",
+                      "marginRight": "2px",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
                       "textAlign": "center",
-                      "whiteSpace": "pre",
+                      "whiteSpace": "nowrap",
                     }
                   }
                 >
@@ -12108,11 +13394,33 @@ exports[`JSON Components Blur View 1`] = `
                 <code
                   style={
                     Object {
-                      "fontFamily": "monospace, monospace",
-                      "fontSize": "1rem",
-                      "lineHeight": "1.3125rem",
+                      "backgroundColor": "rgba(248,248,248,1.00)",
+                      "borderBottomColor": "rgba(238,238,238,1.00)",
+                      "borderBottomLeftRadius": "3px",
+                      "borderBottomRightRadius": "3px",
+                      "borderBottomStyle": "solid",
+                      "borderBottomWidth": "1px",
+                      "borderLeftColor": "rgba(238,238,238,1.00)",
+                      "borderLeftStyle": "solid",
+                      "borderLeftWidth": "1px",
+                      "borderRightColor": "rgba(238,238,238,1.00)",
+                      "borderRightStyle": "solid",
+                      "borderRightWidth": "1px",
+                      "borderTopColor": "rgba(238,238,238,1.00)",
+                      "borderTopLeftRadius": "3px",
+                      "borderTopRightRadius": "3px",
+                      "borderTopStyle": "solid",
+                      "borderTopWidth": "1px",
+                      "color": "rgba(0,0,32,0.90)",
+                      "fontFamily": "monospace,monospace",
+                      "fontSize": "14px",
+                      "lineHeight": "22.4px",
+                      "marginLeft": "2px",
+                      "marginRight": "2px",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
                       "textAlign": "center",
-                      "whiteSpace": "pre",
+                      "whiteSpace": "nowrap",
                     }
                   }
                 >
@@ -12166,11 +13474,33 @@ exports[`JSON Components Blur View 1`] = `
                 <code
                   style={
                     Object {
-                      "fontFamily": "monospace, monospace",
-                      "fontSize": "1rem",
-                      "lineHeight": "1.3125rem",
+                      "backgroundColor": "rgba(248,248,248,1.00)",
+                      "borderBottomColor": "rgba(238,238,238,1.00)",
+                      "borderBottomLeftRadius": "3px",
+                      "borderBottomRightRadius": "3px",
+                      "borderBottomStyle": "solid",
+                      "borderBottomWidth": "1px",
+                      "borderLeftColor": "rgba(238,238,238,1.00)",
+                      "borderLeftStyle": "solid",
+                      "borderLeftWidth": "1px",
+                      "borderRightColor": "rgba(238,238,238,1.00)",
+                      "borderRightStyle": "solid",
+                      "borderRightWidth": "1px",
+                      "borderTopColor": "rgba(238,238,238,1.00)",
+                      "borderTopLeftRadius": "3px",
+                      "borderTopRightRadius": "3px",
+                      "borderTopStyle": "solid",
+                      "borderTopWidth": "1px",
+                      "color": "rgba(0,0,32,0.90)",
+                      "fontFamily": "monospace,monospace",
+                      "fontSize": "14px",
+                      "lineHeight": "22.4px",
+                      "marginLeft": "2px",
+                      "marginRight": "2px",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
                       "textAlign": "center",
-                      "whiteSpace": "pre",
+                      "whiteSpace": "nowrap",
                     }
                   }
                 >
@@ -12224,11 +13554,33 @@ exports[`JSON Components Blur View 1`] = `
                 <code
                   style={
                     Object {
-                      "fontFamily": "monospace, monospace",
-                      "fontSize": "1rem",
-                      "lineHeight": "1.3125rem",
+                      "backgroundColor": "rgba(248,248,248,1.00)",
+                      "borderBottomColor": "rgba(238,238,238,1.00)",
+                      "borderBottomLeftRadius": "3px",
+                      "borderBottomRightRadius": "3px",
+                      "borderBottomStyle": "solid",
+                      "borderBottomWidth": "1px",
+                      "borderLeftColor": "rgba(238,238,238,1.00)",
+                      "borderLeftStyle": "solid",
+                      "borderLeftWidth": "1px",
+                      "borderRightColor": "rgba(238,238,238,1.00)",
+                      "borderRightStyle": "solid",
+                      "borderRightWidth": "1px",
+                      "borderTopColor": "rgba(238,238,238,1.00)",
+                      "borderTopLeftRadius": "3px",
+                      "borderTopRightRadius": "3px",
+                      "borderTopStyle": "solid",
+                      "borderTopWidth": "1px",
+                      "color": "rgba(0,0,32,0.90)",
+                      "fontFamily": "monospace,monospace",
+                      "fontSize": "14px",
+                      "lineHeight": "22.4px",
+                      "marginLeft": "2px",
+                      "marginRight": "2px",
+                      "paddingLeft": "5px",
+                      "paddingRight": "5px",
                       "textAlign": "center",
-                      "whiteSpace": "pre",
+                      "whiteSpace": "nowrap",
                     }
                   }
                 >
@@ -12240,6 +13592,25 @@ exports[`JSON Components Blur View 1`] = `
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/BlurView.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -12351,6 +13722,25 @@ exports[`JSON Components Camera 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/Camera.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -12649,6 +14039,25 @@ exports[`JSON Components Error Recovery 1`] = `
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/ErrorRecovery.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -12760,6 +14169,25 @@ exports[`JSON Components Face Detector 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/FaceDetector.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -12871,6 +14299,25 @@ exports[`JSON Components Facebook Ads 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/FacebookAds.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -12982,6 +14429,25 @@ exports[`JSON Components GLView 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/GLView.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -13093,6 +14559,25 @@ exports[`JSON Components Gesture Handler 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/GestureHandler.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -13204,6 +14689,25 @@ exports[`JSON Components Keep Awake 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/KeepAwake.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -14061,6 +15565,25 @@ exports[`JSON Components Linear Gradient 1`] = `
         </div>
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/LinearGradient.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -14172,6 +15695,25 @@ exports[`JSON Components Map View 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/MapView.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -14278,7 +15820,7 @@ exports[`JSON Components SVG 1`] = `
         }
       }
     >
-      TODO: Bacon: Description
+      ...
     </div>
     <div
       className="css-view-1dbjc4n"
@@ -14319,6 +15861,25 @@ exports[`JSON Components SVG 1`] = `
         />
       </svg>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/SVG.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -14430,6 +15991,25 @@ exports[`JSON Components Splash Screen 1`] = `
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/SplashScreen.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -14580,6 +16160,25 @@ exports[`JSON Components Video 1`] = `
         />
       </div>
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/Video.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -14692,6 +16291,1536 @@ On iOS, it uses \`SFSafariViewController\` or \`SFAuthenticationSession\`, depen
     <div
       className="css-view-1dbjc4n"
     />
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Components/WebBrowser.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
+  </div>
+</div>
+`;
+
+exports[`JSON Getting Started Contributing 1`] = `
+<div
+  className="css-view-1dbjc4n"
+  style={
+    Object {
+      "marginLeft": "auto",
+      "marginRight": "auto",
+      "maxWidth": "680px",
+      "minHeight": "100vh",
+      "paddingBottom": "1rem",
+      "paddingLeft": "1rem",
+      "paddingRight": "1rem",
+      "paddingTop": "1rem",
+    }
+  }
+>
+  <div
+    className="css-view-1dbjc4n"
+    style={
+      Object {
+        "WebkitBoxFlex": 1,
+        "WebkitFlexBasis": "auto",
+        "WebkitFlexGrow": 1,
+        "WebkitFlexShrink": 1,
+        "flexBasis": "auto",
+        "flexGrow": 1,
+        "flexShrink": 1,
+        "msFlexNegative": 1,
+        "msFlexPositive": 1,
+        "msFlexPreferredSize": "auto",
+      }
+    }
+  >
+    <h1
+      className="css-reset-4rbku5 css-text-901oao"
+      dir="auto"
+      role="heading"
+      style={
+        Object {
+          "fontSize": "2rem",
+        }
+      }
+    >
+      Contributing
+    </h1>
+    <div
+      className="css-view-1dbjc4n"
+    >
+      <h2
+        aria-level="2"
+        className="css-reset-4rbku5 css-text-901oao"
+        dir="auto"
+        role="heading"
+        style={
+          Object {
+            "fontSize": "1.3125rem",
+            "fontWeight": "bold",
+            "marginBottom": "1.3125rem",
+          }
+        }
+      />
+      <span>
+        test-file-stub
+      </span>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              packageJson
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125em",
+                  }
+                }
+              >
+                Object
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "calc(0.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125em",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              Optional: NPM Package for the related library
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "calc(0.5 * 1.3125rem)",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <pre>
+              <div
+                className="lang-jsx css-3hyshb"
+              >
+                <div
+                  className="css-1k4n0zb"
+                >
+                  <pre
+                    padded={false}
+                    style={
+                      Object {
+                        "background": "rgba(0,0,0,0)",
+                        "color": "#383a42",
+                        "display": "block",
+                        "margin": 0,
+                        "overflowX": "auto",
+                        "padding": "1em",
+                        "paddingBottom": "3em",
+                      }
+                    }
+                  >
+                    <code>
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        export
+                      </span>
+                       
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        const
+                      </span>
+                       packageJson = 
+                      <span
+                        style={
+                          Object {
+                            "color": "#c18401",
+                          }
+                        }
+                      >
+                        require
+                      </span>
+                      (
+                      <span
+                        style={
+                          Object {
+                            "color": "#50a14f",
+                          }
+                        }
+                      >
+                        'expo/package.json'
+                      </span>
+                      );
+
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  className="css-1myfomu"
+                >
+                  <button
+                    className="css-1iq51ag"
+                    onClick={[Function]}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </pre>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              component
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125em",
+                  }
+                }
+              >
+                React.Component | Functional Component
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "calc(0.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125em",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              The component that will be rendered inside the page
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "calc(0.5 * 1.3125rem)",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <pre>
+              <div
+                className="lang-jsx css-3hyshb"
+              >
+                <div
+                  className="css-1k4n0zb"
+                >
+                  <pre
+                    padded={false}
+                    style={
+                      Object {
+                        "background": "rgba(0,0,0,0)",
+                        "color": "#383a42",
+                        "display": "block",
+                        "margin": 0,
+                        "overflowX": "auto",
+                        "padding": "1em",
+                        "paddingBottom": "3em",
+                      }
+                    }
+                  >
+                    <code>
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        export
+                      </span>
+                       
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        const
+                      </span>
+                       component = 
+                      <span
+                        className={
+                          Array [
+                            "hljs-function",
+                          ]
+                        }
+                        style={Object {}}
+                      >
+                        <span
+                          className={
+                            Array [
+                              "hljs-params",
+                            ]
+                          }
+                          style={Object {}}
+                        >
+                          ()
+                        </span>
+                         =&gt;
+                      </span>
+                       &lt;View /&gt;;
+
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  className="css-1myfomu"
+                >
+                  <button
+                    className="css-1iq51ag"
+                    onClick={[Function]}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </pre>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              title
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125em",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "calc(0.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125em",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              The title element and the name of the tab in the side-bar. Defaults to the packageJson name
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "calc(0.5 * 1.3125rem)",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <pre>
+              <div
+                className="lang-jsx css-3hyshb"
+              >
+                <div
+                  className="css-1k4n0zb"
+                >
+                  <pre
+                    padded={false}
+                    style={
+                      Object {
+                        "background": "rgba(0,0,0,0)",
+                        "color": "#383a42",
+                        "display": "block",
+                        "margin": 0,
+                        "overflowX": "auto",
+                        "padding": "1em",
+                        "paddingBottom": "3em",
+                      }
+                    }
+                  >
+                    <code>
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        export
+                      </span>
+                       
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        const
+                      </span>
+                       title = 
+                      <span
+                        style={
+                          Object {
+                            "color": "#50a14f",
+                          }
+                        }
+                      >
+                        'App Loading'
+                      </span>
+                      ;
+
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  className="css-1myfomu"
+                >
+                  <button
+                    className="css-1iq51ag"
+                    onClick={[Function]}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </pre>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              description
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125em",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "calc(0.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125em",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              Description that will be rendered under the title element on the page. Defaults to the packageJson description
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "calc(0.5 * 1.3125rem)",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <pre>
+              <div
+                className="lang-jsx css-3hyshb"
+              >
+                <div
+                  className="css-1k4n0zb"
+                >
+                  <pre
+                    padded={false}
+                    style={
+                      Object {
+                        "background": "rgba(0,0,0,0)",
+                        "color": "#383a42",
+                        "display": "block",
+                        "margin": 0,
+                        "overflowX": "auto",
+                        "padding": "1em",
+                        "paddingBottom": "3em",
+                      }
+                    }
+                  >
+                    <code>
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        export
+                      </span>
+                       
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        const
+                      </span>
+                       description = 
+                      <span
+                        style={
+                          Object {
+                            "color": "#50a14f",
+                          }
+                        }
+                      >
+                        \`
+              A React component that tells Expo
+              to keep the app loading screen open
+              if it is the first and only component
+              rendered in your app\`
+                      </span>
+                      ;
+
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  className="css-1myfomu"
+                >
+                  <button
+                    className="css-1iq51ag"
+                    onClick={[Function]}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </pre>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              label
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125em",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "calc(0.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125em",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              Github Label for querying related issues on Github
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "calc(0.5 * 1.3125rem)",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <pre>
+              <div
+                className="lang-jsx css-3hyshb"
+              >
+                <div
+                  className="css-1k4n0zb"
+                >
+                  <pre
+                    padded={false}
+                    style={
+                      Object {
+                        "background": "rgba(0,0,0,0)",
+                        "color": "#383a42",
+                        "display": "block",
+                        "margin": 0,
+                        "overflowX": "auto",
+                        "padding": "1em",
+                        "paddingBottom": "3em",
+                      }
+                    }
+                  >
+                    <code>
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        export
+                      </span>
+                       
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        const
+                      </span>
+                       label = 
+                      <span
+                        style={
+                          Object {
+                            "color": "#50a14f",
+                          }
+                        }
+                      >
+                        'AppLoading'
+                      </span>
+                      ;
+
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  className="css-1myfomu"
+                >
+                  <button
+                    className="css-1iq51ag"
+                    onClick={[Function]}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </pre>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              kind
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125em",
+                  }
+                }
+              >
+                string
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "calc(0.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125em",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              Side-bar grouping for the page
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "calc(0.5 * 1.3125rem)",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <pre>
+              <div
+                className="lang-jsx css-3hyshb"
+              >
+                <div
+                  className="css-1k4n0zb"
+                >
+                  <pre
+                    padded={false}
+                    style={
+                      Object {
+                        "background": "rgba(0,0,0,0)",
+                        "color": "#383a42",
+                        "display": "block",
+                        "margin": 0,
+                        "overflowX": "auto",
+                        "padding": "1em",
+                        "paddingBottom": "3em",
+                      }
+                    }
+                  >
+                    <code>
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        export
+                      </span>
+                       
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        const
+                      </span>
+                       kind = 
+                      <span
+                        style={
+                          Object {
+                            "color": "#50a14f",
+                          }
+                        }
+                      >
+                        'AppLoading'
+                      </span>
+                      ;
+
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  className="css-1myfomu"
+                >
+                  <button
+                    className="css-1iq51ag"
+                    onClick={[Function]}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </pre>
+          </div>
+        </div>
+      </div>
+      <div
+        className="css-view-1dbjc4n"
+        style={
+          Object {
+            "marginBottom": "calc(1.5 * 1.3125rem)",
+          }
+        }
+      >
+        <div
+          className="css-text-901oao"
+          dir="auto"
+          style={
+            Object {
+              "fontSize": "1rem",
+            }
+          }
+        >
+          <span
+            className="css-text-901oao css-textHasAncestor-16my406"
+            dir="auto"
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+              style={
+                Object {
+                  "fontWeight": "bold",
+                }
+              }
+            >
+              onStoryCreated
+            </span>
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              : 
+              <span
+                className="css-text-901oao css-textHasAncestor-16my406"
+                dir="auto"
+                style={
+                  Object {
+                    "fontFamily": "monospace, monospace",
+                    "fontSize": "1rem",
+                    "lineHeight": "1.3125em",
+                  }
+                }
+              >
+                ({ stories }) =&gt; {}
+              </span>
+            </span>
+          </span>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "marginTop": "calc(0.5 * 1.3125rem)",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "WebkitAlignItems": "stretch",
+                "WebkitBoxAlign": "stretch",
+                "WebkitBoxDirection": "normal",
+                "WebkitBoxOrient": "vertical",
+                "WebkitFlexDirection": "column",
+                "alignItems": "stretch",
+                "display": "flex",
+                "flexDirection": "column",
+                "fontSize": "1rem",
+                "lineHeight": "1.3125em",
+                "msFlexAlign": "stretch",
+                "msFlexDirection": "column",
+              }
+            }
+          >
+            <span
+              className="css-text-901oao css-textHasAncestor-16my406"
+              dir="auto"
+            >
+              A callback that is invoked with the stories object which you can use to apply.
+            </span>
+          </div>
+        </div>
+        <div
+          className="css-view-1dbjc4n"
+          style={
+            Object {
+              "borderBottomColor": "rgba(230,236,240,1.00)",
+              "borderBottomWidth": "1px",
+              "borderLeftColor": "rgba(230,236,240,1.00)",
+              "borderLeftWidth": "1px",
+              "borderRightColor": "rgba(230,236,240,1.00)",
+              "borderRightWidth": "1px",
+              "borderTopColor": "rgba(230,236,240,1.00)",
+              "borderTopWidth": "1px",
+              "marginTop": "1.3125rem",
+              "paddingBottom": "1.3125rem",
+              "paddingLeft": "1.3125rem",
+              "paddingRight": "1.3125rem",
+              "paddingTop": "1.3125rem",
+            }
+          }
+        >
+          <div
+            className="css-text-901oao"
+            dir="auto"
+            style={
+              Object {
+                "color": "rgba(170,184,194,1.00)",
+                "fontSize": "0.8rem",
+                "fontWeight": "bold",
+                "marginBottom": "calc(0.5 * 1.3125rem)",
+                "textTransform": "uppercase",
+              }
+            }
+          >
+            Example
+          </div>
+          <div
+            className="css-view-1dbjc4n"
+          >
+            <pre>
+              <div
+                className="lang-jsx css-3hyshb"
+              >
+                <div
+                  className="css-1k4n0zb"
+                >
+                  <pre
+                    padded={false}
+                    style={
+                      Object {
+                        "background": "rgba(0,0,0,0)",
+                        "color": "#383a42",
+                        "display": "block",
+                        "margin": 0,
+                        "overflowX": "auto",
+                        "padding": "1em",
+                        "paddingBottom": "3em",
+                      }
+                    }
+                  >
+                    <code>
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        export
+                      </span>
+                       
+                      <span
+                        style={
+                          Object {
+                            "color": "#a626a4",
+                          }
+                        }
+                      >
+                        const
+                      </span>
+                       onStoryCreated = 
+                      <span
+                        className={
+                          Array [
+                            "hljs-function",
+                          ]
+                        }
+                        style={Object {}}
+                      >
+                        (
+                        <span
+                          className={
+                            Array [
+                              "hljs-params",
+                            ]
+                          }
+                          style={Object {}}
+                        >
+                          { stories }
+                        </span>
+                        ) =&gt;
+                      </span>
+                       {}
+
+                    </code>
+                  </pre>
+                </div>
+                <div
+                  className="css-1myfomu"
+                >
+                  <button
+                    className="css-1iq51ag"
+                    onClick={[Function]}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./get-started/Contributing.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
@@ -14764,6 +17893,25 @@ and GPS location. It is provided by the npm package
 [expo](https://www.npmjs.com/package/expo) &mdash; this is installed by default in every
 managed Expo project. You can import modules from it in your JavaScript code as follows:
     </div>
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./get-started/Introduction.stories.js"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "color": "rgba(27,149,224,1.00)",
+          "fontSize": "1rem",
+          "marginTop": "0.65625rem",
+          "textDecoration": "underline",
+        }
+      }
+      target="_blank"
+    >
+      Edit this page on GitHub
+    </a>
   </div>
 </div>
 `;
