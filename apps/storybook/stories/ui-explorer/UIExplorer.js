@@ -28,13 +28,20 @@ const Divider = () => <View style={styles.divider} />;
 
 const SourceLink = ({ uri }) => (
   <ExternalLink
-    href={`https://github.com/expo/expo/tree/master/apps/storybook/stories/${uri}.stories.js`}
+    href={`https://github.com/expo/expo/tree/master/apps/storybook/stories/${uri}`}
     style={styles.link}>
-    View source code on GitHub
+    Edit this page on GitHub
   </ExternalLink>
 );
 
-const UIExplorer = ({ children, packageName, description, sections, title, url }) => (
+const IssuesLink = ({ label }) => (
+  <ExternalLink href={`https://github.com/expo/expo/labels/${label}`} style={styles.link}>
+    View open issues for {label}
+  </ExternalLink>
+);
+
+// TODO: Bacon: Add Canny button https://expo.canny.io/
+const UIExplorer = ({ children, packageName, description, sections, title, url, label }) => (
   <View style={styles.root}>
     <Title>{title}</Title>
     {packageName && (
@@ -50,6 +57,7 @@ const UIExplorer = ({ children, packageName, description, sections, title, url }
     {description && <Description>{description}</Description>}
     {children}
     {url && <SourceLink uri={url} />}
+    {label && <IssuesLink label={label} />}
   </View>
 );
 

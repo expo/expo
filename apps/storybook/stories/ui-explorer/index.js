@@ -6,6 +6,7 @@ import Section from './Section';
 import { storiesOf } from './storiesOf';
 import StyleList from './StyleList';
 import TextList from './TextList';
+import Markdown from './Markdown';
 import ListButton from './ListButton';
 import UIExplorer, { Description } from './UIExplorer';
 
@@ -20,6 +21,7 @@ export {
   storiesOf,
   StyleList,
   TextList,
+  Markdown,
   ListButton,
   DocFunctionItem,
 };

@@ -55,7 +55,7 @@ export const theme = create(expoTheme);
 addParameters({
   options: {
     isFullscreen: false,
-    showAddonsPanel: true,
+    showAddonsPanel: false,
     showSearchBox: false,
     panelPosition: 'right',
     sortStoriesByKind: true,
@@ -114,6 +114,7 @@ function loadStories() {
     }
     stories.add(title, screen, {
       notes: { markdown },
+      info: markdown,
     });
     if (onStoryCreated) {
       onStoryCreated({ stories });
