@@ -63,7 +63,7 @@ By default this is disabled because it will add noticeably more time to your bui
 Lighthouse is a great way to see how fast, accessible, and performant your website is.
 You can test your project with the _Audit_ tab in Chrome, or with the [**Lighthouse CLI**][lighthouse].
 
-After creating a production build with `expo build:web` and serving somewhere. Run lighthouse with the URL your site is hosted at.
+After creating a production build with `expo build:web` and serving it somewhere, run Lighthouse with the URL your site is hosted at.
 
 ```sh
 lighthouse <url> --view
