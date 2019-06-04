@@ -57,8 +57,6 @@ UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSLog(@"Calling queryPurchasableItemsAsync!");
-
   [self setPromise:QUERY_PURCHASABLE_KEY resolve:resolve reject:reject];
 
   self->queryingItems = YES;
@@ -68,19 +66,17 @@ UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
 UM_EXPORT_METHOD_AS(purchaseItemAsync,
                     purchaseItemAsync:(NSString *)productIdentifier
                     resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject) {
-  NSLog(@"Calling purchaseItemAsync!");
-
-  if([SKPaymentQueue canMakePayments]){
-    NSLog(@"User can make payments");
-
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  if ([SKPaymentQueue canMakePayments]) {
     NSArray *productArray = [NSArray arrayWithObjects:productIdentifier,nil];
     [self setPromise:productIdentifier resolve:resolve reject:reject];
 
     self->queryingItems = NO;
     [self requestProducts:productArray];
   }
-  else{
+  else {
+    // Reject here
     NSLog(@"User cannot make purchases");
   }
 }
@@ -99,28 +95,30 @@ UM_EXPORT_METHOD_AS(queryPurchaseHistoryAsync,
 
 UM_EXPORT_METHOD_AS(disconnectAsync,
                     resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
   NSLog(@"Calling disconnectAsync!");
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
   resolve(nil);
 }
 
-- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
+{
 
   for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
     NSLog(@"Invalid identifier: %@", invalidIdentifier);
     // TODO: Reject promise?
-    [self resolvePromise: invalidIdentifier value:nil];
+    [self resolvePromise:invalidIdentifier value:nil];
   }
-  NSInteger count = [response.products count];
-  if(count == 0){
+  NSInteger count = response.products.count;
+  if (count == 0) {
     NSLog(@"No products available");
   }
-  self.products = response.products;
+  _products = response.products;
   NSMutableArray *result = [NSMutableArray array];
 
   for (SKProduct *validProduct in response.products) {
-    if(self->queryingItems) {
+    if (self->queryingItems) {
       // Calling queryPurchasableItemsAsync
       NSLog(@"Querying items. Getting data for %@", validProduct.productIdentifier);
       NSDictionary *productData = [self getProductData:validProduct];
@@ -137,7 +135,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [self resolvePromise:QUERY_PURCHASABLE_KEY value:res];
 }
 
--(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject {
+-(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+{
   NSMutableArray* promise = [promises valueForKey:key];
 
   if (promise == nil) {
@@ -148,7 +147,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [promise addObject:@[resolve, reject]];
 }
 
--(void)resolvePromise:(NSString*)key value:(id)value {
+-(void)resolvePromise:(NSString*)key value:(id)value
+{
   NSMutableArray* currentPromise = [promises valueForKey:key];
 
   if (currentPromise != nil) {
@@ -160,7 +160,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
 }
 
--(void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error {
+-(void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error
+{
   NSMutableArray* currentPromise = [promises valueForKey:key];
 
   if (currentPromise != nil) {
@@ -172,12 +173,13 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
 }
 
-- (void)purchase:(SKProduct *)product{
+- (void)purchase:(SKProduct *)product
+{
   SKPayment *payment = [SKPayment paymentWithProduct:product];
   [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 
-- (void) paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
+- (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
 {
   NSLog(@"received restored transactions: %lu", queue.transactions.count);
   NSMutableArray *results = [NSMutableArray array];
@@ -200,7 +202,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [self resolvePromise:QUERY_HISTORY_KEY value:response];
 }
 
-- (NSDictionary *)getProductData: (SKProduct *) product {
+- (NSDictionary *)getProductData:(SKProduct *)product
+{
   // Format item type sub period and price_amount_micros for platform consistency
   NSString *type = @"inapp";
   NSString *subscriptionPeriod;
@@ -236,7 +239,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   return productData;
 }
 
-- (NSDictionary *)getTransactionData: (SKPaymentTransaction *) transaction {
+- (NSDictionary *)getTransactionData:(SKPaymentTransaction *)transaction
+{
   NSData *receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
   NSDictionary *transactionData = @{
                                     @"acknowledged": @YES,
@@ -249,7 +253,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   return transactionData;
 }
 
-- (NSString *) getSubscriptionPeriod: (SKProduct *) product {
+- (NSString *)getSubscriptionPeriod:(SKProduct *)product
+{
   NSMutableString *subscriptionPeriod = [[NSMutableString alloc] init];
   [subscriptionPeriod appendString:@""];
 
@@ -283,8 +288,9 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   return subscriptionPeriod;
 }
 
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions{
-  for(SKPaymentTransaction *transaction in transactions){
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
+{
+  for (SKPaymentTransaction *transaction in transactions) {
 
     switch(transaction.transactionState) {
       case SKPaymentTransactionStatePurchasing: {
@@ -324,7 +330,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
 }
 
--(NSDictionary *) formatResults:(NSArray *)results withResponseCode:(NSInteger)responseCode {
+-(NSDictionary *)formatResults:(NSArray *)results withResponseCode:(NSInteger)responseCode
+{
   return @{
            @"results": results,
            @"responseCode": [NSNumber numberWithInteger:responseCode],
