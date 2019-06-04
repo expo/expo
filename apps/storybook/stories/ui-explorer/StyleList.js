@@ -1,6 +1,7 @@
-import AppText from './AppText';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import AppText from './AppText';
+import rem from './rem';
 
 const StyleList = ({ stylePropTypes }) => (
   <View accessibilityTraits="list">
@@ -18,24 +19,24 @@ const StyleList = ({ stylePropTypes }) => (
 const styles = StyleSheet.create({
   code: {
     fontFamily: 'monospace, monospace',
-    lineHeight: '1.3125em',
+    lineHeight: rem(1.3125),
   },
   item: {
-    fontSize: '0.85rem',
+    fontSize: rem(0.85),
     marginLeft: 20,
-    marginBottom: '0.5rem',
+    marginBottom: rem(0.5),
   },
   name: {
     fontWeight: 'bold',
   },
   title: {
-    fontSize: '2rem',
+    fontSize: rem(2),
   },
   label: {
-    borderRadius: '1rem',
-    paddingVertical: '0.125rem',
-    paddingHorizontal: '0.5rem',
-    marginRight: '0.5rem',
+    borderRadius: rem(1),
+    paddingVertical: rem(0.125),
+    paddingHorizontal: rem(0.5),
+    marginRight: rem(0.5),
     backgroundColor: '#bdebff',
     color: '#025268',
   },

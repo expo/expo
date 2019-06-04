@@ -1,6 +1,7 @@
-import AppText from './AppText';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import AppText from './AppText';
+import rem from './rem';
 
 const TextList = ({ items }) => (
   <View accessibilityTraits="list" style={styles.list}>
@@ -17,12 +18,12 @@ const styles = StyleSheet.create({
   item: {
     position: 'relative',
     paddingLeft: 20,
-    marginBottom: '0.5rem',
+    marginBottom: rem(0.5),
   },
   bullet: {
     position: 'absolute',
     left: 6,
-    top: '.65625rem',
+    top: rem(0.65625),
     marginTop: -2,
     height: 4,
     width: 4,

@@ -1,11 +1,12 @@
 import AppText from './AppText';
 import Code from './Code';
-import DocItem from './DocItem';
+import DocItem, { DocFunctionItem } from './DocItem';
 import ExternalLink from './ExternalLink';
 import Section from './Section';
 import { storiesOf } from './storiesOf';
 import StyleList from './StyleList';
 import TextList from './TextList';
+import ListButton from './ListButton';
 import UIExplorer, { Description } from './UIExplorer';
 
 export default UIExplorer;
@@ -19,4 +20,6 @@ export {
   storiesOf,
   StyleList,
   TextList,
+  ListButton,
+  DocFunctionItem,
 };
