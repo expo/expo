@@ -33,7 +33,7 @@ Similarly, you can happily scroll up and down through a `ScrollView` when the Ja
 
 ### Running in development mode (`dev=true`)
 
-JavaScript thread performance suffers greatly when running in dev mode. This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions. Always make sure to test performance in [release builds](../running-on-device/#building-your-app-for-production).
+JavaScript thread performance suffers greatly when running in dev mode. This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions. Always make sure to test performance in [release builds](https://facebook.github.io/react-native/docs//running-on-device/#building-your-app-for-production).
 
 ### Using `console.log` statements
 
