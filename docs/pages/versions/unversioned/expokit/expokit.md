@@ -83,6 +83,26 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 - Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 
+If upgrading from SDK 32 or below:
+1. Install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
+2. Remove the list of unimodules' dependencies:
+    ```ruby
+      pod 'EXAdsAdMob',
+        :path => "../node_modules/expo-ads-admob/ios"
+      pod 'EXSegment',
+        :path => "../node_modules/expo-analytics-segment/ios"
+      pod 'EXAppAuth',
+        :path => "../node_modules/expo-app-auth/ios"
+      # and so on...
+    ```
+    and instead add:
+    ```ruby
+      # Install unimodules
+      require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+      use_unimodules!
+    ```
+    This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/unimodules/react-native-unimodules).
+
 If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`.
 
 If you have never made any edits to your Expo-generated `AppDelegate` files, then you can just replace them with these new template files:
@@ -103,12 +123,116 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 
 If upgrading from SDK32 or below:
 
-1. change some package references in `android/app/build.gradle`:
-    - `host.exp.exponent:expo-core:*` to `org.unimodules:core:+`
-    - `host.exp.exponent:expo-react-native-adapter:*` to `org.unimodules:react-native-adapter:+`
-    - `host.exp.exponent:expo-<anything>-interface:*` to `org.unimodules:unimodules-<that something>-interface:+`
-2. remove `expo-errors` dependency from `build.gradle`.
-2. you will need to change some imported packages in `MainApplication` from `host.exp.exponent.` to `org.unimodules.`.
+1. If you haven't already done so when upgrading your iOS project, install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
+2. In `android/settings.gradle` add to the bottom of the file:
+    ```groovy
+    apply from: '../node_modules/react-native-unimodules/gradle.groovy'
+
+    // Include unimodules.
+    includeUnimodulesProjects()
+    ```
+3. In `android/app/build.gradle` remove an explicit list of `host.exp.exponent:…` dependencies with
+    ```groovy
+    addUnimodulesDependencies([
+      modulesPaths : [
+        '../../node_modules'
+      ],
+      configuration: 'api',
+      target       : 'react-native',
+      exclude      : [
+        // You can exclude unneeded modules here, e.g.,
+        // 'unimodules-face-detector-interface',
+        // 'expo-face-detector'
+
+        // Adding a name here will also remove the package
+        // from auto-generated BasePackageList.java
+      ]
+    ])
+    ```
+4. In `android/app/build.gradle` (same file) add the following line above `dependencies {` line
+    ```groovy
+    apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+    ```
+5. In `android/app/build.gradle` (same file) replace all occurrences of `27.1.1` with `28.0.0`.
+6. In `android/app/build.gradle` (same file) replace `compileSdkVersion 27` with `compileSdkVersion 28`.
+7. In `android/app/build.gradle` (same file) if you have the line:
+    ```groovy
+    implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
+    ```
+    change it to
+    ```groovy
+    implementation 'com.google.android.exoplayer:extension-okhttp:2.6.1'
+    ```
+8. In `android/app/build.gradle` (same file) add the following block to the end of `android { … <add here> }`:
+    ```groovy
+    compileOptions {
+      sourceCompatibility 1.8
+      targetCompatibility 1.8
+    }
+    ```
+9. In `android/app/src/main/java/host/exp/exponent/MainApplication.java` change
+    ```java
+    import expolib_v1.okhttp3.OkHttpClient;
+    ```
+    to
+    ```java
+    import okhttp3.OkHttpClient;
+    ```
+10. In both `android/app/src/main/java/host/exp/exponent/MainApplication.java` and `android/app/src/main/java/host/exp/exponent/MainActivity.java` change
+    ```java
+    import expo.core.interfaces.Package;
+    ```
+    to
+    ```java
+    import org.unimodules.core.interfaces.Package;
+    ```
+11. In `android/app/src/main/java/host/exp/exponent/MainApplication.java` change:
+    ```java
+    // only expo.modules!
+    import expo.modules.ads.admob.AdMobPackage;
+    import expo.modules.analytics.segment.SegmentPackage;
+    import expo.modules.appauth.AppAuthPackage;
+    import expo.modules.backgroundfetch.BackgroundFetchPackage;
+    ```
+    to
+    ```java
+    import host.exp.exponent.generated.BasePackageList;
+    ```
+    and
+    ```java
+    public List<Package> getExpoPackages() {
+      return Arrays.<Package>asList(
+          // ... package
+      );
+    }
+    ```
+    to
+    ```java
+    public List<Package> getExpoPackages() {
+      return new BasePackageList().getPackageList();
+    }
+    ```
+12. From `android/app/src/main/java/host/exp/exponent/MainApplication.java` remove the following method:
+    ```java
+    @Override
+    public boolean shouldUseInternetKernel() {
+      return BuildVariantConstants.USE_INTERNET_KERNEL;
+    }
+    ```
+13. Remove `android/app/src/devKernel` and `android/app/src/prodKernel` directories.
+14. From `android/app/build.gradle` remove:
+    ```groovy
+    flavorDimensions 'remoteKernel'
+    productFlavors {
+      devKernel {
+        dimension 'remoteKernel'
+      }
+      prodKernel {
+        dimension 'remoteKernel'
+      }
+    }
+    ```
+    If you used Gradle tasks anywhere in your custom code you'll need to remove `DevKernel` and `ProdKernel` parts of task names, so e.g., `:app:installDevKernelDebug` becomes `:app:installDebug`.
 
 If upgrading from SDK31 or below:
 
