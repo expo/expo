@@ -201,8 +201,19 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 }
 
 - (NSDictionary *)getProductData: (SKProduct *) product {
-  // Format item type and price_amount_micros for platform consistency
-  NSString * type = product.subscriptionPeriod.numberOfUnits == nil ? @"inapp" : @"subs";
+  // Format item type sub period and price_amount_micros for platform consistency
+  NSString *type = @"inapp";
+  NSString *subscriptionPeriod;
+  if (@available(iOS 11.2, *)) {
+    if (product.subscriptionPeriod != nil) {
+      subscriptionPeriod = [self getSubscriptionPeriod:product];
+      // Use with caution: P0D also implies non-renewable subscription.
+      if (![subscriptionPeriod isEqualToString:@"P0D"]) {
+        type = @"subs";
+      }
+    }
+  }
+
   NSDecimalNumber *oneMillion = [[NSDecimalNumber alloc] initWithInt:1000000];
   NSDecimalNumber *priceAmountMicros = [product.price decimalNumberByMultiplyingBy:oneMillion];
 
@@ -218,7 +229,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
                                 @"price_amount_micros": priceAmountMicros,
                                 @"price_currency_code": product.priceLocale.currencyCode,
                                 @"productId": product.productIdentifier,
-                                @"skuDetailsToken": [NSNull null],
+                                @"subscriptionPeriod": subscriptionPeriod,
                                 @"title": product.localizedTitle,
                                 @"type": type
                                 };
@@ -236,6 +247,40 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
                                     @"transactionReceipt": [receiptData base64EncodedStringWithOptions:0]
                                     };
   return transactionData;
+}
+
+- (NSString *) getSubscriptionPeriod: (SKProduct *) product {
+  NSMutableString *subscriptionPeriod = [[NSMutableString alloc] init];
+  [subscriptionPeriod appendString:@""];
+
+  // Subscription period specified in ISO 8601 format to match Android implementation (e.g. P3M = 3 months)
+  if (@available(iOS 11.2, *)) {
+    [subscriptionPeriod appendString:@"P"];
+    NSUInteger numUnits = product.subscriptionPeriod.numberOfUnits;
+    [subscriptionPeriod appendString: [NSString stringWithFormat:@"%lu", (unsigned long)numUnits]];
+    NSString *unit;
+    switch(product.subscriptionPeriod.unit) {
+      case SKProductPeriodUnitDay: {
+        unit = @"D";
+        break;
+      }
+      case SKProductPeriodUnitWeek: {
+        unit = @"W";
+        break;
+      }
+      case SKProductPeriodUnitMonth: {
+        unit = @"M";
+        break;
+      }
+      case SKProductPeriodUnitYear: {
+        unit = @"Y";
+        break;
+      }
+    }
+    [subscriptionPeriod appendString:unit];
+  }
+
+  return subscriptionPeriod;
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions{
