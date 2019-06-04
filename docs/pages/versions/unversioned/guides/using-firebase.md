@@ -10,9 +10,7 @@ Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full 
 
 See the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html).
 
-See also [the full list of available Expo Firebase packages](https://github.com/expo/expo/tree/master/packages) (scroll down to the packages prefixed with `expo-firebase-*`).
-
-> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well), and will eventually cover all of the available Expo Firebase packages.  For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
+> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well).  For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
 
 ##### Table of Contents
 - [Firebase SDK Setup](#firebase-sdk-setup)
