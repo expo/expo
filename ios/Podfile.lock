@@ -445,6 +445,8 @@ PODS:
   - EXImagePicker (5.0.0):
     - UMCore
     - UMFileSystemInterface
+  - EXInAppPurchases (1.0.0):
+    - UMCore
   - EXKeepAwake (5.0.0):
     - UMCore
   - EXLinearGradient (5.0.0):
@@ -552,17 +554,17 @@ PODS:
     - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
     - GTMSessionFetcher/Core (~> 1.1)
   - GoogleSymbolUtilities (1.1.2)
-  - GoogleToolboxForMac/DebugUtils (2.2.0):
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-  - GoogleToolboxForMac/Defines (2.2.0)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.0)":
-    - GoogleToolboxForMac/DebugUtils (= 2.2.0)
-    - GoogleToolboxForMac/Defines (= 2.2.0)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.0)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.2.0)"
+  - GoogleToolboxForMac/DebugUtils (2.2.1):
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+  - GoogleToolboxForMac/Defines (2.2.1)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.1)":
+    - GoogleToolboxForMac/DebugUtils (= 2.2.1)
+    - GoogleToolboxForMac/Defines (= 2.2.1)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.1)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.2.1)"
   - GoogleUtilities (1.3.2):
     - GoogleSymbolUtilities (~> 1.1)
-  - GTMSessionFetcher/Core (1.2.1)
+  - GTMSessionFetcher/Core (1.2.2)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.3)
   - React (0.59.8):
@@ -1125,6 +1127,7 @@ DEPENDENCIES:
   - EXHaptics (from `../packages/expo-haptics/ios`)
   - EXImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../packages/expo-image-picker/ios`)
+  - EXInAppPurchases (from `../packages/expo-in-app-purchases/ios`)
   - EXKeepAwake (from `../packages/expo-keep-awake/ios`)
   - EXLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
@@ -1585,6 +1588,9 @@ EXTERNAL SOURCES:
   EXImagePicker:
     :path: !ruby/object:Pathname
     path: "../packages/expo-image-picker/ios"
+  EXInAppPurchases:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-in-app-purchases/ios"
   EXKeepAwake:
     :path: !ruby/object:Pathname
     path: "../packages/expo-keep-awake/ios"
@@ -1860,6 +1866,7 @@ SPEC CHECKSUMS:
   EXHaptics: a64f2916f185d04069c13a3c8344505e905eb54d
   EXImageManipulator: ac30d215c758fac8fc538e36e7e8b3b764051fb9
   EXImagePicker: 215e12ca7d90c89153b2938d7394a5083f081292
+  EXInAppPurchases: 36bc8335662ff8c6c95e4a919b022c0ead774f99
   EXKeepAwake: f32951b626366e82aeac9330060fff8139bdf67d
   EXLinearGradient: 300bcb612bdaf51a8ca4ee9ad6b6a23418e69736
   EXLocalAuthentication: 8e56d578de3eb01ddcb535346dc84fe306e46161
@@ -1894,9 +1901,9 @@ SPEC CHECKSUMS:
   GoogleNetworkingUtilities: 3edd3a8161347494f2da60ea0deddc8a472d94cb
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleSymbolUtilities: 631ee17048aa5e9ab133470d768ea997a5ef9b96
-  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
+  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   GoogleUtilities: 8bbc733218aad26306f9d4a253823986110e3358
-  GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
+  GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
