@@ -83,9 +83,9 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 - Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 
-If upgrading form SDK 32 or below:
-1. Install `react-native-unimodules@^0.4.0` NPM package in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer NPM over Yarn).
-2. Remove list of unimodules' dependencies:
+If upgrading from SDK 32 or below:
+1. Install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
+2. Remove the list of unimodules' dependencies:
     ```ruby
       pod 'EXAdsAdMob',
         :path => "../node_modules/expo-ads-admob/ios"
@@ -93,7 +93,7 @@ If upgrading form SDK 32 or below:
         :path => "../node_modules/expo-analytics-segment/ios"
       pod 'EXAppAuth',
         :path => "../node_modules/expo-app-auth/ios"
-      # ...
+      # and so on...
     ```
     and instead add:
     ```ruby
@@ -101,7 +101,7 @@ If upgrading form SDK 32 or below:
       require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
       use_unimodules!
     ```
-    This will introduce your project to autoinstallable unimodules. More information can be found on [`react-native-unimodules` repository](https://github.com/unimodules/react-native-unimodules).
+    This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/unimodules/react-native-unimodules).
 
 If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`.
 
@@ -123,7 +123,7 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 
 If upgrading from SDK32 or below:
 
-1. (If you haven't done that already when upgrading iOS project) Install `react-native-unimodules@^0.4.0` NPM package in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer NPM over Yarn).
+1. If you haven't already done so when upgrading your iOS project, install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
 2. In `android/settings.gradle` add to the bottom of the file:
     ```groovy
     apply from: '../node_modules/react-native-unimodules/gradle.groovy'
@@ -140,7 +140,7 @@ If upgrading from SDK32 or below:
       configuration: 'api',
       target       : 'react-native',
       exclude      : [
-        // You can exclude unneeded modules here, eg.
+        // You can exclude unneeded modules here, e.g.,
         // 'unimodules-face-detector-interface',
         // 'expo-face-detector'
 
@@ -153,9 +153,9 @@ If upgrading from SDK32 or below:
     ```groovy
     apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
     ```
-5. In `android/app/build.gradle` (same file) replace all occurences of `27.1.1` with `28.0.0`.
+5. In `android/app/build.gradle` (same file) replace all occurrences of `27.1.1` with `28.0.0`.
 6. In `android/app/build.gradle` (same file) replace `compileSdkVersion 27` with `compileSdkVersion 28`.
-7. In `android/app/build.gradle` (same file) if you have a line:
+7. In `android/app/build.gradle` (same file) if you have the line:
     ```groovy
     implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
     ```
@@ -178,7 +178,7 @@ If upgrading from SDK32 or below:
     ```java
     import okhttp3.OkHttpClient;
     ```
-10. Both in `android/app/src/main/java/host/exp/exponent/MainApplication.java` and in `android/app/src/main/java/host/exp/exponent/MainActivity.java` change
+10. In both `android/app/src/main/java/host/exp/exponent/MainApplication.java` and `android/app/src/main/java/host/exp/exponent/MainActivity.java` change
     ```java
     import expo.core.interfaces.Package;
     ```
@@ -232,7 +232,7 @@ If upgrading from SDK32 or below:
       }
     }
     ```
-    If you used Gradle tasks anywhere in your custom code you'll need to remove `DevKernel` and `ProdKernel` parts of task names, so eg. `:app:installDevKernelDebug` becomes `:app:installDebug`.
+    If you used Gradle tasks anywhere in your custom code you'll need to remove `DevKernel` and `ProdKernel` parts of task names, so e.g., `:app:installDevKernelDebug` becomes `:app:installDebug`.
 
 If upgrading from SDK31 or below:
 
