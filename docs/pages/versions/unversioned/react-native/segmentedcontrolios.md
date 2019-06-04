@@ -27,7 +27,7 @@ The selected index can be changed on the fly by assigning the selectedIndex prop
 ```
 
 
-\<center\>\<img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/example.gif" width="360"\>\</img\>\</center\>
+<center><img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/example.gif" width="360"></img></center>
 
 ### Props
 
@@ -55,7 +55,7 @@ If false the user won't be able to interact with the control. Default value is t
 | ---- | -------- |
 | bool | No       |
 
-\<center\>\<img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/enabled.png" width="360"\>\</img\>\</center\>
+<center><img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/enabled.png" width="360"></img></center>
 
 ---
 
@@ -67,7 +67,7 @@ If true, then selecting a segment won't persist visually. The `onValueChange` ca
 | ---- | -------- |
 | bool | No       |
 
-\<center\>\<img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/momentary.gif" width="360"\>\</img\>\</center\>
+<center><img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/momentary.gif" width="360"></img></center>
 
 ---
 
@@ -109,7 +109,7 @@ Accent color of the control.
 | ------ | -------- |
 | string | No       |
 
-\<center\>\<img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/tintColor.png" width="360"\>\</img\>\</center\>
+<center><img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/tintColor.png" width="360"></img></center>
 
 ---
 
