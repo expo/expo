@@ -1,10 +1,21 @@
+import { AsyncStorage } from 'react-native';
+
 export default {
   setIsLegacyMenuBehaviorEnabledAsync() {},
   setIsNuxFinishedAsync() {},
   addDevMenu() {},
   onEventSuccess() {},
   onEventFailure() {},
-  setSessionAsync() {},
+  setSessionAsync(value) {
+    return AsyncStorage.setItem('@Expo:Session', JSON.stringify(value));
+  },
+  async getSessionAsync() {
+    const value = await AsyncStorage.getItem('@Expo:Session');
+    if (value) {
+      return JSON.parse(value);
+    }
+    return value;
+  },
   //   openURL() {}
   sdkVersions: [],
 
