@@ -290,6 +290,13 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     path.join(androidRoot, 'maven/com/facebook/react'),
   ]);
 
+  await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, 'ReactAndroid', 'build')]);
+  await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, 'expoview', 'build')]);
+  for (const module of detachableUniversalModules) {
+    const { libName } = module;
+    await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, '..', 'packages', libName, 'android', 'build')]);
+  }
+
   // Build RN and exponent view
   const archivesToUpload = [
     'ReactAndroid',
