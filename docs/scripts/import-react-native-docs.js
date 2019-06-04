@@ -88,6 +88,16 @@ let mainAsync = async () => {
         '[CameraRoll](https://facebook.github.io/react-native/docs/cameraroll.html)'
       );
 
+      // A lot of table cells have things like "<string>" and "<any>" that mdx dislikes
+      if (l[0] == '|') {
+        l = l.replace(/</g, '\\<')
+        l = l.replace(/>/g, '\\>')
+      };
+
+      // mdx prefers void image tags
+      l = l.replace('></img>', ' />')
+
+
       // `](./foo` -> `](foo`
       l = l.replace(
         /\]\(\.\/([^\):]+)/g,
@@ -130,40 +140,6 @@ let mainAsync = async () => {
             inCodeBlock = !inCodeBlock;
           }
           break;
-      }
-
-      if (!inCodeBlock) {
-        let nl = '';
-        let inInlineCodeBlock = false;
-        for (let c of l) {
-          let nc = c;
-          if (c === '`') {
-            inInlineCodeBlock = !inInlineCodeBlock;
-          }
-          if (!inInlineCodeBlock && ['<', '>'].includes(c)) {
-            nc = '\\' + c;
-          }
-          nl += nc;
-        }
-        l = nl;
-      }
-
-      if (basename === 'alert.md') {
-        if (l === '</table>') {
-          inAlertSpecialSection = false;
-
-          l =
-            '#### iOS Alert Example\n\n![iOS Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif)' +
-            '\n';
-          l +=
-            '#### Android Alert Example\n\n![Android Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif)';
-        }
-        if (l === '<table>') {
-          inAlertSpecialSection = true;
-        }
-        if (inAlertSpecialSection) {
-          l = '';
-        }
       }
 
       if (basename === 'image.md') {

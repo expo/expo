@@ -137,7 +137,7 @@ You can find a full list of composition methods in the [Composing animations](..
 
 You can [combine two animated values](../animated/#combining-animated-values) via addition, multiplication, division, or modulo to make a new animated value.
 
-There are some cases where an animated value needs to invert another animated value for calculation. An example is inverting a scale (2x --\> 0.5x):
+There are some cases where an animated value needs to invert another animated value for calculation. An example is inverting a scale (2x --> 0.5x):
 
 
 ```javascript

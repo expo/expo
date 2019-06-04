@@ -9,6 +9,23 @@ Optionally provide a list of buttons. Tapping any button will fire the respectiv
 
 This is an API that works both on iOS and Android and can show static alerts. To show an alert that prompts the user to enter some information, see `AlertIOS`; entering text in an alert is common on iOS only.
 
+## Example
+
+<table>
+  <tr>
+    <th style="width: 50%;">iOS</th>
+    <th style="width: 50%;">Android</th>
+  </tr>
+  <tr>
+    <td style="width: 50%;">
+      <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif" /></center>
+    </td>
+    <td style="width: 50%;">
+      <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif" /></center>
+    </td>
+  </tr>
+</table>
+
 ## iOS
 
 On iOS you can specify any number of buttons. Each button can optionally specify a style, which is one of 'default', 'cancel' or 'destructive'.
@@ -21,7 +38,7 @@ On Android at most three buttons can be specified. Android has a concept of a ne
 - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
 - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
 
-By default alerts on Android can be dismissed by tapping outside of the alert box. This event can be handled by providing an optional options parameter, with an onDismiss callback property { onDismiss: () =\> {} }.
+By default alerts on Android can be dismissed by tapping outside of the alert box. This event can be handled by providing an optional options parameter, with an onDismiss callback property { onDismiss: () => {} }.
 
 Alternatively, the dismissing behavior can be disabled altogether by providing an optional options parameter with the cancelable property set to false i.e. { cancelable: false }
 

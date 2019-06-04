@@ -5,9 +5,9 @@ title: Direct Manipulation
 
 It is sometimes necessary to make changes directly to a component without using state/props to trigger a re-render of the entire subtree. When using React in the browser for example, you sometimes need to directly modify a DOM node, and the same is true for views in mobile apps. `setNativeProps` is the React Native equivalent to setting properties directly on a DOM node.
 
-\> Use setNativeProps when frequent re-rendering creates a performance bottleneck
-\>
-\> Direct manipulation will not be a tool that you reach for frequently; you will typically only be using it for creating continuous animations to avoid the overhead of rendering the component hierarchy and reconciling many views. `setNativeProps` is imperative and stores state in the native layer (DOM, UIView, etc.) and not within your React components, which makes your code more difficult to reason about. Before you use it, try to solve your problem with `setState` and [shouldComponentUpdate](http://facebook.github.io/react/advanced-performance.md#shouldcomponentupdate-in-action).
+> Use setNativeProps when frequent re-rendering creates a performance bottleneck
+>
+> Direct manipulation will not be a tool that you reach for frequently; you will typically only be using it for creating continuous animations to avoid the overhead of rendering the component hierarchy and reconciling many views. `setNativeProps` is imperative and stores state in the native layer (DOM, UIView, etc.) and not within your React components, which makes your code more difficult to reason about. Before you use it, try to solve your problem with `setState` and [shouldComponentUpdate](http://facebook.github.io/react/advanced-performance.md#shouldcomponentupdate-in-action).
 
 ## setNativeProps with TouchableOpacity
 

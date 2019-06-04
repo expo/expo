@@ -63,7 +63,7 @@ function MyComponent(props) {
 
 ### accessibilityComponentType
 
-_\> Note: `accessibilityComponentType`will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead._
+_> Note: `accessibilityComponentType`will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead._
 
 | Type                        | Required |
 | --------------------------- | -------- |
@@ -109,7 +109,7 @@ Overrides the text that's read by the screen reader when the user interacts with
 
 ### accessibilityTraits
 
-_\> Note: `accessibilityTraits`will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead._
+_> Note: `accessibilityTraits`will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead._
 
 | Type                                               | Required |
 | -------------------------------------------------- | -------- |
