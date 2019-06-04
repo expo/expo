@@ -12,6 +12,7 @@ for (const key in SvgModules) {
       get() {
         deprecatedModule(
           `Svg.${key} -> import { ${key} } from 'react-native-svg'`,
+          `Svg.${key}`,
           'react-native-svg'
         );
         return SvgModules[key];
