@@ -10,7 +10,7 @@ let args = minimist(process.argv.slice(2));
 let from = args._[0] || path.join(__dirname, '..', 'react-native-website');
 let to = args._[1] || path.join(__dirname, '..');
 let version = args._[2] || 'unversioned';
-let toVersion = path.join(to, 'versions', version);
+let toVersion = path.join(to, 'pages', 'versions', version);
 
 let docsFrom = path.join(from, 'docs/');
 let sidebarsJson = path.join(from, 'website', 'sidebars.json');
@@ -23,8 +23,8 @@ let mainAsync = async () => {
 
   let sidebarInfo = await fsExtra.readJson(sidebarsJson);
   let guides = sidebarInfo.docs.Guides;
-  let components = sidebarInfo.docs.Components;
-  let apis = sidebarInfo.docs.APIs;
+  let components = sidebarInfo.api.Components;
+  let apis = sidebarInfo.api.APIs;
   let basics = sidebarInfo.docs['The Basics'];
 
   await fsExtra.ensureDir(reactNative);
@@ -84,7 +84,7 @@ let mainAsync = async () => {
       );
 
       l.replace(
-        /\[CameraRoll\]([^\)]+\)/g,
+        /\[CameraRoll\]\([^)]+\)/g,
         '[CameraRoll](https://facebook.github.io/react-native/docs/cameraroll.html)'
       );
 
@@ -233,9 +233,6 @@ let mainAsync = async () => {
           break;
       }
 
-      if (l.startsWith('|')) {
-      }
-
       s += l + '\n';
     }
 
@@ -248,7 +245,10 @@ let mainAsync = async () => {
     for (let i = 0; i < x.length; i++) {
       let src = path.join(docsFrom, x[i]) + '.md';
       let dest = path.join(destDir, x[i]) + '.md';
-      await transformFileAysnc(src, dest);
+
+      if (await fsExtra.exists(src)) {
+        await transformFileAysnc(src, dest);
+      }
     }
   };
 
@@ -280,7 +280,7 @@ if (require.main === module) {
         // done
       })
       .catch(err => {
-        console.error('Error: ' + err);
+        console.error('Error:', err.stack);
       });
   })();
 }
