@@ -138,7 +138,7 @@ Used to extract a unique key for a given item at the specified index. Key is use
 
 | Type                                  | Required |
 | ------------------------------------- | -------- |
-| (item: Item, index: number) =\> string | Yes      |
+| (item: Item, index: number) => string | Yes      |
 
 ---
 
@@ -170,7 +170,7 @@ Called once when the scroll position gets within `onEndReachedThreshold` of the 
 
 | Type                                        | Required |
 | ------------------------------------------- | -------- |
-| [(info: {distanceFromEnd: number}) =\> void] | No       |
+| [(info: {distanceFromEnd: number}) => void] | No       |
 
 ---
 
@@ -248,7 +248,7 @@ If provided, a standard RefreshControl will be added for "Pull to Refresh" funct
 
 | Type         | Required |
 | ------------ | -------- |
-| [() =\> void] | No       |
+| [() => void] | No       |
 
 ---
 
@@ -315,7 +315,7 @@ Rendered at the bottom of each section.
 
 | Type                                                 | Required |
 | ---------------------------------------------------- | -------- |
-| [(info: {section: SectionT}) =\> ?React.Element\<any\>] | No       |
+| [(info: {section: SectionT}) => ?React.Element<any>] | No       |
 
 ---
 
@@ -325,7 +325,7 @@ Rendered at the top of each section. These stick to the top of the `ScrollView` 
 
 | Type                                                 | Required |
 | ---------------------------------------------------- | -------- |
-| [(info: {section: SectionT}) =\> ?React.Element\<any\>] | No       |
+| [(info: {section: SectionT}) => ?React.Element<any>] | No       |
 
 ---
 
@@ -335,7 +335,7 @@ Rendered at the top and bottom of each section (note this is different from `Ite
 
 | Type              | Required |
 | ----------------- | -------- |
-| [ReactClass\<any\>] | No       |
+| [ReactClass<any>] | No       |
 
 ---
 
@@ -361,7 +361,7 @@ scrollToLocation(params);
 
 Scrolls to the item at the specified `sectionIndex` and `itemIndex` (within the section) positioned in the viewable area such that `viewPosition` 0 places it at the top (and may be covered by a sticky header), 1 at the bottom, and 0.5 centered in the middle.
 
-\> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` or `onScrollToIndexFailed` prop.
+> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` or `onScrollToIndexFailed` prop.
 
 **Parameters:**
 

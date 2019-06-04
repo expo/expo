@@ -118,18 +118,14 @@ let mainAsync = async () => {
         (match, $1) => '![' + $1 + '](https://facebook.github.io/react-native/docs/'
       );
 
-      switch (basename) {
-        default:
-          if (/^```/.test(l)) {
-            if (!inCodeBlock) {
-              if (l === '```') {
-                l = l.replace(/```\s*$/, '```javascript');
-              }
-            }
-            l = '\n' + l + '\n';
-            inCodeBlock = !inCodeBlock;
+      if (/^```/.test(l)) {
+        if (!inCodeBlock) {
+          if (l === '```') {
+            l = l.replace(/```\s*$/, '```javascript');
           }
-          break;
+        }
+        l = '\n' + l + '\n';
+        inCodeBlock = !inCodeBlock;
       }
 
       if (!inCodeBlock) {
@@ -141,7 +137,7 @@ let mainAsync = async () => {
             inInlineCodeBlock = !inInlineCodeBlock;
           }
           if (!inInlineCodeBlock && ['<', '>'].includes(c)) {
-            nc = '\\' + c;
+            nc = c;
           }
           nl += nc;
         }

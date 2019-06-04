@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import inquirer from 'inquirer';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 
@@ -61,15 +62,29 @@ async function action(options) {
   );
 
   if (await fs.exists(targetSdkDirectory)) {
-    console.log(chalk.magenta(`v${sdk}`), 'directory already exists. Skipping copy operation.');
-  } else {
-    console.log(`Copying ${chalk.yellow('unversioned')} docs to ${chalk.yellow(`v${sdk}`)} directory...`);
+    const { result } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'result',
+        message: `Docs version ${chalk.magenta(`v${sdk}`)} already exists. Do you want to override?`,
+        default: true,
+      },
+    ]);
 
-    await fs.copy(
-      path.join(SDK_DOCS_DIR, 'unversioned'),
-      targetSdkDirectory,
-    );
+    if (result) {
+      await fs.remove(targetSdkDirectory);
+    } else {
+      console.log(chalk.grey('Skipped copying React Native docs.'));
+      return process.exit(0);
+    }
   }
+
+  console.log(`Copying ${chalk.yellow('unversioned')} docs to ${chalk.yellow(`v${sdk}`)} directory...`);
+
+  await fs.copy(
+    path.join(SDK_DOCS_DIR, 'unversioned'),
+    targetSdkDirectory,
+  );
 }
 
 export default program => {

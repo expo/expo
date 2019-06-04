@@ -311,7 +311,7 @@ Set this true while waiting for new data from a refresh.
 
 This may improve scroll performance for large lists.
 
-\> Note: May have bugs (missing content) in some circumstances - use at your own risk.
+> Note: May have bugs (missing content) in some circumstances - use at your own risk.
 
 | Type    | Required |
 | ------- | -------- |
@@ -453,7 +453,7 @@ Determines the maximum number of items rendered outside of the visible area, in 
 
 ### `disableVirtualization`
 
-\> **Deprecated.** Virtualization provides significant performance and memory optimizations, but fully unmounts react instances that are outside of the render window. You should only need to disable this for debugging purposes.
+> **Deprecated.** Virtualization provides significant performance and memory optimizations, but fully unmounts react instances that are outside of the render window. You should only need to disable this for debugging purposes.
 
 | Type | Required |
 | ---- | -------- |

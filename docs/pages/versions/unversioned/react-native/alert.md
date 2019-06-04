@@ -11,20 +11,25 @@ This is an API that works both on iOS and Android and can show static alerts. To
 
 ## Example
 
-\<table\>
-  \<tr\>
-    \<th style="width: 50%;"\>iOS\</th\>
-    \<th style="width: 50%;"\>Android\</th\>
-  \</tr\>
-  \<tr\>
-    \<td style="width: 50%;"\>
-      \<center\>\<img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif"\>\</img\>\</center\>
-    \</td\>
-    \<td style="width: 50%;"\>
-      \<center\>\<img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif"\>\</img\>\</center\>
-    \</td\>
-  \</tr\>
-\</table\>
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### iOS Alert Example
+
+![iOS Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif)
+#### Android Alert Example
+
+![Android Alert Example](https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif)
 
 ## iOS
 
@@ -38,7 +43,7 @@ On Android at most three buttons can be specified. Android has a concept of a ne
 - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
 - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
 
-By default alerts on Android can be dismissed by tapping outside of the alert box. This event can be handled by providing an optional options parameter, with an onDismiss callback property { onDismiss: () =\> {} }.
+By default alerts on Android can be dismissed by tapping outside of the alert box. This event can be handled by providing an optional options parameter, with an onDismiss callback property { onDismiss: () => {} }.
 
 Alternatively, the dismissing behavior can be disabled altogether by providing an optional options parameter with the cancelable property set to false i.e. { cancelable: false }
 

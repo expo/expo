@@ -32,7 +32,7 @@ class ViewColoredBoxesWithText extends Component {
 ```
 
 
-\> `View`s are designed to be used with [`StyleSheet`](../style/) for clarity and performance, although inline styles are also supported.
+> `View`s are designed to be used with [`StyleSheet`](../style/) for clarity and performance, although inline styles are also supported.
 
 ### Synthetic Touch Events
 
@@ -136,7 +136,7 @@ This defines how far a touch event can start away from the view. Typical interfa
 
 For example, if a touchable view has a height of 20 the touchable height can be extended to 40 with `hitSlop={{top: 10, bottom: 10, left: 0, right: 0}}`
 
-\> The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.
+> The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.
 
 | Type                                                               | Required |
 | ------------------------------------------------------------------ | -------- |
@@ -148,7 +148,7 @@ For example, if a touchable view has a height of 20 the touchable height can be 
 
 Used to locate this view from native classes.
 
-\> This disables the 'layout-only view removal' optimization for this view!
+> This disables the 'layout-only view removal' optimization for this view!
 
 | Type   | Required |
 | ------ | -------- |
@@ -354,7 +354,7 @@ Controls whether the `View` can be the target of touch events.
 ```
 
 
-\> Since `pointerEvents` does not affect layout/appearance, and we are already deviating from the spec by adding additional modes, we opt to not include `pointerEvents` on `style`. On some platforms, we would need to implement it as a `className` anyways. Using `style` or not is an implementation detail of the platform.
+> Since `pointerEvents` does not affect layout/appearance, and we are already deviating from the spec by adding additional modes, we opt to not include `pointerEvents` on `style`. On some platforms, we would need to implement it as a `className` anyways. Using `style` or not is an implementation detail of the platform.
 
 | Type                                         | Required |
 | -------------------------------------------- | -------- |
@@ -384,7 +384,7 @@ This is a special performance property exposed by `RCTView` and is useful for sc
 
 Used to locate this view in end-to-end tests.
 
-\> This disables the 'layout-only view removal' optimization for this view!
+> This disables the 'layout-only view removal' optimization for this view!
 
 | Type   | Required |
 | ------ | -------- |
@@ -394,7 +394,7 @@ Used to locate this view in end-to-end tests.
 
 ### `accessibilityLiveRegion`
 
-Indicates to accessibility services whether the user should be notified when this view changes. Works for Android API \>= 19 only. Possible values:
+Indicates to accessibility services whether the user should be notified when this view changes. Works for Android API >= 19 only. Possible values:
 
 - `'none'` - Accessibility services should not announce changes to this view.
 - `'polite'`- Accessibility services should announce changes to this view.

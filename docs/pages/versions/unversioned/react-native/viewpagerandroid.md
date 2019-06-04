@@ -3,7 +3,7 @@ id: viewpagerandroid
 title: ViewPagerAndroid
 ---
 
-\> **Deprecated.** Use [react-native-community/react-native-viewpager](https://github.com/react-native-community/react-native-viewpager) instead.
+> **Deprecated.** Use [react-native-community/react-native-viewpager](https://github.com/react-native-community/react-native-viewpager) instead.
 
 Container that allows to flip left and right between child views. Each child view of the `ViewPagerAndroid` will be treated as a separate page and will be stretched to fill the `ViewPagerAndroid`.
 

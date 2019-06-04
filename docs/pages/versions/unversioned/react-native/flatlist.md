@@ -25,10 +25,10 @@ Minimal Example:
 
 ```javascript
 
-\<FlatList
+<FlatList
   data={[{key: 'a'}, {key: 'b'}]}
-  renderItem={({item}) =\> \<Text\>{item.key}\</Text\>}
-/\>
+  renderItem={({item}) => <Text>{item.key}</Text>}
+/>
 
 ```javascript
 
@@ -506,7 +506,7 @@ Set this true while waiting for new data from a refresh.
 
 This may improve scroll performance for large lists.
 
-\> Note: May have bugs (missing content) in some circumstances - use at your own risk.
+> Note: May have bugs (missing content) in some circumstances - use at your own risk.
 
 | Type    | Required |
 | ------- | -------- |
@@ -630,7 +630,7 @@ scrollToIndex(params);
 
 Scrolls to the item at the specified index such that it is positioned in the viewable area such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the middle.
 
-\> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` prop.
+> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` prop.
 
 **Parameters:**
 
@@ -659,7 +659,7 @@ scrollToItem(params);
 
 Requires linear scan through data - use `scrollToIndex` instead if possible.
 
-\> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` prop.
+> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` prop.
 
 **Parameters:**
 

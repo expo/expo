@@ -739,7 +739,7 @@ Some functionality that can be performed with this instance is:
 - `focus()`
 - `update()`
 
-\> You can reference `DocumentSelectionState` in [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
+> You can reference `DocumentSelectionState` in [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
 
 | Type                   | Required | Platform |
 | ---------------------- | -------- | -------- |

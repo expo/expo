@@ -156,7 +156,7 @@ If you would like to set such things as the HTTP-Verb, Headers or a Body along w
 
 Sometimes, you might be getting encoded image data from a REST API call. You can use the `'data:'` uri scheme to use these images. Same as for network resources, _you will need to manually specify the dimensions of your image_.
 
-\> This is recommended for very small and dynamic images only, like icons in a list from a DB.
+> This is recommended for very small and dynamic images only, like icons in a list from a DB.
 
 
 ```javascript
