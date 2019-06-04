@@ -13,14 +13,14 @@ This is an API that works both on iOS and Android and can show static alerts. To
 
 <table>
   <tr>
-    <th style="width: 50%;">iOS</th>
-    <th style="width: 50%;">Android</th>
+    <th style={{width: "50%"}}>iOS</th>
+    <th style={{width: "50%"}}>Android</th>
   </tr>
   <tr>
-    <td style="width: 50%;">
+    <td style={{width: "50%"}}>
       <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleios.gif" /></center>
     </td>
-    <td style="width: 50%;">
+    <td style={{width: "50%"}}>
       <center><img src="https://facebook.github.io/react-native/docs/assets/Alert/exampleandroid.gif" /></center>
     </td>
   </tr>
