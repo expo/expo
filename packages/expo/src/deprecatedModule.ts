@@ -1,10 +1,12 @@
 let messages: string[] = [];
 let packages: string[] = [];
+let namedImports: string[] = [];
 
-export default function deprecatedModule(message, packageName) {
+export default function deprecatedModule(message, namedImport, packageName) {
   if (__DEV__) {
     messages.push(message);
     packages.push(packageName);
+    namedImports.push(namedImport);
     setTimeout(logWarning, 1000);
   }
 }
@@ -21,15 +23,24 @@ function logWarning() {
   packages = Array.from(new Set(packages));
   packages.sort();
 
+  namedImports = Array.from(new Set(namedImports));
+  namedImports.sort();
+
+  instructions += namedImports.join(', ');
+  instructions += '.\n\n';
+  instructions += '1. Add correct versions of these packages to your project using:\n\n';
+  instructions += `   expo install ${packages.join(' ')}\n\n`;
+  instructions += '   If "install" is not recognized as an expo command, update your expo-cli installation.\n\n';
+  instructions += "2. Change your imports so they use specific packages instead of the "expo" package:\n\n";
   messages.forEach(message => {
-    instructions += `- ${message}\n`;
+    instructions += ` - ${message}\n`;
   });
+
   instructions += '\n';
-  instructions += 'You can add the correct versions of these packages to your project using:\n';
-  instructions += `expo install ${packages.join(' ')}`;
   console.log(
-    `Following APIs have moved to separate packages and importing them from the 'expo' package is deprecated:\n${instructions}`
+    `The following APIs have moved to separate packages and importing them from the "expo" package is deprecated: ${instructions}`
   );
   messages = [];
   packages = [];
+  namedImports = [];
 }
