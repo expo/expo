@@ -10,6 +10,8 @@ This component is used inside a ScrollView or ListView to add pull to refresh fu
 
 ```javascript
 
+import { ScrollView, RefreshControl } from 'react-native';
+
 class RefreshableList extends Component {
   constructor(props) {
     super(props);
@@ -48,18 +50,18 @@ class RefreshableList extends Component {
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`refreshing`](../refreshcontrol/#refreshing)
-- [`onRefresh`](../refreshcontrol/#onrefresh)
-- [`colors`](../refreshcontrol/#colors)
-- [`enabled`](../refreshcontrol/#enabled)
-- [`progressBackgroundColor`](../refreshcontrol/#progressbackgroundcolor)
-- [`progressViewOffset`](../refreshcontrol/#progressviewoffset)
-- [`size`](../refreshcontrol/#size)
-- [`tintColor`](../refreshcontrol/#tintcolor)
-- [`title`](../refreshcontrol/#title)
-- [`titleColor`](../refreshcontrol/#titlecolor)
+* [`refreshing`](../refreshcontrol/#refreshing)
+* [`onRefresh`](../refreshcontrol/#onrefresh)
+* [`colors`](../refreshcontrol/#colors)
+* [`enabled`](../refreshcontrol/#enabled)
+* [`progressBackgroundColor`](../refreshcontrol/#progressbackgroundcolor)
+* [`progressViewOffset`](../refreshcontrol/#progressviewoffset)
+* [`size`](../refreshcontrol/#size)
+* [`tintColor`](../refreshcontrol/#tintcolor)
+* [`title`](../refreshcontrol/#title)
+* [`titleColor`](../refreshcontrol/#titlecolor)
 
 ---
 

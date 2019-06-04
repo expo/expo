@@ -95,36 +95,6 @@ Behind the scenes, React Native converts this to a flat `NSAttributedString` or 
 ```
 
 
-## Nested views (iOS only)
-
-On iOS, you can nest views within your Text component. Here's an example:
-
-
-```javascript
-
-import React, { Component } from 'react';
-import { AppRegistry, Text, View } from 'react-native';
-
-export default class BlueIsCool extends Component {
-  render() {
-    return (
-      <Text>
-        There is a blue square
-        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-        in between my text.
-      </Text>
-    );
-  }
-}
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => BlueIsCool);
-
-```
-
-
-> In order to use this feature, you must give the view a `width` and a `height`.
-
 ## Containers
 
 The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line.
@@ -152,7 +122,7 @@ The `<Text>` element is special relative to layout: everything inside is no long
 // |First part and|
 // |second part   |
 
-// the will will flow in its own block
+// otherwise, the text will flow in its own block
 // |First part |
 // |and        |
 // |second part|
@@ -198,7 +168,7 @@ In React Native, we are more strict about it: **you must wrap all the text nodes
 ```
 
 
-You also lose the ability to set up a default font for an entire subtree. The recommended way to use consistent fonts and sizes across your application is to create a component `MyAppText` that includes them and use this component across your app. You can also use this component to make more specific components like `MyAppHeaderText` for other kinds of text.
+You also lose the ability to set up a default font for an entire subtree. Meanwhile, `fontFamily` only accepts a single font name, which is different from `font-family` in CSS. The recommended way to use consistent fonts and sizes across your application is to create a component `MyAppText` that includes them and use this component across your app. You can also use this component to make more specific components like `MyAppHeaderText` for other kinds of text.
 
 
 ```javascript
@@ -248,48 +218,50 @@ React Native still has the concept of style inheritance, but limited to text sub
 
 We believe that this more constrained way to style text will yield better apps:
 
-* (Developer) React components are designed with strong isolation in mind: You should be able to drop a component anywhere in your application, trusting that as long as the props are the same, it will look and behave the same way. Text properties that could inherit from outside of the props would break this isolation.
+- (Developer) React components are designed with strong isolation in mind: You should be able to drop a component anywhere in your application, trusting that as long as the props are the same, it will look and behave the same way. Text properties that could inherit from outside of the props would break this isolation.
 
-* (Implementor) The implementation of React Native is also simplified. We do not need to have a `fontFamily` field on every single element, and we do not need to potentially traverse the tree up to the root every time we display a text node. The style inheritance is only encoded inside of the native Text component and doesn't leak to other components or the system itself.
+- (Implementor) The implementation of React Native is also simplified. We do not need to have a `fontFamily` field on every single element, and we do not need to potentially traverse the tree up to the root every time we display a text node. The style inheritance is only encoded inside of the native Text component and doesn't leak to other components or the system itself.
 
 ### Props
 
-* [`selectable`](../text/#selectable)
-* [`accessibilityHint`](../text/#accessibilityhint)
-* [`accessibilityLabel`](../text/#accessibilitylabel)
-* [`accessible`](../text/#accessible)
-* [`ellipsizeMode`](../text/#ellipsizemode)
-* [`nativeID`](../text/#nativeid)
-* [`numberOfLines`](../text/#numberoflines)
-* [`onLayout`](../text/#onlayout)
-* [`onLongPress`](../text/#onlongpress)
-* [`onPress`](../text/#onpress)
-* [`pressRetentionOffset`](../text/#pressretentionoffset)
-* [`allowFontScaling`](../text/#allowfontscaling)
-* [`style`](../text/#style)
-* [`testID`](../text/#testid)
-* [`disabled`](../text/#disabled)
-* [`selectionColor`](../text/#selectioncolor)
-* [`textBreakStrategy`](../text/#textbreakstrategy)
-* [`adjustsFontSizeToFit`](../text/#adjustsfontsizetofit)
-* [`minimumFontScale`](../text/#minimumfontscale)
-* [`suppressHighlighting`](../text/#suppresshighlighting)
+- [`accessibilityHint`](../text/#accessibilityhint)
+- [`accessibilityLabel`](../text/#accessibilitylabel)
+- [`accessibilityRole`](../text/#accessibilityrole)
+- [`accessibilityState`](../text/#accessibilitystate)
+- [`accessible`](../text/#accessible)
+- [`adjustsFontSizeToFit`](../text/#adjustsfontsizetofit)
+- [`allowFontScaling`](../text/#allowfontscaling)
+- [`dataDetectorType`](../text/#datadetectortype)
+- [`disabled`](../text/#disabled)
+- [`ellipsizeMode`](../text/#ellipsizemode)
+- [`maxFontSizeMultiplier`](../text/#maxfontsizemultiplier)
+- [`minimumFontScale`](../text/#minimumfontscale)
+- [`nativeID`](../text/#nativeid)
+- [`numberOfLines`](../text/#numberoflines)
+- [`onLayout`](../text/#onlayout)
+- [`onLongPress`](../text/#onlongpress)
+- [`onMoveShouldSetResponder`](../text/#onmoveshouldsetresponder)
+- [`onPress`](../text/#onpress)
+- [`onResponderGrant`](../text/#onrespondergrant)
+- [`onResponderMove`](../text/#onrespondermove)
+- [`onResponderRelease`](../text/#onresponderrelease)
+- [`onResponderTerminate`](../text/#onresponderterminate)
+- [`onResponderTerminationRequest`](../text/#onresponderterminationrequest)
+- [`onStartShouldSetResponder`](../text/#onstartshouldsetresponder)
+- [`onTextLayout`](../text/#ontextlayout)
+- [`pressRetentionOffset`](../text/#pressretentionoffset)
+- [`selectable`](../text/#selectable)
+- [`selectionColor`](../text/#selectioncolor)
+- [`style`](../text/#style)
+- [`suppressHighlighting`](../text/#suppresshighlighting)
+- [`testID`](../text/#testid)
+- [`textBreakStrategy`](../text/#textbreakstrategy)
 
 ---
 
 # Reference
 
 ## Props
-
-### `selectable`
-
-Lets the user select text, to use the native copy and paste functionality.
-
-| Type | Required |
-| ---- | -------- |
-| bool | No       |
-
----
 
 ### `accessibilityHint`
 
@@ -305,9 +277,54 @@ An accessibility hint helps users understand what will happen when they perform 
 
 Overrides the text that's read by the screen reader when the user interacts with the element. By default, the label is constructed by traversing all the children and accumulating all the `Text` nodes separated by space.
 
-| Type | Required |
-| ---- | -------- |
-| node | No       |
+| Type   | Required |
+| ------ | -------- |
+| string | No       |
+
+---
+
+### `accessibilityRole`
+
+Tells the screen reader to treat the currently focused on element as having a specific role.
+
+Possible values for `AccessibilityRole` is one of:
+
+- `'none'` - The element has no role.
+- `'button'` - The element should be treated as a button.
+- `'link'` - The element should be treated as a link.
+- `'header'` - The element is a header that divides content into sections.
+- `'search'` - The element should be treated as a search field.
+- `'image'` - The element should be treated as an image.
+- `'key'` - The element should be treated like a keyboard key.
+- `'text'` - The element should be treated as text.
+- `'summary'` - The element provides app summary information.
+- `'imagebutton'` - The element has the role of both an image and also a button.
+- `'adjustable'` - The element allows adjustment over a range of values.
+
+On iOS, these roles map to corresponding Accessibility Traits. Image button has the same functionality as if the trait was set to both 'image' and 'button'. See the [Accessibility guide](../accessibility/#accessibilitytraits-ios) for more information.
+
+On Android, these roles have similar functionality on TalkBack as adding Accessibility Traits does on Voiceover in iOS
+
+| Type              | Required |
+| ----------------- | -------- |
+| AccessibilityRole | No       |
+
+---
+
+### `accessibilityState`
+
+Tells the screen reader to treat the currently focused on element as being in a specific state.
+
+You can provide one state, no state, or multiple states. The states must be passed in through an object. Ex: `{selected: true, disabled: true}`.
+
+Possible values for `AccessibilityState` are:
+
+- `'selected'` - The element is in a selected state.
+- `'disabled'` - The element is in a disabled state.
+
+| Type   | Required |
+| ------ | -------- |
+| object | No       |
 
 ---
 
@@ -323,22 +340,96 @@ See the [Accessibility guide](../accessibility/#accessible-ios-android) for more
 
 ---
 
+### `adjustsFontSizeToFit`
+
+Specifies whether fonts should be scaled down automatically to fit given style constraints.
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | iOS      |
+
+---
+
+### `allowFontScaling`
+
+Specifies whether fonts should scale to respect Text Size accessibility settings. The default is `true`.
+
+| Type | Required |
+| ---- | -------- |
+| bool | No       |
+
+---
+
+### `dataDetectorType`
+
+Determines the types of data converted to clickable URLs in the text element. By default no data types are detected.
+
+You can provide only one type.
+
+Possible values for `dataDetectorType` are:
+
+- `'phoneNumber'`
+- `'link'`
+- `'email'`
+- `'none'`
+- `'all'`
+
+| Type                                                | Required | Platform |
+| --------------------------------------------------- | -------- | -------- |
+| enum('phoneNumber', 'link', 'email', 'none', 'all') | No       | Android  |
+
+---
+
+### `disabled`
+
+Specifies the disabled state of the text view for testing purposes
+
+| Type | Required | Platform |
+| ---- | -------- | -------- |
+| bool | No       | Android  |
+
+---
+
 ### `ellipsizeMode`
 
 When `numberOfLines` is set, this prop defines how text will be truncated. `numberOfLines` must be set in conjunction with this prop.
 
 This can be one of the following values:
 
-* `head` - The line is displayed so that the end fits in the container and the missing text at the beginning of the line is indicated by an ellipsis glyph. e.g., "...wxyz"
-* `middle` - The line is displayed so that the beginning and end fit in the container and the missing text in the middle is indicated by an ellipsis glyph. "ab...yz"
-* `tail` - The line is displayed so that the beginning fits in the container and the missing text at the end of the line is indicated by an ellipsis glyph. e.g., "abcd..."
-* `clip` - Lines are not drawn past the edge of the text container.
+- `head` - The line is displayed so that the end fits in the container and the missing text at the beginning of the line is indicated by an ellipsis glyph. e.g., "...wxyz"
+- `middle` - The line is displayed so that the beginning and end fit in the container and the missing text in the middle is indicated by an ellipsis glyph. "ab...yz"
+- `tail` - The line is displayed so that the beginning fits in the container and the missing text at the end of the line is indicated by an ellipsis glyph. e.g., "abcd..."
+- `clip` - Lines are not drawn past the edge of the text container.
 
 The default is `tail`.
 
 | Type                                   | Required |
 | -------------------------------------- | -------- |
 | enum('head', 'middle', 'tail', 'clip') | No       |
+
+---
+
+### `maxFontSizeMultiplier`
+
+Specifies largest possible scale a font can reach when `allowFontScaling` is enabled. Possible values:
+
+- `null/undefined` (default): inherit from the parent node or the global default (0)
+- `0`: no max, ignore parent/global default
+- `>= 1`: sets the `maxFontSizeMultiplier` of this node to this value
+
+| Type   | Required |
+| ------ | -------- |
+| number | No       |
+
+---
+
+### `minimumFontScale`
+
+Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | iOS      |
 
 ---
 
@@ -388,6 +479,18 @@ e.g., `onLongPress={this.increaseSize}>`
 
 ---
 
+### `onMoveShouldSetResponder`
+
+Does this view want to "claim" touch responsiveness? This is called for every touch move on the `View` when it is not the responder.
+
+`View.props.onMoveShouldSetResponder: (event) => [true | false]`, where `event` is a synthetic touch event as described above.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
 ### `onPress`
 
 This function is called on press.
@@ -400,6 +503,82 @@ e.g., `onPress={() => console.log('1st')}`
 
 ---
 
+### `onResponderGrant`
+
+The View is now responding for touch events. This is the time to highlight and show the user what is happening.
+
+`View.props.onResponderGrant: (event) => {}`, where `event` is a synthetic touch event as described above.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
+### `onResponderMove`
+
+The user is moving their finger.
+
+`View.props.onResponderMove: (event) => {}`, where `event` is a synthetic touch event as described above.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
+### `onResponderRelease`
+
+Fired at the end of the touch.
+
+`View.props.onResponderRelease: (event) => {}`, where `event` is a synthetic touch event as described above.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
+### `onResponderTerminate`
+
+The responder has been taken from the `View`. Might be taken by other views after a call to `onResponderTerminationRequest`, or might be taken by the OS without asking (e.g., happens with control center/ notification center on iOS)
+
+`View.props.onResponderTerminate: (event) => {}`, where `event` is a synthetic touch event as described above.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
+### `onResponderTerminationRequest`
+
+Some other `View` wants to become responder and is asking this `View` to release its responder. Returning `true` allows its release.
+
+`View.props.onResponderTerminationRequest: (event) => {}`, where `event` is a synthetic touch event as described above.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
+### `onStartShouldSetResponderCapture`
+
+If a parent `View` wants to prevent a child `View` from becoming responder on a touch start, it should have this handler which returns `true`.
+
+`View.props.onStartShouldSetResponderCapture: (event) => [true | false]`, where `event` is a synthetic touch event as described above.
+
+| Type     | Required |
+| -------- | -------- |
+| function | No       |
+
+---
+
+### `onTextLayout`
+
+TODO.
+
 ### `pressRetentionOffset`
 
 When the scroll view is disabled, this defines how far your touch may move off of the button, before deactivating the button. Once deactivated, try moving it back and you'll see that the button is once again reactivated! Move it back and forth several times while the scroll view is disabled. Ensure you pass in a constant to reduce memory allocations.
@@ -410,93 +589,13 @@ When the scroll view is disabled, this defines how far your touch may move off o
 
 ---
 
-### `allowFontScaling`
+### `selectable`
 
-Specifies whether fonts should scale to respect Text Size accessibility settings. The default is `true`.
+Lets the user select text, to use the native copy and paste functionality.
 
 | Type | Required |
 | ---- | -------- |
 | bool | No       |
-
----
-
-### `style`
-
-| Type  | Required |
-| ----- | -------- |
-| style | No       |
-
-* [View Style Props...](../view-style-props/#style)
-
-* **`textShadowOffset`**: object: {width: number,height: number}
-
-* **`color`**: [color](../colors/)
-
-* **`fontSize`**: number
-
-* **`fontStyle`**: enum('normal', 'italic')
-
-* **`fontWeight`**: enum('normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900')
-
-  Specifies font weight. The values 'normal' and 'bold' are supported for most fonts. Not all fonts have a variant for each of the numeric values, in that case the closest one is chosen.
-
-* **`lineHeight`**: number
-
-* **`textAlign`**: enum('auto', 'left', 'right', 'center', 'justify')
-
-  Specifies text alignment. The value 'justify' is only supported on iOS and fallbacks to `left` on Android.
-
-* **`textDecorationLine`**: enum('none', 'underline', 'line-through', 'underline line-through')
-
-* **`textShadowColor`**: [color](../colors/)
-
-* **`fontFamily`**: string
-
-* **`textShadowRadius`**: number
-
-* **`includeFontPadding`**: bool (_Android_)
-
-  Set to `false` to remove extra font padding intended to make space for certain ascenders / descenders. With some fonts, this padding can make text look slightly misaligned when centered vertically. For best results also set `textAlignVertical` to `center`. Default is true.
-
-- **`textAlignVertical`**: enum('auto', 'top', 'bottom', 'center') (_Android_)
-
-- **`fontVariant`**: array of enum('small-caps', 'oldstyle-nums', 'lining-nums', 'tabular-nums', 'proportional-nums') (_iOS_)
-
-- **`letterSpacing`**: number
-
-  Increase or decrease the spacing between characters. The default is 0, for no extra letter spacing.
-
-  iOS: The additional space will be rendered after each glyph.
-
-  Android: Only supported since Android 5.0 - older versions will ignore this attribute. Please note that additional space will be added _around_ the glyphs (half on each side), which differs from the iOS rendering. It is possible to emulate the iOS rendering by using layout attributes, e.g. negative margins, as appropriate for your situation.
-
-- **`textDecorationColor`**: [color](../colors/) (_iOS_)
-
-- **`textDecorationStyle`**: enum('solid', 'double', 'dotted', 'dashed') (_iOS_)
-
-- **`textTransform`**: enum('none', 'uppercase', 'lowercase', 'capitalize')
-
-- **`writingDirection`**: enum('auto', 'ltr', 'rtl') (_iOS_)
-
----
-
-### `testID`
-
-Used to locate this view in end-to-end tests.
-
-| Type   | Required |
-| ------ | -------- |
-| string | No       |
-
----
-
-### `disabled`
-
-Specifies the disabled state of the text view for testing purposes
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
 
 ---
 
@@ -510,33 +609,63 @@ The highlight color of the text.
 
 ---
 
-### `textBreakStrategy`
+### `style`
 
-Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced` The default value is `highQuality`.
+| Type  | Required |
+| ----- | -------- |
+| style | No       |
 
-| Type                                      | Required | Platform |
-| ----------------------------------------- | -------- | -------- |
-| enum('simple', 'highQuality', 'balanced') | No       | Android  |
+- [View Style Props...](../view-style-props/#style)
 
----
+- **`textShadowOffset`**: object: {width: number,height: number}
 
-### `adjustsFontSizeToFit`
+- **`color`**: [color](../colors/)
 
-Specifies whether font should be scaled down automatically to fit given style constraints.
+- **`fontSize`**: number
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | iOS      |
+- **`fontStyle`**: enum('normal', 'italic')
 
----
+- **`fontWeight`**: enum('normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900')
 
-### `minimumFontScale`
+  Specifies font weight. The values 'normal' and 'bold' are supported for most fonts. Not all fonts have a variant for each of the numeric values, in that case the closest one is chosen.
 
-Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
+- **`lineHeight`**: number
 
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| number | No       | iOS      |
+- **`textAlign`**: enum('auto', 'left', 'right', 'center', 'justify')
+
+  Specifies text alignment. The value 'justify' is only supported on iOS and Android Oreo (8.0) or above (API level \>= 26). For lower android version it will fallback to `left`.
+
+- **`textDecorationLine`**: enum('none', 'underline', 'line-through', 'underline line-through')
+
+- **`textShadowColor`**: [color](../colors/)
+
+- **`fontFamily`**: string
+
+- **`textShadowRadius`**: number
+
+- **`includeFontPadding`**: bool (_Android_)
+
+  Set to `false` to remove extra font padding intended to make space for certain ascenders / descenders. With some fonts, this padding can make text look slightly misaligned when centered vertically. For best results also set `textAlignVertical` to `center`. Default is true.
+
+* **`textAlignVertical`**: enum('auto', 'top', 'bottom', 'center') (_Android_)
+
+* **`fontVariant`**: array of enum('small-caps', 'oldstyle-nums', 'lining-nums', 'tabular-nums', 'proportional-nums') (_iOS_)
+
+* **`letterSpacing`**: number
+
+  Increase or decrease the spacing between characters. The default is 0, for no extra letter spacing.
+
+  iOS: The additional space will be rendered after each glyph.
+
+  Android: Only supported since Android 5.0 - older versions will ignore this attribute. Please note that additional space will be added _around_ the glyphs (half on each side), which differs from the iOS rendering. It is possible to emulate the iOS rendering by using layout attributes, e.g. negative margins, as appropriate for your situation.
+
+* **`textDecorationColor`**: [color](../colors/) (_iOS_)
+
+* **`textDecorationStyle`**: enum('solid', 'double', 'dotted', 'dashed') (_iOS_)
+
+* **`textTransform`**: enum('none', 'uppercase', 'lowercase', 'capitalize')
+
+* **`writingDirection`**: enum('auto', 'ltr', 'rtl') (_iOS_)
 
 ---
 
@@ -547,4 +676,28 @@ When `true`, no visual change is made when text is pressed down. By default, a g
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
+
+---
+
+### `testID`
+
+Used to locate this view in end-to-end tests.
+
+| Type   | Required |
+| ------ | -------- |
+| string | No       |
+
+---
+
+### `textBreakStrategy`
+
+Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced` The default value is `highQuality`.
+
+| Type                                      | Required | Platform |
+| ----------------------------------------- | -------- | -------- |
+| enum('simple', 'highQuality', 'balanced') | No       | Android  |
+
+# Known issues
+
+- [react-native#22811](https://github.com/facebook/react-native/issues/22811): Nested Text elements do not support `numberOfLines` attribute
 

@@ -5,14 +5,14 @@ title: Transforms
 
 ### Props
 
-* [`decomposedMatrix`](../transforms/#decomposedmatrix)
-* [`rotation`](../transforms/#rotation)
-* [`scaleX`](../transforms/#scalex)
-* [`scaleY`](../transforms/#scaley)
-* [`transform`](../transforms/#transform)
-* [`transformMatrix`](../transforms/#transformmatrix)
-* [`translateX`](../transforms/#translatex)
-* [`translateY`](../transforms/#translatey)
+- [`decomposedMatrix`](../transforms/#decomposedmatrix)
+- [`rotation`](../transforms/#rotation)
+- [`scaleX`](../transforms/#scalex)
+- [`scaleY`](../transforms/#scaley)
+- [`transform`](../transforms/#transform)
+- [`transformMatrix`](../transforms/#transformmatrix)
+- [`translateX`](../transforms/#translatex)
+- [`translateY`](../transforms/#translatey)
 
 ---
 
@@ -22,7 +22,7 @@ title: Transforms
 
 ### `decomposedMatrix`
 
-Deprecated. Use the transform prop instead.
+\> **Deprecated.** Use the [`transform`](../transforms/#transform) prop instead.
 
 | Type                     | Required |
 | ------------------------ | -------- |
@@ -74,7 +74,7 @@ The skew transformations require a string so that the transform may be expressed
 
 ### `transformMatrix`
 
-Deprecated. Use the transform prop instead.
+\> **Deprecated.** Use the [`transform`](../transforms/#transform) prop instead.
 
 | Type                    | Required |
 | ----------------------- | -------- |

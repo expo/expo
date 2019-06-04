@@ -5,20 +5,20 @@ title: Image Style Props
 
 ### Props
 
-* [`borderTopRightRadius`](../image-style-props/#bordertoprightradius)
-* [`backfaceVisibility`](../image-style-props/#backfacevisibility)
-* [`borderBottomLeftRadius`](../image-style-props/#borderbottomleftradius)
-* [`borderBottomRightRadius`](../image-style-props/#borderbottomrightradius)
-* [`borderColor`](../image-style-props/#bordercolor)
-* [`borderRadius`](../image-style-props/#borderradius)
-* [`borderTopLeftRadius`](../image-style-props/#bordertopleftradius)
-* [`backgroundColor`](../image-style-props/#backgroundcolor)
-* [`borderWidth`](../image-style-props/#borderwidth)
-* [`opacity`](../image-style-props/#opacity)
-* [`overflow`](../image-style-props/#overflow)
-* [`resizeMode`](../image-style-props/#resizemode)
-* [`tintColor`](../image-style-props/#tintcolor)
-* [`overlayColor`](../image-style-props/#overlaycolor)
+- [`borderTopRightRadius`](../image-style-props/#bordertoprightradius)
+- [`backfaceVisibility`](../image-style-props/#backfacevisibility)
+- [`borderBottomLeftRadius`](../image-style-props/#borderbottomleftradius)
+- [`borderBottomRightRadius`](../image-style-props/#borderbottomrightradius)
+- [`borderColor`](../image-style-props/#bordercolor)
+- [`borderRadius`](../image-style-props/#borderradius)
+- [`borderTopLeftRadius`](../image-style-props/#bordertopleftradius)
+- [`backgroundColor`](../image-style-props/#backgroundcolor)
+- [`borderWidth`](../image-style-props/#borderwidth)
+- [`opacity`](../image-style-props/#opacity)
+- [`overflow`](../image-style-props/#overflow)
+- [`resizeMode`](../image-style-props/#resizemode)
+- [`tintColor`](../image-style-props/#tintcolor)
+- [`overlayColor`](../image-style-props/#overlaycolor)
 
 ---
 
@@ -116,9 +116,9 @@ title: Image Style Props
 
 ### `resizeMode`
 
-| Type                         | Required |
-| ---------------------------- | -------- |
-| Object.keys(ImageResizeMode) | No       |
+| Type                                                    | Required |
+| ------------------------------------------------------- | -------- |
+| enum('cover', 'contain', 'stretch', 'repeat', 'center') | No       |
 
 ---
 
@@ -136,12 +136,12 @@ Changes the color of all the non-transparent pixels to the tintColor.
 
 When the image has rounded corners, specifying an overlayColor will cause the remaining space in the corners to be filled with a solid color. This is useful in cases which are not supported by the Android implementation of rounded corners:
 
-* Certain resize modes, such as 'contain'
-* Animated GIFs
+- Certain resize modes, such as 'contain'
+- Animated GIFs
 
 A typical way to use this prop is with images displayed on a solid background and setting the `overlayColor` to the same color as the background.
 
-For details of how this works under the hood, see http://frescolib.org/rounded-corners-and-circles.md
+For details of how this works under the hood, see https://frescolib.org/docs/rounded-corners-and-circles.html
 
 | Type   | Required | Platform |
 | ------ | -------- | -------- |

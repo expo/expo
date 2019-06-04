@@ -10,13 +10,8 @@ Example:
 
 ```javascript
 
-import React, { Component } from "react";
-import {
-  ProgressBarAndroid,
-  AppRegistry,
-  StyleSheet,
-  View
-} from "react-native";
+import React, {Component} from 'react';
+import {ProgressBarAndroid, AppRegistry, StyleSheet, View} from 'react-native';
 
 export default class App extends Component {
   render() {
@@ -38,26 +33,26 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-evenly",
-    padding: 10
-  }
+    justifyContent: 'space-evenly',
+    padding: 10,
+  },
 });
 
-AppRegistry.registerComponent("App", () => App);
+AppRegistry.registerComponent('App', () => App);
 
 ```
 
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`animating`](../progressbarandroid/#animating)
-- [`color`](../progressbarandroid/#color)
-- [`indeterminate`](../progressbarandroid/#indeterminate)
-- [`progress`](../progressbarandroid/#progress)
-- [`styleAttr`](../progressbarandroid/#styleattr)
-- [`testID`](../progressbarandroid/#testid)
+* [`animating`](../progressbarandroid/#animating)
+* [`color`](../progressbarandroid/#color)
+* [`indeterminate`](../progressbarandroid/#indeterminate)
+* [`progress`](../progressbarandroid/#progress)
+* [`styleAttr`](../progressbarandroid/#styleattr)
+* [`testID`](../progressbarandroid/#testid)
 
 ---
 
@@ -109,13 +104,13 @@ The progress value (between 0 and 1).
 
 Style of the ProgressBar. One of:
 
-* Horizontal
-* Normal (default)
-* Small
-* Large
-* Inverse
-* SmallInverse
-* LargeInverse
+- Horizontal
+- Normal (default)
+- Small
+- Large
+- Inverse
+- SmallInverse
+- LargeInverse
 
 | Type                                                                                      | Required |
 | ----------------------------------------------------------------------------------------- | -------- |

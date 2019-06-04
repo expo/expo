@@ -17,18 +17,17 @@ Note that in order to get this to work on **Android** you need to set the follow
 
 ### Methods
 
-* [`configureNext`](../layoutanimation/#configurenext)
-* [`create`](../layoutanimation/#create)
-* [`checkConfig`](../layoutanimation/#checkconfig)
+- [`configureNext`](../layoutanimation/#configurenext)
+- [`create`](../layoutanimation/#create)
 
 ### Properties
 
-* [`Types`](../layoutanimation/#types)
-* [`Properties`](../layoutanimation/#properties)
-* [`Presets`](../layoutanimation/#presets)
-* [`easeInEaseOut`](../layoutanimation/#easeineaseout)
-* [`linear`](../layoutanimation/#linear)
-* [`spring`](../layoutanimation/#spring)
+- [`Types`](../layoutanimation/#types)
+- [`Properties`](../layoutanimation/#properties)
+- [`Presets`](../layoutanimation/#presets)
+- [`easeInEaseOut`](../layoutanimation/#easeineaseout)
+- [`linear`](../layoutanimation/#linear)
+- [`spring`](../layoutanimation/#spring)
 
 ---
 
@@ -57,9 +56,9 @@ Schedules an animation to happen on the next layout.
 
 ##### config
 
-* `duration` in milliseconds
-* `create`, config for animating in new views (see `Anim` type)
-* `update`, config for animating views that have been updated (see `Anim` type)
+- `duration` in milliseconds
+- `create`, config for animating in new views (see `Anim` type)
+- `update`, config for animating views that have been updated (see `Anim` type)
 
 ---
 
@@ -74,18 +73,6 @@ static create(duration, type, creationProp)
 
 
 Helper for creating a config for `configureNext`.
-
----
-
-### `checkConfig()`
-
-
-```javascript
-
-static checkConfig(config, location, name)
-
-```
-
 
 ## Properties
 

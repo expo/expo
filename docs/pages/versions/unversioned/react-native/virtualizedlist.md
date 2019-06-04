@@ -3,61 +3,61 @@ id: virtualizedlist
 title: VirtualizedList
 ---
 
-Base implementation for the more convenient [`<FlatList>`](../flatlist/) and [`<SectionList>`](../sectionlist/) components, which are also better documented. In general, this should only really be used if you need more flexibility than `FlatList` provides, e.g. for use with immutable data instead of plain arrays.
+Base implementation for the more convenient [`<FlatList>`](../flatlist/) and [`<SectionList>`](../sectionlist/) components, which are also better documented. In general, this should only really be used if you need more flexibility than [`FlatList`](../flatlist/) provides, e.g. for use with immutable data instead of plain arrays.
 
 Virtualization massively improves memory consumption and performance of large lists by maintaining a finite render window of active items and replacing all items outside of the render window with appropriately sized blank space. The window adapts to scrolling behavior, and items are rendered incrementally with low-pri (after any running interactions) if they are far from the visible area, or with hi-pri otherwise to minimize the potential of seeing blank space.
 
 Some caveats:
 
-* Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
-* This is a `PureComponent` which means that it will not re-render if `props` remain shallow- equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
-* In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.
-* By default, the list looks for a `key` prop on each item and uses that for the React key. Alternatively, you can provide a custom `keyExtractor` prop.
+- Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
+- This is a `PureComponent` which means that it will not re-render if `props` remain shallow-equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
+- In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.
+- By default, the list looks for a `key` prop on each item and uses that for the React key. Alternatively, you can provide a custom `keyExtractor` prop.
 
 ### Props
 
-* [`ScrollView` props...](../scrollview/#props)
-* [`renderItem`](../virtualizedlist/#renderitem)
-* [`data`](../virtualizedlist/#data)
-* [`getItem`](../virtualizedlist/#getitem)
-* [`getItemCount`](../virtualizedlist/#getitemcount)
-* [`debug`](../virtualizedlist/#debug)
-* [`extraData`](../virtualizedlist/#extradata)
-* [`getItemLayout`](../virtualizedlist/#getitemlayout)
-* [`initialScrollIndex`](../virtualizedlist/#initialscrollindex)
-* [`inverted`](../virtualizedlist/#inverted)
-* [`CellRendererComponent`](../virtualizedlist/#cellrenderercomponent)
-* [`ListEmptyComponent`](../virtualizedlist/#listemptycomponent)
-* [`ListFooterComponent`](../virtualizedlist/#listfootercomponent)
-* [`ListHeaderComponent`](../virtualizedlist/#listheadercomponent)
-* [`onEndReached`](../virtualizedlist/#onendreached)
-* [`onLayout`](../virtualizedlist/#onlayout)
-* [`onRefresh`](../virtualizedlist/#onrefresh)
-* [`onScrollToIndexFailed`](../virtualizedlist/#onscrolltoindexfailed)
-* [`onViewableItemsChanged`](../virtualizedlist/#onviewableitemschanged)
-* [`refreshing`](../virtualizedlist/#refreshing)
-* [`removeClippedSubviews`](../virtualizedlist/#removeclippedsubviews)
-* [`renderScrollComponent`](../virtualizedlist/#renderscrollcomponent)
-* [`viewabilityConfig`](../virtualizedlist/#viewabilityconfig)
-* [`viewabilityConfigCallbackPairs`](../virtualizedlist/#viewabilityconfigcallbackpairs)
-* [`horizontal`](../virtualizedlist/#horizontal)
-* [`initialNumToRender`](../virtualizedlist/#initialnumtorender)
-* [`keyExtractor`](../virtualizedlist/#keyextractor)
-* [`maxToRenderPerBatch`](../virtualizedlist/#maxtorenderperbatch)
-* [`onEndReachedThreshold`](../virtualizedlist/#onendreachedthreshold)
-* [`updateCellsBatchingPeriod`](../virtualizedlist/#updatecellsbatchingperiod)
-* [`windowSize`](../virtualizedlist/#windowsize)
-* [`disableVirtualization`](../virtualizedlist/#disablevirtualization)
-* [`progressViewOffset`](../virtualizedlist/#progressviewoffset)
+- [`ScrollView` props...](../scrollview/#props)
+- [`renderItem`](../virtualizedlist/#renderitem)
+- [`data`](../virtualizedlist/#data)
+- [`getItem`](../virtualizedlist/#getitem)
+- [`getItemCount`](../virtualizedlist/#getitemcount)
+- [`debug`](../virtualizedlist/#debug)
+- [`extraData`](../virtualizedlist/#extradata)
+- [`getItemLayout`](../virtualizedlist/#getitemlayout)
+- [`initialScrollIndex`](../virtualizedlist/#initialscrollindex)
+- [`inverted`](../virtualizedlist/#inverted)
+- [`CellRendererComponent`](../virtualizedlist/#cellrenderercomponent)
+- [`ListEmptyComponent`](../virtualizedlist/#listemptycomponent)
+- [`ListFooterComponent`](../virtualizedlist/#listfootercomponent)
+- [`ListHeaderComponent`](../virtualizedlist/#listheadercomponent)
+- [`onEndReached`](../virtualizedlist/#onendreached)
+- [`onLayout`](../virtualizedlist/#onlayout)
+- [`onRefresh`](../virtualizedlist/#onrefresh)
+- [`onScrollToIndexFailed`](../virtualizedlist/#onscrolltoindexfailed)
+- [`onViewableItemsChanged`](../virtualizedlist/#onviewableitemschanged)
+- [`refreshing`](../virtualizedlist/#refreshing)
+- [`removeClippedSubviews`](../virtualizedlist/#removeclippedsubviews)
+- [`renderScrollComponent`](../virtualizedlist/#renderscrollcomponent)
+- [`viewabilityConfig`](../virtualizedlist/#viewabilityconfig)
+- [`viewabilityConfigCallbackPairs`](../virtualizedlist/#viewabilityconfigcallbackpairs)
+- [`horizontal`](../virtualizedlist/#horizontal)
+- [`initialNumToRender`](../virtualizedlist/#initialnumtorender)
+- [`keyExtractor`](../virtualizedlist/#keyextractor)
+- [`maxToRenderPerBatch`](../virtualizedlist/#maxtorenderperbatch)
+- [`onEndReachedThreshold`](../virtualizedlist/#onendreachedthreshold)
+- [`updateCellsBatchingPeriod`](../virtualizedlist/#updatecellsbatchingperiod)
+- [`windowSize`](../virtualizedlist/#windowsize)
+- [`disableVirtualization`](../virtualizedlist/#disablevirtualization)
+- [`progressViewOffset`](../virtualizedlist/#progressviewoffset)
 
 ### Methods
 
-* [`scrollToEnd`](../virtualizedlist/#scrolltoend)
-* [`scrollToIndex`](../virtualizedlist/#scrolltoindex)
-* [`scrollToItem`](../virtualizedlist/#scrolltoitem)
-* [`scrollToOffset`](../virtualizedlist/#scrolltooffset)
-* [`recordInteraction`](../virtualizedlist/#recordinteraction)
-* [`flashScrollIndicators`](../virtualizedlist/#flashscrollindicators)
+- [`scrollToEnd`](../virtualizedlist/#scrolltoend)
+- [`scrollToIndex`](../virtualizedlist/#scrolltoindex)
+- [`scrollToItem`](../virtualizedlist/#scrolltoitem)
+- [`scrollToOffset`](../virtualizedlist/#scrolltooffset)
+- [`recordInteraction`](../virtualizedlist/#recordinteraction)
+- [`flashScrollIndicators`](../virtualizedlist/#flashscrollindicators)
 
 ---
 
@@ -311,7 +311,7 @@ Set this true while waiting for new data from a refresh.
 
 This may improve scroll performance for large lists.
 
-> Note: May have bugs (missing content) in some circumstances - use at your own risk.
+\> Note: May have bugs (missing content) in some circumstances - use at your own risk.
 
 | Type    | Required |
 | ------- | -------- |
@@ -453,7 +453,7 @@ Determines the maximum number of items rendered outside of the visible area, in 
 
 ### `disableVirtualization`
 
-**DEPRECATED.** Virtualization provides significant performance and memory optimizations, but fully unmounts react instances that are outside of the render window. You should only need to disable this for debugging purposes.
+\> **Deprecated.** Virtualization provides significant performance and memory optimizations, but fully unmounts react instances that are outside of the render window. You should only need to disable this for debugging purposes.
 
 | Type | Required |
 | ---- | -------- |

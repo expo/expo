@@ -25,10 +25,10 @@ return (
 
 ### Props
 
-* [`Image` props...](../image/#props)
-* [`style`](../imagebackground/#style)
-* [`imageStyle`](../imagebackground/#imageStyle)
-* [`imageRef`](../imagebackground/#imageRef)
+- [`Image` props...](../image/#props)
+- [`style`](../imagebackground/#style)
+- [`imageStyle`](../imagebackground/#imageStyle)
+- [`imageRef`](../imagebackground/#imageRef)
 
 ---
 

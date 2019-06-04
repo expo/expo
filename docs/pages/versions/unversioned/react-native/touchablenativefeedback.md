@@ -31,17 +31,17 @@ renderButton: function() {
 
 ### Props
 
-* [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
+- [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
 
-- [`background`](../touchablenativefeedback/#background)
-- [`useForeground`](../touchablenativefeedback/#useforeground)
+* [`background`](../touchablenativefeedback/#background)
+* [`useForeground`](../touchablenativefeedback/#useforeground)
 
 ### Methods
 
-* [`SelectableBackground`](../touchablenativefeedback/#selectablebackground)
-* [`SelectableBackgroundBorderless`](../touchablenativefeedback/#selectablebackgroundborderless)
-* [`Ripple`](../touchablenativefeedback/#ripple)
-* [`canUseNativeForeground`](../touchablenativefeedback/#canusenativeforeground)
+- [`SelectableBackground`](../touchablenativefeedback/#selectablebackground)
+- [`SelectableBackgroundBorderless`](../touchablenativefeedback/#selectablebackgroundborderless)
+- [`Ripple`](../touchablenativefeedback/#ripple)
+- [`canUseNativeForeground`](../touchablenativefeedback/#canusenativeforeground)
 
 ---
 

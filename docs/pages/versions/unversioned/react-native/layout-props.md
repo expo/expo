@@ -5,59 +5,59 @@ title: Layout Props
 
 ### Props
 
-* [`alignContent`](../layout-props/#aligncontent)
-* [`alignItems`](../layout-props/#alignitems)
-* [`alignSelf`](../layout-props/#alignself)
-* [`aspectRatio`](../layout-props/#aspectratio)
-* [`borderBottomWidth`](../layout-props/#borderbottomwidth)
-* [`borderEndWidth`](../layout-props/#borderendwidth)
-* [`borderLeftWidth`](../layout-props/#borderleftwidth)
-* [`borderRightWidth`](../layout-props/#borderrightwidth)
-* [`borderStartWidth`](../layout-props/#borderstartwidth)
-* [`borderTopWidth`](../layout-props/#bordertopwidth)
-* [`borderWidth`](../layout-props/#borderwidth)
-* [`bottom`](../layout-props/#bottom)
-* [`direction`](../layout-props/#direction)
-* [`display`](../layout-props/#display)
-* [`end`](../layout-props/#end)
-* [`flex`](../layout-props/#flex)
-* [`flexBasis`](../layout-props/#flexbasis)
-* [`flexDirection`](../layout-props/#flexdirection)
-* [`flexGrow`](../layout-props/#flexgrow)
-* [`flexShrink`](../layout-props/#flexshrink)
-* [`flexWrap`](../layout-props/#flexwrap)
-* [`height`](../layout-props/#height)
-* [`justifyContent`](../layout-props/#justifycontent)
-* [`left`](../layout-props/#left)
-* [`margin`](../layout-props/#margin)
-* [`marginBottom`](../layout-props/#marginbottom)
-* [`marginEnd`](../layout-props/#marginend)
-* [`marginHorizontal`](../layout-props/#marginhorizontal)
-* [`marginLeft`](../layout-props/#marginleft)
-* [`marginRight`](../layout-props/#marginright)
-* [`marginStart`](../layout-props/#marginstart)
-* [`marginTop`](../layout-props/#margintop)
-* [`marginVertical`](../layout-props/#marginvertical)
-* [`maxHeight`](../layout-props/#maxheight)
-* [`maxWidth`](../layout-props/#maxwidth)
-* [`minHeight`](../layout-props/#minheight)
-* [`minWidth`](../layout-props/#minwidth)
-* [`overflow`](../layout-props/#overflow)
-* [`padding`](../layout-props/#padding)
-* [`paddingBottom`](../layout-props/#paddingbottom)
-* [`paddingEnd`](../layout-props/#paddingend)
-* [`paddingHorizontal`](../layout-props/#paddinghorizontal)
-* [`paddingLeft`](../layout-props/#paddingleft)
-* [`paddingRight`](../layout-props/#paddingright)
-* [`paddingStart`](../layout-props/#paddingstart)
-* [`paddingTop`](../layout-props/#paddingtop)
-* [`paddingVertical`](../layout-props/#paddingvertical)
-* [`position`](../layout-props/#position)
-* [`right`](../layout-props/#right)
-* [`start`](../layout-props/#start)
-* [`top`](../layout-props/#top)
-* [`width`](../layout-props/#width)
-* [`zIndex`](../layout-props/#zindex)
+- [`alignContent`](../layout-props/#aligncontent)
+- [`alignItems`](../layout-props/#alignitems)
+- [`alignSelf`](../layout-props/#alignself)
+- [`aspectRatio`](../layout-props/#aspectratio)
+- [`borderBottomWidth`](../layout-props/#borderbottomwidth)
+- [`borderEndWidth`](../layout-props/#borderendwidth)
+- [`borderLeftWidth`](../layout-props/#borderleftwidth)
+- [`borderRightWidth`](../layout-props/#borderrightwidth)
+- [`borderStartWidth`](../layout-props/#borderstartwidth)
+- [`borderTopWidth`](../layout-props/#bordertopwidth)
+- [`borderWidth`](../layout-props/#borderwidth)
+- [`bottom`](../layout-props/#bottom)
+- [`direction`](../layout-props/#direction)
+- [`display`](../layout-props/#display)
+- [`end`](../layout-props/#end)
+- [`flex`](../layout-props/#flex)
+- [`flexBasis`](../layout-props/#flexbasis)
+- [`flexDirection`](../layout-props/#flexdirection)
+- [`flexGrow`](../layout-props/#flexgrow)
+- [`flexShrink`](../layout-props/#flexshrink)
+- [`flexWrap`](../layout-props/#flexwrap)
+- [`height`](../layout-props/#height)
+- [`justifyContent`](../layout-props/#justifycontent)
+- [`left`](../layout-props/#left)
+- [`margin`](../layout-props/#margin)
+- [`marginBottom`](../layout-props/#marginbottom)
+- [`marginEnd`](../layout-props/#marginend)
+- [`marginHorizontal`](../layout-props/#marginhorizontal)
+- [`marginLeft`](../layout-props/#marginleft)
+- [`marginRight`](../layout-props/#marginright)
+- [`marginStart`](../layout-props/#marginstart)
+- [`marginTop`](../layout-props/#margintop)
+- [`marginVertical`](../layout-props/#marginvertical)
+- [`maxHeight`](../layout-props/#maxheight)
+- [`maxWidth`](../layout-props/#maxwidth)
+- [`minHeight`](../layout-props/#minheight)
+- [`minWidth`](../layout-props/#minwidth)
+- [`overflow`](../layout-props/#overflow)
+- [`padding`](../layout-props/#padding)
+- [`paddingBottom`](../layout-props/#paddingbottom)
+- [`paddingEnd`](../layout-props/#paddingend)
+- [`paddingHorizontal`](../layout-props/#paddinghorizontal)
+- [`paddingLeft`](../layout-props/#paddingleft)
+- [`paddingRight`](../layout-props/#paddingright)
+- [`paddingStart`](../layout-props/#paddingstart)
+- [`paddingTop`](../layout-props/#paddingtop)
+- [`paddingVertical`](../layout-props/#paddingvertical)
+- [`position`](../layout-props/#position)
+- [`right`](../layout-props/#right)
+- [`start`](../layout-props/#start)
+- [`top`](../layout-props/#top)
+- [`width`](../layout-props/#width)
+- [`zIndex`](../layout-props/#zindex)
 
 ---
 
@@ -99,11 +99,11 @@ title: Layout Props
 
 Aspect ratio controls the size of the undefined dimension of a node. Aspect ratio is a non-standard property only available in React Native and not CSS.
 
-* On a node with a set width/height aspect ratio controls the size of the unset dimension
-* On a node with a set flex basis aspect ratio controls the size of the node in the cross axis if unset
-* On a node with a measure function aspect ratio works as though the measure function measures the flex basis
-* On a node with flex grow/shrink aspect ratio controls the size of the node in the cross axis if unset
-* Aspect ratio takes min/max dimensions into account
+- On a node with a set width/height aspect ratio controls the size of the unset dimension
+- On a node with a set flex basis aspect ratio controls the size of the node in the cross axis if unset
+- On a node with a measure function aspect ratio works as though the measure function measures the flex basis
+- On a node with flex grow/shrink aspect ratio controls the size of the node in the cross axis if unset
+- Aspect ratio takes min/max dimensions into account
 
 | Type   | Required |
 | ------ | -------- |
@@ -197,7 +197,7 @@ See https://developer.mozilla.org/en-US/docs/Web/CSS/bottom for more details of 
 
 ### `direction`
 
-`direction` specifies the directional flow of the user interface. The default is `inherit`, except for root node which will have value based on the current locale. See https://facebook.github.io/yoga/docs/rtl/ for more details.
+`direction` specifies the directional flow of the user interface. The default is `inherit`, except for root node which will have value based on the current locale. See https://yogalayout.com/docs/layout-direction for more details.
 
 | Type                          | Required | Platform |
 | ----------------------------- | -------- | -------- |
@@ -231,9 +231,9 @@ This style takes precedence over the `left` and `right` styles.
 
 ### `flex`
 
-In React Native `flex` does not work the same way that it does in CSS. `flex` is a number rather than a string, and it works according to the `Yoga` library at https://github.com/facebook/yoga
+In React Native `flex` does not work the same way that it does in CSS. `flex` is a number rather than a string, and it works according to the [Yoga](https://github.com/facebook/yoga).
 
-When `flex` is a positive number, it makes the component flexible and it will be sized proportional to its flex value. So a component with `flex` set to 2 will take twice the space as a component with `flex` set to 1.
+When `flex` is a positive number, it makes the component flexible and it will be sized proportional to its flex value. So a component with `flex` set to 2 will take twice the space as a component with `flex` set to 1. `flex: <positive number>` equates to `flexGrow: <positive number>, flexShrink: 1, flexBasis: 0`.
 
 When `flex` is 0, the component is sized according to `width` and `height` and it is inflexible.
 
@@ -475,7 +475,7 @@ See https://developer.mozilla.org/en-US/docs/Web/CSS/min-width for more details.
 
 ### `overflow`
 
-`overflow` controls how children are measured and displayed. `overflow: hidden` causes views to be clipped while `overflow: scroll` causes views to be measured independently of their parents main axis. It works like `overflow` in CSS (default: visible). See https://developer.mozilla.org/en/docs/Web/CSS/overflow for more details. `overflow: visible` only works on iOS. On Android, all views will clip their children.
+`overflow` controls how children are measured and displayed. `overflow: hidden` causes views to be clipped while `overflow: scroll` causes views to be measured independently of their parents main axis. It works like `overflow` in CSS (default: visible). See https://developer.mozilla.org/en/docs/Web/CSS/overflow for more details.
 
 | Type                                | Required |
 | ----------------------------------- | -------- |

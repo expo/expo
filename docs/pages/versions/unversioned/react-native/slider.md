@@ -3,28 +3,30 @@ id: slider
 title: Slider
 ---
 
+\> **Deprecated.** Use [react-native-community/react-native-slider](https://github.com/react-native-community/react-native-slider) instead.
+
 A component used to select a single value from a range of values.
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`style`](../slider/#style)
-- [`disabled`](../slider/#disabled)
-- [`maximumValue`](../slider/#maximumvalue)
-- [`minimumTrackTintColor`](../slider/#minimumtracktintcolor)
-- [`minimumValue`](../slider/#minimumvalue)
-- [`onSlidingComplete`](../slider/#onslidingcomplete)
-- [`onValueChange`](../slider/#onvaluechange)
-- [`step`](../slider/#step)
-- [`maximumTrackTintColor`](../slider/#maximumtracktintcolor)
-- [`testID`](../slider/#testid)
-- [`value`](../slider/#value)
-- [`thumbTintColor`](../slider/#thumbtintcolor)
-- [`maximumTrackImage`](../slider/#maximumtrackimage)
-- [`minimumTrackImage`](../slider/#minimumtrackimage)
-- [`thumbImage`](../slider/#thumbimage)
-- [`trackImage`](../slider/#trackimage)
+* [`style`](../slider/#style)
+* [`disabled`](../slider/#disabled)
+* [`maximumValue`](../slider/#maximumvalue)
+* [`minimumTrackTintColor`](../slider/#minimumtracktintcolor)
+* [`minimumValue`](../slider/#minimumvalue)
+* [`onSlidingComplete`](../slider/#onslidingcomplete)
+* [`onValueChange`](../slider/#onvaluechange)
+* [`step`](../slider/#step)
+* [`maximumTrackTintColor`](../slider/#maximumtracktintcolor)
+* [`testID`](../slider/#testid)
+* [`value`](../slider/#value)
+* [`thumbTintColor`](../slider/#thumbtintcolor)
+* [`maximumTrackImage`](../slider/#maximumtrackimage)
+* [`minimumTrackImage`](../slider/#minimumtrackimage)
+* [`thumbImage`](../slider/#thumbimage)
+* [`trackImage`](../slider/#trackimage)
 
 ---
 

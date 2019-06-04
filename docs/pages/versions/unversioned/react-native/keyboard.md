@@ -12,34 +12,36 @@ The Keyboard module allows you to listen for native events and react to them, as
 
 ```javascript
 
-import React, { Component } from 'react';
-import { Keyboard, TextInput } from 'react-native';
+import React, {Component} from 'react';
+import {Keyboard, TextInput} from 'react-native';
 
 class Example extends Component {
-  componentDidMount () {
-    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
-    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+  componentDidMount() {
+    this.keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      this._keyboardDidShow,
+    );
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this._keyboardDidHide,
+    );
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
   }
 
-  _keyboardDidShow () {
+  _keyboardDidShow() {
     alert('Keyboard Shown');
   }
 
-  _keyboardDidHide () {
+  _keyboardDidHide() {
     alert('Keyboard Hidden');
   }
 
   render() {
-    return (
-      <TextInput
-        onSubmitEditing={Keyboard.dismiss}
-      />
-    );
+    return <TextInput onSubmitEditing={Keyboard.dismiss} />;
   }
 }
 
@@ -48,10 +50,10 @@ class Example extends Component {
 
 ### Methods
 
-* [`addListener`](../keyboard/#addlistener)
-* [`removeListener`](../keyboard/#removelistener)
-* [`removeAllListeners`](../keyboard/#removealllisteners)
-* [`dismiss`](../keyboard/#dismiss)
+- [`addListener`](../keyboard/#addlistener)
+- [`removeListener`](../keyboard/#removelistener)
+- [`removeAllListeners`](../keyboard/#removealllisteners)
+- [`dismiss`](../keyboard/#dismiss)
 
 ---
 
@@ -75,14 +77,14 @@ This function then returns the reference to the listener.
 
 @param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for. This can be any of the following:
 
-* `keyboardWillShow`
-* `keyboardDidShow`
-* `keyboardWillHide`
-* `keyboardDidHide`
-* `keyboardWillChangeFrame`
-* `keyboardDidChangeFrame`
+- `keyboardWillShow`
+- `keyboardDidShow`
+- `keyboardWillHide`
+- `keyboardDidHide`
+- `keyboardWillChangeFrame`
+- `keyboardDidChangeFrame`
 
-Note that if you set `android:windowSoftInputMode` to `adjustResize` or `adjustNothing`, only `keyboardDidShow` and `keyboardDidHide` events will be available on Android. `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android since there is no native corresponding event.
+Note that if you set `android:windowSoftInputMode` to `adjustResize`, only `keyboardDidShow` and `keyboardDidHide` events will be available on Android. If you set `android:windowSoftInputMode` to `adjustNothing`, no events will be available on Android. `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android since there is no native corresponding event.
 
 @param {function} callback function to be called when the event fires.
 

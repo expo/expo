@@ -42,20 +42,19 @@ Use a StyleSheet:
 
 Code quality:
 
-* By moving styles away from the render function, you're making the code easier to understand.
-* Naming the styles is a good way to add meaning to the low level components in the render function.
+- By moving styles away from the render function, you're making the code easier to understand.
+- Naming the styles is a good way to add meaning to the low level components in the render function.
 
 ### Methods
 
-* [`setStyleAttributePreprocessor`](../stylesheet/#setstyleattributepreprocessor)
-* [`create`](../stylesheet/#create)
-* [`flatten`](../stylesheet/#flatten)
+- [`setStyleAttributePreprocessor`](../stylesheet/#setstyleattributepreprocessor)
+- [`create`](../stylesheet/#create)
+- [`flatten`](../stylesheet/#flatten)
 
 ### Properties
 
-* [`hairlineWidth`](../stylesheet/#hairlinewidth)
-* [`absoluteFill`](../stylesheet/#absolutefill)
-* [`absoluteFillObject`](../stylesheet/#absolutefillobject)
+- [`hairlineWidth`](../stylesheet/#hairlinewidth)
+- [`absoluteFill`](../stylesheet/#absolutefill)
 
 ---
 
@@ -105,7 +104,7 @@ static flatten(style)
 
 Flattens an array of style objects, into one aggregated style object. Alternatively, this method can be used to lookup IDs, returned by `StyleSheet.register`.
 
-> _NOTE_: Exercise caution as abusing this can tax you in terms of optimizations. IDs enable optimizations through the bridge and memory in general. Refering to style objects directly will deprive you of these optimizations.
+\> _NOTE_: Exercise caution as abusing this can tax you in terms of optimizations. IDs enable optimizations through the bridge and memory in general. Refering to style objects directly will deprive you of these optimizations.
 
 Example:
 
@@ -146,7 +145,7 @@ var styles = StyleSheet.create({
 });
 
 StyleSheet.flatten(styles.listItem);
-// return { flex: 1, fontSize: 16, color: 'white' }
+// returns { flex: 1, fontSize: 16, color: 'white' }
 // Simply styles.listItem would return its ID (number)
 
 ```
@@ -179,20 +178,14 @@ A line with hairline width may not be visible if your simulator is downscaled.
 
 ### `absoluteFill`
 
-A very common pattern is to create overlays with position absolute and zero positioning (`position: 'absolute', left: 0, right: 0, top: 0, bottom: 0`), so `absoluteFill` can be used for convenience and to reduce duplication of these repeated styles.
-
----
-
-### `absoluteFillObject`
-
-Sometimes you may want absoluteFill but with a couple tweaks - absoluteFillObject can be used to create a customized entry in a StyleSheet, e.g.:
+A very common pattern is to create overlays with position absolute and zero positioning (`position: 'absolute', left: 0, right: 0, top: 0, bottom: 0`), so `absoluteFill` can be used for convenience and to reduce duplication of these repeated styles. If you want, absoluteFill can be used to create a customized entry in a StyleSheet, e.g.:
 
 
 ```javascript
 
 const styles = StyleSheet.create({
   wrapper: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     top: 10,
     backgroundColor: 'transparent',
   },

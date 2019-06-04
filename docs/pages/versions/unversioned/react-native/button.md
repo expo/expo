@@ -5,7 +5,7 @@ title: Button
 
 A basic button component that should render nicely on any platform. Supports a minimal level of customization.
 
-<center><img src="https://facebook.github.io/react-native/docs/assets/buttonExample.png"></img></center>
+\<center\>\<img src="https://facebook.github.io/react-native/docs/assets/buttonExample.png"\>\</img\>\</center\>
 
 If this button doesn't look right for your app, you can build your own button using [TouchableOpacity](../touchableopacity/) or [TouchableNativeFeedback](../touchablenativefeedback/). For inspiration, look at the [source code for this button component](https://github.com/facebook/react-native/blob/master/Libraries/Components/Button.js). Or, take a look at the [wide variety of button components built by the community](https://js.coach/react-native?search=button).
 
@@ -29,13 +29,22 @@ import { Button } from 'react-native';
 
 ### Props
 
-* [`onPress`](../button/#onpress)
-* [`title`](../button/#title)
-* [`accessibilityLabel`](../button/#accessibilitylabel)
-* [`color`](../button/#color)
-* [`disabled`](../button/#disabled)
-* [`testID`](../button/#testid)
-* [`hasTVPreferredFocus`](../button/#hastvpreferredfocus)
+- [`accessibilityLabel`](../button/#accessibilitylabel)
+- [`color`](../button/#color)
+- [`disabled`](../button/#disabled)
+- [`hasTVPreferredFocus`](../button/#hastvpreferredfocus)
+- [`nextFocusDown`](../view/#nextfocusdown)
+- [`nextFocusForward`](../view/#nextfocusForward)
+- [`nextFocusLeft`](../view/#nextfocusleft)
+- [`nextFocusRight`](../view/#nextfocusright)
+- [`nextFocusUp`](../view/#nextfocusleft)
+- [`onPress`](../button/#onpress)
+- [`testID`](../button/#testid)
+- [`title`](../button/#title)
+- [`touchSoundDisabled`](../button/#touchSoundDisabled)
+
+
+
 
 ---
 
@@ -110,4 +119,69 @@ _(Apple TV only)_ TV preferred focus (see documentation for the View component).
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
+
+
+### `nextFocusDown`
+
+Designates the next view to receive focus when the user navigates down. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusDown).
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
+
+
+---
+
+
+### `nextFocusForward`
+
+Designates the next view to receive focus when the user navigates forward. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusForward).
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
+
+
+---
+
+### `nextFocusLeft`
+
+Designates the next view to receive focus when the user navigates left. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusLeft).
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
+
+
+---
+
+### `nextFocusRight`
+
+Designates the next view to receive focus when the user navigates right. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusRight).
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
+
+
+---
+
+### `nextFocusUp`
+
+Designates the next view to receive focus when the user navigates up. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusUp).
+
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
+
+
+---
+
+### `touchSoundDisabled`
+
+If true, doesn't play system sound on touch.
+
+| Type    | Required | Platform |
+| ------  | -------- | -------- |
+| boolean | No       | Android  |
 

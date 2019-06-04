@@ -5,34 +5,55 @@ title: TouchableWithoutFeedback
 
 Do not use unless you have a very good reason. All elements that respond to press should have a visual feedback when touched.
 
-TouchableWithoutFeedback supports only one child. If you wish to have several child components, wrap them in a View.
+`TouchableWithoutFeedback` supports only one child. If you wish to have several child components, wrap them in a View. Importantly, `TouchableWithoutFeedback` works by cloning its child and applying responder props to it. It is therefore required that any intermediary components pass through those props to the underlying React Native component.
+
+### Usage Example
+
+
+```javascript
+
+function MyComponent(props) {
+  return (
+    <View {...props} style={{flex: 1, backgroundColour: '#fff'}}>
+      <Text>My Component</Text>
+    </View>
+  );
+}
+
+<TouchableWithoutFeedback onPress={() => alert('Pressed!')}>
+  <MyComponent />
+</TouchableWithoutFeedback>;
+
+```
+
 
 ### Props
 
-* [`accessibilityComponentType`](../touchablewithoutfeedback/#accessibilitycomponenttype)
-* [`accessibilityHint`](../touchablewithoutfeedback/#accessibilityhint)
-* [`accessibilityLabel`](../touchablewithoutfeedback/#accessibilitylabel)
-* [`accessibilityRole`](../view/#accessibilityrole)
-* [`accessibilityStates`](../view/#accessibilitystates)
-* [`accessibilityTraits`](../touchablewithoutfeedback/#accessibilitytraits)
-* [`accessible`](../touchablewithoutfeedback/#accessible)
-* [`delayLongPress`](../touchablewithoutfeedback/#delaylongpress)
-* [`delayPressIn`](../touchablewithoutfeedback/#delaypressin)
-* [`delayPressOut`](../touchablewithoutfeedback/#delaypressout)
-* [`disabled`](../touchablewithoutfeedback/#disabled)
-* [`hitSlop`](../touchablewithoutfeedback/#hitslop)
-* [`onBlur`](../touchablewithoutfeedback/#onblur)
-* [`onFocus`](../touchablewithoutfeedback/#onfocus)
-* [`onLayout`](../touchablewithoutfeedback/#onlayout)
-* [`onLongPress`](../touchablewithoutfeedback/#onlongpress)
-* [`onPress`](../touchablewithoutfeedback/#onpress)
-* [`onPressIn`](../touchablewithoutfeedback/#onpressin)
-* [`onPressOut`](../touchablewithoutfeedback/#onpressout)
-* [`pressRetentionOffset`](../touchablewithoutfeedback/#pressretentionoffset)
+- [`accessibilityComponentType`](../touchablewithoutfeedback/#accessibilitycomponenttype)
+- [`accessibilityHint`](../touchablewithoutfeedback/#accessibilityhint)
+- [`accessibilityLabel`](../touchablewithoutfeedback/#accessibilitylabel)
+- [`accessibilityRole`](../view/#accessibilityrole)
+- [`accessibilityStates`](../view/#accessibilitystates)
+- [`accessibilityTraits`](../touchablewithoutfeedback/#accessibilitytraits)
+- [`accessible`](../touchablewithoutfeedback/#accessible)
+- [`delayLongPress`](../touchablewithoutfeedback/#delaylongpress)
+- [`delayPressIn`](../touchablewithoutfeedback/#delaypressin)
+- [`delayPressOut`](../touchablewithoutfeedback/#delaypressout)
+- [`disabled`](../touchablewithoutfeedback/#disabled)
+- [`hitSlop`](../touchablewithoutfeedback/#hitslop)
+- [`onBlur`](../touchablewithoutfeedback/#onblur)
+- [`onFocus`](../touchablewithoutfeedback/#onfocus)
+- [`onLayout`](../touchablewithoutfeedback/#onlayout)
+- [`onLongPress`](../touchablewithoutfeedback/#onlongpress)
+- [`onPress`](../touchablewithoutfeedback/#onpress)
+- [`onPressIn`](../touchablewithoutfeedback/#onpressin)
+- [`onPressOut`](../touchablewithoutfeedback/#onpressout)
+- [`pressRetentionOffset`](../touchablewithoutfeedback/#pressretentionoffset)
+- [`testID`](../touchablewithoutfeedback/#testid)
 
 ### Type Definitions
 
-* [`Event`](../touchablewithoutfeedback/#event)
+- [`Event`](../touchablewithoutfeedback/#event)
 
 ---
 
@@ -42,7 +63,7 @@ TouchableWithoutFeedback supports only one child. If you wish to have several ch
 
 ### accessibilityComponentType
 
-_> Note: `accessibilityComponentType`will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead._
+_\> Note: `accessibilityComponentType`will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead._
 
 | Type                        | Required |
 | --------------------------- | -------- |
@@ -64,9 +85,9 @@ An accessibility hint helps users understand what will happen when they perform 
 
 Overrides the text that's read by the screen reader when the user interacts with the element. By default, the label is constructed by traversing all the children and accumulating all the `Text` nodes separated by space.
 
-| Type | Required |
-| ---- | -------- |
-| node | No       |
+| Type   | Required |
+| ------ | -------- |
+| string | No       |
 
 ---
 
@@ -88,7 +109,7 @@ Overrides the text that's read by the screen reader when the user interacts with
 
 ### accessibilityTraits
 
-_> Note: `accessibilityTraits`will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead._
+_\> Note: `accessibilityTraits`will soon be deprecated. When possible, use `accessibilityRole` and `accessibilityStates` instead._
 
 | Type                                               | Required |
 | -------------------------------------------------- | -------- |
@@ -229,6 +250,16 @@ When the scroll view is disabled, this defines how far your touch may move off o
 | Type                                                               | Required |
 | ------------------------------------------------------------------ | -------- |
 | object: {top: number, left: number, bottom: number, right: number} | No       |
+
+### testID
+
+Used to locate this view in end-to-end tests.
+
+| Type   | Required |
+| ------ | -------- |
+| string | No       |
+
+---
 
 ## Type Definitions
 

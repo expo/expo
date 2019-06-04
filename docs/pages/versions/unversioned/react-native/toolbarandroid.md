@@ -3,7 +3,7 @@ id: toolbarandroid
 title: ToolbarAndroid
 ---
 
-React component that wraps the Android-only [`Toolbar` widget](https://developer.android.com/reference/android/support/v7/widget/Toolbar.html). A Toolbar can display a logo, navigation icon (e.g. hamburger menu), a title & subtitle and a list of actions. The title and subtitle are expanded so the logo and navigation icons are displayed on the left, title and subtitle in the middle and the actions on the right.
+React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo, navigation icon (e.g. hamburger menu), a title & subtitle and a list of actions. The title and subtitle are expanded so the logo and navigation icons are displayed on the left, title and subtitle in the middle and the actions on the right.
 
 If the toolbar has an only child, it will be displayed between the title and actions.
 
@@ -32,26 +32,26 @@ onActionSelected: function(position) {
 ```
 
 
-[0]: 
+[0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`overflowIcon`](../toolbarandroid/#overflowicon)
-- [`actions`](../toolbarandroid/#actions)
-- [`contentInsetStart`](../toolbarandroid/#contentinsetstart)
-- [`logo`](../toolbarandroid/#logo)
-- [`navIcon`](../toolbarandroid/#navicon)
-- [`onActionSelected`](../toolbarandroid/#onactionselected)
-- [`onIconClicked`](../toolbarandroid/#oniconclicked)
-- [`contentInsetEnd`](../toolbarandroid/#contentinsetend)
-- [`rtl`](../toolbarandroid/#rtl)
-- [`subtitle`](../toolbarandroid/#subtitle)
-- [`subtitleColor`](../toolbarandroid/#subtitlecolor)
-- [`testID`](../toolbarandroid/#testid)
-- [`title`](../toolbarandroid/#title)
-- [`titleColor`](../toolbarandroid/#titlecolor)
+* [`overflowIcon`](../toolbarandroid/#overflowicon)
+* [`actions`](../toolbarandroid/#actions)
+* [`contentInsetStart`](../toolbarandroid/#contentinsetstart)
+* [`logo`](../toolbarandroid/#logo)
+* [`navIcon`](../toolbarandroid/#navicon)
+* [`onActionSelected`](../toolbarandroid/#onactionselected)
+* [`onIconClicked`](../toolbarandroid/#oniconclicked)
+* [`contentInsetEnd`](../toolbarandroid/#contentinsetend)
+* [`rtl`](../toolbarandroid/#rtl)
+* [`subtitle`](../toolbarandroid/#subtitle)
+* [`subtitleColor`](../toolbarandroid/#subtitlecolor)
+* [`testID`](../toolbarandroid/#testid)
+* [`title`](../toolbarandroid/#title)
+* [`titleColor`](../toolbarandroid/#titlecolor)
 
 ---
 
@@ -75,10 +75,10 @@ Sets possible actions on the toolbar as part of the action menu. These are displ
 
 This property takes an array of objects, where each object has the following keys:
 
-* `title`: **required**, the title of this action
-* `icon`: the icon for this action, e.g. `require('./some_icon.png')`
-* `show`: when to show this action as an icon or hide it in the overflow menu: `always`, `ifRoom` or `never`
-* `showWithText`: boolean, whether to show text alongside the icon or not
+- `title`: **required**, the title of this action
+- `icon`: the icon for this action, e.g. `require('./some_icon.png')`
+- `show`: when to show this action as an icon or hide it in the overflow menu: `always`, `ifRoom` or `never`
+- `showWithText`: boolean, whether to show text alongside the icon or not
 
 | Type                                                                                                                  | Required |
 | --------------------------------------------------------------------------------------------------------------------- | -------- |

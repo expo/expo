@@ -7,8 +7,8 @@ When building a cross-platform app, you'll want to re-use as much code as possib
 
 React Native provides two ways to easily organize your code and separate it by platform:
 
-* Using the [`Platform` module](../platform-specific-code/#platform-module).
-* Using [platform-specific file extensions](../platform-specific-code/#platform-specific-extensions).
+- Using the [`Platform` module](../platform-specific-code/#platform-module).
+- Using [platform-specific file extensions](../platform-specific-code/#platform-specific-extensions).
 
 Certain components may have properties that work on one platform only. All of these props are annotated with `@platform` and have a small badge next to them on the website.
 
@@ -124,12 +124,37 @@ You can then require the component as follows:
 
 ```javascript
 
-const BigButton = require('./BigButton');
+import BigButton from './BigButton';
 
 ```
 
 
 React Native will automatically pick up the right file based on the running platform.
 
-If you share your React Native code with a website, you might as well use the `BigButton.native.js` so that both iOS and Android will use this file, while the website will use `BigButton.js`.
+## Native-specific extensions (i.e. sharing code with NodeJS and Web)
+
+You can also use the `.native.js` extension when a module needs to be shared between NodeJS/Web and React Native but it has no Android/iOS differences. This is specially useful for projects that has common code shared among React Native and ReactJS.
+
+For example, say you have the following files in your project:
+
+
+```sh
+
+Container.js # picked up by Webpack, Rollup or any other Web bundler
+Container.native.js # picked up by the React Native bundler for both Android and iOS (Metro)
+
+```
+
+
+You can still require it without the `.native` extension, as follows:
+
+
+```javascript
+
+import Container from './Container';
+
+```
+
+
+**Pro tip:** Configure your Web bundler to ignore `.native.js` extensions in order to avoid having unused code in your production bundle, thus reducing the final bundle size.
 

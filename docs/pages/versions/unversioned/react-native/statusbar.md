@@ -12,16 +12,13 @@ It is possible to have multiple `StatusBar` components mounted at the same time.
 
 ```javascript
 
- <View>
-   <StatusBar
-     backgroundColor="blue"
-     barStyle="light-content"
-   />
-   <View>
-     <StatusBar hidden={route.statusBarHidden} />
-     ...
-   </View>
- </View>
+<View>
+  <StatusBar backgroundColor="blue" barStyle="light-content" />
+  <View>
+    <StatusBar hidden={route.statusBarHidden} />
+    ...
+  </View>
+</View>
 
 ```
 
@@ -36,26 +33,26 @@ For cases where using a component is not ideal, there is also an imperative API 
 
 ### Props
 
-* [`animated`](../statusbar/#animated)
-* [`barStyle`](../statusbar/#barstyle)
-* [`hidden`](../statusbar/#hidden)
-* [`backgroundColor`](../statusbar/#backgroundcolor)
-* [`translucent`](../statusbar/#translucent)
-* [`networkActivityIndicatorVisible`](../statusbar/#networkactivityindicatorvisible)
-* [`showHideTransition`](../statusbar/#showhidetransition)
+- [`animated`](../statusbar/#animated)
+- [`barStyle`](../statusbar/#barstyle)
+- [`hidden`](../statusbar/#hidden)
+- [`backgroundColor`](../statusbar/#backgroundcolor)
+- [`translucent`](../statusbar/#translucent)
+- [`networkActivityIndicatorVisible`](../statusbar/#networkactivityindicatorvisible)
+- [`showHideTransition`](../statusbar/#showhidetransition)
 
 ### Methods
 
-* [`setHidden`](../statusbar/#sethidden)
-* [`setBarStyle`](../statusbar/#setbarstyle)
-* [`setNetworkActivityIndicatorVisible`](../statusbar/#setnetworkactivityindicatorvisible)
-* [`setBackgroundColor`](../statusbar/#setbackgroundcolor)
-* [`setTranslucent`](../statusbar/#settranslucent)
+- [`setHidden`](../statusbar/#sethidden)
+- [`setBarStyle`](../statusbar/#setbarstyle)
+- [`setNetworkActivityIndicatorVisible`](../statusbar/#setnetworkactivityindicatorvisible)
+- [`setBackgroundColor`](../statusbar/#setbackgroundcolor)
+- [`setTranslucent`](../statusbar/#settranslucent)
 
 ### Type Definitions
 
-* [`StatusBarStyle`](../statusbar/#statusbarstyle)
-* [`StatusBarAnimation`](../statusbar/#statusbaranimation)
+- [`StatusBarStyle`](../statusbar/#statusbarstyle)
+- [`StatusBarAnimation`](../statusbar/#statusbaranimation)
 
 ---
 
@@ -185,7 +182,7 @@ static setNetworkActivityIndicatorVisible(visible: boolean)
 ```
 
 
-Control the visibility of the network activity indicator
+Control the visibility of the network activity indicator. iOS-only.
 
 **Parameters:**
 
@@ -205,7 +202,7 @@ static setBackgroundColor(color: string, [animated]: boolean)
 ```
 
 
-Set the background color for the status bar
+Set the background color for the status bar. Android-only
 
 **Parameters:**
 
@@ -226,7 +223,7 @@ static setTranslucent(translucent: boolean)
 ```
 
 
-Control the translucency of the status bar
+Control the translucency of the status bar. Android-only.
 
 **Parameters:**
 
@@ -240,9 +237,9 @@ Control the translucency of the status bar
 
 Status bar style
 
-| Type  |
-| ----- |
-| $Enum |
+| Type   |
+| ------ |
+| \$Enum |
 
 **Constants:**
 
@@ -250,7 +247,7 @@ Status bar style
 | ------------- | -------------------------------------------------------------------- |
 | default       | Default status bar style (dark for iOS, light for Android)           |
 | light-content | Dark background, white texts and icons                               |
-| dark-content  | Light background, dark texts and icons (requires API>=23 on Android) |
+| dark-content  | Light background, dark texts and icons (requires API\>=23 on Android) |
 
 ---
 
@@ -258,9 +255,9 @@ Status bar style
 
 Status bar animation
 
-| Type  |
-| ----- |
-| $Enum |
+| Type   |
+| ------ |
+| \$Enum |
 
 **Constants:**
 

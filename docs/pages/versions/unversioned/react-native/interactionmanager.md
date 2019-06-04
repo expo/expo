@@ -19,9 +19,9 @@ InteractionManager.runAfterInteractions(() => {
 
 Compare this to other scheduling alternatives:
 
-* requestAnimationFrame(): for code that animates a view over time.
-* setImmediate/setTimeout(): run code later, note this may delay animations.
-* runAfterInteractions(): run code later, without delaying active animations.
+- requestAnimationFrame(): for code that animates a view over time.
+- setImmediate/setTimeout(): run code later, note this may delay animations.
+- runAfterInteractions(): run code later, without delaying active animations.
 
 The touch handling system considers one or more active touches to be an 'interaction' and will delay `runAfterInteractions()` callbacks until all touches have ended or been cancelled.
 
@@ -45,15 +45,15 @@ By default, queued tasks are executed together in a loop in one `setImmediate` b
 
 ### Methods
 
-* [`runAfterInteractions`](../interactionmanager/#runafterinteractions)
-* [`createInteractionHandle`](../interactionmanager/#createinteractionhandle)
-* [`clearInteractionHandle`](../interactionmanager/#clearinteractionhandle)
-* [`setDeadline`](../interactionmanager/#setdeadline)
+- [`runAfterInteractions`](../interactionmanager/#runafterinteractions)
+- [`createInteractionHandle`](../interactionmanager/#createinteractionhandle)
+- [`clearInteractionHandle`](../interactionmanager/#clearinteractionhandle)
+- [`setDeadline`](../interactionmanager/#setdeadline)
 
 ### Properties
 
-* [`Events`](../interactionmanager/#events)
-* [`addListener`](../interactionmanager/#addlistener)
+- [`Events`](../interactionmanager/#events)
+- [`addListener`](../interactionmanager/#addlistener)
 
 ---
 

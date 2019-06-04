@@ -16,7 +16,7 @@ var image = getImage({
   width: PixelRatio.getPixelSizeForLayoutSize(200),
   height: PixelRatio.getPixelSizeForLayoutSize(100),
 });
-<Image source={image} style={{width: 200, height: 100}} />
+<Image source={image} style={{width: 200, height: 100}} />;
 
 ```
 
@@ -33,10 +33,10 @@ In React Native, everything in JavaScript and within the layout engine works wit
 
 ### Methods
 
-* [`get`](../pixelratio/#get)
-* [`getFontScale`](../pixelratio/#getfontscale)
-* [`getPixelSizeForLayoutSize`](../pixelratio/#getpixelsizeforlayoutsize)
-* [`roundToNearestPixel`](../pixelratio/#roundtonearestpixel)
+- [`get`](../pixelratio/#get)
+- [`getFontScale`](../pixelratio/#getfontscale)
+- [`getPixelSizeForLayoutSize`](../pixelratio/#getpixelsizeforlayoutsize)
+- [`roundToNearestPixel`](../pixelratio/#roundtonearestpixel)
 
 ---
 
@@ -56,25 +56,25 @@ static get()
 
 Returns the device pixel density. Some examples:
 
-* PixelRatio.get() === 1
-  * [mdpi Android devices](https://material.io/tools/devices/)
-* PixelRatio.get() === 1.5
-  * [hdpi Android devices](https://material.io/tools/devices/)
-* PixelRatio.get() === 2
-  * iPhone 4, 4S
-  * iPhone 5, 5C, 5S
-  * iPhone 6, 7, 8
-  * iPhone XR
-  * [xhdpi Android devices](https://material.io/tools/devices/)
-* PixelRatio.get() === 3
-  * iPhone 6 Plus, 7 Plus, 8 Plus
-  * iPhone X, XS, XS Max
-  * Pixel, Pixel 2
-  * [xxhdpi Android devices](https://material.io/tools/devices/)
-* PixelRatio.get() === 3.5
-  * Nexus 6
-  * Pixel XL, Pixel 2 XL
-  * [xxxhdpi Android devices](https://material.io/tools/devices/)
+- PixelRatio.get() === 1
+  - [mdpi Android devices](https://material.io/tools/devices/)
+- PixelRatio.get() === 1.5
+  - [hdpi Android devices](https://material.io/tools/devices/)
+- PixelRatio.get() === 2
+  - iPhone 4, 4S
+  - iPhone 5, 5C, 5S
+  - iPhone 6, 7, 8
+  - iPhone XR
+  - [xhdpi Android devices](https://material.io/tools/devices/)
+- PixelRatio.get() === 3
+  - iPhone 6 Plus, 7 Plus, 8 Plus
+  - iPhone X, XS, XS Max
+  - Pixel, Pixel 2
+  - [xxhdpi Android devices](https://material.io/tools/devices/)
+- PixelRatio.get() === 3.5
+  - Nexus 6
+  - Pixel XL, Pixel 2 XL
+  - [xxxhdpi Android devices](https://material.io/tools/devices/)
 
 ---
 
@@ -92,7 +92,7 @@ Returns the scaling factor for font sizes. This is the ratio that is used to cal
 
 If a font scale is not set, this returns the device pixel ratio.
 
-Currently this is only implemented on Android and reflects the user preference set in Settings > Display > Font size, on iOS it will always return the default pixel ratio. @platform android
+Currently this is only implemented on Android and reflects the user preference set in Settings \> Display \> Font size, on iOS it will always return the default pixel ratio. @platform android
 
 ---
 

@@ -101,17 +101,17 @@ class App extends Component {
 
 ### Methods
 
-* [`show`](../toastandroid/#show)
-* [`showWithGravity`](../toastandroid/#showwithgravity)
-* [`showWithGravityAndOffset`](../toastandroid/#showwithgravityandoffset)
+- [`show`](../toastandroid/#show)
+- [`showWithGravity`](../toastandroid/#showwithgravity)
+- [`showWithGravityAndOffset`](../toastandroid/#showwithgravityandoffset)
 
 ### Properties
 
-* [`SHORT`](../toastandroid/#short)
-* [`LONG`](../toastandroid/#long)
-* [`TOP`](../toastandroid/#top)
-* [`BOTTOM`](../toastandroid/#bottom)
-* [`CENTER`](../toastandroid/#center)
+- [`SHORT`](../toastandroid/#short)
+- [`LONG`](../toastandroid/#long)
+- [`TOP`](../toastandroid/#top)
+- [`BOTTOM`](../toastandroid/#bottom)
+- [`CENTER`](../toastandroid/#center)
 
 ---
 

@@ -11,18 +11,18 @@ You can find a visualization of some common easing functions at http://easings.n
 
 The `Easing` module provides several predefined animations through the following methods:
 
-* [`back`](../easing/#back) provides a simple animation where the object goes slightly back before moving forward
-* [`bounce`](../easing/#bounce) provides a bouncing animation
-* [`ease`](../easing/#ease) provides a simple inertial animation
-* [`elastic`](../easing/#elastic) provides a simple spring interaction
+- [`back`](../easing/#back) provides a simple animation where the object goes slightly back before moving forward
+- [`bounce`](../easing/#bounce) provides a bouncing animation
+- [`ease`](../easing/#ease) provides a simple inertial animation
+- [`elastic`](../easing/#elastic) provides a simple spring interaction
 
 ### Standard functions
 
 Three standard easing functions are provided:
 
-* [`linear`](../easing/#linear)
-* [`quad`](../easing/#quad)
-* [`cubic`](../easing/#cubic)
+- [`linear`](../easing/#linear)
+- [`quad`](../easing/#quad)
+- [`cubic`](../easing/#cubic)
 
 The [`poly`](../easing/#poly) function can be used to implement quartic, quintic, and other higher power functions.
 
@@ -30,36 +30,36 @@ The [`poly`](../easing/#poly) function can be used to implement quartic, quintic
 
 Additional mathematical functions are provided by the following methods:
 
-* [`bezier`](../easing/#bezier) provides a cubic bezier curve
-* [`circle`](../easing/#circle) provides a circular function
-* [`sin`](../easing/#sin) provides a sinusoidal function
-* [`exp`](../easing/#exp) provides an exponential function
+- [`bezier`](../easing/#bezier) provides a cubic bezier curve
+- [`circle`](../easing/#circle) provides a circular function
+- [`sin`](../easing/#sin) provides a sinusoidal function
+- [`exp`](../easing/#exp) provides an exponential function
 
 The following helpers are used to modify other easing functions.
 
-* [`in`](../easing/#in) runs an easing function forwards
-* [`inOut`](../easing/#inout) makes any easing function symmetrical
-* [`out`](../easing/#out) runs an easing function backwards
+- [`in`](../easing/#in) runs an easing function forwards
+- [`inOut`](../easing/#inout) makes any easing function symmetrical
+- [`out`](../easing/#out) runs an easing function backwards
 
 ### Methods
 
-* [`step0`](../easing/#step0)
-* [`step1`](../easing/#step1)
-* [`linear`](../easing/#linear)
-* [`ease`](../easing/#ease)
-* [`quad`](../easing/#quad)
-* [`cubic`](../easing/#cubic)
-* [`poly`](../easing/#poly)
-* [`sin`](../easing/#sin)
-* [`circle`](../easing/#circle)
-* [`exp`](../easing/#exp)
-* [`elastic`](../easing/#elastic)
-* [`back`](../easing/#back)
-* [`bounce`](../easing/#bounce)
-* [`bezier`](../easing/#bezier)
-* [`in`](../easing/#in)
-* [`out`](../easing/#out)
-* [`inOut`](../easing/#inout)
+- [`step0`](../easing/#step0)
+- [`step1`](../easing/#step1)
+- [`linear`](../easing/#linear)
+- [`ease`](../easing/#ease)
+- [`quad`](../easing/#quad)
+- [`cubic`](../easing/#cubic)
+- [`poly`](../easing/#poly)
+- [`sin`](../easing/#sin)
+- [`circle`](../easing/#circle)
+- [`exp`](../easing/#exp)
+- [`elastic`](../easing/#elastic)
+- [`back`](../easing/#back)
+- [`bounce`](../easing/#bounce)
+- [`bezier`](../easing/#bezier)
+- [`in`](../easing/#in)
+- [`out`](../easing/#out)
+- [`inOut`](../easing/#inout)
 
 ---
 
@@ -235,7 +235,7 @@ static elastic(bounciness)
 
 A simple elastic interaction, similar to a spring oscillating back and forth.
 
-Default bounciness is 1, which overshoots a little bit once. 0 bounciness doesn't overshoot at all, and bounciness of N > 1 will overshoot about N times.
+Default bounciness is 1, which overshoots a little bit once. 0 bounciness doesn't overshoot at all, and bounciness of N \> 1 will overshoot about N times.
 
 http://easings.net/#easeInElastic
 
@@ -292,7 +292,7 @@ A useful tool to visualize cubic bezier curves can be found at http://cubic-bezi
 
 ```javascript
 
-static in easing;
+static in(easing);
 
 ```
 

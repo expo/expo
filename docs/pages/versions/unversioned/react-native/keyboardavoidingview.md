@@ -10,11 +10,11 @@ Example usage:
 
 ```javascript
 
-import { KeyboardAvoidingView } from 'react-native';
+import {KeyboardAvoidingView} from 'react-native';
 
 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
   ... your UI ...
-</KeyboardAvoidingView>
+</KeyboardAvoidingView>;
 
 ```
 
@@ -25,12 +25,12 @@ import { KeyboardAvoidingView } from 'react-native';
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`keyboardVerticalOffset`](../keyboardavoidingview/#keyboardverticaloffset)
-- [`behavior`](../keyboardavoidingview/#behavior)
-- [`contentContainerStyle`](../keyboardavoidingview/#contentcontainerstyle)
-- [`enabled`](../keyboardavoidingview/#enabled)
+* [`keyboardVerticalOffset`](../keyboardavoidingview/#keyboardverticaloffset)
+* [`behavior`](../keyboardavoidingview/#behavior)
+* [`contentContainerStyle`](../keyboardavoidingview/#contentcontainerstyle)
+* [`enabled`](../keyboardavoidingview/#enabled)
 
 ---
 
