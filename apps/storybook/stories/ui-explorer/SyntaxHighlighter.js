@@ -29,26 +29,13 @@ const Scroller = styled.div(
     position: 'relative',
     overflow: 'auto',
   },
-  ({}) => ({
+  () => ({
     '& code': {
       paddingRight: theme.layoutMargin,
     },
   })
   // ({}) => themedSyntax(theme)
 );
-
-const Pre = styled.pre(({ padded }) => ({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  margin: 0,
-  padding: padded ? theme.layoutMargin : 0,
-}));
-
-const Code = styled.code({
-  flex: 1,
-  paddingRight: 0,
-  opacity: 1,
-});
 
 const atomOneLight = {
   hljs: {
@@ -228,16 +215,7 @@ export default class CopyableCode extends Component {
   };
 
   render() {
-    const {
-      children,
-      language,
-      copyable,
-      bordered,
-      padded,
-      format,
-      className,
-      ...rest
-    } = this.props;
+    const { children, language, copyable, bordered, padded, format, className } = this.props;
 
     const { copied } = this.state;
 
