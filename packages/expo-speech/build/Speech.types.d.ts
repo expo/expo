@@ -8,7 +8,7 @@ export declare type SpeechOptions = {
     onDone?: () => void | SpeechEventCallback;
     onError?: (error: Error) => void | SpeechEventCallback;
     volume?: number;
-    voiceIOS?: string;
+    voice?: string;
     _voiceIndex?: number;
     onBoundary?: SpeechEventCallback | null;
     onMark?: SpeechEventCallback | null;
