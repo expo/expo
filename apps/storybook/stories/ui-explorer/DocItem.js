@@ -1,7 +1,12 @@
-import AppText from './AppText';
-import insertBetween from './insertBetween';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import AppText from './AppText';
+import insertBetween from './insertBetween';
+// import { Row, Rows, Table } from 'react-native-table-component';
+
+const Row = View;
+const Rows = View;
+const Table = View;
 
 const Divider = () => <View style={styles.verticalDivider} />;
 
@@ -35,9 +40,105 @@ const DocItem = ({ description, example = {}, name, typeInfo, label }) => (
   </View>
 );
 
+const ParametersTable = ({ data, header }) => {
+  return (
+    <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+      <Row
+        data={header || ['Name', 'Type', 'Description']}
+        style={{ height: 40, backgroundColor: '#f1f8ff' }}
+        textStyle={{ margin: 6 }}
+      />
+      <Rows
+        data={data.map(({ name, type, description }) => {
+          let outputType = type;
+          if (Array.isArray(type)) {
+            outputType = type.join(' | ');
+          }
+          return [name, outputType, description];
+        })}
+        textStyle={{ margin: 6 }}
+      />
+    </Table>
+  );
+};
+
+const ReturnsTable = ({ data, header }) => {
+  return (
+    <Table borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+      <Row
+        data={header || ['Type', 'Description']}
+        style={{ height: 40, backgroundColor: '#f1f8ff' }}
+        textStyle={{ margin: 6 }}
+      />
+      <Rows
+        data={data.map(({ type, description }) => {
+          let outputType = type;
+          if (Array.isArray(type)) {
+            outputType = type.join(' | ');
+          }
+          return [outputType, description];
+        })}
+        textStyle={{ margin: 6 }}
+      />
+    </Table>
+  );
+};
+
+const Parameters = ({ title, data, header }) => {
+  return (
+    <View>
+      <AppText style={styles.title}>Parameters</AppText>
+      <ParametersTable data={data} />
+    </View>
+  );
+};
+const Returns = ({ title, data, header }) => {
+  return (
+    <View>
+      <AppText style={styles.title}>Returns</AppText>
+      <ReturnsTable data={data} />
+    </View>
+  );
+};
+
+export const DocFunctionItem = ({
+  description,
+  parameters,
+  returns,
+  example = {},
+  name,
+  typeInfo,
+  label,
+}) => (
+  <View style={styles.example}>
+    {name && (
+      <AppText style={styles.title}>
+        <PropText label={label} name={name} typeInfo={typeInfo} />
+      </AppText>
+    )}
+    {description && <View style={styles.description}>{createDescription(description)}</View>}
+    {parameters && <Parameters data={parameters} />}
+    {returns && <Returns data={returns} />}
+    {(example.render || example.code) && (
+      <View style={styles.renderBox}>
+        <AppText style={styles.exampleText}>Example</AppText>
+        {example.render && <View>{example.render()}</View>}
+        {example.render && example.code && <View style={styles.verticalDivider} />}
+        {example.code && <Text style={styles.code}>{example.code}</Text>}
+      </View>
+    )}
+  </View>
+);
+
+export const Label = ({ style, children, ...props }) => (
+  <Text {...props} style={[styles.label, children === 'web' && styles.webLabel, style]}>
+    {children}
+  </Text>
+);
+
 const PropText = ({ label, name, typeInfo }) => (
   <AppText>
-    {label && <Text style={[styles.label, label === 'web' && styles.webLabel]}>{label}</Text>}
+    {label && <Label>{label}</Label>}
     <Text style={styles.propName}>{name}</Text>
     {typeInfo && (
       <Text>

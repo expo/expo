@@ -24,7 +24,10 @@ function _createJestPreset() {
     ...jestExpoPreset,
     clearMocks: true,
     roots: ['<rootDir>/src'],
-    transform: tsJestPreset.transform,
+    transform: {
+      ...tsJestPreset.transform,
+      ...jestExpoPreset.transform,
+    },
     globals: {
       'ts-jest': {
         tsConfig: _createTypeScriptConfiguration(),

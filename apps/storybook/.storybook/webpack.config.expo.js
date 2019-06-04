@@ -7,6 +7,10 @@ const createBabelConfig = require('@expo/webpack-config/webpack/createBabelConfi
 module.exports = function(env) {
   const locations = getLocations(env.projectRoot);
   const babelConfig = createBabelConfig(locations.root);
+  // console.log("BABEL", babel)
+  //   babelConfig.use.push(require.resolve('ts-loader'));
+  // babelConfig.use.push(require.resolve("react-docgen-typescript-loader"));
+
   const clientEnv = createClientEnvironment(locations);
   const ttfLoaderConfiguration = {
     test: /\.(ttf|otf|woff)$/,
@@ -71,10 +75,22 @@ module.exports = function(env) {
     },
     resolve: {
       symlinks: false,
-      extensions: ['.web.js', '.js', '.jsx', '.json'],
+      extensions: [
+        '.web.ts',
+        '.web.tsx',
+        '.ts',
+        '.tsx',
+        '.web.js',
+        '.web.jsx',
+        '.js',
+        '.jsx',
+        '.json',
+      ],
       alias: {
         // Alias direct react-native imports to react-native-web
         'react-native$': 'react-native-web',
+
+        '@storybook/react-native$': '@storybook/react',
         // Add polyfills for modules that react-native-web doesn't support
         // Depends on expo-asset
         'react-native/Libraries/Image/AssetSourceResolver$': 'expo-asset/build/AssetSourceResolver',
