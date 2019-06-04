@@ -9,14 +9,46 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { ActionBar } from './ActionBar';
 import theme from './theme';
 
-CopyableCode.defaultProps = {
-  language: 'jsx',
-  copyable: false,
-  bordered: false,
-  padded: false,
-  format: true,
-  className: null,
-};
+const Wrapper = styled.div(
+  {
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  ({ bordered }) =>
+    bordered
+      ? {
+          border: `1px solid ${theme.appBorderColor}`,
+          borderRadius: theme.borderRadius,
+          background: (theme.background || {}).bar,
+        }
+      : {}
+);
+
+const Scroller = styled.div(
+  {
+    position: 'relative',
+    overflow: 'auto',
+  },
+  ({}) => ({
+    '& code': {
+      paddingRight: theme.layoutMargin,
+    },
+  })
+  // ({}) => themedSyntax(theme)
+);
+
+const Pre = styled.pre(({ padded }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  margin: 0,
+  padding: padded ? theme.layoutMargin : 0,
+}));
+
+const Code = styled.code({
+  flex: 1,
+  paddingRight: 0,
+  opacity: 1,
+});
 
 const atomOneLight = {
   hljs: {
@@ -135,49 +167,26 @@ const atomOneLight = {
   },
 };
 
-
-const Wrapper = styled.div(
-  {
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  ({ bordered }) =>
-    bordered
-      ? {
-          border: `1px solid ${theme.appBorderColor}`,
-          borderRadius: theme.borderRadius,
-          background: (theme.background || {}).bar,
-        }
-      : {}
-);
-
-const Scroller = styled.div(
-  {
-    position: 'relative',
-    overflow: 'auto',
-  },
-  ({}) => ({
-    '& code': {
-      paddingRight: theme.layoutMargin,
-    },
-  })
-  // ({}) => themedSyntax(theme)
-);
-
-const Pre = styled.pre(({ padded }) => ({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  margin: 0,
-  padding: padded ? theme.layoutMargin : 0,
-}));
-
-const Code = styled.code({
-  flex: 1,
-  paddingRight: 0,
-  opacity: 1,
-});
-
 export default class CopyableCode extends Component {
+  static propTypes = {
+    language: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
+    copyable: PropTypes.bool,
+    bordered: PropTypes.bool,
+    padded: PropTypes.bool,
+    format: PropTypes.bool,
+    className: PropTypes.string,
+  };
+
+  static defaultProps = {
+    language: 'jsx',
+    copyable: false,
+    bordered: false,
+    padded: false,
+    format: true,
+    className: null,
+  };
+
   state = { copied: false };
 
   formatCode = memoize(2)((language, code) => {
@@ -250,13 +259,3 @@ export default class CopyableCode extends Component {
     ) : null;
   }
 }
-
-CopyableCode.propTypes = {
-  language: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
-  copyable: PropTypes.bool,
-  bordered: PropTypes.bool,
-  padded: PropTypes.bool,
-  format: PropTypes.bool,
-  className: PropTypes.string,
-};
