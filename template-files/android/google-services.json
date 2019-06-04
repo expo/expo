@@ -8,10 +8,10 @@
     {
       "client_info": {
         "mobilesdk_app_id": "${GOOGLE_MOBILE_SDK_APP_ID}",
-        "client_id": "android:host.exp.exponent",
+        "client_id": "android:com.expo.payments",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "host.exp.exponent",
+          "package_name": "com.expo.payments",
           "certificate_hash": "${CERTIFICATE_HASH}"
         }
       },

@@ -29,7 +29,7 @@ android {
   }
 
   defaultConfig {
-    applicationId 'host.exp.exponent'
+    applicationId 'com.expo.payments'
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
