@@ -35,7 +35,8 @@ An [EventSubscription](#eventsubscription) object that you can call remove() on 
 Returned from `addListener`.
 
 -   **remove() (_function_)** -- Unsubscribe the listener from future notifications.
-    `Notification`
+
+### `Notification`
 
 An object that is passed into each event listener when a notification is received:
 
