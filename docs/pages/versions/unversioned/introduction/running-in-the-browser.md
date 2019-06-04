@@ -12,13 +12,13 @@ Starting in _SDK 33_ projects bootstrapped with the Expo CLI will have web suppo
 
 - Install the latest version of the Expo CLI: `npm i -g expo-cli`
 - Add web dependencies: `yarn add react-native-web react-dom`
+  - Ensure your project has at least `expo@^33.0.0` installed.
 - Start your project with `expo start` then press `w` to start Webpack and open the project in the browser.
-  - You can also run `expo start --web` which will start Webpack immediately.
-  - If your `app.json` only contains the `"web"` platform then Webpack will startup instead of Metro, this is the same as running `expo start --web-only`
 
 **Tips**
 
-- Expo will only start the Webpack dev server (and not Metro) if `"web"` is the only platform defined in your `app.json` `"platforms"` array.
+- You can also run `expo start --web` which will start Webpack immediately.
+- If your `app.json` only contains the `"web"` platform then Webpack will startup instead of Metro, this is the same as running `expo start --web-only`
 - Toggle the production environment variable with **`--no-dev`**. This will persist commands so remember to turn it off with **`--dev`**.
 
 ## Create React App & React Native CLI
@@ -40,7 +40,7 @@ Expo Unimodules aren't bound to the Expo SDK, you can use them in _any_ react.js
   }
   ```
 
-- Update your root `index.js`:
+- **React Native Only**: Update your root `index.js`:
 
   ```diff
     import {
@@ -62,14 +62,14 @@ Expo Unimodules aren't bound to the Expo SDK, you can use them in _any_ react.js
 - Start your project with `expo start` then press `w` to start Webpack and open the project in the browser.
   - You can also run `expo start --web` which will start Webpack immediately.
   - If your `app.json` only contains the `"web"` platform then Webpack will startup instead of Metro, this is the same as running `expo start --web-only`
-  - You may want to add `.expo`, and `/web-build` to your `.gitignore`.
+  - You may want to add `/.expo`, and `/web-build` to your `.gitignore`.
 
-#### Tree-Shaking
-
-> Required for usage with Create React App
+## Tree-Shaking
 
 The package `babel-preset-expo` extends `@babel/preset-env` on web and is used to configure your project for Unimodules. The core feature is that it won't compile your modules to **`core.js`** when targeting web, this means that you get optimal tree-shaking and dead-code-elimination.
 This step is optional with the React Native CLI but you'll get a much smaller bundle size and faster website if you do choose to use it. This is because `module:metro-react-native-babel-preset` is made for usage with the Metro bundler and not Webpack.
+
+> `babel-preset-expo` is required for usage with Create React App, optional but recommended for all React Native projects using Unimodules.
 
 - Install: `yarn add -D babel-preset-expo`
 - Change the babel preset in `babel.config.js`. If your project has a `.babelrc` then you should upgrade to **Babel 7+** first.
@@ -80,16 +80,20 @@ This step is optional with the React Native CLI but you'll get a much smaller bu
   };
   ```
 
-#### App Entry
+## App Entry
 
 Expo `AppEntry` has built in support for error boundaries in development mode. In the future Notifications and Splash Screen features may be added as well. When used with `babel-preset-expo` you can eliminate all of the unused modules from the `expo` package, this means if you only import `AppEntry` then things like `Constants`, and `Camera` would be completely removed during the production build (`expo build:web`).
 
-**Web only method.** If you don't want to change how your native app works do the following:
+### Web only method
+
+If you don't want to change how your native app works do the following:
 
 - Install Expo: `yarn add expo`
 - Create a `index.web.js` and add the line `import 'expo/AppEntry'`
 
-**Universal method.** To use Expo for both web and native:
+### Universal method
+
+To use Expo for both web and native:
 
 - Install Expo: `yarn add expo`
 - Change the `main` field in `package.json`
