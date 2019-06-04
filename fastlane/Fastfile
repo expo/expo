@@ -30,6 +30,22 @@ def clear_bundle_version
   )
 end
 
+# TODO: is there a way to modify the plist and automatically revert the changes
+# after the build?
+def configure_for_app_store
+  puts "configuring app for App Store submission..."
+  puts "removing background location permission strings and background mode..."
+  update_info_plist(
+    xcodeproj: "ios/Exponent.xcodeproj",
+    plist_path: "Exponent/Supporting/Info.plist",
+    block: proc do |plist|
+      plist.delete("NSLocationAlwaysUsageDescription")
+      plist.delete("NSLocationAlwaysAndWhenInUseUsageDescription")
+      plist["UIBackgroundModes"].delete("location")
+    end
+  )
+end
+
 platform :ios do
 
   before_all do
@@ -103,6 +119,8 @@ platform :ios do
       "#{k.to_s.shellescape}=#{v.shellescape}"
     end.join ' '
 
+    configure_for_app_store
+
     gym(
       workspace: "ios/Exponent.xcworkspace",
       scheme: "Exponent",
@@ -112,6 +130,8 @@ platform :ios do
       output_directory: output_directory,
       output_name: "Exponent.ipa",
     )
+
+    puts "don't commit the locations changes to Info.plist"
 
     deliver()
   end
