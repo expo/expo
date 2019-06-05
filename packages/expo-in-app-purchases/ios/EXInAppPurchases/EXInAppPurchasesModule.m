@@ -191,10 +191,10 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSLog(@"received restored transactions: %lu", queue.transactions.count);
   NSMutableArray *results = [NSMutableArray array];
 
-  for(SKPaymentTransaction *transaction in queue.transactions) {
+  for (SKPaymentTransaction *transaction in queue.transactions) {
     SKPaymentTransactionState transactionState = transaction.transactionState;
     NSLog(@"%ld", transactionState);
-    if(transactionState == SKPaymentTransactionStateRestored || transactionState == SKPaymentTransactionStatePurchased){
+    if (transactionState == SKPaymentTransactionStateRestored || transactionState == SKPaymentTransactionStatePurchased) {
       NSLog(@"Transaction state -> Restored or Purchased");
 
       NSDictionary * transactionData = [self getTransactionData:transaction];
