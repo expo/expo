@@ -46,7 +46,7 @@ const BannerPhoto = ({ source }) => (
   <View style={StyleSheet.absoluteFill}>
     <Image style={[{ flex: 1, opacity: 0.7, resizeMode: 'cover' }]} source={source} />
     <LinearGradient
-      colors={['rgba(255,255,255,0)', 'white']}
+      colors={['rgba(255,255,255,0)', Colors.greyBackground]}
       style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%' }}
     />
   </View>
