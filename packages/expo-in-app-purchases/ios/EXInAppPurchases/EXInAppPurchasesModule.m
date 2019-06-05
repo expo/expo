@@ -2,6 +2,17 @@
 
 #import <EXInAppPurchases/EXInAppPurchasesModule.h>
 
+@interface EXInAppPurchasesModule ()
+
+@property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
+@property(nonatomic, assign) BOOL queryingItems;
+@property (strong, nonatomic) NSMutableDictionary *promises;
+@property (strong, nonatomic) SKProductsRequest *request;
+@property (strong, nonatomic) SKReceiptRefreshRequest *receiptRequest;
+@property (strong, nonatomic) NSArray<SKProduct*> *products;
+
+@end
+
 static NSString const * QUERY_HISTORY_KEY = @"QUERY_HISTORY";
 static NSString const * QUERY_PURCHASABLE_KEY = @"QUERY_PURCHASABLE";
 
@@ -45,8 +56,8 @@ UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
   NSLog(@"Calling ConnectToAppStoreAsync");
   // Initialize listener and promises dictionary
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-  promises = [NSMutableDictionary dictionary];
-  queryingItems = NO;
+  _promises = [NSMutableDictionary dictionary];
+  _queryingItems = NO;
   [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
 
   // Request history
@@ -60,7 +71,7 @@ UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
 {
   [self setPromise:QUERY_PURCHASABLE_KEY resolve:resolve reject:reject];
 
-  self->queryingItems = YES;
+  _queryingItems = YES;
   [self requestProducts:productIDs];
 }
 
@@ -73,7 +84,7 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
     NSArray *productArray = [NSArray arrayWithObjects:productIdentifier,nil];
     [self setPromise:productIdentifier resolve:resolve reject:reject];
 
-    self->queryingItems = NO;
+    _queryingItems = NO;
     [self requestProducts:productArray];
   }
   else {
@@ -119,7 +130,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSMutableArray *result = [NSMutableArray array];
 
   for (SKProduct *validProduct in response.products) {
-    if (self->queryingItems) {
+    if (_queryingItems) {
       // Calling queryPurchasableItemsAsync
       NSLog(@"Querying items. Getting data for %@", validProduct.productIdentifier);
       NSDictionary *productData = [self getProductData:validProduct];
@@ -131,18 +142,18 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
     }
   }
 
-  self->queryingItems = NO;
+  _queryingItems = NO;
   NSDictionary *res = [self formatResults:result withResponseCode:OK];
   [self resolvePromise:QUERY_PURCHASABLE_KEY value:res];
 }
 
 -(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
-  NSMutableArray* promise = [promises valueForKey:key];
+  NSMutableArray* promise = [_promises valueForKey:key];
 
   if (promise == nil) {
     promise = [NSMutableArray array];
-    [promises setValue:promise forKey:key];
+    [_promises setValue:promise forKey:key];
   }
 
   [promise addObject:@[resolve, reject]];
@@ -150,27 +161,27 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
 -(void)resolvePromise:(NSString*)key value:(id)value
 {
-  NSMutableArray* currentPromise = [promises valueForKey:key];
+  NSMutableArray* currentPromise = [_promises valueForKey:key];
 
   if (currentPromise != nil) {
     for (NSMutableArray *tuple in currentPromise) {
       UMPromiseResolveBlock resolve = tuple[0];
       resolve(value);
     }
-    [promises removeObjectForKey:key];
+    [_promises removeObjectForKey:key];
   }
 }
 
 -(void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error
 {
-  NSMutableArray* currentPromise = [promises valueForKey:key];
+  NSMutableArray* currentPromise = [_promises valueForKey:key];
 
   if (currentPromise != nil) {
     for (NSMutableArray *tuple in currentPromise) {
       UMPromiseRejectBlock reject = tuple[1];
       reject(code, message, error);
     }
-    [promises removeObjectForKey:key];
+    [_promises removeObjectForKey:key];
   }
 }
 

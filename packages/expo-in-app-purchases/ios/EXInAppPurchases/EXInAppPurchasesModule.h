@@ -4,14 +4,5 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <StoreKit/StoreKit.h>
 
-@interface EXInAppPurchasesModule : UMExportedModule <UMModuleRegistryConsumer, SKProductsRequestDelegate, SKPaymentTransactionObserver> {
-  NSMutableDictionary *promises;
-  Boolean queryingItems;
-}
-
-@property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
-@property (strong, nonatomic) SKProductsRequest *request;
-@property (strong, nonatomic) SKReceiptRefreshRequest *receiptRequest;
-@property (strong, nonatomic) NSArray<SKProduct*> *products;
-
+@interface EXInAppPurchasesModule : UMExportedModule <UMModuleRegistryConsumer, SKProductsRequestDelegate, SKPaymentTransactionObserver>
 @end
