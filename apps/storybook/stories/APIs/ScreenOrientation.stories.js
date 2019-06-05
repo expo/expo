@@ -12,6 +12,8 @@ import {
 
 export const title = 'Screen Orientation';
 export const packageJson = require('expo/package.json');
+export const label = 'ScreenOrientation';
+
 export const description = (
   <>
     Screen Orientation is defined as the orientation in which graphics are painted on the device.

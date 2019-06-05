@@ -14,7 +14,8 @@
     "pretest:web:ci": "npm run build",
     "test:web:ci": "export IS_EXPO_CI=true; npm run test:web",
     "update:test:web:ci": "rm -rf .storybook/__image_snapshots__ && npm run test:web:ci -u",
-    "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js"
+    "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js",
+    "deploy": "yarn build && netlify deploy --prod"
   },
   "author": "Expo",
   "license": "MIT",

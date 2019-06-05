@@ -3,10 +3,10 @@ import Svg from 'expo/build/Svg';
 import React from 'react';
 
 import { Section } from '../ui-explorer';
+export const label = 'SVG';
 
 export const title = 'SVG';
-export const description = '...';
-export const packageJson = require('expo/package.json');
+export const packageJson = require('react-native-svg/package.json');
 
 export const component = () => (
   <Section>

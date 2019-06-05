@@ -6,6 +6,8 @@ import image from '../../assets/roadster.jpg';
 import { Code, DocItem, Section } from '../ui-explorer';
 
 export const title = 'Blur View';
+export const label = 'BlurView';
+
 export const packageJson = require('expo-blur/package.json');
 export const component = () => {
   return (

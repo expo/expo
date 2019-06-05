@@ -1,10 +1,11 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 
-import UIExplorer, { DocItem, Section } from '../ui-explorer';
+import { DocItem, Section } from '../ui-explorer';
 
 const url = 'https://mathiasbynens.github.io/rel-noopener/malicious.html';
 export const title = 'Linking';
+export const label = 'Linking';
 
 export const packageJson = require('expo/package.json');
 export const description =

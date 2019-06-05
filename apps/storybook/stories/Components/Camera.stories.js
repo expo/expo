@@ -5,6 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 export const title = 'Camera';
 export const packageJson = require('expo-camera/package.json');
+export const label = 'Camera';
 
 export class component extends React.Component {
   state = {

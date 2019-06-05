@@ -1,9 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import UIExplorer, { AppText, Code, DocItem, Section, TextList } from '../ui-explorer';
+import { AppText, Code, DocItem, Section, TextList } from '../ui-explorer';
 
 export const title = 'Updates';
+export const label = 'Updates';
+
 export const packageJson = require('expo/package.json');
 export const description =
   'API for controlling and responding to over-the-air updates to your app.';

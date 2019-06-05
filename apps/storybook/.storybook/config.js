@@ -3,7 +3,7 @@ import { addDecorator, addParameters, configure } from '@storybook/react';
 import { create, themes } from '@storybook/theming';
 import * as React from 'react';
 import requireContext from 'require-context.macro';
-
+import Markdown from '../stories/ui-explorer/Markdown';
 import UIExplorer, { storiesOf } from '../stories/ui-explorer';
 import centered from './decorator-centered';
 
@@ -78,7 +78,7 @@ function loadStories() {
     if (!module.component) {
       return;
     }
-    const {
+    let {
       component: Component,
       packageJson = {},
       notes,
@@ -95,6 +95,9 @@ function loadStories() {
       markdown = mdreq(mdPath);
     }
 
+    if (Component === true && markdown) {
+      Component = () => <Markdown>{markdown}</Markdown>;
+    }
     const screen = (props = {}) => (
       <UIExplorer
         title={title}
@@ -106,7 +109,7 @@ function loadStories() {
       </UIExplorer>
     );
 
-    const storiesKind = kind || filename.split('/')[1];
+    const storiesKind = kind || 'SDK|' + filename.split('/')[1];
     let stories = storiesCache[storiesKind];
     if (!stories) {
       stories = storiesOf(storiesKind, global.module);
@@ -114,7 +117,6 @@ function loadStories() {
     }
     stories.add(title, screen, {
       notes: { markdown },
-      info: markdown,
     });
     if (onStoryCreated) {
       onStoryCreated({ stories });
