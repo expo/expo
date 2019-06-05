@@ -19,8 +19,8 @@ export interface Purchase {
 export interface ItemDetails {
   description: string,
   price: string,
-  price_amount_micros: number,
-  price_currency_code: string,
+  priceAmountMicros: number,
+  priceCurrencyCode: string,
   productId: string,
   title: string,
   type: ValidItemType,

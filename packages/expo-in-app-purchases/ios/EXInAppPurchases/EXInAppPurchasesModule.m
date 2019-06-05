@@ -211,7 +211,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
 - (NSDictionary *)getProductData:(SKProduct *)product
 {
-  // Format item type sub period and price_amount_micros for platform consistency
+  // Format item type sub period and priceAmountMicros for platform consistency
   NSString *type = @"inapp";
   NSString *subscriptionPeriod;
   if (@available(iOS 11.2, *)) {
@@ -236,8 +236,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   return @{
           @"description": product.localizedDescription,
           @"price": price,
-          @"price_amount_micros": priceAmountMicros,
-          @"price_currency_code": product.priceLocale.currencyCode,
+          @"priceAmountMicros": priceAmountMicros,
+          @"priceCurrencyCode": product.priceLocale.currencyCode,
           @"productId": product.productIdentifier,
           @"subscriptionPeriod": subscriptionPeriod,
           @"title": product.localizedTitle,
