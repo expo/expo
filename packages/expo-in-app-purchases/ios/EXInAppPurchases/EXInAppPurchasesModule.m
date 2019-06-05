@@ -87,8 +87,7 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
     _queryingItems = NO;
     [self requestProducts:productArray];
   } else {
-    // Reject here
-    NSLog(@"User cannot make purchases");
+    reject(@"E_MISSING_PERMISSIONS", @"User cannot make payments", nil);
   }
 }
 
