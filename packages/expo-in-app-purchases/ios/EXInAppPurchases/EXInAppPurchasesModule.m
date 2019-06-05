@@ -50,7 +50,7 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 }
 
 UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
-                    resolve:(UMPromiseResolveBlock)resolve
+                    connectToAppStoreAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Calling ConnectToAppStoreAsync");
@@ -104,8 +104,8 @@ UM_EXPORT_METHOD_AS(queryPurchaseHistoryAsync,
 }
 
 UM_EXPORT_METHOD_AS(disconnectAsync,
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    disconnectAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Calling disconnectAsync!");
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
