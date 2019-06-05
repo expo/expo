@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 111
-    versionName '2.11.1'
+    versionCode 112
+    versionName '2.11.2'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'

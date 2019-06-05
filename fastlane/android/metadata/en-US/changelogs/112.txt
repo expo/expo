@@ -1,0 +1,3 @@
+Version 2.11.0 introduced support for Expo SDK 33.
+
+Version 2.11.2 fixes an issue with AppAuth and GoogleSignIn on Android 8.0 devices.
