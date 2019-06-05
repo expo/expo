@@ -86,8 +86,7 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
 
     _queryingItems = NO;
     [self requestProducts:productArray];
-  }
-  else {
+  } else {
     // Reject here
     NSLog(@"User cannot make purchases");
   }
@@ -149,39 +148,36 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
 -(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
-  NSMutableArray* promise = [_promises valueForKey:key];
+  NSArray *promise = _promises[key];
 
   if (promise == nil) {
-    promise = [NSMutableArray array];
-    [_promises setValue:promise forKey:key];
+    _promises[key] = @[resolve, reject];
+  } else {
+    reject(@"E_UNFINISHED_PROMISE", @"Must wait for promise to resolve before recalling function.", nil);
   }
-
-  [promise addObject:@[resolve, reject]];
 }
 
 -(void)resolvePromise:(NSString*)key value:(id)value
 {
-  NSMutableArray* currentPromise = [_promises valueForKey:key];
+  NSArray *currentPromise = _promises[key];
 
   if (currentPromise != nil) {
-    for (NSMutableArray *tuple in currentPromise) {
-      UMPromiseResolveBlock resolve = tuple[0];
-      resolve(value);
-    }
-    [_promises removeObjectForKey:key];
+    UMPromiseResolveBlock resolve = currentPromise[0];
+    _promises[key] = nil;
+
+    resolve(value);
   }
 }
 
 -(void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error
 {
-  NSMutableArray* currentPromise = [_promises valueForKey:key];
+  NSArray* currentPromise = _promises[key];
 
   if (currentPromise != nil) {
-    for (NSMutableArray *tuple in currentPromise) {
-      UMPromiseRejectBlock reject = tuple[1];
-      reject(code, message, error);
-    }
-    [_promises removeObjectForKey:key];
+    UMPromiseRejectBlock reject = currentPromise[1];
+    _promises[key] = nil;
+
+    reject(code, message, error);
   }
 }
 
