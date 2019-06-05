@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
-const { ExponentKernel } = NativeModules;
+import ExponentKernel from '../universal/ExponentKernel';
 
 const isProduction = !!(
   Constants.manifest.id === '@exponent/home' && Constants.manifest.publishedTime
