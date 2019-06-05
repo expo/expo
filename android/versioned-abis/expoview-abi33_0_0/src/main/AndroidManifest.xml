@@ -76,8 +76,10 @@
         </provider>
 
         <activity
-            android:name="abi33_0_0.expo.modules.appauth.AppAuthBrowserActivity">
-        </activity>
+            android:name="abi33_0_0.expo.modules.appauth.AppAuthBrowserActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
     </application>
 
 </manifest>
