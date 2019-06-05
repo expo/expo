@@ -13,8 +13,10 @@
 
 @end
 
-static NSString const * QUERY_HISTORY_KEY = @"QUERY_HISTORY";
-static NSString const * QUERY_PURCHASABLE_KEY = @"QUERY_PURCHASABLE";
+static NSString * const QUERY_HISTORY_KEY = @"QUERY_HISTORY";
+static NSString * const QUERY_PURCHASABLE_KEY = @"QUERY_PURCHASABLE";
+static NSString * const IN_APP = @"inapp";
+static NSString * const SUBS = @"subs";
 
 static const int SERVICE_DISCONNECTED = -1;
 static const int OK = 0;
@@ -188,12 +190,10 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
 {
-  NSLog(@"received restored transactions: %lu", queue.transactions.count);
   NSMutableArray *results = [NSMutableArray array];
 
   for (SKPaymentTransaction *transaction in queue.transactions) {
     SKPaymentTransactionState transactionState = transaction.transactionState;
-    NSLog(@"%ld", transactionState);
     if (transactionState == SKPaymentTransactionStateRestored || transactionState == SKPaymentTransactionStatePurchased) {
       NSLog(@"Transaction state -> Restored or Purchased");
 
@@ -212,14 +212,14 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 - (NSDictionary *)getProductData:(SKProduct *)product
 {
   // Format item type sub period and priceAmountMicros for platform consistency
-  NSString *type = @"inapp";
+  NSString *type = IN_APP;
   NSString *subscriptionPeriod;
   if (@available(iOS 11.2, *)) {
     if (product.subscriptionPeriod != nil) {
       subscriptionPeriod = [self getSubscriptionPeriod:product];
       // Use with caution: P0D also implies non-renewable subscription.
       if (![subscriptionPeriod isEqualToString:@"P0D"]) {
-        type = @"subs";
+        type = SUBS;
       }
     }
   }
