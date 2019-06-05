@@ -7,10 +7,11 @@ const validTypes = {
   INAPP: 'inapp',
   SUBS: 'subs',
 }
-const { billingResponseCodes, purchaseStates } = ExpoInAppPurchases;
+
+const { responseCodes, purchaseStates } = ExpoInAppPurchases;
 
 export const constants = {
-  billingResponseCodes,
+  responseCodes,
   purchaseStates,
   validTypes,
 }
@@ -35,7 +36,7 @@ export async function getProductsAsync(itemList: string[]): Promise<QueryRespons
   if (Platform.OS === 'android') {
     // On Android you have to pass in the item type so we will combine the results of both inapp and subs
     const { responseCode, results } = await ExpoInAppPurchases.getProductsAsync(validTypes.INAPP, itemList);
-    if (responseCode == billingResponseCodes.OK) {
+    if (responseCode == responseCodes.OK) {
       const subs = await ExpoInAppPurchases.getProductsAsync(validTypes.SUBS, itemList);
       subs.results.forEach(result => {
         results.push(result);
@@ -54,7 +55,7 @@ export async function getPurchaseHistoryAsync(refresh?: boolean): Promise<QueryR
   }
   if (refresh && Platform.OS === 'android') {
     const { responseCode, results } = await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.INAPP);
-    if (responseCode === billingResponseCodes.OK) {
+    if (responseCode === responseCodes.OK) {
       const subs = await await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.SUBS);
       subs.results.forEach(result => {
         results.push(result);
@@ -94,10 +95,10 @@ export async function acknowledgePurchaseAsync(purchaseToken: string, consumeIte
 
 export async function getBillingResponseCodeAsync(): Promise<number> {
   if (!connected) {
-    return billingResponseCodes.SERVICE_DISCONNECTED;
+    return responseCodes.SERVICE_DISCONNECTED;
   }
   if (Platform.OS !== 'android') {
-    return billingResponseCodes.OK;
+    return responseCodes.OK;
   }
 
   return await ExpoInAppPurchases.getBillingResponseCodeAsync();

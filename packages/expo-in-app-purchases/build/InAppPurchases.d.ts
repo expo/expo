@@ -1,6 +1,6 @@
 import { QueryResponse } from './InAppPurchases.types';
 export declare const constants: {
-    billingResponseCodes: any;
+    responseCodes: any;
     purchaseStates: any;
     validTypes: {
         INAPP: string;
