@@ -9,10 +9,12 @@ With Bugsnag, developers and engineering organizations can:
 - Release health dashboard
 - Stability scores and targets
 - Built-in alerts via email, Slack, PagerDuty, and more
+
 **Prioritize**: Improve customer experience by identifying and prioritizing bugs that have the greatest impact on app stability
 - Issues grouped by root cause and sorted by business impact
 - Customer segmentation
 - A/B testing and experiment analysis
+
 **Fix**: Increase productivity by spending less time on reproducing and fixing bugs
 - Powerful diagnostic data
 - Full stacktraces
