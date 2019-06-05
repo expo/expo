@@ -6,56 +6,55 @@ const validTypes = {
     INAPP: 'inapp',
     SUBS: 'subs',
 };
-const billingResponseCodes = ExpoInAppPurchases.responseCodes;
-const purchaseStates = ExpoInAppPurchases.purchaseStates;
+const { billingResponseCodes, purchaseStates } = ExpoInAppPurchases;
 export const constants = {
     billingResponseCodes,
     purchaseStates,
     validTypes,
 };
 let connected = false;
-export async function connectToAppStoreAsync() {
+export async function connectAsync() {
     console.log('calling connectToAppStoreAsync from TS');
     if (connected) {
         throw new ConnectionError('Already connected to App Store');
     }
     connected = true;
-    return await ExpoInAppPurchases.connectToAppStoreAsync();
+    return await ExpoInAppPurchases.connectAsync();
 }
-export async function queryPurchasableItemsAsync(itemList) {
+export async function getProductsAsync(itemList) {
     console.log('calling queryPurchasableItemsAsync from TS');
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
     }
     if (Platform.OS === 'android') {
         // On Android you have to pass in the item type so we will combine the results of both inapp and subs
-        const { responseCode, results } = await ExpoInAppPurchases.queryPurchasableItemsAsync(validTypes.INAPP, itemList);
+        const { responseCode, results } = await ExpoInAppPurchases.getProductsAsync(validTypes.INAPP, itemList);
         if (responseCode == billingResponseCodes.OK) {
-            const subs = await ExpoInAppPurchases.queryPurchasableItemsAsync(validTypes.SUBS, itemList);
+            const subs = await ExpoInAppPurchases.getProductsAsync(validTypes.SUBS, itemList);
             subs.results.forEach(result => {
                 results.push(result);
             });
         }
         return { responseCode, results };
     }
-    return await ExpoInAppPurchases.queryPurchasableItemsAsync(itemList);
+    return await ExpoInAppPurchases.getProductsAsync(itemList);
 }
-export async function queryPurchaseHistoryAsync(refresh) {
+export async function getPurchaseHistoryAsync(refresh) {
     console.log('calling queryPurchaseHistoryAsync from TS');
     if (!connected) {
         throw new ConnectionError('Must be connected to App Store');
     }
     if (refresh && Platform.OS === 'android') {
-        const { responseCode, results } = await ExpoInAppPurchases.queryPurchaseHistoryAsync(validTypes.INAPP);
+        const { responseCode, results } = await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.INAPP);
         if (responseCode === billingResponseCodes.OK) {
-            const subs = await await ExpoInAppPurchases.queryPurchaseHistoryAsync(validTypes.SUBS);
+            const subs = await await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.SUBS);
             subs.results.forEach(result => {
                 results.push(result);
             });
         }
         return { responseCode, results };
     }
-    return await ExpoInAppPurchases.queryPurchaseHistoryAsync(null);
+    return await ExpoInAppPurchases.getPurchaseHistoryAsync(null);
 }
 export async function purchaseItemAsync(itemId, oldItem) {
     console.log('calling purchaseItemAsync from TS');

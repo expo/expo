@@ -49,8 +49,8 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
    };
 }
 
-UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
-                    connectToAppStoreAsync:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(connectAsync,
+                    connectAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Calling ConnectToAppStoreAsync");
@@ -64,8 +64,8 @@ UM_EXPORT_METHOD_AS(connectToAppStoreAsync,
   [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
-UM_EXPORT_METHOD_AS(queryPurchasableItemsAsync,
-                    queryPurchasableItemsAsync:(NSArray *)productIDs
+UM_EXPORT_METHOD_AS(getProductsAsync,
+                    getProductsAsync:(NSArray *)productIDs
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -91,8 +91,8 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(queryPurchaseHistoryAsync,
-                    queryPurchaseHistoryAsync:(NSArray *)productIDs
+UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
+                    getPurchaseHistoryAsync:(NSArray *)productIDs
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {

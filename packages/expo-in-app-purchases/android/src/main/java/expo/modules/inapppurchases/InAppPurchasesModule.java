@@ -49,7 +49,7 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void connectToAppStoreAsync(final Promise promise) {
+  public void connectAsync(final Promise promise) {
     Activity activity = getCurrentActivity();
     if (activity == null) {
       promise.reject("E_ACTIVITY_UNAVAILABLE", "Activity is not available");
@@ -59,12 +59,12 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void queryPurchasableItemsAsync(String billingType, List<String> itemList, final Promise promise) {
+  public void getProductsAsync(String billingType, List<String> itemList, final Promise promise) {
     mBillingManager.queryPurchasableItems(itemList, billingType, promise);
   }
 
   @ExpoMethod
-  public void queryPurchaseHistoryAsync(String itemType, final Promise promise) {
+  public void getPurchaseHistoryAsync(String itemType, final Promise promise) {
     if (itemType == null) {
       mBillingManager.queryPurchases(promise);
     } else {

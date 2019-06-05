@@ -8,9 +8,9 @@ export declare const constants: {
         SUBS: string;
     };
 };
-export declare function connectToAppStoreAsync(): Promise<QueryResponse>;
-export declare function queryPurchasableItemsAsync(itemList: string[]): Promise<QueryResponse>;
-export declare function queryPurchaseHistoryAsync(refresh?: boolean): Promise<QueryResponse>;
+export declare function connectAsync(): Promise<QueryResponse>;
+export declare function getProductsAsync(itemList: string[]): Promise<QueryResponse>;
+export declare function getPurchaseHistoryAsync(refresh?: boolean): Promise<QueryResponse>;
 export declare function purchaseItemAsync(itemId: string, oldItem?: string): Promise<QueryResponse>;
 export declare function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void>;
 export declare function getBillingResponseCodeAsync(): Promise<number>;
