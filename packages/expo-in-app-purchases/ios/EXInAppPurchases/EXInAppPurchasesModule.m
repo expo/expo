@@ -2,12 +2,13 @@
 
 #import <EXInAppPurchases/EXInAppPurchasesModule.h>
 
-#define QUERY_HISTORY_KEY @"QUERY_HISTORY"
-#define QUERY_PURCHASABLE_KEY @"QUERY_PURCHASABLE"
-#define SERVICE_DISCONNECTED -1
-#define OK 0
-#define ERROR 1
-#define USER_CANCELED 2
+static NSString const * QUERY_HISTORY_KEY = @"QUERY_HISTORY";
+static NSString const * QUERY_PURCHASABLE_KEY = @"QUERY_PURCHASABLE";
+
+static const int SERVICE_DISCONNECTED = -1;
+static const int OK = 0;
+static const int ERROR = 1;
+static const int USER_CANCELED = 2;
 
 @implementation EXInAppPurchasesModule
 
@@ -22,17 +23,17 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 {
   return @{
        @"responseCodes": @{
-         @"OK": @OK,
-         @"USER_CANCELED": @USER_CANCELED,
-         @"ERROR": @ERROR,
-         @"SERVICE_DISCONNECTED": @SERVICE_DISCONNECTED
+         @"OK": @(OK),
+         @"USER_CANCELED": @(USER_CANCELED),
+         @"ERROR": @(ERROR),
+         @"SERVICE_DISCONNECTED": @(SERVICE_DISCONNECTED),
       },
       @"purchaseStates": @{
-         @"PURCHASED": [NSNumber numberWithInteger:SKPaymentTransactionStatePurchased],
-         @"PENDING": [NSNumber numberWithInteger:SKPaymentTransactionStatePurchasing],
-         @"FAILED": [NSNumber numberWithInteger:SKPaymentTransactionStateFailed],
-         @"RESTORED": [NSNumber numberWithInteger:SKPaymentTransactionStateRestored],
-         @"DEFERRED": [NSNumber numberWithInteger:SKPaymentTransactionStateDeferred]
+         @"PURCHASED": @(SKPaymentTransactionStatePurchased),
+         @"PENDING": @(SKPaymentTransactionStatePurchasing),
+         @"FAILED": @(SKPaymentTransactionStateFailed),
+         @"RESTORED": @(SKPaymentTransactionStateRestored),
+         @"DEFERRED": @(SKPaymentTransactionStateDeferred),
       }
    };
 }
@@ -226,31 +227,29 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [price appendString:product.priceLocale.currencySymbol];
   [price appendString:priceString];
 
-  NSDictionary *productData = @{
-                                @"description": product.localizedDescription,
-                                @"price": price,
-                                @"price_amount_micros": priceAmountMicros,
-                                @"price_currency_code": product.priceLocale.currencyCode,
-                                @"productId": product.productIdentifier,
-                                @"subscriptionPeriod": subscriptionPeriod,
-                                @"title": product.localizedTitle,
-                                @"type": type
-                                };
-  return productData;
+  return @{
+          @"description": product.localizedDescription,
+          @"price": price,
+          @"price_amount_micros": priceAmountMicros,
+          @"price_currency_code": product.priceLocale.currencyCode,
+          @"productId": product.productIdentifier,
+          @"subscriptionPeriod": subscriptionPeriod,
+          @"title": product.localizedTitle,
+          @"type": type
+          };
 }
 
 - (NSDictionary *)getTransactionData:(SKPaymentTransaction *)transaction
 {
   NSData *receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
-  NSDictionary *transactionData = @{
-                                    @"acknowledged": @YES,
-                                    @"orderId": transaction.transactionIdentifier,
-                                    @"productId": transaction.payment.productIdentifier,
-                                    @"purchaseState": @(transaction.transactionState),
-                                    @"purchaseTime": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
-                                    @"transactionReceipt": [receiptData base64EncodedStringWithOptions:0]
-                                    };
-  return transactionData;
+  return @{
+          @"acknowledged": @YES,
+          @"orderId": transaction.transactionIdentifier,
+          @"productId": transaction.payment.productIdentifier,
+          @"purchaseState": @(transaction.transactionState),
+          @"purchaseTime": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
+          @"transactionReceipt": [receiptData base64EncodedStringWithOptions:0]
+          };
 }
 
 - (NSString *)getSubscriptionPeriod:(SKProduct *)product
@@ -334,7 +333,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 {
   return @{
            @"results": results,
-           @"responseCode": [NSNumber numberWithInteger:responseCode],
+           @"responseCode": @(responseCode),
            };
 }
 
