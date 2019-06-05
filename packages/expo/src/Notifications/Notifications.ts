@@ -403,7 +403,7 @@ export default {
   },
 
   /* Primary public api */
-  addListener(listener: Function): EventSubscription {
+  addListener(listener: (notification: Notification) => unknown): EventSubscription {
     _maybeInitEmitter();
 
     if (_initialNotification) {
