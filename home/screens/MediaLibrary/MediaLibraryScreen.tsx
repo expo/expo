@@ -62,16 +62,16 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
     const isAlbumSet = params && params.album;
 
     return {
-      title: 'MediaLibrary',
-      headerRight: (
-        <View style={{ marginRight: 5 }}>
-          <RNButton
-            title={isAlbumSet ? 'Show all' : 'Albums'}
-            onPress={isAlbumSet ? clearAlbumSelection : goToAlbums}
-            color={Colors.tintColor}
-          />
-        </View>
-      ),
+      title: 'Choose a photo',
+      // headerRight: (
+      //   <View style={{ marginRight: 5 }}>
+      //     <RNButton
+      //       title={isAlbumSet ? 'Show all' : 'Albums'}
+      //       onPress={isAlbumSet ? clearAlbumSelection : goToAlbums}
+      //       color={Colors.tintColor}
+      //     />
+      //   </View>
+      // ),
     };
   };
 

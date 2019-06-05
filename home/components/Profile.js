@@ -2,7 +2,7 @@
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import FadeIn from '@expo/react-native-fade-in-image';
 import dedent from 'dedent';
-import { BlurView, Constants } from 'expo';
+import { BlurView, Constants, Asset } from 'expo';
 import { take, takeRight } from 'lodash';
 import React from 'react';
 import {
@@ -14,6 +14,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 
 import Colors from '../constants/Colors';
@@ -25,6 +26,8 @@ import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SeeAllSnacksButton from './SeeAllSnacksButton';
 import SmallProjectCard from './SmallProjectCard';
 import SnackCard from './SnackCard';
+import isIPhoneX from 'react-native-is-iphonex';
+import SettingsButton from './SettingsButton';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -39,14 +42,14 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as possible.
 `;
 
-const BannerPhoto = ({ scroll, source }) => {
+const BannerPhoto = ({ style, scroll, source }) => {
   const scale = scroll.interpolate({
     inputRange: [-50, 0],
     outputRange: [2, 1],
     extrapolateRight: 'clamp',
   });
 
-  const translate = scroll.interpolate({
+  const translateY = scroll.interpolate({
     inputRange: [-1, 0, 1],
     outputRange: [-1, 0, 0.5],
   });
@@ -58,8 +61,8 @@ const BannerPhoto = ({ scroll, source }) => {
 
   return (
     <Animated.View
-      style={[StyleSheet.absoluteFill, { transform: [{ translateY: translate }, { scale }] }]}>
-      <Animated.Image style={[{ flex: 1, resizeMode: 'cover' }]} source={source} />
+      style={[style, StyleSheet.absoluteFill, { transform: [{ translateY }, { scale }] }]}>
+      <Image resizeMode="cover" style={{ flex: 1 }} source={source} />
       <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
         <BlurView style={{ flex: 1 }} intensity={100} tint="light" />
       </Animated.View>
@@ -74,6 +77,7 @@ const BannerButton = ({ onPress }) => (
         opacity: 0.7,
         paddingVertical: 4,
         paddingHorizontal: 8,
+        marginRight: 12,
         borderWidth: 1,
         backgroundColor: 'transparent',
         borderRadius: 24,
@@ -92,8 +96,9 @@ export default class Profile extends React.Component {
 
   _isMounted: boolean;
 
-  componentWillMount() {
+  async componentWillMount() {
     this._isMounted = true;
+    await Asset.fromModule(require('../assets/banner-image.png')).downloadAsync();
   }
 
   componentWillUnmount() {
@@ -211,16 +216,24 @@ export default class Profile extends React.Component {
       return this._renderLegacyHeader();
     }
 
-    const { image } = this.props;
+    const { image, isOwnProfile } = this.props;
     let { firstName, lastName, username, profilePhoto } = this.props.data.user;
 
-    const verticalHeight = 72;
+    const verticalHeight = isOwnProfile ? 128 : 96;
     const imagePeek = 16;
     const imageSize = 64;
     return (
       <View
         style={[styles.header, { alignItems: 'stretch', padding: 12, paddingTop: verticalHeight }]}>
-        <BannerPhoto scroll={this.scroll} source={{ uri: image }} />
+        <BannerPhoto
+          style={{ height: verticalHeight + imagePeek }}
+          scroll={this.scroll}
+          source={
+            isOwnProfile
+              ? { uri: image }
+              : { uri: Asset.fromModule(require('../assets/banner-image.png')).localUri }
+          }
+        />
         <View
           style={{
             position: 'absolute',
@@ -237,11 +250,11 @@ export default class Profile extends React.Component {
             justifyContent: 'flex-start',
             alignItems: 'flex-end',
           }}>
-          <TouchableOpacity style={styles.headerAvatarContainer}>
+          <View style={styles.headerAvatarContainer}>
             <FadeIn>
               <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
             </FadeIn>
-          </TouchableOpacity>
+          </View>
           <View>
             <Text style={styles.headerFullNameText}>
               {firstName} {lastName}
@@ -252,15 +265,18 @@ export default class Profile extends React.Component {
             </View>
           </View>
 
-          <View
-            style={{
-              flex: 1,
-              height: imageSize - imagePeek,
-              alignItems: 'flex-end',
-              justifyContent: 'center',
-            }}>
-            <BannerButton onPress={this._showImageOptions} />
-          </View>
+          <View style={{ flex: 1 }} />
+          {this.props.isOwnProfile && (
+            <View
+              style={{
+                flexDirection: 'row',
+                height: imageSize - imagePeek,
+                alignItems: 'center',
+              }}>
+              <BannerButton onPress={this._showImageOptions} />
+              <SettingsButton />
+            </View>
+          )}
         </View>
       </View>
     );

@@ -115,6 +115,7 @@ const ProfileStack = createStackNavigator(
   {
     initialRouteName: 'Profile',
     defaultNavigationOptions,
+    headerMode: 'screen',
     navigationOptions: {
       tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, focused),
       tabBarLabel: 'Profile',

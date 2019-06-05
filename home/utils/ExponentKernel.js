@@ -19,5 +19,5 @@ export default {
   //   openURL() {}
   sdkVersions: [],
 
-  IOSClientReleaseType: 'APPLE_APP_STORE',
+  // IOSClientReleaseType: 'APPLE_APP_STORE',
 };
