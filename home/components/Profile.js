@@ -1,34 +1,30 @@
 /* @flow */
-
+import { connectActionSheet } from '@expo/react-native-action-sheet';
+import FadeIn from '@expo/react-native-fade-in-image';
+import dedent from 'dedent';
+import { BlurView, Constants } from 'expo';
+import { take, takeRight } from 'lodash';
 import React from 'react';
 import {
   ActivityIndicator,
+  Animated,
   Image,
-  StyleSheet,
   RefreshControl,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Animated,
 } from 'react-native';
-import { ScrollView } from 'react-navigation';
-import FadeIn from '@expo/react-native-fade-in-image';
-import { LinearGradient } from 'expo-linear-gradient';
-import { take, takeRight } from 'lodash';
-import dedent from 'dedent';
-import { connectActionSheet } from '@expo/react-native-action-sheet';
 
-import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
-import PrimaryButton from './PrimaryButton';
+import SharedStyles from '../constants/SharedStyles';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
+import PrimaryButton from './PrimaryButton';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SeeAllSnacksButton from './SeeAllSnacksButton';
-import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
 import SnackCard from './SnackCard';
-import { Constants, BlurView } from 'expo';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -69,10 +65,6 @@ const BannerPhoto = ({ scroll, source }) => {
       </Animated.View>
     </Animated.View>
   );
-  //   <LinearGradient
-  //   colors={['rgba(255,255,255,0)', Colors.greyBackground]}
-  //   style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%' }}
-  // />
 };
 
 const BannerButton = ({ onPress }) => (
