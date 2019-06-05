@@ -2,7 +2,6 @@ import { Platform } from 'react-native';
 import { CodedError } from '@unimodules/core';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 import { QueryResponse } from './InAppPurchases.types';
-export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 
 const validTypes = {
   INAPP: 'inapp',

@@ -5,7 +5,7 @@
 @interface EXInAppPurchasesModule ()
 
 @property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
-@property(nonatomic, assign) BOOL queryingItems;
+@property (nonatomic, assign) BOOL queryingItems;
 @property (strong, nonatomic) NSMutableDictionary *promises;
 @property (strong, nonatomic) SKProductsRequest *request;
 @property (strong, nonatomic) SKReceiptRefreshRequest *receiptRequest;
@@ -96,7 +96,7 @@ UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSLog(@"Calling queryPurchasableHistoryAsync!");
+  NSLog(@"Calling queryPurchasableHistoryAsync");
   [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
 
   // Request history
@@ -107,7 +107,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
                     disconnectAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  NSLog(@"Calling disconnectAsync!");
+  NSLog(@"Calling disconnectAsync");
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
   resolve(nil);
 }

@@ -1,5 +1,4 @@
 import { QueryResponse } from './InAppPurchases.types';
-export { default as ExpoInAppPurchasesView } from './ExpoInAppPurchasesView';
 export declare const constants: {
     billingResponseCodes: any;
     purchaseStates: any;
