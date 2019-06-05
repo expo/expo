@@ -26,5 +26,9 @@
   "devDependencies": {
     "react": "16.8.3"
   },
-  "gitHead": "49f285013c22996f5d03958708761be385e6cab4"
+  "gitHead": "49f285013c22996f5d03958708761be385e6cab4",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/jest-expo"
 }
