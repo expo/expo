@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Animated,
 } from 'react-native';
 import { ScrollView } from 'react-navigation';
 import FadeIn from '@expo/react-native-fade-in-image';
@@ -27,7 +28,7 @@ import SeeAllSnacksButton from './SeeAllSnacksButton';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
 import SnackCard from './SnackCard';
-import { Constants } from 'expo';
+import { Constants, BlurView } from 'expo';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -42,14 +43,54 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as possible.
 `;
 
-const BannerPhoto = ({ source }) => (
-  <View style={StyleSheet.absoluteFill}>
-    <Image style={[{ flex: 1, opacity: 0.7, resizeMode: 'cover' }]} source={source} />
-    <LinearGradient
-      colors={['rgba(255,255,255,0)', Colors.greyBackground]}
-      style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%' }}
-    />
-  </View>
+const BannerPhoto = ({ scroll, source }) => {
+  const scale = scroll.interpolate({
+    inputRange: [-50, 0],
+    outputRange: [2, 1],
+    extrapolateRight: 'clamp',
+  });
+
+  const translate = scroll.interpolate({
+    inputRange: [-1, 0, 1],
+    outputRange: [-1, 0, 0.5],
+  });
+
+  const opacity = scroll.interpolate({
+    inputRange: [-50, 0],
+    outputRange: [1, 0],
+  });
+
+  return (
+    <Animated.View
+      style={[StyleSheet.absoluteFill, { transform: [{ translateY: translate }, { scale }] }]}>
+      <Animated.Image style={[{ flex: 1, resizeMode: 'cover' }]} source={source} />
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
+        <BlurView style={{ flex: 1 }} intensity={100} tint="light" />
+      </Animated.View>
+    </Animated.View>
+  );
+  //   <LinearGradient
+  //   colors={['rgba(255,255,255,0)', Colors.greyBackground]}
+  //   style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%' }}
+  // />
+};
+
+const BannerButton = ({ onPress }) => (
+  <TouchableOpacity onPress={onPress}>
+    <View
+      style={{
+        opacity: 0.7,
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        borderWidth: 1,
+        backgroundColor: 'transparent',
+        borderRadius: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <Text style={{ textAlign: 'center', fontSize: 14, fontWeight: '500' }}>Change Banner</Text>
+    </View>
+  </TouchableOpacity>
 );
 @connectActionSheet
 export default class Profile extends React.Component {
@@ -80,6 +121,8 @@ export default class Profile extends React.Component {
     }
   }
 
+  scroll = new Animated.Value(0);
+
   render() {
     // NOTE(brentvatne): investigate why `user` is null when there
     // is an error, even if it loaded before. This seems undesirable,
@@ -93,7 +136,11 @@ export default class Profile extends React.Component {
     }
 
     return (
-      <ScrollView
+      <Animated.ScrollView
+        scrollEventThrottle={1}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: this.scroll } } }], {
+          useNativeDriver: true,
+        })}
         refreshControl={
           <RefreshControl
             refreshing={this.state.isRefetching}
@@ -105,7 +152,7 @@ export default class Profile extends React.Component {
         {this._renderHeader()}
         {this._renderApps()}
         {this._renderSnacks()}
-      </ScrollView>
+      </Animated.ScrollView>
     );
   }
 
@@ -175,20 +222,53 @@ export default class Profile extends React.Component {
     const { image } = this.props;
     let { firstName, lastName, username, profilePhoto } = this.props.data.user;
 
+    const verticalHeight = 72;
+    const imagePeek = 16;
+    const imageSize = 64;
     return (
-      <View style={styles.header}>
-        <BannerPhoto source={{ uri: image }} />
-        <TouchableOpacity onPress={this._showImageOptions} style={styles.headerAvatarContainer}>
-          <FadeIn>
-            <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
-          </FadeIn>
-        </TouchableOpacity>
-        <Text style={styles.headerFullNameText}>
-          {firstName} {lastName}
-        </Text>
-        <View style={styles.headerAccountsList}>
-          <Text style={styles.headerAccountText}>@{username}</Text>
-          {this._maybeRenderGithubAccount()}
+      <View
+        style={[styles.header, { alignItems: 'stretch', padding: 12, paddingTop: verticalHeight }]}>
+        <BannerPhoto scroll={this.scroll} source={{ uri: image }} />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: Colors.greyBackground,
+            top: verticalHeight + imagePeek,
+          }}
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-end',
+          }}>
+          <TouchableOpacity style={styles.headerAvatarContainer}>
+            <FadeIn>
+              <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
+            </FadeIn>
+          </TouchableOpacity>
+          <View>
+            <Text style={styles.headerFullNameText}>
+              {firstName} {lastName}
+            </Text>
+            <View style={{}}>
+              <Text style={styles.headerAccountText}>@{username}</Text>
+              {this._maybeRenderGithubAccount()}
+            </View>
+          </View>
+
+          <View
+            style={{
+              flex: 1,
+              height: imageSize - imagePeek,
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+            }}>
+            <BannerButton onPress={this._showImageOptions} />
+          </View>
         </View>
       </View>
     );
@@ -228,7 +308,11 @@ export default class Profile extends React.Component {
     return (
       <View style={styles.header}>
         <View
-          style={[styles.headerAvatar, styles.headerAvatarContainer, styles.legacyHeaderAvatar]}
+          style={[
+            styles.headerAvatar,
+            styles.legacyHeaderAvatarContainer,
+            styles.legacyHeaderAvatar,
+          ]}
         />
         <View style={styles.headerAccountsList}>
           <Text style={styles.headerAccountText}>@{username}</Text>
@@ -264,7 +348,7 @@ export default class Profile extends React.Component {
 
     return (
       <View style={{ marginBottom: 3 }}>
-        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
+        <View style={[SharedStyles.sectionLabelContainer, {}]}>
           <Text style={SharedStyles.sectionLabelText}>PUBLISHED PROJECTS</Text>
         </View>
         {content}
@@ -364,10 +448,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: Colors.separator,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.separator,
   },
   headerAvatarContainer: {
+    marginRight: 12,
+    overflow: 'hidden',
+    borderRadius: 5,
+  },
+  legacyHeaderAvatarContainer: {
     marginTop: 20,
     marginBottom: 12,
     overflow: 'hidden',
