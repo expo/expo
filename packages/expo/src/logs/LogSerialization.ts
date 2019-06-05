@@ -73,15 +73,14 @@ function _stringifyLogData(data: unknown[]): string[] {
     if (typeof item === 'string') {
       return item;
     } else {
-      //check the size of string returned
       let result = prettyFormat(item, { plugins: [ReactNodeFormatter] });
-      if(result.length > 10000){
-        //truncate the result to 10kb
-        let newResult = result.substring(0,10000);
-        newResult += '...';
-        return newResult;
-      }
-      else{
+      // check the size of string returned
+      if (result.length > 10000) {
+        let truncatedResult = result.substring(0, 10000);
+        // truncate the result string to the first 10000 characters
+        truncatedResult += '...';
+        return truncatedResult;
+      } else {
         return result;
       }
     }
