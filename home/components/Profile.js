@@ -12,9 +12,10 @@ import {
 } from 'react-native';
 import { ScrollView } from 'react-navigation';
 import FadeIn from '@expo/react-native-fade-in-image';
-
+import { LinearGradient } from 'expo-linear-gradient';
 import { take, takeRight } from 'lodash';
 import dedent from 'dedent';
+import { connectActionSheet } from '@expo/react-native-action-sheet';
 
 import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
@@ -26,6 +27,7 @@ import SeeAllSnacksButton from './SeeAllSnacksButton';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
 import SnackCard from './SnackCard';
+import { Constants } from 'expo';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -40,6 +42,16 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as possible.
 `;
 
+const BannerPhoto = ({ source }) => (
+  <View style={StyleSheet.absoluteFill}>
+    <Image style={[{ flex: 1, opacity: 0.7, resizeMode: 'cover' }]} source={source} />
+    <LinearGradient
+      colors={['rgba(255,255,255,0)', 'white']}
+      style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%' }}
+    />
+  </View>
+);
+@connectActionSheet
 export default class Profile extends React.Component {
   state = {
     isRefetching: false,
@@ -160,15 +172,17 @@ export default class Profile extends React.Component {
       return this._renderLegacyHeader();
     }
 
+    const { image } = this.props;
     let { firstName, lastName, username, profilePhoto } = this.props.data.user;
 
     return (
       <View style={styles.header}>
-        <View style={styles.headerAvatarContainer}>
+        <BannerPhoto source={{ uri: image }} />
+        <TouchableOpacity onPress={this._showImageOptions} style={styles.headerAvatarContainer}>
           <FadeIn>
             <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
           </FadeIn>
-        </View>
+        </TouchableOpacity>
         <Text style={styles.headerFullNameText}>
           {firstName} {lastName}
         </Text>
@@ -177,6 +191,34 @@ export default class Profile extends React.Component {
           {this._maybeRenderGithubAccount()}
         </View>
       </View>
+    );
+  };
+
+  _showImageOptions = () => {
+    let options = ['Choose Photo', 'Cancel'];
+    if (Constants.isDevice) {
+      options.unshift('Take Photo');
+    }
+    let cancelButtonIndex = options.length - 1;
+    this.props.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+      },
+      async buttonIndex => {
+        const option = options[buttonIndex];
+        if (option === 'Take Photo') {
+          this.props.navigation.navigate('Camera', {
+            username: this.props.username,
+            belongsToCurrentUser: this.props.isOwnProfile,
+          });
+        } else if (option === 'Choose Photo') {
+          this.props.navigation.navigate('MediaLibrary', {
+            username: this.props.username,
+            belongsToCurrentUser: this.props.isOwnProfile,
+          });
+        }
+      }
     );
   };
 
@@ -221,8 +263,8 @@ export default class Profile extends React.Component {
     }
 
     return (
-      <View style={{marginBottom: 3}}>
-        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10,  }]}>
+      <View style={{ marginBottom: 3 }}>
+        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
           <Text style={SharedStyles.sectionLabelText}>PUBLISHED PROJECTS</Text>
         </View>
         {content}
@@ -255,7 +297,7 @@ export default class Profile extends React.Component {
     }
 
     return (
-      <View style={{marginBottom: 3}}>
+      <View style={{ marginBottom: 3 }}>
         <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
           <Text style={SharedStyles.sectionLabelText}>SAVED SNACKS</Text>
         </View>
@@ -343,7 +385,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerAccountText: {
-    color: 'rgba(36, 44, 58, 0.4)',
+    color: 'rgba(36, 44, 58, 0.7)',
     fontSize: 14,
   },
   headerFullNameText: {

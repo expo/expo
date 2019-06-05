@@ -53,6 +53,7 @@ export default class ProfileScreen extends React.Component {
 
     return {
       isAuthenticated,
+      image: data.profile.image,
       username: props.navigation.getParam('username'),
     };
   }
