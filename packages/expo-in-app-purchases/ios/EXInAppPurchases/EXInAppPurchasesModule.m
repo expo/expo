@@ -17,6 +17,7 @@ static NSString * const QUERY_HISTORY_KEY = @"QUERY_HISTORY";
 static NSString * const QUERY_PURCHASABLE_KEY = @"QUERY_PURCHASABLE";
 static NSString * const IN_APP = @"inapp";
 static NSString * const SUBS = @"subs";
+static NSString * const P0D = @"P0D";
 
 static const int SERVICE_DISCONNECTED = -1;
 static const int OK = 0;
@@ -211,27 +212,13 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
 - (NSDictionary *)getProductData:(SKProduct *)product
 {
-  // Format item type sub period and priceAmountMicros for platform consistency
-  NSString *type = IN_APP;
-  NSString *subscriptionPeriod;
-  if (@available(iOS 11.2, *)) {
-    if (product.subscriptionPeriod != nil) {
-      subscriptionPeriod = [self getSubscriptionPeriod:product];
-      // Use with caution: P0D also implies non-renewable subscription.
-      if (![subscriptionPeriod isEqualToString:@"P0D"]) {
-        type = SUBS;
-      }
-    }
-  }
+  // Use with caution: P0D also implies non-renewable subscription.
+  NSString *subscriptionPeriod = [self getSubscriptionPeriod:product];
+  NSString *type = [subscriptionPeriod isEqualToString:P0D] ? IN_APP : SUBS;
 
   NSDecimalNumber *oneMillion = [[NSDecimalNumber alloc] initWithInt:1000000];
   NSDecimalNumber *priceAmountMicros = [product.price decimalNumberByMultiplyingBy:oneMillion];
-
-  // Format price string
-  NSMutableString *price = [NSMutableString string];
-  NSString *priceString = [NSString stringWithFormat:@"%@", product.price];
-  [price appendString:product.priceLocale.currencySymbol];
-  [price appendString:priceString];
+  NSString *price = [NSString stringWithFormat:@"%@%@", product.priceLocale.currencySymbol, product.price];
 
   return @{
           @"description": product.localizedDescription,
@@ -260,37 +247,36 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
 - (NSString *)getSubscriptionPeriod:(SKProduct *)product
 {
-  NSMutableString *subscriptionPeriod = [[NSMutableString alloc] init];
-  [subscriptionPeriod appendString:@""];
-
   // Subscription period specified in ISO 8601 format to match Android implementation (e.g. P3M = 3 months)
   if (@available(iOS 11.2, *)) {
-    [subscriptionPeriod appendString:@"P"];
-    NSUInteger numUnits = product.subscriptionPeriod.numberOfUnits;
-    [subscriptionPeriod appendString: [NSString stringWithFormat:@"%lu", (unsigned long)numUnits]];
-    NSString *unit;
-    switch(product.subscriptionPeriod.unit) {
-      case SKProductPeriodUnitDay: {
-        unit = @"D";
-        break;
-      }
-      case SKProductPeriodUnitWeek: {
-        unit = @"W";
-        break;
-      }
-      case SKProductPeriodUnitMonth: {
-        unit = @"M";
-        break;
-      }
-      case SKProductPeriodUnitYear: {
-        unit = @"Y";
-        break;
-      }
-    }
-    [subscriptionPeriod appendString:unit];
+    NSString *unit = [self getUnit:product];
+    unsigned long numUnits = (unsigned long)product.subscriptionPeriod.numberOfUnits;
+    return [NSString stringWithFormat:@"P%lu%@", numUnits, unit];
   }
 
-  return subscriptionPeriod;
+  // Default to P0D if we can't get this info so we assume all products are in app
+  return P0D;
+}
+
+- (NSString *)getUnit:(SKProduct *)product
+{
+  if (@available(iOS 11.2, *)) {
+    switch(product.subscriptionPeriod.unit) {
+      case SKProductPeriodUnitDay: {
+        return @"D";
+      }
+      case SKProductPeriodUnitWeek: {
+        return @"W";
+      }
+      case SKProductPeriodUnitMonth: {
+        return @"M";
+      }
+      case SKProductPeriodUnitYear: {
+        return @"Y";
+      }
+    }
+  }
+  return [NSString string];
 }
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
