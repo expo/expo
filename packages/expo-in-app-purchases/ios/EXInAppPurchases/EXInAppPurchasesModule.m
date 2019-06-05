@@ -120,8 +120,10 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
   for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
     NSLog(@"Invalid identifier: %@", invalidIdentifier);
-    // TODO: Reject promise?
-    [self resolvePromise:invalidIdentifier value:nil];
+    if (!_queryingItems) {
+      NSString * errorMessage = [NSString stringWithFormat:@"Cannot purchase item %@ because it does not exist.", invalidIdentifier];
+      [self rejectPromise:invalidIdentifier code:@"E_INVALID_IDENTIFIER" message:errorMessage error:nil];
+    }
   }
   NSInteger count = response.products.count;
   if (count == 0) {
@@ -132,7 +134,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
   for (SKProduct *validProduct in response.products) {
     if (_queryingItems) {
-      // Calling queryPurchasableItemsAsync
+      // Retrieving product info
       NSLog(@"Querying items. Getting data for %@", validProduct.productIdentifier);
       NSDictionary *productData = [self getProductData:validProduct];
       [result addObject:productData];
