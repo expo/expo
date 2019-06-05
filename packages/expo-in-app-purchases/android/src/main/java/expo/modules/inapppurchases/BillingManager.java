@@ -39,7 +39,6 @@ import java.util.Set;
 public class BillingManager implements PurchasesUpdatedListener {
     private static final String TAG = "BillingManager";
 
-    // Default value of mBillingClientResponseCode until BillingManager was not yet initialized
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
     public static final String PURCHASING_ITEM = "Purchasing Item";
     public static final String ACKNOWLEDGING_PURCHASE = "Acknowledging Item";

@@ -11,11 +11,16 @@ export const constants = {
     purchaseStates,
     validTypes,
 };
+const errors = {
+    ALREADY_CONNECTED: 'Already connected to App Store',
+    ALREADY_DISCONNECTED: 'Already disconnected from App Store',
+    NOT_CONNECTED: 'Must be connected to App Store',
+};
 let connected = false;
 export async function connectAsync() {
     console.log('calling connectToAppStoreAsync from TS');
     if (connected) {
-        throw new ConnectionError('Already connected to App Store');
+        throw new ConnectionError(errors.ALREADY_CONNECTED);
     }
     connected = true;
     return await ExpoInAppPurchases.connectAsync();
@@ -23,7 +28,7 @@ export async function connectAsync() {
 export async function getProductsAsync(itemList) {
     console.log('calling queryPurchasableItemsAsync from TS');
     if (!connected) {
-        throw new ConnectionError('Must be connected to App Store');
+        throw new ConnectionError(errors.NOT_CONNECTED);
     }
     if (Platform.OS === 'android') {
         // On Android you have to pass in the item type so we will combine the results of both inapp and subs
@@ -41,12 +46,12 @@ export async function getProductsAsync(itemList) {
 export async function getPurchaseHistoryAsync(refresh) {
     console.log('calling queryPurchaseHistoryAsync from TS');
     if (!connected) {
-        throw new ConnectionError('Must be connected to App Store');
+        throw new ConnectionError(errors.NOT_CONNECTED);
     }
     if (refresh && Platform.OS === 'android') {
         const { responseCode, results } = await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.INAPP);
         if (responseCode === responseCodes.OK) {
-            const subs = await await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.SUBS);
+            const subs = await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.SUBS);
             subs.results.forEach(result => {
                 results.push(result);
             });
@@ -58,7 +63,7 @@ export async function getPurchaseHistoryAsync(refresh) {
 export async function purchaseItemAsync(itemId, oldItem) {
     console.log('calling purchaseItemAsync from TS');
     if (!connected) {
-        throw new ConnectionError('Must be connected to App Store');
+        throw new ConnectionError(errors.NOT_CONNECTED);
     }
     // Replacing old item is only supported on Android
     const args = Platform.OS === 'android' ? [itemId, oldItem] : [itemId];
@@ -66,11 +71,11 @@ export async function purchaseItemAsync(itemId, oldItem) {
 }
 export async function acknowledgePurchaseAsync(purchaseToken, consumeItem) {
     // No-op if not on Android since this is not applicable
-    if (Platform.OS !== 'android')
+    if (!ExpoInAppPurchases.acknowledgePurchaseAsync)
         return;
     console.log('calling acknowledgePurchaseAsync from TS');
     if (!connected) {
-        throw new ConnectionError('Must be connected to App Store');
+        throw new ConnectionError(errors.NOT_CONNECTED);
     }
     if (consumeItem) {
         console.log('Consuming...');
@@ -83,15 +88,14 @@ export async function getBillingResponseCodeAsync() {
     if (!connected) {
         return responseCodes.SERVICE_DISCONNECTED;
     }
-    if (Platform.OS !== 'android') {
+    if (!ExpoInAppPurchases.getBillingResponseCodeAsync) {
         return responseCodes.OK;
     }
     return await ExpoInAppPurchases.getBillingResponseCodeAsync();
 }
 export async function disconnectAsync() {
-    console.log('calling disconnectAsync from TS');
     if (!connected) {
-        throw new ConnectionError('Already disconnected from App Store');
+        throw new ConnectionError(errors.ALREADY_DISCONNECTED);
     }
     connected = false;
     return await ExpoInAppPurchases.disconnectAsync();
