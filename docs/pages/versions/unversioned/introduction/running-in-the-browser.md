@@ -40,7 +40,7 @@ Expo Unimodules aren't bound to the Expo SDK, you can use them in _any_ react.js
   }
   ```
 
-- **React Native Only**: Update your root `index.js`:
+- **React Native-Only**: Update your root `index.js`:
 
   ```diff
     import {
