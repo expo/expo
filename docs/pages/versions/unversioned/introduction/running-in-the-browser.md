@@ -84,7 +84,7 @@ This step is optional with the React Native CLI but you'll get a much smaller bu
 
 Expo `AppEntry` has built in support for error boundaries in development mode. In the future Notifications and Splash Screen features may be added as well. When used with `babel-preset-expo` you can eliminate all of the unused modules from the `expo` package, this means if you only import `AppEntry` then things like `Constants`, and `Camera` would be completely removed during the production build (`expo build:web`).
 
-### Web only method
+### Web-only method
 
 If you don't want to change how your native app works do the following:
 
