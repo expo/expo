@@ -215,6 +215,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
+  api 'org.webkit:android-jsc:r241213' // needs to be before react-native
   api 'com.facebook.react:react-native:33.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
