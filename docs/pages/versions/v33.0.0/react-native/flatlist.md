@@ -21,30 +21,19 @@ If you need section support, use [`<SectionList>`](../sectionlist/).
 Minimal Example:
 
 ```javascript
-
-
-```javascript
-
 <FlatList
   data={[{key: 'a'}, {key: 'b'}]}
   renderItem={({item}) => <Text>{item.key}</Text>}
 />
-
-```javascript
-
+```
 
 To render multiple columns, use the [`numColumns`](../flatlist/#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
-
-```
 
 More complex, multi-select example demonstrating `PureComponent` usage for perf optimization and avoiding bugs.
 
 - By binding the `onPressItem` handler, the props will remain `===` and `PureComponent` will prevent wasteful re-renders unless the actual `id`, `selected`, or `title` props change, even if the components rendered in `MyListItem` did not have such optimizations.
 - By passing `extraData={this.state}` to `FlatList` we make sure `FlatList` itself will re-render when the `state.selected` changes. Without setting this prop, `FlatList` would not know it needs to re-render any items because it is also a `PureComponent` and the prop comparison will not show any changes.
 - `keyExtractor` tells the list to use the `id`s for the react keys instead of the default `key` property.
-
-
-```javascript
 
 ```javascript
 class MyListItem extends React.PureComponent {
@@ -99,9 +88,6 @@ class MultiSelectList extends React.PureComponent {
     );
   }
 }
-
-```
-
 
 ```
 
