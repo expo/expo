@@ -29,6 +29,8 @@ redirects[versions/latest/guides/offline-support.html]=versions/latest/guides/of
 redirects[versions/latest/sdk/]=versions/latest/sdk/overview/
 # upgrading expo -> upgrading sdk walkthrough
 redirects[versions/latest/workflow/upgrading-expo]=versions/latest/workflow/upgrading-expo-sdk-walkthrough/
+# rename
+redirects[versions/latest/sdk/haptic/]=versions/latest/sdk/haptics/
 
 for i in "${!redirects[@]}" # iterate over keys
 do
