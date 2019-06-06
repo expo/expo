@@ -2,7 +2,7 @@
 title: Crypto
 ---
 
-**`expo-crypto`** enables you to encrypt data in an equivalent manner to the `Node.js` core `crypto` API.
+**`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
 
 | 🍎 iOS | 💚 Android | 💻 Web |
 | ------ | ---------- | ------ |
