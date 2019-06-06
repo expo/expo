@@ -1,7 +1,8 @@
-import { AsyncStorage, NativeModules } from 'react-native';
 import mapValues from 'lodash/mapValues';
+import { AsyncStorage } from 'react-native';
+
+import ExponentKernel from '../universal/ExponentKernel';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
-const { ExponentKernel } = NativeModules;
 
 const Keys = mapValues(
   {
