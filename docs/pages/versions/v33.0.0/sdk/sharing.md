@@ -1,5 +1,5 @@
 ---
-title: Speech
+title: Sharing
 ---
 
 This module allows sharing files.
