@@ -4,6 +4,7 @@ import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
 import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
 import ExponentNotifications from './ExponentNotifications';
+import { CodedError } from '@unimodules/core';
 
 type Notification = {
   origin: 'selected' | 'received';
@@ -448,16 +449,19 @@ export default {
     } = {}
   ): Promise<string> {
     const areOptionsValid: boolean =
-      (options.month == null || isInRange(options.month, 1, 12)) &&
-      (options.day == null || isInRange(options.day, 1, 31)) &&
-      (options.hour == null || isInRange(options.hour, 0, 23)) &&
-      (options.minute == null || isInRange(options.minute, 0, 59)) &&
-      (options.second == null || isInRange(options.second, 0, 59)) &&
-      (options.weekDay == null || isInRange(options.weekDay, 1, 7)) &&
+      (options.month == null || isInRangeInclusive(options.month, 1, 12)) &&
+      (options.day == null || isInRangeInclusive(options.day, 1, 31)) &&
+      (options.hour == null || isInRangeInclusive(options.hour, 0, 23)) &&
+      (options.minute == null || isInRangeInclusive(options.minute, 0, 59)) &&
+      (options.second == null || isInRangeInclusive(options.second, 0, 59)) &&
+      (options.weekDay == null || isInRangeInclusive(options.weekDay, 1, 7)) &&
       (options.weekDay == null || options.day == null);
 
     if (!areOptionsValid) {
-      throw 'Options in scheduleNotificationWithCalendarAsync call were incorrect!';
+      throw new CodedError(
+        'WRONG_OPTIONS',
+        'Options in scheduleNotificationWithCalendarAsync call were incorrect!'
+      );
     }
 
     return ExponentNotifications.scheduleNotificationWithCalendar(notification, options);
@@ -471,12 +475,12 @@ export default {
     }
   ): Promise<string> {
     if (options.interval < 1) {
-      throw 'Interval must be not less then 1';
+      throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
     }
     return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
   },
 };
 
-function isInRange(variable: number, min: number, max: number): boolean {
+function isInRangeInclusive(variable: number, min: number, max: number): boolean {
   return (variable >= min && variable <= max);
 }
