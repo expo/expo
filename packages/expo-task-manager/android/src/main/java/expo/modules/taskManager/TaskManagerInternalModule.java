@@ -56,7 +56,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
 
   @Override
   public void onDestroy() {
-      mUIManager.unregisterLifecycleEventListener(this);
+    mUIManager.unregisterLifecycleEventListener(this);
   }
 
   //endregion

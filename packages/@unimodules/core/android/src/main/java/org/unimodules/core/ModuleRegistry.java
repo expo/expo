@@ -18,7 +18,7 @@ public class ModuleRegistry {
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
   private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
-  private final ArrayList<WeakReference<ComponentLifecycleListener>> mOuterListners = new ArrayList<>();
+  private final List<WeakReference<ComponentLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
 
   public ModuleRegistry(
           Collection<InternalModule> internalModules,
