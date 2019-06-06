@@ -4,7 +4,7 @@ import { ComposeOptions, ComposeResult } from './MailComposer.types';
 
 function removeNullValues(obj) {
   for (const propName in obj) {
-    if (obj[propName] === null || obj[propName] === undefined) {
+    if (obj[propName] == null) {
       delete obj[propName];
     }
   }
