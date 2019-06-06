@@ -80,28 +80,33 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 
 ### iOS
 
-- Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
+- Go to https://expo.io/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
+- Update your version of expokit in `package.json` to the version in `expokitNpmPackage` and run `yarn` or `npm install`.
+- Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the release corresponding to your SDK version (found on the link above in `sdkVersions.[NEW SDK VERSION].iosVersion`). 
+- Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 
 If upgrading from SDK 32 or below:
+
 1. Install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
 2. Remove the list of unimodules' dependencies:
-    ```ruby
+    ```
       pod 'EXAdsAdMob',
         :path => "../node_modules/expo-ads-admob/ios"
       pod 'EXSegment',
         :path => "../node_modules/expo-analytics-segment/ios"
       pod 'EXAppAuth',
         :path => "../node_modules/expo-app-auth/ios"
-      # and so on...
+      # and all the other pods starting with "EX"
     ```
     and instead add:
-    ```ruby
+    ```
       # Install unimodules
       require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
       use_unimodules!
     ```
-    This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/unimodules/react-native-unimodules).
+    
+This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/unimodules/react-native-unimodules).
 
 If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`.
 
