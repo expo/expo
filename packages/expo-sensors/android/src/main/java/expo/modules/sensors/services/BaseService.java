@@ -5,11 +5,11 @@ package expo.modules.sensors.services;
 import android.content.Context;
 
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.ComponentLifecycleListener;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.UIManager;
 
-/* package */ abstract class BaseService implements LifecycleEventListener, ComponentLifecycleListener {
+/* package */ abstract class BaseService implements LifecycleEventListener, RegistryLifecycleListener {
   private Context mContext;
   private ModuleRegistry mModuleRegistry;
   private boolean mIsForegrounded = false;

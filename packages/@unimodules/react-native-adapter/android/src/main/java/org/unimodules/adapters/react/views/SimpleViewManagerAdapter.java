@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
 
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ComponentLifecycleListener;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
-public class SimpleViewManagerAdapter<M extends ViewManager<V>, V extends View> extends SimpleViewManager<V> implements ComponentLifecycleListener {
+public class SimpleViewManagerAdapter<M extends ViewManager<V>, V extends View> extends SimpleViewManager<V> implements RegistryLifecycleListener {
   private M mViewManager;
 
   public SimpleViewManagerAdapter(M viewManager) {

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.unimodules.core.interfaces.ComponentLifecycleListener;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.SingletonModule;
 
@@ -18,7 +18,7 @@ public class ModuleRegistry {
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
   private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
-  private final List<WeakReference<ComponentLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
+  private final List<WeakReference<RegistryLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
 
   public ModuleRegistry(
           Collection<InternalModule> internalModules,
@@ -105,8 +105,8 @@ public class ModuleRegistry {
     mSingletonModulesMap.put(singletonName, singleton);
   }
 
-  public void registerOuterListener(ComponentLifecycleListener outerListener) {
-    mOuterListners.add(new WeakReference<>(outerListener));
+  public void registerExtraListener(RegistryLifecycleListener outerListener) {
+    mExtraRegistryLifecycleListeners.add(new WeakReference<>(outerListener));
   }
 
   /********************************************************
@@ -134,36 +134,36 @@ public class ModuleRegistry {
   }
 
   public void initialize() {
-    List<ComponentLifecycleListener> lifecycleListeners = new ArrayList<>();
+    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
     lifecycleListeners.addAll(mExportedModulesMap.values());
     lifecycleListeners.addAll(mInternalModulesMap.values());
     lifecycleListeners.addAll(mViewManagersMap.values());
     lifecycleListeners.addAll(mSingletonModulesMap.values());
 
-    for (WeakReference<ComponentLifecycleListener> ref : mOuterListners) {
+    for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
       if (ref.get() != null) {
         lifecycleListeners.add(ref.get());
       }
     }
 
-    for (ComponentLifecycleListener lifecycleListener : lifecycleListeners) {
+    for (RegistryLifecycleListener lifecycleListener : lifecycleListeners) {
       lifecycleListener.onCreate(this);
     }
   }
 
   public void onDestroy() {
-    List<ComponentLifecycleListener> lifecycleListeners = new ArrayList<>();
+    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
     lifecycleListeners.addAll(mExportedModulesMap.values());
     lifecycleListeners.addAll(mInternalModulesMap.values());
     lifecycleListeners.addAll(mViewManagersMap.values());
 
-    for (WeakReference<ComponentLifecycleListener> ref : mOuterListners) {
+    for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
       if (ref.get() != null) {
         lifecycleListeners.add(ref.get());
       }
     }
 
-    for (ComponentLifecycleListener lifecycleListener : lifecycleListeners) {
+    for (RegistryLifecycleListener lifecycleListener : lifecycleListeners) {
       lifecycleListener.onDestroy();
     }
   }

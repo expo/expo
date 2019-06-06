@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.ComponentLifecycleListener;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.InternalModule;
 
 import host.exp.exponent.ExponentManifest;
@@ -50,8 +50,8 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
     for (NativeModule otherModule : otherModules) {
-      if (otherModule instanceof ComponentLifecycleListener) {
-        moduleRegistry.registerOuterListener((ComponentLifecycleListener) otherModule);
+      if (otherModule instanceof RegistryLifecycleListener) {
+        moduleRegistry.registerExtraListener((RegistryLifecycleListener) otherModule);
       }
     }
 

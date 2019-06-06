@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
 
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ComponentLifecycleListener;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
-public class ViewGroupManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> extends ViewGroupManager<V> implements ComponentLifecycleListener {
+public class ViewGroupManagerAdapter<M extends ViewManager<V>, V extends ViewGroup> extends ViewGroupManager<V> implements RegistryLifecycleListener {
   private M mViewManager;
 
   public ViewGroupManagerAdapter(M viewManager) {
