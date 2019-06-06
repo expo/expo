@@ -5,7 +5,7 @@ import ApiV2Error from './ApiV2Error';
 import Config from './Config';
 import Store from '../redux/Store';
 
-const { ExponentKernel } = NativeModules;
+import ExponentKernel from '../universal/ExponentKernel';
 
 type RequestOptions = {
   httpMethod: 'get' | 'post';
