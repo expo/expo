@@ -38,7 +38,16 @@ android {
     versionName '2.11.0'
     // END VERSIONS
     ndk {
+      // We use different `abiFilters` for distributing
+      // to be able to bundle old, incompatible SDKs.
+    
+      // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
       abiFilters 'armeabi-v7a', 'x86'
+      // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+     
+      /* UNCOMMENT WHEN DISTRIBUTING
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
+      END UNCOMMENT WHEN DISTRIBUTING */
     }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
