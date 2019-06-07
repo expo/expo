@@ -21,12 +21,6 @@ Object.defineProperty(exports, "Linking", {
     return _Linking.default;
   }
 });
-Object.defineProperty(exports, "Notifications", {
-  enumerable: true,
-  get: function () {
-    return _Notifications.default;
-  }
-});
 Object.defineProperty(exports, "AppLoading", {
   enumerable: true,
   get: function () {
@@ -459,7 +453,7 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.ErrorRecovery = exports.AR = void 0;
+exports.Notifications = exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.ErrorRecovery = exports.AR = void 0;
 
 require("./Expo.fx");
 
@@ -487,13 +481,15 @@ var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
 
 exports.SplashScreen = SplashScreen;
 
+var Notifications = _interopRequireWildcard(require("./Notifications/index"));
+
+exports.Notifications = Notifications;
+
 var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
 var _registerRootComponent = _interopRequireDefault(require("./launch/registerRootComponent"));
 
 var _Linking = _interopRequireDefault(require("./Linking/Linking"));
-
-var _Notifications = _interopRequireDefault(require("./Notifications/Notifications"));
 
 var _AppLoading = _interopRequireDefault(require("./launch/AppLoading"));
 

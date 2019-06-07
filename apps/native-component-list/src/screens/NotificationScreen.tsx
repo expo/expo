@@ -8,6 +8,11 @@ import ListButton from '../components/ListButton';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 export default class NotificationScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    Notifications.addOnUserInteractionListener('notificationScreen', console.log);
+    Notifications.addOnForegroundNotificationListener('notificationScreen', console.log);
+  }
   static navigationOptions = {
     title: 'Notifications',
   };

@@ -51,7 +51,6 @@ import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPack
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule;
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage;
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
-import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaViewManager;
@@ -170,7 +169,6 @@ public class ExponentPackage implements ReactPackage {
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
         nativeModules.add(new ExponentAsyncStorageModule(reactContext, mManifest));
-        nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
         nativeModules.add(new PedometerModule(reactContext));

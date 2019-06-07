@@ -1,10 +1,18 @@
 package host.exp.exponent.fcm;
 
+import android.content.Intent;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.notifications.PushNotificationHelper;
+
+import static host.exp.exponent.fcm.ExpoFirebaseEventDispatcher.MESSAGE_KEY;
+import static host.exp.exponent.fcm.ExpoFirebaseEventDispatcher.METHOD_KEY;
+import static host.exp.exponent.fcm.ExpoFirebaseEventDispatcher.ON_NEW_MESSAGE;
+import static host.exp.exponent.fcm.ExpoFirebaseEventDispatcher.ON_NEW_TOKEN;
+import static host.exp.exponent.fcm.ExpoFirebaseEventDispatcher.TOKEN_KEY;
 
 public class ExpoFcmMessagingService extends FirebaseMessagingService {
 
@@ -14,7 +22,10 @@ public class ExpoFcmMessagingService extends FirebaseMessagingService {
       return;
     }
 
-    FcmRegistrationIntentService.registerForeground(getApplicationContext(), token);
+    Intent intent = new Intent(getApplicationContext(), ExpoFirebaseEventDispatcher.class);
+    intent.putExtra(TOKEN_KEY, token);
+    intent.putExtra(METHOD_KEY, ON_NEW_TOKEN);
+    getApplicationContext().startService(intent);
   }
 
   @Override
@@ -23,6 +34,10 @@ public class ExpoFcmMessagingService extends FirebaseMessagingService {
       return;
     }
 
-    PushNotificationHelper.getInstance().onMessageReceived(this, remoteMessage.getData().get("experienceId"), remoteMessage.getData().get("channelId"), remoteMessage.getData().get("message"), remoteMessage.getData().get("body"), remoteMessage.getData().get("title"), remoteMessage.getData().get("categoryId"));
+    Intent intent = new Intent(getApplicationContext(), ExpoFirebaseEventDispatcher.class);
+    intent.putExtra(MESSAGE_KEY, remoteMessage.toIntent().getExtras());
+    intent.putExtra(METHOD_KEY, ON_NEW_MESSAGE);
+    getApplicationContext().startService(intent);
+
   }
 }
