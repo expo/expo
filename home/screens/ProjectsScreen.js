@@ -206,7 +206,7 @@ export default class ProjectsScreen extends React.Component {
   _fetchProjectsAsync = async () => {
     try {
       let api = new ApiV2HttpClient();
-      let projects = await api.getAsync('development-sessions/', {
+      let projects = await api.getAsync('development-sessions', {
         deviceId: getSnackId(),
       });
       this.setState({ projects });
