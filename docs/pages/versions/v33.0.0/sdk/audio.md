@@ -4,7 +4,7 @@ title: Audio
 
 Provides basic sample playback and recording.
 
-Note that Expo does not yet support backgrounding, so audio is not available to play in the background of your experience. Audio also automatically stops if headphones / bluetooth audio devices are disconnected.
+Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
 Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](http://expo.io/@community/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
