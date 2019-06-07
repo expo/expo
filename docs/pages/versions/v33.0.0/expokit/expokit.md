@@ -85,8 +85,6 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 - Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 
-Nb: If your app is for iOS only, you can run `yarn remove expokit`/ `npm remove expokit`.
-
 If upgrading from SDK 32 or below:
 
 1. Install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).

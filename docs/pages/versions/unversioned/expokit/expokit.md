@@ -81,35 +81,36 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 ### iOS
 
 - Go to https://expo.io/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
-- Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the release corresponding to your SDK version (found on the link above in `sdkVersions.[NEW SDK VERSION].iosVersion`). 
+- Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the release corresponding to your SDK version (found on the link above in `sdkVersions.[NEW SDK VERSION].iosVersion`).
 - Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
-
-Nb: If your app is for iOS only, you can run `yarn remove expokit`/ `npm remove expokit`.
 
 If upgrading from SDK 32 or below:
 
 1. Install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
 2. Remove the list of unimodules' dependencies:
-    ```
-      pod 'EXAdsAdMob',
-        :path => "../node_modules/expo-ads-admob/ios"
-      pod 'EXSegment',
-        :path => "../node_modules/expo-analytics-segment/ios"
-      pod 'EXAppAuth',
-        :path => "../node_modules/expo-app-auth/ios"
-      # and all the other pods starting with "EX"
-    ```
-    and instead add:
-    ```
-      # Install unimodules
-      require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
-      use_unimodules!
-    ```
-    
+
+   ```
+     pod 'EXAdsAdMob',
+       :path => "../node_modules/expo-ads-admob/ios"
+     pod 'EXSegment',
+       :path => "../node_modules/expo-analytics-segment/ios"
+     pod 'EXAppAuth',
+       :path => "../node_modules/expo-app-auth/ios"
+     # and all the other pods starting with "EX"
+   ```
+
+   and instead add:
+
+   ```
+     # Install unimodules
+     require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+     use_unimodules!
+   ```
+
 This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/unimodules/react-native-unimodules).
 
-If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`.
+If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`.
 
 If you have never made any edits to your Expo-generated `AppDelegate` files, then you can just replace them with these new template files:
 
@@ -131,59 +132,63 @@ If upgrading from SDK32 or below:
 
 1. If you haven't already done so when upgrading your iOS project, install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
 2. In `android/settings.gradle` add to the bottom of the file:
-    ```groovy
-    apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
-    // Include unimodules.
-    includeUnimodulesProjects()
-    ```
+   ```groovy
+   apply from: '../node_modules/react-native-unimodules/gradle.groovy'
+
+   // Include unimodules.
+   includeUnimodulesProjects()
+   ```
+
 3. In `android/app/build.gradle` remove an explicit list of `host.exp.exponent:…` dependencies with
-    ```groovy
-    addUnimodulesDependencies([
-      modulesPaths : [
-        '../../node_modules'
-      ],
-      configuration: 'api',
-      target       : 'react-native',
-      exclude      : [
-        // You can exclude unneeded modules here, e.g.,
-        // 'unimodules-face-detector-interface',
-        // 'expo-face-detector'
 
-        // Adding a name here will also remove the package
-        // from auto-generated BasePackageList.java
-      ]
-    ])
-    ```
+   ```groovy
+   addUnimodulesDependencies([
+     modulesPaths : [
+       '../../node_modules'
+     ],
+     configuration: 'api',
+     target       : 'react-native',
+     exclude      : [
+       // You can exclude unneeded modules here, e.g.,
+       // 'unimodules-face-detector-interface',
+       // 'expo-face-detector'
+
+       // Adding a name here will also remove the package
+       // from auto-generated BasePackageList.java
+     ]
+   ])
+   ```
+
 4. In `android/app/build.gradle` (same file) add the following line above `dependencies {` line
-    ```groovy
-    apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
-    ```
+   ```groovy
+   apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+   ```
 5. In `android/app/build.gradle` (same file) replace all occurrences of `27.1.1` with `28.0.0`.
 6. In `android/app/build.gradle` (same file) replace `compileSdkVersion 27` with `compileSdkVersion 28`.
 7. In `android/app/build.gradle` (same file) if you have the line:
-    ```groovy
-    implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
-    ```
-    change it to
-    ```groovy
-    implementation 'com.google.android.exoplayer:extension-okhttp:2.6.1'
-    ```
+   ```groovy
+   implementation 'expolib_v1.com.google.android.exoplayer:expolib_v1-extension-okhttp:2.6.1@aar'
+   ```
+   change it to
+   ```groovy
+   implementation 'com.google.android.exoplayer:extension-okhttp:2.6.1'
+   ```
 8. In `android/app/build.gradle` (same file) add the following block to the end of `android { … <add here> }`:
-    ```groovy
-    compileOptions {
-      sourceCompatibility 1.8
-      targetCompatibility 1.8
-    }
-    ```
+   ```groovy
+   compileOptions {
+     sourceCompatibility 1.8
+     targetCompatibility 1.8
+   }
+   ```
 9. In `android/app/src/main/java/host/exp/exponent/MainApplication.java` change
-    ```java
-    import expolib_v1.okhttp3.OkHttpClient;
-    ```
-    to
-    ```java
-    import okhttp3.OkHttpClient;
-    ```
+   ```java
+   import expolib_v1.okhttp3.OkHttpClient;
+   ```
+   to
+   ```java
+   import okhttp3.OkHttpClient;
+   ```
 10. In both `android/app/src/main/java/host/exp/exponent/MainApplication.java` and `android/app/src/main/java/host/exp/exponent/MainActivity.java` change
     ```java
     import expo.core.interfaces.Package;
@@ -243,119 +248,123 @@ If upgrading from SDK32 or below:
 If upgrading from SDK31 or below:
 
 1. add the following lines to `android/app/build.gradle`:
-    ```groovy
-    api 'host.exp.exponent:expo-app-loader-provider:+'
-    api 'org.unimodules:core:+'
-    api 'org.unimodules:unimodules-constants-interface:+'
-    api 'host.exp.exponent:expo-constants:+'
-    api 'org.unimodules:unimodules-file-system-interface:+'
-    api 'host.exp.exponent:expo-file-system:+'
-    api 'org.unimodules:unimodules-image-loader-interface:+'
-    api 'host.exp.exponent:expo-permissions:+'
-    api 'org.unimodules:unimodules-permissions-interface:+'
-    api 'org.unimodules:unimodules-sensors-interface:+'
-    api 'host.exp.exponent:expo-react-native-adapter:+'
-    api 'host.exp.exponent:expo-task-manager:+'
-    api 'org.unimodules:unimodules-task-manager-interface:+'
 
-    // Optional universal modules, could be removed
-    // along with references in MainActivity
-    api 'host.exp.exponent:expo-ads-admob:+'
-    api 'host.exp.exponent:expo-app-auth:+'
-    api 'host.exp.exponent:expo-analytics-segment:+'
-    api 'org.unimodules:unimodules-barcode-scanner-interface:+'
-    api 'host.exp.exponent:expo-barcode-scanner:+'
-    api 'org.unimodules:unimodules-camera-interface:+'
-    api 'host.exp.exponent:expo-camera:+'
-    api 'host.exp.exponent:expo-contacts:+'
-    api 'host.exp.exponent:expo-face-detector:+'
-    api 'org.unimodules:unimodules-face-detector-interface:+'
-    api 'host.exp.exponent:expo-font:+'
-    api 'host.exp.exponent:expo-gl-cpp:+'
-    api 'host.exp.exponent:expo-gl:+'
-    api 'host.exp.exponent:expo-google-sign-in:+'
-    api 'host.exp.exponent:expo-local-authentication:+'
-    api 'host.exp.exponent:expo-localization:+'
-    api 'host.exp.exponent:expo-location:+'
-    api 'host.exp.exponent:expo-media-library:+'
-    api 'host.exp.exponent:expo-print:+'
-    api 'host.exp.exponent:expo-sensors:+'
-    api 'host.exp.exponent:expo-sms:+'
-    api 'host.exp.exponent:expo-background-fetch:+'
-    ```
+   ```groovy
+   api 'host.exp.exponent:expo-app-loader-provider:+'
+   api 'org.unimodules:core:+'
+   api 'org.unimodules:unimodules-constants-interface:+'
+   api 'host.exp.exponent:expo-constants:+'
+   api 'org.unimodules:unimodules-file-system-interface:+'
+   api 'host.exp.exponent:expo-file-system:+'
+   api 'org.unimodules:unimodules-image-loader-interface:+'
+   api 'host.exp.exponent:expo-permissions:+'
+   api 'org.unimodules:unimodules-permissions-interface:+'
+   api 'org.unimodules:unimodules-sensors-interface:+'
+   api 'host.exp.exponent:expo-react-native-adapter:+'
+   api 'host.exp.exponent:expo-task-manager:+'
+   api 'org.unimodules:unimodules-task-manager-interface:+'
+
+   // Optional universal modules, could be removed
+   // along with references in MainActivity
+   api 'host.exp.exponent:expo-ads-admob:+'
+   api 'host.exp.exponent:expo-app-auth:+'
+   api 'host.exp.exponent:expo-analytics-segment:+'
+   api 'org.unimodules:unimodules-barcode-scanner-interface:+'
+   api 'host.exp.exponent:expo-barcode-scanner:+'
+   api 'org.unimodules:unimodules-camera-interface:+'
+   api 'host.exp.exponent:expo-camera:+'
+   api 'host.exp.exponent:expo-contacts:+'
+   api 'host.exp.exponent:expo-face-detector:+'
+   api 'org.unimodules:unimodules-face-detector-interface:+'
+   api 'host.exp.exponent:expo-font:+'
+   api 'host.exp.exponent:expo-gl-cpp:+'
+   api 'host.exp.exponent:expo-gl:+'
+   api 'host.exp.exponent:expo-google-sign-in:+'
+   api 'host.exp.exponent:expo-local-authentication:+'
+   api 'host.exp.exponent:expo-localization:+'
+   api 'host.exp.exponent:expo-location:+'
+   api 'host.exp.exponent:expo-media-library:+'
+   api 'host.exp.exponent:expo-print:+'
+   api 'host.exp.exponent:expo-sensors:+'
+   api 'host.exp.exponent:expo-sms:+'
+   api 'host.exp.exponent:expo-background-fetch:+'
+   ```
+
 2. Ensure that in `MainActivity.java`, `expoPackages` method looks like this:
-    ```java
-    @Override
-    public List<Package> expoPackages() {
-      return ((MainApplication) getApplication()).getExpoPackages();
-    }
-    ```
+   ```java
+   @Override
+   public List<Package> expoPackages() {
+     return ((MainApplication) getApplication()).getExpoPackages();
+   }
+   ```
 3. In `MainApplication.java`, replace
-    ```java
-    public class MainApplication extends ExpoApplication {
-    ```
-    with
-    ```java
-    public class MainApplication extends ExpoApplication implements AppLoaderPackagesProviderInterface<ReactPackage> {
-    ```
+   ```java
+   public class MainApplication extends ExpoApplication {
+   ```
+   with
+   ```java
+   public class MainApplication extends ExpoApplication implements AppLoaderPackagesProviderInterface<ReactPackage> {
+   ```
 4. Add the following lines in `MainApplication.java`:
-    ```java
-    import org.unimodules.core.interfaces.Package;
-    import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
-    import expo.modules.ads.admob.AdMobPackage;
-    import expo.modules.analytics.segment.SegmentPackage;
-    import expo.modules.appauth.AppAuthPackage;
-    import expo.modules.backgroundfetch.BackgroundFetchPackage;
-    import expo.modules.barcodescanner.BarCodeScannerPackage;
-    import expo.modules.camera.CameraPackage;
-    import expo.modules.constants.ConstantsPackage;
-    import expo.modules.contacts.ContactsPackage;
-    import expo.modules.facedetector.FaceDetectorPackage;
-    import expo.modules.filesystem.FileSystemPackage;
-    import expo.modules.font.FontLoaderPackage;
-    import expo.modules.gl.GLPackage;
-    import expo.modules.google.signin.GoogleSignInPackage;
-    import expo.modules.localauthentication.LocalAuthenticationPackage;
-    import expo.modules.localization.LocalizationPackage;
-    import expo.modules.location.LocationPackage;
-    import expo.modules.medialibrary.MediaLibraryPackage;
-    import expo.modules.permissions.PermissionsPackage;
-    import expo.modules.print.PrintPackage;
-    import expo.modules.sensors.SensorsPackage;
-    import expo.modules.sms.SMSPackage;
-    import expo.modules.taskManager.TaskManagerPackage;
 
-    ...
+   ```java
+   import org.unimodules.core.interfaces.Package;
+   import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
+   import expo.modules.ads.admob.AdMobPackage;
+   import expo.modules.analytics.segment.SegmentPackage;
+   import expo.modules.appauth.AppAuthPackage;
+   import expo.modules.backgroundfetch.BackgroundFetchPackage;
+   import expo.modules.barcodescanner.BarCodeScannerPackage;
+   import expo.modules.camera.CameraPackage;
+   import expo.modules.constants.ConstantsPackage;
+   import expo.modules.contacts.ContactsPackage;
+   import expo.modules.facedetector.FaceDetectorPackage;
+   import expo.modules.filesystem.FileSystemPackage;
+   import expo.modules.font.FontLoaderPackage;
+   import expo.modules.gl.GLPackage;
+   import expo.modules.google.signin.GoogleSignInPackage;
+   import expo.modules.localauthentication.LocalAuthenticationPackage;
+   import expo.modules.localization.LocalizationPackage;
+   import expo.modules.location.LocationPackage;
+   import expo.modules.medialibrary.MediaLibraryPackage;
+   import expo.modules.permissions.PermissionsPackage;
+   import expo.modules.print.PrintPackage;
+   import expo.modules.sensors.SensorsPackage;
+   import expo.modules.sms.SMSPackage;
+   import expo.modules.taskManager.TaskManagerPackage;
 
-    public List<Package> getExpoPackages() {
-      return Arrays.<Package>asList(
-          new CameraPackage(),
-          new ConstantsPackage(),
-          new SensorsPackage(),
-          new FileSystemPackage(),
-          new FaceDetectorPackage(),
-          new GLPackage(),
-          new GoogleSignInPackage(),
-          new PermissionsPackage(),
-          new SMSPackage(),
-          new PrintPackage(),
-          new MediaLibraryPackage(),
-          new SegmentPackage(),
-          new FontLoaderPackage(),
-          new LocationPackage(),
-          new ContactsPackage(),
-          new BarCodeScannerPackage(),
-          new AdMobPackage(),
-          new LocalAuthenticationPackage(),
-          new LocalizationPackage(),
-          new AppAuthPackage(),
-          new TaskManagerPackage(),
-          new BackgroundFetchPackage()
-      );
-    }
-    ```
+   ...
+
+   public List<Package> getExpoPackages() {
+     return Arrays.<Package>asList(
+         new CameraPackage(),
+         new ConstantsPackage(),
+         new SensorsPackage(),
+         new FileSystemPackage(),
+         new FaceDetectorPackage(),
+         new GLPackage(),
+         new GoogleSignInPackage(),
+         new PermissionsPackage(),
+         new SMSPackage(),
+         new PrintPackage(),
+         new MediaLibraryPackage(),
+         new SegmentPackage(),
+         new FontLoaderPackage(),
+         new LocationPackage(),
+         new ContactsPackage(),
+         new BarCodeScannerPackage(),
+         new AdMobPackage(),
+         new LocalAuthenticationPackage(),
+         new LocalizationPackage(),
+         new AppAuthPackage(),
+         new TaskManagerPackage(),
+         new BackgroundFetchPackage()
+     );
+   }
+   ```
 
 If upgrading from SDK 30 or below, remove the following lines from `android/app/build.gradle`:
+
 ```groovy
 implementation 'com.squareup.okhttp3:okhttp:3.4.1'
 implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
@@ -367,12 +376,15 @@ If upgrading from SDK 28 or below, you'll also need to follow these instructions
 - Change all instances of `android\\detach-scripts` and `android/detach-scripts` to `node_modules\\expokit\\detach-scripts` and `node_modules/expokit/detach-scripts` respectively in `android/app/expo.gradle`.
 - Add `maven { url "$rootDir/../node_modules/expokit/maven" }` under `allprojects.repositories` in `android/build.gradle`.
 - In `android/app/build.gradle`, replace
+
 ```groovy
 compile('host.exp.exponent:expoview:[SDK VERSION]@aar') {
   transitive = true
 }
 ```
+
 with
+
 ```groovy
 compile('host.exp.exponent:expoview:[SDK VERSION]@aar') {
   transitive = true
