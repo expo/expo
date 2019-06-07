@@ -80,6 +80,11 @@ export async function openBrowserAsync(
 }
 
 export function dismissBrowser(): void {
+  if (Platform.OS === 'android') {
+    // It's not possible to dismiss on Android, this is a noop
+    return;
+  }
+
   if (!ExponentWebBrowser.dismissBrowser) {
     throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
   }
