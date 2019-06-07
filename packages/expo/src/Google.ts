@@ -51,7 +51,7 @@ function getPlatformGUID(config: GoogleLogInConfig) {
   const { clientId } = config;
 
   const iosClientId =
-    Constants.appOwnership === 'standalone' ? config.iosClientId : config.iosStandaloneAppClientId;
+    Constants.appOwnership === 'standalone' ? config.iosStandaloneAppClientId : config.iosClientId;
   const androidClientId = isInExpo ? config.androidClientId : config.androidStandaloneAppClientId;
 
   const platformClientId =
