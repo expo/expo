@@ -51,7 +51,7 @@ export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
 
 export async function getInfoAsync(
   fileUri: string,
-  options: { md5?: boolean; cache?: boolean } = {}
+  options: { md5?: boolean; size?: boolean } = {}
 ): Promise<FileInfo> {
   if (!ExponentFileSystem.getInfoAsync) {
     throw new UnavailabilityError('expo-file-system', 'getInfoAsync');
