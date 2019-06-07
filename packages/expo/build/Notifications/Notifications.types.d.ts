@@ -21,6 +21,7 @@ export declare type LocalNotification = {
         link?: string;
     };
     web?: NotificationOptions;
+    remote?: boolean;
 };
 export declare type Channel = {
     name: string;
@@ -41,4 +42,10 @@ export declare type ActionType = {
         placeholder: string;
     };
 };
+export declare type UserInteraction = LocalNotification & {
+    actionType?: string;
+    userText?: string;
+};
+export declare type OnUserInteractionListener = (userInteraction: UserInteraction) => void;
+export declare type OnForegroundNotificationListener = (notification: LocalNotification) => void;
 export declare type LocalNotificationId = string | number;

@@ -20,6 +20,7 @@ import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
+import expo.modules.notifications.NotificationsPackage;
 import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -95,6 +96,7 @@ public class ExperiencePackagePicker {
       new MailComposerPackage(),
       new MediaLibraryPackage(),
       new NetworkPackage(),
+      new NotificationsPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
       new RandomPackage(),

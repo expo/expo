@@ -23,6 +23,7 @@ export type LocalNotification = {
     link?: string;
   };
   web?: NotificationOptions;
+  remote?: boolean;
 };
 
 export type Channel = {
@@ -45,6 +46,15 @@ export type ActionType = {
     placeholder: string;
   };
 };
+
+export type UserInteraction = LocalNotification & {
+    actionType?: string;
+    userText?: string;
+}
+
+export type OnUserInteractionListener = (userInteraction: UserInteraction) => void;
+
+export type OnForegroundNotificationListener = (notification: LocalNotification) => void;
 
 // Android assigns unique number to each notification natively.
 // Since that's not supported on iOS, we generate an unique string.

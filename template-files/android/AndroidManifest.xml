@@ -389,6 +389,11 @@
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
 
     <!-- ADD HERE STRIPE SCHEME META DATA -->
+
+    <meta-data android:name="appId" android:value="REPLACE_VALUE_HERE_WITH_EXP_ID" />
+    <meta-data android:name="pushNotificationEngine" android:value="expo" />
+    <meta-data android:name="notificationReceiver" android:value="host.exp.exponent.LauncherActivity" />
+    
   </application>
 
 </manifest>
