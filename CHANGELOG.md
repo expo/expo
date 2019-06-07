@@ -40,6 +40,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🎉 New features
 
+- Expo client on iOS doesn't require fullscreen now which should enable Split and Slide over view by [@CarlAmbroselli] ([#4466](https://github.com/expo/expo/pull/4466))
 - updated `react-native-view-shot` to `2.6.0` by [@sjchmiela](https://github.com/sjchmiela) ([#4175](https://github.com/expo/expo/pull/4175))
 - added `VideoThumbnails` API allowing you to thumbnail videos by [@graszka22](https://github.com/graszka22) ([#3980](https://github.com/expo/expo/pull/3980))
 - upgraded `react-native-lottie` to `2.6.1` by [@sjchmiela](https://github.com/sjchmiela) ([#4147](https://github.com/expo/expo/pull/4147))
