@@ -110,7 +110,13 @@ function postTransforms({ versionPrefix }) {
       paths: 'RNCWKWebView.m',
       replace: /\b(_SwizzleHelperWK)\b/g,
       with: `${versionPrefix}$1`,
-    }
+    },
+    {
+      // see issue: https://github.com/expo/expo/issues/4463
+      paths: 'RNCWKWebView.m',
+      replace: /MessageHandlerName = @"ReactABI\d+_\d+_\d+NativeWebView";/,
+      with: `MessageHandlerName = @"ReactNativeWebView";`,
+    },
   ];
 }
 
