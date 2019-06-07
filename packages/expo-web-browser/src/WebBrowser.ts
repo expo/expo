@@ -80,11 +80,6 @@ export async function openBrowserAsync(
 }
 
 export function dismissBrowser(): void {
-  if (Platform.OS === 'android') {
-    // It's not possible to dismiss on Android, this is a noop
-    return;
-  }
-
   if (!ExponentWebBrowser.dismissBrowser) {
     throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
   }
@@ -145,7 +140,11 @@ async function _openAuthSessionPolyfillAsync(
   try {
     return await Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]);
   } finally {
-    dismissBrowser();
+    // We can't dismiss the browser on Android, only call this when it's available
+    if (ExponentWebBrowser.dismissBrowser) {
+      ExponentWebBrowser.dismissBrowser();
+    }
+
     if (!_redirectHandler) {
       throw new Error(
         `The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`
