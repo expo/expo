@@ -11,9 +11,8 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class VideoViewManager extends ViewManager<VideoViewWrapper> implements ModuleRegistryConsumer {
+public class VideoViewManager extends ViewManager<VideoViewWrapper> {
   public static final String REACT_CLASS = "ExpoVideoView";
 
   private static final String PROP_STATUS = "status";
@@ -24,7 +23,7 @@ public class VideoViewManager extends ViewManager<VideoViewWrapper> implements M
   private ModuleRegistry mModuleRegistry;
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

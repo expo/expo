@@ -4,14 +4,11 @@ import android.content.Context;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class GLViewManager extends ViewManager<GLView> implements ModuleRegistryConsumer {
+public class GLViewManager extends ViewManager<GLView> {
   private ModuleRegistry mModuleRegistry;
 
   @Override
@@ -35,7 +32,7 @@ public class GLViewManager extends ViewManager<GLView> implements ModuleRegistry
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

@@ -9,9 +9,8 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class NativeAdModule extends ExportedModule implements ModuleRegistryConsumer {
+public class NativeAdModule extends ExportedModule {
   private ModuleRegistry mModuleRegistry;
 
   public NativeAdModule(Context context) {
@@ -19,7 +18,7 @@ public class NativeAdModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
