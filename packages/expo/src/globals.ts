@@ -30,12 +30,17 @@ Object.defineProperties(module.exports, {
     },
   },
 
-  // Vendored native modules
-
   Icon: {
     enumerable: true,
     get() {
       return require('@expo/vector-icons');
+    },
+  },
+
+  LinearGradient: {
+    enumerable: true,
+    get() {
+      return require('expo-linear-gradient').LinearGradient;
     },
   },
 });
