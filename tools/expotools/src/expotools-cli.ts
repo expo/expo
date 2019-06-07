@@ -12,20 +12,16 @@ Command.prototype.asyncAction = function(asyncAction: Function) {
     try {
       await asyncAction(...args);
     } catch (e) {
-      console.log('');
-      console.log(chalk.red('========================================'));
-      console.log(chalk.red('There was an error running this command:'));
-      console.log(chalk.red('========================================'));
-      console.log('');
-      if (process.env.EXPO_ET_VERBOSE) {
-        console.trace(chalk.red(e));
-      } else {
-        console.log(chalk.red(e.message));
-      }
+      console.log(
+        chalk.red(`There was an error running ${chalk.green(this._originalName)} command:`),
+        chalk.red(process.env.EXPO_ET_VERBOSE ? e.stack : e.message),
+      );
+
       if (e.stderr) {
         console.log(chalk.red('\nSTDERR:'));
         console.log(chalk.red(e.stderr));
       }
+      console.log();
       process.exit(1);
     }
   });
@@ -40,9 +36,11 @@ Command.prototype.unknownOption = function(flag: string) {
   if (this._allowUnknownOption) return;
 
   const defaultHandler = () => {
-    console.error();
-    console.error('  error: unknown option `%s`', flag);
-    console.error();
+    console.error(
+      chalk.red(`\nUnknown option ${chalk.yellow(flag)} for command ${chalk.green(this._originalName)}.`),
+      chalk.red('See below for the full list of options.\n'),
+    );
+    this.help();
   };
 
   if (this._unknownOptionHandler) {
@@ -76,35 +74,46 @@ async function runAsync() {
         }
       });
 
+    // Add some chalks to the output.
+    program.commands.forEach(command => {
+      command._originalName = command._name;
+      command._name = chalk.bold(chalk.green(command._name));
+      command._description = `\n  ${chalk.yellow(command._description.trim())}\n`;
+
+      command.options.forEach(option => {
+        option.flags = option.flags
+          .replace(/(-{1,2}\w[\w\-]*)/g, `${chalk.magenta('$1')}`)
+          .replace(/(<\w+>|\[\w+\])/g, `${chalk.grey('$1')}`);
+        option.description = `\n  ${chalk.yellow(option.description.trim())}\n`;
+      });
+    });
+ 
     program.parse(process.argv);
 
-    let subCommand = process.argv[2];
-    if (subCommand) {
-      let commands: string[] = [];
-      program.commands.forEach(command => {
-        commands.push(command['_name']);
-        let alias = command['_alias'];
-        if (alias) {
-          commands.push(alias);
-        }
-      });
-      if (!commands.includes(subCommand)) {
-        console.log(
-          `"${subCommand}" is not an expotools command. See "expotools --help" for the full list of commands.`
-        );
-      }
-    } else {
+    const subCommand = process.argv[2];
+    const hasSubCommand = subCommand && program.commands.some(({ _originalName, _alias }) => {
+      return [_originalName, _alias].includes(subCommand);
+    });
+
+    if (!hasSubCommand) {
+      subCommand && console.log(
+        chalk.bold(chalk.green(subCommand)),
+        chalk.red('is not an expotools command. See below for the full list of commands.\n'),
+      );
       program.help();
     }
   } catch (e) {
-    console.error(e);
+    console.error(chalk.red(e));
     throw e;
   }
 }
 
 export function run() {
   runAsync().catch(e => {
-    console.error('Uncaught Error', e);
+    console.error(
+      chalk.red('Uncaught error:'),
+      chalk.red(process.env.EXPO_ET_VERBOSE ? e.stack : e.message),
+    );
     process.exit(1);
   });
 }
