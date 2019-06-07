@@ -42,7 +42,7 @@ export default class ApiV2HttpClient {
       headers: {
         'Expo-SDK-Version': ExponentKernel.sdkVersions,
         'Expo-Platform': Platform.OS,
-        ...(session.sessionSecret ? { 'Expo-Session': session.sessionSecret } : null),
+        ...(session.sessionSecret ? { 'expo-session': session.sessionSecret } : null),
       },
     };
     if (options.body) {
