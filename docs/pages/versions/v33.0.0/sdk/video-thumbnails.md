@@ -24,7 +24,7 @@ Create an image thumbnail from video provided via `uri`.
 
   - **compress (_number_)** -- A value in range `0.0` - `1.0` specifying compression level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality).
   - **time (_number_)** -- The time position where the image will be retrieved in ms.
-  - **headers (_number_)** -- In case `uri` is a remote `uri`, headers object passed in a network request.
+  - **headers (_object_)** -- In case `uri` is a remote `uri`, headers object passed in a network request.
 
 #### Returns
 

@@ -130,7 +130,7 @@ Returns a list of applications package names supporting Custom Tabs, Custom Tabs
 
 #### Returns
 
-The promise resolves with `{ browserPackages: string[], defaultPackage: string, servicePackages: string[], preferredPackage: string }`
+The promise resolves with `{ browserPackages: string[], defaultBrowserPackage: string, servicePackages: string[], preferredBrowserPackage: string }`
 
 - **browserPackages (_string[]_)** : All packages recognized by `PackageManager` as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
 - **defaultBrowserPackage (_string_ | null)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.
