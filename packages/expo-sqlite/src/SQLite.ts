@@ -9,15 +9,16 @@ const { ExponentSQLite } = NativeModulesProxy;
 
 export type Query = { sql: string; args: unknown[] };
 
-export type ResultSet =
-  | { error: Error }
-  | {
-      insertId?: number;
-      rowsAffected: number;
-      rows: Array<{ [column: string]: any }>;
-    };
+export interface ResultSetError {
+  error: Error;
+};
+export interface ResultSet {
+  insertId?: number;
+  rowsAffected: number;
+  rows: Array<{ [column: string]: any }>;
+};
 
-export type SQLiteCallback = (error?: Error | null, resultSet?: ResultSet) => void;
+export type SQLiteCallback = (error?: Error | null, resultSet?: ResultSetError|ResultSet) => void;
 
 class SQLiteDatabase {
   _name: string;
@@ -53,12 +54,12 @@ function _serializeQuery(query: Query): [string, unknown[]] {
   return [query.sql, Platform.OS === 'android' ? query.args.map(_escapeBlob) : query.args];
 }
 
-function _deserializeResultSet(nativeResult): ResultSet {
+function _deserializeResultSet(nativeResult): ResultSet|ResultSetError {
   let [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
   // TODO: send more structured error information from the native module so we can better construct
   // a SQLException object
   if (errorMessage !== null) {
-    return { error: new Error(errorMessage) };
+    return { error: new Error(errorMessage) } as ResultSetError;
   }
 
   return {
