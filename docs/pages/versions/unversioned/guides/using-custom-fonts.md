@@ -103,6 +103,21 @@ class App extends React.Component {
   // ...
 }
 ```
+Another way to achieve this is by using the [then function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then) of the returned `Promise` from loadAsync:
+```
+class App extends React.Component {
+  async componentDidMount() {
+    Font.loadAsync({
+      'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
+    }).then(()=>{
+      this.setState({ fontLoaded: true });
+    });
+  }
+
+  // ...
+}
+```
+
 
 Finally, we want to only render the `Text` component if `fontLoaded` is `true`. We can do this by replacing the `Text` element with the following:
 
