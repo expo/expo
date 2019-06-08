@@ -12,8 +12,40 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ## API
 
+If you want to import all available gesture handlers:
+
 ```js
 import GestureHandler from 'react-native-gesture-handler';
+
+class ComponentName extends Component { 
+  render () {
+    return (
+      <GestureHandler.TapGestureHandler>
+        <GestureHandler.RotationGestureHandler>
+        ...
+        </GestureHandler.RotationGestureHandler>
+      </GestureHandler.TapGestureHandler>
+    );
+  }
+}
+```
+
+If you want to import each gesture handler separately:
+
+```js
+import { TapGestureHandler, RotationGestureHandler } from 'react-native-gesture-handler';
+
+class ComponentName extends Component { 
+  render () {
+    return (
+      <TapGestureHandler>
+        <RotationGestureHandler>
+        ...
+        </RotationGestureHandler>
+      </TapGestureHandler>
+    );
+  }
+}
 ```
 
 Read the [react-native-gesture-handler docs](https://kmagiera.github.io/react-native-gesture-handler) for more information on the API and usage.
