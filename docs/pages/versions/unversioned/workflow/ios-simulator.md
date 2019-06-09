@@ -36,7 +36,7 @@ The first time you install the app in the simulator, iOS will prompt you to ask 
 
 ### How do I force an update to the latest version?
 
-You can run `expo install:ios` to download and install the latest Expo client version in the simulator.
+You can run `expo client:install:ios` to download and install the latest Expo client version in the simulator.
 
 ### expo-cli is printing some esoteric error message about xcrun, what do I do?
 
