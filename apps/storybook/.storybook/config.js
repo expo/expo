@@ -68,64 +68,63 @@ addParameters({
 
 let storiesCache = {};
 
+export function loadStory(filename, req, mdreq) {
+  const _mdreq = mdreq || requireContext('../stories', true, /\.notes\.md$/);
+  const module = req(filename);
+  if (!module.component) {
+    return;
+  }
+  let {
+    component: Component,
+    packageJson = {},
+    notes,
+    label,
+    description,
+    title,
+    kind,
+    onStoryCreated,
+  } = module;
+
+  let markdown = notes;
+  if (!notes) {
+    const mdPath = filename.substr(0, filename.lastIndexOf('.stories')) + '.notes.md';
+    markdown = _mdreq(mdPath);
+  }
+
+  if (Component === true && markdown) {
+    Component = () => <Markdown>{markdown}</Markdown>;
+  }
+  const screen = (props = {}) => (
+    <UIExplorer
+      title={title}
+      url={filename}
+      label={label}
+      description={description || packageJson.description}
+      packageName={packageJson.name}>
+      <Component {...props} />
+    </UIExplorer>
+  );
+
+  const storiesKind = kind || 'SDK|' + filename.split('/')[1];
+  let stories = storiesCache[storiesKind];
+  if (!stories) {
+    stories = storiesOf(storiesKind, global.module);
+    storiesCache[storiesKind] = stories;
+  }
+  stories.add(title, screen, {
+    notes: { markdown },
+  });
+  if (onStoryCreated) {
+    onStoryCreated({ stories });
+  }
+}
+
 function loadStories() {
   // automatically import all story js files that end with *.stories.js
   const req = requireContext('../stories', true, /\.stories\.jsx?$/);
   const mdreq = requireContext('../stories', true, /\.notes\.md$/);
-
-  function loadModule(filename) {
-    const module = req(filename);
-    if (!module.component) {
-      return;
-    }
-    let {
-      component: Component,
-      packageJson = {},
-      notes,
-      label,
-      description,
-      title,
-      kind,
-      onStoryCreated,
-    } = module;
-
-    let markdown = notes;
-    if (!notes) {
-      const mdPath = filename.substr(0, filename.lastIndexOf('.stories')) + '.notes.md';
-      markdown = mdreq(mdPath);
-    }
-
-    if (Component === true && markdown) {
-      Component = () => <Markdown>{markdown}</Markdown>;
-    }
-    const screen = (props = {}) => (
-      <UIExplorer
-        title={title}
-        url={filename}
-        label={label}
-        description={description || packageJson.description}
-        packageName={packageJson.name}>
-        <Component {...props} />
-      </UIExplorer>
-    );
-
-    const storiesKind = kind || 'SDK|' + filename.split('/')[1];
-    let stories = storiesCache[storiesKind];
-    if (!stories) {
-      stories = storiesOf(storiesKind, global.module);
-      storiesCache[storiesKind] = stories;
-    }
-    stories.add(title, screen, {
-      notes: { markdown },
-    });
-    if (onStoryCreated) {
-      onStoryCreated({ stories });
-    }
-  }
-
   // loadModule('./apis/Accelerometer.stories.jsx');
-
-  req.keys().forEach(filename => loadModule(filename));
+  req.keys().forEach(filename => loadStory(filename, req, mdreq));
 }
 
 configure(loadStories, module);

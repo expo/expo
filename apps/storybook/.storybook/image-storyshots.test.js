@@ -1,6 +1,7 @@
 import initStoryshots from '@storybook/addon-storyshots';
 import { imageSnapshot } from '@storybook/addon-storyshots-puppeteer';
 import path from 'path';
+import requireContext from 'require-context.macro';
 
 // In the build command we export a variable which helps us detect a web env.
 // visual regression testing only works in the browser
@@ -34,7 +35,21 @@ if (process.env.BABEL_ENV === 'test:web' && !process.env.IS_EXPO_CI) {
   }
 
   initStoryshots({
-    suite: 'Image',
+    suite: 'Image-APIs',
+    configPath: path.resolve(__dirname, 'config-APIs.js'),
+
+    test: imageSnapshot({
+      storybookUrl,
+      getMatchOptions,
+      getScreenshotOptions,
+      customizePage,
+    }),
+  });
+
+  initStoryshots({
+    suite: 'Image-Components',
+    configPath: path.resolve(__dirname, 'config-Components.js'),
+
     test: imageSnapshot({
       storybookUrl,
       getMatchOptions,
