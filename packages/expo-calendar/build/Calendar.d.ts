@@ -104,7 +104,7 @@ declare type RecurrenceRule = {
     endDate?: string;
     occurrence?: number;
 };
-export declare function getCalendarsAsync(entityType?: string): Promise<void>;
+export declare function getCalendarsAsync(entityType?: string): Promise<Calendar[]>;
 export declare function createCalendarAsync(details?: Calendar): Promise<string>;
 export declare function updateCalendarAsync(id: string, details?: Calendar): Promise<string>;
 export declare function deleteCalendarAsync(id: string): Promise<void>;
