@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "33.0.3",
+  "version": "33.0.4",
   "description": "The Expo SDK",
   "main": "build/ExpoLazy.js",
   "module": "build/Expo",
@@ -114,7 +114,7 @@
     "expo-speech": "~5.0.2",
     "expo-sqlite": "~5.0.1",
     "expo-task-manager": "~5.0.1",
-    "expo-web-browser": "~5.0.2",
+    "expo-web-browser": "~5.0.3",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
     "lodash": "^4.6.0",
