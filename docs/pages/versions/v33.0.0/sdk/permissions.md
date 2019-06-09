@@ -170,7 +170,7 @@ The permission type for reading or writing reminders.
 
 ### `Permissions.SYSTEM_BRIGHTNESS`
 
-The permissions type for changing brighness of the screen
+The permissions type for changing brightness of the screen
 
 ## Android: permissions equivalents inside `app.json`
 
