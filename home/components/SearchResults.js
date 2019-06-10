@@ -21,6 +21,7 @@ import SharedStyles from '../constants/SharedStyles';
 import ExponentKernel from '../universal/ExponentKernel';
 import UrlUtils from '../utils/UrlUtils';
 
+
 const SectionIds = ['UserSearchResult', 'AppSearchResult'];
 
 export default class SearchResults extends React.Component {
