@@ -1,6 +1,7 @@
 include ':app'
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 include ':expoview'
 project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
@@ -33,3 +34,6 @@ includeUnimodulesProjects(
 ]
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 )
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
