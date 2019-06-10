@@ -19,10 +19,9 @@ static NSString * const IN_APP = @"inapp";
 static NSString * const SUBS = @"subs";
 static NSString * const P0D = @"P0D";
 
-static const int SERVICE_DISCONNECTED = -1;
 static const int OK = 0;
-static const int ERROR = 1;
-static const int USER_CANCELED = 2;
+static const int USER_CANCELED = 1;
+static const int ERROR = 2;
 
 @implementation EXInAppPurchasesModule
 
@@ -36,12 +35,6 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 - (NSDictionary *)constantsToExport
 {
   return @{
-       @"responseCodes": @{
-         @"OK": @(OK),
-         @"USER_CANCELED": @(USER_CANCELED),
-         @"ERROR": @(ERROR),
-         @"SERVICE_DISCONNECTED": @(SERVICE_DISCONNECTED),
-      },
       @"purchaseStates": @{
          @"PURCHASED": @(SKPaymentTransactionStatePurchased),
          @"PENDING": @(SKPaymentTransactionStatePurchasing),
@@ -121,8 +114,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
     NSLog(@"Invalid identifier: %@", invalidIdentifier);
     if (!_queryingItems) {
-      NSString * errorMessage = [NSString stringWithFormat:@"Cannot purchase item %@ because it does not exist.", invalidIdentifier];
-      [self rejectPromise:invalidIdentifier code:@"E_INVALID_IDENTIFIER" message:errorMessage error:nil];
+      NSDictionary *results = [self formatResults:SKErrorStoreProductNotAvailable];
+      [self resolvePromise:invalidIdentifier value:results];
     }
   }
   NSInteger count = response.products.count;
@@ -150,7 +143,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [self resolvePromise:QUERY_PURCHASABLE_KEY value:res];
 }
 
--(void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+- (void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
   NSArray *promise = _promises[key];
 
@@ -161,7 +154,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
 }
 
--(void)resolvePromise:(NSString*)key value:(id)value
+- (void)resolvePromise:(NSString*)key value:(id)value
 {
   NSArray *currentPromise = _promises[key];
 
@@ -173,7 +166,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
 }
 
--(void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error
+- (void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error
 {
   NSArray* currentPromise = _promises[key];
 
@@ -314,8 +307,8 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
           NSDictionary *response = [self formatResults:[NSArray array] withResponseCode:USER_CANCELED];
           [self resolvePromise:transaction.payment.productIdentifier value:response];
         } else {
-          NSString *errorCode = [NSString stringWithFormat:@"%ld", (long)transaction.error.code];
-          [self rejectPromise:transaction.payment.productIdentifier code:errorCode message:transaction.error.localizedDescription error:transaction.error];
+          NSDictionary *response = [self formatResults:transaction.error.code];
+          [self resolvePromise:transaction.payment.productIdentifier value:response];
         }
         break;
       }
@@ -323,12 +316,52 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
 }
 
--(NSDictionary *)formatResults:(NSArray *)results withResponseCode:(NSInteger)responseCode
+- (NSDictionary *)formatResults:(NSArray *)results withResponseCode:(NSInteger)responseCode
 {
   return @{
            @"results": results,
            @"responseCode": @(responseCode),
            };
+}
+
+- (NSDictionary *)formatResults:(SKErrorCode)errorCode
+{
+  int convertedErrorCode = [self errorCodeNativeToJS:errorCode];
+  return @{
+           @"results": [NSArray array],
+           @"responseCode": @(ERROR),
+           @"errorCode": @(convertedErrorCode),
+           };
+}
+
+// Convert native error code to match TS enum
+- (int)errorCodeNativeToJS:(SKErrorCode)errorCode
+{
+  switch(errorCode) {
+    case SKErrorUnknown:
+      return 0;
+    case SKErrorClientInvalid:
+    case SKErrorPaymentInvalid:
+    case SKErrorPaymentNotAllowed:
+    case SKErrorPaymentCancelled:
+      return 1;
+    case SKErrorStoreProductNotAvailable:
+      return 6;
+    case SKErrorCloudServiceRevoked:
+    case SKErrorCloudServicePermissionDenied:
+    case SKErrorCloudServiceNetworkConnectionFailed:
+      return 10;
+    case SKErrorPrivacyAcknowledgementRequired:
+      return 11;
+    case SKErrorUnauthorizedRequestData:
+      return 12;
+    case SKErrorInvalidSignature:
+    case SKErrorInvalidOfferPrice:
+    case SKErrorInvalidOfferIdentifier:
+      return 13;
+    case SKErrorMissingOfferParams:
+      return 14;
+  }
 }
 
 - (void)requestProducts:(NSArray *)productIdentifiers

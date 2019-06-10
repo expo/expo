@@ -1,12 +1,5 @@
-import { QueryResponse } from './InAppPurchases.types';
-export declare const constants: {
-    responseCodes: any;
-    purchaseStates: any;
-    validTypes: {
-        INAPP: string;
-        SUBS: string;
-    };
-};
+import { QueryResponse, ResponseCode, ErrorCode } from './InAppPurchases.types';
+export { ResponseCode, ErrorCode, };
 export declare function connectAsync(): Promise<QueryResponse>;
 export declare function getProductsAsync(itemList: string[]): Promise<QueryResponse>;
 export declare function getPurchaseHistoryAsync(refresh?: boolean): Promise<QueryResponse>;

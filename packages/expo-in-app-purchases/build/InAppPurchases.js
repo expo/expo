@@ -1,16 +1,12 @@
 import { Platform } from 'react-native';
 import { CodedError } from '@unimodules/core';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
+import { ResponseCode, ErrorCode } from './InAppPurchases.types';
 const validTypes = {
     INAPP: 'inapp',
     SUBS: 'subs',
 };
-const { responseCodes, purchaseStates } = ExpoInAppPurchases;
-export const constants = {
-    responseCodes,
-    purchaseStates,
-    validTypes,
-};
+export { ResponseCode, ErrorCode, };
 const errors = {
     ALREADY_CONNECTED: 'Already connected to App Store',
     ALREADY_DISCONNECTED: 'Already disconnected from App Store',
@@ -33,7 +29,7 @@ export async function getProductsAsync(itemList) {
     if (Platform.OS === 'android') {
         // On Android you have to pass in the item type so we will combine the results of both inapp and subs
         const { responseCode, results } = await ExpoInAppPurchases.getProductsAsync(validTypes.INAPP, itemList);
-        if (responseCode == responseCodes.OK) {
+        if (responseCode == ResponseCode.OK) {
             const subs = await ExpoInAppPurchases.getProductsAsync(validTypes.SUBS, itemList);
             subs.results.forEach(result => {
                 results.push(result);
@@ -50,7 +46,7 @@ export async function getPurchaseHistoryAsync(refresh) {
     }
     if (refresh && Platform.OS === 'android') {
         const { responseCode, results } = await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.INAPP);
-        if (responseCode === responseCodes.OK) {
+        if (responseCode === ResponseCode.OK) {
             const subs = await ExpoInAppPurchases.getPurchaseHistoryAsync(validTypes.SUBS);
             subs.results.forEach(result => {
                 results.push(result);
@@ -86,10 +82,10 @@ export async function acknowledgePurchaseAsync(purchaseToken, consumeItem) {
 }
 export async function getBillingResponseCodeAsync() {
     if (!connected) {
-        return responseCodes.SERVICE_DISCONNECTED;
+        return ResponseCode.ERROR;
     }
     if (!ExpoInAppPurchases.getBillingResponseCodeAsync) {
-        return responseCodes.OK;
+        return ResponseCode.OK;
     }
     return await ExpoInAppPurchases.getBillingResponseCodeAsync();
 }

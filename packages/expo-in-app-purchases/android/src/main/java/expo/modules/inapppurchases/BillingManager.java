@@ -3,6 +3,7 @@ package expo.modules.inapppurchases;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
@@ -38,6 +39,10 @@ import java.util.Set;
  */
 public class BillingManager implements PurchasesUpdatedListener {
     private static final String TAG = "BillingManager";
+
+    public static final int OK = 0;
+    public static final int USER_CANCELED = 1;
+    public static final int ERROR = 2;
 
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
     public static final String PURCHASING_ITEM = "Purchasing Item";
@@ -168,8 +173,7 @@ public class BillingManager implements PurchasesUpdatedListener {
             } else {
                 Log.w(TAG, "onPurchasesUpdated() got unknown resultCode: " + result);
             }
-            Bundle response = new Bundle();
-            response.putInt("responseCode", result.getResponseCode());
+            Bundle response = formatResponse(result, null);
             Promise promise = promises.get(PURCHASING_ITEM);
             if (promise != null) {
                 promises.put(PURCHASING_ITEM, null);
@@ -182,8 +186,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         AcknowledgePurchaseResponseListener acknowledgePurchaseResponseListener = new AcknowledgePurchaseResponseListener() {
             @Override
             public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
-                Bundle response = new Bundle();
-                response.putInt("responseCode", billingResult.getResponseCode());
+                Bundle response = formatResponse(billingResult, null);
 
                 promise.resolve(response);
             }
@@ -218,7 +221,6 @@ public class BillingManager implements PurchasesUpdatedListener {
             @Override
             public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
                 // If billing service was disconnected, we try to reconnect 1 time
-                // (feel free to introduce your retry policy here).
                 mBillingUpdatesListener.onConsumeFinished(purchaseToken, billingResult);
             }
         };
@@ -311,16 +313,16 @@ public class BillingManager implements PurchasesUpdatedListener {
                     @Override
                     public void onPurchaseHistoryResponse(BillingResult billingResult,
                                                           List<PurchaseHistoryRecord> purchasesList) {
-                        Bundle response = new Bundle();
-                        response.putInt("responseCode", billingResult.getResponseCode());
+
+                        ArrayList<Bundle> bundles = new ArrayList<>();
                         if (billingResult.getResponseCode() == BillingResponseCode.OK
                                 && purchasesList != null) {
-                            ArrayList<Bundle> bundles = new ArrayList<>();
                             for (PurchaseHistoryRecord record : purchasesList) {
                                 bundles.add(convertPurchaseHistory(record));
                             }
-                            response.putParcelableArrayList("results", bundles);
                         }
+
+                        Bundle response = formatResponse(billingResult, bundles);
                         promise.resolve(response);
                     }
                 });
@@ -328,6 +330,53 @@ public class BillingManager implements PurchasesUpdatedListener {
         };
 
         executeServiceRequest(queryToExecute);
+    }
+
+    public static Bundle formatResponse(BillingResult billingResult, ArrayList<? extends Parcelable> results) {
+        Bundle response = new Bundle();
+        int responseCode = billingResult.getResponseCode();
+        if(responseCode == BillingResponseCode.OK) {
+            response.putInt("responseCode", OK);
+            response.putParcelableArrayList("results", results);
+            if (results == null) {
+                response.putParcelableArrayList("results", new ArrayList<Parcelable>());
+            }
+        } else if (responseCode == BillingResponseCode.USER_CANCELED) {
+            response.putInt("responseCode", USER_CANCELED);
+        } else {
+            response.putInt("responseCode", ERROR);
+            response.putInt("errorCode", errorCodeNativeToJS(responseCode));
+        }
+        return response;
+    }
+
+    /**
+     * Convert native error code to match TS enum
+     */
+    private static int errorCodeNativeToJS(int responseCode) {
+        switch(responseCode) {
+            case BillingResponseCode.ERROR:
+                return 0;
+            case BillingResponseCode.FEATURE_NOT_SUPPORTED:
+                return 1;
+            case BillingResponseCode.SERVICE_DISCONNECTED:
+                return 2;
+            case BillingResponseCode.SERVICE_UNAVAILABLE:
+                return 3;
+            case BillingResponseCode.SERVICE_TIMEOUT:
+                return 4;
+            case BillingResponseCode.BILLING_UNAVAILABLE:
+                return 5;
+            case BillingResponseCode.ITEM_UNAVAILABLE:
+                return 6;
+            case BillingResponseCode.DEVELOPER_ERROR:
+                return 7;
+            case BillingResponseCode.ITEM_ALREADY_OWNED:
+                return 8;
+            case BillingResponseCode.ITEM_NOT_OWNED:
+                return 9;
+        }
+        return 0;
     }
 
     private static Bundle convertSku(SkuDetails skuDetails) {
@@ -394,9 +443,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         mPurchases.clear();
         onPurchasesUpdated(billingResult, purchasesList);
 
-        final Bundle response = new Bundle();
-        response.putInt("responseCode", billingResult.getResponseCode());
-        response.putParcelableArrayList("results", results);
+        final Bundle response = formatResponse(billingResult, results);
         Log.d(TAG, "Resolving connectToAppStoreAsync promise with response code: "
                 + billingResult.getResponseCode() + " and purchases list: " + purchasesList);
         promise.resolve(response);
@@ -430,30 +477,25 @@ public class BillingManager implements PurchasesUpdatedListener {
             final @SkuType String billingType,
             final Promise promise
     ) {
-        Log.d(TAG, "Calling queryPurchasableItems");
-        Log.d(TAG, "Billing Type: " + billingType);
-        Log.d(TAG, "Item List: " + itemList);
-        final Bundle response = new Bundle();
         querySkuDetailsAsync(billingType, itemList,
             new SkuDetailsResponseListener() {
                 @Override
                 public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
                     final int responseCode = billingResult.getResponseCode();
                     Log.d(TAG, "Got a SkuDetailsResponse with code: " + responseCode);
-                    response.putInt("responseCode", responseCode);
+                    ArrayList<Bundle> results = new ArrayList<>();
                     if(responseCode != BillingResponseCode.OK) {
                         Log.w(TAG, "Unsuccessful query for type: " + billingType
                                 + ". Error code: " + responseCode);
                     } else if (skuDetailsList != null && skuDetailsList.size() > 0) {
                         Log.d(TAG, "Successfully got results back: " + skuDetailsList);
-                        ArrayList<Bundle> results = new ArrayList<>();
                         for (SkuDetails skuDetails : skuDetailsList) {
                             mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
                             results.add(convertSku(skuDetails));
                         }
 
-                        response.putParcelableArrayList("results", results);
                     }
+                    Bundle response = formatResponse(billingResult, results);
                     promise.resolve(response);
                 }
             }

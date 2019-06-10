@@ -42,7 +42,6 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
 
-    constants.put("responseCodes", getBillingResponseCodes());
     constants.put("purchaseStates", getPurchaseStates());
 
     return constants;
@@ -104,25 +103,6 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   private Activity getCurrentActivity() {
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
     return activityProvider != null ? activityProvider.getCurrentActivity() : null;
-  }
-
-  private Map<String, Integer> getBillingResponseCodes() {
-    Map<String, Integer> responseCodes = new HashMap<>();
-
-    responseCodes.put("BILLING_UNAVAILABLE", BillingClient.BillingResponseCode.BILLING_UNAVAILABLE);
-    responseCodes.put("DEVELOPER_ERROR", BillingClient.BillingResponseCode.DEVELOPER_ERROR);
-    responseCodes.put("ERROR", BillingClient.BillingResponseCode.ERROR);
-    responseCodes.put("FEATURE_NOT_SUPPORTED", BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED);
-    responseCodes.put("ITEM_ALREADY_OWNED", BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED);
-    responseCodes.put("ITEM_NOT_OWNED", BillingClient.BillingResponseCode.ITEM_NOT_OWNED);
-    responseCodes.put("ITEM_UNAVAILABLE", BillingClient.BillingResponseCode.ITEM_UNAVAILABLE);
-    responseCodes.put("OK", BillingClient.BillingResponseCode.OK);
-    responseCodes.put("SERVICE_DISCONNECTED", BillingClient.BillingResponseCode.SERVICE_DISCONNECTED);
-    responseCodes.put("SERVICE_TIMEOUT", BillingClient.BillingResponseCode.SERVICE_TIMEOUT);
-    responseCodes.put("SERVICE_UNAVAILABLE", BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE);
-    responseCodes.put("USER_CANCELED", BillingClient.BillingResponseCode.USER_CANCELED);
-
-    return responseCodes;
   }
 
   private Map<String, Integer> getPurchaseStates() {
