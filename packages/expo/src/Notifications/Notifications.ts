@@ -3,59 +3,13 @@ import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
 import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
 import ExponentNotifications from './ExponentNotifications';
-
-type Notification = {
-  origin: 'selected' | 'received';
-  data: any;
-  remote: boolean;
-  isMultiple: boolean;
-};
-
-type LocalNotification = {
-  title: string;
-  // How should we deal with body being required on iOS but not on Android?
-  body?: string;
-  data?: any;
-  ios?: {
-    sound?: boolean;
-  };
-  android?: {
-    channelId?: string;
-    icon?: string;
-    color?: string;
-    sticky?: boolean;
-    link?: string;
-    // DEPRECATED:
-    sound?: boolean;
-    vibrate?: boolean | number[];
-    priority: string;
-  };
-};
-
-type Channel = {
-  name: string;
-  description?: string;
-  priority?: string;
-  sound?: boolean;
-  vibrate?: boolean | number[];
-  badge?: boolean;
-};
-
-type ActionType = {
-  actionId: string;
-  buttonTitle: string;
-  isDestructive?: boolean;
-  isAuthenticationRequired?: boolean;
-  textInput?: {
-    submitButtonTitle: string;
-    placeholder: string;
-  };
-};
-
-// Android assigns unique number to each notification natively.
-// Since that's not supported on iOS, we generate an unique string.
-type LocalNotificationId = string | number;
-
+import {
+  Notification,
+  LocalNotification,
+  Channel,
+  ActionType,
+  LocalNotificationId,
+} from './Notifications.types';
 let _emitter;
 let _initialNotification;
 
@@ -235,8 +189,8 @@ export default {
     _validateNotification(notification);
     let nativeNotification = _processNotification(notification);
 
-    if (Platform.OS === 'ios') {
-      return ExponentNotifications.presentLocalNotification(nativeNotification);
+    if (Platform.OS !== 'android') {
+      return await ExponentNotifications.presentLocalNotification(nativeNotification);
     } else {
       let _channel;
       if (nativeNotification.channelId) {
@@ -349,8 +303,13 @@ export default {
 
     if (Platform.OS === 'ios') {
       if (options.repeat) {
-        console.warn('Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.');
-        return ExponentNotifications.legacyScheduleLocalRepeatingNotification(nativeNotification, options);
+        console.warn(
+          'Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.'
+        );
+        return ExponentNotifications.legacyScheduleLocalRepeatingNotification(
+          nativeNotification,
+          options
+        );
       }
 
       return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
