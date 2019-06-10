@@ -15,13 +15,12 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.errors.ModuleNotFoundException;
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException;
 
-public class IntentLauncherModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class IntentLauncherModule extends ExportedModule implements ActivityEventListener {
   private static final int REQUEST_CODE = 12;
   private static final String ATTR_ACTION = "action";
   private static final String ATTR_TYPE = "type";
@@ -46,7 +45,7 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mUIManager = moduleRegistry.getModule(UIManager.class);
   }

@@ -1,13 +1,12 @@
 /* @flow */
-
-import React from 'react';
-import { AlertIOS, Linking, NativeModules, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { AlertIOS, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/Colors';
+import ExponentKernel from '../universal/ExponentKernel';
 import UrlUtils from '../utils/UrlUtils';
 
-import ExponentKernel from '../utils/ExponentKernel';
 export default class OpenProjectByURLButton extends React.Component {
   render() {
     return (

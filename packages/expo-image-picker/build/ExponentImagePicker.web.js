@@ -1,9 +1,9 @@
 import uuidv4 from 'uuid/v4';
 import { MediaTypeOptions, } from './ImagePicker.types';
 const MediaTypeInput = {
-    [MediaTypeOptions.All]: 'video/*,image/*',
+    [MediaTypeOptions.All]: 'video/mp4,video/quicktime,video/x-m4v,video/*,image/*',
     [MediaTypeOptions.Images]: 'image/*',
-    [MediaTypeOptions.Videos]: 'video/*',
+    [MediaTypeOptions.Videos]: 'video/mp4,video/quicktime,video/x-m4v,video/*',
 };
 export default {
     get name() {

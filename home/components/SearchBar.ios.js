@@ -1,9 +1,8 @@
 /* @flow */
-
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   LayoutAnimation,
-  NativeModules,
   StyleSheet,
   Text,
   TextInput,
@@ -11,12 +10,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 
 import Layout from '../constants/Layout';
+import ExponentKernel from '../universal/ExponentKernel';
 
-import ExponentKernel from '../utils/ExponentKernel';
 const SearchContainerHorizontalMargin = 10;
 const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
 

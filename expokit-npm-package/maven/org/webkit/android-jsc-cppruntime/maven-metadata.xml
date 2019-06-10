@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.webkit</groupId>
+  <artifactId>android-jsc-cppruntime</artifactId>
+  <versioning>
+    <release>r241213</release>
+    <versions>
+      <version>r241213</version>
+    </versions>
+    <lastUpdated>20190604094535</lastUpdated>
+  </versioning>
+</metadata>

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+<<<<<<< HEAD:expokit-npm-package/maven/host/exp/exponent/expo-av/5.0.0/ivy-5.0.0.xml
   <info organisation="host.exp.exponent" module="expo-av" revision="5.0.0" status="integration" publication="20190529143058"/>
+||||||| parent of 33142e83b... [android] update jsc version to 241213.2.0
+  <info organisation="host.exp.exponent" module="expo-av" revision="5.0.1" status="integration" publication="20190603130155"/>
+=======
+  <info organisation="host.exp.exponent" module="expo-av" revision="5.0.1" status="integration" publication="20190605120514"/>
+>>>>>>> 33142e83b... [android] update jsc version to 241213.2.0:expokit-npm-package/maven/host/exp/exponent/expo-av/5.0.1/ivy-5.0.1.xml
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -108,7 +114,7 @@
   </publications>
   <dependencies>
     <dependency org="com.android.tools.build" name="aapt2" rev="3.3.2-5309881" conf="_internal_aapt2_binary-&gt;default">
-      <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
+      <artifact name="aapt2" type="jar" ext="jar" m:classifier="linux" conf="_internal_aapt2_binary"/>
     </dependency>
     <dependency org="com.google.android.exoplayer" name="exoplayer" rev="2.9.2" conf="api-&gt;default"/>
     <dependency org="com.google.android.exoplayer" name="extension-okhttp" rev="2.9.2" conf="api-&gt;default"/>

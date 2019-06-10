@@ -19,9 +19,9 @@ import {
 
 import DevIndicator from '../components/DevIndicator';
 import FriendlyUrls from '../legacy/FriendlyUrls';
+import ExponentKernel from '../universal/ExponentKernel';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 
-import ExponentKernel from '../utils/ExponentKernel';
 let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 
 export default class MenuView extends React.Component {

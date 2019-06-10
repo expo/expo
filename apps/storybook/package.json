@@ -47,10 +47,15 @@
     "@types/jest": "^24.0.11",
     "@types/storybook__react": "^4.0.1",
     "expo-cli": "^2.17.3",
+    "github-markdown-css": "^3.0.1",
+    "marked": "^0.6.2",
+    "memoizerific": "^1.11.3",
     "react": "16.6.0",
+    "react-markdown": "^4.0.8",
     "react-native": "0.59.8",
     "react-native-table-component": "^1.2.0",
-    "react-native-web": "^0.11.4"
+    "react-native-web": "^0.11.4",
+    "react-syntax-highlighter": "^8.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",

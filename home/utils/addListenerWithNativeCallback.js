@@ -1,6 +1,7 @@
-import { DeviceEventEmitter, NativeModules } from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
 
-import ExponentKernel from '../utils/ExponentKernel';
+import ExponentKernel from '../universal/ExponentKernel';
+
 const addListenerWithNativeCallback = (eventName, eventListener) => {
   if (ExponentKernel) {
     DeviceEventEmitter.addListener(eventName, async event => {

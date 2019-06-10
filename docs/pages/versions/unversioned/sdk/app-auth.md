@@ -298,11 +298,7 @@ Below is a set of example functions that demonstrate how to use `expo-app-auth` 
 
 ```js
 import { AsyncStorage } from 'react-native';
-import { AppAuth } from 'expo-app-auth';
-/* 
-// or from expo directly...
-import { AppAuth } from 'expo';
-*/
+import * as AppAuth from 'expo-app-auth';
 
 const config = {
   issuer: 'https://accounts.google.com',

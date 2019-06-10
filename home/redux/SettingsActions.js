@@ -1,6 +1,6 @@
-import { NativeModules } from 'react-native';
 import LocalStorage from '../storage/LocalStorage';
-import ExponentKernel from '../utils/ExponentKernel';
+import ExponentKernel from '../universal/ExponentKernel';
+
 export default {
   loadSettings() {
     return async dispatch => {

@@ -1,12 +1,11 @@
 /* @flow */
-
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import React from 'react';
 import {
   ActivityIndicator,
   Keyboard,
-  ListView,
   Linking,
-  NativeModules,
+  ListView,
   Platform,
   ScrollView,
   StyleSheet,
@@ -14,15 +13,13 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
-import Colors from '../constants/Colors';
 import ProfileCard from '../components/ProfileCard';
 import ProjectCard from '../components/ProjectCard';
+import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import ExponentKernel from '../universal/ExponentKernel';
 import UrlUtils from '../utils/UrlUtils';
-
-import ExponentKernel from '../utils/ExponentKernel';
 
 const SectionIds = ['UserSearchResult', 'AppSearchResult'];
 
