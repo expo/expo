@@ -118,6 +118,6 @@ export async function disconnectAsync(): Promise<void> {
 
 class ConnectionError extends CodedError {
   constructor(message: string) {
-    super('ERR_Connection', message);
+    super('ERR_IN_APP_PURCHASES_CONNECTION', message);
   }
 }
