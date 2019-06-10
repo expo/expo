@@ -10,6 +10,7 @@ export type LocalNotification = {
   // How should we deal with body being required on iOS but not on Android?
   body?: string;
   data?: any;
+  categoryId?: string;
   ios?: {
     sound?: boolean;
   };
@@ -19,10 +20,6 @@ export type LocalNotification = {
     color?: string;
     sticky?: boolean;
     link?: string;
-    // DEPRECATED:
-    sound?: boolean;
-    vibrate?: boolean | number[];
-    priority: string;
   };
   web?: NotificationOptions;
 };
