@@ -10,6 +10,7 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
+import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
@@ -22,11 +23,8 @@ export default class OpenFromClipboardButton extends React.Component {
   render() {
     let { fullWidthBorder, clipboardContents, isValid } = this.props;
 
-    if (!isValid) {
-      if (Platform.OS === 'android') {
-        return null;
-      }
-
+    // Show info for iOS simulator about how to make clipboard contents available
+    if (!isValid && Platform.OS === 'ios' && !Constants.isDevice) {
       return (
         <View
           style={[
@@ -49,11 +47,7 @@ export default class OpenFromClipboardButton extends React.Component {
         underlayColor="#b7b7b7"
         style={[styles.container, styles.bottomBorder]}>
         <View style={styles.iconContainer}>
-          <Ionicons
-            name={Platform.OS === 'ios' ? 'ios-open' : 'md-open'}
-            size={28}
-            color="#888"
-          />
+          <Ionicons name={Platform.OS === 'ios' ? 'ios-open' : 'md-open'} size={28} color="#888" />
         </View>
 
         <View style={styles.infoContainer}>

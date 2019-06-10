@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
@@ -17,11 +16,9 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
-public class AdMobRewardedVideoAdModule extends ExportedModule implements RewardedVideoAdListener,
-    ModuleRegistryConsumer {
+public class AdMobRewardedVideoAdModule extends ExportedModule implements RewardedVideoAdListener {
   private RewardedVideoAd mRewardedVideoAd;
   private String mAdUnitID;
   private String mTestDeviceID;
@@ -62,7 +59,7 @@ public class AdMobRewardedVideoAdModule extends ExportedModule implements Reward
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
   }

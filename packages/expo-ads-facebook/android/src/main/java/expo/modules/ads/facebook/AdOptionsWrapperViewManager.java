@@ -8,10 +8,9 @@ import com.facebook.ads.AdOptionsView;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
 import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class AdOptionsWrapperViewManager extends ViewManager<AdOptionsWrapperView> implements ModuleRegistryConsumer {
+public class AdOptionsWrapperViewManager extends ViewManager<AdOptionsWrapperView> {
   private ModuleRegistry mModuleRegistry;
 
   @Override
@@ -66,7 +65,7 @@ public class AdOptionsWrapperViewManager extends ViewManager<AdOptionsWrapperVie
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }
