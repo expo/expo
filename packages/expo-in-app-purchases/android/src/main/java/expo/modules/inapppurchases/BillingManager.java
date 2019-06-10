@@ -457,21 +457,30 @@ public class BillingManager implements PurchasesUpdatedListener {
         promise.resolve(response);
     }
 
-    public void querySkuDetailsAsync(final String itemType, final List<String> skuList,
+    public void querySkuDetailsAsync(final List<String> skuList,
                                      final SkuDetailsResponseListener listener) {
         // Creating a runnable from the request to use it inside our connection retry policy below
         Runnable queryRequest = new Runnable() {
             @Override
             public void run() {
-            // Query the purchase async
+            // Query in app product details
             SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-            params.setSkusList(skuList).setType(itemType);
+            params.setSkusList(skuList).setType(SkuType.INAPP);
             mBillingClient.querySkuDetailsAsync(params.build(),
                 new SkuDetailsResponseListener() {
                 @Override
-                public void onSkuDetailsResponse(BillingResult billingResult,
-                                                 List<SkuDetails> skuDetailsList) {
-                    listener.onSkuDetailsResponse(billingResult, skuDetailsList);
+                public void onSkuDetailsResponse(BillingResult inAppResult,
+                                                 final List<SkuDetails> skuDetails) {
+                    // Query subscription details
+                    SkuDetailsParams.Builder subs = SkuDetailsParams.newBuilder();
+                    subs.setSkusList(skuList).setType(SkuType.SUBS);
+                    mBillingClient.querySkuDetailsAsync(subs.build(), new SkuDetailsResponseListener() {
+                        @Override
+                        public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> subscriptionDetails) {
+                            skuDetails.addAll(subscriptionDetails);
+                            listener.onSkuDetailsResponse(billingResult, skuDetails);
+                        }
+                    });
                 }
             });
             }
@@ -480,28 +489,15 @@ public class BillingManager implements PurchasesUpdatedListener {
         executeServiceRequest(queryRequest);
     }
 
-    public void queryPurchasableItems(
-            List<String> itemList,
-            final @SkuType String billingType,
-            final Promise promise
-    ) {
-        querySkuDetailsAsync(billingType, itemList,
+    public void queryPurchasableItems(List<String> itemList, final Promise promise) {
+        querySkuDetailsAsync(itemList,
             new SkuDetailsResponseListener() {
                 @Override
                 public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
-                    final int responseCode = billingResult.getResponseCode();
-                    Log.d(TAG, "Got a SkuDetailsResponse with code: " + responseCode);
                     ArrayList<Bundle> results = new ArrayList<>();
-                    if(responseCode != BillingResponseCode.OK) {
-                        Log.w(TAG, "Unsuccessful query for type: " + billingType
-                                + ". Error code: " + responseCode);
-                    } else if (skuDetailsList != null && skuDetailsList.size() > 0) {
-                        Log.d(TAG, "Successfully got results back: " + skuDetailsList);
-                        for (SkuDetails skuDetails : skuDetailsList) {
-                            mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
-                            results.add(convertSku(skuDetails));
-                        }
-
+                    for (SkuDetails skuDetails : skuDetailsList) {
+                        mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
+                        results.add(convertSku(skuDetails));
                     }
                     Bundle response = formatResponse(billingResult, results);
                     promise.resolve(response);
@@ -521,26 +517,16 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     /**
      * Checks if subscriptions are supported for current client
-     * <p>Note: This method does not automatically retry for RESULT_SERVICE_DISCONNECTED.
-     * It is only used in unit tests and after queryPurchases execution, which already has
-     * a retry-mechanism implemented.
-     * </p>
      */
     public boolean areSubscriptionsSupported() {
         BillingResult billingResult = mBillingClient.isFeatureSupported(FeatureType.SUBSCRIPTIONS);
-        int responseCode = billingResult.getResponseCode();
-        if (responseCode != BillingResponseCode.OK) {
-            Log.w(TAG, "areSubscriptionsSupported() got an error response: " + responseCode);
-        }
-        return responseCode == BillingResponseCode.OK;
+        return billingResult.getResponseCode() == BillingResponseCode.OK;
     }
 
     /**
      * Clear the resources
      */
     public void destroy() {
-        Log.d(TAG, "Destroying the manager.");
-
         if (mBillingClient != null && mBillingClient.isReady()) {
             mBillingClient.endConnection();
             mBillingClient = null;

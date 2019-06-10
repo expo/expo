@@ -23,20 +23,8 @@ export async function connectAsync() {
     return result;
 }
 export async function getProductsAsync(itemList) {
-    console.log('calling queryPurchasableItemsAsync from TS');
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
-    }
-    if (Platform.OS === 'android') {
-        // On Android you have to pass in the item type so we will combine the results of both inapp and subs
-        const { responseCode, results } = await ExpoInAppPurchases.getProductsAsync(validTypes.INAPP, itemList);
-        if (responseCode == ResponseCode.OK) {
-            const subs = await ExpoInAppPurchases.getProductsAsync(validTypes.SUBS, itemList);
-            subs.results.forEach(result => {
-                results.push(result);
-            });
-        }
-        return { responseCode, results };
     }
     return await ExpoInAppPurchases.getProductsAsync(itemList);
 }

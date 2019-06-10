@@ -58,8 +58,8 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void getProductsAsync(String billingType, List<String> itemList, final Promise promise) {
-    mBillingManager.queryPurchasableItems(itemList, billingType, promise);
+  public void getProductsAsync(List<String> itemList, final Promise promise) {
+    mBillingManager.queryPurchasableItems(itemList, promise);
   }
 
   @ExpoMethod
