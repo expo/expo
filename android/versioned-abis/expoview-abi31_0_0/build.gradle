@@ -48,13 +48,6 @@ android {
   }
 }
 
-
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r224109'
-  }
-}
-
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'com.android.support:multidex:1.0.3'
@@ -77,7 +70,6 @@ dependencies {
   api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   api 'expolib_v1.com.squareup.okio:okio:1.13.0'
   api 'expolib_v1.com.facebook.infer.annotation:infer-annotation:0.11.2'
-  api 'org.webkit:android-jsc:r224109'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
@@ -86,7 +78,7 @@ dependencies {
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
-  api 'com.facebook.android:facebook-android-sdk:4.38.0'
+  api 'com.facebook.android:facebook-android-sdk:5.0.1'
   api('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
   }

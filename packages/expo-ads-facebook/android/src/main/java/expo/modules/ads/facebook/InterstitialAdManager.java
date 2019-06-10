@@ -10,28 +10,29 @@ import com.facebook.ads.InterstitialAdListener;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class InterstitialAdManager extends ExportedModule implements InterstitialAdListener, LifecycleEventListener, ModuleRegistryConsumer {
-
+public class InterstitialAdManager extends ExportedModule implements InterstitialAdListener, LifecycleEventListener {
   private Promise mPromise;
   private boolean mDidClick = false;
   private InterstitialAd mInterstitial;
   private UIManager mUIManager;
+  private ActivityProvider mActivityProvider;
 
   public InterstitialAdManager(Context reactContext) {
     super(reactContext);
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     if (mUIManager != null) {
       mUIManager.unregisterLifecycleEventListener(this);
     }
     mUIManager = moduleRegistry.getModule(UIManager.class);
+    mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mUIManager.registerLifecycleEventListener(this);
   }
 
@@ -43,7 +44,7 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
     }
 
     mPromise = p;
-    mInterstitial = new InterstitialAd(getContext(), placementId);
+    mInterstitial = new InterstitialAd(mActivityProvider.getCurrentActivity(), placementId);
     mInterstitial.setAdListener(this);
     mInterstitial.loadAd();
   }
@@ -89,8 +90,6 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
   private void cleanUp() {
     mPromise = null;
     mDidClick = false;
-    mUIManager.unregisterLifecycleEventListener(this);
-    mUIManager = null;
 
     if (mInterstitial != null) {
       mInterstitial.destroy();
@@ -111,5 +110,7 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
   @Override
   public void onHostDestroy() {
     cleanUp();
+    mUIManager.unregisterLifecycleEventListener(this);
+    mUIManager = null;
   }
 }

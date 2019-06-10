@@ -15,6 +15,14 @@ import android.provider.CalendarContract;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import org.unimodules.interfaces.permissions.Permissions;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,15 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
-import org.unimodules.interfaces.permissions.Permissions;
-
-public class CalendarModule extends ExportedModule implements ModuleRegistryConsumer {
+public class CalendarModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String TAG = CalendarModule.class.getSimpleName();
 
   private Context mContext;
@@ -48,7 +48,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mPermissionsModule = moduleRegistry.getModule(Permissions.class);
   }
 
@@ -160,7 +160,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
         try {
           Integer eventID = saveEvent(details);
           promise.resolve(eventID.toString());
-        } catch (ParseException e) {
+        } catch (ParseException | EventNotSavedException e) {
           promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e);
         }
       }
@@ -591,7 +591,7 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
     return rows > 0;
   }
 
-  private int saveEvent(ReadableArguments details) throws ParseException, SecurityException {
+  private int saveEvent(ReadableArguments details) throws EventNotSavedException, ParseException, SecurityException {
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -742,6 +742,9 @@ public class CalendarModule extends ExportedModule implements ModuleRegistryCons
 
       Uri eventsUri = CalendarContract.Events.CONTENT_URI;
       Uri eventUri = cr.insert(eventsUri, eventValues);
+      if (eventUri == null) {
+        throw new EventNotSavedException();
+      }
       int eventID = Integer.parseInt(eventUri.getLastPathSegment());
 
       if (details.containsKey("alarms")) {

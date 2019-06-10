@@ -20,7 +20,9 @@ export declare function trackWithProperties(event: string, properties: {
     [key: string]: any;
 }): void;
 export declare function screen(screenName: string): void;
-export declare function screenWithProperties(event: string, properties: string): void;
+export declare function screenWithProperties(event: string, properties: {
+    [key: string]: any;
+}): void;
 export declare function flush(): void;
 export declare function getEnabledAsync(): Promise<boolean>;
 export declare function setEnabledAsync(enabled: boolean): Promise<void>;

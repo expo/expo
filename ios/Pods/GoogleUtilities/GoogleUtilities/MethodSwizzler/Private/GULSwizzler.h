@@ -35,14 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
      isClassSelector:(BOOL)isClassSelector
            withBlock:(nullable id)block;
 
-/** Restores the original implementation.
- *
- *  @param aClass The class to unswizzle.
- *  @param selector The selector to restore the original implementation of.
- *  @param isClassSelector A BOOL specifying whether the selector is a class or instance selector.
- */
-+ (void)unswizzleClass:(Class)aClass selector:(SEL)selector isClassSelector:(BOOL)isClassSelector;
-
 /** Returns the current IMP for the given class and selector.
  *
  *  @param aClass The class to use.
@@ -53,18 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable IMP)currentImplementationForClass:(Class)aClass
                                      selector:(SEL)selector
                               isClassSelector:(BOOL)isClassSelector;
-
-/** Returns the original IMP for the given class and selector.
- *
- *  @param aClass The class to use.
- *  @param selector The selector to find the implementation of.
- *  @param isClassSelector A BOOL specifying whether the selector is a class or instance selector.
- *  @return The implementation of the selector in the runtime before any consumer or GULSwizzler
- *          swizzled.
- */
-+ (nullable IMP)originalImplementationForClass:(Class)aClass
-                                      selector:(SEL)selector
-                               isClassSelector:(BOOL)isClassSelector;
 
 /** Checks the runtime to see if a selector exists on a class. If a property is declared as
  *  @dynamic, we have a reverse swizzling situation, where the implementation of a method exists

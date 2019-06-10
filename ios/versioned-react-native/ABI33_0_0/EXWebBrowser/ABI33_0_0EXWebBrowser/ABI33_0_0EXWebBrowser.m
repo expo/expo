@@ -5,6 +5,10 @@
 
 #import <ABI33_0_0UMCore/ABI33_0_0UMUtilities.h>
 
+static NSString* const WebBrowserErrorCode = @"WebBrowser";
+static NSString* const WebBrowserControlsColorKey = @"controlsColor";
+static NSString* const WebBrowserToolbarColorKey = @"toolbarColor";
+
 @interface ABI33_0_0EXWebBrowser () <SFSafariViewControllerDelegate>
 
 @property (nonatomic, copy) ABI33_0_0UMPromiseResolveBlock redirectResolve;
@@ -17,9 +21,6 @@
 #pragma clang diagnostic pop
 
 @end
-
-NSString *ABI33_0_0EXWebBrowserErrorCode = @"ABI33_0_0EXWebBrowser";
-
 
 @implementation ABI33_0_0EXWebBrowser
 {
@@ -96,14 +97,12 @@ ABI33_0_0UM_EXPORT_METHOD_AS(openBrowserAsync,
   } else {
     safariVC = [[SFSafariViewController alloc] initWithURL:url];
   }
-  
-  NSString *toolbarColorKey = @"toolbarColor";
-  if([[arguments allKeys] containsObject:toolbarColorKey]) {
-    safariVC.preferredBarTintColor = [ABI33_0_0EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
+
+  if([[arguments allKeys] containsObject:WebBrowserToolbarColorKey]) {
+    safariVC.preferredBarTintColor = [ABI33_0_0EXWebBrowser convertHexColorString:arguments[WebBrowserToolbarColorKey]];
   }
-  NSString *controlsColorKey = @"controlsColor";
-  if([[arguments allKeys] containsObject:controlsColorKey]) {
-    safariVC.preferredControlTintColor = [ABI33_0_0EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
+  if([[arguments allKeys] containsObject:WebBrowserControlsColorKey]) {
+    safariVC.preferredControlTintColor = [ABI33_0_0EXWebBrowser convertHexColorString:arguments[WebBrowserControlsColorKey]];
   }
   safariVC.delegate = self;
 
@@ -200,7 +199,7 @@ ABI33_0_0UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
  */
 - (BOOL)initializeWebBrowserWithResolver:(ABI33_0_0UMPromiseResolveBlock)resolve andRejecter:(ABI33_0_0UMPromiseRejectBlock)reject {
   if (_redirectResolve) {
-    reject(ABI33_0_0EXWebBrowserErrorCode, @"Another WebBrowser is already being presented.", nil);
+    reject(WebBrowserErrorCode, @"Another WebBrowser is already being presented.", nil);
     return NO;
   }
   _redirectReject = reject;

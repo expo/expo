@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 106
-    versionName '2.10.7'
+    versionCode 110
+    versionName '2.11.0'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
@@ -93,7 +93,7 @@ devicefarm {
 
 configurations.all {
   resolutionStrategy {
-    force 'org.webkit:android-jsc:r224109'
+    force 'org.webkit:android-jsc:r241213'
     force 'com.google.android.gms:play-services-basement:16.1.0'
     force 'com.google.android.gms:play-services-vision:17.0.2'
     // TODO: Remove once finished with migration to MLKit
@@ -119,7 +119,7 @@ dependencies {
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   implementation "com.android.support:appcompat-v7:$supportLibVersion"
-  implementation 'com.facebook.android:facebook-android-sdk:4.37.0'
+  implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
   }
@@ -218,7 +218,8 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:32.0.0'
+  api 'org.webkit:android-jsc:r241213' // needs to be before react-native
+  api 'com.facebook.react:react-native:33.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
@@ -234,12 +235,20 @@ dependencies {
   // WHEN_DETACHING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DETACHING
-  addMavenUnimodulesDependencies([
+  addUnimodulesDependencies([
       modulesPaths : [
         '../../node_modules'
       ],
       configuration: 'api',
-      target       : 'react-native'
+      target       : 'react-native',
+      exclude      : [
+        // You can exclude unneeded modules here, eg.
+        // 'unimodules-face-detector-interface',
+        // 'expo-face-detector'
+
+        // Adding a name here will also remove the package
+        // from auto-generated BasePackageList.java
+      ]
   ])
   END UNCOMMENT WHEN DETACHING */
 }

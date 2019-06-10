@@ -52,10 +52,10 @@
     // This allows app extensions that have the app's bundle as their prefix to pass this test.
     NSString *applicationBundleIdentifier =
         [GULAppEnvironmentUtil isAppExtension]
-            ? [self bundleIdentifierByRemovingLastPartFrom:bundleIdentifier]
-            : bundleIdentifier;
+            ? [self bundleIdentifierByRemovingLastPartFrom:bundle.bundleIdentifier]
+            : bundle.bundleIdentifier;
 
-    if ([applicationBundleIdentifier isEqualToString:bundle.bundleIdentifier]) {
+    if ([applicationBundleIdentifier isEqualToString:bundleIdentifier]) {
       return YES;
     }
   }

@@ -10,6 +10,8 @@ import {
   Platform,
 } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+
+import Colors from '../constants/Colors';
 import Button from '../components/Button';
 
 const url = 'https://expo.io';
@@ -20,7 +22,7 @@ interface Package {
 
 interface State {
   showTitle: boolean;
-  colorText?: string;
+  toolbarColor?: string;
   controlsColorText?: string;
   packages?: Package[];
   selectedPackage?: string;
@@ -36,6 +38,8 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   readonly state: State = {
     showTitle: false,
     barCollapsing: false,
+    toolbarColor: Colors.tintColor.replace(/^#/, ''),
+    controlsColorText: Colors.headerTitle.replace(/^#/, ''),
   };
 
   componentDidMount() {
@@ -87,7 +91,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   handleOpenWebUrlClicked = async () => {
     const args = {
       showTitle: this.state.showTitle,
-      toolbarColor: this.state.colorText && `#${this.state.colorText}`,
+      toolbarColor: this.state.toolbarColor && `#${this.state.toolbarColor}`,
       controlsColor: this.state.controlsColorText && `#${this.state.controlsColorText}`,
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
@@ -96,7 +100,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   }
 
-  handleToolbarColorInputChanged = (colorText: string) => this.setState({ colorText });
+  handleToolbarColorInputChanged = (toolbarColor: string) => this.setState({ toolbarColor });
 
   handleControlsColorInputChanged = (controlsColorText: string) => this.setState({ controlsColorText });
 
@@ -175,7 +179,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
             style={styles.input}
             placeholder="RRGGBB"
             onChangeText={this.handleToolbarColorInputChanged}
-            value={this.state.colorText}
+            value={this.state.toolbarColor}
           />
         </View>
         {this.renderIOSChoices()}

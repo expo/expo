@@ -2,6 +2,7 @@ import { EventEmitter } from '@unimodules/core';
 declare const LocationEventEmitter: EventEmitter;
 export interface ProviderStatus {
     locationServicesEnabled: boolean;
+    backgroundModeEnabled: boolean;
     gpsAvailable?: boolean;
     networkAvailable?: boolean;
     passiveAvailable?: boolean;
@@ -114,6 +115,7 @@ export declare function watchPositionAsync(options: LocationOptions, callback: L
 }>;
 export declare function requestPermissionsAsync(): Promise<void>;
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
+export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
 export declare function stopLocationUpdatesAsync(taskName: string): Promise<void>;
 export declare function hasStartedLocationUpdatesAsync(taskName: string): Promise<boolean>;

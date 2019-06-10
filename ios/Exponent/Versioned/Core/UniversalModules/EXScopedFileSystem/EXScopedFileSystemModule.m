@@ -1,4 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+
+#if __has_include(<EXFileSystem/EXFileSystem.h>)
 #import "EXScopedFileSystemModule.h"
 
 // TODO @sjchmiela: Should this be versioned? It is only used in detached scenario.
@@ -83,3 +85,4 @@ NSString * const EXShellManifestResourceName = @"shell-app-manifest";
 }
 
 @end
+#endif

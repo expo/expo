@@ -7,6 +7,7 @@ const LocationEventEmitter = new EventEmitter(ExpoLocation);
 
 export interface ProviderStatus {
   locationServicesEnabled: boolean;
+  backgroundModeEnabled: boolean;
   gpsAvailable?: boolean;
   networkAvailable?: boolean;
   passiveAvailable?: boolean;
@@ -465,6 +466,11 @@ export async function hasServicesEnabledAsync(): Promise<boolean> {
 
 function _validateTaskName(taskName: string) {
   invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
+}
+
+export async function isBackgroundLocationAvailableAsync(): Promise<boolean> {
+  const providerStatus = await getProviderStatusAsync();
+  return providerStatus.backgroundModeEnabled;
 }
 
 export async function startLocationUpdatesAsync(

@@ -36,8 +36,7 @@ const sortByStates: { [key in MediaLibrary.SortByKey]: MediaLibrary.SortByKey } 
   [MediaLibrary.SortBy.modificationTime]: MediaLibrary.SortBy.mediaType,
   [MediaLibrary.SortBy.mediaType]: MediaLibrary.SortBy.width,
   [MediaLibrary.SortBy.width]: MediaLibrary.SortBy.height,
-  [MediaLibrary.SortBy.height]: MediaLibrary.SortBy.id,
-  [MediaLibrary.SortBy.id]: MediaLibrary.SortBy.duration,
+  [MediaLibrary.SortBy.height]: MediaLibrary.SortBy.duration,
   [MediaLibrary.SortBy.duration]: MediaLibrary.SortBy.default,
 };
 
@@ -75,7 +74,7 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
   readonly state: State = {
     assets: [],
     refreshing: true,
-    mediaType: MediaLibrary.MediaType.unknown,
+    mediaType: MediaLibrary.MediaType.photo,
     sortBy: MediaLibrary.SortBy.default,
   };
 

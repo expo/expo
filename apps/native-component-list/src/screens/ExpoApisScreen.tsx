@@ -1,12 +1,12 @@
 import React from 'react';
+import { Notifications } from 'expo';
 import { Alert, Platform } from 'react-native';
 import { EventSubscription } from 'fbemitter';
-import { DangerZone, Notifications } from 'expo';
 import ComponentListScreen from './ComponentListScreen';
 import { Screens } from '../navigation/ExpoApis';
 
 try {
-  DangerZone.Branch.subscribe((bundle: any) => {
+  require('react-native-branch').default.subscribe((bundle: any) => {
     if (bundle && bundle.params && !bundle.error) {
       Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
     }

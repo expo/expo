@@ -1,5 +1,6 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
+#if __has_include(<EXPermissions/EXPermissions.h>)
 #import <UIKit/UIKit.h>
 #import <EXPermissions/EXPermissions.h>
 
@@ -20,3 +21,4 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+#endif

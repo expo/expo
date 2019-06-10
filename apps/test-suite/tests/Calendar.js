@@ -381,7 +381,9 @@ export async function test(t) {
 
         t.expect(updatedEvent).toBeDefined();
         t.expect(updatedEvent.id).toBe(eventId);
-        t.expect(updatedEvent.availability).toBe(Calendar.Availability.FREE);
+        t.expect([Calendar.Availability.FREE, Calendar.Availability.NOT_SUPPORTED]).toContain(
+          updatedEvent.availability
+        );
       });
 
       t.afterAll(async () => {

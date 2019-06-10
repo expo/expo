@@ -444,6 +444,7 @@ NSString *const ABI33_0_0EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"pl
                                           
                                           ABI33_0_0EXAVPlayerDataStatusRateKeyPath: _rate,
                                           ABI33_0_0EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
+                                          ABI33_0_0EXAVPlayerDataStatusPitchCorrectionQualityKeyPath: _pitchCorrectionQuality,
                                           ABI33_0_0EXAVPlayerDataStatusVolumeKeyPath: @(_player.volume),
                                           ABI33_0_0EXAVPlayerDataStatusIsMutedKeyPath: @(_player.muted),
                                           ABI33_0_0EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),

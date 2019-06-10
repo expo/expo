@@ -7,7 +7,6 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.interfaces.facedetector.FaceDetector;
 import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
 
@@ -18,7 +17,7 @@ import java.util.Map;
 import expo.modules.facedetector.tasks.FileFaceDetectionCompletionListener;
 import expo.modules.facedetector.tasks.FileFaceDetectionTask;
 
-public class FaceDetectorModule extends ExportedModule implements ModuleRegistryConsumer {
+public class FaceDetectorModule extends ExportedModule {
   private static final String TAG = "ExpoFaceDetector";
 
   private static final String MODE_OPTION_KEY = "Mode";
@@ -91,7 +90,7 @@ public class FaceDetectorModule extends ExportedModule implements ModuleRegistry
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

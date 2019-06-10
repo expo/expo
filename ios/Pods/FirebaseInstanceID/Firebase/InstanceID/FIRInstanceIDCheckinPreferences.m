@@ -18,7 +18,6 @@
 
 #import <GoogleUtilities/GULUserDefaults.h>
 #import "FIRInstanceIDCheckinService.h"
-#import "FIRInstanceIDDefines.h"
 #import "FIRInstanceIDUtilities.h"
 
 const NSTimeInterval kFIRInstanceIDDefaultCheckinInterval = 7 * 24 * 60 * 60;  // 7 days.
@@ -62,8 +61,7 @@ const NSTimeInterval kFIRInstanceIDDefaultCheckinInterval = 7 * 24 * 60 * 60;  /
 - (BOOL)hasValidCheckinInfo {
   int64_t currentTimestampInMillis = FIRInstanceIDCurrentTimestampInMilliseconds();
   int64_t timeSinceLastCheckinInMillis = currentTimestampInMillis - self.lastCheckinTimestampMillis;
-  _FIRInstanceIDDevAssert(timeSinceLastCheckinInMillis >= 0,
-                          @"FCM error: cannot have last checkin timestamp in future");
+
   BOOL hasCheckinInfo = [self hasCheckinInfo];
   NSString *lastLocale =
       [[GULUserDefaults standardUserDefaults] stringForKey:kFIRInstanceIDUserDefaultsKeyLocale];
