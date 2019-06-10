@@ -69,6 +69,15 @@ export async function readAsStringAsync(
   return await ExponentFileSystem.readAsStringAsync(fileUri, options || {});
 }
 
+export async function contentUriFromFile(
+  fileUri: string
+): Promise<string> {
+  if (!ExponentFileSystem.contentUriFromFile) {
+    throw new UnavailabilityError('expo-file-system', 'contentUriFromFile');
+  }
+  return await ExponentFileSystem.contentUriFromFile(fileUri);
+}
+
 export async function writeAsStringAsync(
   fileUri: string,
   contents: string,
