@@ -214,6 +214,12 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [self resolvePromise:QUERY_HISTORY_KEY value:response];
 }
 
+- (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error {
+  int errorCode = [self errorCodeNativeToJS:error.code];
+  NSDictionary *response = [self formatResults:errorCode];
+  [self resolvePromise:QUERY_HISTORY_KEY value:response];
+}
+
 - (NSDictionary *)getProductData:(SKProduct *)product
 {
   // Use with caution: P0D also implies non-renewable subscription.
