@@ -1,6 +1,6 @@
 {
   "name": "UMImageLoaderInterface",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "summary": "Interface for ImageLoader",
   "description": "Interface for ImageLoader",
   "license": "MIT",

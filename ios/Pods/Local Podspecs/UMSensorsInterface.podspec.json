@@ -1,6 +1,6 @@
 {
   "name": "UMSensorsInterface",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "summary": "An interface for sensors modules.",
   "description": "An interface for sensors modules.",
   "license": "MIT",

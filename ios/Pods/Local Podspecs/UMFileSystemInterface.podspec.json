@@ -1,6 +1,6 @@
 {
   "name": "UMFileSystemInterface",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "summary": "Interface for file system modules",
   "description": "Interface for file system modules",
   "license": "MIT",
