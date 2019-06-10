@@ -12,9 +12,6 @@ import {
 } from 'react-native';
 import { NavigationScreenProps } from 'react-navigation';
 
-// import MonoText from '../../components/MonoText';
-const MonoText = Text;
-
 interface State {
   includeSmartAlbums: boolean;
   albums: MediaLibrary.Album[];
@@ -60,7 +57,7 @@ export default class MediaAlbumsScreen extends React.Component<NavigationScreenP
           <Text>{item.title}</Text>
           <Text>{item.assetCount}</Text>
         </View>
-        <MonoText>{JSON.stringify(item, null, 2)}</MonoText>
+        <Text>{JSON.stringify(item, null, 2)}</Text>
       </TouchableOpacity>
     );
   };
