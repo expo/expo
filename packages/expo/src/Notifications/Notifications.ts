@@ -3,6 +3,7 @@ import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
 import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
+import { UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 import {
   Notification,
@@ -149,6 +150,9 @@ export default {
 
   /* Re-export */
   getExpoPushTokenAsync(): Promise<string> {
+    if (!ExponentNotifications.getExponentPushTokenAsync) {
+      throw new UnavailabilityError('Expo.Notifications', 'getExpoPushTokenAsync');
+    }
     if (!Constants.isDevice) {
       throw new Error(`Must be on a physical device to get an Expo Push Token`);
     }
@@ -157,8 +161,12 @@ export default {
 
   getDevicePushTokenAsync: (config: {
     gcmSenderId?: string;
-  }): Promise<{ type: string; data: string }> =>
-    ExponentNotifications.getDevicePushTokenAsync(config || {}),
+  }): Promise<{ type: string; data: string }> => {
+    if (!ExponentNotifications.getDevicePushTokenAsync) {
+      throw new UnavailabilityError('Expo.Notifications', 'getDevicePushTokenAsync');
+    }
+    return ExponentNotifications.getDevicePushTokenAsync(config || {});
+  },
 
   createChannelAndroidAsync(id: string, channel: Channel): Promise<void> {
     if (Platform.OS !== 'android') {
@@ -174,8 +182,8 @@ export default {
   },
 
   deleteChannelAndroidAsync(id: string): Promise<void> {
-    if (Platform.OS === 'ios') {
-      console.warn('deleteChannelAndroidAsync(...) has no effect on iOS');
+    if (Platform.OS !== 'android') {
+      console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
       return Promise.resolve();
     }
     // This codepath will never be triggered in SDK 28 and above
@@ -297,7 +305,7 @@ export default {
       }
     }
 
-    if (Platform.OS === 'ios') {
+    if (Platform.OS !== 'android') {
       if (options.repeat) {
         console.warn(
           'Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.'
@@ -338,20 +346,18 @@ export default {
 
   /* Dismiss currently shown notification with ID (Android only) */
   async dismissNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
-    if (Platform.OS === 'android') {
-      return ExponentNotifications.dismissNotification(notificationId);
-    } else {
-      throw new Error('Dismissing notifications is not supported on iOS');
+    if (!ExponentNotifications.dismissNotification) {
+      throw new UnavailabilityError('Expo.Notifications', 'dismissNotification');
     }
+    return await ExponentNotifications.dismissNotification(notificationId);
   },
 
   /* Dismiss all currently shown notifications (Android only) */
   async dismissAllNotificationsAsync(): Promise<void> {
-    if (Platform.OS === 'android') {
-      return ExponentNotifications.dismissAllNotifications();
-    } else {
-      throw new Error('Dismissing notifications is not supported on iOS');
+    if (!ExponentNotifications.dismissAllNotifications) {
+      throw new UnavailabilityError('Expo.Notifications', 'dismissAllNotifications');
     }
+    return await ExponentNotifications.dismissAllNotifications();
   },
 
   /* Cancel scheduled notification notification with ID */
@@ -388,7 +394,7 @@ export default {
 
   async setBadgeNumberAsync(number: number): Promise<void> {
     if (!ExponentNotifications.setBadgeNumberAsync) {
-      return;
+      throw new UnavailabilityError('Expo.Notifications', 'setBadgeNumberAsync');
     }
     return ExponentNotifications.setBadgeNumberAsync(number);
   },
