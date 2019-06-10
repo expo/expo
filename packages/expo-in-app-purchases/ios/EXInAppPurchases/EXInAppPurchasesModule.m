@@ -7,6 +7,7 @@
 @property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, assign) BOOL queryingItems;
 @property (strong, nonatomic) NSMutableDictionary *promises;
+@property (strong, nonatomic) NSMutableSet *retrievedItems;
 @property (strong, nonatomic) SKProductsRequest *request;
 @property (strong, nonatomic) SKReceiptRefreshRequest *receiptRequest;
 @property (strong, nonatomic) NSArray<SKProduct*> *products;
@@ -53,6 +54,7 @@ UM_EXPORT_METHOD_AS(connectAsync,
   // Initialize listener and promises dictionary
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
   _promises = [NSMutableDictionary dictionary];
+  _retrievedItems = [NSMutableSet set];
   _queryingItems = NO;
   [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
 
@@ -67,6 +69,9 @@ UM_EXPORT_METHOD_AS(getProductsAsync,
 {
   [self setPromise:QUERY_PURCHASABLE_KEY resolve:resolve reject:reject];
 
+  for (NSString *identifier in productIDs) {
+    [_retrievedItems addObject:identifier];
+  }
   _queryingItems = YES;
   [self requestProducts:productIDs];
 }
@@ -76,15 +81,20 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if ([SKPaymentQueue canMakePayments]) {
-    NSArray *productArray = [NSArray arrayWithObjects:productIdentifier,nil];
-    [self setPromise:productIdentifier resolve:resolve reject:reject];
-
-    _queryingItems = NO;
-    [self requestProducts:productArray];
-  } else {
+  if (![SKPaymentQueue canMakePayments]) {
     reject(@"E_MISSING_PERMISSIONS", @"User cannot make payments", nil);
+    return;
   }
+  if (![_retrievedItems containsObject:productIdentifier]) {
+    reject(@"E_ITEM_NOT_QUERIED", @"Must query item from store before calling purchase", nil);
+    return;
+  }
+
+  // Make the request
+  NSArray *productArray = @[productIdentifier];
+  [self setPromise:productIdentifier resolve:resolve reject:reject];
+  _queryingItems = NO;
+  [self requestProducts:productArray];
 }
 
 UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
@@ -112,7 +122,6 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 {
 
   for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
-    NSLog(@"Invalid identifier: %@", invalidIdentifier);
     if (!_queryingItems) {
       NSDictionary *results = [self formatResults:SKErrorStoreProductNotAvailable];
       [self resolvePromise:invalidIdentifier value:results];
@@ -287,7 +296,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
         NSLog(@"Made a purchase!");
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         NSLog(@"Transaction state -> Purchased");
-        NSArray *results = [NSArray arrayWithObjects: [self getTransactionData:transaction], nil];
+        NSArray *results = @[[self getTransactionData:transaction]];
         NSDictionary *response = [self formatResults:results withResponseCode:OK];
         [self resolvePromise:transaction.payment.productIdentifier value:response];
         break;

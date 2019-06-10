@@ -133,16 +133,18 @@ public class BillingManager implements PurchasesUpdatedListener {
      * Start a purchase or subscription replace flow
      */
     public void purchaseItemAsync(final String skuId, final String oldSku, final Promise promise) {
-        // Save promise to HashMap to resolve later
-        promises.put(PURCHASING_ITEM, promise);
 
         // oldSku is for subscription replacements and may be null.
         Runnable purchaseFlowRequest = new Runnable() {
             @Override
             public void run() {
-            Log.d(TAG, "Launching in-app purchase flow. Replace old SKU? " + (oldSku != null));
-
             SkuDetails skuDetails = mSkuDetailsMap.get(skuId);
+            if (skuDetails == null) {
+                promise.reject("E_ITEM_NOT_QUERIED", "Must query item from store before calling purchase");
+            }
+
+            // Save promise to HashMap to resolve later
+            promises.put(PURCHASING_ITEM, promise);
             BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(skuDetails).setOldSku(oldSku).build();
             mBillingClient.launchBillingFlow(mActivity, purchaseParams);
