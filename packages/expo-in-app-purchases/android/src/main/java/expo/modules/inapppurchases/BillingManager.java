@@ -436,12 +436,9 @@ public class BillingManager implements PurchasesUpdatedListener {
     private void onQueryPurchasesFinished(PurchasesResult result, final Promise promise) {
         // Have we been disposed of in the meantime? If so, or bad result code, then quit
         if (mBillingClient == null || result.getResponseCode() != BillingResponseCode.OK) {
-            Log.w(TAG, "Billing client was null or result code (" + result.getResponseCode()
-                    + ") was bad - quitting");
+            promise.reject("E_QUERY_FAILED", "Billing client was null or query was unsuccessful");
             return;
         }
-
-        Log.d(TAG, "Query inventory was successful.");
 
         BillingResult billingResult = result.getBillingResult();
         List<Purchase> purchasesList = result.getPurchasesList();
