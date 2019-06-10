@@ -2,13 +2,13 @@ import { Platform } from 'react-native';
 import { CodedError } from '@unimodules/core';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 import { ResponseCode, ErrorCode } from './InAppPurchases.types';
-export { ResponseCode, ErrorCode, };
 const errors = {
     ALREADY_CONNECTED: 'Already connected to App Store',
     ALREADY_DISCONNECTED: 'Already disconnected from App Store',
     NOT_CONNECTED: 'Must be connected to App Store',
 };
 let connected = false;
+export { ResponseCode, ErrorCode, };
 export async function connectAsync() {
     if (connected) {
         throw new ConnectionError(errors.ALREADY_CONNECTED);

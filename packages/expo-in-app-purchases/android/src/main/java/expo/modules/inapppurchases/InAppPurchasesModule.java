@@ -1,14 +1,9 @@
 package expo.modules.inapppurchases;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
 
 import android.content.Context;
 import android.app.Activity;
-
-import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.Purchase;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -36,15 +31,6 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    Map<String, Object> constants = new HashMap<>();
-
-    constants.put("purchaseStates", getPurchaseStates());
-
-    return constants;
   }
 
   @ExpoMethod
@@ -105,15 +91,4 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
     return activityProvider != null ? activityProvider.getCurrentActivity() : null;
   }
-
-  private Map<String, Integer> getPurchaseStates() {
-    Map<String, Integer> purchaseState = new HashMap<>();
-
-    purchaseState.put("PENDING", Purchase.PurchaseState.PENDING);
-    purchaseState.put("PURCHASED", Purchase.PurchaseState.PURCHASED);
-    purchaseState.put("UNSPECIFIED_STATE", Purchase.PurchaseState.UNSPECIFIED_STATE);
-
-    return purchaseState;
-  }
-
 }

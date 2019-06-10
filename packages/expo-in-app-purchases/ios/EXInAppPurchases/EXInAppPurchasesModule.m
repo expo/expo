@@ -33,19 +33,6 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
   _moduleRegistry = moduleRegistry;
 }
 
-- (NSDictionary *)constantsToExport
-{
-  return @{
-      @"purchaseStates": @{
-         @"PURCHASED": @(SKPaymentTransactionStatePurchased),
-         @"PENDING": @(SKPaymentTransactionStatePurchasing),
-         @"FAILED": @(SKPaymentTransactionStateFailed),
-         @"RESTORED": @(SKPaymentTransactionStateRestored),
-         @"DEFERRED": @(SKPaymentTransactionStateDeferred),
-      }
-   };
-}
-
 UM_EXPORT_METHOD_AS(connectAsync,
                     connectAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
