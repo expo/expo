@@ -226,7 +226,12 @@ dependencies {
         '../enabled-modules'
       ],
       configuration: 'api',
-      target       : 'react-native'
+      target       : 'react-native',
+      exclude      : [
+        'unimodules-face-detector-interface',
+        'expo-face-detector',
+        'expo-payments-stripe'
+      ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE
@@ -239,9 +244,12 @@ dependencies {
       configuration: 'api',
       target       : 'react-native',
       exclude      : [
-        // You can exclude unneeded modules here, eg.
-        // 'unimodules-face-detector-interface',
-        // 'expo-face-detector'
+        // You can exclude unneeded modules here.
+        // By default we exclude FaceDetector
+        // and Stripe payments APIs.
+        'unimodules-face-detector-interface',
+        'expo-face-detector',
+        'expo-payments-stripe'
 
         // Adding a name here will also remove the package
         // from auto-generated BasePackageList.java
