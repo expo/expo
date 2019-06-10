@@ -833,7 +833,7 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   if ([config isKindOfClass:[NSArray class]]) {
     NSArray *sortArray = (NSArray *)config;
     NSString *key = [EXMediaLibrary _convertSortByKey:sortArray[0]];
-    BOOL ascending = sortArray[1] > 0;
+    BOOL ascending = [(NSNumber *)sortArray[1] boolValue];
     
     if (key) {
       return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
