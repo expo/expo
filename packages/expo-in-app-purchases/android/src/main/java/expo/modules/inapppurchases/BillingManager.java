@@ -315,26 +315,29 @@ public class BillingManager implements PurchasesUpdatedListener {
      * Does the same thing as queryPurchases except makes a network request (instead of using Google Play cache)
      * and returns all records for every SKU of a given type, even if they're expired/consumed
      */
-    public void queryPurchaseHistoryAsync(final String itemType, final Promise promise) {
+    public void queryPurchaseHistoryAsync(final Promise promise) {
         Runnable queryToExecute = new Runnable() {
             @Override
             public void run() {
-                mBillingClient.queryPurchaseHistoryAsync(itemType,
+                mBillingClient.queryPurchaseHistoryAsync(SkuType.INAPP,
                 new PurchaseHistoryResponseListener() {
                     @Override
                     public void onPurchaseHistoryResponse(BillingResult billingResult,
-                                                          List<PurchaseHistoryRecord> purchasesList) {
+                                                          final List<PurchaseHistoryRecord> inAppList) {
 
-                        ArrayList<Bundle> bundles = new ArrayList<>();
-                        if (billingResult.getResponseCode() == BillingResponseCode.OK
-                                && purchasesList != null) {
-                            for (PurchaseHistoryRecord record : purchasesList) {
-                                bundles.add(convertPurchaseHistory(record));
+                        mBillingClient.queryPurchaseHistoryAsync(SkuType.SUBS, new PurchaseHistoryResponseListener() {
+                            @Override
+                            public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseList) {
+                                purchaseList.addAll(inAppList);
+                                ArrayList<Bundle> bundles = new ArrayList<>();
+                                for (PurchaseHistoryRecord record : purchaseList) {
+                                    bundles.add(convertPurchaseHistory(record));
+                                }
+
+                                Bundle response = formatResponse(billingResult, bundles);
+                                promise.resolve(response);
                             }
-                        }
-
-                        Bundle response = formatResponse(billingResult, bundles);
-                        promise.resolve(response);
+                        });
                     }
                 });
             }

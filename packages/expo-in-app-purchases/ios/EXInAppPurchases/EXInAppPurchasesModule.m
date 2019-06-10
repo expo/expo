@@ -98,7 +98,7 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
 }
 
 UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
-                    getPurchaseHistoryAsync:(NSArray *)productIDs
+                    getPurchaseHistoryAsync:(BOOL)refresh
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
