@@ -141,9 +141,14 @@ public class BillingManager implements PurchasesUpdatedListener {
             SkuDetails skuDetails = mSkuDetailsMap.get(skuId);
             if (skuDetails == null) {
                 promise.reject("E_ITEM_NOT_QUERIED", "Must query item from store before calling purchase");
+                return;
             }
 
             // Save promise to HashMap to resolve later
+            if (promises.get(PURCHASING_ITEM) != null) {
+                promise.reject("E_UNFINISHED_PROMISE", "Must wait for promise to resolve before recalling function.");
+                return;
+            }
             promises.put(PURCHASING_ITEM, promise);
             BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(skuDetails).setOldSku(oldSku).build();
@@ -215,6 +220,10 @@ public class BillingManager implements PurchasesUpdatedListener {
             return;
         }
 
+        if (promises.get(ACKNOWLEDGING_PURCHASE) != null) {
+            promise.reject("E_UNFINISHED_PROMISE", "Must wait for promise to resolve before recalling function.");
+            return;
+        }
         promises.put(ACKNOWLEDGING_PURCHASE, promise);
         mTokensToBeConsumed.add(purchaseToken);
 

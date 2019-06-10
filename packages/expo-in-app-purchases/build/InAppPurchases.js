@@ -18,8 +18,9 @@ export async function connectAsync() {
     if (connected) {
         throw new ConnectionError(errors.ALREADY_CONNECTED);
     }
+    const result = await ExpoInAppPurchases.connectAsync();
     connected = true;
-    return await ExpoInAppPurchases.connectAsync();
+    return result;
 }
 export async function getProductsAsync(itemList) {
     console.log('calling queryPurchasableItemsAsync from TS');
@@ -93,12 +94,12 @@ export async function disconnectAsync() {
     if (!connected) {
         throw new ConnectionError(errors.ALREADY_DISCONNECTED);
     }
+    await ExpoInAppPurchases.disconnectAsync();
     connected = false;
-    return await ExpoInAppPurchases.disconnectAsync();
 }
 class ConnectionError extends CodedError {
     constructor(message) {
-        super('ERR_Connection', message);
+        super('ERR_IN_APP_PURCHASES_CONNECTION', message);
     }
 }
 //# sourceMappingURL=InAppPurchases.js.map
