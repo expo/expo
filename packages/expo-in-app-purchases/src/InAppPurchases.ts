@@ -27,8 +27,9 @@ export async function connectAsync(): Promise<QueryResponse> {
     throw new ConnectionError(errors.ALREADY_CONNECTED);
   }
 
+  const result = await ExpoInAppPurchases.connectAsync();
   connected = true;
-  return await ExpoInAppPurchases.connectAsync();
+  return result;
 }
 
 export async function getProductsAsync(itemList: string[]): Promise<QueryResponse> {
@@ -111,8 +112,8 @@ export async function disconnectAsync(): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.ALREADY_DISCONNECTED);
   }
+  await ExpoInAppPurchases.disconnectAsync();
   connected = false;
-  return await ExpoInAppPurchases.disconnectAsync();
 }
 
 class ConnectionError extends CodedError {

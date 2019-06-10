@@ -64,8 +64,8 @@ UM_EXPORT_METHOD_AS(connectAsync,
 
 UM_EXPORT_METHOD_AS(getProductsAsync,
                     getProductsAsync:(NSArray *)productIDs
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   [self setPromise:QUERY_PURCHASABLE_KEY resolve:resolve reject:reject];
 
@@ -99,8 +99,8 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
 
 UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
                     getPurchaseHistoryAsync:(NSArray *)productIDs
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Calling queryPurchasableHistoryAsync");
   [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
