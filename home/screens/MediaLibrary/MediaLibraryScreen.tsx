@@ -172,14 +172,8 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
   };
 
   onCellPress = (asset: MediaLibrary.Asset) => {
-    console.log('chosen: ', asset);
     Store.dispatch(ProfileActions.setImage(asset.uri));
     this.props.navigation.goBack();
-    // this.props.navigation.navigate('MediaDetails', {
-    //   asset,
-    //   album: this.getAlbum(),
-    //   onGoBack: this.refresh,
-    // });
   };
 
   renderRowItem: ListRenderItem<MediaLibrary.Asset> = ({ item }) => {
