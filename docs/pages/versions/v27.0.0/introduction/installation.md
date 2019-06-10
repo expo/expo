@@ -18,7 +18,7 @@ npm install -g expo-cli
 
 ## Mobile Client: Expo for iOS and Android
 
-Expo Client helps view your projects while you're developing them. When you serve your project with Expo CLI, it generates a development URL that you can open in Expo Client to preview your app. On Android, Expo Client can also be used to view others' projects on [expo.io](https://expo.io). Expo Client works on devices, simulators, and emulators.
+Expo client helps view your projects while you're developing them. When you serve your project with Expo CLI, it generates a development URL that you can open in Expo client to preview your app. On Android, Expo client can also be used to view others' projects on [expo.io](https://expo.io). Expo client works on devices, simulators, and emulators.
 
 ### On your device
 
@@ -32,9 +32,9 @@ You don't need to manually install the Expo client on your emulator/simulator, b
 
 Install [Xcode through the Apple App Store](https://itunes.apple.com/app/xcode/id497799835). It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list.
 
-Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Expo Client to the simulator and open up your app inside of it.
+Once the simulator is open and you have a project open in XDE, you can press _Open on iOS simulator_ in XDE and it will install the Expo client to the simulator and open up your app inside of it.
 
-> **Not working?** Occasionally XDE will have trouble installing the Expo Client automatically, usually due to annoying small differences in your environment or Xcode toolchain. If you need to install the Expo Client on your simulator manually, you can follow these steps:
+> **Not working?** Occasionally XDE will have trouble installing the Expo client automatically, usually due to annoying small differences in your environment or Xcode toolchain. If you need to install the Expo client on your simulator manually, you can follow these steps:
 > 
 > - Download the [latest simulator build](http://expo.io/--/api/v2/versions/download-ios-simulator-build).
 > - Extract the contents of the archive: `mkdir Exponent-X.XX.X.app && tar xvf Exponent-X.XX.X.tar.gz -C Exponent-X.XX.X.app`. You should get a directory like `Exponent-X.XX.X.app`.
@@ -43,9 +43,9 @@ Once the simulator is open and you have a project open in XDE, you can press _Op
 
 ### Android emulator
 
-[Download Genymotion](https://www.genymotion.com/fun-zone/) (free version) and follow the [Genymotion installation guide](https://docs.genymotion.com/Content/01_Get_Started/Installation.htm). Once you've installed Genymotion, create a virtual device - we recommend a Nexus 5, the Android version is up to you. Start up the virtual device when it's ready.
+Follow our [Android Studio emulator guide](../../workflow/android-studio-emulator/) to set up Android tools and create a virtual device. Start up the virtual device when it's ready.
 
-Once the emulator is open and you have a project open in XDE, you can press _Open project in Expo on Android_ in XDE and it will install the Expo client to the emulator and open up your app inside of it. If you run into any issues follow our [Genymotion guide](../../workflow/genymotion/#genymotion).
+Once the emulator is open and you have a project open in Expo Dev Tools, you can press _Run on Android device/emulator_ in Expo Dev Tools and it will install the Expo client to the emulator and open up your app inside of it.
 
 ## Node.js
 

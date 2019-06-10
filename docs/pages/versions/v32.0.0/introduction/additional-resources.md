@@ -15,7 +15,6 @@ The following resources are useful for learning Expo and some of the projects th
 Cross-Platform Mobile Development](https://web.stanford.edu/class/cs47si/) (free)
 - [repl.it - React Native - Build your first app in the next 5 minutes](https://repl.it/site/react_native) (free)
 - [React Europe - Introduction to React Native Workshop videos on YouTube](https://www.youtube.com/playlist?list=PLCC436JpVnK2RFms3NG9ubPToWCNbMLbT) (free)
-- [Udemy - React Native: Advanced Concepts by Stephen Grider](https://www.udemy.com/react-native-advanced/) (paid)
 - [Udacity - React Nanodegree](https://www.udacity.com/course/react-nanodegree--nd019) (paid)
 
 ## React Native

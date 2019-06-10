@@ -2,6 +2,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
 
 buildscript {
   repositories {
@@ -12,7 +15,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0'
   }
 }
 
@@ -22,11 +25,11 @@ repositories {
 }
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
     versionName "1.0"
     ndk {
@@ -42,13 +45,6 @@ android {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
-  }
-}
-
-
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r224109'
   }
 }
 
@@ -74,16 +70,15 @@ dependencies {
   api 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   api 'expolib_v1.com.squareup.okio:okio:1.13.0'
   api 'expolib_v1.com.facebook.infer.annotation:infer-annotation:0.11.2'
-  api 'org.webkit:android-jsc:r224109'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api 'com.android.support:appcompat-v7:27.1.1'
-  api 'com.android.support:customtabs:27.1.1'
+  api "com.android.support:appcompat-v7:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:customtabs:${safeExtGet("supportLibVersion", "28.0.0")}"
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
-  api 'com.facebook.android:facebook-android-sdk:4.38.0'
+  api 'com.facebook.android:facebook-android-sdk:5.0.1'
   api('com.facebook.android:audience-network-sdk:4.99.0') {
     exclude module: 'play-services-ads'
   }
@@ -129,12 +124,12 @@ dependencies {
     exclude group: 'com.android.support', module: 'appcompat-v7'
   }
   api 'io.branch.sdk.android:library:2.17.1'
-  api 'com.android.support:exifinterface:27.1.1'
+  api "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
   api 'com.google.firebase:firebase-core:16.0.1'
   api 'com.google.firebase:firebase-messaging:17.1.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:8.4.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+  api 'com.jakewharton:butterknife:9.0.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-analytics-segment
@@ -157,9 +152,12 @@ dependencies {
   // expo-payments-stripe
   implementation 'com.stripe:stripe-android:8.1.0'
   implementation 'com.github.tipsi:CreditCardEntry:1.5.0'
-  implementation project(':expo-gl-cpp')
-  implementation project(':expo-print')
+
+  // expo-location
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
+
+  implementation project(':expo-gl-cpp')
+  implementation project(':expo-print')
 }

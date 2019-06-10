@@ -31,6 +31,12 @@ UM_EXPORT_MODULE(ExpoTaskManager);
   return @[@protocol(UMTaskManagerInterface)];
 }
 
+- (instancetype)init
+{
+  return [self initWithExperienceId:@"mainApplication"];
+}
+
+// TODO: Remove when adding bare React Native support
 - (instancetype)initWithExperienceId:(NSString *)experienceId
 {
   if (self = [super init]) {

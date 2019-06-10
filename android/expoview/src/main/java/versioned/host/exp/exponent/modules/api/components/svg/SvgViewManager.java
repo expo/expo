@@ -11,6 +11,7 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 
 import android.util.SparseArray;
 
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.view.ReactViewGroup;
@@ -27,9 +28,19 @@ class SvgViewManager extends ReactViewManager {
     private static final String REACT_CLASS = "RNSVGSvgView";
 
     private static final SparseArray<SvgView> mTagToSvgView = new SparseArray<>();
+    private static final SparseArray<Runnable> mTagToRunnable = new SparseArray<>();
 
     static void setSvgView(int tag, SvgView svg) {
         mTagToSvgView.put(tag, svg);
+        Runnable task = mTagToRunnable.get(tag);
+        if (task != null) {
+            task.run();
+            mTagToRunnable.delete(tag);
+        }
+    }
+
+    static void runWhenViewIsAvailable(int tag, Runnable task) {
+        mTagToRunnable.put(tag, task);
     }
 
     static @Nullable SvgView getSvgViewByTag(int tag) {
@@ -89,13 +100,13 @@ class SvgViewManager extends ReactViewManager {
     }
 
     @ReactProp(name = "bbWidth")
-    public void setVbWidth(SvgView node, String bbWidth) {
-        node.setVbWidth(bbWidth);
+    public void setBbWidth(SvgView node, Dynamic bbWidth) {
+        node.setBbWidth(bbWidth);
     }
 
     @ReactProp(name = "bbHeight")
-    public void setVbHeight(SvgView node, String bbHeight) {
-        node.setVbHeight(bbHeight);
+    public void setBbHeight(SvgView node, Dynamic bbHeight) {
+        node.setBbHeight(bbHeight);
     }
 
     @ReactProp(name = "align")

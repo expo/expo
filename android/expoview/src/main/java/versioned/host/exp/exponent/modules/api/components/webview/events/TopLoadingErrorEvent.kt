@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * Event emitted when there is an error in loading.
  */
 class TopLoadingErrorEvent(viewId: Int, private val mEventData: WritableMap) :
-    Event<TopLoadingErrorEvent>(viewId) {
+        Event<TopLoadingErrorEvent>(viewId) {
     companion object {
         const val EVENT_NAME = "topLoadingError"
     }
@@ -20,6 +20,6 @@ class TopLoadingErrorEvent(viewId: Int, private val mEventData: WritableMap) :
     override fun getCoalescingKey(): Short = 0
 
     override fun dispatch(rctEventEmitter: RCTEventEmitter) =
-        rctEventEmitter.receiveEvent(viewTag, eventName, mEventData)
+            rctEventEmitter.receiveEvent(viewTag, eventName, mEventData)
 
 }

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { Playback, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
-import { FullscreenUpdateEvent, NativeProps, NaturalSize, Props, ReadyForDisplayEvent, ResizeMode, State } from './Video.types';
-export { NaturalSize };
+import { ExponentVideoComponent, FullscreenUpdateEvent, NativeProps, NaturalSize, VideoProps, ReadyForDisplayEvent, ResizeMode, VideoState } from './Video.types';
+export { ExponentVideoComponent, FullscreenUpdateEvent, NativeProps, NaturalSize, VideoProps, ReadyForDisplayEvent, ResizeMode, VideoState, };
 export declare const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export declare const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export declare const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -11,7 +11,7 @@ export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
-export default class Video extends React.Component<Props, State> implements Playback {
+export default class Video extends React.Component<VideoProps, VideoState> implements Playback {
     static RESIZE_MODE_CONTAIN: ResizeMode;
     static RESIZE_MODE_COVER: ResizeMode;
     static RESIZE_MODE_STRETCH: ResizeMode;
@@ -38,6 +38,13 @@ export default class Video extends React.Component<Props, State> implements Play
         accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
+        isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
+        hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
+        tvParallaxProperties?: PropTypes.Validator<import("react-native").TVParallaxProperties | undefined> | undefined;
+        tvParallaxShiftDistanceX?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxShiftDistanceY?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxTiltAngle?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxMagnification?: PropTypes.Validator<number | undefined> | undefined;
         onStartShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onMoveShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onResponderEnd?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
@@ -75,6 +82,7 @@ export default class Video extends React.Component<Props, State> implements Play
         posterSource: PropTypes.Requireable<number | PropTypes.InferProps<{
             uri: PropTypes.Requireable<string>;
         }>>;
+        posterStyle: PropTypes.Validator<import("react-native").StyleProp<import("react-native").ViewStyle>> | undefined;
         onPlaybackStatusUpdate: PropTypes.Requireable<(...args: any[]) => any>;
         onLoadStart: PropTypes.Requireable<(...args: any[]) => any>;
         onLoad: PropTypes.Requireable<(...args: any[]) => any>;
@@ -110,7 +118,7 @@ export default class Video extends React.Component<Props, State> implements Play
         rotation: PropTypes.Requireable<number>;
     };
     _nativeRef: React.RefObject<React.Component<NativeProps, any, any> & import("react-native").NativeMethodsMixinStatic>;
-    constructor(props: Props);
+    constructor(props: VideoProps);
     setNativeProps(nativeProps: NativeProps): void;
     _handleNewStatus: (status: PlaybackStatus) => void;
     _performOperationAndHandleStatusAsync: (operation: (tag: number) => Promise<PlaybackStatus>) => Promise<PlaybackStatus>;

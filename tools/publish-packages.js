@@ -4,10 +4,11 @@ const os = require('os');
 const path = require('path');
 const chalk = require('chalk');
 const fs = require('fs-extra');
+const JsonFile = require('@expo/json-file').default;
 const shell = require('shelljs');
 const semver = require('semver');
 const inquirer = require('inquirer');
-const { Modules } = require('xdl');
+const { Modules } = require('@expo/xdl');
 const argv = require('minimist')(process.argv.slice(2));
 
 const defaultOptions = {
@@ -28,12 +29,7 @@ const ROOT_DIR = path.dirname(__dirname);
 const SED = os.platform() === 'linux' ? 'sed' : 'gsed';
 
 // configs for other packages that are not unimodules
-const otherPackages = [
-  {
-    libName: 'expo',
-    dir: `${ROOT_DIR}/packages/expo`,
-  },
-];
+const otherPackages = [{ libName: 'expo' }, { libName: 'jest-expo' }];
 
 // list of teams owning the packages - script will ensure all of these teams are owning published packages
 const TEAMS_WITH_RW_ACCESS = [
@@ -64,13 +60,33 @@ function _trimExpoDirectory(dir) {
 async function _runPipelineAsync(pipeline, publishConfigs, options) {
   for (const action of pipeline) {
     for (const [libName, publishConfig] of publishConfigs) {
-      shell.cd(publishConfig.dir);
+      const runAction = async () => {
+        try {
+          shell.cd(publishConfig.dir);
 
-      const newConfig = await action(publishConfig, publishConfigs, options);
+          const newConfig = await action(publishConfig, publishConfigs, options);
 
-      if (newConfig) {
-        publishConfigs.set(libName, { ...publishConfig, ...newConfig });
-      }
+          if (newConfig) {
+            publishConfigs.set(libName, { ...publishConfig, ...newConfig });
+          }
+        } catch (e) {
+          console.log(
+            chalk.red(`Pipeline failed for package ${chalk.green(libName)} with reason:`),
+            chalk.gray(e.stack),
+          );
+          const select = await _selectPromptAsync(
+            `Do you want to (s)kip this package or (e)xit?`,
+            ['s', 'e']
+          );
+
+          if (select === 's') {
+            publishConfigs.delete(libName);
+          } else {
+            return process.exit(1);
+          }
+        }
+      };
+      await runAction();
     }
   }
 }
@@ -398,7 +414,11 @@ async function _preparePublishAsync({ libName, dir }, allConfigs, options) {
   };
 }
 
-async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, packageJson }, allConfigs, options) {
+async function _bumpVersionsAsync(
+  { libName, dir, newVersion, shouldPublish, packageJson, isNativeModule, config },
+  allConfigs,
+  options
+) {
   if (!shouldPublish) {
     return;
   }
@@ -468,6 +488,19 @@ async function _bumpVersionsAsync({ libName, dir, newVersion, shouldPublish, pac
         `in ${chalk.magenta('android/build.gradle')}`
       );
     }
+  }
+
+  if (isNativeModule && (config.android.includeInExpoClient || config.ios.includeInExpoClient)) {
+    await JsonFile.setAsync(
+      path.join(ROOT_DIR, 'packages/expo/bundledNativeModules.json'),
+      libName,
+      `~${newVersion}`
+    );
+    console.log(
+      chalk.yellow('>'),
+      `Updated package version in`,
+      chalk.magenta('packages/expo/bundledNativeModules.json')
+    );
   }
 
   console.log(chalk.yellow('>'), `Updated package version in ${chalk.magenta('package.json')}`);
@@ -599,6 +632,8 @@ async function _gitCommitAsync(allConfigs) {
     // Add expoview's build.gradle in which the dependencies were updated
     _runCommand(`git add ${ROOT_DIR}/android/expoview/build.gradle`);
 
+    _runCommand(`git add ${ROOT_DIR}/packages/expo/bundledNativeModules.json`);
+
     _runCommand(`git commit -m "${message}" -m "${description}"`);
   }
 }
@@ -694,7 +729,7 @@ async function publishPackagesAsync() {
   const { exp: { sdkVersion } } = JSON.parse(await fs.readFile('../package.json'));
 
   const publishConfigs = new Map();
-  const modules = Modules.getPublishableModules(argv.abi || sdkVersion).map(module => {
+  const modules = Modules.getPublishableModules(argv.abi || sdkVersion).concat(...otherPackages).map(module => {
     const dir = `${ROOT_DIR}/packages/${module.libName}`;
     const unimoduleConfig = _requireUnimoduleConfig(dir);
 
@@ -704,9 +739,6 @@ async function publishPackagesAsync() {
       dir,
     };
   });
-
-  // add other packages that are not unimodules (e.g. expo)
-  modules.push(...otherPackages);
 
   modules.forEach(module => {
     publishConfigs.set(module.libName, module);

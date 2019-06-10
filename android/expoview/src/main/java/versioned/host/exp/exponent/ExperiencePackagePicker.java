@@ -49,6 +49,7 @@ import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
 
 public class ExperiencePackagePicker {
@@ -96,6 +97,7 @@ public class ExperiencePackagePicker {
       new SpeechPackage(),
       new StripePackage(),
       new TaskManagerPackage(),
+      new VideoThumbnailsPackage(),
       new WebBrowserPackage()
   );
 

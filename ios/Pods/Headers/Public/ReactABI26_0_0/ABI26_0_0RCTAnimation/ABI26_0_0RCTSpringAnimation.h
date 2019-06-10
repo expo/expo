@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI26_0_0/Libraries/NativeAnimation/Drivers/ABI26_0_0RCTSpringAnimation.h

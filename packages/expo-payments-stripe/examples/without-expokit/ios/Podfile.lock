@@ -1,90 +1,90 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
-  - EXCore (1.2.0)
-  - EXFontInterface (1.1.0):
-    - EXCore
-  - EXImageLoaderInterface (1.1.0):
-    - EXCore
-  - EXPaymentsStripe (1.1.0):
-    - EXCore
+  - EXPaymentsStripe (5.0.0-rc.0):
     - Stripe (~> 13.2.0)
-  - EXPermissions (1.2.0):
-    - EXCore
-    - EXPermissionsInterface
-  - EXPermissionsInterface (1.2.0):
-    - EXCore
-  - EXReactNativeAdapter (1.2.0):
-    - EXCore
-    - EXFontInterface
-    - React
-  - Folly (2016.10.31.00):
+    - UMCore
+  - EXPermissions (5.0.0-rc.0):
+    - UMCore
+    - UMPermissionsInterface
+  - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - React (0.57.5):
-    - React/Core (= 0.57.5)
-  - React/ART (0.57.5):
+  - React (0.59.8):
+    - React/Core (= 0.59.8)
+  - React/ART (0.59.8):
     - React/Core
-  - React/Core (0.57.5):
-    - yoga (= 0.57.5.React)
-  - React/CxxBridge (0.57.5):
-    - Folly (= 2016.10.31.00)
+  - React/Core (0.59.8):
+    - yoga (= 0.59.8.React)
+  - React/CxxBridge (0.59.8):
+    - Folly (= 2018.10.22.00)
     - React/Core
     - React/cxxreact
-  - React/cxxreact (0.57.5):
+    - React/jsiexecutor
+  - React/cxxreact (0.59.8):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
-    - React/jschelpers
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
     - React/jsinspector
-  - React/DevSupport (0.57.5):
+  - React/DevSupport (0.59.8):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.57.5)
-  - React/jschelpers (0.57.5):
-    - Folly (= 2016.10.31.00)
-    - React/PrivateDatabase
-  - React/jsinspector (0.57.5)
-  - React/PrivateDatabase (0.57.5)
-  - React/RCTActionSheet (0.57.5):
+  - React/fishhook (0.59.8)
+  - React/jsi (0.59.8):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+  - React/jsiexecutor (0.59.8):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React/cxxreact
+    - React/jsi
+  - React/jsinspector (0.59.8)
+  - React/RCTActionSheet (0.59.8):
     - React/Core
-  - React/RCTAnimation (0.57.5):
+  - React/RCTAnimation (0.59.8):
     - React/Core
-  - React/RCTBlob (0.57.5):
+  - React/RCTBlob (0.59.8):
     - React/Core
-  - React/RCTCameraRoll (0.57.5):
+  - React/RCTCameraRoll (0.59.8):
     - React/Core
     - React/RCTImage
-  - React/RCTGeolocation (0.57.5):
+  - React/RCTGeolocation (0.59.8):
     - React/Core
-  - React/RCTImage (0.57.5):
+  - React/RCTImage (0.59.8):
     - React/Core
     - React/RCTNetwork
-  - React/RCTLinkingIOS (0.57.5):
+  - React/RCTLinkingIOS (0.59.8):
     - React/Core
-  - React/RCTNetwork (0.57.5):
+  - React/RCTNetwork (0.59.8):
     - React/Core
-  - React/RCTText (0.57.5):
+  - React/RCTText (0.59.8):
     - React/Core
-  - React/RCTVibration (0.57.5):
+  - React/RCTVibration (0.59.8):
     - React/Core
-  - React/RCTWebSocket (0.57.5):
+  - React/RCTWebSocket (0.59.8):
     - React/Core
     - React/fishhook
     - React/RCTBlob
   - Stripe (13.2.0)
-  - yoga (0.57.5.React)
+  - UMCore (2.0.0-rc.0)
+  - UMFontInterface (2.0.0-rc.0)
+  - UMImageLoaderInterface (2.0.0-rc.0)
+  - UMPermissionsInterface (2.0.0-rc.0)
+  - UMReactNativeAdapter (2.0.0-rc.0):
+    - React
+    - UMCore
+    - UMFontInterface
+  - yoga (0.59.8.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - EXCore (from `../node_modules/expo-core/ios`)
-  - EXFontInterface (from `../node_modules/expo-font-interface/ios`)
-  - EXImageLoaderInterface (from `../node_modules/expo-image-loader-interface/ios`)
   - EXPaymentsStripe (from `../node_modules/expo-payments-stripe/ios`)
   - EXPermissions (from `../node_modules/expo-permissions/ios`)
-  - EXPermissionsInterface (from `../node_modules/expo-permissions-interface/ios`)
-  - EXReactNativeAdapter (from `../node_modules/expo-react-native-adapter/ios`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - React/ART (from `../node_modules/react-native`)
@@ -101,6 +101,11 @@ DEPENDENCIES:
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - "UMCore (from `../node_modules/@unimodules/core/ios`)"
+  - UMFontInterface (from `../node_modules/unimodules-font-interface/ios`)
+  - UMImageLoaderInterface (from `../node_modules/unimodules-image-loader-interface/ios`)
+  - UMPermissionsInterface (from `../node_modules/unimodules-permissions-interface/ios`)
+  - "UMReactNativeAdapter (from `../node_modules/@unimodules/react-native-adapter/ios`)"
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -111,45 +116,45 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
-  EXCore:
-    :path: "../node_modules/expo-core/ios"
-  EXFontInterface:
-    :path: "../node_modules/expo-font-interface/ios"
-  EXImageLoaderInterface:
-    :path: "../node_modules/expo-image-loader-interface/ios"
   EXPaymentsStripe:
     :path: "../node_modules/expo-payments-stripe/ios"
   EXPermissions:
     :path: "../node_modules/expo-permissions/ios"
-  EXPermissionsInterface:
-    :path: "../node_modules/expo-permissions-interface/ios"
-  EXReactNativeAdapter:
-    :path: "../node_modules/expo-react-native-adapter/ios"
   Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../node_modules/react-native"
+  UMCore:
+    :path: "../node_modules/@unimodules/core/ios"
+  UMFontInterface:
+    :path: "../node_modules/unimodules-font-interface/ios"
+  UMImageLoaderInterface:
+    :path: "../node_modules/unimodules-image-loader-interface/ios"
+  UMPermissionsInterface:
+    :path: "../node_modules/unimodules-permissions-interface/ios"
+  UMReactNativeAdapter:
+    :path: "../node_modules/@unimodules/react-native-adapter/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
-  EXCore: 81304a0284b7f2e0f691b8a6bc642854e730f5e2
-  EXFontInterface: 06126ec4f6a67415426074c3383a82b241f087c1
-  EXImageLoaderInterface: 3f460f6ff344ba6c4e00621806c0d1d76249cd8f
-  EXPaymentsStripe: 2201b77ad9cff57f2a63996d4a9d260b3258b56d
-  EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
-  EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
-  EXReactNativeAdapter: 253efa069b53a6c8be7c3f2afd49ef6b4e97e902
-  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
-  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
-  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  EXPaymentsStripe: 8834dbffcbbdeddf7fbc839014b0dea900f90b45
+  EXPermissions: 332e6241b48d34a8363a78d87d90a20436a9eff9
+  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
+  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
+  React: 1d605e098d69bdf08960787f3446f0a9dc2e2ccf
   Stripe: 2c69e216061d54d9c538204bb4f58bd597ddfc5b
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+  UMCore: c057256783718d88e019597f70b14c7312b14d91
+  UMFontInterface: cb06a806e1f43acfee615bca477aac86d467aa4b
+  UMImageLoaderInterface: ce7c8dd0b4f11fc9a8571d4e8608fc0bae7b89a6
+  UMPermissionsInterface: 2a4e59492eb0a32410af28dff8d498ea4030deaf
+  UMReactNativeAdapter: b5ea1cc455cdb00114f6922d17bb64ca770a421f
+  yoga: 128daf064cacaede0c3bb27424b6b4c71052e6cd
 
-PODFILE CHECKSUM: 486dbf66f7f2e779ddf4a1afbf8eec1fd1a9870b
+PODFILE CHECKSUM: 9baf27fa6480443308a3ed6204fd7fd9c4e62e2e
 
 COCOAPODS: 1.5.3

@@ -121,7 +121,7 @@ static int ABI32_0_0YGDefaultLog(
 #endif
 
 bool ABI32_0_0YGFloatIsUndefined(const float value) {
-  return facebook::yoga::isUndefined(value);
+  return facebook::ABI32_0_0yoga::isUndefined(value);
 }
 
 const ABI32_0_0YGValue* ABI32_0_0YGComputedEdgeValue(
@@ -1087,7 +1087,7 @@ static void ABI32_0_0YGNodePrintInternal(
     const ABI32_0_0YGNodeRef node,
     const ABI32_0_0YGPrintOptions options) {
   std::string str;
-  facebook::yoga::ABI32_0_0YGNodeToString(&str, node, options, 0);
+  facebook::ABI32_0_0yoga::ABI32_0_0YGNodeToString(&str, node, options, 0);
   ABI32_0_0YGLog(node, ABI32_0_0YGLogLevelDebug, str.c_str());
 }
 

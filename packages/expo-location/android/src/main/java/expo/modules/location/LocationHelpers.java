@@ -114,6 +114,7 @@ public class LocationHelpers {
     return new LocationRequest()
         .setFastestInterval(locationParams.getInterval())
         .setInterval(locationParams.getInterval())
+        .setMaxWaitTime(locationParams.getInterval())
         .setSmallestDisplacement(locationParams.getDistance())
         .setPriority(mapAccuracyToPriority(accuracy));
   }

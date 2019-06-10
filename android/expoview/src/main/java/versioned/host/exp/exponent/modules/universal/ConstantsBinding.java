@@ -66,16 +66,20 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
+    constants.put("nativeAppVersion", Constants.VERSION_NAME);
+    constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
 
-    if (mExperienceProperties != null) {
-      constants.put("appOwnership", getAppOwnership());
-      constants.putAll(mExperienceProperties);
-    }
+    String appOwnership = getAppOwnership();
+
+    constants.put("appOwnership", appOwnership);
+    constants.putAll(mExperienceProperties);
 
     Map<String, Object> platform = new HashMap<>();
     Map<String, Object> androidPlatform = new HashMap<>();
 
-    androidPlatform.put("versionCode", Constants.ANDROID_VERSION_CODE);
+    Integer versionCode = appOwnership.equals("expo") ? null : Constants.ANDROID_VERSION_CODE;
+    androidPlatform.put("versionCode", versionCode);
+
     platform.put("android", androidPlatform);
     constants.put("platform", platform);
     constants.put("isDetached", Constants.isStandaloneApp());

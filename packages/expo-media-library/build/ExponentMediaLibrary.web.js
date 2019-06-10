@@ -16,7 +16,6 @@ export default {
     get SortBy() {
         return {
             default: 'default',
-            id: 'id',
             mediaType: 'mediaType',
             width: 'width',
             height: 'height',

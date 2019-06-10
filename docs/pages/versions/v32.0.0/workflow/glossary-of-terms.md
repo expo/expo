@@ -33,9 +33,9 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 The command-line tool for working with Expo. [Read more](../expo-cli/).
 
-### Expo Client
+### Expo client
 
-The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
 
 ### Expo Dev Tools
 
@@ -43,7 +43,7 @@ Expo Developer Tools is a web browser based UI included in [Expo CLI](#expo-cli)
 
 ### Expo SDK
 
-The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](../../sdk/). [Find it on Github](https://github.com/expo/expo-sdk).
+The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](../../sdk/overview/). [Find it on Github](https://github.com/expo/expo-sdk).
 
 ### ExpoKit
 

@@ -1,5 +1,5 @@
-import omit from 'lodash.omit';
-import pick from 'lodash.pick';
+import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 import React from 'react';
 import { NativeModules, UIManager, ViewPropTypes, requireNativeComponent } from 'react-native';
 
@@ -35,7 +35,8 @@ export function requireNativeViewManager<P = any>(viewName: string): React.Compo
   // manager
   const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
   const ReactNativeComponent = requireNativeComponent(reactNativeViewName);
-  const reactNativeUIConfiguration = UIManager[reactNativeViewName] || {
+  // @ts-ignore: UIManager.getViewManagerConfig is not declared
+  const reactNativeUIConfiguration = UIManager.getViewManagerConfig(reactNativeViewName) || {
     NativeProps: {},
     directEventTypes: {},
   };

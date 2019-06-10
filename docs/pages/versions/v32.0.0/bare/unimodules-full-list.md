@@ -75,6 +75,9 @@ import * as Font from 'expo-font';
 // GL View
 import { GLView } from 'expo-gl';
 
+// Google Sign In
+import * as GoogleSignIn from 'expo-google-sign-in';
+
 // Gyroscope
 import { Gyroscope } from 'expo-sensors';
 

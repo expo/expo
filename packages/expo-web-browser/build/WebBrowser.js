@@ -1,35 +1,61 @@
-import { Linking, Platform } from 'react-native';
+import { AppState, Linking, Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
 import ExponentWebBrowser from './ExpoWebBrowser';
+const emptyCustomTabsPackages = {
+    defaultBrowserPackage: undefined,
+    preferredBrowserPackage: undefined,
+    browserPackages: [],
+    servicePackages: [],
+};
 export async function getCustomTabsSupportingBrowsersAsync() {
     if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
         throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
     }
-    return ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+    if (Platform.OS !== 'android') {
+        return emptyCustomTabsPackages;
+    }
+    else {
+        return await ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync();
+    }
 }
 export async function warmUpAsync(browserPackage) {
-    if (!ExponentWebBrowser.mayInitWithUrlAsync) {
+    if (!ExponentWebBrowser.warmUpAsync) {
         throw new UnavailabilityError('WebBrowser', 'warmUpAsync');
     }
-    return ExponentWebBrowser.warmUpAsync(browserPackage);
+    if (Platform.OS !== 'android') {
+        return {};
+    }
+    else {
+        return await ExponentWebBrowser.warmUpAsync(browserPackage);
+    }
 }
 export async function mayInitWithUrlAsync(url, browserPackage) {
     if (!ExponentWebBrowser.mayInitWithUrlAsync) {
         throw new UnavailabilityError('WebBrowser', 'mayInitWithUrlAsync');
     }
-    return ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
+    if (Platform.OS !== 'android') {
+        return {};
+    }
+    else {
+        return await ExponentWebBrowser.mayInitWithUrlAsync(url, browserPackage);
+    }
 }
 export async function coolDownAsync(browserPackage) {
     if (!ExponentWebBrowser.coolDownAsync) {
         throw new UnavailabilityError('WebBrowser', 'coolDownAsync');
     }
-    return ExponentWebBrowser.coolDownAsync(browserPackage);
+    if (Platform.OS !== 'android') {
+        return {};
+    }
+    else {
+        return await ExponentWebBrowser.coolDownAsync(browserPackage);
+    }
 }
 export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
     }
-    return ExponentWebBrowser.openBrowserAsync(url, browserParams);
+    return await ExponentWebBrowser.openBrowserAsync(url, browserParams);
 }
 export function dismissBrowser() {
     if (!ExponentWebBrowser.dismissBrowser) {
@@ -38,15 +64,14 @@ export function dismissBrowser() {
     ExponentWebBrowser.dismissBrowser();
 }
 export async function openAuthSessionAsync(url, redirectUrl) {
-    if (_authSessionIsNativelySupported()) {
-        if (!ExponentWebBrowser.openAuthSessionAsync) {
-            throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
-        }
-        return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
-    }
-    else {
-        return _openAuthSessionPolyfillAsync(url, redirectUrl);
-    }
+    // if (_authSessionIsNativelySupported()) {
+    //   if (!ExponentWebBrowser.openAuthSessionAsync) {
+    //     throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
+    //   }
+    //   return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
+    // } else {
+    return _openAuthSessionPolyfillAsync(url, redirectUrl);
+    // }
 }
 export function dismissAuthSession() {
     if (_authSessionIsNativelySupported()) {
@@ -71,21 +96,59 @@ function _authSessionIsNativelySupported() {
     return versionNumber >= 11;
 }
 let _redirectHandler = null;
+let _onWebBrowserCloseAndroid = null;
+function _onAppStateChangeAndroid(state) {
+    if (state === 'active' && _onWebBrowserCloseAndroid) {
+        _onWebBrowserCloseAndroid();
+    }
+}
+async function _openBrowserAndWaitAndroidAsync(startUrl) {
+    let appStateChangedToActive = new Promise(resolve => {
+        _onWebBrowserCloseAndroid = resolve;
+        AppState.addEventListener('change', _onAppStateChangeAndroid);
+    });
+    let result = { type: 'cancel' };
+    let { type } = await openBrowserAsync(startUrl);
+    if (type === 'opened') {
+        await appStateChangedToActive;
+        result = { type: 'dismiss' };
+    }
+    AppState.removeEventListener('change', _onAppStateChangeAndroid);
+    _onWebBrowserCloseAndroid = null;
+    return result;
+}
 async function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
     if (_redirectHandler) {
         throw new Error(`The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`);
     }
+    if (_onWebBrowserCloseAndroid) {
+        throw new Error(`WebBrowser is already open, only one can be open at a time`);
+    }
     try {
-        return await Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]);
+        if (Platform.OS === 'android') {
+            return await Promise.race([
+                _openBrowserAndWaitAndroidAsync(startUrl),
+                _waitForRedirectAsync(returnUrl),
+            ]);
+        }
+        else {
+            return await Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]);
+        }
     }
     finally {
-        dismissBrowser();
-        if (!_redirectHandler) {
-            throw new Error(`The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`);
+        // We can't dismiss the browser on Android, only call this when it's available
+        if (ExponentWebBrowser.dismissBrowser) {
+            ExponentWebBrowser.dismissBrowser();
         }
-        Linking.removeEventListener('url', _redirectHandler);
-        _redirectHandler = null;
+        _stopWaitingForRedirect();
     }
+}
+function _stopWaitingForRedirect() {
+    if (!_redirectHandler) {
+        throw new Error(`The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`);
+    }
+    Linking.removeEventListener('url', _redirectHandler);
+    _redirectHandler = null;
 }
 function _waitForRedirectAsync(returnUrl) {
     return new Promise(resolve => {

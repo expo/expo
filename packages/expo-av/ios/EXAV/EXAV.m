@@ -29,8 +29,6 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 @interface EXAV ()
 
-@property (nonatomic, strong) NSString *experienceId;
-
 @property (nonatomic, weak) id kernelAudioSessionManagerDelegate;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 
@@ -41,6 +39,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @property (nonatomic, assign) EXAudioInterruptionMode audioInterruptionMode;
 @property (nonatomic, assign) BOOL playsInSilentMode;
 @property (nonatomic, assign) BOOL allowsAudioRecording;
+@property (nonatomic, assign) BOOL staysActiveInBackground;
 
 @property (nonatomic, assign) int soundDictionaryKeyCount;
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, EXAVPlayerData *> *soundDictionary;
@@ -62,10 +61,9 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 UM_EXPORT_MODULE(ExponentAV);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)init
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
     _audioIsEnabled = YES;
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
     _isBackgrounded = NO;
@@ -73,6 +71,7 @@ UM_EXPORT_MODULE(ExponentAV);
     _audioInterruptionMode = EXAudioInterruptionModeMixWithOthers;
     _playsInSilentMode = false;
     _allowsAudioRecording = false;
+    _staysActiveInBackground = false;
     
     _soundDictionaryKeyCount = 0;
     _soundDictionary = [NSMutableDictionary new];
@@ -105,11 +104,6 @@ UM_EXPORT_MODULE(ExponentAV);
            };
 }
 
-- (NSString *)experienceId
-{
-  return _experienceId;
-}
-
 #pragma mark - Expo experience lifecycle
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
@@ -117,14 +111,14 @@ UM_EXPORT_MODULE(ExponentAV);
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] unregisterAppLifecycleListener:self];
   _moduleRegistry = moduleRegistry;
   _kernelAudioSessionManagerDelegate = [_moduleRegistry getSingletonModuleForName:@"AudioSessionManager"];
-  [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
+//  [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
 
 }
 
 - (void)onAppForegrounded
 {
-  [_kernelAudioSessionManagerDelegate scopedModuleDidForeground:self];
+  [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   _isBackgrounded = NO;
   
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
@@ -135,12 +129,14 @@ UM_EXPORT_MODULE(ExponentAV);
 - (void)onAppBackgrounded
 {
   _isBackgrounded = YES;
-  [self _deactivateAudioSession]; // This will pause all players and stop all recordings
-  
-  [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-    [exAVObject appDidBackground];
-  }];
-  [_kernelAudioSessionManagerDelegate scopedModuleDidBackground:self];
+  if (!_staysActiveInBackground) {
+    [self _deactivateAudioSession]; // This will pause all players and stop all recordings
+
+    [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
+      [exAVObject appDidBackground];
+    }];
+    [_kernelAudioSessionManagerDelegate moduleDidBackground:self];
+  }
 }
 
 #pragma mark - RCTEventEmitter
@@ -189,6 +185,8 @@ UM_EXPORT_MODULE(ExponentAV);
     return UMErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and duckOthers == true cannot be set on iOS.");
   } else if (!playsInSilentMode && allowsRecording) {
     return UMErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and allowsRecording == true cannot be set on iOS.");
+  } else if (!playsInSilentMode && shouldPlayInBackground) {
+    return UMErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and staysActiveInBackground == true cannot be set on iOS.");
   } else {
     if (!allowsRecording) {
       if (_audioRecorder && [_audioRecorder isRecording]) {
@@ -199,6 +197,7 @@ UM_EXPORT_MODULE(ExponentAV);
     _playsInSilentMode = playsInSilentMode;
     _audioInterruptionMode = interruptionMode;
     _allowsAudioRecording = allowsRecording;
+    _staysActiveInBackground = shouldPlayInBackground;
     
     if (_currentAudioSessionMode != EXAVAudioSessionModeInactive) {
       return [self _updateAudioSessionCategoryForAudioSessionMode:[self _getAudioSessionModeRequired]];
@@ -240,7 +239,7 @@ UM_EXPORT_MODULE(ExponentAV);
     return nil;
   }
 
-  return [_kernelAudioSessionManagerDelegate setCategory:requiredAudioCategory withOptions:requiredAudioCategoryOptions forScopedModule:self];
+  return [_kernelAudioSessionManagerDelegate setCategory:requiredAudioCategory withOptions:requiredAudioCategoryOptions forModule:self];
 }
 
 - (EXAVAudioSessionMode)_getAudioSessionModeRequired
@@ -270,7 +269,7 @@ UM_EXPORT_MODULE(ExponentAV);
   if (!_audioIsEnabled) {
     return UMErrorWithMessage(@"Expo Audio is disabled, so the audio session could not be activated.");
   }
-  if (_isBackgrounded && ![_kernelAudioSessionManagerDelegate isActiveForScopedModule:self]) {
+  if (_isBackgrounded && ![_kernelAudioSessionManagerDelegate isActiveForModule:self]) {
     return UMErrorWithMessage(@"This experience is currently in the background, so the audio session could not be activated.");
   }
   
@@ -287,7 +286,7 @@ UM_EXPORT_MODULE(ExponentAV);
     return error;
   }
 
-  error = [_kernelAudioSessionManagerDelegate setActive:YES forScopedModule:self];
+  error = [_kernelAudioSessionManagerDelegate setActive:YES forModule:self];
   if (error) {
     return error;
   }
@@ -310,7 +309,7 @@ UM_EXPORT_MODULE(ExponentAV);
     [_audioRecorder pause];
   }
   
-  NSError *error = [_kernelAudioSessionManagerDelegate setActive:NO forScopedModule:self];
+  NSError *error = [_kernelAudioSessionManagerDelegate setActive:NO forModule:self];
 
   if (!error) {
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
@@ -404,7 +403,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 {
   // TODO check that the bridge is still valid after the dispatch
   // TODO check if the queues are ok
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] addUIBlock:^(id view) {
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXVideoView class]]) {
       block(view);
     } else {
@@ -858,7 +857,8 @@ UM_EXPORT_METHOD_AS(unloadAudioRecorder,
 
 - (void)dealloc
 {
-  [_kernelAudioSessionManagerDelegate scopedModuleWillDeallocate:self];
+  [_kernelAudioSessionManagerDelegate moduleWillDeallocate:self];
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] unregisterAppLifecycleListener:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   // This will clear all @properties and deactivate the audio session:

@@ -1,9 +1,15 @@
 import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash.mapvalues';
+import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
-import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
+import {
+  CapturedPicture,
+  NativeProps,
+  PictureOptions,
+  Props,
+  RecordingOptions,
+} from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
 
@@ -47,19 +53,23 @@ function ensureRecordingOptions(options?: RecordingOptions): RecordingOptions {
   return recordingOptions;
 }
 
-function ensureNativeProps(options?: Props): Props {
+function ensureNativeProps(options?: Props): NativeProps {
   let props = options || {};
 
   if (!props || typeof props !== 'object') {
     props = {};
   }
 
-  const newProps = mapValues(props, convertProp);
+  const newProps: NativeProps = mapValues(props, convertProp);
 
   const propsKeys = Object.keys(newProps);
   // barCodeTypes is deprecated
   if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
+    console.warn(
+      `The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`
+    );
     newProps.barCodeScannerSettings = {
+      // @ts-ignore
       barCodeTypes: newProps.barCodeTypes,
     };
   }

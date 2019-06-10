@@ -10,7 +10,7 @@
 
 @implementation EXLinearGradientManager
 
-UM_EXPORT_MODULE(EXLinearGradientManager);
+UM_EXPORT_MODULE(ExpoLinearGradientManager);
 
 - (NSString *)viewName
 {

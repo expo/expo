@@ -1,15 +1,9 @@
+import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { View, ViewPropTypes, findNodeHandle } from 'react-native';
-import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
+import { findNodeHandle, ViewPropTypes } from 'react-native';
 
-type Props = {
-  tint: BlurTint;
-  intensity: number;
-} & React.ComponentProps<typeof View>;
-type BlurTint = 'light' | 'dark' | 'default';
-
-type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
+import { BlurTint, ComponentOrHandle, Props } from './BlurView.types';
 
 export default class BlurView extends React.Component<Props> {
   static propTypes = {
@@ -37,7 +31,13 @@ export default class BlurView extends React.Component<Props> {
 
   render() {
     let { style, ...props } = this.props;
-    return <NativeBlurView {...props} ref={this._setNativeRef} style={[style, { backgroundColor: 'transparent' }]} />;
+    return (
+      <NativeBlurView
+        {...props}
+        ref={this._setNativeRef}
+        style={[style, { backgroundColor: 'transparent' }]}
+      />
+    );
   }
 }
 

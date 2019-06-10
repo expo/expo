@@ -26,13 +26,6 @@ typedef enum EXPermissionStatus {
 
 @end
 
-@protocol EXPermissionsScopedModuleDelegate
-
-- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId;
-- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
-
-@end
-
 @protocol EXPermissionsModule
 
 - (dispatch_queue_t)methodQueue;

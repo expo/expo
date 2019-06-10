@@ -7,7 +7,9 @@ const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 
 type PedometerResult = { steps: number };
 type PedometerUpdateCallback = (result: PedometerResult) => void;
-type PedometerListener = { remove: () => void };
+export interface PedometerListener {
+  remove: () => void;
+}
 
 export function watchStepCount(callback: PedometerUpdateCallback): PedometerListener {
   return PedometerEventEmitter.addListener('Exponent.pedometerUpdate', callback);

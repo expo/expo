@@ -1,8 +1,8 @@
-module.exports = function(api) {
+module.exports = function(api, options) {
   const isWeb = api.caller(isTargetWeb);
 
   if (isWeb) {
-    return getWebConfig();
+    return getWebConfig(options.web);
   }
 
   return getNativeConfig();
@@ -25,7 +25,7 @@ function getNativeConfig() {
   };
 }
 
-function getWebConfig() {
+function getWebConfig(options = {}) {
   const defaultPlugins = [
     ['@babel/plugin-transform-flow-strip-types'],
     [
@@ -54,7 +54,8 @@ function getWebConfig() {
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
     ['@babel/plugin-transform-react-display-name'],
     ['@babel/plugin-transform-react-jsx-source'],
-  ];
+    options.transformImportExport && ['@babel/plugin-transform-modules-commonjs'],
+  ].filter(Boolean);
 
   return {
     comments: false,

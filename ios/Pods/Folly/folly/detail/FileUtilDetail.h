@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cerrno>
 
 #include <folly/portability/SysUio.h>
@@ -25,10 +26,11 @@
  * Helper functions and templates for FileUtil.cpp.  Declared here so
  * they can be unittested.
  */
-namespace folly { namespace fileutil_detail {
+namespace folly {
+namespace fileutil_detail {
 
 // Wrap call to f(args) in loop to retry on EINTR
-template<class F, class... Args>
+template <class F, class... Args>
 ssize_t wrapNoInt(F f, Args... args) {
   ssize_t r;
   do {
@@ -38,7 +40,9 @@ ssize_t wrapNoInt(F f, Args... args) {
 }
 
 inline void incr(ssize_t /* n */) {}
-inline void incr(ssize_t n, off_t& offset) { offset += n; }
+inline void incr(ssize_t n, off_t& offset) {
+  offset += off_t(n);
+}
 
 // Wrap call to read/pread/write/pwrite(fd, buf, count, offset?) to retry on
 // incomplete reads / writes.  The variadic argument magic is there to support
@@ -63,7 +67,7 @@ ssize_t wrapFull(F f, int fd, void* buf, size_t count, Offset... offset) {
     b += r;
     count -= r;
     incr(r, offset...);
-  } while (r != 0 && count);  // 0 means EOF
+  } while (r != 0 && count); // 0 means EOF
 
   return totalBytes;
 }
@@ -73,10 +77,10 @@ ssize_t wrapFull(F f, int fd, void* buf, size_t count, Offset... offset) {
 template <class F, class... Offset>
 ssize_t wrapvFull(F f, int fd, iovec* iov, int count, Offset... offset) {
   ssize_t totalBytes = 0;
-  size_t r;
+  ssize_t r;
   do {
     r = f(fd, iov, std::min<int>(count, kIovMax), offset...);
-    if (r == (size_t)-1) {
+    if (r == -1) {
       if (errno == EINTR) {
         continue;
       }
@@ -84,14 +88,14 @@ ssize_t wrapvFull(F f, int fd, iovec* iov, int count, Offset... offset) {
     }
 
     if (r == 0) {
-      break;  // EOF
+      break; // EOF
     }
 
     totalBytes += r;
     incr(r, offset...);
     while (r != 0 && count != 0) {
-      if (r >= iov->iov_len) {
-        r -= iov->iov_len;
+      if (r >= ssize_t(iov->iov_len)) {
+        r -= ssize_t(iov->iov_len);
         ++iov;
         --count;
       } else {
@@ -105,4 +109,5 @@ ssize_t wrapvFull(F f, int fd, iovec* iov, int count, Offset... offset) {
   return totalBytes;
 }
 
-}}  // namespaces
+} // namespace fileutil_detail
+} // namespace folly

@@ -1,6 +1,7 @@
 import ExpoDocumentPicker from './ExpoDocumentPicker';
 
 import { GetDocumentOptions, DocumentResult } from './types';
+export { DocumentResult };
 
 export async function getDocumentAsync({
   type = '*/*',

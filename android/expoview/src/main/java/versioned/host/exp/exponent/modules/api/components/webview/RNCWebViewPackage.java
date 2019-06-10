@@ -1,4 +1,3 @@
-
 package versioned.host.exp.exponent.modules.api.components.webview;
 
 import com.facebook.react.ReactPackage;
@@ -11,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class RNCWebViewPackage implements ReactPackage {
-
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     return Collections.<NativeModule>singletonList(new RNCWebViewModule(reactContext));

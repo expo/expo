@@ -4,9 +4,13 @@ title: Camera
 
 A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
 
-> **Note**: Only one Camera preview is supported by Expo right now. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
+> **Note**: Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount previously rendered `Camera` component so next screens can use camera without issues.
+<br/>
 
 > **Note**: Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
+<br/>
+
+> **Note**: The Camera API will not work on simulators or emulators.
 
 Requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
 
@@ -183,7 +187,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
     -   **exif (_boolean_)** -- Whether to also include the EXIF data for the image.
     -   **onPictureSaved (_function_)** -- A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured. The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it is not your case, this callback lets you skip waiting for it to be saved.
     -   **skipProcessing (_boolean_)** - Android only. If set to `true`, camera skips orientation adjustment and returns an image straight from the device's camera. If enabled, `quality` option is discarded (processing pipeline is skipped as a whole). Although enabling this option reduces image delivery time significantly, it may cause the image to appear in a wrong orientation in the `Image` component (at the time of writing, it does not respect EXIF orientation of the images).
-    > **Note**: Enabling **skipProcessing** would cause orientation uncertainty. `Image` component does not respect EXIF stored orientation information, that means obtained image would be displayed wrongly (rotated by 90°, 180° or 270°). Different devices provide different orientations. For example some SonyExperia or Samosung devices don't provide correctly oriented images by default. To always obtain correctly oriented image disable **skipProcessing** option.
+    > **Note**: Enabling **skipProcessing** would cause orientation uncertainty. `Image` component does not respect EXIF stored orientation information, that means obtained image would be displayed wrongly (rotated by 90°, 180° or 270°). Different devices provide different orientations. For example some Sony Xperia or Samsung devices don't provide correctly oriented images by default. To always obtain correctly oriented image disable **skipProcessing** option.
 
 
 #### Returns

@@ -8,7 +8,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import "EXConstantsBinding.h"
 
 @implementation RCTConvert (NSCalendarUnit)
 
@@ -62,7 +62,7 @@ RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-  id<UMConstantsInterface> constants = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
+  EXConstantsBinding *constants = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
 
   if (![constants.appOwnership isEqualToString:@"standalone"]) {
     return reject(0, @"getDevicePushTokenAsync is only accessible within standalone applications", nil);

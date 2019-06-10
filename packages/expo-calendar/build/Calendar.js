@@ -1,6 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
+;
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -74,7 +75,7 @@ export async function getEventsAsync(calendarIds, startDate, endDate) {
     if (!calendarIds || !calendarIds.length) {
         throw new Error('getEventsAsync must be called with a non-empty array of calendarIds to search');
     }
-    return ExpoCalendar.getEventsAsync(startDate, endDate, calendarIds);
+    return ExpoCalendar.getEventsAsync(stringifyIfDate(startDate), stringifyIfDate(endDate), calendarIds);
 }
 export async function getEventAsync(id, { futureEvents = false, instanceStartDate } = {}) {
     if (!ExpoCalendar.getEventByIdAsync) {
@@ -110,7 +111,7 @@ export async function createEventAsync(calendarId, details = {}) {
         id: undefined,
         calendarId: calendarId === DEFAULT ? undefined : calendarId,
     };
-    return ExpoCalendar.saveEventAsync(newDetails, {});
+    return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
 export async function updateEventAsync(id, details = {}, { futureEvents = false, instanceStartDate } = {}) {
     if (!ExpoCalendar.saveEventAsync) {
@@ -130,7 +131,7 @@ export async function updateEventAsync(id, details = {}, { futureEvents = false,
         }
     }
     const newDetails = { ...details, id, instanceStartDate };
-    return ExpoCalendar.saveEventAsync(newDetails, { futureEvents });
+    return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), { futureEvents });
 }
 export async function deleteEventAsync(id, { futureEvents = false, instanceStartDate } = {}) {
     if (!ExpoCalendar.deleteEventAsync) {
@@ -206,7 +207,7 @@ export async function getRemindersAsync(calendarIds, status, startDate, endDate)
     if (!calendarIds || !calendarIds.length) {
         throw new Error('getRemindersAsync must be called with a non-empty array of calendarIds to search');
     }
-    return ExpoCalendar.getRemindersAsync(startDate || null, endDate || null, calendarIds, status || null);
+    return ExpoCalendar.getRemindersAsync(stringifyIfDate(startDate) || null, stringifyIfDate(endDate) || null, calendarIds, status || null);
 } // iOS
 export async function getReminderAsync(id) {
     if (!ExpoCalendar.getReminderByIdAsync) {
@@ -229,7 +230,7 @@ export async function createReminderAsync(calendarId, details = {}) {
         id: undefined,
         calendarId: calendarId === DEFAULT ? undefined : calendarId,
     };
-    return ExpoCalendar.saveReminderAsync(newDetails);
+    return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
 export async function updateReminderAsync(id, details = {}) {
     if (!ExpoCalendar.saveReminderAsync) {
@@ -242,7 +243,7 @@ export async function updateReminderAsync(id, details = {}) {
         console.warn('updateReminderAsync was called with one or more read-only properties, which will not be updated');
     }
     const newDetails = { ...details, id };
-    return ExpoCalendar.saveReminderAsync(newDetails);
+    return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
 export async function deleteReminderAsync(id) {
     if (!ExpoCalendar.deleteReminderAsync) {
@@ -391,4 +392,13 @@ export const ReminderStatus = {
     INCOMPLETE: 'incomplete',
 };
 export const DEFAULT = 'default';
+function stringifyIfDate(date) {
+    return date instanceof Date ? date.toISOString() : date;
+}
+function stringifyDateValues(obj) {
+    return Object.keys(obj).reduce((acc, key) => {
+        acc[key] = stringifyIfDate(obj[key]);
+        return acc;
+    }, {});
+}
 //# sourceMappingURL=Calendar.js.map

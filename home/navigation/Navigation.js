@@ -1,21 +1,19 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import {
   createAppContainer,
   createStackNavigator,
-  createSwitchNavigator,
   createBottomTabNavigator,
 } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
-import BackgroundLocationScreen from '../screens/BackgroundLocationScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
+import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SearchScreen from '../screens/SearchScreen';
@@ -25,6 +23,7 @@ import QRCodeScreen from '../screens/QRCodeScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
+import Environment from '../utils/Environment';
 
 import Colors from '../constants/Colors';
 import defaultNavigationOptions from './defaultNavigationOptions';
@@ -125,7 +124,7 @@ const ProfileStack = createStackNavigator(
 const DiagnosticsStack = createStackNavigator(
   {
     Diagnostics: DiagnosticsScreen,
-    BackgroundLocation: BackgroundLocationScreen,
+    Location: LocationDiagnosticsScreen,
     Geofencing: GeofencingScreen,
   },
   {
@@ -150,7 +149,7 @@ if (Platform.OS === 'android') {
     ProfileStack,
   };
 } else {
-  if (Constants.isDevice) {
+  if (Environment.IsIOSRestrictedBuild) {
     TabRoutes = {
       ProjectsStack,
       DiagnosticsStack,
@@ -168,7 +167,7 @@ if (Platform.OS === 'android') {
 const TabNavigator =
   Platform.OS === 'ios'
     ? createBottomTabNavigator(TabRoutes, {
-        initialRouteName: 'ProfileStack',
+        initialRouteName: Environment.IsIOSRestrictedBuild ? 'ProfileStack' : 'ProjectsStack',
         navigationOptions: {
           header: null,
         },

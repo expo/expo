@@ -8,14 +8,16 @@ const DIR_MAPPING = {
   introduction: 'Introduction',
   guides: 'Guides',
   'managed-workflow': 'Managed Workflow',
-  'bare': 'Essentials',
+  bare: 'Essentials',
   tutorials: 'Tutorials',
   sdk: 'Expo SDK',
   'react-native': 'React Native',
+
   // 'react-native-apis': 'React Native APIs',
   // 'react-native-components': 'React Native Components',
   // 'react-native-guides': 'React Native Guides',
   // 'react-native-basics': 'React Native Basics',
+
   workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
@@ -42,7 +44,7 @@ const generateNavLinks = (path_, arr) => {
       if (name === 'introduction') {
         let rootPath = path_.replace('./pages', '');
         // TODO: find what's eating the final slash
-        initArr.push({ name: 'Getting to know Expo', href: rootPath });
+        initArr.push({ name: 'Getting to know Expo', href: (rootPath + '//') });
       }
 
       arr.push({

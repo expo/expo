@@ -4,8 +4,9 @@ const gulp = require('gulp');
 const { resolve } = require('path');
 const shell = require('gulp-shell');
 const argv = require('minimist')(process.argv.slice(2));
-const { Modules } = require('xdl');
+const { Modules } = require('@expo/xdl');
 const chalk = require('chalk');
+const fs = require('fs-extra');
 
 const { saveKernelBundlesAsync } = require('./bundle-tasks');
 const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
@@ -15,6 +16,7 @@ const {
   versionReactNativeIOSFilesAsync,
 } = require('./ios-tasks');
 const updateVendoredNativeModule = require('./update-vendored-native-module');
+const outdatedVendoredNativeModules = require('./outdated-vendored-native-modules');
 const AndroidExpolib = require('./android-versioning/android-expolib');
 const androidVersionLibraries = require('./android-versioning/android-version-libraries');
 const { publishPackagesAsync } = require('./publish-packages');
@@ -35,17 +37,17 @@ function renameJNILibsWithABIArgument() {
 }
 
 function addVersionWithArguments() {
-  if (!argv.abi || !argv.root) {
-    throw new Error('Run with `--abi <abi version> --root <path to exponent project root>`');
+  if (!argv.abi) {
+    throw new Error('Run with `--abi <abi version> --root <path to expo project root>`');
   }
-  return addVersionAsync(argv.abi, argv.root);
+  return addVersionAsync(argv.abi, argv.root || '..');
 }
 
 function removeVersionWithArguments() {
-  if (!argv.abi || !argv.root) {
-    throw new Error('Run with `--abi <abi version> --root <path to exponent project root>`');
+  if (!argv.abi) {
+    throw new Error('Run with `--abi <abi version> --root <path to expo project root>`');
   }
-  return removeVersionAsync(argv.abi, argv.root);
+  return removeVersionAsync(argv.abi, argv.root || '..');
 }
 
 function versionIOSFilesWithArguments() {
@@ -119,51 +121,60 @@ gulp.task('ios-remove-version', removeVersionWithArguments);
 gulp.task('ios-version-files', versionIOSFilesWithArguments);
 
 // Update external dependencies
+gulp.task('outdated-native-dependencies', async () => {
+  const bundledNativeModules = JSON.parse(await fs.readFile('../packages/expo/bundledNativeModules.json', 'utf8'));
+  const isModuleLinked = async packageName => await fs.pathExists(`../packages/${packageName}/package.json`);
+  return await outdatedVendoredNativeModules({ bundledNativeModules, isModuleLinked });
+});
+
 gulp.task('update-react-native-svg', () => {
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-svg',
-    repoUrl: 'https://github.com/expo/react-native-svg.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-svg.git',
     sourceIosPath: 'ios',
     targetIosPath: 'Api/Components/Svg',
     sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
     targetAndroidPath: 'modules/api/components/svg',
     sourceAndroidPackage: 'com.horcrux.svg',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.svg',
+    installableInManagedApps: true,
   });
 });
 
-gulp.task('update-react-native-gesture-handler', () => {
-  console.log(
-    'If you are updating Android, then also run update-react-native-gesture-handler-lib afterwards'
-  );
+gulp.task('update-react-native-gesture-handler-code', () => {
   return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-gesture-handler',
-    repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
-    sourceIosPath: 'ios',
-    sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-    targetIosPath: 'Api/Components/GestureHandler',
-    targetAndroidPath: 'modules/api/components/gesturehandler/react',
-    sourceAndroidPackage: 'com.swmansion.gesturehandler.react',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler.react',
+      argv,
+      name: 'react-native-gesture-handler',
+      repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+      sourceIosPath: 'ios',
+      sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
+      targetIosPath: 'Api/Components/GestureHandler',
+      targetAndroidPath: 'modules/api/components/gesturehandler/react',
+      sourceAndroidPackage: 'com.swmansion.gesturehandler.react',
+      targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler.react',
+      installableInManagedApps: true,
+    });
   });
-});
 
-gulp.task('update-react-native-gesture-handler-lib', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-gesture-handler',
-    repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
-    sourceIosPath: 'ios',
-    targetIosPath: '',
-    sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
-    targetAndroidPath: 'modules/api/components/gesturehandler',
-    sourceAndroidPackage: 'com.swmansion.gesturehandler',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
-    skipCleanup: true,
+  gulp.task('update-react-native-gesture-handler-lib', () => {
+    return updateVendoredNativeModule({
+      argv,
+      name: 'react-native-gesture-handler-lib',
+      repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+      sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
+      targetAndroidPath: 'modules/api/components/gesturehandler',
+      sourceAndroidPackage: 'com.swmansion.gesturehandler',
+      targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+      installableInManagedApps: true,
+    });
   });
-});
+
+gulp.task('update-react-native-gesture-handler',
+  gulp.series(
+    'update-react-native-gesture-handler-lib',
+    'update-react-native-gesture-handler-code'
+  ));
 
 gulp.task('update-amazon-cognito-identity-js', () => {
   return updateVendoredNativeModule({
@@ -176,6 +187,7 @@ gulp.task('update-amazon-cognito-identity-js', () => {
     targetAndroidPath: 'modules/api/cognito',
     sourceAndroidPackage: 'com.amazonaws',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.cognito',
+    installableInManagedApps: false,
   });
 });
 
@@ -184,54 +196,27 @@ gulp.task('update-react-native-maps', async () => {
     await updateVendoredNativeModule({
       argv,
       name: 'react-native-google-maps',
-      repoUrl: 'https://github.com/expo/react-native-maps.git',
+      repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
       sourceIosPath: 'lib/ios/AirGoogleMaps',
       targetIosPath: 'Api/Components/GoogleMaps',
       sourceAndroidPath: '',
       targetAndroidPath: '',
       sourceAndroidPackage: '',
       targetAndroidPackage: '',
+      installableInManagedApps: true,
     });
   }
   return updateVendoredNativeModule({
     argv,
     name: 'react-native-maps',
-    repoUrl: 'https://github.com/expo/react-native-maps.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
     sourceIosPath: 'lib/ios/AirMaps',
     sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
     targetIosPath: 'Api/Components/Maps',
     targetAndroidPath: 'modules/api/components/maps',
     sourceAndroidPackage: 'com.airbnb.android.react.maps',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
-  });
-});
-
-gulp.task('update-tipsi-stripe', () => {
-  throw new Error('Not working yet, need to update updateVendoredNativeModule to support Optional');
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-tipsi-stripe',
-    repoUrl: 'https://github.com/jeff-da/tipsi-stripe',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Components/tipsi',
-    sourceAndroidPath: 'android/src/main/java/com/gettipsi/',
-    targetAndroidPath: 'modules/api/components/tipsi',
-    sourceAndroidPackage: 'com.gettipsi.stripe.StripeReactPackage',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.tipsi',
-  });
-});
-
-gulp.task('update-react-native-admob', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-admob',
-    repoUrl: 'https://github.com/expo/react-native-admob',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Components/admob',
-    sourceAndroidPath: 'android/src/main/java/com/sbugert/rnadmob/',
-    targetAndroidPath: 'modules/api/components/admob',
-    sourceAndroidPackage: 'com.sbugert.rnadmob',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.admob',
+    installableInManagedApps: true,
   });
 });
 
@@ -245,7 +230,7 @@ gulp.task('update-react-native-view-shot', () => {
     sourceIosPath: 'ios',
     sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
     targetIosPath: 'Api',
-    targetAndroidPath: 'modules/api',
+    targetAndroidPath: 'modules/api/viewshot',
     sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.viewshot',
   });
@@ -254,8 +239,8 @@ gulp.task('update-react-native-view-shot', () => {
 gulp.task('update-react-native-lottie', () => {
   return updateVendoredNativeModule({
     argv,
-    name: 'react-native-lottie',
-    repoUrl: 'https://github.com/expo/lottie-react-native.git',
+    name: 'lottie-react-native',
+    repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
     sourceIosPath: 'src/ios/LottieReactNative',
     iosPrefix: 'LRN',
     sourceAndroidPath:
@@ -264,35 +249,7 @@ gulp.task('update-react-native-lottie', () => {
     targetAndroidPath: 'modules/api/components/lottie',
     sourceAndroidPackage: 'com.airbnb.android.react.lottie',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.lottie',
-  });
-});
-
-gulp.task('update-react-native-fbads', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-fbads',
-    repoUrl: 'https://github.com/callstack-io/react-native-fbads.git',
-    sourceIosPath: 'src/ios',
-    targetIosPath: 'Api/FBAds',
-    sourceAndroidPath: 'src/android/src/main/java/io/callstack/react/fbads',
-    targetAndroidPath: 'modules/api/fbads',
-    sourceAndroidPackage: 'io.callstack.react.fbads',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.fbads',
-  });
-});
-
-gulp.task('update-react-native-branch', () => {
-  return updateVendoredNativeModule({
-    argv,
-    name: 'react-native-branch',
-    repoUrl: 'https://github.com/BranchMetrics/react-native-branch-deep-linking.git',
-    sourceIosPath: 'ios',
-    targetIosPath: 'Api/Standalone/Branch',
-    sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-    targetAndroidPath: 'modules/api/standalone/branch',
-    sourceAndroidPackage: 'io.branch.rnbranch',
-    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.standalone.branch',
-    recursive: false,
+    installableInManagedApps: true,
   });
 });
 
@@ -308,6 +265,7 @@ gulp.task('update-react-native-reanimated', () => {
     targetAndroidPath: 'modules/api/reanimated',
     sourceAndroidPackage: 'com.swmansion.reanimated',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.reanimated',
+    installableInManagedApps: true,
   });
 });
 
@@ -322,6 +280,7 @@ gulp.task('update-react-native-screens', () => {
     targetAndroidPath: 'modules/api/screens',
     sourceAndroidPackage: 'com.swmansion.rnscreens',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
+    installableInManagedApps: true,
   });
 });
 
@@ -337,6 +296,7 @@ gulp.task('update-react-native-webview', () => {
     targetAndroidPath: 'modules/api/components/webview',
     sourceAndroidPackage: 'com.reactnativecommunity.webview',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.webview',
+    installableInManagedApps: true,
   });
 });
 
@@ -351,6 +311,7 @@ gulp.task('update-react-native-netinfo', () => {
     targetAndroidPath: 'modules/api/netinfo',
     sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
+    installableInManagedApps: true,
   });
 });
 

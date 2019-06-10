@@ -1,6 +1,6 @@
 import { describeCrossPlatform } from 'jest-expo';
 import { NativeModules } from 'react-native';
-import ErrorRecovery from '../ErrorRecovery/ErrorRecovery';
+import * as ErrorRecovery from '../ErrorRecovery/ErrorRecovery';
 
 describeCrossPlatform('ErrorRecovery', () => {
   it('passes the recovery props to the native method', () => {

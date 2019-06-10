@@ -113,7 +113,9 @@ Cancel all scheduled notifications.
 
 ## Notification categories
 
-A notification category defines a set of actions with which a user may respond to the incoming notification. You can read more about it [here (for iOS)](https://developer.apple.com/documentation/usernotifications/unnotificationcategory) and [here (for Android)](https://developer.android.com/guide/topics/ui/notifiers/notifications#Actions).
+A notification category defines a set of actions with which a user may interact with and respond to the incoming notification. You can read more about categories [here (for iOS)](https://developer.apple.com/documentation/usernotifications/unnotificationcategory) and [here (for Android)](https://developer.android.com/guide/topics/ui/notifiers/notifications#Actions).
+
+Check out how to implement interactive Notifications in your app by taking a look at the code behind [this Snack](https://snack.expo.io/@documentation/interactivenotificationexample)
 
 ### `Notifications.createCategoryAsync(name: string, actions: ActionType[])`
 
@@ -169,6 +171,7 @@ An object used to describe the local notification that you would like to present
 -   **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
 -   **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
     -   **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
+    -   **count** (_optional_) (_number_) -- Number to display in the badge on the app icon. Specify zero to clear the badge.
 -   **android (_optional_) (_object_)** -- notification configuration specific to Android.
     -   **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
     -   **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.

@@ -36,8 +36,7 @@ function ensureContext(canvas, contextAttributes) {
     if (!canvas) {
         throw new CodedError('ERR_GL_INVALID', 'Attempting to use the GL context before it has been created.');
     }
-    const context = canvas.getContext('webgl2', contextAttributes) ||
-        canvas.getContext('webgl', contextAttributes) ||
+    const context = canvas.getContext('webgl', contextAttributes) ||
         canvas.getContext('webgl-experimental', contextAttributes) ||
         canvas.getContext('experimental-webgl', contextAttributes);
     invariant(context, 'Browser does not support WebGL');

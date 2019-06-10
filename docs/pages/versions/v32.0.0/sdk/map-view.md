@@ -40,18 +40,20 @@ If you have already integrated Google Sign In into your standalone app, this is 
   8.  Add your `android.package` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the Package name field.
   9.  Run `expo fetch:android:hashes`.
   10. Copy `Google Certificate Fingerprint` from the output from step 9 and insert it in the "SHA-1 certificate fingerprint" field.
-  11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
+  11. Copy the API key (the first text input on the page) into `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2). 
   12. Press `Save` and then rebuild the app like in step 1.
 
-Note that if you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
+**Note:** The API key can be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.android.config.googleMaps.apiKey`) if you'd prefer not to have it in your code directly.
+
+**Note:** If you've enabled Google Play's app signing service, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. You can do this by grabbing the signature from Play Console -> Your App -> Release management -> App signing, and then going to the [API Dashboard](https://console.developers.google.com/apis/) -> Credentials and adding the signature to your existing credential.
 
 ### Deploying Google Maps to a standalone app on iOS
 
-Apple Maps should just work with no extra configuration. For Google Maps, you can specify your own Google Maps API key using the `ios.config.googleMapsApiKey` [configuration](../../workflow/configuration#ios) in your project's app.json.
+Apple Maps should just work with no extra configuration. For Google Maps, you can specify your own Google Maps API key using the `ios.config.googleMapsApiKey` [configuration](../../workflow/configuration#ios) in your project's app.json. **Note:** This can also be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
 
 ### Deploying Google Maps to ExpoKit for iOS
 
-If you want to add MapView with Google Maps to an [ExpoKit](../../expokit) (ejected) project on iOS, you may need to manually provide a key by calling:
+If you want to add MapView with Google Maps to an [ExpoKit](../../expokit/overview/) (ejected) project on iOS, you may need to manually provide a key by calling:
 
 ```
 [GMSServices provideApiKey:@"your api key"]
@@ -84,4 +86,3 @@ To use this in web, add the following script to your `web/index.html`. This scri
   <!-- <body /> -->
 </html>
 ```
-

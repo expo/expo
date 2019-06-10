@@ -1,8 +1,10 @@
-import { Calendar } from 'expo';
+import * as Calendar from 'expo-calendar';
 import { Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
 
 import * as TestUtils from '../TestUtils';
+
+export const name = 'Calendar';
 
 async function createTestCalendarAsync(patch = {}) {
   return await Calendar.createCalendarAsync({
@@ -379,7 +381,9 @@ export async function test(t) {
 
         t.expect(updatedEvent).toBeDefined();
         t.expect(updatedEvent.id).toBe(eventId);
-        t.expect(updatedEvent.availability).toBe(Calendar.Availability.FREE);
+        t.expect([Calendar.Availability.FREE, Calendar.Availability.NOT_SUPPORTED]).toContain(
+          updatedEvent.availability
+        );
       });
 
       t.afterAll(async () => {

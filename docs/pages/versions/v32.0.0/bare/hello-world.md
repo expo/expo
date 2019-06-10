@@ -62,18 +62,7 @@ The iOS side is easiest, so let's do it first. Bare projects are initialized usi
 
 ### Android configuration
 
-There's not much context needed beyond what the README says here, all you have to do is add the package to the package list in `MainApplication.java`, like so:
-
-```java
-import expo.modules.webbrowser.WebBrowserPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new WebBrowserPackage()
-), Arrays.<SingletonModule>asList());
-```
-Now go ahead and run `react-native run-android`. Press the button, watch the browser open. Success! Happy times.
+You don't have to do anything, just run the project with `react-native run-android`. Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
 
 ## What now?
 

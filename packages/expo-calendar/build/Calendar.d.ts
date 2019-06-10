@@ -1,8 +1,8 @@
 declare type RecurringEventOptions = {
     futureEvents?: boolean;
-    instanceStartDate?: string;
+    instanceStartDate?: string | Date;
 };
-declare type Calendar = {
+export interface Calendar {
     id?: string;
     title?: string;
     sourceId?: string;
@@ -21,29 +21,29 @@ declare type Calendar = {
     isVisible?: boolean;
     isSynced?: boolean;
     accessLevel?: string;
-};
+}
 declare type Source = {
     id?: string;
     type?: string;
     name?: string;
     isLocalAccount?: boolean;
 };
-declare type Event = {
+export declare type Event = {
     id?: string;
     calendarId?: string;
     title?: string;
     location?: string;
-    creationDate?: string;
-    lastModifiedDate?: string;
+    creationDate?: string | Date;
+    lastModifiedDate?: string | Date;
     timeZone?: string;
     endTimeZone?: string;
     url?: string;
     notes?: string;
     alarms?: Alarm[];
     recurrenceRule?: RecurrenceRule;
-    startDate?: string;
-    endDate?: string;
-    originalStartDate?: string;
+    startDate?: string | Date;
+    endDate?: string | Date;
+    originalStartDate?: string | Date;
     isDetached?: boolean;
     allDay?: boolean;
     availability?: string;
@@ -57,23 +57,23 @@ declare type Event = {
     originalId?: string;
     instanceId?: string;
 };
-declare type Reminder = {
+export interface Reminder {
     id?: string;
     calendarId?: string;
     title?: string;
     location?: string;
-    creationDate?: string;
-    lastModifiedDate?: string;
+    creationDate?: string | Date;
+    lastModifiedDate?: string | Date;
     timeZone?: string;
     url?: string;
     notes?: string;
     alarms?: Alarm[];
     recurrenceRule?: RecurrenceRule;
-    startDate?: string;
-    dueDate?: string;
+    startDate?: string | Date;
+    dueDate?: string | Date;
     completed?: boolean;
-    completionDate?: string;
-};
+    completionDate?: string | Date;
+}
 declare type Attendee = {
     id?: string;
     isCurrentUser?: boolean;

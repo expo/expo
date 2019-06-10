@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/EXSensors/ABI30_0_0EXSensors/Modules/SensorModules/ABI30_0_0EXBaseSensorModule.h

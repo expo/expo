@@ -47,6 +47,10 @@ return @(OP); \
             @"sqrt": REA_SINGLE(sqrt(a)),
             @"sin": REA_SINGLE(sin(a)),
             @"cos": REA_SINGLE(cos(a)),
+            @"tan": REA_SINGLE(tan(a)),
+            @"acos": REA_SINGLE(acos(a)),
+            @"asin": REA_SINGLE(asin(a)),
+            @"atan": REA_SINGLE(atan(a)),
             @"exp": REA_SINGLE(exp(a)),
             @"round": REA_SINGLE(round(a)),
 

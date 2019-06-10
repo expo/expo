@@ -1,7 +1,10 @@
 ---
-name: "🐛 Bug Report in Expo SDK"
+name: "\U0001F41B Bug Report in Expo SDK"
 about: You want to report a reproducible bug or regression in Expo SDK.
-labels: 'project: sdk'
+title: ''
+labels: 'bug'
+assignees: ''
+
 ---
 
 ## 🐛 Bug Report

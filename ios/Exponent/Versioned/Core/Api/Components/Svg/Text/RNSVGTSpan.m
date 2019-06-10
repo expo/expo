@@ -17,13 +17,15 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 @implementation RNSVGTSpan
 {
     CGFloat startOffset;
-    CGPathRef _cache;
     CGFloat _pathLength;
     RNSVGTextPath *textPath;
     NSArray *lengths;
     NSArray *lines;
     NSUInteger lineCount;
     BOOL isClosed;
+    NSMutableArray *emoji;
+    NSMutableArray *emojiTransform;
+    CGFloat cachedAdvance;
 }
 
 - (id)init
@@ -34,7 +36,16 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
         RNSVGTSpan_separators = [NSCharacterSet whitespaceCharacterSet];
     }
 
+    emoji = [NSMutableArray arrayWithCapacity:0];
+    emojiTransform = [NSMutableArray arrayWithCapacity:0];
+
     return self;
+}
+
+- (void)clearPath
+{
+    [super clearPath];
+    cachedAdvance = NAN;
 }
 
 - (void)setContent:(NSString *)content
@@ -49,6 +60,21 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 - (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
     if (self.content) {
+        if (self.path) {
+            NSUInteger count = [emoji count];
+            RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
+            CGFloat fontSize = [gc getFontSize];
+            for (NSUInteger i = 0; i < count; i++) {
+                UILabel *label = [emoji objectAtIndex:i];
+                NSValue *transformValue = [emojiTransform objectAtIndex:i];
+                CGAffineTransform transform = [transformValue CGAffineTransformValue];
+                CGContextConcatCTM(context, transform);
+                CGContextTranslateCTM(context, 0, -fontSize);
+                [label.layer renderInContext:context];
+                CGContextTranslateCTM(context, 0, fontSize);
+                CGContextConcatCTM(context, CGAffineTransformInvert(transform));
+            }
+        }
         [self renderPathTo:context rect:rect];
     } else {
         [self clip:context];
@@ -56,22 +82,11 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     }
 }
 
-- (void)releaseCachedPath
-{
-    CGPathRelease(_cache);
-    _cache = nil;
-    self.path = nil;
-}
-
-- (void)dealloc
-{
-    CGPathRelease(_cache);
-}
-
 - (CGPathRef)getPath:(CGContextRef)context
 {
-    if (_cache) {
-        return _cache;
+    CGPathRef path = self.path;
+    if (path) {
+        return path;
     }
 
     NSString *text = self.content;
@@ -83,13 +98,76 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 
     [self pushGlyphContext];
 
-    CGPathRef path = [self getLinePath:text context:context];
+    path = [self getLinePath:text context:context];
 
-    _cache = CGPathRetain(CFAutorelease(CGPathCreateCopy(path)));
+    self.path = CGPathRetain(path);
 
     [self popGlyphContext];
 
     return path;
+}
+
+- (CGFloat)getSubtreeTextChunksTotalAdvance
+{
+    if (!isnan(cachedAdvance)) {
+        return cachedAdvance;
+    }
+    CGFloat advance = 0;
+
+    NSString *str = self.content;
+    if (!str) {
+        for (UIView *node in self.subviews) {
+            if ([node isKindOfClass:[RNSVGText class]]) {
+                RNSVGText *text = (RNSVGText*)node;
+                advance += [text getSubtreeTextChunksTotalAdvance];
+            }
+        }
+        cachedAdvance = advance;
+        return advance;
+    }
+
+    // Create a dictionary for this font
+    CTFontRef fontRef = [self getFontFromContext];
+    RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
+    RNSVGFontData* font = [gc getFont];
+
+    CGFloat letterSpacing = font->letterSpacing;
+    CGFloat kerning = font->kerning;
+
+    bool allowOptionalLigatures = letterSpacing == 0 && font->fontVariantLigatures == RNSVGFontVariantLigaturesNormal;
+
+    NSMutableDictionary *attrs = [[NSMutableDictionary alloc] init];
+
+    NSNumber *lig = [NSNumber numberWithInt:allowOptionalLigatures ? 2 : 1];
+    attrs[NSLigatureAttributeName] = lig;
+    CFDictionaryRef attributes;
+    if (fontRef != nil) {
+        attrs[NSFontAttributeName] = (__bridge id)fontRef;
+    }
+    float kern = (float)(letterSpacing + kerning);
+    NSNumber *kernAttr = [NSNumber numberWithFloat:kern];
+
+#if DTCORETEXT_SUPPORT_NS_ATTRIBUTES
+    if (___useiOS6Attributes)
+    {
+        [attrs setObject:kernAttr forKey:NSKernAttributeName];
+    }
+    else
+#endif
+    {
+        [attrs setObject:kernAttr forKey:(id)kCTKernAttributeName];
+    }
+
+    attributes = (__bridge CFDictionaryRef)attrs;
+
+    CFStringRef string = (__bridge CFStringRef)str;
+    CFAttributedStringRef attrString = CFAttributedStringCreate(kCFAllocatorDefault, string, attributes);
+    CTLineRef line = CTLineCreateWithAttributedString(attrString);
+
+    CGRect textBounds = CTLineGetBoundsWithOptions(line, 0);
+    CGFloat textMeasure = CGRectGetWidth(textBounds);
+    cachedAdvance = textMeasure;
+    return textMeasure;
 }
 
 - (CGPathRef)getLinePath:(NSString *)str context:(CGContextRef)context
@@ -284,8 +362,8 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
      attributes, such as a ‘dx’ attribute value on a ‘tspan’ element.
      */
     enum RNSVGTextAnchor textAnchor = font->textAnchor;
-    CGRect textBounds = CTLineGetBoundsWithOptions(line, 0);
-    CGFloat textMeasure = CGRectGetWidth(textBounds);
+    RNSVGText *anchorRoot = [self getTextAnchorRoot];
+    CGFloat textMeasure = [anchorRoot getSubtreeTextChunksTotalAdvance];
     CGFloat offset = [RNSVGTSpan getTextAnchorOffset:textAnchor width:textMeasure];
 
     bool hasTextPath = textPath != nil;
@@ -670,6 +748,9 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
         }
     }
 
+    [emoji removeAllObjects];
+    [emojiTransform removeAllObjects];
+
     CFArrayRef runs = CTLineGetGlyphRuns(line);
     CFIndex runEnd = CFArrayGetCount(runs);
     for (CFIndex r = 0; r < runEnd; r++) {
@@ -764,8 +845,10 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 
                 //  Glyphs whose midpoint-on-the-path are off the path are not rendered.
                 if (midPoint > endOfRendering) {
+                    CGPathRelease(glyphPath);
                     continue;
                 } else if (midPoint < startOfRendering) {
+                    CGPathRelease(glyphPath);
                     continue;
                 }
 
@@ -839,6 +922,9 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
                 [label.layer renderInContext:context];
                 CGContextTranslateCTM(context, 0, fontSize);
                 CGContextConcatCTM(context, CGAffineTransformInvert(transform));
+
+                [emoji addObject:label];
+                [emojiTransform addObject:[NSValue valueWithCGAffineTransform:transform]];
             } else {
                 transform = CGAffineTransformScale(transform, 1.0, -1.0);
                 CGPathAddPath(path, &transform, glyphPath);

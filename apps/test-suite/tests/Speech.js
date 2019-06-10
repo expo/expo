@@ -1,12 +1,13 @@
 'use strict';
 
-import { Speech } from 'expo';
-import { Platform } from 'react-native';
+import * as Speech from 'expo-speech';
+import { Platform, NativeModules } from 'react-native';
 
 import { waitFor } from './helpers';
 
 export const name = 'Speech';
 
+const { ExponentTest } = NativeModules;
 const longTextToSpeak = 'One ring to rule them all.';
 const shortTextToSpeak = 'Hi!';
 
@@ -17,7 +18,7 @@ const shortTextToSpeak = 'Hi!';
 
 export function test(t) {
   // NOTE(2018-03-08): These tests are failing on iOS; disable for CI
-  const unreliablyDescribe = Platform.OS === 'ios' ? t.xdescribe : t.describe;
+  const unreliablyDescribe = Platform.OS === 'ios' && ExponentTest.isInCI ? t.xdescribe : t.describe;
   unreliablyDescribe('Speech', () => {
     t.describe('Speech.speak()', () => {
       t.it('calls onStart', async () => {

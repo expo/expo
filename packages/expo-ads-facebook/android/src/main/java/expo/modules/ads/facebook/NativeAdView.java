@@ -9,11 +9,11 @@ import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
-
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.services.EventEmitter;
+
+import java.lang.ref.WeakReference;
+import java.util.List;
 
 public class NativeAdView extends ViewGroup {
   /**
@@ -77,10 +77,15 @@ public class NativeAdView extends ViewGroup {
     mEventEmitter.emit(getId(), "onAdLoaded", event);
   }
 
+  public NativeAd getNativeAd() {
+    return mNativeAd;
+  }
+
   public void registerViewsForInteraction(MediaView mediaView, AdIconView adIconView, List<View> clickableViews) {
+    mMediaView = new WeakReference<>(mediaView);
+
     clickableViews.add(mediaView);
     mNativeAd.registerViewForInteraction(this, mediaView, adIconView, clickableViews);
-    mMediaView = new WeakReference<>(mediaView);
   }
 
   public void triggerClick() {

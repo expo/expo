@@ -1,8 +1,9 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-navigation';
-import { BaseButton, State } from 'react-native-gesture-handler';
+import { BaseButton } from 'react-native-gesture-handler';
 import Colors from '../constants/Colors';
+import Environment from '../utils/Environment';
 
 class ShadowButton extends React.Component {
   state = {
@@ -46,7 +47,7 @@ class ShadowButton extends React.Component {
   }
 }
 
-export default class DiagnosticsScren extends React.Component {
+export default class DiagnosticsScreen extends React.Component {
   static navigationOptions = {
     title: 'Diagnostics',
   };
@@ -55,28 +56,57 @@ export default class DiagnosticsScren extends React.Component {
     return (
       <View style={{ flex: 1, backgroundColor: Colors.greyBackground }}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
-          <ShadowButton onPress={() => this.props.navigation.navigate('BackgroundLocation')}>
-            <Text style={styles.titleText}>Background location</Text>
-            <Text style={styles.bodyText}>
-              On iOS it's possible to track your location when an app is backgrounded or even
-              closed. This diagnostic allows you to see what options are available, see the output,
-              and test the functionality on your device. None of the location data will leave your
-              device.
-            </Text>
-          </ShadowButton>
-          <ShadowButton onPress={() => this.props.navigation.navigate('Geofencing')}>
-            <Text style={styles.titleText}>Geofencing</Text>
-            <Text style={styles.bodyText}>
-              You can fire actions when your device enters specific geographical regions represented
-              by a longitude, latitude, and a radius. This diagnostic lets you experiment with
-              Geofencing using regions that you specify and shows you the data that is made
-              available. None of the data will leave your device.
-            </Text>
-          </ShadowButton>
+          {Environment.IsIOSRestrictedBuild ? (
+            <ForegroundLocationDiagnostic navigation={this.props.navigation} />
+          ) : (
+            <BackgroundLocationDiagnostic navigation={this.props.navigation} />
+          )}
+          <GeofencingDiagnostic navigation={this.props.navigation} />
         </ScrollView>
       </View>
     );
   }
+}
+
+function BackgroundLocationDiagnostic(props) {
+  return (
+    <ShadowButton onPress={() => props.navigation.navigate('Location')}>
+      <Text style={styles.titleText}>Background location</Text>
+      <Text style={styles.bodyText}>
+        On iOS it's possible to track your location when an app is foregrounded, backgrounded, or
+        even closed. This diagnostic allows you to see what options are available, see the output,
+        and test the functionality on your device. None of the location data will leave your device.
+      </Text>
+    </ShadowButton>
+  );
+}
+
+function ForegroundLocationDiagnostic(props) {
+  return (
+    <ShadowButton onPress={() => props.navigation.navigate('Location')}>
+      <Text style={styles.titleText}>Location (when app in use)</Text>
+      <Text style={styles.bodyText}>
+        On iOS, there are different permissions for tracking your location. This diagnostic allows
+        you to see what options are available and test the functionality on your device while you
+        are using the app (background location is available only in standalone apps). None of the
+        location data will leave your device.
+      </Text>
+    </ShadowButton>
+  );
+}
+
+function GeofencingDiagnostic(props) {
+  return (
+    <ShadowButton onPress={() => props.navigation.navigate('Geofencing')}>
+      <Text style={styles.titleText}>Geofencing</Text>
+      <Text style={styles.bodyText}>
+        You can fire actions when your device enters specific geographical regions represented by a
+        longitude, latitude, and a radius. This diagnostic lets you experiment with Geofencing using
+        regions that you specify and shows you the data that is made available. None of the data
+        will leave your device.
+      </Text>
+    </ShadowButton>
+  );
 }
 
 const styles = StyleSheet.create({

@@ -1,6 +1,10 @@
 ---
 name: "❓ Questions and discussions"
 about: You have a question about Expo or want to discuss some aspects of Expo.
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 <!--

@@ -57,6 +57,12 @@ export default {
         const { browser, engine, os: OS } = parser.getResult();
         return browser.name || engine.name || OS.name || undefined;
     },
+    get nativeAppVersion() {
+        return null;
+    },
+    get nativeBuildVersion() {
+        return null;
+    },
     get systemFonts() {
         // TODO: Bacon: Maybe possible.
         return [];

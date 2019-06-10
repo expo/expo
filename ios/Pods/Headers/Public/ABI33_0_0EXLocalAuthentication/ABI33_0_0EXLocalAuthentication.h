@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI33_0_0/EXLocalAuthentication/ABI33_0_0EXLocalAuthentication/ABI33_0_0EXLocalAuthentication.h

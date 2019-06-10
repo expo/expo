@@ -152,7 +152,7 @@
     backgroundImageResizeMode = ([splash[@"resizeMode"] isEqualToString:@"cover"]) ? RCTResizeModeCover : RCTResizeModeContain;
     
     NSString *imageUrl;
-    if (splash[@"tabletImageUrl"]) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && splash[@"tabletImageUrl"]) {
       imageUrl = splash[@"tabletImageUrl"];
     } else if (splash[@"imageUrl"]) {
       imageUrl = splash[@"imageUrl"];

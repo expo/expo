@@ -3,6 +3,8 @@ id: asyncstorage
 title: AsyncStorage
 ---
 
+> **Deprecated.** Use [react-native-community/react-native-async-storage](https://github.com/react-native-community/react-native-async-storage) instead.
+
 `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value storage system that is global to the app. It should be used instead of LocalStorage.
 
 It is recommended that you use an abstraction on top of `AsyncStorage` instead of `AsyncStorage` directly for anything more than light usage since it operates globally.
@@ -16,7 +18,7 @@ Importing the `AsyncStorage` library:
 
 ```javascript
 
-import { AsyncStorage } from "react-native"
+import {AsyncStorage} from 'react-native';
 
 ```
 
@@ -32,7 +34,7 @@ _storeData = async () => {
   } catch (error) {
     // Error saving data
   }
-}
+};
 
 ```
 
@@ -52,24 +54,24 @@ _retrieveData = async () => {
   } catch (error) {
     // Error retrieving data
   }
-}
+};
 
 ```
 
 
 ### Methods
 
-* [`getItem`](../asyncstorage/#getitem)
-* [`setItem`](../asyncstorage/#setitem)
-* [`removeItem`](../asyncstorage/#removeitem)
-* [`mergeItem`](../asyncstorage/#mergeitem)
-* [`clear`](../asyncstorage/#clear)
-* [`getAllKeys`](../asyncstorage/#getallkeys)
-* [`flushGetRequests`](../asyncstorage/#flushgetrequests)
-* [`multiGet`](../asyncstorage/#multiget)
-* [`multiSet`](../asyncstorage/#multiset)
-* [`multiRemove`](../asyncstorage/#multiremove)
-* [`multiMerge`](../asyncstorage/#multimerge)
+- [`getItem`](../asyncstorage/#getitem)
+- [`setItem`](../asyncstorage/#setitem)
+- [`removeItem`](../asyncstorage/#removeitem)
+- [`mergeItem`](../asyncstorage/#mergeitem)
+- [`clear`](../asyncstorage/#clear)
+- [`getAllKeys`](../asyncstorage/#getallkeys)
+- [`flushGetRequests`](../asyncstorage/#flushgetrequests)
+- [`multiGet`](../asyncstorage/#multiget)
+- [`multiSet`](../asyncstorage/#multiset)
+- [`multiRemove`](../asyncstorage/#multiremove)
+- [`multiMerge`](../asyncstorage/#multimerge)
 
 ---
 
@@ -94,7 +96,7 @@ Fetches an item for a `key` and invokes a callback upon completion. Returns a `P
 | Name     | Type                                      | Required | Description                                                       |
 | -------- | ----------------------------------------- | -------- | ----------------------------------------------------------------- |
 | key      | string                                    | Yes      | Key of the item to fetch.                                         |
-| callback | ?(error: ?Error, result: ?string) => void | No       | Function that will be called with a result if found or any error. |
+| callback | ?(error: ?Error, result: ?string) =\> void | No       | Function that will be called with a result if found or any error. |
 
 ---
 
@@ -116,7 +118,7 @@ Sets the value for a `key` and invokes a callback upon completion. Returns a `Pr
 | -------- | ------------------------ | -------- | -------------------------------------------- |
 | key      | string                   | Yes      | Key of the item to set.                      |
 | value    | string                   | Yes      | Value to set for the `key`.                  |
-| callback | ?(error: ?Error) => void | No       | Function that will be called with any error. |
+| callback | ?(error: ?Error) =\> void | No       | Function that will be called with any error. |
 
 ---
 
@@ -137,7 +139,7 @@ Removes an item for a `key` and invokes a callback upon completion. Returns a `P
 | Name     | Type                     | Required | Description                                  |
 | -------- | ------------------------ | -------- | -------------------------------------------- |
 | key      | string                   | Yes      | Key of the item to remove.                   |
-| callback | ?(error: ?Error) => void | No       | Function that will be called with any error. |
+| callback | ?(error: ?Error) =\> void | No       | Function that will be called with any error. |
 
 ---
 
@@ -161,7 +163,7 @@ Merges an existing `key` value with an input value, assuming both values are str
 | -------- | ------------------------ | -------- | -------------------------------------------- |
 | key      | string                   | Yes      | Key of the item to modify.                   |
 | value    | string                   | Yes      | New value to merge for the `key`.            |
-| callback | ?(error: ?Error) => void | No       | Function that will be called with any error. |
+| callback | ?(error: ?Error) =\> void | No       | Function that will be called with any error. |
 
 Example:
 
@@ -212,7 +214,7 @@ Erases _all_ `AsyncStorage` for all clients, libraries, etc. You probably don't 
 
 | Name     | Type                     | Required | Description                                  |
 | -------- | ------------------------ | -------- | -------------------------------------------- |
-| callback | ?(error: ?Error) => void | No       | Function that will be called with any error. |
+| callback | ?(error: ?Error) =\> void | No       | Function that will be called with any error. |
 
 ---
 
@@ -230,9 +232,9 @@ Gets _all_ keys known to your app; for all callers, libraries, etc. Returns a `P
 
 **Parameters:**
 
-| Name     | Type                                           | Required | Description                                                |
-| -------- | ---------------------------------------------- | -------- | ---------------------------------------------------------- |
-| callback | ?(error: ?Error, keys: ?Array\<string\>) => void | No       | Function that will be called the keys found and any error. |
+| Name     | Type                                           | Required | Description                                                     |
+| -------- | ---------------------------------------------- | -------- | --------------------------------------------------------------- |
+| callback | ?(error: ?Error, keys: ?Array\<string\>) =\> void | No       | Function that will be called with all keys found and any error. |
 
 ---
 
@@ -277,7 +279,7 @@ The method returns a `Promise` object.
 | Name     | Type                                                            | Required | Description                                                                                                         |
 | -------- | --------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
 | keys     | Array\<string\>                                                   | Yes      | Array of key for the items to get.                                                                                  |
-| callback | ?(errors: ?Array\<Error\>, result: ?Array\<Array\<string\>\>) => void | No       | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
+| callback | ?(errors: ?Array\<Error\>, result: ?Array\<Array\<string\>\>) =\> void | No       | Function that will be called with a key-value array of the results, plus an array of any key-specific errors found. |
 
 Example:
 
@@ -326,7 +328,7 @@ The method returns a `Promise` object.
 | Name          | Type                             | Required | Description                                                                  |
 | ------------- | -------------------------------- | -------- | ---------------------------------------------------------------------------- |
 | keyValuePairs | Array\<Array\<string\>\>             | Yes      | Array of key-value array for the items to set.                               |
-| callback      | ?(errors: ?Array\<Error\>) => void | No       | Function that will be called with an array of any key-specific errors found. |
+| callback      | ?(errors: ?Array\<Error\>) =\> void | No       | Function that will be called with an array of any key-specific errors found. |
 
 ---
 
@@ -347,7 +349,7 @@ Call this to batch the deletion of all keys in the `keys` array. Returns a `Prom
 | Name     | Type                             | Required | Description                                                             |
 | -------- | -------------------------------- | -------- | ----------------------------------------------------------------------- |
 | keys     | Array\<string\>                    | Yes      | Array of key for the items to delete.                                   |
-| callback | ?(errors: ?Array\<Error\>) => void | No       | Function that will be called an array of any key-specific errors found. |
+| callback | ?(errors: ?Array\<Error\>) =\> void | No       | Function that will be called an array of any key-specific errors found. |
 
 Example:
 
@@ -384,7 +386,7 @@ Batch operation to merge in existing and new values for a given set of keys. Thi
 | Name          | Type                             | Required | Description                                                                  |
 | ------------- | -------------------------------- | -------- | ---------------------------------------------------------------------------- |
 | keyValuePairs | Array\<Array\<string\>\>             | Yes      | Array of key-value array for the items to merge.                             |
-| callback      | ?(errors: ?Array\<Error\>) => void | No       | Function that will be called with an array of any key-specific errors found. |
+| callback      | ?(errors: ?Array\<Error\>) =\> void | No       | Function that will be called with an array of any key-specific errors found. |
 
 Example:
 

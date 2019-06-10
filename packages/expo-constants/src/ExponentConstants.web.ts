@@ -67,6 +67,12 @@ export default {
 
     return browser.name || engine.name || OS.name || undefined;
   },
+  get nativeAppVersion(): null {
+    return null;
+  },
+  get nativeBuildVersion(): null {
+    return null;
+  },
   get systemFonts(): string[] {
     // TODO: Bacon: Maybe possible.
     return [];
