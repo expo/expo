@@ -1,24 +1,24 @@
-import React from 'react';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
+import React from 'react';
 import {
   ActivityIndicator,
   Button,
   Dimensions,
-  View,
-  Text,
-  StyleSheet,
   FlatList,
-  RefreshControl,
   ListRenderItem,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-import { NavigationEvents, NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
+import { NavigationEvents, NavigationScreenConfig, NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
+
 import HeadingText from '../../components/HeadingText';
-import Colors from '../../constants/Colors';
-import MediaLibraryCell from './MediaLibraryCell';
 import ProfileActions from '../../redux/ProfileActions';
 import Store from '../../redux/Store';
+import MediaLibraryCell from './MediaLibraryCell';
 
 const RNButton = Button;
 
@@ -55,24 +55,8 @@ interface State {
 
 @connect()
 export default class MediaLibraryScreen extends React.Component<NavigationScreenProps, State> {
-  static navigationOptions: NavigationScreenConfig<{}> = ({ navigation }) => {
-    const goToAlbums = () => navigation.navigate('MediaAlbums');
-    const clearAlbumSelection = () => navigation.setParams({ album: null });
-    const { params } = navigation.state;
-    const isAlbumSet = params && params.album;
-
-    return {
-      title: 'Choose a photo',
-      // headerRight: (
-      //   <View style={{ marginRight: 5 }}>
-      //     <RNButton
-      //       title={isAlbumSet ? 'Show all' : 'Albums'}
-      //       onPress={isAlbumSet ? clearAlbumSelection : goToAlbums}
-      //       color={Colors.tintColor}
-      //     />
-      //   </View>
-      // ),
-    };
+  static navigationOptions: NavigationScreenConfig<{}> = {
+    title: 'Choose a photo',
   };
 
   readonly state: State = {
@@ -186,33 +170,6 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
     );
   };
 
-  renderHeader = () => {
-    const album = this.getAlbum();
-
-    return null;
-
-    return (
-      <View style={styles.header}>
-        <HeadingText style={styles.headerText}>
-          {album ? `Album: ${album.title}` : 'All albums'}
-        </HeadingText>
-
-        <View style={styles.headerButtons}>
-          <Button
-            style={styles.button}
-            title={`Media type: ${this.state.mediaType}`}
-            onPress={this.toggleMediaType}
-          />
-          <Button
-            style={styles.button}
-            title={`Sort by key: ${this.state.sortBy}`}
-            onPress={this.toggleSortBy}
-          />
-        </View>
-      </View>
-    );
-  };
-
   renderFooter = () => {
     const { assets, refreshing, mediaType } = this.state;
 
@@ -259,7 +216,6 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
         onEndReachedThreshold={0.5}
         onEndReached={this.onEndReached}
         renderItem={this.renderRowItem}
-        ListHeaderComponent={this.renderHeader}
         ListFooterComponent={this.renderFooter}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={this.refresh} />}
       />
