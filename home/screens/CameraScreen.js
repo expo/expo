@@ -86,6 +86,11 @@ interface State {
 
 @withNavigation
 export default class CameraScreen extends React.Component {
+  static navigationOptions = Platform.select({
+    ios: { title: 'Take Photo' },
+    default: { header: null },
+  });
+
   state = {
     flash: 'off',
     zoom: 0,

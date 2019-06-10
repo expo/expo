@@ -222,17 +222,14 @@ export default class Profile extends React.Component {
     const verticalHeight = isOwnProfile ? 128 : 96;
     const imagePeek = 16;
     const imageSize = 64;
+    const fallbackImage = Asset.fromModule(require('../assets/banner-image.png')).localUri;
     return (
       <View
         style={[styles.header, { alignItems: 'stretch', padding: 12, paddingTop: verticalHeight }]}>
         <BannerPhoto
           style={{ height: verticalHeight + imagePeek }}
           scroll={this.scroll}
-          source={
-            isOwnProfile
-              ? { uri: image }
-              : { uri: Asset.fromModule(require('../assets/banner-image.png')).localUri }
-          }
+          source={isOwnProfile ? { uri: image || fallbackImage } : { uri: fallbackImage }}
         />
         <View
           style={{
