@@ -1,5 +1,4 @@
 import { Record } from 'immutable';
-import LocalStorage from '../storage/LocalStorage';
 
 const ProfileState = Record({
   image: null,
