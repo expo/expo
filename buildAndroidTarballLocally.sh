@@ -22,6 +22,7 @@ mkdir -p $TEMP_DIR/android/expoview/src/main/java/host/exp/exponent/generated/
 cd $TEMP_DIR/tools-public
 ./generate-dynamic-macros-android.sh
 rm -rf $TEMP_DIR/secrets
+rm -rf $TEMP_DIR/tools-public/node_modules
 
 cd $TEMP_DIR; tar -czhf $ARTIFACTS_DIR/android-shell-builder.tar.gz .
 rm -rf $TEMP_DIR
