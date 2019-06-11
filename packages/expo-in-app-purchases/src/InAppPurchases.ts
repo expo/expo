@@ -66,17 +66,12 @@ export async function onPurchase(callback: (result) => void): Promise<void> {
   });
 }
 
-export async function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {
-  // No-op if not on Android since this is not applicable
-  if (!ExpoInAppPurchases.acknowledgePurchaseAsync) return;
+export async function finishTransactionAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  if (consumeItem) {
-    return await ExpoInAppPurchases.consumeAsync(purchaseToken);
-  }
-  return await ExpoInAppPurchases.acknowledgePurchaseAsync(purchaseToken);
+  return await ExpoInAppPurchases.finishTransactionAsync(purchaseToken, consumeItem);
 }
 
 export async function getBillingResponseCodeAsync(): Promise<number> {

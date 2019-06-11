@@ -5,6 +5,6 @@ export declare function getProductsAsync(itemList: string[]): Promise<QueryRespo
 export declare function getPurchaseHistoryAsync(refresh?: boolean): Promise<QueryResponse>;
 export declare function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void>;
 export declare function onPurchase(callback: (result: any) => void): Promise<void>;
-export declare function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void>;
+export declare function finishTransactionAsync(purchaseToken: string, consumeItem: boolean): Promise<void>;
 export declare function getBillingResponseCodeAsync(): Promise<number>;
 export declare function disconnectAsync(): Promise<void>;

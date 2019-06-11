@@ -28,12 +28,12 @@ export declare enum ErrorCode {
 }
 export interface Purchase {
     acknowledged: boolean;
-    orderId: string;
     productId: string;
+    purchaseToken: string;
     purchaseState: number;
     purchaseTime: number;
+    orderId?: string;
     packageName?: string;
-    purchaseToken?: string;
     transactionReceipt?: string;
 }
 export interface ItemDetails {

@@ -32,12 +32,12 @@ export enum ErrorCode {
 
 export interface Purchase {
   acknowledged: boolean,
-  orderId: string,
   productId: string,
+  purchaseToken: string
   purchaseState: number,
   purchaseTime: number,
+  orderId?: string, // Android only
   packageName?: string, // Android only
-  purchaseToken?: string // Android only
   transactionReceipt?: string // iOS only
 }
 export interface ItemDetails {

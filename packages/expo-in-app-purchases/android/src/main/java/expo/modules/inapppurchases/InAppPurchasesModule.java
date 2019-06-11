@@ -72,13 +72,12 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
   }
 
   @ExpoMethod
-  public void acknowledgePurchaseAsync(String purchaseToken, final Promise promise) {
-    mBillingManager.acknowledgePurchaseAsync(purchaseToken, promise);
-  }
-
-  @ExpoMethod
-  public void consumeAsync(String purchaseToken, final Promise promise) {
-    mBillingManager.consumeAsync(purchaseToken, promise);
+  public void finishTransactionAsync(String purchaseToken, Boolean consume, final Promise promise) {
+    if (consume != null && consume) {
+      mBillingManager.consumeAsync(purchaseToken, promise);
+    } else {
+      mBillingManager.acknowledgePurchaseAsync(purchaseToken, promise);
+    }
   }
 
   @ExpoMethod
