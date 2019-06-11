@@ -83,7 +83,7 @@ jarjar-rules.txt
 /*.cer
 /fastlane/report.xml
 /fastlane/Preview.html
-/Deployment
+/fastlane/Deployment
 /Preview.html
 
 # CI
