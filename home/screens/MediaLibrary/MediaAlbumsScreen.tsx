@@ -19,7 +19,7 @@ interface State {
 
 export default class MediaAlbumsScreen extends React.Component<NavigationScreenProps, State> {
   static navigationOptions = {
-    title: 'MediaLibrary Albums',
+    title: 'Albums',
   };
 
   state: State = {
