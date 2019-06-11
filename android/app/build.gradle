@@ -34,12 +34,12 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 112
-    versionName '2.11.2'
+    versionCode 113
+    versionName '2.11.3'
     // END VERSIONS
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
-    }
+    } 
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth

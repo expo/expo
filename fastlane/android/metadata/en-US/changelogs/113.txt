@@ -1,0 +1,3 @@
+Version 2.11.0 introduced support for Expo SDK 33.
+
+Version 2.11.3 fixed compatibility for SDK 32 for `scheduleLocalNotification` in the Notifications API 
