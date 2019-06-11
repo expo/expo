@@ -12,7 +12,10 @@ export async function reloadFromCache(): Promise<void> {
   await ExponentUpdates.reloadFromCache();
 }
 
-export async function checkForUpdateAsync(): Promise<Object> {
+export async function checkForUpdateAsync(): Promise<{
+  isAvailable: boolean,
+  manifest: any,
+}> {
   if (!ExponentUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
@@ -26,7 +29,10 @@ export async function checkForUpdateAsync(): Promise<Object> {
   return returnObj;
 }
 
-export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<Object> {
+export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<{
+  isNew: boolean,
+  manifest: any,
+}> {
   if (!ExponentUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
