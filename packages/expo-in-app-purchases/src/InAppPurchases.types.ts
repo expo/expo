@@ -10,6 +10,7 @@ export enum ResponseCode {
   OK = 0,
   USER_CANCELED = 1,
   ERROR = 2,
+  DEFERRED = 3,
 }
 
 export enum ErrorCode {

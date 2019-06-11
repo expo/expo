@@ -3,6 +3,7 @@ export var ResponseCode;
     ResponseCode[ResponseCode["OK"] = 0] = "OK";
     ResponseCode[ResponseCode["USER_CANCELED"] = 1] = "USER_CANCELED";
     ResponseCode[ResponseCode["ERROR"] = 2] = "ERROR";
+    ResponseCode[ResponseCode["DEFERRED"] = 3] = "DEFERRED";
 })(ResponseCode || (ResponseCode = {}));
 export var ErrorCode;
 (function (ErrorCode) {

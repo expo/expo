@@ -7,7 +7,8 @@ export interface QueryResponse {
 export declare enum ResponseCode {
     OK = 0,
     USER_CANCELED = 1,
-    ERROR = 2
+    ERROR = 2,
+    DEFERRED = 3
 }
 export declare enum ErrorCode {
     UNKNOWN = 0,

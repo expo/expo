@@ -25,6 +25,7 @@ static NSString * const P0D = @"P0D";
 static const int OK = 0;
 static const int USER_CANCELED = 1;
 static const int ERROR = 2;
+static const int DEFERRED = 3;
 
 @implementation EXInAppPurchasesModule
 
@@ -340,7 +341,10 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
         break;
       }
       case SKPaymentTransactionStateDeferred: {
-        // TODO: Emit to user with deferred response code
+        // Emit results with deferred response code
+        NSArray *results = @[[self getTransactionData:transaction]];
+        NSDictionary *response = [self formatResults:results withResponseCode:DEFERRED];
+        [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
 
         // Resolve promise
         [self resolvePromise:transaction.payment.productIdentifier value:nil];
