@@ -45,7 +45,7 @@ module.exports = async function(env, argv) {
 # Editing static files
 
 You can use `expo customize:web` to create a replacement `index.html`, `serve.json`, `favicon.ico`, etc...
-If you want to reset these files to their initial values simply run `expo customize:web --force` or `-f` for short. All of these files will be copied to the `web/` folder in your project. Think of this folder like `public/` in Create React App. We use "web" instead of "public" because Expo projects target more then just web. In React Native we similarly put non-agnostic project files in `/ios` and `/android` folders.
+If you want to reset these files to their initial values simply run `expo customize:web --force` or `-f` for short. All of the files you select will be copied to a `web/` folder in your project's root directory. Think of this folder like `public/` in Create React App. We use "web" instead of "public" because Expo projects target more then just web. In React Native we similarly put non-agnostic project files in `/ios` and `/android` folders.
 
 Deleting any of these files will cause the CLI to fallback to the internal copies.
 
