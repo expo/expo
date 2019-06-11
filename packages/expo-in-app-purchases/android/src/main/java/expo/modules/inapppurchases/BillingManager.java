@@ -45,7 +45,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     public static final int ERROR = 2;
 
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
-    public static final String PURCHASES_UPDATED_EVENT = "PURCHASES_UPDATED";
+    public static final String PURCHASES_UPDATED_EVENT = "Expo.purchasesUpdated";
     public static final String PURCHASING_ITEM = "Purchasing Item";
     public static final String ACKNOWLEDGING_PURCHASE = "Acknowledging Item";
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;

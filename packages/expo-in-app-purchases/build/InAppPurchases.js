@@ -7,7 +7,7 @@ const errors = {
     ALREADY_DISCONNECTED: 'Already disconnected from App Store',
     NOT_CONNECTED: 'Must be connected to App Store',
 };
-const PURCHASES_UPDATED_EVENT = 'PURCHASES_UPDATED';
+const PURCHASES_UPDATED_EVENT = 'Expo.purchasesUpdated';
 const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 let connected = false;
 let purchaseUpdatedSubscription;

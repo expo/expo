@@ -15,7 +15,7 @@
 
 @end
 
-static NSString * const EXPurchasesUpdatedEventName = @"PURCHASES_UPDATED";
+static NSString * const EXPurchasesUpdatedEventName = @"Expo.purchasesUpdated";
 static NSString * const QUERY_HISTORY_KEY = @"QUERY_HISTORY";
 static NSString * const QUERY_PURCHASABLE_KEY = @"QUERY_PURCHASABLE";
 static NSString * const IN_APP = @"inapp";
