@@ -142,6 +142,7 @@ platform :ios do
     )
 
     sigh(
+      app_identifier: "host.exp.Exponent",
       output_path: output_directory,
       filename: "Exponent-distribution.mobileprovision",
     )
@@ -165,7 +166,9 @@ platform :ios do
       output_name: "Exponent.ipa",
     )
 
-    deliver()
+    deliver(
+      team_id: "17102800",
+    )
   end
 
   after_all do |lane|
