@@ -1117,10 +1117,10 @@
     jimp "^0.6.0"
     mime "^2.4.0"
 
-"@expo/xdl@^54.1.5":
-  version "54.1.5"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-54.1.5.tgz#d569022b2797de625eaeaa96899797509601daf8"
-  integrity sha512-J2tEBOsDiSScUnERFVSiUkfdsJQdtrrl8kHV9dQ3+vlbA7BUIeWZDN/tYKvQ1camY3FlO39rU8WdJvjyNeffJw==
+"@expo/xdl@~54.1.6-alpha.0":
+  version "54.1.6-alpha.0"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-54.1.6-alpha.0.tgz#c0268ac92973b6b93381e331f44eeb47fe4c62c4"
+  integrity sha512-Av6PAdBZKt9liao7EfSl50X4xKOagRQdMG4AL/zj6HM0KxttrmDCNRjvq3WcNRQ7oCwC3HgeuWSkg8W9hAa0vA==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.0.1"
