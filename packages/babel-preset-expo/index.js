@@ -21,6 +21,7 @@ function getNativeConfig() {
         },
       ],
       ['@babel/plugin-proposal-decorators', { legacy: true }],
+      ['babel-plugin-expo-vector-icons'],
     ],
   };
 }
@@ -45,6 +46,7 @@ function getWebConfig(options = {}) {
     ['@babel/plugin-syntax-dynamic-import'],
     ['@babel/plugin-transform-react-jsx'],
     ['babel-plugin-react-native-web'],
+    ['babel-plugin-expo-vector-icons'],
   ];
 
   const otherPlugins = [
