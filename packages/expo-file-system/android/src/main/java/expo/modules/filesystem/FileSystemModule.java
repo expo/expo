@@ -6,7 +6,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
+//import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
 
@@ -521,7 +521,7 @@ public class FileSystemModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void contentUriFromFile(String uri, Promise promise){
+  public void getContentUriAsync(String uri, Promise promise){
     try{
       final Uri fileUri = Uri.parse(uri);
       ensurePermission(fileUri, Permission.WRITE);
@@ -544,7 +544,8 @@ public class FileSystemModule extends ExportedModule {
   private Uri cUriFromFile(File file) {
     try {
       Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
-      return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+      return null;
+//      return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
     } catch (Exception e) {
       return Uri.fromFile(file);
     }

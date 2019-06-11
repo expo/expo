@@ -85,7 +85,7 @@ export interface ExponentFileSystemModule {
   readonly downloadAsync?: PlatformMethod;
   readonly downloadResumableStartAsync?: PlatformMethod;
   readonly downloadResumablePauseAsync?: PlatformMethod;
-  readonly contentUriFromFile?: PlatformMethod;
+  readonly getContentUriAsync?: PlatformMethod;
 
   startObserving?: () => void;
   stopObserving?: () => void;
