@@ -124,9 +124,9 @@ const styles = StyleSheet.create({
       default: {
         height: 56 + Constants.statusBarHeight,
         paddingTop: Constants.statusBarHeight,
-      }
-    })
+      },
+    }),
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(46, 59, 76, 0.10)',
-  }
+  },
 });
