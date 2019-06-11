@@ -3,12 +3,12 @@ import { AsyncStorage } from 'react-native';
 
 import ExponentKernel from '../universal/ExponentKernel';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
-
 const Keys = mapValues(
   {
     AuthTokens: 'authTokens',
     Session: 'session',
     History: 'history',
+    ProfileBannerImage: 'profileBannerImage',
     Settings: 'settings',
     NuxIsFinished: 'nuxIsFinishedApr-17-2017',
   },
@@ -87,6 +87,18 @@ async function getHistoryAsync() {
   return [];
 }
 
+async function saveProfileBannerImageAsync(uri) {
+  return AsyncStorage.setItem(Keys.ProfileBannerImage, uri);
+}
+
+async function getProfileBannerImageAsync() {
+  return AsyncStorage.getItem(Keys.ProfileBannerImage);
+}
+
+async function clearProfileBannerImageAsync() {
+  return AsyncStorage.removeItem(Keys.ProfileBannerImage);
+}
+
 async function saveHistoryAsync(history) {
   return AsyncStorage.setItem(Keys.History, JSON.stringify(history));
 }
@@ -131,6 +143,9 @@ export default {
   clearHistoryAsync,
   clearAllAsync,
   getSessionAsync,
+  saveProfileBannerImageAsync,
+  getProfileBannerImageAsync,
+  clearProfileBannerImageAsync,
   getHistoryAsync,
   getSettingsAsync,
   saveHistoryAsync,
