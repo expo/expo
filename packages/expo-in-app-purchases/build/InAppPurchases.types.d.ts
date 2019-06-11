@@ -45,5 +45,4 @@ export interface ItemDetails {
     title: string;
     type: ValidItemType;
     subscriptionPeriod?: string;
-    skuDetailsToken?: string;
 }

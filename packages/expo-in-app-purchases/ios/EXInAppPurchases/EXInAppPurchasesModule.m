@@ -6,6 +6,7 @@
 
 @property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, assign) BOOL queryingItems;
+@property (nonatomic, weak) id <UMEventEmitterService> eventEmitter;
 @property (strong, nonatomic) NSMutableDictionary *promises;
 @property (strong, nonatomic) NSMutableSet *retrievedItems;
 @property (strong, nonatomic) SKProductsRequest *request;
@@ -14,6 +15,7 @@
 
 @end
 
+static NSString * const EXPurchasesUpdatedEventName = @"PURCHASES_UPDATED";
 static NSString * const QUERY_HISTORY_KEY = @"QUERY_HISTORY";
 static NSString * const QUERY_PURCHASABLE_KEY = @"QUERY_PURCHASABLE";
 static NSString * const IN_APP = @"inapp";
@@ -31,7 +33,16 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
 }
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[EXPurchasesUpdatedEventName];
+}
+
+- (void)startObserving {}
+- (void)stopObserving {}
 
 UM_EXPORT_METHOD_AS(connectAsync,
                     connectAsync:(UMPromiseResolveBlock)resolve
@@ -103,6 +114,17 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSLog(@"Calling disconnectAsync");
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
   resolve(nil);
+}
+
+- (void)requestProducts:(NSArray *)productIdentifiers
+{
+  SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
+                                        initWithProductIdentifiers:[NSSet setWithArray:productIdentifiers]];
+  // Keep a strong reference to the request.
+  self.request = productsRequest;
+  productsRequest.delegate = self;
+
+  [productsRequest start];
 }
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
@@ -279,7 +301,6 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
 {
   for (SKPaymentTransaction *transaction in transactions) {
-
     switch(transaction.transactionState) {
       case SKPaymentTransactionStatePurchasing: {
         NSLog(@"Transaction state -> Purchasing");
@@ -291,7 +312,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
         NSLog(@"Transaction state -> Purchased");
         NSArray *results = @[[self getTransactionData:transaction]];
         NSDictionary *response = [self formatResults:results withResponseCode:OK];
-        [self resolvePromise:transaction.payment.productIdentifier value:response];
+        [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
         break;
       }
       case SKPaymentTransactionStateRestored: {
@@ -307,10 +328,10 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
         if(transaction.error.code == SKErrorPaymentCancelled){
           NSLog(@"Transaction state -> Cancelled");
           NSDictionary *response = [self formatResults:[NSArray array] withResponseCode:USER_CANCELED];
-          [self resolvePromise:transaction.payment.productIdentifier value:response];
+          [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
         } else {
           NSDictionary *response = [self formatResults:transaction.error.code];
-          [self resolvePromise:transaction.payment.productIdentifier value:response];
+          [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
         }
         break;
       }
@@ -364,18 +385,6 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
     case SKErrorMissingOfferParams:
       return 14;
   }
-}
-
-- (void)requestProducts:(NSArray *)productIdentifiers
-{
-
-  SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
-                                        initWithProductIdentifiers:[NSSet setWithArray:productIdentifiers]];
-  // Keep a strong reference to the request.
-  self.request = productsRequest;
-  productsRequest.delegate = self;
-
-  [productsRequest start];
 }
 
 @end

@@ -1,13 +1,16 @@
 import { Platform } from 'react-native';
-import { CodedError } from '@unimodules/core';
-import ExpoInAppPurchases from './ExpoInAppPurchases';
+import { CodedError, EventEmitter } from '@unimodules/core';
 import { ResponseCode, ErrorCode } from './InAppPurchases.types';
+import ExpoInAppPurchases from './ExpoInAppPurchases';
 const errors = {
     ALREADY_CONNECTED: 'Already connected to App Store',
     ALREADY_DISCONNECTED: 'Already disconnected from App Store',
     NOT_CONNECTED: 'Must be connected to App Store',
 };
+const PURCHASES_UPDATED_EVENT = 'PURCHASES_UPDATED';
+const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 let connected = false;
+let purchaseUpdatedSubscription;
 export { ResponseCode, ErrorCode, };
 export async function connectAsync() {
     if (connected) {
@@ -35,7 +38,15 @@ export async function purchaseItemAsync(itemId, oldItem) {
     }
     // Replacing old item is only supported on Android
     const args = Platform.OS === 'android' ? [itemId, oldItem] : [itemId];
-    return await ExpoInAppPurchases.purchaseItemAsync(...args);
+    await ExpoInAppPurchases.purchaseItemAsync(...args);
+}
+export async function onPurchase(callback) {
+    if (purchaseUpdatedSubscription) {
+        purchaseUpdatedSubscription.remove();
+    }
+    purchaseUpdatedSubscription = eventEmitter.addListener(PURCHASES_UPDATED_EVENT, result => {
+        callback(result);
+    });
 }
 export async function acknowledgePurchaseAsync(purchaseToken, consumeItem) {
     // No-op if not on Android since this is not applicable
@@ -63,6 +74,7 @@ export async function disconnectAsync() {
         throw new ConnectionError(errors.ALREADY_DISCONNECTED);
     }
     await ExpoInAppPurchases.disconnectAsync();
+    purchaseUpdatedSubscription.remove();
     connected = false;
 }
 class ConnectionError extends CodedError {

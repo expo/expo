@@ -10,6 +10,7 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 public class InAppPurchasesModule extends ExportedModule implements ModuleRegistryConsumer {
@@ -18,6 +19,7 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
 
   private BillingManager mBillingManager;
   private ModuleRegistry mModuleRegistry;
+  protected static EventEmitter mEventEmitter;
 
   public InAppPurchasesModule(Context context) {
     super(context);
@@ -39,6 +41,7 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
     if (activity == null) {
       promise.reject("E_ACTIVITY_UNAVAILABLE", "Activity is not available");
     }
+    mEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
     mBillingManager = new BillingManager(activity);
     mBillingManager.startConnectionAndQueryHistory(promise);
   }

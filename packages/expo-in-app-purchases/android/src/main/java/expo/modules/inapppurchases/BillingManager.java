@@ -45,6 +45,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     public static final int ERROR = 2;
 
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
+    public static final String PURCHASES_UPDATED_EVENT = "PURCHASES_UPDATED";
     public static final String PURCHASING_ITEM = "Purchasing Item";
     public static final String ACKNOWLEDGING_PURCHASE = "Acknowledging Item";
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
@@ -144,12 +145,6 @@ public class BillingManager implements PurchasesUpdatedListener {
                 return;
             }
 
-            // Save promise to HashMap to resolve later
-            if (promises.get(PURCHASING_ITEM) != null) {
-                promise.reject("E_UNFINISHED_PROMISE", "Must wait for promise to resolve before recalling function.");
-                return;
-            }
-            promises.put(PURCHASING_ITEM, promise);
             BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
                     .setSkuDetails(skuDetails).setOldSku(oldSku).build();
             mBillingClient.launchBillingFlow(mActivity, purchaseParams);
@@ -173,19 +168,9 @@ public class BillingManager implements PurchasesUpdatedListener {
                 handlePurchase(purchase);
             }
             mBillingUpdatesListener.onPurchasesUpdated(mPurchases);
-            Log.d(TAG, "Done updating purchases");
         } else {
-            if (result.getResponseCode() == BillingResponseCode.USER_CANCELED) {
-                Log.i(TAG, "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
-            } else {
-                Log.w(TAG, "onPurchasesUpdated() got unknown resultCode: " + result);
-            }
             Bundle response = formatResponse(result, null);
-            Promise promise = promises.get(PURCHASING_ITEM);
-            if (promise != null) {
-                promises.put(PURCHASING_ITEM, null);
-                promise.resolve(response);
-            }
+            InAppPurchasesModule.mEventEmitter.emit(PURCHASES_UPDATED_EVENT, response);
         }
     }
 

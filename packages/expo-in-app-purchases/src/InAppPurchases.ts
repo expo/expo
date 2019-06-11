@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
-import { CodedError } from '@unimodules/core';
-import ExpoInAppPurchases from './ExpoInAppPurchases';
+import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
 import { QueryResponse, ResponseCode, ErrorCode } from './InAppPurchases.types';
+import ExpoInAppPurchases from './ExpoInAppPurchases';
 
 const errors = {
   ALREADY_CONNECTED: 'Already connected to App Store',
@@ -9,7 +9,11 @@ const errors = {
   NOT_CONNECTED: 'Must be connected to App Store',
 };
 
+const PURCHASES_UPDATED_EVENT = 'PURCHASES_UPDATED';
+const eventEmitter = new EventEmitter(ExpoInAppPurchases);
+
 let connected = false;
+let purchaseUpdatedSubscription: Subscription;
 
 export {
   ResponseCode,
@@ -42,14 +46,24 @@ export async function getPurchaseHistoryAsync(refresh?: boolean): Promise<QueryR
   return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
 }
 
-export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<QueryResponse> {
+export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
   // Replacing old item is only supported on Android
   const args = Platform.OS === 'android' ? [itemId, oldItem] : [itemId];
-  return await ExpoInAppPurchases.purchaseItemAsync(...args);
+  await ExpoInAppPurchases.purchaseItemAsync(...args);
+}
+
+export async function onPurchase(callback: (result) => void): Promise<void> {
+  if (purchaseUpdatedSubscription) {
+    purchaseUpdatedSubscription.remove();
+  }
+
+  purchaseUpdatedSubscription = eventEmitter.addListener<QueryResponse>(PURCHASES_UPDATED_EVENT, result => {
+    callback(result);
+  });
 }
 
 export async function acknowledgePurchaseAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {
@@ -81,6 +95,7 @@ export async function disconnectAsync(): Promise<void> {
     throw new ConnectionError(errors.ALREADY_DISCONNECTED);
   }
   await ExpoInAppPurchases.disconnectAsync();
+  purchaseUpdatedSubscription.remove();
   connected = false;
 }
 

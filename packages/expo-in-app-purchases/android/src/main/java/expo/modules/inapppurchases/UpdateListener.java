@@ -23,7 +23,6 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
 
     @Override
     public void onConsumeFinished(String token, BillingResult result) {
-        Log.d(TAG, "Consumption finished. Purchase token: " + token + ", result: " + result);
         Bundle response = new Bundle();
         response.putInt("responseCode", result.getResponseCode());
         response.putString("token", token);
@@ -33,7 +32,6 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
             BillingManager.promises.put(BillingManager.ACKNOWLEDGING_PURCHASE, null);
             promise.resolve(response);
         }
-        Log.d(TAG, "End consumption flow.");
     }
 
     @Override
@@ -46,10 +44,6 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
         response.putParcelableArrayList("results", results);
         response.putInt("responseCode", BillingResponseCode.OK);
 
-        Promise promise = BillingManager.promises.get(BillingManager.PURCHASING_ITEM);
-        if (promise != null) {
-            BillingManager.promises.put(BillingManager.PURCHASING_ITEM, null);
-            promise.resolve(response);
-        }
+        InAppPurchasesModule.mEventEmitter.emit(BillingManager.PURCHASES_UPDATED_EVENT, response);
     }
 }
