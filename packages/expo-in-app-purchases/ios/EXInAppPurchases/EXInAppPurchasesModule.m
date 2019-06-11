@@ -44,15 +44,19 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 - (void)startObserving {}
 - (void)stopObserving {}
 
+# pragma mark - Exported Methods
+
 UM_EXPORT_METHOD_AS(connectAsync,
                     connectAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   // Initialize listener and object properties
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+
   _promises = [NSMutableDictionary dictionary];
   _pendingTransactions = [NSMutableDictionary dictionary];
   _retrievedItems = [NSMutableSet set];
+
   _queryingItems = NO;
   BOOL promiseSet = [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
 
@@ -93,9 +97,8 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
   // Make the request
   BOOL promiseSet = [self setPromise:productIdentifier resolve:resolve reject:reject];
   if (promiseSet) {
-    NSArray *productArray = @[productIdentifier];
     _queryingItems = NO;
-    [self requestProducts:productArray];
+    [self requestProducts:@[productIdentifier]];
   }
 }
 
@@ -134,27 +137,20 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   resolve(nil);
 }
 
+# pragma mark - Helper Methods
+
 - (void)requestProducts:(NSArray *)productIdentifiers
 {
   SKProductsRequest *productsRequest = [[SKProductsRequest alloc]
                                         initWithProductIdentifiers:[NSSet setWithArray:productIdentifiers]];
-  // Keep a strong reference to the request.
+  // Keep a strong reference to the request
   _request = productsRequest;
+
+  // Here we are the delegate since this class also implements SKProductsRequestDelegate
   productsRequest.delegate = self;
 
+  // This will return in the productsRequest method below
   [productsRequest start];
-}
-
-/*
- This function is called both when purchasing an item and querying for item data
- */
-- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
-{
-  if (_queryingItems) {
-    [self handleQuery:response];
-  } else {
-    [self handlePurchase:response];
-  }
 }
 
 - (void)handleQuery:(SKProductsResponse *)response {
@@ -187,41 +183,17 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 
-// Returns a boolean indicating the promise was successfully set. Otherwise, we should return immediately
-- (BOOL)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
-{
-  NSArray *promise = _promises[key];
+# pragma mark - StoreKit Transaction Observer Methods
 
-  if (promise == nil) {
-    _promises[key] = @[resolve, reject];
-    return YES;
+/*
+ This function is called both when purchasing an item and querying for item data
+ */
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
+{
+  if (_queryingItems) {
+    [self handleQuery:response];
   } else {
-    reject(@"E_UNFINISHED_PROMISE", @"Must wait for promise to resolve before recalling function.", nil);
-    return NO;
-  }
-}
-
-- (void)resolvePromise:(NSString*)key value:(id)value
-{
-  NSArray *currentPromise = _promises[key];
-
-  if (currentPromise != nil) {
-    UMPromiseResolveBlock resolve = currentPromise[0];
-    _promises[key] = nil;
-
-    resolve(value);
-  }
-}
-
-- (void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error
-{
-  NSArray* currentPromise = _promises[key];
-
-  if (currentPromise != nil) {
-    UMPromiseRejectBlock reject = currentPromise[1];
-    _promises[key] = nil;
-
-    reject(code, message, error);
+    [self handlePurchase:response];
   }
 }
 
@@ -305,6 +277,48 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
     }
   }
 }
+
+# pragma mark - Handling Promises
+
+// Returns a boolean indicating the promise was successfully set. Otherwise, we should return immediately
+- (BOOL)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+{
+  NSArray *promise = _promises[key];
+
+  if (promise == nil) {
+    _promises[key] = @[resolve, reject];
+    return YES;
+  } else {
+    reject(@"E_UNFINISHED_PROMISE", @"Must wait for promise to resolve before recalling function.", nil);
+    return NO;
+  }
+}
+
+- (void)resolvePromise:(NSString*)key value:(id)value
+{
+  NSArray *currentPromise = _promises[key];
+
+  if (currentPromise != nil) {
+    UMPromiseResolveBlock resolve = currentPromise[0];
+    _promises[key] = nil;
+
+    resolve(value);
+  }
+}
+
+- (void)rejectPromise:(NSString*)key code:(NSString*)code message:(NSString*)message error:(NSError*) error
+{
+  NSArray* currentPromise = _promises[key];
+
+  if (currentPromise != nil) {
+    UMPromiseRejectBlock reject = currentPromise[1];
+    _promises[key] = nil;
+
+    reject(code, message, error);
+  }
+}
+
+# pragma mark - Formatting Response
 
 - (NSDictionary *)getProductData:(SKProduct *)product
 {
