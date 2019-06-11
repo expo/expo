@@ -9,7 +9,8 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 public class UpdatesModule extends ExportedModule implements ModuleRegistryConsumer {
-  private static final String TAG = "ExpoUpdatesModule";
+  private static final String NAME = "ExpoUpdates";
+  private static final String TAG = UpdatesModule.class.getSimpleName();
 
   private ModuleRegistry mModuleRegistry;
 
@@ -19,7 +20,7 @@ public class UpdatesModule extends ExportedModule implements ModuleRegistryConsu
 
   @Override
   public String getName() {
-    return TAG;
+    return NAME;
   }
 
   @Override
