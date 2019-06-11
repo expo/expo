@@ -650,8 +650,7 @@ public class FileSystemModule extends ExportedModule {
       promise.reject(e);
     }
   }
-
-
+  
   private static byte[] getInputStreamBytes(InputStream inputStream) throws IOException {
     byte[] bytesResult;
     ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
