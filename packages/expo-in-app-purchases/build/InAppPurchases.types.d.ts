@@ -1,7 +1,7 @@
 export declare type ValidItemType = 'inapp' | 'subs';
 export interface QueryResponse {
     responseCode: ResponseCode;
-    results: Array<Purchase | ItemDetails>;
+    results?: Array<Purchase | ItemDetails>;
     errorCode?: ErrorCode;
 }
 export declare enum ResponseCode {

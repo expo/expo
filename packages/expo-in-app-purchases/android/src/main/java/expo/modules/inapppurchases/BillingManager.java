@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
@@ -78,7 +77,6 @@ public class BillingManager implements PurchasesUpdatedListener {
     }
 
     public BillingManager(Activity activity) {
-        Log.d(TAG, "Creating Billing client.");
         mActivity = activity;
         mBillingUpdatesListener = new UpdateListener();
         mBillingClient =
@@ -90,8 +88,6 @@ public class BillingManager implements PurchasesUpdatedListener {
     }
 
     public void startConnectionAndQueryHistory(final Promise promise) {
-        Log.d(TAG, "Starting setup.");
-
         // Start setup. This is asynchronous and the specified listener will be called
         // once setup completes.
         // It also starts to report all the new purchases through onPurchasesUpdated() callback.
@@ -101,7 +97,6 @@ public class BillingManager implements PurchasesUpdatedListener {
                 // Notifying the listener that billing client is ready
                 mBillingUpdatesListener.onBillingClientSetupFinished();
                 // IAB is fully set up. Now, let's get an inventory of stuff we own.
-                Log.d(TAG, "Setup successful. Querying inventory.");
                 queryPurchases(promise);
             }
         });
@@ -112,8 +107,6 @@ public class BillingManager implements PurchasesUpdatedListener {
             @Override
             public void onBillingSetupFinished(BillingResult billingResult) {
                 final int responseCode = billingResult.getResponseCode();
-                Log.d(TAG, "Setup finished. Response code: " + responseCode);
-
                 if (responseCode == BillingResponseCode.OK) {
                     mIsServiceConnected = true;
                     if (executeOnSuccess != null) {
@@ -198,7 +191,6 @@ public class BillingManager implements PurchasesUpdatedListener {
         if (mTokensToBeConsumed == null) {
             mTokensToBeConsumed = new HashSet<>();
         } else if (mTokensToBeConsumed.contains(purchaseToken)) {
-            Log.i(TAG, "Token was already scheduled to be consumed - skipping...");
             Bundle response = new Bundle();
             response.putInt("responseCode", BillingClient.BillingResponseCode.OK);
             promise.resolve(response);
@@ -243,7 +235,6 @@ public class BillingManager implements PurchasesUpdatedListener {
      * @param purchase Purchase to be handled
      */
     private void handlePurchase(Purchase purchase) {
-        Log.d(TAG, "Got a verified purchase: " + purchase);
         mPurchases.add(purchase);
     }
 
@@ -263,32 +254,19 @@ public class BillingManager implements PurchasesUpdatedListener {
         Runnable queryToExecute = new Runnable() {
             @Override
             public void run() {
-            long time = System.currentTimeMillis();
             PurchasesResult purchasesResult = mBillingClient.queryPurchases(SkuType.INAPP);
-            Log.i(TAG, "Querying purchases elapsed time: " + (System.currentTimeMillis() - time)
-                    + "ms");
+
             // If there are subscriptions supported, we add subscription rows as well
             if (areSubscriptionsSupported()) {
                 PurchasesResult subscriptionResult
                         = mBillingClient.queryPurchases(SkuType.SUBS);
-                Log.i(TAG, "Querying purchases and subscriptions elapsed time: "
-                        + (System.currentTimeMillis() - time) + "ms");
-                Log.i(TAG, "Querying subscriptions result code: "
-                        + subscriptionResult.getResponseCode()
-                        + " res: " + subscriptionResult.getPurchasesList().size());
 
                 if (subscriptionResult.getResponseCode() == BillingResponseCode.OK) {
                     purchasesResult.getPurchasesList().addAll(
                             subscriptionResult.getPurchasesList());
-                } else {
-                    Log.e(TAG, "Got an error response trying to query subscription purchases");
                 }
-            } else if (purchasesResult.getResponseCode() == BillingResponseCode.OK) {
-                Log.i(TAG, "Skipped subscription purchases query since they are not supported");
-            } else {
-                Log.w(TAG, "queryPurchases() got an error response code: "
-                        + purchasesResult.getResponseCode());
             }
+
             onQueryPurchasesFinished(purchasesResult, promise);
             }
         };
@@ -440,8 +418,6 @@ public class BillingManager implements PurchasesUpdatedListener {
         onPurchasesUpdated(billingResult, purchasesList);
 
         final Bundle response = formatResponse(billingResult, results);
-        Log.d(TAG, "Resolving connectToAppStoreAsync promise with response code: "
-                + billingResult.getResponseCode() + " and purchases list: " + purchasesList);
         promise.resolve(response);
     }
 
