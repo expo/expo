@@ -54,10 +54,12 @@ UM_EXPORT_METHOD_AS(connectAsync,
   _promises = [NSMutableDictionary dictionary];
   _retrievedItems = [NSMutableSet set];
   _queryingItems = NO;
-  [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
+  BOOL promiseSet = [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
 
-  // Request history
-  [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+  if (promiseSet) {
+    // Request history
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+  }
 }
 
 UM_EXPORT_METHOD_AS(getProductsAsync,
@@ -89,10 +91,12 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
   }
 
   // Make the request
-  NSArray *productArray = @[productIdentifier];
-  [self setPromise:productIdentifier resolve:resolve reject:reject];
-  _queryingItems = NO;
-  [self requestProducts:productArray];
+  BOOL promiseSet = [self setPromise:productIdentifier resolve:resolve reject:reject];
+  if (promiseSet) {
+    NSArray *productArray = @[productIdentifier];
+    _queryingItems = NO;
+    [self requestProducts:productArray];
+  }
 }
 
 UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
@@ -101,17 +105,18 @@ UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSLog(@"Calling queryPurchasableHistoryAsync");
-  [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
+  BOOL promiseSet = [self setPromise:QUERY_HISTORY_KEY resolve:resolve reject:reject];
 
-  // Request history
-  [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+  if(promiseSet) {
+    // Request history
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+  }
 }
 
 UM_EXPORT_METHOD_AS(disconnectAsync,
                     disconnectAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  NSLog(@"Calling disconnectAsync");
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
   resolve(nil);
 }
@@ -136,10 +141,6 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
       [self resolvePromise:invalidIdentifier value:results];
     }
   }
-  NSInteger count = response.products.count;
-  if (count == 0) {
-    NSLog(@"No products available");
-  }
   _products = response.products;
   NSMutableArray *result = [NSMutableArray array];
 
@@ -161,14 +162,17 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [self resolvePromise:QUERY_PURCHASABLE_KEY value:res];
 }
 
-- (void)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+// Returns a boolean indicating the promise was successfully set. Otherwise, we should return immediately
+- (BOOL)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
 {
   NSArray *promise = _promises[key];
 
   if (promise == nil) {
     _promises[key] = @[resolve, reject];
+    return YES;
   } else {
     reject(@"E_UNFINISHED_PROMISE", @"Must wait for promise to resolve before recalling function.", nil);
+    return NO;
   }
 }
 
@@ -303,36 +307,34 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   for (SKPaymentTransaction *transaction in transactions) {
     switch(transaction.transactionState) {
       case SKPaymentTransactionStatePurchasing: {
-        NSLog(@"Transaction state -> Purchasing");
         break;
       }
       case SKPaymentTransactionStatePurchased: {
-        NSLog(@"Made a purchase!");
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-        NSLog(@"Transaction state -> Purchased");
         NSArray *results = @[[self getTransactionData:transaction]];
         NSDictionary *response = [self formatResults:results withResponseCode:OK];
+        [self resolvePromise:transaction.payment.productIdentifier value:nil];
         [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
         break;
       }
       case SKPaymentTransactionStateRestored: {
-        NSLog(@"Transaction state -> Restored");
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         break;
       }
       case SKPaymentTransactionStateDeferred: {
+        [self resolvePromise:transaction.payment.productIdentifier value:nil];
         break;
       }
       case SKPaymentTransactionStateFailed: {
         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
         if(transaction.error.code == SKErrorPaymentCancelled){
-          NSLog(@"Transaction state -> Cancelled");
           NSDictionary *response = [self formatResults:[NSArray array] withResponseCode:USER_CANCELED];
           [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
         } else {
           NSDictionary *response = [self formatResults:transaction.error.code];
           [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
         }
+        [self resolvePromise:transaction.payment.productIdentifier value:nil];
         break;
       }
     }
