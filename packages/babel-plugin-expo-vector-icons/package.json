@@ -1,0 +1,24 @@
+{
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "name": "babel-plugin-expo-vector-icons",
+  "version": "1.0.0",
+  "description": "Babel plugin for eliminating unused fonts by redirecting all @expo/vector-icons",
+  "main": "index.js",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-tester": "^5.0.0",
+    "jest": "^24.8.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Evan Bacon",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/expo/expo.git",
+    "directory": "packages/babel-plugin-expo-vector-icons"
+  }
+}

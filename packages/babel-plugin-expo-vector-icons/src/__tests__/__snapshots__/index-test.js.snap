@@ -1,0 +1,144 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Eliminates unused fonts by redirecting all @expo/vector-icons export from "@expo/vector-icons": export from "@expo/vector-icons" 1`] = `
+"
+export { FontAwesome } from '@expo/vector-icons';
+export { EvilIcons, Feather, Ionicons, createIconSetFromFontello } from '@expo/vector-icons';
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+export { default as FontAwesome } from '@expo/vector-icons/build/FontAwesome';
+export { default as EvilIcons } from '@expo/vector-icons/build/EvilIcons';
+export { default as Feather } from '@expo/vector-icons/build/Feather';
+export { default as Ionicons } from '@expo/vector-icons/build/Ionicons';
+export { default as createIconSetFromFontello } from '@expo/vector-icons/build/createIconSetFromFontello';
+"
+`;
+
+exports[`Eliminates unused fonts by redirecting all @expo/vector-icons export from "react-native-vector-icons": export from "react-native-vector-icons" 1`] = `
+"
+export { Ionicons } from 'react-native-vector-icons';
+export { EvilIcons, Feather, FontAwesome, createIconSetFromFontello } from 'react-native-vector-icons';
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+export { default as Ionicons } from '@expo/vector-icons/build/Ionicons';
+export { default as EvilIcons } from '@expo/vector-icons/build/EvilIcons';
+export { default as Feather } from '@expo/vector-icons/build/Feather';
+export { default as FontAwesome } from '@expo/vector-icons/build/FontAwesome';
+export { default as createIconSetFromFontello } from '@expo/vector-icons/build/createIconSetFromFontello';
+"
+`;
+
+exports[`Eliminates unused fonts by redirecting all @expo/vector-icons import from "@expo/vector-icons": import from "@expo/vector-icons" 1`] = `
+"
+import ReactNative from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { Invalid, FontAwesome as MyFont, MaterialIcons } from '@expo/vector-icons';
+import * as AllFonts from '@expo/vector-icons';
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import ReactNative from '@expo/vector-icons/build/Icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { Invalid } from '@expo/vector-icons/build/Icons';
+import MyFont from '@expo/vector-icons/build/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import * as AllFonts from '@expo/vector-icons/build/Icons';
+"
+`;
+
+exports[`Eliminates unused fonts by redirecting all @expo/vector-icons import from "@expo/vector-icons": import from "@expo/vector-icons" 2`] = `
+"
+import Fonts from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
+import { Invalid, Ionicons as MyFont, MaterialCommunityIcons } from '@expo/vector-icons';
+import * as AllFonts from '@expo/vector-icons';
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import Fonts from '@expo/vector-icons/build/Icons';
+import AntDesign from '@expo/vector-icons/build/AntDesign';
+import { Invalid } from '@expo/vector-icons/build/Icons';
+import MyFont from '@expo/vector-icons/build/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import * as AllFonts from '@expo/vector-icons/build/Icons';
+"
+`;
+
+exports[`Eliminates unused fonts by redirecting all @expo/vector-icons import from "react-native-vector-icons": import from "react-native-vector-icons" 1`] = `
+"
+import { createIconSetFromFontello } from 'react-native-vector-icons';
+import { EvilIcons, Feather, FontAwesome, createIconSetFromIcoMoon } from 'react-native-vector-icons';
+import * as AllFonts from 'react-native-vector-icons';
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import createIconSetFromFontello from '@expo/vector-icons/build/createIconSetFromFontello';
+import EvilIcons from '@expo/vector-icons/build/EvilIcons';
+import Feather from '@expo/vector-icons/build/Feather';
+import FontAwesome from '@expo/vector-icons/build/FontAwesome';
+import createIconSetFromIcoMoon from '@expo/vector-icons/build/createIconSetFromIcoMoon';
+import * as AllFonts from '@expo/vector-icons/build/Icons';
+"
+`;
+
+exports[`Eliminates unused fonts by redirecting all @expo/vector-icons require "@expo/vector-icons": require "@expo/vector-icons" 1`] = `
+"
+const Fonts = require('@expo/vector-icons');
+const { FontAwesome5 } = require('@expo/vector-icons');
+const { EvilIcons, Feather } = require('@expo/vector-icons');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const Fonts = require('@expo/vector-icons/build/Icons');
+
+const FontAwesome5 = require('@expo/vector-icons/build/FontAwesome5').default;
+
+const EvilIcons = require('@expo/vector-icons/build/EvilIcons').default;
+
+const Feather = require('@expo/vector-icons/build/Feather').default;
+"
+`;
+
+exports[`Eliminates unused fonts by redirecting all @expo/vector-icons require "@expo/vector-icons": require "@expo/vector-icons" 2`] = `
+"
+const Fonts = require('@expo/vector-icons');
+const { Foundation } = require('@expo/vector-icons');
+const { FontAwesome5, AntDesign } = require('@expo/vector-icons');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const Fonts = require('@expo/vector-icons/build/Icons');
+
+const Foundation = require('@expo/vector-icons/build/Foundation').default;
+
+const FontAwesome5 = require('@expo/vector-icons/build/FontAwesome5').default;
+
+const AntDesign = require('@expo/vector-icons/build/AntDesign').default;
+"
+`;
+
+exports[`Eliminates unused fonts by redirecting all @expo/vector-icons require "react-native-vector-icons": require "react-native-vector-icons" 1`] = `
+"
+const Fonts = require('react-native-vector-icons');
+const { FontAwesome5 } = require('react-native-vector-icons');
+const { FontAwesome, AntDesign, EvilIcons, Ionicons, createIconSetFromFontello } = require('react-native-vector-icons');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const Fonts = require('@expo/vector-icons/build/Icons');
+
+const FontAwesome5 = require('@expo/vector-icons/build/FontAwesome5').default;
+
+const FontAwesome = require('@expo/vector-icons/build/FontAwesome').default;
+
+const AntDesign = require('@expo/vector-icons/build/AntDesign').default;
+
+const EvilIcons = require('@expo/vector-icons/build/EvilIcons').default;
+
+const Ionicons = require('@expo/vector-icons/build/Ionicons').default;
+
+const createIconSetFromFontello = require('@expo/vector-icons/build/createIconSetFromFontello').default;
+"
+`;
