@@ -96,8 +96,6 @@ export {
   // @ts-ignore
   Haptics,
   // @ts-ignore
-  Icon,
-  // @ts-ignore
   ImageManipulator,
   // @ts-ignore
   ImagePicker,

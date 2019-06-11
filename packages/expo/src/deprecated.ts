@@ -729,18 +729,6 @@ Object.defineProperties(module.exports, {
     },
   },
 
-  Icon: {
-    enumerable: true,
-    get() {
-      deprecatedModule(
-        `import { Icon } from 'expo' -> import * as Icon from '@expo/vector-icons'`,
-        'Icon',
-        '@expo/vector-icons'
-      );
-      return require('@expo/vector-icons');
-    },
-  },
-
   MapView: {
     enumerable: true,
     get() {
