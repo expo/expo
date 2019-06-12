@@ -409,6 +409,8 @@ PODS:
     - UMPermissionsInterface
   - EXCrypto (5.0.0):
     - UMCore
+  - EXDevice (1.0.0):
+    - UMCore
   - EXDocumentPicker (5.0.0):
     - UMCore
     - UMFileSystemInterface
@@ -1193,6 +1195,7 @@ DEPENDENCIES:
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXCrypto (from `../packages/expo-crypto/ios`)
+  - EXDevice (from `../packages/expo-device/ios`)
   - EXDocumentPicker (from `../packages/expo-document-picker/ios`)
   - EXFacebook (from `../packages/expo-facebook/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
@@ -1639,6 +1642,9 @@ EXTERNAL SOURCES:
   EXCrypto:
     :path: !ruby/object:Pathname
     path: "../packages/expo-crypto/ios"
+  EXDevice:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-device/ios"
   EXDocumentPicker:
     :path: !ruby/object:Pathname
     path: "../packages/expo-document-picker/ios"
@@ -1936,6 +1942,7 @@ SPEC CHECKSUMS:
   EXConstants: f1d63f5bcf9a790fea747ceba6411b7814005191
   EXContacts: cba6db9b4d8ef590c2185711a648fa32d90041b9
   EXCrypto: fdec92b3f9740e1c27858688d3cff33002f1ff44
+  EXDevice: 370fbd6c67a7be3b2976dedc29128ad71ec8331f
   EXDocumentPicker: 03566e97f55139cf76e0a85b2afdb29abb3f46c8
   EXFacebook: 670578e816563084201dc850b91dc2b8b8578189
   EXFaceDetector: 531fdafaa07a582cd898bacf05a68fa03b795d0d
@@ -2017,4 +2024,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: bd77b697fc78ff53e5e91ca9ea5a67676723450b
 
-COCOAPODS: 1.7.2
+COCOAPODS: 1.7.1

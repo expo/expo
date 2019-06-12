@@ -1,0 +1,1 @@
+../../../../../packages/expo-device/ios/EXDevice/EXDevice.h

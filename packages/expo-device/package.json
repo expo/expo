@@ -1,0 +1,33 @@
+{
+  "name": "expo-device",
+  "version": "1.0.0",
+  "description": "ExpoDevice standalone module",
+  "main": "build/Device.js",
+  "types": "build/Device.d.ts",
+  "scripts": {
+    "build": "expo-module build"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-device"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-device",
+  "peerDependencies": {
+    "@unimodules/core": "~1.0.0"
+  },
+  "gitHead": "f213c9be2a909dae42a0a27d8aa4b9eac8e97be1"
+
+,"_resolved": ""
+,"_integrity": ""
+,"_from": "expo-device@latest"
+}
