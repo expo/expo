@@ -331,6 +331,13 @@ target 'Exponent' do
         end
       end
 
+      if pod_name == 'UMReactNativeAdapter'
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RN_TURBO_MODULE_ENABLED=1'
+        end
+      end
+
       # Can't specify this in the React podspec because we need to use those podspecs for detached
       # projects which don't reference ExponentCPP.
       if pod_name.start_with?('React')

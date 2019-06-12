@@ -20401,6 +20401,34 @@
 			};
 			name = Release;
 		};
+		30184E74740A4620876FD8AE612CE24A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B50A475E8012F32B38D00D0F297CA4E0 /* UMReactNativeAdapter.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMReactNativeAdapter/UMReactNativeAdapter-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RN_TURBO_MODULE_ENABLED=1",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMReactNativeAdapter;
+				PRODUCT_NAME = UMReactNativeAdapter;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		30B281D9A528A6F58A15399FD6AB7CEB /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1F0451BDE5FAF57BAF327FF06A627E6A /* Bolts.xcconfig */;
@@ -23028,30 +23056,6 @@
 			};
 			name = Debug;
 		};
-		B59C91A09A3DB7ED1090786337009DC4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B50A475E8012F32B38D00D0F297CA4E0 /* UMReactNativeAdapter.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMReactNativeAdapter/UMReactNativeAdapter-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMReactNativeAdapter;
-				PRODUCT_NAME = UMReactNativeAdapter;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		B67E9345B30AF03ACE27BCD16D11170F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7D841D34D6C03DA3388C3CB84B8AEE6F /* React-RCTCameraRoll.xcconfig */;
@@ -23883,6 +23887,35 @@
 			};
 			name = Release;
 		};
+		E5EE16031FF4D60FCA24B419A6937DE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B50A475E8012F32B38D00D0F297CA4E0 /* UMReactNativeAdapter.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMReactNativeAdapter/UMReactNativeAdapter-prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"RN_TURBO_MODULE_ENABLED=1",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMReactNativeAdapter;
+				PRODUCT_NAME = UMReactNativeAdapter;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		E6A962E981A6AAA324E35F70E3FAD652 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8B8E7050C2EE40968C019F95868A8E03 /* GoogleUtilities.xcconfig */;
@@ -24043,31 +24076,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		ECAB7E5BC50E9532CB08208CECA72B9D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B50A475E8012F32B38D00D0F297CA4E0 /* UMReactNativeAdapter.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/UMReactNativeAdapter/UMReactNativeAdapter-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = UMReactNativeAdapter;
-				PRODUCT_NAME = UMReactNativeAdapter;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		EFA65C79059A49A2A2271010B868D37A /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -25207,8 +25215,8 @@
 		B663C58AF59ED9815D942141AB940501 /* Build configuration list for PBXNativeTarget "UMReactNativeAdapter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B59C91A09A3DB7ED1090786337009DC4 /* Debug */,
-				ECAB7E5BC50E9532CB08208CECA72B9D /* Release */,
+				30184E74740A4620876FD8AE612CE24A /* Debug */,
+				E5EE16031FF4D60FCA24B419A6937DE5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
