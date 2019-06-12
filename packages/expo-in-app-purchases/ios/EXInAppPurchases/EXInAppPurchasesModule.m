@@ -204,7 +204,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   for (SKPaymentTransaction *transaction in queue.transactions) {
     SKPaymentTransactionState transactionState = transaction.transactionState;
     if (transactionState == SKPaymentTransactionStateRestored || transactionState == SKPaymentTransactionStatePurchased) {
-      NSDictionary * transactionData = [self getTransactionData:transaction];
+      NSDictionary * transactionData = [self getTransactionData:transaction acknowledged:YES];
       [results addObject:transactionData];
 
       [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
@@ -236,7 +236,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
         _pendingTransactions[transaction.transactionIdentifier] = transaction;
         
         // Emit results
-        NSArray *results = @[[self getTransactionData:transaction]];
+        NSArray *results = @[[self getTransactionData:transaction acknowledged:NO]];
         NSDictionary *response = [self formatResults:results withResponseCode:OK];
         [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
         
@@ -251,7 +251,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
       }
       case SKPaymentTransactionStateDeferred: {
         // Emit results with deferred response code
-        NSArray *results = @[[self getTransactionData:transaction]];
+        NSArray *results = @[[self getTransactionData:transaction acknowledged:NO]];
         NSDictionary *response = [self formatResults:results withResponseCode:DEFERRED];
         [_eventEmitter sendEventWithName:EXPurchasesUpdatedEventName body:response];
         
@@ -342,11 +342,11 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
           };
 }
 
-- (NSDictionary *)getTransactionData:(SKPaymentTransaction *)transaction
+- (NSDictionary *)getTransactionData:(SKPaymentTransaction *)transaction acknowledged:(BOOL)acknowledged
 {
   NSData *receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
   return @{
-          @"acknowledged": @NO,
+          @"acknowledged": @(acknowledged),
           @"productId": transaction.payment.productIdentifier,
           @"purchaseToken": transaction.transactionIdentifier,
           @"purchaseState": @(transaction.transactionState),
