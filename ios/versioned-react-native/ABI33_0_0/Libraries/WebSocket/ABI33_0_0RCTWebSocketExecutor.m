@@ -195,7 +195,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
 
 - (void)flushedQueue:(ABI33_0_0RCTJavaScriptCallback)onComplete
 {
-  [self _executeJSCall:@"flushedQueue" arguments:@[] callback:onComplete];
+  [self _executeABI33_0_0JSCall:@"flushedQueue" arguments:@[] callback:onComplete];
 }
 
 - (void)callFunctionOnModule:(NSString *)module
@@ -203,17 +203,17 @@ ABI33_0_0RCT_EXPORT_MODULE()
                    arguments:(NSArray *)args
                     callback:(ABI33_0_0RCTJavaScriptCallback)onComplete
 {
-  [self _executeJSCall:@"callFunctionReturnFlushedQueue" arguments:@[module, method, args] callback:onComplete];
+  [self _executeABI33_0_0JSCall:@"callFunctionReturnFlushedQueue" arguments:@[module, method, args] callback:onComplete];
 }
 
 - (void)invokeCallbackID:(NSNumber *)cbID
                arguments:(NSArray *)args
                 callback:(ABI33_0_0RCTJavaScriptCallback)onComplete
 {
-  [self _executeJSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[cbID, args] callback:onComplete];
+  [self _executeABI33_0_0JSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[cbID, args] callback:onComplete];
 }
 
-- (void)_executeJSCall:(NSString *)method arguments:(NSArray *)arguments callback:(ABI33_0_0RCTJavaScriptCallback)onComplete
+- (void)_executeABI33_0_0JSCall:(NSString *)method arguments:(NSArray *)arguments callback:(ABI33_0_0RCTJavaScriptCallback)onComplete
 {
   ABI33_0_0RCTAssert(onComplete != nil, @"callback was missing for exec JS call");
   NSDictionary<NSString *, id> *message = @{

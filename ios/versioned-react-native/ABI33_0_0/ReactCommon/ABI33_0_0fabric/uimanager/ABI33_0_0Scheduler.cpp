@@ -38,7 +38,7 @@ Scheduler::Scheduler(
   uiManagerBinding_ = std::make_shared<UIManagerBinding>(std::move(uiManager));
 
   auto eventPipe = [uiManagerBinding = uiManagerBinding_.get()](
-                       jsi::Runtime &runtime,
+                       ABI33_0_0jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
                        const ValueFactory &payloadFactory) {
@@ -55,7 +55,7 @@ Scheduler::Scheduler(
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
   uiManagerRef.setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
+  runtimeExecutor_([=](ABI33_0_0jsi::Runtime &runtime) {
     UIManagerBinding::install(runtime, uiManagerBinding_);
   });
 }
@@ -79,7 +79,7 @@ void Scheduler::startSurface(
   shadowTreeRegistry_.add(std::move(shadowTree));
 
 #ifndef ANDROID
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
+  runtimeExecutor_([=](ABI33_0_0jsi::Runtime &runtime) {
     uiManagerBinding_->startSurface(
         runtime, surfaceId, moduleName, initialProps);
   });
@@ -144,7 +144,7 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
   shadowTree->setDelegate(nullptr);
 
 #ifndef ANDROID
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
+  runtimeExecutor_([=](ABI33_0_0jsi::Runtime &runtime) {
     uiManagerBinding_->stopSurface(runtime, surfaceId);
   });
 #endif

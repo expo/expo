@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI31_0_0/EXFaceDetectorInterface/ABI31_0_0EXFaceDetectorInterface/ABI31_0_0EXFaceDetectorManagerProvider.h

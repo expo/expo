@@ -45,7 +45,7 @@
                 eventName, [self class], [[self supportedEvents] componentsJoinedByString:@"`, `"]);
   }
   if (_listenerCount > 0) {
-    [_bridge enqueueJSCall:@"ABI33_0_0RCTDeviceEventEmitter"
+    [_bridge enqueueABI33_0_0JSCall:@"ABI33_0_0RCTDeviceEventEmitter"
                     method:@"emit"
                       args:body ? @[eventName, body] : @[eventName]
                 completion:NULL];

@@ -195,7 +195,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
     NSArray<NSNumber *> *sortedTimers = [[timersToCall sortedArrayUsingComparator:^(_ABI33_0_0RCTTimer *a, _ABI33_0_0RCTTimer *b) {
       return [a.target compare:b.target];
     }] valueForKey:@"callbackID"];
-    [_bridge enqueueJSCall:@"JSTimers"
+    [_bridge enqueueABI33_0_0JSCall:@"JSTimers"
                     method:@"callTimers"
                       args:@[sortedTimers]
                 completion:NULL];
@@ -215,7 +215,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
     if (kFrameDuration - frameElapsed >= kIdleCallbackFrameDeadline) {
       NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
       NSNumber *absoluteFrameStartMS = @((currentTimestamp - frameElapsed) * 1000);
-      [_bridge enqueueJSCall:@"JSTimers"
+      [_bridge enqueueABI33_0_0JSCall:@"JSTimers"
                       method:@"callIdleCallbacks"
                         args:@[absoluteFrameStartMS]
                   completion:NULL];

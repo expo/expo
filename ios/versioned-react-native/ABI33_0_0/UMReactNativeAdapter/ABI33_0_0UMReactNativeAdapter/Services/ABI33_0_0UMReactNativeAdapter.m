@@ -171,8 +171,8 @@ ABI33_0_0UM_REGISTER_MODULE();
   if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
     return _bridge.jsContextRef;
   } else { 
-    // In ReactABI33_0_0-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
-    // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
+    // In ReactABI33_0_0-native 0.59 vm is abstracted by ABI33_0_0JSI and all ABI33_0_0JSC specific references are removed
+    // To access ABI33_0_0jsc context we are extracting specific offset in ABI33_0_0jsi::Runtime, JSGlobalContextRef
     // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
     // WARNING: This is temporary solution that may break with new ReactABI33_0_0-native releases.
     return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);

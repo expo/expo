@@ -13,14 +13,14 @@ namespace ReactABI33_0_0 {
 /*
  * Exposes UIManager to JavaScript realm.
  */
-class UIManagerBinding : public jsi::HostObject {
+class UIManagerBinding : public ABI33_0_0jsi::HostObject {
  public:
   /*
    * Installs UIManagerBinding into JavaSctipt runtime.
    * Thread synchronization must be enforced externally.
    */
   static void install(
-      jsi::Runtime &runtime,
+      ABI33_0_0jsi::Runtime &runtime,
       std::shared_ptr<UIManagerBinding> uiManagerBinding);
 
   UIManagerBinding(std::unique_ptr<UIManager> uiManager);
@@ -30,7 +30,7 @@ class UIManagerBinding : public jsi::HostObject {
    * Thread synchronization must be enforced externally.
    */
   void startSurface(
-      jsi::Runtime &runtime,
+      ABI33_0_0jsi::Runtime &runtime,
       SurfaceId surfaceId,
       const std::string &moduleName,
       const folly::dynamic &initalProps) const;
@@ -39,14 +39,14 @@ class UIManagerBinding : public jsi::HostObject {
    * Stops ReactABI33_0_0 Native Surface with given id.
    * Thread synchronization must be enforced externally.
    */
-  void stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId) const;
+  void stopSurface(ABI33_0_0jsi::Runtime &runtime, SurfaceId surfaceId) const;
 
   /*
    * Delivers raw event data to JavaScript.
    * Thread synchronization must be enforced externally.
    */
   void dispatchEvent(
-      jsi::Runtime &runtime,
+      ABI33_0_0jsi::Runtime &runtime,
       const EventTarget *eventTarget,
       const std::string &type,
       const ValueFactory &payloadFactory) const;
@@ -61,9 +61,9 @@ class UIManagerBinding : public jsi::HostObject {
   void invalidate() const;
 
   /*
-   * `jsi::HostObject` specific overloads.
+   * `ABI33_0_0jsi::HostObject` specific overloads.
    */
-  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override;
+  ABI33_0_0jsi::Value get(ABI33_0_0jsi::Runtime &runtime, const ABI33_0_0jsi::PropNameID &name) override;
 
  private:
   std::unique_ptr<UIManager> uiManager_;

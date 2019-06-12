@@ -10,13 +10,13 @@
 namespace facebook {
 namespace ReactABI33_0_0 {
 
-std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> JSIndexedRAMBundle::buildFactory() {
+std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> ABI33_0_0JSIndexedRAMBundle::buildFactory() {
   return [](const std::string& bundlePath){
-    return folly::make_unique<JSIndexedRAMBundle>(bundlePath.c_str());
+    return folly::make_unique<ABI33_0_0JSIndexedRAMBundle>(bundlePath.c_str());
   };
 }
 
-JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) :
+ABI33_0_0JSIndexedRAMBundle::ABI33_0_0JSIndexedRAMBundle(const char *sourcePath) :
     m_bundle (sourcePath, std::ios_base::in) {
   if (!m_bundle) {
     throw std::ios_base::failure(
@@ -48,19 +48,19 @@ JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) :
   readBundle(m_startupCode->data(), startupCodeSize - 1);
 }
 
-JSIndexedRAMBundle::Module JSIndexedRAMBundle::getModule(uint32_t moduleId) const {
+ABI33_0_0JSIndexedRAMBundle::Module ABI33_0_0JSIndexedRAMBundle::getModule(uint32_t moduleId) const {
   Module ret;
   ret.name = folly::to<std::string>(moduleId, ".js");
   ret.code = getModuleCode(moduleId);
   return ret;
 }
 
-std::unique_ptr<const JSBigString> JSIndexedRAMBundle::getStartupCode() {
+std::unique_ptr<const JSBigString> ABI33_0_0JSIndexedRAMBundle::getStartupCode() {
   CHECK(m_startupCode) << "startup code for a RAM Bundle can only be retrieved once";
   return std::move(m_startupCode);
 }
 
-std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
+std::string ABI33_0_0JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
   const auto moduleData = id < m_table.numEntries ? &m_table.data[id] : nullptr;
 
   // entries without associated code have offset = 0 and length = 0
@@ -75,7 +75,7 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
   return ret;
 }
 
-void JSIndexedRAMBundle::readBundle(char *buffer, const std::streamsize bytes) const {
+void ABI33_0_0JSIndexedRAMBundle::readBundle(char *buffer, const std::streamsize bytes) const {
   if (!m_bundle.read(buffer, bytes)) {
     if (m_bundle.rdstate() & std::ios::eofbit) {
       throw std::ios_base::failure("Unexpected end of RAM Bundle file");
@@ -85,7 +85,7 @@ void JSIndexedRAMBundle::readBundle(char *buffer, const std::streamsize bytes) c
   }
 }
 
-void JSIndexedRAMBundle::readBundle(
+void ABI33_0_0JSIndexedRAMBundle::readBundle(
     char *buffer,
     const std::streamsize bytes,
     const std::ifstream::pos_type position) const {

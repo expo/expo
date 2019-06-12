@@ -33,23 +33,23 @@ static NSString *const ABI33_0_0RCTPerfMonitorCellIdentifier = @"ABI33_0_0RCTPer
 static CGFloat const ABI33_0_0RCTPerfMonitorBarHeight = 50;
 static CGFloat const ABI33_0_0RCTPerfMonitorExpandHeight = 250;
 
-typedef BOOL (*ABI33_0_0RCTJSCSetOptionType)(const char *);
+typedef BOOL (*ABI33_0_0RCTABI33_0_0JSCSetOptionType)(const char *);
 
-static BOOL ABI33_0_0RCTJSCSetOption(const char *option)
+static BOOL ABI33_0_0RCTABI33_0_0JSCSetOption(const char *option)
 {
-  static ABI33_0_0RCTJSCSetOptionType setOption;
+  static ABI33_0_0RCTABI33_0_0JSCSetOptionType setOption;
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{
     /**
-     * JSC private C++ static method to toggle options at runtime
+     * ABI33_0_0JSC private C++ static method to toggle options at runtime
      *
-     * JSC::Options::setOptions - JavaScriptCore/runtime/Options.h
+     * ABI33_0_0JSC::Options::setOptions - JavaScriptCore/runtime/Options.h
      */
-    setOption = dlsym(RTLD_DEFAULT, "_ZN3JSC7Options9setOptionEPKc");
+    setOption = dlsym(RTLD_DEFAULT, "_ZN3ABI33_0_0JSC7Options9setOptionEPKc");
 
     if (ABI33_0_0RCT_DEBUG && setOption == NULL) {
-      ABI33_0_0RCTLogWarn(@"The symbol used to enable JSC runtime options is not available in this iOS version");
+      ABI33_0_0RCTLogWarn(@"The symbol used to enable ABI33_0_0JSC runtime options is not available in this iOS version");
     }
   });
 
@@ -314,7 +314,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
 
   [self redirectLogs];
 
-  ABI33_0_0RCTJSCSetOption("logGC=1");
+  ABI33_0_0RCTABI33_0_0JSCSetOption("logGC=1");
 
   [self updateStats];
 
@@ -355,7 +355,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
   _jsGraph = nil;
   _uiGraph = nil;
 
-  ABI33_0_0RCTJSCSetOption("logGC=0");
+  ABI33_0_0RCTABI33_0_0JSCSetOption("logGC=0");
 
   [self stopLogs];
 
@@ -466,7 +466,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
 
   double mem = (double)ABI33_0_0RCTGetResidentMemorySize() / 1024 / 1024;
   self.memory.text  =[NSString stringWithFormat:@"RAM\n%.2lf\nMB", mem];
-  self.heap.text = [NSString stringWithFormat:@"JSC\n%.2lf\nMB", (double)_heapSize / 1024];
+  self.heap.text = [NSString stringWithFormat:@"ABI33_0_0JSC\n%.2lf\nMB", (double)_heapSize / 1024];
   self.views.text = [NSString stringWithFormat:@"Views\n%lu\n%lu", (unsigned long)visibleViewCount, (unsigned long)viewCount];
 
   __weak __typeof__(self) weakSelf = self;

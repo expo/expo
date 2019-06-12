@@ -39,13 +39,13 @@
 - (NSArray<id<ABI33_0_0RCTBridgeModule>> *)extraModulesForBridge:(ABI33_0_0RCTBridge *)bridge;
 
 /**
- * Configure whether the JSCExecutor created should use the system JSC API or
+ * Configure whether the ABI33_0_0JSCExecutor created should use the system ABI33_0_0JSC API or
  * alternative hooks provided. When returning YES from this method, you must have
- * previously called facebook::ReactABI33_0_0::setCustomJSCWrapper.
+ * previously called facebook::ReactABI33_0_0::setCustomABI33_0_0JSCWrapper.
  *
  * @experimental
  */
-- (BOOL)shouldBridgeUseCustomJSC:(ABI33_0_0RCTBridge *)bridge;
+- (BOOL)shouldBridgeUseCustomABI33_0_0JSC:(ABI33_0_0RCTBridge *)bridge;
 
 /**
 * The bridge will call this method when a module been called from JS

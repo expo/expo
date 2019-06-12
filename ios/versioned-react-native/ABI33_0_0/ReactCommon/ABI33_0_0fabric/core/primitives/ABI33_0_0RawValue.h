@@ -22,17 +22,17 @@ class RawProps;
  * `float`, `double`, `string`, and `vector` & `map` of those types and itself.
  *
  * The main intention of the class is to abstract ReactABI33_0_0 props parsing infra from
- * JSI, to enable support for any non-JSI-based data sources. The particular
+ * ABI33_0_0JSI, to enable support for any non-ABI33_0_0JSI-based data sources. The particular
  * implementation of the interface is a very slim abstraction around
  * `folly::dynamic` though.
- * In the near future, this class will hold a `jsi::Runtime` and `jsi::Value`
+ * In the near future, this class will hold a `ABI33_0_0jsi::Runtime` and `ABI33_0_0jsi::Value`
  * pair instead of `folly::dynamic`.
  *
- * How `RawValue` is different from `JSI::Value`:
+ * How `RawValue` is different from `ABI33_0_0JSI::Value`:
  *  * `RawValue` provides much more scoped API without any references to
  * JavaScript specifics.
  *  * The API is much more C++-idiomatic and easy to use from C++ code.
- *  * The API prevents access to JSI/JavaScript internals from prop-parsing
+ *  * The API prevents access to ABI33_0_0JSI/JavaScript internals from prop-parsing
  * code.
  *  * The `RawValue` is not copyable nor thread-safe, which prevent
  * misuse and accidental performance problems.

@@ -126,7 +126,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Load the first 4 bytes to check if the bundle is regular or RAM ("Random Access Modules" bundle).
   // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
   // The benefit of RAM bundle over a regular bundle is that we can lazily inject
-  // modules into JSC as they're required.
+  // modules into ABI33_0_0JSC as they're required.
   FILE *bundle = fopen(scriptURL.path.UTF8String, "r");
   if (!bundle) {
     if (error) {

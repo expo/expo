@@ -124,14 +124,14 @@
 		13F8876E1E29726200C3C7A1 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */; };
 		13F887701E29726200C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
 		13F887711E29726200C3C7A1 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
-		13F8877B1E29726200C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0C61E03699D0018521A /* JSIndexedRAMBundle.cpp */; };
+		13F8877B1E29726200C3C7A1 /* ABI33_0_0JSIndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0C61E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.cpp */; };
 		13F8877C1E29726200C3C7A1 /* MethodCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CA1E03699D0018521A /* MethodCall.cpp */; };
 		13F8877D1E29726200C3C7A1 /* ModuleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CC1E03699D0018521A /* ModuleRegistry.cpp */; };
 		13F8877E1E29726200C3C7A1 /* NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CF1E03699D0018521A /* NativeToJsBridge.cpp */; };
 		13F887801E29726200C3C7A1 /* SampleCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0D31E03699D0018521A /* SampleCxxModule.cpp */; };
 		13F887821E29726300C3C7A1 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */; };
 		13F887841E29726300C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
-		13F8878E1E29726300C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0C61E03699D0018521A /* JSIndexedRAMBundle.cpp */; };
+		13F8878E1E29726300C3C7A1 /* ABI33_0_0JSIndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0C61E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.cpp */; };
 		13F8878F1E29726300C3C7A1 /* MethodCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CA1E03699D0018521A /* MethodCall.cpp */; };
 		13F887901E29726300C3C7A1 /* ModuleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CC1E03699D0018521A /* ModuleRegistry.cpp */; };
 		13F887911E29726300C3C7A1 /* NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CF1E03699D0018521A /* NativeToJsBridge.cpp */; };
@@ -168,7 +168,7 @@
 		27595AA91E575C7800CCE2B1 /* Instance.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AF1E03699D0018521A /* Instance.h */; };
 		27595AAA1E575C7800CCE2B1 /* JsArgumentHelpers-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
 		27595AAB1E575C7800CCE2B1 /* JsArgumentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
-		27595AB51E575C7800CCE2B1 /* JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
+		27595AB51E575C7800CCE2B1 /* ABI33_0_0JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.h */; };
 		27595AB61E575C7800CCE2B1 /* MessageQueueThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		27595AB71E575C7800CCE2B1 /* MethodCall.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
 		27595AB81E575C7800CCE2B1 /* ModuleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
@@ -182,7 +182,7 @@
 		27595AC41E575C7800CCE2B1 /* Instance.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AF1E03699D0018521A /* Instance.h */; };
 		27595AC51E575C7800CCE2B1 /* JsArgumentHelpers-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
 		27595AC61E575C7800CCE2B1 /* JsArgumentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
-		27595AD01E575C7800CCE2B1 /* JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
+		27595AD01E575C7800CCE2B1 /* ABI33_0_0JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.h */; };
 		27595AD11E575C7800CCE2B1 /* MessageQueueThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		27595AD21E575C7800CCE2B1 /* MethodCall.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
 		27595AD31E575C7800CCE2B1 /* ModuleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
@@ -652,7 +652,7 @@
 		3DA981A71E5B0E34004F2374 /* JsArgumentHelpers.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
 		3DA981A81E5B0E34004F2374 /* JSBigString.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
 		3DA981A91E5B0E34004F2374 /* JSBundleType.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
-		3DA981B31E5B0E34004F2374 /* JSIndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
+		3DA981B31E5B0E34004F2374 /* ABI33_0_0JSIndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.h */; };
 		3DA981B41E5B0E34004F2374 /* JSModulesUnbundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
 		3DA981B51E5B0E34004F2374 /* MessageQueueThread.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		3DA981B61E5B0E34004F2374 /* MethodCall.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
@@ -763,7 +763,7 @@
 		3DA982421E5B1053004F2374 /* JsArgumentHelpers.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
 		3DA982431E5B1053004F2374 /* JSBigString.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
 		3DA982441E5B1053004F2374 /* JSBundleType.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
-		3DA9824E1E5B1053004F2374 /* JSIndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
+		3DA9824E1E5B1053004F2374 /* ABI33_0_0JSIndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.h */; };
 		3DA9824F1E5B1053004F2374 /* JSModulesUnbundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
 		3DA982501E5B1053004F2374 /* MessageQueueThread.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		3DA982511E5B1053004F2374 /* MethodCall.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
@@ -1038,10 +1038,10 @@
 		83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA661A601EF300E9B192 /* RCTEventDispatcher.m */; };
 		83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA971A6020BB00E9B192 /* RCTTouchHandler.m */; };
 		83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBACB1A6023D300E9B192 /* RCTConvert.m */; };
-		8507BBBE21EDACC200AEAFCA /* JSCExecutorFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8507BBBC21EDACC200AEAFCA /* JSCExecutorFactory.mm */; };
-		8507BBBF21EDACC200AEAFCA /* JSCExecutorFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8507BBBC21EDACC200AEAFCA /* JSCExecutorFactory.mm */; };
-		8507BBC021EDACC200AEAFCA /* JSCExecutorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 8507BBBD21EDACC200AEAFCA /* JSCExecutorFactory.h */; };
-		8507BBC121EDACC200AEAFCA /* JSCExecutorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 8507BBBD21EDACC200AEAFCA /* JSCExecutorFactory.h */; };
+		8507BBBE21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8507BBBC21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.mm */; };
+		8507BBBF21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8507BBBC21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.mm */; };
+		8507BBC021EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 8507BBBD21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.h */; };
+		8507BBC121EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 8507BBBD21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.h */; };
 		916F9C2D1F743F57002E5920 /* RCTModalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 91076A871F743AB00081B4FA /* RCTModalManager.m */; };
 		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
@@ -1103,21 +1103,21 @@
 		EBF21BFC1FC4990B0052F4D5 /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
 		EBF21BFE1FC499840052F4D5 /* InspectorInterfaces.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
 		EBF21BFF1FC4998E0052F4D5 /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
-		ED296F82214C973700B7C4FE /* libjsinspector-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF21BFA1FC4989A0052F4D5 /* libjsinspector-tvOS.a */; };
+		ED296F82214C973700B7C4FE /* libABI33_0_0jsinspector-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF21BFA1FC4989A0052F4D5 /* libABI33_0_0jsinspector-tvOS.a */; };
 		ED296F83214C974A00B7C4FE /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C06751DE3340C00C268FA /* libyoga.a */; };
-		ED296FB7214C9A9A00B7C4FE /* JSIDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DA214B3F6800DD5AC8 /* JSIDynamic.cpp */; };
-		ED296FB8214C9A9A00B7C4FE /* jsi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DB214B3F6800DD5AC8 /* jsi.cpp */; };
-		ED296FB9214C9AC200B7C4FE /* JSCRuntime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DD214B3F6800DD5AC8 /* JSCRuntime.cpp */; };
-		ED296FBC214C9B0400B7C4FE /* jsi-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* jsi-inl.h */; };
-		ED296FBF214C9B0400B7C4FE /* JSIDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* JSIDynamic.h */; };
-		ED296FC1214C9B0400B7C4FE /* JSCRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* JSCRuntime.h */; };
+		ED296FB7214C9A9A00B7C4FE /* ABI33_0_0JSIDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DA214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.cpp */; };
+		ED296FB8214C9A9A00B7C4FE /* ABI33_0_0jsi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DB214B3F6800DD5AC8 /* ABI33_0_0jsi.cpp */; };
+		ED296FB9214C9AC200B7C4FE /* ABI33_0_0JSCRuntime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DD214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.cpp */; };
+		ED296FBC214C9B0400B7C4FE /* ABI33_0_0jsi-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* ABI33_0_0jsi-inl.h */; };
+		ED296FBF214C9B0400B7C4FE /* ABI33_0_0JSIDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.h */; };
+		ED296FC1214C9B0400B7C4FE /* ABI33_0_0JSCRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.h */; };
 		ED296FC3214C9B0400B7C4FE /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */; };
-		ED296FC4214C9B0400B7C4FE /* jsi.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* jsi.h */; };
-		ED296FC5214C9B3E00B7C4FE /* jsi-inl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* jsi-inl.h */; };
-		ED296FC6214C9B4400B7C4FE /* JSIDynamic.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* JSIDynamic.h */; };
+		ED296FC4214C9B0400B7C4FE /* ABI33_0_0jsi.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* ABI33_0_0jsi.h */; };
+		ED296FC5214C9B3E00B7C4FE /* ABI33_0_0jsi-inl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* ABI33_0_0jsi-inl.h */; };
+		ED296FC6214C9B4400B7C4FE /* ABI33_0_0JSIDynamic.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.h */; };
 		ED296FC7214C9B4B00B7C4FE /* instrumentation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */; };
-		ED296FC8214C9B5200B7C4FE /* jsi.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* jsi.h */; };
-		ED296FCB214C9B6C00B7C4FE /* libjsi-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED296FB6214C9A0900B7C4FE /* libjsi-tvOS.a */; };
+		ED296FC8214C9B5200B7C4FE /* ABI33_0_0jsi.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* ABI33_0_0jsi.h */; };
+		ED296FCB214C9B6C00B7C4FE /* libABI33_0_0jsi-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED296FB6214C9A0900B7C4FE /* libABI33_0_0jsi-tvOS.a */; };
 		ED29703E2150126E00B7C4FE /* AtomicIntrusiveLinkedList.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D849C1E273B5600323FB7 /* AtomicIntrusiveLinkedList.h */; };
 		ED2970422150126E00B7C4FE /* Conv.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D84A01E273B5600323FB7 /* Conv.h */; };
 		ED2970432150126E00B7C4FE /* dynamic-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D84A11E273B5600323FB7 /* dynamic-inl.h */; };
@@ -1128,36 +1128,36 @@
 		ED29704A2150126E00B7C4FE /* MoveWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D84AA1E273B5600323FB7 /* MoveWrapper.h */; };
 		ED29704B2150126E00B7C4FE /* Optional.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D84AB1E273B5600323FB7 /* Optional.h */; };
 		ED29704C2150126E00B7C4FE /* ScopeGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D84AC1E273B5600323FB7 /* ScopeGuard.h */; };
-		ED29704F2150199F00B7C4FE /* JSCRuntime.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* JSCRuntime.h */; };
+		ED29704F2150199F00B7C4FE /* ABI33_0_0JSCRuntime.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.h */; };
 		ED297050215019B400B7C4FE /* instrumentation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */; };
-		ED297067215023D800B7C4FE /* libjsiexecutor-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED296FEE214C9CF800B7C4FE /* libjsiexecutor-tvOS.a */; };
-		ED6189692155BBF70000C9A7 /* JSIExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* JSIExecutor.h */; };
-		ED61896A2155BBF70000C9A7 /* JSIExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* JSIExecutor.h */; };
-		ED61896B2155BBF70000C9A7 /* JSINativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* JSINativeModules.h */; };
-		ED61896C2155BBF70000C9A7 /* JSINativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* JSINativeModules.h */; };
-		ED7286BC2155C62000C26ABF /* JSIExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* JSIExecutor.h */; };
-		ED7286BD2155C62000C26ABF /* JSINativeModules.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* JSINativeModules.h */; };
-		ED7286BE2155C62B00C26ABF /* JSIExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* JSIExecutor.h */; };
-		ED7286BF2155C62B00C26ABF /* JSINativeModules.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* JSINativeModules.h */; };
-		EDDA711D2164285A00B2D070 /* JSINativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711B2164285A00B2D070 /* JSINativeModules.cpp */; };
-		EDDA711E2164285A00B2D070 /* JSINativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711B2164285A00B2D070 /* JSINativeModules.cpp */; };
-		EDDA711F2164285A00B2D070 /* JSIExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711C2164285A00B2D070 /* JSIExecutor.cpp */; };
-		EDDA71202164285A00B2D070 /* JSIExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711C2164285A00B2D070 /* JSIExecutor.cpp */; };
-		EDEBC6E2214B3F6800DD5AC8 /* jsi-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* jsi-inl.h */; };
-		EDEBC6E3214B3F6800DD5AC8 /* JSIDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DA214B3F6800DD5AC8 /* JSIDynamic.cpp */; };
-		EDEBC6E4214B3F6800DD5AC8 /* jsi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DB214B3F6800DD5AC8 /* jsi.cpp */; };
-		EDEBC6E5214B3F6800DD5AC8 /* JSIDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* JSIDynamic.h */; };
-		EDEBC6E6214B3F6800DD5AC8 /* JSCRuntime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DD214B3F6800DD5AC8 /* JSCRuntime.cpp */; };
-		EDEBC6E7214B3F6800DD5AC8 /* JSCRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* JSCRuntime.h */; };
+		ED297067215023D800B7C4FE /* libABI33_0_0jsiexecutor-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED296FEE214C9CF800B7C4FE /* libABI33_0_0jsiexecutor-tvOS.a */; };
+		ED6189692155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h */; };
+		ED61896A2155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h */; };
+		ED61896B2155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h */; };
+		ED61896C2155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h */; };
+		ED7286BC2155C62000C26ABF /* ABI33_0_0JSIExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h */; };
+		ED7286BD2155C62000C26ABF /* ABI33_0_0JSINativeModules.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h */; };
+		ED7286BE2155C62B00C26ABF /* ABI33_0_0JSIExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h */; };
+		ED7286BF2155C62B00C26ABF /* ABI33_0_0JSINativeModules.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h */; };
+		EDDA711D2164285A00B2D070 /* ABI33_0_0JSINativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711B2164285A00B2D070 /* ABI33_0_0JSINativeModules.cpp */; };
+		EDDA711E2164285A00B2D070 /* ABI33_0_0JSINativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711B2164285A00B2D070 /* ABI33_0_0JSINativeModules.cpp */; };
+		EDDA711F2164285A00B2D070 /* ABI33_0_0JSIExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711C2164285A00B2D070 /* ABI33_0_0JSIExecutor.cpp */; };
+		EDDA71202164285A00B2D070 /* ABI33_0_0JSIExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711C2164285A00B2D070 /* ABI33_0_0JSIExecutor.cpp */; };
+		EDEBC6E2214B3F6800DD5AC8 /* ABI33_0_0jsi-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* ABI33_0_0jsi-inl.h */; };
+		EDEBC6E3214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DA214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.cpp */; };
+		EDEBC6E4214B3F6800DD5AC8 /* ABI33_0_0jsi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DB214B3F6800DD5AC8 /* ABI33_0_0jsi.cpp */; };
+		EDEBC6E5214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.h */; };
+		EDEBC6E6214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DD214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.cpp */; };
+		EDEBC6E7214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.h */; };
 		EDEBC6E8214B3F6800DD5AC8 /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */; };
-		EDEBC6E9214B3F6800DD5AC8 /* jsi.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* jsi.h */; };
-		EDEBC71A214B40A300DD5AC8 /* libjsi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC6D6214B3E7000DD5AC8 /* libjsi.a */; };
-		EDEBC71C214B40F900DD5AC8 /* jsi-inl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* jsi-inl.h */; };
-		EDEBC71D214B40F900DD5AC8 /* JSIDynamic.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* JSIDynamic.h */; };
-		EDEBC71E214B40F900DD5AC8 /* JSCRuntime.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* JSCRuntime.h */; };
-		EDEBC71F214B40F900DD5AC8 /* jsi.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* jsi.h */; };
-		EDEBC7DF214C705700DD5AC8 /* libjsiexecutor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC73B214B45A300DD5AC8 /* libjsiexecutor.a */; };
-		EDEBC7E0214C709200DD5AC8 /* libjsinspector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF21BDC1FC498900052F4D5 /* libjsinspector.a */; };
+		EDEBC6E9214B3F6800DD5AC8 /* ABI33_0_0jsi.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* ABI33_0_0jsi.h */; };
+		EDEBC71A214B40A300DD5AC8 /* libABI33_0_0jsi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC6D6214B3E7000DD5AC8 /* libABI33_0_0jsi.a */; };
+		EDEBC71C214B40F900DD5AC8 /* ABI33_0_0jsi-inl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* ABI33_0_0jsi-inl.h */; };
+		EDEBC71D214B40F900DD5AC8 /* ABI33_0_0JSIDynamic.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.h */; };
+		EDEBC71E214B40F900DD5AC8 /* ABI33_0_0JSCRuntime.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.h */; };
+		EDEBC71F214B40F900DD5AC8 /* ABI33_0_0jsi.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* ABI33_0_0jsi.h */; };
+		EDEBC7DF214C705700DD5AC8 /* libABI33_0_0jsiexecutor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC73B214B45A300DD5AC8 /* libABI33_0_0jsiexecutor.a */; };
+		EDEBC7E0214C709200DD5AC8 /* libABI33_0_0jsinspector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF21BDC1FC498900052F4D5 /* libABI33_0_0jsinspector.a */; };
 		F1EFDA50201F661000EE6E4C /* RCTUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F1EFDA4E201F660F00EE6E4C /* RCTUIUtils.m */; };
 		FEFAAC9E1FDB89B50057BBE0 /* RCTRedBoxExtraDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FEFAAC9C1FDB89B40057BBE0 /* RCTRedBoxExtraDataViewController.m */; };
 		FEFAAC9F1FDB89B50057BBE0 /* RCTRedBoxExtraDataViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FEFAAC9D1FDB89B40057BBE0 /* RCTRedBoxExtraDataViewController.h */; };
@@ -1211,14 +1211,14 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EDEBC6BA214B3E7000DD5AC8;
-			remoteInfo = jsi;
+			remoteInfo = ABI33_0_0jsi;
 		};
 		ED296F80214C971800B7C4FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EBF21BDD1FC4989A0052F4D5;
-			remoteInfo = "jsinspector-tvOS";
+			remoteInfo = "ABI33_0_0jsinspector-tvOS";
 		};
 		ED296F96214C996500B7C4FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1232,7 +1232,7 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = ED296F98214C9A0900B7C4FE;
-			remoteInfo = "jsi-tvOS";
+			remoteInfo = "ABI33_0_0jsi-tvOS";
 		};
 		ED296FF7214C9EAA00B7C4FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1253,7 +1253,7 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = ED296F98214C9A0900B7C4FE;
-			remoteInfo = "jsi-tvOS";
+			remoteInfo = "ABI33_0_0jsi-tvOS";
 		};
 		ED29704D215012C700B7C4FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1267,21 +1267,21 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = ED296FD0214C9CF800B7C4FE;
-			remoteInfo = "jsiexecutor-tvOS";
+			remoteInfo = "ABI33_0_0jsiexecutor-tvOS";
 		};
 		EDEBC74A214B46A700DD5AC8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EDEBC724214B45A300DD5AC8;
-			remoteInfo = jsiexecutor;
+			remoteInfo = ABI33_0_0jsiexecutor;
 		};
 		EDEBC74E214B477400DD5AC8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EDEBC6BA214B3E7000DD5AC8;
-			remoteInfo = jsi;
+			remoteInfo = ABI33_0_0jsi;
 		};
 		EDEBC7CB214C516800DD5AC8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1316,7 +1316,7 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = EBF21BBF1FC498900052F4D5;
-			remoteInfo = jsinspector;
+			remoteInfo = ABI33_0_0jsinspector;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -1506,7 +1506,7 @@
 				3DA982421E5B1053004F2374 /* JsArgumentHelpers.h in Copy Headers */,
 				3DA982431E5B1053004F2374 /* JSBigString.h in Copy Headers */,
 				3DA982441E5B1053004F2374 /* JSBundleType.h in Copy Headers */,
-				3DA9824E1E5B1053004F2374 /* JSIndexedRAMBundle.h in Copy Headers */,
+				3DA9824E1E5B1053004F2374 /* ABI33_0_0JSIndexedRAMBundle.h in Copy Headers */,
 				3DA9824F1E5B1053004F2374 /* JSModulesUnbundle.h in Copy Headers */,
 				3DA982501E5B1053004F2374 /* MessageQueueThread.h in Copy Headers */,
 				3DA982511E5B1053004F2374 /* MethodCall.h in Copy Headers */,
@@ -1703,7 +1703,7 @@
 				3DA981A71E5B0E34004F2374 /* JsArgumentHelpers.h in Copy Headers */,
 				3DA981A81E5B0E34004F2374 /* JSBigString.h in Copy Headers */,
 				3DA981A91E5B0E34004F2374 /* JSBundleType.h in Copy Headers */,
-				3DA981B31E5B0E34004F2374 /* JSIndexedRAMBundle.h in Copy Headers */,
+				3DA981B31E5B0E34004F2374 /* ABI33_0_0JSIndexedRAMBundle.h in Copy Headers */,
 				3DA981B41E5B0E34004F2374 /* JSModulesUnbundle.h in Copy Headers */,
 				3DA981B51E5B0E34004F2374 /* MessageQueueThread.h in Copy Headers */,
 				3DA981B61E5B0E34004F2374 /* MethodCall.h in Copy Headers */,
@@ -1720,7 +1720,7 @@
 		EBF21BCB1FC498900052F4D5 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = include/jsinspector;
+			dstPath = include/ABI33_0_0jsinspector;
 			dstSubfolderSpec = 16;
 			files = (
 				EBF21BFB1FC498FC0052F4D5 /* InspectorInterfaces.h in Copy Headers */,
@@ -1731,7 +1731,7 @@
 		EBF21BE91FC4989A0052F4D5 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = include/jsinspector;
+			dstPath = include/ABI33_0_0jsinspector;
 			dstSubfolderSpec = 16;
 			files = (
 				EBF21BFE1FC499840052F4D5 /* InspectorInterfaces.h in Copy Headers */,
@@ -1742,14 +1742,14 @@
 		ED296FA4214C9A0900B7C4FE /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = include/jsi;
+			dstPath = include/ABI33_0_0jsi;
 			dstSubfolderSpec = 16;
 			files = (
-				ED29704F2150199F00B7C4FE /* JSCRuntime.h in Copy Headers */,
-				ED296FC8214C9B5200B7C4FE /* jsi.h in Copy Headers */,
+				ED29704F2150199F00B7C4FE /* ABI33_0_0JSCRuntime.h in Copy Headers */,
+				ED296FC8214C9B5200B7C4FE /* ABI33_0_0jsi.h in Copy Headers */,
 				ED296FC7214C9B4B00B7C4FE /* instrumentation.h in Copy Headers */,
-				ED296FC6214C9B4400B7C4FE /* JSIDynamic.h in Copy Headers */,
-				ED296FC5214C9B3E00B7C4FE /* jsi-inl.h in Copy Headers */,
+				ED296FC6214C9B4400B7C4FE /* ABI33_0_0JSIDynamic.h in Copy Headers */,
+				ED296FC5214C9B3E00B7C4FE /* ABI33_0_0jsi-inl.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1757,11 +1757,11 @@
 		ED296FDC214C9CF800B7C4FE /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = include/jsireact;
+			dstPath = include/ABI33_0_0jsireact;
 			dstSubfolderSpec = 16;
 			files = (
-				ED7286BE2155C62B00C26ABF /* JSIExecutor.h in Copy Headers */,
-				ED7286BF2155C62B00C26ABF /* JSINativeModules.h in Copy Headers */,
+				ED7286BE2155C62B00C26ABF /* ABI33_0_0JSIExecutor.h in Copy Headers */,
+				ED7286BF2155C62B00C26ABF /* ABI33_0_0JSINativeModules.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1769,14 +1769,14 @@
 		EDEBC6C6214B3E7000DD5AC8 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
-			dstPath = include/jsi;
+			dstPath = include/ABI33_0_0jsi;
 			dstSubfolderSpec = 16;
 			files = (
 				ED297050215019B400B7C4FE /* instrumentation.h in Copy Headers */,
-				EDEBC71C214B40F900DD5AC8 /* jsi-inl.h in Copy Headers */,
-				EDEBC71D214B40F900DD5AC8 /* JSIDynamic.h in Copy Headers */,
-				EDEBC71E214B40F900DD5AC8 /* JSCRuntime.h in Copy Headers */,
-				EDEBC71F214B40F900DD5AC8 /* jsi.h in Copy Headers */,
+				EDEBC71C214B40F900DD5AC8 /* ABI33_0_0jsi-inl.h in Copy Headers */,
+				EDEBC71D214B40F900DD5AC8 /* ABI33_0_0JSIDynamic.h in Copy Headers */,
+				EDEBC71E214B40F900DD5AC8 /* ABI33_0_0JSCRuntime.h in Copy Headers */,
+				EDEBC71F214B40F900DD5AC8 /* ABI33_0_0jsi.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1784,11 +1784,11 @@
 		EDEBC72F214B45A300DD5AC8 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
-			dstPath = include/jsireact;
+			dstPath = include/ABI33_0_0jsireact;
 			dstSubfolderSpec = 16;
 			files = (
-				ED7286BC2155C62000C26ABF /* JSIExecutor.h in Copy Headers */,
-				ED7286BD2155C62000C26ABF /* JSINativeModules.h in Copy Headers */,
+				ED7286BC2155C62000C26ABF /* ABI33_0_0JSIExecutor.h in Copy Headers */,
+				ED7286BD2155C62000C26ABF /* ABI33_0_0JSINativeModules.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2038,8 +2038,8 @@
 		3D92B0AF1E03699D0018521A /* Instance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Instance.h; sourceTree = "<group>"; };
 		3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JsArgumentHelpers-inl.h"; sourceTree = "<group>"; };
 		3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsArgumentHelpers.h; sourceTree = "<group>"; };
-		3D92B0C61E03699D0018521A /* JSIndexedRAMBundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSIndexedRAMBundle.cpp; sourceTree = "<group>"; };
-		3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIndexedRAMBundle.h; sourceTree = "<group>"; };
+		3D92B0C61E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ABI33_0_0JSIndexedRAMBundle.cpp; sourceTree = "<group>"; };
+		3D92B0C71E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0JSIndexedRAMBundle.h; sourceTree = "<group>"; };
 		3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSModulesUnbundle.h; sourceTree = "<group>"; };
 		3D92B0C91E03699D0018521A /* MessageQueueThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageQueueThread.h; sourceTree = "<group>"; };
 		3D92B0CA1E03699D0018521A /* MethodCall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MethodCall.cpp; sourceTree = "<group>"; };
@@ -2187,8 +2187,8 @@
 		83CBBACA1A6023D300E9B192 /* RCTConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTConvert.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		83CBBACB1A6023D300E9B192 /* RCTConvert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert.m; sourceTree = "<group>"; };
 		83F15A171B7CC46900F10295 /* UIView+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+Private.h"; sourceTree = "<group>"; };
-		8507BBBC21EDACC200AEAFCA /* JSCExecutorFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSCExecutorFactory.mm; sourceTree = "<group>"; };
-		8507BBBD21EDACC200AEAFCA /* JSCExecutorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCExecutorFactory.h; sourceTree = "<group>"; };
+		8507BBBC21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ABI33_0_0JSCExecutorFactory.mm; sourceTree = "<group>"; };
+		8507BBBD21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0JSCExecutorFactory.h; sourceTree = "<group>"; };
 		91076A871F743AB00081B4FA /* RCTModalManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTModalManager.m; sourceTree = "<group>"; };
 		91076A881F743AB00081B4FA /* RCTModalManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTModalManager.h; sourceTree = "<group>"; };
 		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
@@ -2221,25 +2221,25 @@
 		E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAccessibilityManager.m; sourceTree = "<group>"; };
 		EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspectorInterfaces.h; sourceTree = "<group>"; };
 		EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InspectorInterfaces.cpp; sourceTree = "<group>"; };
-		EBF21BDC1FC498900052F4D5 /* libjsinspector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjsinspector.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		EBF21BFA1FC4989A0052F4D5 /* libjsinspector-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsinspector-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ED296FB6214C9A0900B7C4FE /* libjsi-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsi-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ED296FEE214C9CF800B7C4FE /* libjsiexecutor-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsiexecutor-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ED6189672155BBF70000C9A7 /* JSIExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSIExecutor.h; path = jsireact/JSIExecutor.h; sourceTree = "<group>"; };
-		ED6189682155BBF70000C9A7 /* JSINativeModules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSINativeModules.h; path = jsireact/JSINativeModules.h; sourceTree = "<group>"; };
-		EDDA711B2164285A00B2D070 /* JSINativeModules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSINativeModules.cpp; path = jsireact/JSINativeModules.cpp; sourceTree = "<group>"; };
-		EDDA711C2164285A00B2D070 /* JSIExecutor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSIExecutor.cpp; path = jsireact/JSIExecutor.cpp; sourceTree = "<group>"; };
-		EDEBC6D6214B3E7000DD5AC8 /* libjsi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjsi.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		EDEBC6D9214B3F6800DD5AC8 /* jsi-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "jsi-inl.h"; sourceTree = "<group>"; };
-		EDEBC6DA214B3F6800DD5AC8 /* JSIDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSIDynamic.cpp; sourceTree = "<group>"; };
-		EDEBC6DB214B3F6800DD5AC8 /* jsi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsi.cpp; sourceTree = "<group>"; };
-		EDEBC6DC214B3F6800DD5AC8 /* JSIDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIDynamic.h; sourceTree = "<group>"; };
-		EDEBC6DD214B3F6800DD5AC8 /* JSCRuntime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSCRuntime.cpp; sourceTree = "<group>"; };
-		EDEBC6DE214B3F6800DD5AC8 /* JSCRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCRuntime.h; sourceTree = "<group>"; };
+		EBF21BDC1FC498900052F4D5 /* libABI33_0_0jsinspector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libABI33_0_0jsinspector.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EBF21BFA1FC4989A0052F4D5 /* libABI33_0_0jsinspector-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libABI33_0_0jsinspector-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED296FB6214C9A0900B7C4FE /* libABI33_0_0jsi-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libABI33_0_0jsi-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED296FEE214C9CF800B7C4FE /* libABI33_0_0jsiexecutor-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libABI33_0_0jsiexecutor-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED6189672155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0JSIExecutor.h; path = ABI33_0_0jsireact/ABI33_0_0JSIExecutor.h; sourceTree = "<group>"; };
+		ED6189682155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0JSINativeModules.h; path = ABI33_0_0jsireact/ABI33_0_0JSINativeModules.h; sourceTree = "<group>"; };
+		EDDA711B2164285A00B2D070 /* ABI33_0_0JSINativeModules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ABI33_0_0JSINativeModules.cpp; path = ABI33_0_0jsireact/ABI33_0_0JSINativeModules.cpp; sourceTree = "<group>"; };
+		EDDA711C2164285A00B2D070 /* ABI33_0_0JSIExecutor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ABI33_0_0JSIExecutor.cpp; path = ABI33_0_0jsireact/ABI33_0_0JSIExecutor.cpp; sourceTree = "<group>"; };
+		EDEBC6D6214B3E7000DD5AC8 /* libABI33_0_0jsi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libABI33_0_0jsi.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EDEBC6D9214B3F6800DD5AC8 /* ABI33_0_0jsi-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0jsi-inl.h"; sourceTree = "<group>"; };
+		EDEBC6DA214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ABI33_0_0JSIDynamic.cpp; sourceTree = "<group>"; };
+		EDEBC6DB214B3F6800DD5AC8 /* ABI33_0_0jsi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ABI33_0_0jsi.cpp; sourceTree = "<group>"; };
+		EDEBC6DC214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0JSIDynamic.h; sourceTree = "<group>"; };
+		EDEBC6DD214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ABI33_0_0JSCRuntime.cpp; sourceTree = "<group>"; };
+		EDEBC6DE214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0JSCRuntime.h; sourceTree = "<group>"; };
 		EDEBC6DF214B3F6800DD5AC8 /* BUCK */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUCK; sourceTree = "<group>"; };
 		EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = instrumentation.h; sourceTree = "<group>"; };
-		EDEBC6E1214B3F6800DD5AC8 /* jsi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsi.h; sourceTree = "<group>"; };
-		EDEBC73B214B45A300DD5AC8 /* libjsiexecutor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjsiexecutor.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EDEBC6E1214B3F6800DD5AC8 /* ABI33_0_0jsi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0jsi.h; sourceTree = "<group>"; };
+		EDEBC73B214B45A300DD5AC8 /* libABI33_0_0jsiexecutor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libABI33_0_0jsiexecutor.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EDEBC740214B463000DD5AC8 /* BUCK */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUCK; sourceTree = "<group>"; };
 		EDEBC750214B47E100DD5AC8 /* JSDeltaBundleClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSDeltaBundleClient.cpp; sourceTree = "<group>"; };
 		EDEBC751214B47E100DD5AC8 /* JSDeltaBundleClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSDeltaBundleClient.h; sourceTree = "<group>"; };
@@ -2256,10 +2256,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDEBC7E0214C709200DD5AC8 /* libjsinspector.a in Frameworks */,
+				EDEBC7E0214C709200DD5AC8 /* libABI33_0_0jsinspector.a in Frameworks */,
 				3D3CD9411DE5FC5300167DC4 /* libcxxreact.a in Frameworks */,
-				EDEBC71A214B40A300DD5AC8 /* libjsi.a in Frameworks */,
-				EDEBC7DF214C705700DD5AC8 /* libjsiexecutor.a in Frameworks */,
+				EDEBC71A214B40A300DD5AC8 /* libABI33_0_0jsi.a in Frameworks */,
+				EDEBC7DF214C705700DD5AC8 /* libABI33_0_0jsiexecutor.a in Frameworks */,
 				53D123971FBF1DF5001B8A10 /* libyoga.a in Frameworks */,
 				3D383D6D1EBD2940005632C8 /* libdouble-conversion.a in Frameworks */,
 				3D383D6F1EBD2940005632C8 /* libthird-party.a in Frameworks */,
@@ -2270,10 +2270,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED297067215023D800B7C4FE /* libjsiexecutor-tvOS.a in Frameworks */,
-				ED296FCB214C9B6C00B7C4FE /* libjsi-tvOS.a in Frameworks */,
+				ED297067215023D800B7C4FE /* libABI33_0_0jsiexecutor-tvOS.a in Frameworks */,
+				ED296FCB214C9B6C00B7C4FE /* libABI33_0_0jsi-tvOS.a in Frameworks */,
 				ED296F83214C974A00B7C4FE /* libyoga.a in Frameworks */,
-				ED296F82214C973700B7C4FE /* libjsinspector-tvOS.a in Frameworks */,
+				ED296F82214C973700B7C4FE /* libABI33_0_0jsinspector-tvOS.a in Frameworks */,
 				2D1D83CE1F74E2DA00615550 /* libdouble-conversion.a in Frameworks */,
 				3D383D721EBD2949005632C8 /* libthird-party.a in Frameworks */,
 				3D8ED92C1E5B120100D83D20 /* libcxxreact.a in Frameworks */,
@@ -2364,8 +2364,8 @@
 				13134C781E296B2A00B9F3CB /* RCTMessageThread.mm */,
 				13134C7B1E296B2A00B9F3CB /* RCTObjcExecutor.h */,
 				13134C7C1E296B2A00B9F3CB /* RCTObjcExecutor.mm */,
-				8507BBBD21EDACC200AEAFCA /* JSCExecutorFactory.h */,
-				8507BBBC21EDACC200AEAFCA /* JSCExecutorFactory.mm */,
+				8507BBBD21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.h */,
+				8507BBBC21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.mm */,
 			);
 			path = CxxBridge;
 			sourceTree = "<group>";
@@ -2646,11 +2646,11 @@
 		3D10A3C71DDF3CED004A0F9D /* ReactCommon */ = {
 			isa = PBXGroup;
 			children = (
-				EDEBC73C214B463000DD5AC8 /* jsiexecutor */,
-				EDEBC6D8214B3F6800DD5AC8 /* jsi */,
+				EDEBC73C214B463000DD5AC8 /* ABI33_0_0jsiexecutor */,
+				EDEBC6D8214B3F6800DD5AC8 /* ABI33_0_0jsi */,
 				130A77021DF767AF001F9587 /* yoga */,
 				AC70D2EA1DE489FC002E6351 /* cxxreact */,
-				EBF21BB91FC497DA0052F4D5 /* jsinspector */,
+				EBF21BB91FC497DA0052F4D5 /* ABI33_0_0jsinspector */,
 			);
 			name = ReactCommon;
 			path = ../ReactCommon;
@@ -2855,12 +2855,12 @@
 				139D7ECE1E25DB7D00323FB7 /* libthird-party.a */,
 				3D383D3C1EBD27B6005632C8 /* libthird-party.a */,
 				3D383D621EBD27B9005632C8 /* libdouble-conversion.a */,
-				EBF21BDC1FC498900052F4D5 /* libjsinspector.a */,
-				EBF21BFA1FC4989A0052F4D5 /* libjsinspector-tvOS.a */,
-				EDEBC6D6214B3E7000DD5AC8 /* libjsi.a */,
-				EDEBC73B214B45A300DD5AC8 /* libjsiexecutor.a */,
-				ED296FB6214C9A0900B7C4FE /* libjsi-tvOS.a */,
-				ED296FEE214C9CF800B7C4FE /* libjsiexecutor-tvOS.a */,
+				EBF21BDC1FC498900052F4D5 /* libABI33_0_0jsinspector.a */,
+				EBF21BFA1FC4989A0052F4D5 /* libABI33_0_0jsinspector-tvOS.a */,
+				EDEBC6D6214B3E7000DD5AC8 /* libABI33_0_0jsi.a */,
+				EDEBC73B214B45A300DD5AC8 /* libABI33_0_0jsiexecutor.a */,
+				ED296FB6214C9A0900B7C4FE /* libABI33_0_0jsi-tvOS.a */,
+				ED296FEE214C9CF800B7C4FE /* libABI33_0_0jsiexecutor-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2984,8 +2984,8 @@
 				AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */,
 				3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */,
 				3D92B0AB1E03699D0018521A /* JSExecutor.h */,
-				3D92B0C61E03699D0018521A /* JSIndexedRAMBundle.cpp */,
-				3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */,
+				3D92B0C61E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.cpp */,
+				3D92B0C71E03699D0018521A /* ABI33_0_0JSIndexedRAMBundle.h */,
 				3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */,
 				3D92B0C91E03699D0018521A /* MessageQueueThread.h */,
 				3D92B0CA1E03699D0018521A /* MethodCall.cpp */,
@@ -3005,49 +3005,49 @@
 			path = cxxreact;
 			sourceTree = "<group>";
 		};
-		EBF21BB91FC497DA0052F4D5 /* jsinspector */ = {
+		EBF21BB91FC497DA0052F4D5 /* ABI33_0_0jsinspector */ = {
 			isa = PBXGroup;
 			children = (
 				EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */,
 				EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */,
 			);
-			path = jsinspector;
+			path = ABI33_0_0jsinspector;
 			sourceTree = "<group>";
 		};
-		ED6189662155BBDD0000C9A7 /* jsireact */ = {
+		ED6189662155BBDD0000C9A7 /* ABI33_0_0jsireact */ = {
 			isa = PBXGroup;
 			children = (
-				EDDA711C2164285A00B2D070 /* JSIExecutor.cpp */,
-				EDDA711B2164285A00B2D070 /* JSINativeModules.cpp */,
-				ED6189672155BBF70000C9A7 /* JSIExecutor.h */,
-				ED6189682155BBF70000C9A7 /* JSINativeModules.h */,
+				EDDA711C2164285A00B2D070 /* ABI33_0_0JSIExecutor.cpp */,
+				EDDA711B2164285A00B2D070 /* ABI33_0_0JSINativeModules.cpp */,
+				ED6189672155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h */,
+				ED6189682155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h */,
 			);
-			name = jsireact;
+			name = ABI33_0_0jsireact;
 			sourceTree = "<group>";
 		};
-		EDEBC6D8214B3F6800DD5AC8 /* jsi */ = {
+		EDEBC6D8214B3F6800DD5AC8 /* ABI33_0_0jsi */ = {
 			isa = PBXGroup;
 			children = (
-				EDEBC6D9214B3F6800DD5AC8 /* jsi-inl.h */,
-				EDEBC6DA214B3F6800DD5AC8 /* JSIDynamic.cpp */,
-				EDEBC6DB214B3F6800DD5AC8 /* jsi.cpp */,
-				EDEBC6DC214B3F6800DD5AC8 /* JSIDynamic.h */,
-				EDEBC6DD214B3F6800DD5AC8 /* JSCRuntime.cpp */,
-				EDEBC6DE214B3F6800DD5AC8 /* JSCRuntime.h */,
+				EDEBC6D9214B3F6800DD5AC8 /* ABI33_0_0jsi-inl.h */,
+				EDEBC6DA214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.cpp */,
+				EDEBC6DB214B3F6800DD5AC8 /* ABI33_0_0jsi.cpp */,
+				EDEBC6DC214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.h */,
+				EDEBC6DD214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.cpp */,
+				EDEBC6DE214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.h */,
 				EDEBC6DF214B3F6800DD5AC8 /* BUCK */,
 				EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */,
-				EDEBC6E1214B3F6800DD5AC8 /* jsi.h */,
+				EDEBC6E1214B3F6800DD5AC8 /* ABI33_0_0jsi.h */,
 			);
-			path = jsi;
+			path = ABI33_0_0jsi;
 			sourceTree = "<group>";
 		};
-		EDEBC73C214B463000DD5AC8 /* jsiexecutor */ = {
+		EDEBC73C214B463000DD5AC8 /* ABI33_0_0jsiexecutor */ = {
 			isa = PBXGroup;
 			children = (
-				ED6189662155BBDD0000C9A7 /* jsireact */,
+				ED6189662155BBDD0000C9A7 /* ABI33_0_0jsireact */,
 				EDEBC740214B463000DD5AC8 /* BUCK */,
 			);
-			path = jsiexecutor;
+			path = ABI33_0_0jsiexecutor;
 			sourceTree = "<group>";
 		};
 		F1EFDA4D201F660F00EE6E4C /* UIUtils */ = {
@@ -3112,7 +3112,7 @@
 				3D302F2E1DF828F800D6DDAE /* RCTBridgeDelegate.h in Headers */,
 				3D302F2F1DF828F800D6DDAE /* RCTBridgeMethod.h in Headers */,
 				130E3D8A1E6A083600ACE484 /* RCTDevSettings.h in Headers */,
-				8507BBC121EDACC200AEAFCA /* JSCExecutorFactory.h in Headers */,
+				8507BBC121EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.h in Headers */,
 				3D0E378E1F1CC59100DCAC9F /* RCTWebSocketModule.h in Headers */,
 				3D302F301DF828F800D6DDAE /* RCTBridgeModule.h in Headers */,
 				3D302F311DF828F800D6DDAE /* RCTBundleURLProvider.h in Headers */,
@@ -3284,7 +3284,7 @@
 				27595ABF1E575C7800CCE2B1 /* CxxModule.h in Headers */,
 				27595AD41E575C7800CCE2B1 /* NativeModule.h in Headers */,
 				27595AC01E575C7800CCE2B1 /* CxxNativeModule.h in Headers */,
-				27595AD01E575C7800CCE2B1 /* JSIndexedRAMBundle.h in Headers */,
+				27595AD01E575C7800CCE2B1 /* ABI33_0_0JSIndexedRAMBundle.h in Headers */,
 				27595AD31E575C7800CCE2B1 /* ModuleRegistry.h in Headers */,
 				27595AC11E575C7800CCE2B1 /* JSExecutor.h in Headers */,
 			);
@@ -3350,7 +3350,7 @@
 				27595AB91E575C7800CCE2B1 /* NativeModule.h in Headers */,
 				3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */,
 				27595AA51E575C7800CCE2B1 /* CxxNativeModule.h in Headers */,
-				27595AB51E575C7800CCE2B1 /* JSIndexedRAMBundle.h in Headers */,
+				27595AB51E575C7800CCE2B1 /* ABI33_0_0JSIndexedRAMBundle.h in Headers */,
 				27595AB81E575C7800CCE2B1 /* ModuleRegistry.h in Headers */,
 				27595AA61E575C7800CCE2B1 /* JSExecutor.h in Headers */,
 			);
@@ -3516,7 +3516,7 @@
 				3D80DA8C1DF820620028D040 /* RCTTextDecorationLineType.h in Headers */,
 				6577348E1EE8354A00A0E9EA /* RCTInspector.h in Headers */,
 				3D80DA8D1DF820620028D040 /* RCTView.h in Headers */,
-				8507BBC021EDACC200AEAFCA /* JSCExecutorFactory.h in Headers */,
+				8507BBC021EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.h in Headers */,
 				590D7BFD1EBD458B00D8A370 /* RCTShadowView+Layout.h in Headers */,
 				3D80DA8F1DF820620028D040 /* RCTViewManager.h in Headers */,
 				13134CA01E296B2A00B9F3CB /* RCTCxxUtils.h in Headers */,
@@ -3548,11 +3548,11 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED296FBC214C9B0400B7C4FE /* jsi-inl.h in Headers */,
-				ED296FBF214C9B0400B7C4FE /* JSIDynamic.h in Headers */,
-				ED296FC1214C9B0400B7C4FE /* JSCRuntime.h in Headers */,
+				ED296FBC214C9B0400B7C4FE /* ABI33_0_0jsi-inl.h in Headers */,
+				ED296FBF214C9B0400B7C4FE /* ABI33_0_0JSIDynamic.h in Headers */,
+				ED296FC1214C9B0400B7C4FE /* ABI33_0_0JSCRuntime.h in Headers */,
 				ED296FC3214C9B0400B7C4FE /* instrumentation.h in Headers */,
-				ED296FC4214C9B0400B7C4FE /* jsi.h in Headers */,
+				ED296FC4214C9B0400B7C4FE /* ABI33_0_0jsi.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3560,8 +3560,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED61896C2155BBF70000C9A7 /* JSINativeModules.h in Headers */,
-				ED61896A2155BBF70000C9A7 /* JSIExecutor.h in Headers */,
+				ED61896C2155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h in Headers */,
+				ED61896A2155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3586,10 +3586,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDEBC6E9214B3F6800DD5AC8 /* jsi.h in Headers */,
-				EDEBC6E7214B3F6800DD5AC8 /* JSCRuntime.h in Headers */,
-				EDEBC6E5214B3F6800DD5AC8 /* JSIDynamic.h in Headers */,
-				EDEBC6E2214B3F6800DD5AC8 /* jsi-inl.h in Headers */,
+				EDEBC6E9214B3F6800DD5AC8 /* ABI33_0_0jsi.h in Headers */,
+				EDEBC6E7214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.h in Headers */,
+				EDEBC6E5214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.h in Headers */,
+				EDEBC6E2214B3F6800DD5AC8 /* ABI33_0_0jsi-inl.h in Headers */,
 				EDEBC6E8214B3F6800DD5AC8 /* instrumentation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3598,8 +3598,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED61896B2155BBF70000C9A7 /* JSINativeModules.h in Headers */,
-				ED6189692155BBF70000C9A7 /* JSIExecutor.h in Headers */,
+				ED61896B2155BBF70000C9A7 /* ABI33_0_0JSINativeModules.h in Headers */,
+				ED6189692155BBF70000C9A7 /* ABI33_0_0JSIExecutor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3648,7 +3648,7 @@
 				3D302F231DF828D100D6DDAE /* Headers */,
 				3D302E191DF8249100D6DDAE /* Copy Headers */,
 				2D2A280F1D9B038B00D4039D /* Sources */,
-				2D6948201DA3042200B3FA97 /* Include RCTJSCProfiler */,
+				2D6948201DA3042200B3FA97 /* Include RCTABI33_0_0JSCProfiler */,
 				3D3C088B1DE342FE00C268FA /* Frameworks */,
 			);
 			buildRules = (
@@ -3778,7 +3778,7 @@
 				3D80DA181DF820500028D040 /* Headers */,
 				3D80D91E1DF6FA530028D040 /* Copy Headers */,
 				83CBBA2A1A601D0E00E9B192 /* Sources */,
-				142C4F7F1B582EA6001F0B58 /* Include RCTJSCProfiler */,
+				142C4F7F1B582EA6001F0B58 /* Include RCTABI33_0_0JSCProfiler */,
 				3D3C08881DE342EE00C268FA /* Frameworks */,
 			);
 			buildRules = (
@@ -3795,9 +3795,9 @@
 			productReference = 83CBBA2E1A601D0E00E9B192 /* libReact.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		EBF21BBF1FC498900052F4D5 /* jsinspector */ = {
+		EBF21BBF1FC498900052F4D5 /* ABI33_0_0jsinspector */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EBF21BD91FC498900052F4D5 /* Build configuration list for PBXNativeTarget "jsinspector" */;
+			buildConfigurationList = EBF21BD91FC498900052F4D5 /* Build configuration list for PBXNativeTarget "ABI33_0_0jsinspector" */;
 			buildPhases = (
 				EBF21BC41FC498900052F4D5 /* Headers */,
 				EBF21BCB1FC498900052F4D5 /* Copy Headers */,
@@ -3807,14 +3807,14 @@
 			);
 			dependencies = (
 			);
-			name = jsinspector;
+			name = ABI33_0_0jsinspector;
 			productName = React;
-			productReference = EBF21BDC1FC498900052F4D5 /* libjsinspector.a */;
+			productReference = EBF21BDC1FC498900052F4D5 /* libABI33_0_0jsinspector.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		EBF21BDD1FC4989A0052F4D5 /* jsinspector-tvOS */ = {
+		EBF21BDD1FC4989A0052F4D5 /* ABI33_0_0jsinspector-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EBF21BF71FC4989A0052F4D5 /* Build configuration list for PBXNativeTarget "jsinspector-tvOS" */;
+			buildConfigurationList = EBF21BF71FC4989A0052F4D5 /* Build configuration list for PBXNativeTarget "ABI33_0_0jsinspector-tvOS" */;
 			buildPhases = (
 				EBF21BE21FC4989A0052F4D5 /* Headers */,
 				EBF21BE91FC4989A0052F4D5 /* Copy Headers */,
@@ -3824,14 +3824,14 @@
 			);
 			dependencies = (
 			);
-			name = "jsinspector-tvOS";
+			name = "ABI33_0_0jsinspector-tvOS";
 			productName = "React-tvOS";
-			productReference = EBF21BFA1FC4989A0052F4D5 /* libjsinspector-tvOS.a */;
+			productReference = EBF21BFA1FC4989A0052F4D5 /* libABI33_0_0jsinspector-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		ED296F98214C9A0900B7C4FE /* jsi-tvOS */ = {
+		ED296F98214C9A0900B7C4FE /* ABI33_0_0jsi-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ED296FB3214C9A0900B7C4FE /* Build configuration list for PBXNativeTarget "jsi-tvOS" */;
+			buildConfigurationList = ED296FB3214C9A0900B7C4FE /* Build configuration list for PBXNativeTarget "ABI33_0_0jsi-tvOS" */;
 			buildPhases = (
 				ED296F99214C9A0900B7C4FE /* Headers */,
 				ED296FA4214C9A0900B7C4FE /* Copy Headers */,
@@ -3843,14 +3843,14 @@
 			dependencies = (
 				ED29704E215012C700B7C4FE /* PBXTargetDependency */,
 			);
-			name = "jsi-tvOS";
+			name = "ABI33_0_0jsi-tvOS";
 			productName = "React-tvOS";
-			productReference = ED296FB6214C9A0900B7C4FE /* libjsi-tvOS.a */;
+			productReference = ED296FB6214C9A0900B7C4FE /* libABI33_0_0jsi-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		ED296FD0214C9CF800B7C4FE /* jsiexecutor-tvOS */ = {
+		ED296FD0214C9CF800B7C4FE /* ABI33_0_0jsiexecutor-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ED296FEB214C9CF800B7C4FE /* Build configuration list for PBXNativeTarget "jsiexecutor-tvOS" */;
+			buildConfigurationList = ED296FEB214C9CF800B7C4FE /* Build configuration list for PBXNativeTarget "ABI33_0_0jsiexecutor-tvOS" */;
 			buildPhases = (
 				ED296FD1214C9CF800B7C4FE /* Headers */,
 				ED296FDC214C9CF800B7C4FE /* Copy Headers */,
@@ -3864,14 +3864,14 @@
 				ED296FFC214C9EC000B7C4FE /* PBXTargetDependency */,
 				ED296FF8214C9EAA00B7C4FE /* PBXTargetDependency */,
 			);
-			name = "jsiexecutor-tvOS";
+			name = "ABI33_0_0jsiexecutor-tvOS";
 			productName = "React-tvOS";
-			productReference = ED296FEE214C9CF800B7C4FE /* libjsiexecutor-tvOS.a */;
+			productReference = ED296FEE214C9CF800B7C4FE /* libABI33_0_0jsiexecutor-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		EDEBC6BA214B3E7000DD5AC8 /* jsi */ = {
+		EDEBC6BA214B3E7000DD5AC8 /* ABI33_0_0jsi */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EDEBC6D3214B3E7000DD5AC8 /* Build configuration list for PBXNativeTarget "jsi" */;
+			buildConfigurationList = EDEBC6D3214B3E7000DD5AC8 /* Build configuration list for PBXNativeTarget "ABI33_0_0jsi" */;
 			buildPhases = (
 				EDEBC6BB214B3E7000DD5AC8 /* Headers */,
 				EDEBC6C6214B3E7000DD5AC8 /* Copy Headers */,
@@ -3883,14 +3883,14 @@
 			dependencies = (
 				EDEBC7CC214C516800DD5AC8 /* PBXTargetDependency */,
 			);
-			name = jsi;
+			name = ABI33_0_0jsi;
 			productName = React;
-			productReference = EDEBC6D6214B3E7000DD5AC8 /* libjsi.a */;
+			productReference = EDEBC6D6214B3E7000DD5AC8 /* libABI33_0_0jsi.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		EDEBC724214B45A300DD5AC8 /* jsiexecutor */ = {
+		EDEBC724214B45A300DD5AC8 /* ABI33_0_0jsiexecutor */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EDEBC738214B45A300DD5AC8 /* Build configuration list for PBXNativeTarget "jsiexecutor" */;
+			buildConfigurationList = EDEBC738214B45A300DD5AC8 /* Build configuration list for PBXNativeTarget "ABI33_0_0jsiexecutor" */;
 			buildPhases = (
 				EDEBC729214B45A300DD5AC8 /* Headers */,
 				EDEBC72F214B45A300DD5AC8 /* Copy Headers */,
@@ -3904,9 +3904,9 @@
 				EDEBC7D3214C528C00DD5AC8 /* PBXTargetDependency */,
 				EDEBC7CE214C523F00DD5AC8 /* PBXTargetDependency */,
 			);
-			name = jsiexecutor;
+			name = ABI33_0_0jsiexecutor;
 			productName = React;
-			productReference = EDEBC73B214B45A300DD5AC8 /* libjsiexecutor.a */;
+			productReference = EDEBC73B214B45A300DD5AC8 /* libABI33_0_0jsiexecutor.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -3951,16 +3951,16 @@
 				3D3C059B1DE3340C00C268FA /* yoga-tvOS */,
 				3D3CD9191DE5FBEC00167DC4 /* cxxreact */,
 				3D3CD9261DE5FBEE00167DC4 /* cxxreact-tvOS */,
-				EBF21BBF1FC498900052F4D5 /* jsinspector */,
-				EBF21BDD1FC4989A0052F4D5 /* jsinspector-tvOS */,
+				EBF21BBF1FC498900052F4D5 /* ABI33_0_0jsinspector */,
+				EBF21BDD1FC4989A0052F4D5 /* ABI33_0_0jsinspector-tvOS */,
 				139D7ECD1E25DB7D00323FB7 /* third-party */,
 				3D383D211EBD27B6005632C8 /* third-party-tvOS */,
 				139D7E871E25C6D100323FB7 /* double-conversion */,
 				3D383D3D1EBD27B9005632C8 /* double-conversion-tvOS */,
-				EDEBC6BA214B3E7000DD5AC8 /* jsi */,
-				EDEBC724214B45A300DD5AC8 /* jsiexecutor */,
-				ED296F98214C9A0900B7C4FE /* jsi-tvOS */,
-				ED296FD0214C9CF800B7C4FE /* jsiexecutor-tvOS */,
+				EDEBC6BA214B3E7000DD5AC8 /* ABI33_0_0jsi */,
+				EDEBC724214B45A300DD5AC8 /* ABI33_0_0jsiexecutor */,
+				ED296F98214C9A0900B7C4FE /* ABI33_0_0jsi-tvOS */,
+				ED296FD0214C9CF800B7C4FE /* ABI33_0_0jsiexecutor-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -3981,19 +3981,19 @@
 			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		142C4F7F1B582EA6001F0B58 /* Include RCTJSCProfiler */ = {
+		142C4F7F1B582EA6001F0B58 /* Include RCTABI33_0_0JSCProfiler */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Include RCTJSCProfiler";
+			name = "Include RCTABI33_0_0JSCProfiler";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ \"$CONFIGURATION\" == \"Debug\" ]] && [[ -d \"/tmp/RCTJSCProfiler\" ]]; then\n   find \"${CONFIGURATION_BUILD_DIR}\" -name '*.app' | xargs -I{} sh -c 'cp -r /tmp/RCTJSCProfiler \"$1\"' -- {}\nfi\n";
+			shellScript = "if [[ \"$CONFIGURATION\" == \"Debug\" ]] && [[ -d \"/tmp/RCTABI33_0_0JSCProfiler\" ]]; then\n   find \"${CONFIGURATION_BUILD_DIR}\" -name '*.app' | xargs -I{} sh -c 'cp -r /tmp/RCTABI33_0_0JSCProfiler \"$1\"' -- {}\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		190EE32F1E6A43DE00A8543A /* Install Third Party */ = {
@@ -4071,19 +4071,19 @@
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/..\"\nexec ./scripts/ios-install-third-party.sh\n";
 		};
-		2D6948201DA3042200B3FA97 /* Include RCTJSCProfiler */ = {
+		2D6948201DA3042200B3FA97 /* Include RCTABI33_0_0JSCProfiler */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Include RCTJSCProfiler";
+			name = "Include RCTABI33_0_0JSCProfiler";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ \"$CONFIGURATION\" == \"Debug\" ]] && [[ -d \"/tmp/RCTJSCProfiler\" ]]; then\nfind \"${CONFIGURATION_BUILD_DIR}\" -name '*.app' | xargs -I{} sh -c 'cp -r /tmp/RCTJSCProfiler \"$1\"' -- {}\nfi";
+			shellScript = "if [[ \"$CONFIGURATION\" == \"Debug\" ]] && [[ -d \"/tmp/RCTABI33_0_0JSCProfiler\" ]]; then\nfind \"${CONFIGURATION_BUILD_DIR}\" -name '*.app' | xargs -I{} sh -c 'cp -r /tmp/RCTABI33_0_0JSCProfiler \"$1\"' -- {}\nfi";
 			showEnvVarsInLog = 0;
 		};
 		2D6948301DA3088700B3FA97 /* Start Packager */ = {
@@ -4236,7 +4236,7 @@
 				2D3B5E981D9B089500451313 /* RCTConvert.m in Sources */,
 				3D7BFD181EA8E351008DFB7A /* RCTPackagerClient.m in Sources */,
 				2D3B5EA71D9B08CE00451313 /* RCTTouchHandler.m in Sources */,
-				8507BBBF21EDACC200AEAFCA /* JSCExecutorFactory.mm in Sources */,
+				8507BBBF21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.mm in Sources */,
 				59D031F01F8353D3008361F0 /* RCTSafeAreaShadowView.m in Sources */,
 				5925356B20084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm in Sources */,
 				3D05745A1DE5FFF500184BB4 /* RCTJavaScriptLoader.mm in Sources */,
@@ -4373,7 +4373,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DC159E51E83E1E9007B1282 /* JSBigString.cpp in Sources */,
-				13F8877B1E29726200C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */,
+				13F8877B1E29726200C3C7A1 /* ABI33_0_0JSIndexedRAMBundle.cpp in Sources */,
 				13F8877D1E29726200C3C7A1 /* ModuleRegistry.cpp in Sources */,
 				C6D3801C1F71D76700621378 /* RAMBundleRegistry.cpp in Sources */,
 				13F8876E1E29726200C3C7A1 /* CxxNativeModule.cpp in Sources */,
@@ -4392,7 +4392,7 @@
 			files = (
 				BA0501AE2109DD0600A6BBC4 /* JSExecutor.cpp in Sources */,
 				3DC159E61E83E1FA007B1282 /* JSBigString.cpp in Sources */,
-				13F8878E1E29726300C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */,
+				13F8878E1E29726300C3C7A1 /* ABI33_0_0JSIndexedRAMBundle.cpp in Sources */,
 				13F887901E29726300C3C7A1 /* ModuleRegistry.cpp in Sources */,
 				C6D3801D1F71D76800621378 /* RAMBundleRegistry.cpp in Sources */,
 				13DA8A342097A90B00276ED4 /* ReactMarker.cpp in Sources */,
@@ -4429,7 +4429,7 @@
 				83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */,
 				131B6AF41AF1093D00FFC3E0 /* RCTSegmentedControl.m in Sources */,
 				830A229E1A66C68A008503DA /* RCTRootView.m in Sources */,
-				8507BBBE21EDACC200AEAFCA /* JSCExecutorFactory.mm in Sources */,
+				8507BBBE21EDACC200AEAFCA /* ABI33_0_0JSCExecutorFactory.mm in Sources */,
 				13B07FF01A69327A00A75B9A /* RCTExceptionsManager.m in Sources */,
 				13A0C28A1B74F71200B29F6F /* RCTDevMenu.m in Sources */,
 				13BCE8091C99CB9D00DD7AAD /* RCTRootShadowView.m in Sources */,
@@ -4566,9 +4566,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED296FB9214C9AC200B7C4FE /* JSCRuntime.cpp in Sources */,
-				ED296FB7214C9A9A00B7C4FE /* JSIDynamic.cpp in Sources */,
-				ED296FB8214C9A9A00B7C4FE /* jsi.cpp in Sources */,
+				ED296FB9214C9AC200B7C4FE /* ABI33_0_0JSCRuntime.cpp in Sources */,
+				ED296FB7214C9A9A00B7C4FE /* ABI33_0_0JSIDynamic.cpp in Sources */,
+				ED296FB8214C9A9A00B7C4FE /* ABI33_0_0jsi.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4576,8 +4576,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDDA711E2164285A00B2D070 /* JSINativeModules.cpp in Sources */,
-				EDDA71202164285A00B2D070 /* JSIExecutor.cpp in Sources */,
+				EDDA711E2164285A00B2D070 /* ABI33_0_0JSINativeModules.cpp in Sources */,
+				EDDA71202164285A00B2D070 /* ABI33_0_0JSIExecutor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4585,9 +4585,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDEBC6E6214B3F6800DD5AC8 /* JSCRuntime.cpp in Sources */,
-				EDEBC6E4214B3F6800DD5AC8 /* jsi.cpp in Sources */,
-				EDEBC6E3214B3F6800DD5AC8 /* JSIDynamic.cpp in Sources */,
+				EDEBC6E6214B3F6800DD5AC8 /* ABI33_0_0JSCRuntime.cpp in Sources */,
+				EDEBC6E4214B3F6800DD5AC8 /* ABI33_0_0jsi.cpp in Sources */,
+				EDEBC6E3214B3F6800DD5AC8 /* ABI33_0_0JSIDynamic.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4595,8 +4595,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDDA711D2164285A00B2D070 /* JSINativeModules.cpp in Sources */,
-				EDDA711F2164285A00B2D070 /* JSIExecutor.cpp in Sources */,
+				EDDA711D2164285A00B2D070 /* ABI33_0_0JSINativeModules.cpp in Sources */,
+				EDDA711F2164285A00B2D070 /* ABI33_0_0JSIExecutor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4635,12 +4635,12 @@
 		};
 		ED296F7E214C957300B7C4FE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = EDEBC6BA214B3E7000DD5AC8 /* jsi */;
+			target = EDEBC6BA214B3E7000DD5AC8 /* ABI33_0_0jsi */;
 			targetProxy = ED296F7D214C957300B7C4FE /* PBXContainerItemProxy */;
 		};
 		ED296F81214C971800B7C4FE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = EBF21BDD1FC4989A0052F4D5 /* jsinspector-tvOS */;
+			target = EBF21BDD1FC4989A0052F4D5 /* ABI33_0_0jsinspector-tvOS */;
 			targetProxy = ED296F80214C971800B7C4FE /* PBXContainerItemProxy */;
 		};
 		ED296F97214C996500B7C4FE /* PBXTargetDependency */ = {
@@ -4650,7 +4650,7 @@
 		};
 		ED296FCA214C9B6200B7C4FE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = ED296F98214C9A0900B7C4FE /* jsi-tvOS */;
+			target = ED296F98214C9A0900B7C4FE /* ABI33_0_0jsi-tvOS */;
 			targetProxy = ED296FC9214C9B6200B7C4FE /* PBXContainerItemProxy */;
 		};
 		ED296FF8214C9EAA00B7C4FE /* PBXTargetDependency */ = {
@@ -4665,7 +4665,7 @@
 		};
 		ED296FFE214C9EC600B7C4FE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = ED296F98214C9A0900B7C4FE /* jsi-tvOS */;
+			target = ED296F98214C9A0900B7C4FE /* ABI33_0_0jsi-tvOS */;
 			targetProxy = ED296FFD214C9EC600B7C4FE /* PBXContainerItemProxy */;
 		};
 		ED29704E215012C700B7C4FE /* PBXTargetDependency */ = {
@@ -4675,17 +4675,17 @@
 		};
 		ED2970662150237300B7C4FE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = ED296FD0214C9CF800B7C4FE /* jsiexecutor-tvOS */;
+			target = ED296FD0214C9CF800B7C4FE /* ABI33_0_0jsiexecutor-tvOS */;
 			targetProxy = ED2970652150237300B7C4FE /* PBXContainerItemProxy */;
 		};
 		EDEBC74B214B46A700DD5AC8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = EDEBC724214B45A300DD5AC8 /* jsiexecutor */;
+			target = EDEBC724214B45A300DD5AC8 /* ABI33_0_0jsiexecutor */;
 			targetProxy = EDEBC74A214B46A700DD5AC8 /* PBXContainerItemProxy */;
 		};
 		EDEBC74F214B477400DD5AC8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = EDEBC6BA214B3E7000DD5AC8 /* jsi */;
+			target = EDEBC6BA214B3E7000DD5AC8 /* ABI33_0_0jsi */;
 			targetProxy = EDEBC74E214B477400DD5AC8 /* PBXContainerItemProxy */;
 		};
 		EDEBC7CC214C516800DD5AC8 /* PBXTargetDependency */ = {
@@ -4710,7 +4710,7 @@
 		};
 		EDEBC7D9214C628300DD5AC8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = EBF21BBF1FC498900052F4D5 /* jsinspector */;
+			target = EBF21BBF1FC498900052F4D5 /* ABI33_0_0jsinspector */;
 			targetProxy = EDEBC7D8214C628300DD5AC8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -5220,7 +5220,7 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsinspector;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsinspector;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 			};
 			name = Debug;
@@ -5235,7 +5235,7 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsinspector;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsinspector;
 				RUN_CLANG_STATIC_ANALYZER = NO;
 			};
 			name = Release;
@@ -5254,7 +5254,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsinspector;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsinspector;
 				SDKROOT = appletvos;
 			};
 			name = Debug;
@@ -5273,7 +5273,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsinspector;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsinspector;
 				SDKROOT = appletvos;
 			};
 			name = Release;
@@ -5301,7 +5301,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsi;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsi;
 				SDKROOT = appletvos;
 			};
 			name = Debug;
@@ -5329,7 +5329,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsi;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsi;
 				SDKROOT = appletvos;
 			};
 			name = Release;
@@ -5357,7 +5357,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsireact;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsireact;
 				SDKROOT = appletvos;
 			};
 			name = Debug;
@@ -5385,7 +5385,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsireact;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsireact;
 				SDKROOT = appletvos;
 			};
 			name = Release;
@@ -5399,7 +5399,7 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsi;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsi;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 			};
 			name = Debug;
@@ -5414,7 +5414,7 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsi;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsi;
 				RUN_CLANG_STATIC_ANALYZER = NO;
 			};
 			name = Release;
@@ -5428,7 +5428,7 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsireact;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsireact;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 			};
 			name = Debug;
@@ -5443,7 +5443,7 @@
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsireact;
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/ABI33_0_0jsireact;
 				RUN_CLANG_STATIC_ANALYZER = NO;
 			};
 			name = Release;
@@ -5550,7 +5550,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EBF21BD91FC498900052F4D5 /* Build configuration list for PBXNativeTarget "jsinspector" */ = {
+		EBF21BD91FC498900052F4D5 /* Build configuration list for PBXNativeTarget "ABI33_0_0jsinspector" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EBF21BDA1FC498900052F4D5 /* Debug */,
@@ -5559,7 +5559,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EBF21BF71FC4989A0052F4D5 /* Build configuration list for PBXNativeTarget "jsinspector-tvOS" */ = {
+		EBF21BF71FC4989A0052F4D5 /* Build configuration list for PBXNativeTarget "ABI33_0_0jsinspector-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EBF21BF81FC4989A0052F4D5 /* Debug */,
@@ -5568,7 +5568,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ED296FB3214C9A0900B7C4FE /* Build configuration list for PBXNativeTarget "jsi-tvOS" */ = {
+		ED296FB3214C9A0900B7C4FE /* Build configuration list for PBXNativeTarget "ABI33_0_0jsi-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ED296FB4214C9A0900B7C4FE /* Debug */,
@@ -5577,7 +5577,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ED296FEB214C9CF800B7C4FE /* Build configuration list for PBXNativeTarget "jsiexecutor-tvOS" */ = {
+		ED296FEB214C9CF800B7C4FE /* Build configuration list for PBXNativeTarget "ABI33_0_0jsiexecutor-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ED296FEC214C9CF800B7C4FE /* Debug */,
@@ -5586,7 +5586,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EDEBC6D3214B3E7000DD5AC8 /* Build configuration list for PBXNativeTarget "jsi" */ = {
+		EDEBC6D3214B3E7000DD5AC8 /* Build configuration list for PBXNativeTarget "ABI33_0_0jsi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EDEBC6D4214B3E7000DD5AC8 /* Debug */,
@@ -5595,7 +5595,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EDEBC738214B45A300DD5AC8 /* Build configuration list for PBXNativeTarget "jsiexecutor" */ = {
+		EDEBC738214B45A300DD5AC8 /* Build configuration list for PBXNativeTarget "ABI33_0_0jsiexecutor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EDEBC739214B45A300DD5AC8 /* Debug */,

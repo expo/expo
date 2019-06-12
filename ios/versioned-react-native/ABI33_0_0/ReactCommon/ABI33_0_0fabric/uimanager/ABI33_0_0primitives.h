@@ -11,23 +11,23 @@ namespace facebook {
 namespace ReactABI33_0_0 {
 
 using RuntimeExecutor = std::function<void(
-    std::function<void(facebook::jsi::Runtime &runtime)> &&callback)>;
+    std::function<void(facebook::ABI33_0_0jsi::Runtime &runtime)> &&callback)>;
 
 struct EventHandlerWrapper : public EventHandler {
-  EventHandlerWrapper(jsi::Function eventHandler)
+  EventHandlerWrapper(ABI33_0_0jsi::Function eventHandler)
       : callback(std::move(eventHandler)) {}
 
-  jsi::Function callback;
+  ABI33_0_0jsi::Function callback;
 };
 
-struct ShadowNodeWrapper : public jsi::HostObject {
+struct ShadowNodeWrapper : public ABI33_0_0jsi::HostObject {
   ShadowNodeWrapper(SharedShadowNode shadowNode)
       : shadowNode(std::move(shadowNode)) {}
 
   SharedShadowNode shadowNode;
 };
 
-struct ShadowNodeListWrapper : public jsi::HostObject {
+struct ShadowNodeListWrapper : public ABI33_0_0jsi::HostObject {
   ShadowNodeListWrapper(SharedShadowNodeUnsharedList shadowNodeList)
       : shadowNodeList(shadowNodeList) {}
 
@@ -35,56 +35,56 @@ struct ShadowNodeListWrapper : public jsi::HostObject {
 };
 
 inline static SharedShadowNode shadowNodeFromValue(
-    jsi::Runtime &runtime,
-    const jsi::Value &value) {
+    ABI33_0_0jsi::Runtime &runtime,
+    const ABI33_0_0jsi::Value &value) {
   return value.getObject(runtime)
       .getHostObject<ShadowNodeWrapper>(runtime)
       ->shadowNode;
 }
 
-inline static jsi::Value valueFromShadowNode(
-    jsi::Runtime &runtime,
+inline static ABI33_0_0jsi::Value valueFromShadowNode(
+    ABI33_0_0jsi::Runtime &runtime,
     const SharedShadowNode &shadowNode) {
-  return jsi::Object::createFromHostObject(
+  return ABI33_0_0jsi::Object::createFromHostObject(
       runtime, std::make_shared<ShadowNodeWrapper>(shadowNode));
 }
 
 inline static SharedShadowNodeUnsharedList shadowNodeListFromValue(
-    jsi::Runtime &runtime,
-    const jsi::Value &value) {
+    ABI33_0_0jsi::Runtime &runtime,
+    const ABI33_0_0jsi::Value &value) {
   return value.getObject(runtime)
       .getHostObject<ShadowNodeListWrapper>(runtime)
       ->shadowNodeList;
 }
 
-inline static jsi::Value valueFromShadowNodeList(
-    jsi::Runtime &runtime,
+inline static ABI33_0_0jsi::Value valueFromShadowNodeList(
+    ABI33_0_0jsi::Runtime &runtime,
     const SharedShadowNodeUnsharedList &shadowNodeList) {
-  return jsi::Object::createFromHostObject(
+  return ABI33_0_0jsi::Object::createFromHostObject(
       runtime, std::make_unique<ShadowNodeListWrapper>(shadowNodeList));
 }
 
 inline static SharedEventTarget eventTargetFromValue(
-    jsi::Runtime &runtime,
-    const jsi::Value &eventTargetValue,
-    const jsi::Value &tagValue) {
+    ABI33_0_0jsi::Runtime &runtime,
+    const ABI33_0_0jsi::Value &eventTargetValue,
+    const ABI33_0_0jsi::Value &tagValue) {
   return std::make_shared<EventTarget>(
       runtime, eventTargetValue, tagValue.getNumber());
 }
 
-inline static Tag tagFromValue(jsi::Runtime &runtime, const jsi::Value &value) {
+inline static Tag tagFromValue(ABI33_0_0jsi::Runtime &runtime, const ABI33_0_0jsi::Value &value) {
   return (Tag)value.getNumber();
 }
 
 inline static SurfaceId surfaceIdFromValue(
-    jsi::Runtime &runtime,
-    const jsi::Value &value) {
+    ABI33_0_0jsi::Runtime &runtime,
+    const ABI33_0_0jsi::Value &value) {
   return (SurfaceId)value.getNumber();
 }
 
 inline static ComponentName componentNameFromValue(
-    jsi::Runtime &runtime,
-    const jsi::Value &value) {
+    ABI33_0_0jsi::Runtime &runtime,
+    const ABI33_0_0jsi::Value &value) {
   return value.getString(runtime).utf8(runtime);
 }
 

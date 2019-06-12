@@ -57,13 +57,13 @@ public:
     }
     if (isEndOfBatch) {
       // onBatchComplete will be called on the native (module) queue, but
-      // decrementPendingJSCalls will be called sync. Be aware that the bridge may still
+      // decrementPendingABI33_0_0JSCalls will be called sync. Be aware that the bridge may still
       // be processing native calls when the birdge idle signaler fires.
       if (m_batchHadNativeModuleCalls) {
         m_callback->onBatchComplete();
         m_batchHadNativeModuleCalls = false;
       }
-      m_callback->decrementPendingJSCalls();
+      m_callback->decrementPendingABI33_0_0JSCalls();
     }
   }
 
@@ -149,7 +149,7 @@ void NativeToJsBridge::callFunction(
   systraceCookie = m_systraceCookie++;
   FbSystraceAsyncFlow::begin(
       TRACE_TAG_REACT_CXX_BRIDGE,
-      "JSCall",
+      "ABI33_0_0JSCall",
       systraceCookie);
   #endif
 
@@ -163,7 +163,7 @@ void NativeToJsBridge::callFunction(
       #ifdef WITH_FBSYSTRACE
       FbSystraceAsyncFlow::end(
           TRACE_TAG_REACT_CXX_BRIDGE,
-          "JSCall",
+          "ABI33_0_0JSCall",
           systraceCookie);
       SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
       #else

@@ -13,19 +13,19 @@ namespace ReactABI33_0_0 {
 using Tag = EventTarget::Tag;
 
 EventTarget::EventTarget(
-    jsi::Runtime &runtime,
-    const jsi::Value &instanceHandle,
+    ABI33_0_0jsi::Runtime &runtime,
+    const ABI33_0_0jsi::Value &instanceHandle,
     Tag tag)
     : weakInstanceHandle_(
-          jsi::WeakObject(runtime, instanceHandle.asObject(runtime))),
-      strongInstanceHandle_(jsi::Value::null()),
+          ABI33_0_0jsi::WeakObject(runtime, instanceHandle.asObject(runtime))),
+      strongInstanceHandle_(ABI33_0_0jsi::Value::null()),
       tag_(tag) {}
 
 void EventTarget::setEnabled(bool enabled) const {
   enabled_ = enabled;
 }
 
-void EventTarget::retain(jsi::Runtime &runtime) const {
+void EventTarget::retain(ABI33_0_0jsi::Runtime &runtime) const {
   if (!enabled_) {
     return;
   }
@@ -35,27 +35,27 @@ void EventTarget::retain(jsi::Runtime &runtime) const {
   // Having a `null` or `undefined` object here indicates that
   // `weakInstanceHandle_` was already deallocated. This should *not* happen by
   // design, and if it happens it's a severe problem. This basically means that
-  // particular implementation of JSI was able to detect this inconsistency and
-  // dealt with it, but some JSI implementation may not support this feature and
+  // particular implementation of ABI33_0_0JSI was able to detect this inconsistency and
+  // dealt with it, but some ABI33_0_0JSI implementation may not support this feature and
   // that case will lead to a crash in those environments.
   assert(!strongInstanceHandle_.isNull());
   assert(!strongInstanceHandle_.isUndefined());
 }
 
-void EventTarget::release(jsi::Runtime &runtime) const {
-  // The method does not use `jsi::Runtime` reference.
+void EventTarget::release(ABI33_0_0jsi::Runtime &runtime) const {
+  // The method does not use `ABI33_0_0jsi::Runtime` reference.
   // It takes it only to ensure thread-safety (if the caller has the reference,
   // we are on a proper thread).
-  strongInstanceHandle_ = jsi::Value::null();
+  strongInstanceHandle_ = ABI33_0_0jsi::Value::null();
 }
 
-jsi::Value EventTarget::getInstanceHandle(jsi::Runtime &runtime) const {
+ABI33_0_0jsi::Value EventTarget::getInstanceHandle(ABI33_0_0jsi::Runtime &runtime) const {
   if (strongInstanceHandle_.isNull()) {
     // The `instanceHandle` is not retained.
-    return jsi::Value::null();
+    return ABI33_0_0jsi::Value::null();
   }
 
-  return jsi::Value(runtime, strongInstanceHandle_);
+  return ABI33_0_0jsi::Value(runtime, strongInstanceHandle_);
 }
 
 Tag EventTarget::getTag() const {

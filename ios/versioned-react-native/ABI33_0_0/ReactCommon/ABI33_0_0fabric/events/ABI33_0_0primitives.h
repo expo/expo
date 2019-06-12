@@ -41,10 +41,10 @@ struct EventHandler {
 };
 using UniqueEventHandler = std::unique_ptr<const EventHandler>;
 
-using ValueFactory = std::function<jsi::Value(jsi::Runtime &runtime)>;
+using ValueFactory = std::function<ABI33_0_0jsi::Value(ABI33_0_0jsi::Runtime &runtime)>;
 
 using EventPipe = std::function<void(
-    jsi::Runtime &runtime,
+    ABI33_0_0jsi::Runtime &runtime,
     const EventTarget *eventTarget,
     const std::string &type,
     const ValueFactory &payloadFactory)>;

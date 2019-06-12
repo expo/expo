@@ -38,7 +38,7 @@ ABI33_0_0EX_EXPORT_SCOPED_MODULE(ExponentUpdates, UpdatesManager)
 
 - (void)sendEventWithBody:(NSDictionary *)body
 {
-  [_bridge enqueueJSCall:@"ABI33_0_0RCTDeviceEventEmitter.emit" args:@[ABI33_0_0EXUpdatesEventName, body]];
+  [_bridge enqueueABI33_0_0JSCall:@"ABI33_0_0RCTDeviceEventEmitter.emit" args:@[ABI33_0_0EXUpdatesEventName, body]];
 }
 
 ABI33_0_0RCT_EXPORT_METHOD(reload)

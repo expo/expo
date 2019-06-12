@@ -11,16 +11,16 @@ namespace facebook {
 namespace ReactABI33_0_0 {
 
 void SliderEventEmitter::onValueChange(float value) const {
-  dispatchEvent("valueChange", [value](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
+  dispatchEvent("valueChange", [value](ABI33_0_0jsi::Runtime &runtime) {
+    auto payload = ABI33_0_0jsi::Object(runtime);
     payload.setProperty(runtime, "value", value);
     return payload;
   });
 }
 
 void SliderEventEmitter::onSlidingComplete(float value) const {
-  dispatchEvent("slidingComplete", [value](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
+  dispatchEvent("slidingComplete", [value](ABI33_0_0jsi::Runtime &runtime) {
+    auto payload = ABI33_0_0jsi::Object(runtime);
     payload.setProperty(runtime, "value", value);
     return payload;
   });

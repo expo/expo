@@ -25,8 +25,8 @@ class JSExecutorFactory;
 /**
  * In the ABI33_0_0RCTCxxBridge, if this method is implemented, return a
  * ExecutorFactory instance which can be used to create the executor.
- * If not implemented, or returns an empty pointer, JSIExecutorFactory
- * will be used with a JSCRuntime.
+ * If not implemented, or returns an empty pointer, ABI33_0_0JSIExecutorFactory
+ * will be used with a ABI33_0_0JSCRuntime.
  */
 - (std::unique_ptr<facebook::ReactABI33_0_0::JSExecutorFactory>)jsExecutorFactoryForBridge:(ABI33_0_0RCTBridge *)bridge;
 

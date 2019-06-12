@@ -62,9 +62,9 @@ void MainRunLoopEventBeat::lockExecutorAndBeat() const
   mutex2.lock();
   mutex3.lock();
 
-  jsi::Runtime *runtimePtr;
+  ABI33_0_0jsi::Runtime *runtimePtr;
 
-  runtimeExecutor_([&](jsi::Runtime &runtime) {
+  runtimeExecutor_([&](ABI33_0_0jsi::Runtime &runtime) {
     runtimePtr = &runtime;
     mutex1.unlock();
     // `beat` is called somewhere here.

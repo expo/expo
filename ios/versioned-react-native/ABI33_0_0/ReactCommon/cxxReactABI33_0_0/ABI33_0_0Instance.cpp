@@ -58,7 +58,7 @@ void Instance::initializeBridge(
 void Instance::loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                                std::unique_ptr<const JSBigString> string,
                                std::string sourceURL) {
-  callback_->incrementPendingJSCalls();
+  callback_->incrementPendingABI33_0_0JSCalls();
   SystraceSection s("Instance::loadApplication", "sourceURL",
                     sourceURL);
   nativeToJsBridge_->loadApplication(std::move(bundleRegistry), std::move(string),
@@ -78,7 +78,7 @@ void Instance::loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegi
 }
 
 void Instance::setSourceURL(std::string sourceURL) {
-  callback_->incrementPendingJSCalls();
+  callback_->incrementPendingABI33_0_0JSCalls();
   SystraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
 
   nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
@@ -111,9 +111,9 @@ bool Instance::isIndexedRAMBundle(const char *sourcePath) {
 void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
                            const std::string& sourceURL,
                            bool loadSynchronously) {
-    auto bundle = folly::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
+    auto bundle = folly::make_unique<ABI33_0_0JSIndexedRAMBundle>(sourcePath.c_str());
     auto startupScript = bundle->getStartupCode();
-    auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory());
+    auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), ABI33_0_0JSIndexedRAMBundle::buildFactory());
     loadRAMBundle(
       std::move(registry),
       std::move(startupScript),
@@ -155,14 +155,14 @@ bool Instance::isBatchActive() {
 
 void Instance::callJSFunction(std::string &&module, std::string &&method,
                               folly::dynamic &&params) {
-  callback_->incrementPendingJSCalls();
+  callback_->incrementPendingABI33_0_0JSCalls();
   nativeToJsBridge_->callFunction(std::move(module), std::move(method),
                                   std::move(params));
 }
 
-void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
-  SystraceSection s("Instance::callJSCallback");
-  callback_->incrementPendingJSCalls();
+void Instance::callABI33_0_0JSCallback(uint64_t callbackId, folly::dynamic &&params) {
+  SystraceSection s("Instance::callABI33_0_0JSCallback");
+  callback_->incrementPendingABI33_0_0JSCalls();
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
 }
 

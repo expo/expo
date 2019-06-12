@@ -18,12 +18,12 @@
 namespace facebook {
 namespace ReactABI33_0_0 {
 
-class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
+class RN_EXPORT ABI33_0_0JSIndexedRAMBundle : public JSModulesUnbundle {
 public:
   static std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> buildFactory();
 
   // Throws std::runtime_error on failure.
-  JSIndexedRAMBundle(const char *sourceURL);
+  ABI33_0_0JSIndexedRAMBundle(const char *sourceURL);
 
   // Throws std::runtime_error on failure.
   std::unique_ptr<const JSBigString> getStartupCode();

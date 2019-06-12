@@ -13,8 +13,8 @@ namespace ReactABI33_0_0 {
 #pragma mark - Accessibility
 
 void ViewEventEmitter::onAccessibilityAction(const std::string &name) const {
-  dispatchEvent("accessibilityAction", [name](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
+  dispatchEvent("accessibilityAction", [name](ABI33_0_0jsi::Runtime &runtime) {
+    auto payload = ABI33_0_0jsi::Object(runtime);
     payload.setProperty(runtime, "action", name);
     return payload;
   });
@@ -35,13 +35,13 @@ void ViewEventEmitter::onAccessibilityEscape() const {
 #pragma mark - Layout
 
 void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
-  dispatchEvent("layout", [frame = layoutMetrics.frame](jsi::Runtime &runtime) {
-    auto layout = jsi::Object(runtime);
+  dispatchEvent("layout", [frame = layoutMetrics.frame](ABI33_0_0jsi::Runtime &runtime) {
+    auto layout = ABI33_0_0jsi::Object(runtime);
     layout.setProperty(runtime, "x", frame.origin.x);
     layout.setProperty(runtime, "y", frame.origin.y);
     layout.setProperty(runtime, "width", frame.size.width);
     layout.setProperty(runtime, "height", frame.size.height);
-    auto payload = jsi::Object(runtime);
+    auto payload = ABI33_0_0jsi::Object(runtime);
     payload.setProperty(runtime, "layout", std::move(layout));
     return payload;
   });

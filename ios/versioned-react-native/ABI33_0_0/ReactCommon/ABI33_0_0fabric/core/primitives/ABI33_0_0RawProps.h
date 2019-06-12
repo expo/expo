@@ -17,11 +17,11 @@ namespace ReactABI33_0_0 {
 
 /*
  * `RawProps` represents an untyped map of props comes from JavaScript side.
- * `RawProps` stores JSI (or `folly::dynamic`) primitives inside and abstract
+ * `RawProps` stores ABI33_0_0JSI (or `folly::dynamic`) primitives inside and abstract
  * them as `RawValue` objects.
  * `RawProps` is NOT a thread-safe type nor long-living type.
  * The caller must not store values of this type.
- * The class is practically a wrapper around a `jsi::Value and `jsi::Runtime`
+ * The class is practically a wrapper around a `ABI33_0_0jsi::Value and `ABI33_0_0jsi::Runtime`
  * pair (or folly::dynamic) preventing direct access to it and inefficient
  * misuse. Not copyable, not moveable.
  */
@@ -30,16 +30,16 @@ class RawProps {
   /*
    * Creates an object with given `runtime` and `value`.
    */
-  RawProps(jsi::Runtime &runtime, const jsi::Value &value) noexcept
+  RawProps(ABI33_0_0jsi::Runtime &runtime, const ABI33_0_0jsi::Value &value) noexcept
       : RawProps(
             value.isNull() ? folly::dynamic::object()
-                           : jsi::dynamicFromValue(runtime, value)) {}
+                           : ABI33_0_0jsi::dynamicFromValue(runtime, value)) {}
 
   /*
    * Creates an object with given `folly::dynamic` object.
    * Deprecated.
    * We need this temporary, only because we have a callsite that does not have
-   * a `jsi::Runtime` behind the data.
+   * a `ABI33_0_0jsi::Runtime` behind the data.
    */
   RawProps(const folly::dynamic &dynamic) noexcept
       :

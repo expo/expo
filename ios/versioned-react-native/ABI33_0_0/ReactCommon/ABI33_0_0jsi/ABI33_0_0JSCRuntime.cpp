@@ -15,31 +15,31 @@
 #include <thread>
 
 namespace facebook {
-namespace jsc {
+namespace ABI33_0_0jsc {
 
 namespace detail {
 class ArgsConverter;
 } // namespace detail
 
-class JSCRuntime;
+class ABI33_0_0JSCRuntime;
 
 struct Lock {
-  void lock(const jsc::JSCRuntime&) const {}
-  void unlock(const jsc::JSCRuntime&) const {}
+  void lock(const ABI33_0_0jsc::ABI33_0_0JSCRuntime&) const {}
+  void unlock(const ABI33_0_0jsc::ABI33_0_0JSCRuntime&) const {}
 };
 
-class JSCRuntime : public jsi::Runtime {
+class ABI33_0_0JSCRuntime : public ABI33_0_0jsi::Runtime {
  public:
   // Creates new context in new context group
-  JSCRuntime();
+  ABI33_0_0JSCRuntime();
   // Retains ctx
-  JSCRuntime(JSGlobalContextRef ctx);
-  ~JSCRuntime();
+  ABI33_0_0JSCRuntime(JSGlobalContextRef ctx);
+  ~ABI33_0_0JSCRuntime();
 
   void evaluateJavaScript(
-      std::unique_ptr<const jsi::Buffer> buffer,
+      std::unique_ptr<const ABI33_0_0jsi::Buffer> buffer,
       const std::string& sourceURL) override;
-  jsi::Object global() override;
+  ABI33_0_0jsi::Object global() override;
 
   std::string description() override;
 
@@ -54,18 +54,18 @@ class JSCRuntime : public jsi::Runtime {
   }
 
   // JSValueRef->JSValue (needs make.*Value so it must be member function)
-  jsi::Value createValue(JSValueRef value) const;
+  ABI33_0_0jsi::Value createValue(JSValueRef value) const;
 
   // Value->JSValueRef (similar to above)
-  JSValueRef valueRef(const jsi::Value& value);
+  JSValueRef valueRef(const ABI33_0_0jsi::Value& value);
 
  protected:
   friend class detail::ArgsConverter;
-  class JSCStringValue final : public PointerValue {
+  class ABI33_0_0JSCStringValue final : public PointerValue {
 #ifndef NDEBUG
-    JSCStringValue(JSStringRef str, std::atomic<intptr_t>& counter);
+    ABI33_0_0JSCStringValue(JSStringRef str, std::atomic<intptr_t>& counter);
 #else
-    JSCStringValue(JSStringRef str);
+    ABI33_0_0JSCStringValue(JSStringRef str);
 #endif
     void invalidate() override;
 
@@ -74,11 +74,11 @@ class JSCRuntime : public jsi::Runtime {
     std::atomic<intptr_t>& counter_;
 #endif
    protected:
-    friend class JSCRuntime;
+    friend class ABI33_0_0JSCRuntime;
   };
 
-  class JSCObjectValue final : public PointerValue {
-    JSCObjectValue(
+  class ABI33_0_0JSCObjectValue final : public PointerValue {
+    ABI33_0_0JSCObjectValue(
         JSGlobalContextRef ctx,
         const std::atomic<bool>& ctxInvalid,
         JSObjectRef obj
@@ -97,94 +97,94 @@ class JSCRuntime : public jsi::Runtime {
     std::atomic<intptr_t>& counter_;
 #endif
    protected:
-    friend class JSCRuntime;
+    friend class ABI33_0_0JSCRuntime;
   };
 
   PointerValue* cloneString(const Runtime::PointerValue* pv) override;
   PointerValue* cloneObject(const Runtime::PointerValue* pv) override;
   PointerValue* clonePropNameID(const Runtime::PointerValue* pv) override;
 
-  jsi::PropNameID createPropNameIDFromAscii(const char* str, size_t length)
+  ABI33_0_0jsi::PropNameID createPropNameIDFromAscii(const char* str, size_t length)
       override;
-  jsi::PropNameID createPropNameIDFromUtf8(const uint8_t* utf8, size_t length)
+  ABI33_0_0jsi::PropNameID createPropNameIDFromUtf8(const uint8_t* utf8, size_t length)
       override;
-  jsi::PropNameID createPropNameIDFromString(const jsi::String& str) override;
-  std::string utf8(const jsi::PropNameID&) override;
-  bool compare(const jsi::PropNameID&, const jsi::PropNameID&) override;
+  ABI33_0_0jsi::PropNameID createPropNameIDFromString(const ABI33_0_0jsi::String& str) override;
+  std::string utf8(const ABI33_0_0jsi::PropNameID&) override;
+  bool compare(const ABI33_0_0jsi::PropNameID&, const ABI33_0_0jsi::PropNameID&) override;
 
-  jsi::String createStringFromAscii(const char* str, size_t length) override;
-  jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) override;
-  std::string utf8(const jsi::String&) override;
+  ABI33_0_0jsi::String createStringFromAscii(const char* str, size_t length) override;
+  ABI33_0_0jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) override;
+  std::string utf8(const ABI33_0_0jsi::String&) override;
 
-  jsi::Object createObject() override;
-  jsi::Object createObject(std::shared_ptr<jsi::HostObject> ho) override;
-  virtual std::shared_ptr<jsi::HostObject> getHostObject(
-      const jsi::Object&) override;
-  jsi::HostFunctionType& getHostFunction(const jsi::Function&) override;
+  ABI33_0_0jsi::Object createObject() override;
+  ABI33_0_0jsi::Object createObject(std::shared_ptr<ABI33_0_0jsi::HostObject> ho) override;
+  virtual std::shared_ptr<ABI33_0_0jsi::HostObject> getHostObject(
+      const ABI33_0_0jsi::Object&) override;
+  ABI33_0_0jsi::HostFunctionType& getHostFunction(const ABI33_0_0jsi::Function&) override;
 
-  jsi::Value getProperty(const jsi::Object&, const jsi::String& name) override;
-  jsi::Value getProperty(const jsi::Object&, const jsi::PropNameID& name)
+  ABI33_0_0jsi::Value getProperty(const ABI33_0_0jsi::Object&, const ABI33_0_0jsi::String& name) override;
+  ABI33_0_0jsi::Value getProperty(const ABI33_0_0jsi::Object&, const ABI33_0_0jsi::PropNameID& name)
       override;
-  bool hasProperty(const jsi::Object&, const jsi::String& name) override;
-  bool hasProperty(const jsi::Object&, const jsi::PropNameID& name) override;
+  bool hasProperty(const ABI33_0_0jsi::Object&, const ABI33_0_0jsi::String& name) override;
+  bool hasProperty(const ABI33_0_0jsi::Object&, const ABI33_0_0jsi::PropNameID& name) override;
   void setPropertyValue(
-      jsi::Object&,
-      const jsi::String& name,
-      const jsi::Value& value) override;
+      ABI33_0_0jsi::Object&,
+      const ABI33_0_0jsi::String& name,
+      const ABI33_0_0jsi::Value& value) override;
   void setPropertyValue(
-      jsi::Object&,
-      const jsi::PropNameID& name,
-      const jsi::Value& value) override;
-  bool isArray(const jsi::Object&) const override;
-  bool isArrayBuffer(const jsi::Object&) const override;
-  bool isFunction(const jsi::Object&) const override;
-  bool isHostObject(const jsi::Object&) const override;
-  bool isHostFunction(const jsi::Function&) const override;
-  jsi::Array getPropertyNames(const jsi::Object&) override;
+      ABI33_0_0jsi::Object&,
+      const ABI33_0_0jsi::PropNameID& name,
+      const ABI33_0_0jsi::Value& value) override;
+  bool isArray(const ABI33_0_0jsi::Object&) const override;
+  bool isArrayBuffer(const ABI33_0_0jsi::Object&) const override;
+  bool isFunction(const ABI33_0_0jsi::Object&) const override;
+  bool isHostObject(const ABI33_0_0jsi::Object&) const override;
+  bool isHostFunction(const ABI33_0_0jsi::Function&) const override;
+  ABI33_0_0jsi::Array getPropertyNames(const ABI33_0_0jsi::Object&) override;
 
-  jsi::WeakObject createWeakObject(const jsi::Object&) override;
-  jsi::Value lockWeakObject(const jsi::WeakObject&) override;
+  ABI33_0_0jsi::WeakObject createWeakObject(const ABI33_0_0jsi::Object&) override;
+  ABI33_0_0jsi::Value lockWeakObject(const ABI33_0_0jsi::WeakObject&) override;
 
-  jsi::Array createArray(size_t length) override;
-  size_t size(const jsi::Array&) override;
-  size_t size(const jsi::ArrayBuffer&) override;
-  uint8_t* data(const jsi::ArrayBuffer&) override;
-  jsi::Value getValueAtIndex(const jsi::Array&, size_t i) override;
-  void setValueAtIndexImpl(jsi::Array&, size_t i, const jsi::Value& value)
+  ABI33_0_0jsi::Array createArray(size_t length) override;
+  size_t size(const ABI33_0_0jsi::Array&) override;
+  size_t size(const ABI33_0_0jsi::ArrayBuffer&) override;
+  uint8_t* data(const ABI33_0_0jsi::ArrayBuffer&) override;
+  ABI33_0_0jsi::Value getValueAtIndex(const ABI33_0_0jsi::Array&, size_t i) override;
+  void setValueAtIndexImpl(ABI33_0_0jsi::Array&, size_t i, const ABI33_0_0jsi::Value& value)
       override;
 
-  jsi::Function createFunctionFromHostFunction(
-      const jsi::PropNameID& name,
+  ABI33_0_0jsi::Function createFunctionFromHostFunction(
+      const ABI33_0_0jsi::PropNameID& name,
       unsigned int paramCount,
-      jsi::HostFunctionType func) override;
-  jsi::Value call(
-      const jsi::Function&,
-      const jsi::Value& jsThis,
-      const jsi::Value* args,
+      ABI33_0_0jsi::HostFunctionType func) override;
+  ABI33_0_0jsi::Value call(
+      const ABI33_0_0jsi::Function&,
+      const ABI33_0_0jsi::Value& jsThis,
+      const ABI33_0_0jsi::Value* args,
       size_t count) override;
-  jsi::Value callAsConstructor(
-      const jsi::Function&,
-      const jsi::Value* args,
+  ABI33_0_0jsi::Value callAsConstructor(
+      const ABI33_0_0jsi::Function&,
+      const ABI33_0_0jsi::Value* args,
       size_t count) override;
 
-  bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
-  bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
-  bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
+  bool strictEquals(const ABI33_0_0jsi::String& a, const ABI33_0_0jsi::String& b) const override;
+  bool strictEquals(const ABI33_0_0jsi::Object& a, const ABI33_0_0jsi::Object& b) const override;
+  bool instanceOf(const ABI33_0_0jsi::Object& o, const ABI33_0_0jsi::Function& f) override;
 
  private:
   // Basically convenience casts
-  static JSStringRef stringRef(const jsi::String& str);
-  static JSStringRef stringRef(const jsi::PropNameID& sym);
-  static JSObjectRef objectRef(const jsi::Object& obj);
+  static JSStringRef stringRef(const ABI33_0_0jsi::String& str);
+  static JSStringRef stringRef(const ABI33_0_0jsi::PropNameID& sym);
+  static JSObjectRef objectRef(const ABI33_0_0jsi::Object& obj);
 
   // Factory methods for creating String/Object
-  jsi::String createString(JSStringRef stringRef) const;
-  jsi::PropNameID createPropNameID(JSStringRef stringRef);
-  jsi::Object createObject(JSObjectRef objectRef) const;
+  ABI33_0_0jsi::String createString(JSStringRef stringRef) const;
+  ABI33_0_0jsi::PropNameID createPropNameID(JSStringRef stringRef);
+  ABI33_0_0jsi::Object createObject(JSObjectRef objectRef) const;
 
   // Used by factory methods and clone methods
-  jsi::Runtime::PointerValue* makeStringValue(JSStringRef str) const;
-  jsi::Runtime::PointerValue* makeObjectValue(JSObjectRef obj) const;
+  ABI33_0_0jsi::Runtime::PointerValue* makeStringValue(JSStringRef str) const;
+  ABI33_0_0jsi::Runtime::PointerValue* makeObjectValue(JSObjectRef obj) const;
 
   void checkException(JSValueRef exc);
   void checkException(JSValueRef res, JSValueRef exc);
@@ -205,16 +205,16 @@ class JSCRuntime : public jsi::Runtime {
 #endif
 
 #if __has_builtin(__builtin_expect) || defined(__GNUC__)
-#define JSC_LIKELY(ABI33_0_0EXPR) __builtin_expect((bool)(ABI33_0_0EXPR), true)
-#define JSC_UNLIKELY(ABI33_0_0EXPR) __builtin_expect((bool)(ABI33_0_0EXPR), false)
+#define ABI33_0_0JSC_LIKELY(ABI33_0_0EXPR) __builtin_expect((bool)(ABI33_0_0EXPR), true)
+#define ABI33_0_0JSC_UNLIKELY(ABI33_0_0EXPR) __builtin_expect((bool)(ABI33_0_0EXPR), false)
 #else
-#define JSC_LIKELY(ABI33_0_0EXPR) (ABI33_0_0EXPR)
-#define JSC_UNLIKELY(ABI33_0_0EXPR) (ABI33_0_0EXPR)
+#define ABI33_0_0JSC_LIKELY(ABI33_0_0EXPR) (ABI33_0_0EXPR)
+#define ABI33_0_0JSC_UNLIKELY(ABI33_0_0EXPR) (ABI33_0_0EXPR)
 #endif
 
-#define JSC_ASSERT(x)          \
+#define ABI33_0_0JSC_ASSERT(x)          \
   do {                         \
-    if (JSC_UNLIKELY(!!(x))) { \
+    if (ABI33_0_0JSC_UNLIKELY(!!(x))) { \
       abort();                 \
     }                          \
   } while (0)
@@ -223,7 +223,7 @@ class JSCRuntime : public jsi::Runtime {
 // This takes care of watch and tvos (due to backwards compatibility in
 // Availability.h
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0
-#define _JSC_FAST_IS_ARRAY
+#define _ABI33_0_0JSC_FAST_IS_ARRAY
 #endif
 #endif
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
@@ -231,7 +231,7 @@ class JSCRuntime : public jsi::Runtime {
 // Only one of these should be set for a build.  If somehow that's not
 // true, this will be a compile-time error and it can be resolved when
 // we understand why.
-#define _JSC_FAST_IS_ARRAY
+#define _ABI33_0_0JSC_FAST_IS_ARRAY
 #endif
 #endif
 
@@ -259,7 +259,7 @@ JSStringRef getFunctionString() {
   return func;
 }
 
-#if !defined(_JSC_FAST_IS_ARRAY)
+#if !defined(_ABI33_0_0JSC_FAST_IS_ARRAY)
 JSStringRef getArrayString() {
   static JSStringRef array = JSStringCreateWithUTF8CString("Array");
   return array;
@@ -281,12 +281,12 @@ std::string to_string(void* value) {
 }
 } // namespace
 
-JSCRuntime::JSCRuntime()
-    : JSCRuntime(JSGlobalContextCreateInGroup(nullptr, nullptr)) {
+ABI33_0_0JSCRuntime::ABI33_0_0JSCRuntime()
+    : ABI33_0_0JSCRuntime(JSGlobalContextCreateInGroup(nullptr, nullptr)) {
   JSGlobalContextRelease(ctx_);
 }
 
-JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
+ABI33_0_0JSCRuntime::ABI33_0_0JSCRuntime(JSGlobalContextRef ctx)
     : ctx_(JSGlobalContextRetain(ctx)),
       ctxInvalid_(false)
 #ifndef NDEBUG
@@ -297,9 +297,9 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 {
 }
 
-JSCRuntime::~JSCRuntime() {
-  // On shutting down and cleaning up: when JSC is actually torn down,
-  // it calls JSC::Heap::lastChanceToFinalize internally which
+ABI33_0_0JSCRuntime::~ABI33_0_0JSCRuntime() {
+  // On shutting down and cleaning up: when ABI33_0_0JSC is actually torn down,
+  // it calls ABI33_0_0JSC::Heap::lastChanceToFinalize internally which
   // finalizes anything left over.  But at this point,
   // JSValueUnprotect() can no longer be called.  We use an
   // atomic<bool> to avoid unsafe unprotects happening after shutdown
@@ -308,14 +308,14 @@ JSCRuntime::~JSCRuntime() {
   JSGlobalContextRelease(ctx_);
 #ifndef NDEBUG
   assert(
-      objectCounter_ == 0 && "JSCRuntime destroyed with a dangling API object");
+      objectCounter_ == 0 && "ABI33_0_0JSCRuntime destroyed with a dangling API object");
   assert(
-      stringCounter_ == 0 && "JSCRuntime destroyed with a dangling API string");
+      stringCounter_ == 0 && "ABI33_0_0JSCRuntime destroyed with a dangling API string");
 #endif
 }
 
-void JSCRuntime::evaluateJavaScript(
-    std::unique_ptr<const jsi::Buffer> buffer,
+void ABI33_0_0JSCRuntime::evaluateJavaScript(
+    std::unique_ptr<const ABI33_0_0jsi::Buffer> buffer,
     const std::string& sourceURL) {
   std::string tmp(
       reinterpret_cast<const char*>(buffer->data()), buffer->size());
@@ -334,23 +334,23 @@ void JSCRuntime::evaluateJavaScript(
   checkException(res, exc);
 }
 
-jsi::Object JSCRuntime::global() {
+ABI33_0_0jsi::Object ABI33_0_0JSCRuntime::global() {
   return createObject(JSContextGetGlobalObject(ctx_));
 }
 
-std::string JSCRuntime::description() {
+std::string ABI33_0_0JSCRuntime::description() {
   if (desc_.empty()) {
-    desc_ = std::string("<JSCRuntime@") + to_string(this) + ">";
+    desc_ = std::string("<ABI33_0_0JSCRuntime@") + to_string(this) + ">";
   }
   return desc_;
 }
 
-bool JSCRuntime::isInspectable() {
+bool ABI33_0_0JSCRuntime::isInspectable() {
   return false;
 }
 
 #ifndef NDEBUG
-JSCRuntime::JSCStringValue::JSCStringValue(
+ABI33_0_0JSCRuntime::ABI33_0_0JSCStringValue::ABI33_0_0JSCStringValue(
     JSStringRef str,
     std::atomic<intptr_t>& counter)
     : str_(JSStringRetain(str)), counter_(counter) {
@@ -359,15 +359,15 @@ JSCRuntime::JSCStringValue::JSCStringValue(
   counter_ += 1;
 }
 #else
-JSCRuntime::JSCStringValue::JSCStringValue(JSStringRef str)
+ABI33_0_0JSCRuntime::ABI33_0_0JSCStringValue::ABI33_0_0JSCStringValue(JSStringRef str)
     : str_(JSStringRetain(str)) {
 }
 #endif
 
-void JSCRuntime::JSCStringValue::invalidate() {
-  // These JSC{String,Object}Value objects are implicitly owned by the
+void ABI33_0_0JSCRuntime::ABI33_0_0JSCStringValue::invalidate() {
+  // These ABI33_0_0JSC{String,Object}Value objects are implicitly owned by the
   // {String,Object} objects, thus when a String/Object is destructed
-  // the JSC{String,Object}Value should be released.
+  // the ABI33_0_0JSC{String,Object}Value should be released.
 #ifndef NDEBUG
   counter_ -= 1;
 #endif
@@ -376,7 +376,7 @@ void JSCRuntime::JSCStringValue::invalidate() {
   delete this;
 }
 
-JSCRuntime::JSCObjectValue::JSCObjectValue(
+ABI33_0_0JSCRuntime::ABI33_0_0JSCObjectValue::ABI33_0_0JSCObjectValue(
     JSGlobalContextRef ctx,
     const std::atomic<bool>& ctxInvalid,
     JSObjectRef obj
@@ -399,21 +399,21 @@ JSCRuntime::JSCObjectValue::JSCObjectValue(
 #endif
 }
 
-void JSCRuntime::JSCObjectValue::invalidate() {
+void ABI33_0_0JSCRuntime::ABI33_0_0JSCObjectValue::invalidate() {
 #ifndef NDEBUG
   counter_ -= 1;
 #endif
   // When shutting down the VM, if there is a HostObject which
-  // contains or otherwise owns a jsi::Object, then the final GC will
+  // contains or otherwise owns a ABI33_0_0jsi::Object, then the final GC will
   // finalize the HostObject, leading to a call to invalidate().  But
   // at that point, making calls to JSValueUnprotect will crash.
   // It is up to the application to make sure that any other calls to
   // invalidate() happen before VM destruction; see the comment on
-  // jsi::Runtime.
+  // ABI33_0_0jsi::Runtime.
   //
   // Another potential concern here is that in the non-shutdown case,
   // if a HostObject is GCd, JSValueUnprotect will be called from the
-  // JSC finalizer.  The documentation warns against this: "You must
+  // ABI33_0_0JSC finalizer.  The documentation warns against this: "You must
   // not call any function that may cause a garbage collection or an
   // allocation of a garbage collected object from within a
   // JSObjectFinalizeCallback. This includes all functions that have a
@@ -431,40 +431,40 @@ void JSCRuntime::JSCObjectValue::invalidate() {
   delete this;
 }
 
-jsi::Runtime::PointerValue* JSCRuntime::cloneString(
-    const jsi::Runtime::PointerValue* pv) {
+ABI33_0_0jsi::Runtime::PointerValue* ABI33_0_0JSCRuntime::cloneString(
+    const ABI33_0_0jsi::Runtime::PointerValue* pv) {
   if (!pv) {
     return nullptr;
   }
-  const JSCStringValue* string = static_cast<const JSCStringValue*>(pv);
+  const ABI33_0_0JSCStringValue* string = static_cast<const ABI33_0_0JSCStringValue*>(pv);
   return makeStringValue(string->str_);
 }
 
-jsi::Runtime::PointerValue* JSCRuntime::cloneObject(
-    const jsi::Runtime::PointerValue* pv) {
+ABI33_0_0jsi::Runtime::PointerValue* ABI33_0_0JSCRuntime::cloneObject(
+    const ABI33_0_0jsi::Runtime::PointerValue* pv) {
   if (!pv) {
     return nullptr;
   }
-  const JSCObjectValue* object = static_cast<const JSCObjectValue*>(pv);
+  const ABI33_0_0JSCObjectValue* object = static_cast<const ABI33_0_0JSCObjectValue*>(pv);
   assert(
       object->ctx_ == ctx_ &&
       "Don't try to clone an object backed by a different Runtime");
   return makeObjectValue(object->obj_);
 }
 
-jsi::Runtime::PointerValue* JSCRuntime::clonePropNameID(
-    const jsi::Runtime::PointerValue* pv) {
+ABI33_0_0jsi::Runtime::PointerValue* ABI33_0_0JSCRuntime::clonePropNameID(
+    const ABI33_0_0jsi::Runtime::PointerValue* pv) {
   if (!pv) {
     return nullptr;
   }
-  const JSCStringValue* string = static_cast<const JSCStringValue*>(pv);
+  const ABI33_0_0JSCStringValue* string = static_cast<const ABI33_0_0JSCStringValue*>(pv);
   return makeStringValue(string->str_);
 }
 
-jsi::PropNameID JSCRuntime::createPropNameIDFromAscii(
+ABI33_0_0jsi::PropNameID ABI33_0_0JSCRuntime::createPropNameIDFromAscii(
     const char* str,
     size_t length) {
-  // For system JSC this must is identical to a string
+  // For system ABI33_0_0JSC this must is identical to a string
   std::string tmp(str, length);
   JSStringRef strRef = JSStringCreateWithUTF8CString(tmp.c_str());
   auto res = createPropNameID(strRef);
@@ -472,7 +472,7 @@ jsi::PropNameID JSCRuntime::createPropNameIDFromAscii(
   return res;
 }
 
-jsi::PropNameID JSCRuntime::createPropNameIDFromUtf8(
+ABI33_0_0jsi::PropNameID ABI33_0_0JSCRuntime::createPropNameIDFromUtf8(
     const uint8_t* utf8,
     size_t length) {
   std::string tmp(reinterpret_cast<const char*>(utf8), length);
@@ -482,26 +482,26 @@ jsi::PropNameID JSCRuntime::createPropNameIDFromUtf8(
   return res;
 }
 
-jsi::PropNameID JSCRuntime::createPropNameIDFromString(const jsi::String& str) {
+ABI33_0_0jsi::PropNameID ABI33_0_0JSCRuntime::createPropNameIDFromString(const ABI33_0_0jsi::String& str) {
   return createPropNameID(stringRef(str));
 }
 
-std::string JSCRuntime::utf8(const jsi::PropNameID& sym) {
+std::string ABI33_0_0JSCRuntime::utf8(const ABI33_0_0jsi::PropNameID& sym) {
   return JSStringToSTLString(stringRef(sym));
 }
 
-bool JSCRuntime::compare(const jsi::PropNameID& a, const jsi::PropNameID& b) {
+bool ABI33_0_0JSCRuntime::compare(const ABI33_0_0jsi::PropNameID& a, const ABI33_0_0jsi::PropNameID& b) {
   return JSStringIsEqual(stringRef(a), stringRef(b));
 }
 
-jsi::String JSCRuntime::createStringFromAscii(const char* str, size_t length) {
+ABI33_0_0jsi::String ABI33_0_0JSCRuntime::createStringFromAscii(const char* str, size_t length) {
   // Yes we end up double casting for semantic reasons (UTF8 contains ASCII,
   // not the other way around)
   return this->createStringFromUtf8(
       reinterpret_cast<const uint8_t*>(str), length);
 }
 
-jsi::String JSCRuntime::createStringFromUtf8(
+ABI33_0_0jsi::String ABI33_0_0JSCRuntime::createStringFromUtf8(
     const uint8_t* str,
     size_t length) {
   std::string tmp(reinterpret_cast<const char*>(str), length);
@@ -509,11 +509,11 @@ jsi::String JSCRuntime::createStringFromUtf8(
   return createString(stringRef);
 }
 
-std::string JSCRuntime::utf8(const jsi::String& str) {
+std::string ABI33_0_0JSCRuntime::utf8(const ABI33_0_0jsi::String& str) {
   return JSStringToSTLString(stringRef(str));
 }
 
-jsi::Object JSCRuntime::createObject() {
+ABI33_0_0jsi::Object ABI33_0_0JSCRuntime::createObject() {
   return createObject(static_cast<JSObjectRef>(nullptr));
 }
 
@@ -521,12 +521,12 @@ jsi::Object JSCRuntime::createObject() {
 namespace detail {
 struct HostObjectProxyBase {
   HostObjectProxyBase(
-      JSCRuntime& rt,
-      const std::shared_ptr<jsi::HostObject>& sho)
+      ABI33_0_0JSCRuntime& rt,
+      const std::shared_ptr<ABI33_0_0jsi::HostObject>& sho)
       : runtime(rt), hostObject(sho) {}
 
-  JSCRuntime& runtime;
-  std::shared_ptr<jsi::HostObject> hostObject;
+  ABI33_0_0JSCRuntime& runtime;
+  std::shared_ptr<ABI33_0_0jsi::HostObject> hostObject;
 };
 } // namespace detail
 
@@ -535,7 +535,7 @@ std::once_flag hostObjectClassOnceFlag;
 JSClassRef hostObjectClass{};
 } // namespace
 
-jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
+ABI33_0_0jsi::Object ABI33_0_0JSCRuntime::createObject(std::shared_ptr<ABI33_0_0jsi::HostObject> ho) {
   struct HostObjectProxy : public detail::HostObjectProxyBase {
     static JSValueRef getProperty(
         JSContextRef ctx,
@@ -544,11 +544,11 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSValueRef* exception) {
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
-      jsi::PropNameID sym = rt.createPropNameID(propertyName);
-      jsi::Value ret;
+      ABI33_0_0jsi::PropNameID sym = rt.createPropNameID(propertyName);
+      ABI33_0_0jsi::Value ret;
       try {
         ret = proxy->hostObject->get(rt, sym);
-      } catch (const jsi::JSError& error) {
+      } catch (const ABI33_0_0jsi::JSError& error) {
         *exception = rt.valueRef(error.value());
         return JSValueMakeUndefined(ctx);
       } catch (const std::exception& ex) {
@@ -571,7 +571,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       return rt.valueRef(ret);
     }
     
-    #define JSC_UNUSED(x) (void) (x);
+    #define ABI33_0_0JSC_UNUSED(x) (void) (x);
 
     static bool setProperty(
         JSContextRef ctx,
@@ -579,13 +579,13 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSStringRef propName,
         JSValueRef value,
         JSValueRef* exception) {
-      JSC_UNUSED(ctx);
+      ABI33_0_0JSC_UNUSED(ctx);
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
-      jsi::PropNameID sym = rt.createPropNameID(propName);
+      ABI33_0_0jsi::PropNameID sym = rt.createPropNameID(propName);
       try {
         proxy->hostObject->set(rt, sym, rt.createValue(value));
-      } catch (const jsi::JSError& error) {
+      } catch (const ABI33_0_0jsi::JSError& error) {
         *exception = rt.valueRef(error.value());
         return false;
       } catch (const std::exception& ex) {
@@ -608,14 +608,14 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       return true;
     }
 
-    // JSC does not provide means to communicate errors from this callback,
+    // ABI33_0_0JSC does not provide means to communicate errors from this callback,
     // so the error handling strategy is very brutal - we'll just crash
     // due to noexcept.
     static void getPropertyNames(
         JSContextRef ctx,
         JSObjectRef object,
         JSPropertyNameAccumulatorRef propertyNames) noexcept {
-      JSC_UNUSED(ctx);
+      ABI33_0_0JSC_UNUSED(ctx);
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
       auto names = proxy->hostObject->getPropertyNames(rt);
@@ -624,7 +624,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       }
     }
     
-    #undef JSC_UNUSED
+    #undef ABI33_0_0JSC_UNUSED
 
     static void finalize(JSObjectRef obj) {
       auto hostObject = static_cast<HostObjectProxy*>(JSObjectGetPrivate(obj));
@@ -651,8 +651,8 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
   return createObject(obj);
 }
 
-std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
-    const jsi::Object& obj) {
+std::shared_ptr<ABI33_0_0jsi::HostObject> ABI33_0_0JSCRuntime::getHostObject(
+    const ABI33_0_0jsi::Object& obj) {
   // We are guarenteed at this point to have isHostObject(obj) == true
   // so the private data should be HostObjectMetadata
   JSObjectRef object = objectRef(obj);
@@ -662,9 +662,9 @@ std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
   return metadata->hostObject;
 }
 
-jsi::Value JSCRuntime::getProperty(
-    const jsi::Object& obj,
-    const jsi::String& name) {
+ABI33_0_0jsi::Value ABI33_0_0JSCRuntime::getProperty(
+    const ABI33_0_0jsi::Object& obj,
+    const ABI33_0_0jsi::String& name) {
   JSObjectRef objRef = objectRef(obj);
   JSValueRef exc = nullptr;
   JSValueRef res = JSObjectGetProperty(ctx_, objRef, stringRef(name), &exc);
@@ -672,9 +672,9 @@ jsi::Value JSCRuntime::getProperty(
   return createValue(res);
 }
 
-jsi::Value JSCRuntime::getProperty(
-    const jsi::Object& obj,
-    const jsi::PropNameID& name) {
+ABI33_0_0jsi::Value ABI33_0_0JSCRuntime::getProperty(
+    const ABI33_0_0jsi::Object& obj,
+    const ABI33_0_0jsi::PropNameID& name) {
   JSObjectRef objRef = objectRef(obj);
   JSValueRef exc = nullptr;
   JSValueRef res = JSObjectGetProperty(ctx_, objRef, stringRef(name), &exc);
@@ -682,22 +682,22 @@ jsi::Value JSCRuntime::getProperty(
   return createValue(res);
 }
 
-bool JSCRuntime::hasProperty(const jsi::Object& obj, const jsi::String& name) {
+bool ABI33_0_0JSCRuntime::hasProperty(const ABI33_0_0jsi::Object& obj, const ABI33_0_0jsi::String& name) {
   JSObjectRef objRef = objectRef(obj);
   return JSObjectHasProperty(ctx_, objRef, stringRef(name));
 }
 
-bool JSCRuntime::hasProperty(
-    const jsi::Object& obj,
-    const jsi::PropNameID& name) {
+bool ABI33_0_0JSCRuntime::hasProperty(
+    const ABI33_0_0jsi::Object& obj,
+    const ABI33_0_0jsi::PropNameID& name) {
   JSObjectRef objRef = objectRef(obj);
   return JSObjectHasProperty(ctx_, objRef, stringRef(name));
 }
 
-void JSCRuntime::setPropertyValue(
-    jsi::Object& object,
-    const jsi::PropNameID& name,
-    const jsi::Value& value) {
+void ABI33_0_0JSCRuntime::setPropertyValue(
+    ABI33_0_0jsi::Object& object,
+    const ABI33_0_0jsi::PropNameID& name,
+    const ABI33_0_0jsi::Value& value) {
   JSValueRef exc = nullptr;
   JSObjectSetProperty(
       ctx_,
@@ -709,10 +709,10 @@ void JSCRuntime::setPropertyValue(
   checkException(exc);
 }
 
-void JSCRuntime::setPropertyValue(
-    jsi::Object& object,
-    const jsi::String& name,
-    const jsi::Value& value) {
+void ABI33_0_0JSCRuntime::setPropertyValue(
+    ABI33_0_0jsi::Object& object,
+    const ABI33_0_0jsi::String& name,
+    const ABI33_0_0jsi::Value& value) {
   JSValueRef exc = nullptr;
   JSObjectSetProperty(
       ctx_,
@@ -724,63 +724,63 @@ void JSCRuntime::setPropertyValue(
   checkException(exc);
 }
 
-bool JSCRuntime::isArray(const jsi::Object& obj) const {
-#if !defined(_JSC_FAST_IS_ARRAY)
+bool ABI33_0_0JSCRuntime::isArray(const ABI33_0_0jsi::Object& obj) const {
+#if !defined(_ABI33_0_0JSC_FAST_IS_ARRAY)
   JSObjectRef global = JSContextGetGlobalObject(ctx_);
   JSStringRef arrayString = getArrayString();
   JSValueRef exc = nullptr;
   JSValueRef arrayCtorValue =
       JSObjectGetProperty(ctx_, global, arrayString, &exc);
-  JSC_ASSERT(exc);
+  ABI33_0_0JSC_ASSERT(exc);
   JSObjectRef arrayCtor = JSValueToObject(ctx_, arrayCtorValue, &exc);
-  JSC_ASSERT(exc);
+  ABI33_0_0JSC_ASSERT(exc);
   JSStringRef isArrayString = getIsArrayString();
   JSValueRef isArrayValue =
       JSObjectGetProperty(ctx_, arrayCtor, isArrayString, &exc);
-  JSC_ASSERT(exc);
+  ABI33_0_0JSC_ASSERT(exc);
   JSObjectRef isArray = JSValueToObject(ctx_, isArrayValue, &exc);
-  JSC_ASSERT(exc);
+  ABI33_0_0JSC_ASSERT(exc);
   JSValueRef arg = objectRef(obj);
   JSValueRef result =
       JSObjectCallAsFunction(ctx_, isArray, nullptr, 1, &arg, &exc);
-  JSC_ASSERT(exc);
+  ABI33_0_0JSC_ASSERT(exc);
   return JSValueToBoolean(ctx_, result);
 #else
   return JSValueIsArray(ctx_, objectRef(obj));
 #endif
 }
 
-bool JSCRuntime::isArrayBuffer(const jsi::Object& /*obj*/) const {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
+bool ABI33_0_0JSCRuntime::isArrayBuffer(const ABI33_0_0jsi::Object& /*obj*/) const {
+  // TODO: T23270523 - This would fail on builds that use our custom ABI33_0_0JSC
   // auto typedArrayType = JSValueGetTypedArrayType(ctx_, objectRef(obj),
   // nullptr);  return typedArrayType == kJSTypedArrayTypeArrayBuffer;
   throw std::runtime_error("Unsupported");
 }
 
-uint8_t* JSCRuntime::data(const jsi::ArrayBuffer& /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
+uint8_t* ABI33_0_0JSCRuntime::data(const ABI33_0_0jsi::ArrayBuffer& /*obj*/) {
+  // TODO: T23270523 - This would fail on builds that use our custom ABI33_0_0JSC
   // return static_cast<uint8_t*>(
   //    JSObjectGetArrayBufferBytesPtr(ctx_, objectRef(obj), nullptr));
   throw std::runtime_error("Unsupported");
 }
 
-size_t JSCRuntime::size(const jsi::ArrayBuffer& /*obj*/) {
-  // TODO: T23270523 - This would fail on builds that use our custom JSC
+size_t ABI33_0_0JSCRuntime::size(const ABI33_0_0jsi::ArrayBuffer& /*obj*/) {
+  // TODO: T23270523 - This would fail on builds that use our custom ABI33_0_0JSC
   // return JSObjectGetArrayBufferByteLength(ctx_, objectRef(obj), nullptr);
   throw std::runtime_error("Unsupported");
 }
 
-bool JSCRuntime::isFunction(const jsi::Object& obj) const {
+bool ABI33_0_0JSCRuntime::isFunction(const ABI33_0_0jsi::Object& obj) const {
   return JSObjectIsFunction(ctx_, objectRef(obj));
 }
 
-bool JSCRuntime::isHostObject(const jsi::Object& obj) const {
+bool ABI33_0_0JSCRuntime::isHostObject(const ABI33_0_0jsi::Object& obj) const {
   auto cls = hostObjectClass;
   return cls != nullptr && JSValueIsObjectOfClass(ctx_, objectRef(obj), cls);
 }
 
 // Very expensive
-jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
+ABI33_0_0jsi::Array ABI33_0_0JSCRuntime::getPropertyNames(const ABI33_0_0jsi::Object& obj) {
   JSPropertyNameArrayRef names =
       JSObjectCopyPropertyNames(ctx_, objectRef(obj));
   size_t len = JSPropertyNameArrayGetCount(names);
@@ -794,15 +794,15 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
   return result;
 }
 
-jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object&) {
+ABI33_0_0jsi::WeakObject ABI33_0_0JSCRuntime::createWeakObject(const ABI33_0_0jsi::Object&) {
   throw std::logic_error("Not implemented");
 }
 
-jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject&) {
+ABI33_0_0jsi::Value ABI33_0_0JSCRuntime::lockWeakObject(const ABI33_0_0jsi::WeakObject&) {
   throw std::logic_error("Not implemented");
 }
 
-jsi::Array JSCRuntime::createArray(size_t length) {
+ABI33_0_0jsi::Array ABI33_0_0JSCRuntime::createArray(size_t length) {
   JSValueRef exc = nullptr;
   JSObjectRef obj = JSObjectMakeArray(ctx_, 0, nullptr, &exc);
   checkException(obj, exc);
@@ -817,22 +817,22 @@ jsi::Array JSCRuntime::createArray(size_t length) {
   return createObject(obj).getArray(*this);
 }
 
-size_t JSCRuntime::size(const jsi::Array& arr) {
+size_t ABI33_0_0JSCRuntime::size(const ABI33_0_0jsi::Array& arr) {
   return static_cast<size_t>(
       getProperty(arr, createPropNameID(getLengthString())).getNumber());
 }
 
-jsi::Value JSCRuntime::getValueAtIndex(const jsi::Array& arr, size_t i) {
+ABI33_0_0jsi::Value ABI33_0_0JSCRuntime::getValueAtIndex(const ABI33_0_0jsi::Array& arr, size_t i) {
   JSValueRef exc = nullptr;
   auto res = JSObjectGetPropertyAtIndex(ctx_, objectRef(arr), (int)i, &exc);
   checkException(exc);
   return createValue(res);
 }
 
-void JSCRuntime::setValueAtIndexImpl(
-    jsi::Array& arr,
+void ABI33_0_0JSCRuntime::setValueAtIndexImpl(
+    ABI33_0_0jsi::Array& arr,
     size_t i,
-    const jsi::Value& value) {
+    const ABI33_0_0jsi::Value& value) {
   JSValueRef exc = nullptr;
   JSObjectSetPropertyAtIndex(ctx_, objectRef(arr), (int)i, valueRef(value), &exc);
   checkException(exc);
@@ -844,22 +844,22 @@ JSClassRef hostFunctionClass{};
 
 class HostFunctionProxy {
  public:
-  HostFunctionProxy(jsi::HostFunctionType hostFunction)
+  HostFunctionProxy(ABI33_0_0jsi::HostFunctionType hostFunction)
       : hostFunction_(hostFunction) {}
 
-  jsi::HostFunctionType& getHostFunction() {
+  ABI33_0_0jsi::HostFunctionType& getHostFunction() {
     return hostFunction_;
   }
 
  protected:
-  jsi::HostFunctionType hostFunction_;
+  ABI33_0_0jsi::HostFunctionType hostFunction_;
 };
 } // namespace
 
-jsi::Function JSCRuntime::createFunctionFromHostFunction(
-    const jsi::PropNameID& name,
+ABI33_0_0jsi::Function ABI33_0_0JSCRuntime::createFunctionFromHostFunction(
+    const ABI33_0_0jsi::PropNameID& name,
     unsigned int paramCount,
-    jsi::HostFunctionType func) {
+    ABI33_0_0jsi::HostFunctionType func) {
   class HostFunctionMetadata : public HostFunctionProxy {
    public:
     static void initialize(JSContextRef ctx, JSObjectRef object) {
@@ -903,7 +903,7 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
       JSValueRef value =
           JSObjectGetProperty(ctx, global, getFunctionString(), &exc);
       // If we don't have Function then something bad is going on.
-      if (JSC_UNLIKELY(exc)) {
+      if (ABI33_0_0JSC_UNLIKELY(exc)) {
         abort();
       }
       JSObjectRef funcCtor = JSValueToObject(ctx, value, &exc);
@@ -915,8 +915,8 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
       JSObjectSetPrototype(ctx, object, funcProto);
     }
 
-    static JSValueRef makeError(JSCRuntime& rt, const std::string& desc) {
-      jsi::Value value =
+    static JSValueRef makeError(ABI33_0_0JSCRuntime& rt, const std::string& desc) {
+      ABI33_0_0jsi::Value value =
           rt.global().getPropertyAsFunction(rt, "Error").call(rt, desc);
       return rt.valueRef(value);
     }
@@ -930,13 +930,13 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
         JSValueRef* exception) {
       HostFunctionMetadata* metadata =
           static_cast<HostFunctionMetadata*>(JSObjectGetPrivate(function));
-      JSCRuntime& rt = *(metadata->runtime);
+      ABI33_0_0JSCRuntime& rt = *(metadata->runtime);
       const unsigned maxStackArgCount = 8;
-      jsi::Value stackArgs[maxStackArgCount];
-      std::unique_ptr<jsi::Value[]> heapArgs;
-      jsi::Value* args;
+      ABI33_0_0jsi::Value stackArgs[maxStackArgCount];
+      std::unique_ptr<ABI33_0_0jsi::Value[]> heapArgs;
+      ABI33_0_0jsi::Value* args;
       if (argumentCount > maxStackArgCount) {
-        heapArgs = std::make_unique<jsi::Value[]>(argumentCount);
+        heapArgs = std::make_unique<ABI33_0_0jsi::Value[]>(argumentCount);
         for (size_t i = 0; i < argumentCount; i++) {
           heapArgs[i] = rt.createValue(arguments[i]);
         }
@@ -948,11 +948,11 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
         args = stackArgs;
       }
       JSValueRef res;
-      jsi::Value thisVal(rt.createObject(thisObject));
+      ABI33_0_0jsi::Value thisVal(rt.createObject(thisObject));
       try {
         res = rt.valueRef(
             metadata->hostFunction_(rt, thisVal, args, argumentCount));
-      } catch (const jsi::JSError& error) {
+      } catch (const ABI33_0_0jsi::JSError& error) {
         *exception = rt.valueRef(error.value());
         res = JSValueMakeUndefined(ctx);
       } catch (const std::exception& ex) {
@@ -976,8 +976,8 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
     }
 
     HostFunctionMetadata(
-        JSCRuntime* rt,
-        jsi::HostFunctionType hf,
+        ABI33_0_0JSCRuntime* rt,
+        ABI33_0_0jsi::HostFunctionType hf,
         unsigned ac,
         JSStringRef n)
         : HostFunctionProxy(hf),
@@ -985,7 +985,7 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
           argCount(ac),
           name(JSStringRetain(n)) {}
 
-    JSCRuntime* runtime;
+    ABI33_0_0JSCRuntime* runtime;
     unsigned argCount;
     JSStringRef name;
   };
@@ -1012,7 +1012,7 @@ namespace detail {
 
 class ArgsConverter {
  public:
-  ArgsConverter(JSCRuntime& rt, const jsi::Value* args, size_t count) {
+  ArgsConverter(ABI33_0_0JSCRuntime& rt, const ABI33_0_0jsi::Value* args, size_t count) {
     JSValueRef* destination = inline_;
     if (count > maxStackArgs) {
       outOfLine_ = std::make_unique<JSValueRef[]>(count);
@@ -1035,22 +1035,22 @@ class ArgsConverter {
 };
 } // namespace detail
 
-bool JSCRuntime::isHostFunction(const jsi::Function& obj) const {
+bool ABI33_0_0JSCRuntime::isHostFunction(const ABI33_0_0jsi::Function& obj) const {
   auto cls = hostFunctionClass;
   return cls != nullptr && JSValueIsObjectOfClass(ctx_, objectRef(obj), cls);
 }
 
-jsi::HostFunctionType& JSCRuntime::getHostFunction(const jsi::Function& obj) {
+ABI33_0_0jsi::HostFunctionType& ABI33_0_0JSCRuntime::getHostFunction(const ABI33_0_0jsi::Function& obj) {
   // We know that isHostFunction(obj) is true here, so its safe to proceed
   auto proxy =
       static_cast<HostFunctionProxy*>(JSObjectGetPrivate(objectRef(obj)));
   return proxy->getHostFunction();
 }
 
-jsi::Value JSCRuntime::call(
-    const jsi::Function& f,
-    const jsi::Value& jsThis,
-    const jsi::Value* args,
+ABI33_0_0jsi::Value ABI33_0_0JSCRuntime::call(
+    const ABI33_0_0jsi::Function& f,
+    const ABI33_0_0jsi::Value& jsThis,
+    const ABI33_0_0jsi::Value* args,
     size_t count) {
   JSValueRef exc = nullptr;
   auto res = JSObjectCallAsFunction(
@@ -1064,9 +1064,9 @@ jsi::Value JSCRuntime::call(
   return createValue(res);
 }
 
-jsi::Value JSCRuntime::callAsConstructor(
-    const jsi::Function& f,
-    const jsi::Value* args,
+ABI33_0_0jsi::Value ABI33_0_0JSCRuntime::callAsConstructor(
+    const ABI33_0_0jsi::Function& f,
+    const ABI33_0_0jsi::Value* args,
     size_t count) {
   JSValueRef exc = nullptr;
   auto res = JSObjectCallAsConstructor(
@@ -1079,17 +1079,17 @@ jsi::Value JSCRuntime::callAsConstructor(
   return createValue(res);
 }
 
-bool JSCRuntime::strictEquals(const jsi::String& a, const jsi::String& b)
+bool ABI33_0_0JSCRuntime::strictEquals(const ABI33_0_0jsi::String& a, const ABI33_0_0jsi::String& b)
     const {
   return JSStringIsEqual(stringRef(a), stringRef(b));
 }
 
-bool JSCRuntime::strictEquals(const jsi::Object& a, const jsi::Object& b)
+bool ABI33_0_0JSCRuntime::strictEquals(const ABI33_0_0jsi::Object& a, const ABI33_0_0jsi::Object& b)
     const {
   return objectRef(a) == objectRef(b);
 }
 
-bool JSCRuntime::instanceOf(const jsi::Object& o, const jsi::Function& f) {
+bool ABI33_0_0JSCRuntime::instanceOf(const ABI33_0_0jsi::Object& o, const ABI33_0_0jsi::Function& f) {
   JSValueRef exc = nullptr;
   bool res =
       JSValueIsInstanceOfConstructor(ctx_, objectRef(o), objectRef(f), &exc);
@@ -1104,66 +1104,66 @@ JSStringRef getEmptyString() {
 }
 } // namespace
 
-jsi::Runtime::PointerValue* JSCRuntime::makeStringValue(
+ABI33_0_0jsi::Runtime::PointerValue* ABI33_0_0JSCRuntime::makeStringValue(
     JSStringRef stringRef) const {
   if (!stringRef) {
     stringRef = getEmptyString();
   }
 #ifndef NDEBUG
-  return new JSCStringValue(stringRef, stringCounter_);
+  return new ABI33_0_0JSCStringValue(stringRef, stringCounter_);
 #else
-  return new JSCStringValue(stringRef);
+  return new ABI33_0_0JSCStringValue(stringRef);
 #endif
 }
 
-jsi::String JSCRuntime::createString(JSStringRef str) const {
-  return make<jsi::String>(makeStringValue(str));
+ABI33_0_0jsi::String ABI33_0_0JSCRuntime::createString(JSStringRef str) const {
+  return make<ABI33_0_0jsi::String>(makeStringValue(str));
 }
 
-jsi::PropNameID JSCRuntime::createPropNameID(JSStringRef str) {
-  return make<jsi::PropNameID>(makeStringValue(str));
+ABI33_0_0jsi::PropNameID ABI33_0_0JSCRuntime::createPropNameID(JSStringRef str) {
+  return make<ABI33_0_0jsi::PropNameID>(makeStringValue(str));
 }
 
-jsi::Runtime::PointerValue* JSCRuntime::makeObjectValue(
+ABI33_0_0jsi::Runtime::PointerValue* ABI33_0_0JSCRuntime::makeObjectValue(
     JSObjectRef objectRef) const {
   if (!objectRef) {
     objectRef = JSObjectMake(ctx_, nullptr, nullptr);
   }
 #ifndef NDEBUG
-  return new JSCObjectValue(ctx_, ctxInvalid_, objectRef, objectCounter_);
+  return new ABI33_0_0JSCObjectValue(ctx_, ctxInvalid_, objectRef, objectCounter_);
 #else
-  return new JSCObjectValue(ctx_, ctxInvalid_, objectRef);
+  return new ABI33_0_0JSCObjectValue(ctx_, ctxInvalid_, objectRef);
 #endif
 }
 
-jsi::Object JSCRuntime::createObject(JSObjectRef obj) const {
-  return make<jsi::Object>(makeObjectValue(obj));
+ABI33_0_0jsi::Object ABI33_0_0JSCRuntime::createObject(JSObjectRef obj) const {
+  return make<ABI33_0_0jsi::Object>(makeObjectValue(obj));
 }
 
-jsi::Value JSCRuntime::createValue(JSValueRef value) const {
+ABI33_0_0jsi::Value ABI33_0_0JSCRuntime::createValue(JSValueRef value) const {
   if (JSValueIsNumber(ctx_, value)) {
-    return jsi::Value(JSValueToNumber(ctx_, value, nullptr));
+    return ABI33_0_0jsi::Value(JSValueToNumber(ctx_, value, nullptr));
   } else if (JSValueIsBoolean(ctx_, value)) {
-    return jsi::Value(JSValueToBoolean(ctx_, value));
+    return ABI33_0_0jsi::Value(JSValueToBoolean(ctx_, value));
   } else if (JSValueIsNull(ctx_, value)) {
-    return jsi::Value(nullptr);
+    return ABI33_0_0jsi::Value(nullptr);
   } else if (JSValueIsUndefined(ctx_, value)) {
-    return jsi::Value();
+    return ABI33_0_0jsi::Value();
   } else if (JSValueIsString(ctx_, value)) {
     JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
-    auto result = jsi::Value(createString(str));
+    auto result = ABI33_0_0jsi::Value(createString(str));
     JSStringRelease(str);
     return result;
   } else if (JSValueIsObject(ctx_, value)) {
     JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
-    return jsi::Value(createObject(objRef));
+    return ABI33_0_0jsi::Value(createObject(objRef));
   } else {
     // WHAT ARE YOU
     abort();
   }
 }
 
-JSValueRef JSCRuntime::valueRef(const jsi::Value& value) {
+JSValueRef ABI33_0_0JSCRuntime::valueRef(const ABI33_0_0jsi::Value& value) {
   // I would rather switch on value.kind_
   if (value.isUndefined()) {
     return JSValueMakeUndefined(ctx_);
@@ -1183,48 +1183,48 @@ JSValueRef JSCRuntime::valueRef(const jsi::Value& value) {
   }
 }
 
-JSStringRef JSCRuntime::stringRef(const jsi::String& str) {
-  return static_cast<const JSCStringValue*>(getPointerValue(str))->str_;
+JSStringRef ABI33_0_0JSCRuntime::stringRef(const ABI33_0_0jsi::String& str) {
+  return static_cast<const ABI33_0_0JSCStringValue*>(getPointerValue(str))->str_;
 }
 
-JSStringRef JSCRuntime::stringRef(const jsi::PropNameID& sym) {
-  return static_cast<const JSCStringValue*>(getPointerValue(sym))->str_;
+JSStringRef ABI33_0_0JSCRuntime::stringRef(const ABI33_0_0jsi::PropNameID& sym) {
+  return static_cast<const ABI33_0_0JSCStringValue*>(getPointerValue(sym))->str_;
 }
 
-JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
-  return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
+JSObjectRef ABI33_0_0JSCRuntime::objectRef(const ABI33_0_0jsi::Object& obj) {
+  return static_cast<const ABI33_0_0JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 
-void JSCRuntime::checkException(JSValueRef exc) {
-  if (JSC_UNLIKELY(exc)) {
-    throw jsi::JSError(*this, createValue(exc));
+void ABI33_0_0JSCRuntime::checkException(JSValueRef exc) {
+  if (ABI33_0_0JSC_UNLIKELY(exc)) {
+    throw ABI33_0_0jsi::JSError(*this, createValue(exc));
   }
 }
 
-void JSCRuntime::checkException(JSValueRef res, JSValueRef exc) {
-  if (JSC_UNLIKELY(!res)) {
-    throw jsi::JSError(*this, createValue(exc));
+void ABI33_0_0JSCRuntime::checkException(JSValueRef res, JSValueRef exc) {
+  if (ABI33_0_0JSC_UNLIKELY(!res)) {
+    throw ABI33_0_0jsi::JSError(*this, createValue(exc));
   }
 }
 
-void JSCRuntime::checkException(JSValueRef exc, const char* msg) {
-  if (JSC_UNLIKELY(exc)) {
-    throw jsi::JSError(std::string(msg), *this, createValue(exc));
+void ABI33_0_0JSCRuntime::checkException(JSValueRef exc, const char* msg) {
+  if (ABI33_0_0JSC_UNLIKELY(exc)) {
+    throw ABI33_0_0jsi::JSError(std::string(msg), *this, createValue(exc));
   }
 }
 
-void JSCRuntime::checkException(
+void ABI33_0_0JSCRuntime::checkException(
     JSValueRef res,
     JSValueRef exc,
     const char* msg) {
-  if (JSC_UNLIKELY(!res)) {
-    throw jsi::JSError(std::string(msg), *this, createValue(exc));
+  if (ABI33_0_0JSC_UNLIKELY(!res)) {
+    throw ABI33_0_0jsi::JSError(std::string(msg), *this, createValue(exc));
   }
 }
 
-std::unique_ptr<jsi::Runtime> makeJSCRuntime() {
-  return std::make_unique<JSCRuntime>();
+std::unique_ptr<ABI33_0_0jsi::Runtime> makeABI33_0_0JSCRuntime() {
+  return std::make_unique<ABI33_0_0JSCRuntime>();
 }
 
-} // namespace jsc
+} // namespace ABI33_0_0jsc
 } // namespace facebook

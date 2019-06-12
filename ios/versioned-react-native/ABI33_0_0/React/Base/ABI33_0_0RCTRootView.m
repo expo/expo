@@ -287,7 +287,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   };
 
   ABI33_0_0RCTLogInfo(@"Running application %@ (%@)", moduleName, appParameters);
-  [bridge enqueueJSCall:@"AppRegistry"
+  [bridge enqueueABI33_0_0JSCall:@"AppRegistry"
                  method:@"runApplication"
                    args:@[moduleName, appParameters]
              completion:NULL];

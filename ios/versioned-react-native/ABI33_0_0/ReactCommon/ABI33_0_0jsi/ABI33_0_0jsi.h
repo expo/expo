@@ -13,17 +13,17 @@
 #include <string>
 #include <vector>
 
-#ifndef JSI_EXPORT
+#ifndef ABI33_0_0JSI_EXPORT
 #ifdef _MSC_VER
-#define JSI_EXPORT
+#define ABI33_0_0JSI_EXPORT
 #else
-#define JSI_EXPORT __attribute__((visibility("default")))
+#define ABI33_0_0JSI_EXPORT __attribute__((visibility("default")))
 #endif
 #endif
 
 class FBJSRuntime;
 namespace facebook {
-namespace jsi {
+namespace ABI33_0_0jsi {
 
 namespace detail {
 
@@ -64,7 +64,7 @@ class Function;
 class Value;
 class Instrumentation;
 class Scope;
-class JSIException;
+class ABI33_0_0JSIException;
 class JSError;
 
 /// A function which has this type can be registered as a function
@@ -83,7 +83,7 @@ using HostFunctionType = std::function<
 
 /// An object which implements this interface can be registered as an
 /// Object with the JS runtime.
-class JSI_EXPORT HostObject {
+class ABI33_0_0JSI_EXPORT HostObject {
  public:
   // The C++ object's dtor will be called when the GC finalizes this
   // object.  (This may be as late as when the Runtime is shut down.)
@@ -91,7 +91,7 @@ class JSI_EXPORT HostObject {
   // be called from inside the GC, so it is unsafe to do any VM
   // operations which require a Runtime&.  Derived classes' dtors
   // should also avoid doing anything expensive.  Calling the dtor on
-  // a jsi object is explicitly ok.  If you want to do JS operations,
+  // a ABI33_0_0jsi object is explicitly ok.  If you want to do JS operations,
   // or any nontrivial work, you should add it to a work queue, and
   // manage it externally.
   virtual ~HostObject();
@@ -128,7 +128,7 @@ class JSI_EXPORT HostObject {
 /// make shutdown safe, destruction of objects associated with the Runtime
 /// must be destroyed before the Runtime is destroyed, or from the
 /// destructor of a managed HostObject or HostFunction.  Informally, this
-/// means that the main source of unsafe behavior is to hold a jsi object
+/// means that the main source of unsafe behavior is to hold a ABI33_0_0jsi object
 /// in a non-Runtime-managed object, and not clean it up before the Runtime
 /// is shut down.  If your lifecycle is such that avoiding this is hard,
 /// you will probably need to do use your own locks.
@@ -140,7 +140,7 @@ class Runtime {
   /// to annotate the stack trace if there is an exception.  The
   /// contents may be utf8-encoded JS source code, or binary bytcode
   /// whose format is specific to the implementation.  If the input
-  /// format is unknown, or evaluation causes an error, a JSIException
+  /// format is unknown, or evaluation causes an error, a ABI33_0_0JSIException
   /// will be thrown.
   virtual void evaluateJavaScript(
       std::unique_ptr<const Buffer> buffer,
@@ -211,8 +211,8 @@ class Runtime {
 
   virtual Object createObject() = 0;
   virtual Object createObject(std::shared_ptr<HostObject> ho) = 0;
-  virtual std::shared_ptr<HostObject> getHostObject(const jsi::Object&) = 0;
-  virtual HostFunctionType& getHostFunction(const jsi::Function&) = 0;
+  virtual std::shared_ptr<HostObject> getHostObject(const ABI33_0_0jsi::Object&) = 0;
+  virtual HostFunctionType& getHostFunction(const ABI33_0_0jsi::Function&) = 0;
 
   virtual Value getProperty(const Object&, const PropNameID& name) = 0;
   virtual Value getProperty(const Object&, const String& name) = 0;
@@ -226,8 +226,8 @@ class Runtime {
   virtual bool isArray(const Object&) const = 0;
   virtual bool isArrayBuffer(const Object&) const = 0;
   virtual bool isFunction(const Object&) const = 0;
-  virtual bool isHostObject(const jsi::Object&) const = 0;
-  virtual bool isHostFunction(const jsi::Function&) const = 0;
+  virtual bool isHostObject(const ABI33_0_0jsi::Object&) const = 0;
+  virtual bool isHostFunction(const ABI33_0_0jsi::Function&) const = 0;
   virtual Array getPropertyNames(const Object&) = 0;
 
   virtual WeakObject createWeakObject(const Object&) = 0;
@@ -341,7 +341,7 @@ class PropNameID : public Pointer {
   }
 
   /// Create a PropNameID from a JS string.
-  static PropNameID forString(Runtime& runtime, const jsi::String& str) {
+  static PropNameID forString(Runtime& runtime, const ABI33_0_0jsi::String& str) {
     return runtime.createPropNameIDFromString(str);
   }
 
@@ -360,8 +360,8 @@ class PropNameID : public Pointer {
 
   static bool compare(
       Runtime& runtime,
-      const jsi::PropNameID& a,
-      const jsi::PropNameID& b) {
+      const ABI33_0_0jsi::PropNameID& a,
+      const ABI33_0_0jsi::PropNameID& b) {
     return runtime.compare(a, b);
   }
 
@@ -533,12 +533,12 @@ class Object : public Pointer {
 
   /// \return an Array instance which refers to the same underlying
   /// object.  If \c isArray() would return false, this will throw
-  /// JSIException.
+  /// ABI33_0_0JSIException.
   Array asArray(Runtime& runtime) const&;
 
   /// \return an Array instance which refers to the same underlying
   /// object.  If \c isArray() would return false, this will throw
-  /// JSIException.
+  /// ABI33_0_0JSIException.
   Array asArray(Runtime& runtime) &&;
 
   /// \return an ArrayBuffer instance which refers to the same underlying
@@ -559,12 +559,12 @@ class Object : public Pointer {
 
   /// \return a Function instance which refers to the same underlying
   /// object.  If \c isFunction() would return false, this will throw
-  /// JSIException.
+  /// ABI33_0_0JSIException.
   Function asFunction(Runtime& runtime) const&;
 
   /// \return a Function instance which refers to the same underlying
   /// object.  If \c isFunction() would return false, this will throw
-  /// JSIException.
+  /// ABI33_0_0JSIException.
   Function asFunction(Runtime& runtime) &&;
 
   /// \return a shared_ptr<T> which refers to the same underlying
@@ -586,7 +586,7 @@ class Object : public Pointer {
 
   /// \return similar to \c
   /// getProperty(name).getObject().getFunction(), except it will
-  /// throw JSIException instead of asserting if the property is
+  /// throw ABI33_0_0JSIException instead of asserting if the property is
   /// not an object, or the object is not callable.
   Function getPropertyAsFunction(Runtime& runtime, const char* name) const;
 
@@ -660,12 +660,12 @@ class Array : public Object {
 
   /// \return the property of the array at index \c i.  If there is no
   /// such property, returns the undefined value.  If \c i is out of
-  /// range [ 0..\c length ] throws a JSIException.
+  /// range [ 0..\c length ] throws a ABI33_0_0JSIException.
   Value getValueAtIndex(Runtime& runtime, size_t i) const;
 
   /// Sets the property of the array at index \c i.  The argument
   /// value behaves as with Object::setProperty().  If \c i is out of
-  /// range [ 0..\c length ] throws a JSIException.
+  /// range [ 0..\c length ] throws a ABI33_0_0JSIException.
   template <typename T>
   void setValueAtIndex(Runtime& runtime, size_t i, T&& value);
 
@@ -733,9 +733,9 @@ class Function : public Object {
   /// may not be the number of arguments the function is passed.
   static Function createFromHostFunction(
       Runtime& runtime,
-      const jsi::PropNameID& name,
+      const ABI33_0_0jsi::PropNameID& name,
       unsigned int paramCount,
-      jsi::HostFunctionType func);
+      ABI33_0_0jsi::HostFunctionType func);
 
   /// Calls the function with \c count \c args.  The \c this value of
   /// the JS function will be undefined.
@@ -787,7 +787,7 @@ class Function : public Object {
       const;
 
   /// Same as above `callAsConstructor`, but automatically converts/wraps
-  /// any argument with a jsi Value.
+  /// any argument with a ABI33_0_0jsi Value.
   template <typename... Args>
   Value callAsConstructor(Runtime& runtime, Args&&... args) const;
 
@@ -945,7 +945,7 @@ class Value {
     return data_.number;
   }
 
-  /// \return the number value, or throws JSIException if not a
+  /// \return the number value, or throws ABI33_0_0JSIException if not a
   /// number.
   double asNumber() const;
 
@@ -982,7 +982,7 @@ class Value {
     return static_cast<Object>(ptr);
   }
 
-  /// \return the Object value, or throws JSIException if not an
+  /// \return the Object value, or throws ABI33_0_0JSIException if not an
   /// object.
   Object asObject(Runtime& runtime) const&;
   Object asObject(Runtime& runtime) &&;
@@ -1033,11 +1033,11 @@ class Value {
 
   // In the future: Value becomes NaN-boxed.  In the Hermes impl, if
   // the object contains a PinnedHermesValue, we need to be able to
-  // get a pointer to it; this can be casted from 'this'.  In the JSC
-  // impl, we need to be able to convert the boxed value into a JSC
+  // get a pointer to it; this can be casted from 'this'.  In the ABI33_0_0JSC
+  // impl, we need to be able to convert the boxed value into a ABI33_0_0JSC
   // ref.  This can be done by casting this, deferencing it to get a
   // number, doing some bit masks, and then casting again into the
-  // desired JSC ref type.
+  // desired ABI33_0_0JSC ref type.
 };
 
 /// Not movable and not copyable RAII marker advising the underlying
@@ -1082,11 +1082,11 @@ class Scope {
   Runtime::ScopeState* prv_;
 };
 
-/// Base class for jsi exceptions
-class JSIException : public std::exception {
+/// Base class for ABI33_0_0jsi exceptions
+class ABI33_0_0JSIException : public std::exception {
  protected:
-  JSIException(){};
-  JSIException(std::string what) : what_(std::move(what)){};
+  ABI33_0_0JSIException(){};
+  ABI33_0_0JSIException(std::string what) : what_(std::move(what)){};
 
  public:
   virtual const char* what() const noexcept override {
@@ -1099,15 +1099,15 @@ class JSIException : public std::exception {
 
 /// This exception will be thrown by API functions on errors not related to
 /// JavaScript execution.
-class JSINativeException : public JSIException {
+class ABI33_0_0JSINativeException : public ABI33_0_0JSIException {
  public:
-  JSINativeException(std::string what) : JSIException(std::move(what)) {}
+  ABI33_0_0JSINativeException(std::string what) : ABI33_0_0JSIException(std::move(what)) {}
 };
 
 /// This exception will be thrown by API functions whenever a JS
 /// operation causes an exception as described by the spec, or as
 /// otherwise described.
-class JSError : public JSIException {
+class JSError : public ABI33_0_0JSIException {
  public:
   /// Creates a JSError referring to provided \c value
   JSError(Runtime& r, Value&& value);
@@ -1138,7 +1138,7 @@ class JSError : public JSIException {
     return message_;
   }
 
-  const jsi::Value& value() const {
+  const ABI33_0_0jsi::Value& value() const {
     assert(value_);
     return *value_;
   }
@@ -1151,12 +1151,12 @@ class JSError : public JSIException {
 
   // This needs to be on the heap, because throw requires the object
   // be copyable, and Value is not.
-  std::shared_ptr<jsi::Value> value_;
+  std::shared_ptr<ABI33_0_0jsi::Value> value_;
   std::string message_;
   std::string stack_;
 };
 
-} // namespace jsi
+} // namespace ABI33_0_0jsi
 } // namespace facebook
 
 #include <ABI33_0_0jsi/ABI33_0_0jsi-inl.h>

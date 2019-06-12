@@ -99,7 +99,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDe
     self.userInteractionEnabled = NO;
     [(ABI33_0_0RCTRootView *)self.superview contentViewInvalidated];
 
-    [_bridge enqueueJSCall:@"AppRegistry"
+    [_bridge enqueueABI33_0_0JSCall:@"AppRegistry"
                     method:@"unmountApplicationComponentAtRootTag"
                       args:@[self.ReactABI33_0_0Tag]
                 completion:NULL];

@@ -578,12 +578,12 @@
 
 - (void)mountReactABI33_0_0ComponentWithBridge:(ABI33_0_0RCTBridge *)bridge moduleName:(NSString *)moduleName params:(NSDictionary *)params
 {
-  [bridge enqueueJSCall:@"AppRegistry" method:@"runApplication" args:@[moduleName, params] completion:NULL];
+  [bridge enqueueABI33_0_0JSCall:@"AppRegistry" method:@"runApplication" args:@[moduleName, params] completion:NULL];
 }
 
 - (void)unmountReactABI33_0_0ComponentWithBridge:(ABI33_0_0RCTBridge *)bridge rootViewTag:(NSNumber *)rootViewTag
 {
-  [bridge enqueueJSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[rootViewTag] completion:NULL];
+  [bridge enqueueABI33_0_0JSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[rootViewTag] completion:NULL];
 }
 
 @end

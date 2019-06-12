@@ -130,7 +130,7 @@ ABI33_0_0RCT_EXTERN void ABI33_0_0RCTRegisterModule(Class);
                 params:(NSArray *)params;
 
 /**
- * Hook exposed for ABI33_0_0RCTLog to send logs to JavaScript when not running in JSC
+ * Hook exposed for ABI33_0_0RCTLog to send logs to JavaScript when not running in ABI33_0_0JSC
  */
 - (void)logMessage:(NSString *)message level:(NSString *)level;
 

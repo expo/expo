@@ -38,7 +38,7 @@ std::mutex &EventEmitter::DispatchMutex() {
 
 ValueFactory EventEmitter::defaultPayloadFactory() {
   static auto payloadFactory =
-      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+      ValueFactory{[](ABI33_0_0jsi::Runtime &runtime) { return ABI33_0_0jsi::Object(runtime); }};
   return payloadFactory;
 }
 
@@ -55,7 +55,7 @@ void EventEmitter::dispatchEvent(
     const EventPriority &priority) const {
   dispatchEvent(
       type,
-      [payload](jsi::Runtime &runtime) {
+      [payload](ABI33_0_0jsi::Runtime &runtime) {
         return valueFromDynamic(runtime, payload);
       },
       priority);

@@ -25,7 +25,7 @@ void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
   queue_.push_back(rawEvent);
 }
 
-void EventQueue::onBeat(jsi::Runtime &runtime) const {
+void EventQueue::onBeat(ABI33_0_0jsi::Runtime &runtime) const {
   std::vector<RawEvent> queue;
 
   {

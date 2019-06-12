@@ -9,8 +9,8 @@
 namespace facebook {
 namespace ReactABI33_0_0 {
 
-static jsi::Object getModule(
-    jsi::Runtime &runtime,
+static ABI33_0_0jsi::Object getModule(
+    ABI33_0_0jsi::Runtime &runtime,
     const std::string &moduleName) {
   auto batchedBridge =
       runtime.global().getPropertyAsObject(runtime, "__fbBatchedBridge");
@@ -20,16 +20,16 @@ static jsi::Object getModule(
                     .callWithThis(
                         runtime,
                         batchedBridge,
-                        {jsi::String::createFromUtf8(runtime, moduleName)})
+                        {ABI33_0_0jsi::String::createFromUtf8(runtime, moduleName)})
                     .asObject(runtime);
   return module;
 }
 
 void UIManagerBinding::install(
-    jsi::Runtime &runtime,
+    ABI33_0_0jsi::Runtime &runtime,
     std::shared_ptr<UIManagerBinding> uiManagerBinding) {
   auto uiManagerModuleName = "nativeFabricUIManager";
-  auto object = jsi::Object::createFromHostObject(runtime, uiManagerBinding);
+  auto object = ABI33_0_0jsi::Object::createFromHostObject(runtime, uiManagerBinding);
   runtime.global().setProperty(runtime, uiManagerModuleName, std::move(object));
 }
 
@@ -37,7 +37,7 @@ UIManagerBinding::UIManagerBinding(std::unique_ptr<UIManager> uiManager)
     : uiManager_(std::move(uiManager)) {}
 
 void UIManagerBinding::startSurface(
-    jsi::Runtime &runtime,
+    ABI33_0_0jsi::Runtime &runtime,
     SurfaceId surfaceId,
     const std::string &moduleName,
     const folly::dynamic &initalProps) const {
@@ -51,20 +51,20 @@ void UIManagerBinding::startSurface(
   method.callWithThis(
       runtime,
       module,
-      {jsi::String::createFromUtf8(runtime, moduleName),
-       jsi::valueFromDynamic(runtime, parameters)});
+      {ABI33_0_0jsi::String::createFromUtf8(runtime, moduleName),
+       ABI33_0_0jsi::valueFromDynamic(runtime, parameters)});
 }
 
-void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
+void UIManagerBinding::stopSurface(ABI33_0_0jsi::Runtime &runtime, SurfaceId surfaceId)
     const {
   auto module = getModule(runtime, "ReactABI33_0_0Fabric");
   auto method = module.getPropertyAsFunction(runtime, "unmountComponentAtNode");
 
-  method.callWithThis(runtime, module, {jsi::Value{surfaceId}});
+  method.callWithThis(runtime, module, {ABI33_0_0jsi::Value{surfaceId}});
 }
 
 void UIManagerBinding::dispatchEvent(
-    jsi::Runtime &runtime,
+    ABI33_0_0jsi::Runtime &runtime,
     const EventTarget *eventTarget,
     const std::string &type,
     const ValueFactory &payloadFactory) const {
@@ -76,7 +76,7 @@ void UIManagerBinding::dispatchEvent(
     ? [&]() {
       auto instanceHandle = eventTarget->getInstanceHandle(runtime);
       if (instanceHandle.isUndefined()) {
-        return jsi::Value::null();
+        return ABI33_0_0jsi::Value::null();
       }
 
       // Mixing `target` into `payload`.
@@ -84,7 +84,7 @@ void UIManagerBinding::dispatchEvent(
       payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
       return instanceHandle;
     }()
-    : jsi::Value::null();
+    : ABI33_0_0jsi::Value::null();
 
   auto &eventHandlerWrapper =
       static_cast<const EventHandlerWrapper &>(*eventHandler_);
@@ -92,7 +92,7 @@ void UIManagerBinding::dispatchEvent(
   eventHandlerWrapper.callback.call(
       runtime,
       {std::move(instanceHandle),
-       jsi::String::createFromUtf8(runtime, type),
+       ABI33_0_0jsi::String::createFromUtf8(runtime, type),
        std::move(payload)});
 }
 
@@ -101,23 +101,23 @@ void UIManagerBinding::invalidate() const {
   uiManager_->setDelegate(nullptr);
 }
 
-jsi::Value UIManagerBinding::get(
-    jsi::Runtime &runtime,
-    const jsi::PropNameID &name) {
+ABI33_0_0jsi::Value UIManagerBinding::get(
+    ABI33_0_0jsi::Runtime &runtime,
+    const ABI33_0_0jsi::PropNameID &name) {
   auto methodName = name.utf8(runtime);
   auto &uiManager = *uiManager_;
 
   // Semantic: Creates a new node with given pieces.
   if (methodName == "createNode") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         5,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           return valueFromShadowNode(
               runtime,
               uiManager.createNode(
@@ -131,15 +131,15 @@ jsi::Value UIManagerBinding::get(
 
   // Semantic: Clones the node with *same* props and *same* children.
   if (methodName == "cloneNode") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         1,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(shadowNodeFromValue(runtime, arguments[0])));
@@ -148,15 +148,15 @@ jsi::Value UIManagerBinding::get(
 
   // Semantic: Clones the node with *same* props and *empty* children.
   if (methodName == "cloneNodeWithNewChildren") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         1,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(
@@ -167,15 +167,15 @@ jsi::Value UIManagerBinding::get(
 
   // Semantic: Clones the node with *given* props and *same* children.
   if (methodName == "cloneNodeWithNewProps") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         2,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
@@ -188,15 +188,15 @@ jsi::Value UIManagerBinding::get(
 
   // Semantic: Clones the node with *given* props and *empty* children.
   if (methodName == "cloneNodeWithNewChildrenAndProps") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         2,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
@@ -208,31 +208,31 @@ jsi::Value UIManagerBinding::get(
   }
 
   if (methodName == "appendChild") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         2,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           uiManager.appendChild(
               shadowNodeFromValue(runtime, arguments[0]),
               shadowNodeFromValue(runtime, arguments[1]));
-          return jsi::Value::undefined();
+          return ABI33_0_0jsi::Value::undefined();
         });
   }
 
   if (methodName == "createChildSet") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         1,
-        [](jsi::Runtime &runtime,
-           const jsi::Value &thisValue,
-           const jsi::Value *arguments,
-           size_t count) -> jsi::Value {
+        [](ABI33_0_0jsi::Runtime &runtime,
+           const ABI33_0_0jsi::Value &thisValue,
+           const ABI33_0_0jsi::Value *arguments,
+           size_t count) -> ABI33_0_0jsi::Value {
           auto shadowNodeList =
               std::make_shared<SharedShadowNodeList>(SharedShadowNodeList({}));
           return valueFromShadowNodeList(runtime, shadowNodeList);
@@ -240,71 +240,71 @@ jsi::Value UIManagerBinding::get(
   }
 
   if (methodName == "appendChildToSet") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         2,
-        [](jsi::Runtime &runtime,
-           const jsi::Value &thisValue,
-           const jsi::Value *arguments,
-           size_t count) -> jsi::Value {
+        [](ABI33_0_0jsi::Runtime &runtime,
+           const ABI33_0_0jsi::Value &thisValue,
+           const ABI33_0_0jsi::Value *arguments,
+           size_t count) -> ABI33_0_0jsi::Value {
           auto shadowNodeList = shadowNodeListFromValue(runtime, arguments[0]);
           auto shadowNode = shadowNodeFromValue(runtime, arguments[1]);
           shadowNodeList->push_back(shadowNode);
-          return jsi::Value::undefined();
+          return ABI33_0_0jsi::Value::undefined();
         });
   }
 
   if (methodName == "completeRoot") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         2,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           uiManager.completeSurface(
               surfaceIdFromValue(runtime, arguments[0]),
               shadowNodeListFromValue(runtime, arguments[1]));
-          return jsi::Value::undefined();
+          return ABI33_0_0jsi::Value::undefined();
         });
   }
 
   if (methodName == "registerEventHandler") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         1,
         [this](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           auto eventHandler =
               arguments[0].getObject(runtime).getFunction(runtime);
           eventHandler_ =
               std::make_unique<EventHandlerWrapper>(std::move(eventHandler));
-          return jsi::Value::undefined();
+          return ABI33_0_0jsi::Value::undefined();
         });
   }
 
   if (methodName == "getRelativeLayoutMetrics") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         2,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               shadowNodeFromValue(runtime, arguments[1]).get());
           auto frame = layoutMetrics.frame;
-          auto result = jsi::Object(runtime);
+          auto result = ABI33_0_0jsi::Object(runtime);
           result.setProperty(runtime, "left", frame.origin.x);
           result.setProperty(runtime, "top", frame.origin.y);
           result.setProperty(runtime, "width", frame.size.width);
@@ -314,24 +314,24 @@ jsi::Value UIManagerBinding::get(
   }
 
   if (methodName == "setNativeProps") {
-    return jsi::Function::createFromHostFunction(
+    return ABI33_0_0jsi::Function::createFromHostFunction(
         runtime,
         name,
         2,
         [&uiManager](
-            jsi::Runtime &runtime,
-            const jsi::Value &thisValue,
-            const jsi::Value *arguments,
-            size_t count) -> jsi::Value {
+            ABI33_0_0jsi::Runtime &runtime,
+            const ABI33_0_0jsi::Value &thisValue,
+            const ABI33_0_0jsi::Value *arguments,
+            size_t count) -> ABI33_0_0jsi::Value {
           uiManager.setNativeProps(
               shadowNodeFromValue(runtime, arguments[0]),
               RawProps(runtime, arguments[1]));
 
-          return jsi::Value::undefined();
+          return ABI33_0_0jsi::Value::undefined();
         });
   }
 
-  return jsi::Value::undefined();
+  return ABI33_0_0jsi::Value::undefined();
 }
 
 } // namespace ReactABI33_0_0

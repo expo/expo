@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/EXConstantsInterface/ABI32_0_0EXConstantsInterface/ABI32_0_0EXConstantsInterface.h

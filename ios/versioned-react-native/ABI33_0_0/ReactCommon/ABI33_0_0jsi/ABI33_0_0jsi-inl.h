@@ -6,7 +6,7 @@
 #pragma once
 
 namespace facebook {
-namespace jsi {
+namespace ABI33_0_0jsi {
 namespace detail {
 
 inline Value toValue(Runtime&, std::nullptr_t) {
@@ -61,12 +61,12 @@ inline T Runtime::make(Runtime::PointerValue* pv) {
 }
 
 inline const Runtime::PointerValue* Runtime::getPointerValue(
-    const jsi::Pointer& pointer) {
+    const ABI33_0_0jsi::Pointer& pointer) {
   return pointer.ptr_;
 }
 
 inline const Runtime::PointerValue* Runtime::getPointerValue(
-    const jsi::Value& value) {
+    const ABI33_0_0jsi::Value& value) {
   return value.data_.pointer.ptr_;
 }
 
@@ -207,9 +207,9 @@ inline Value Array::getValueAtIndex(Runtime& runtime, size_t i) const {
 
 inline Function Function::createFromHostFunction(
     Runtime& runtime,
-    const jsi::PropNameID& name,
+    const ABI33_0_0jsi::PropNameID& name,
     unsigned int paramCount,
-    jsi::HostFunctionType func) {
+    ABI33_0_0jsi::HostFunctionType func) {
   return runtime.createFunctionFromHostFunction(
       name, paramCount, std::move(func));
 }
@@ -305,5 +305,5 @@ inline Value Function::callAsConstructor(Runtime& runtime, Args&&... args)
       runtime, {detail::toValue(runtime, std::forward<Args>(args))...});
 }
 
-} // namespace jsi
+} // namespace ABI33_0_0jsi
 } // namespace facebook

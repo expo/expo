@@ -15,7 +15,7 @@
 
 NSString *const ABI33_0_0RCTAccessibilityManagerDidUpdateMultiplierNotification = @"ABI33_0_0RCTAccessibilityManagerDidUpdateMultiplierNotification";
 
-static NSString *UIKitCategoryFromJSCategory(NSString *JSCategory)
+static NSString *UIKitCategoryFromABI33_0_0JSCategory(NSString *ABI33_0_0JSCategory)
 {
   static NSDictionary *map = nil;
   static dispatch_once_t onceToken;
@@ -33,7 +33,7 @@ static NSString *UIKitCategoryFromJSCategory(NSString *JSCategory)
             @"accessibilityExtraExtraLarge": UIContentSizeCategoryAccessibilityExtraExtraLarge,
             @"accessibilityExtraExtraExtraLarge": UIContentSizeCategoryAccessibilityExtraExtraExtraLarge};
   });
-  return map[JSCategory];
+  return map[ABI33_0_0JSCategory];
 }
 
 @interface ABI33_0_0RCTAccessibilityManager ()
@@ -173,9 +173,9 @@ ABI33_0_0RCT_EXPORT_MODULE()
 ABI33_0_0RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers:(NSDictionary *)JSMultipliers)
 {
   NSMutableDictionary<NSString *, NSNumber *> *multipliers = [NSMutableDictionary new];
-  for (NSString *__nonnull JSCategory in JSMultipliers) {
-    NSNumber *m = [ABI33_0_0RCTConvert NSNumber:JSMultipliers[JSCategory]];
-    NSString *UIKitCategory = UIKitCategoryFromJSCategory(JSCategory);
+  for (NSString *__nonnull ABI33_0_0JSCategory in JSMultipliers) {
+    NSNumber *m = [ABI33_0_0RCTConvert NSNumber:JSMultipliers[ABI33_0_0JSCategory]];
+    NSString *UIKitCategory = UIKitCategoryFromABI33_0_0JSCategory(ABI33_0_0JSCategory);
     multipliers[UIKitCategory] = m;
   }
   self.multipliers = multipliers;

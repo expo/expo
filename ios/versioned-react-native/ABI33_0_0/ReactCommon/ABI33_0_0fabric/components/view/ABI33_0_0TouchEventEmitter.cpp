@@ -12,8 +12,8 @@ namespace ReactABI33_0_0 {
 
 #pragma mark - Touches
 
-static jsi::Value touchPayload(jsi::Runtime &runtime, const Touch &touch) {
-  auto object = jsi::Object(runtime);
+static ABI33_0_0jsi::Value touchPayload(ABI33_0_0jsi::Runtime &runtime, const Touch &touch) {
+  auto object = ABI33_0_0jsi::Object(runtime);
   object.setProperty(runtime, "locationX", touch.offsetPoint.x);
   object.setProperty(runtime, "locationY", touch.offsetPoint.y);
   object.setProperty(runtime, "pageX", touch.pagePoint.x);
@@ -27,10 +27,10 @@ static jsi::Value touchPayload(jsi::Runtime &runtime, const Touch &touch) {
   return object;
 }
 
-static jsi::Value touchesPayload(
-    jsi::Runtime &runtime,
+static ABI33_0_0jsi::Value touchesPayload(
+    ABI33_0_0jsi::Runtime &runtime,
     const Touches &touches) {
-  auto array = jsi::Array(runtime, touches.size());
+  auto array = ABI33_0_0jsi::Array(runtime, touches.size());
   int i = 0;
   for (const auto &touch : touches) {
     array.setValueAtIndex(runtime, i++, touchPayload(runtime, touch));
@@ -38,10 +38,10 @@ static jsi::Value touchesPayload(
   return array;
 }
 
-static jsi::Value touchEventPayload(
-    jsi::Runtime &runtime,
+static ABI33_0_0jsi::Value touchEventPayload(
+    ABI33_0_0jsi::Runtime &runtime,
     const TouchEvent &event) {
-  auto object = jsi::Object(runtime);
+  auto object = ABI33_0_0jsi::Object(runtime);
   object.setProperty(
       runtime, "touches", touchesPayload(runtime, event.touches));
   object.setProperty(
@@ -57,7 +57,7 @@ void TouchEventEmitter::dispatchTouchEvent(
     const EventPriority &priority) const {
   dispatchEvent(
       type,
-      [event](jsi::Runtime &runtime) {
+      [event](ABI33_0_0jsi::Runtime &runtime) {
         return touchEventPayload(runtime, event);
       },
       priority);

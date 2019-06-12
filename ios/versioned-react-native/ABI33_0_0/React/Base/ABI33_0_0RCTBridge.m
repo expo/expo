@@ -380,17 +380,17 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self.batchedBridge registerAdditionalModuleClasses:modules];
 }
 
-- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
+- (void)enqueueABI33_0_0JSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
   NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
   NSString *module = ids[0];
   NSString *method = ids[1];
-  [self enqueueJSCall:module method:method args:args completion:NULL];
+  [self enqueueABI33_0_0JSCall:module method:method args:args completion:NULL];
 }
 
-- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
+- (void)enqueueABI33_0_0JSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
 {
-  [self.batchedBridge enqueueJSCall:module method:method args:args completion:completion];
+  [self.batchedBridge enqueueABI33_0_0JSCall:module method:method args:args completion:completion];
 }
 
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args

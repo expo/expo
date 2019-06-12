@@ -35,7 +35,7 @@ class EventQueue {
   virtual void enqueueEvent(const RawEvent &rawEvent) const;
 
  protected:
-  void onBeat(jsi::Runtime &runtime) const;
+  void onBeat(ABI33_0_0jsi::Runtime &runtime) const;
 
   const EventPipe eventPipe_;
   const std::unique_ptr<EventBeat> eventBeat_;

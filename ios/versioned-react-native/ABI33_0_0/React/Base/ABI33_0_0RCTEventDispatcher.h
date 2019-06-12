@@ -64,7 +64,7 @@ ABI33_0_0RCT_EXTERN NSString *ABI33_0_0RCTNormalizeInputEventName(NSString *even
 
 
 /**
- * This class wraps the -[ABI33_0_0RCTBridge enqueueJSCall:args:] method, and
+ * This class wraps the -[ABI33_0_0RCTBridge enqueueABI33_0_0JSCall:args:] method, and
  * provides some convenience methods for generating event calls.
  */
 @interface ABI33_0_0RCTEventDispatcher : NSObject <ABI33_0_0RCTBridgeModule>

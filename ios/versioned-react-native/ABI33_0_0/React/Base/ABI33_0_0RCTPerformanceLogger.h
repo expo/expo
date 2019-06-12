@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, ABI33_0_0RCTPLTag) {
   ABI33_0_0RCTPLNativeModuleMainThread,
   ABI33_0_0RCTPLNativeModulePrepareConfig,
   ABI33_0_0RCTPLNativeModuleMainThreadUsesCount,
-  ABI33_0_0RCTPLJSCWrapperOpenLibrary,
+  ABI33_0_0RCTPLABI33_0_0JSCWrapperOpenLibrary,
   ABI33_0_0RCTPLBridgeStartup,
   ABI33_0_0RCTPLTTI,
   ABI33_0_0RCTPLBundleSize,

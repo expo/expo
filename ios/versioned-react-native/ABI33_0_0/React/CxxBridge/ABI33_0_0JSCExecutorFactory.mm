@@ -13,18 +13,18 @@
 namespace facebook {
 namespace ReactABI33_0_0 {
 
-std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
+std::unique_ptr<JSExecutor> ABI33_0_0JSCExecutorFactory::createJSExecutor(
   std::shared_ptr<ExecutorDelegate> delegate,
   std::shared_ptr<MessageQueueThread> jsQueue) {
-  return folly::make_unique<JSIExecutor>(
-    facebook::jsc::makeJSCRuntime(),
+  return folly::make_unique<ABI33_0_0JSIExecutor>(
+    facebook::ABI33_0_0jsc::makeABI33_0_0JSCRuntime(),
     delegate,
     [](const std::string &message, unsigned int logLevel) {
       _ABI33_0_0RCTLogJavaScriptInternal(
         static_cast<ABI33_0_0RCTLogLevel>(logLevel),
         [NSString stringWithUTF8String:message.c_str()]);
     },
-    JSIExecutor::defaultTimeoutInvoker,
+    ABI33_0_0JSIExecutor::defaultTimeoutInvoker,
     std::move(runtimeInstaller_));
 }
 

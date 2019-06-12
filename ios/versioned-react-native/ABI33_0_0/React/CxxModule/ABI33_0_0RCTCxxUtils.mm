@@ -20,7 +20,7 @@
 namespace facebook {
 namespace ReactABI33_0_0 {
 
-using facebook::jsi::JSError;
+using facebook::ABI33_0_0jsi::JSError;
 
 std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<ABI33_0_0RCTModuleData *> *modules, ABI33_0_0RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
 {

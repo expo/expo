@@ -14,7 +14,7 @@ void EventBeat::request() const {
   isRequested_ = true;
 }
 
-void EventBeat::beat(jsi::Runtime &runtime) const {
+void EventBeat::beat(ABI33_0_0jsi::Runtime &runtime) const {
   if (!this->isRequested_) {
     return;
   }

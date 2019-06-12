@@ -192,10 +192,10 @@ using namespace facebook::ReactABI33_0_0;
   _contextContainer->registerInstance(_ReactABI33_0_0NativeConfig, "ReactABI33_0_0NativeConfig");
 
   auto messageQueueThread = _batchedBridge.jsMessageThread;
-  auto runtime = (facebook::jsi::Runtime *)((ABI33_0_0RCTCxxBridge *)_batchedBridge).runtime;
+  auto runtime = (facebook::ABI33_0_0jsi::Runtime *)((ABI33_0_0RCTCxxBridge *)_batchedBridge).runtime;
 
   RuntimeExecutor runtimeExecutor =
-    [runtime, messageQueueThread](std::function<void(facebook::jsi::Runtime &runtime)> &&callback) {
+    [runtime, messageQueueThread](std::function<void(facebook::ABI33_0_0jsi::Runtime &runtime)> &&callback) {
       messageQueueThread->runOnQueue([runtime, callback = std::move(callback)]() {
         callback(*runtime);
       });

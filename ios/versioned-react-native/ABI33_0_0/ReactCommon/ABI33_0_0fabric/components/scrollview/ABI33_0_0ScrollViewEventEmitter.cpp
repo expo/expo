@@ -10,20 +10,20 @@
 namespace facebook {
 namespace ReactABI33_0_0 {
 
-static jsi::Value scrollViewMetricsPayload(
-    jsi::Runtime &runtime,
+static ABI33_0_0jsi::Value scrollViewMetricsPayload(
+    ABI33_0_0jsi::Runtime &runtime,
     const ScrollViewMetrics &scrollViewMetrics) {
-  auto payload = jsi::Object(runtime);
+  auto payload = ABI33_0_0jsi::Object(runtime);
 
   {
-    auto contentOffset = jsi::Object(runtime);
+    auto contentOffset = ABI33_0_0jsi::Object(runtime);
     contentOffset.setProperty(runtime, "x", scrollViewMetrics.contentOffset.x);
     contentOffset.setProperty(runtime, "y", scrollViewMetrics.contentOffset.y);
     payload.setProperty(runtime, "contentOffset", contentOffset);
   }
 
   {
-    auto contentInset = jsi::Object(runtime);
+    auto contentInset = ABI33_0_0jsi::Object(runtime);
     contentInset.setProperty(
         runtime, "top", scrollViewMetrics.contentInset.top);
     contentInset.setProperty(
@@ -36,7 +36,7 @@ static jsi::Value scrollViewMetricsPayload(
   }
 
   {
-    auto contentSize = jsi::Object(runtime);
+    auto contentSize = ABI33_0_0jsi::Object(runtime);
     contentSize.setProperty(
         runtime, "width", scrollViewMetrics.contentSize.width);
     contentSize.setProperty(
@@ -45,7 +45,7 @@ static jsi::Value scrollViewMetricsPayload(
   }
 
   {
-    auto containerSize = jsi::Object(runtime);
+    auto containerSize = ABI33_0_0jsi::Object(runtime);
     containerSize.setProperty(
         runtime, "width", scrollViewMetrics.containerSize.width);
     containerSize.setProperty(
@@ -89,7 +89,7 @@ void ScrollViewEventEmitter::dispatchScrollViewEvent(
     EventPriority priority) const {
   dispatchEvent(
       name,
-      [scrollViewMetrics](jsi::Runtime &runtime) {
+      [scrollViewMetrics](ABI33_0_0jsi::Runtime &runtime) {
         return scrollViewMetricsPayload(runtime, scrollViewMetrics);
       },
       priority);

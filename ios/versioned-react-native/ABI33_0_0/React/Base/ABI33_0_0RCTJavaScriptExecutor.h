@@ -15,7 +15,7 @@ typedef void (^ABI33_0_0RCTJavaScriptCallback)(id result, NSError *error);
 
 /**
  * Abstracts away a JavaScript execution context - we may be running code in a
- * web view (for debugging purposes), or may be running code in a `JSContext`.
+ * web view (for debugging purposes), or may be running code in a `ABI33_0_0JSContext`.
  */
 @protocol ABI33_0_0RCTJavaScriptExecutor <ABI33_0_0RCTInvalidating, ABI33_0_0RCTBridgeModule>
 
@@ -32,14 +32,14 @@ typedef void (^ABI33_0_0RCTJavaScriptCallback)(id result, NSError *error);
 
 /**
  * Executes BatchedBridge.flushedQueue on JS thread and calls the given callback
- * with JSValue, containing the next queue, and JSContext.
+ * with JSValue, containing the next queue, and ABI33_0_0JSContext.
  */
 - (void)flushedQueue:(ABI33_0_0RCTJavaScriptCallback)onComplete;
 
 /**
  * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module name,
  * method name and optional additional arguments on the JS thread and calls the
- * given callback with JSValue, containing the next queue, and JSContext.
+ * given callback with JSValue, containing the next queue, and ABI33_0_0JSContext.
  */
 - (void)callFunctionOnModule:(NSString *)module
                       method:(NSString *)method
@@ -49,7 +49,7 @@ typedef void (^ABI33_0_0RCTJavaScriptCallback)(id result, NSError *error);
 /**
  * Executes BatchedBridge.invokeCallbackAndReturnFlushedQueue with the cbID,
  * and optional additional arguments on the JS thread and calls the
- * given callback with JSValue, containing the next queue, and JSContext.
+ * given callback with JSValue, containing the next queue, and ABI33_0_0JSContext.
  */
 - (void)invokeCallbackID:(NSNumber *)cbID
                arguments:(NSArray *)args

@@ -23,7 +23,7 @@ class EventBeat {
  public:
   virtual ~EventBeat() = default;
 
-  using BeatCallback = std::function<void(jsi::Runtime &runtime)>;
+  using BeatCallback = std::function<void(ABI33_0_0jsi::Runtime &runtime)>;
   using FailCallback = std::function<void()>;
 
   /*
@@ -62,7 +62,7 @@ class EventBeat {
    * Should be used by sublasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
    */
-  void beat(jsi::Runtime &runtime) const;
+  void beat(ABI33_0_0jsi::Runtime &runtime) const;
 
  protected:
   BeatCallback beatCallback_;

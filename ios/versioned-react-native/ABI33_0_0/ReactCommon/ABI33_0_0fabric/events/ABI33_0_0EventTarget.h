@@ -34,7 +34,7 @@ class EventTarget {
   /*
    * Constructs an EventTarget from a weak instance handler and a tag.
    */
-  EventTarget(jsi::Runtime &runtime, const jsi::Value &instanceHandle, Tag tag);
+  EventTarget(ABI33_0_0jsi::Runtime &runtime, const ABI33_0_0jsi::Value &instanceHandle, Tag tag);
 
   /*
    * Sets the `enabled` flag that allows creating a strong instance handle from
@@ -46,18 +46,18 @@ class EventTarget {
    * Retains an instance handler by creating a strong reference to it.
    * If the EventTarget is disabled, does nothing.
    */
-  void retain(jsi::Runtime &runtime) const;
+  void retain(ABI33_0_0jsi::Runtime &runtime) const;
 
   /*
    * Releases the instance handler by nulling a strong reference to it.
    */
-  void release(jsi::Runtime &runtime) const;
+  void release(ABI33_0_0jsi::Runtime &runtime) const;
 
   /*
    * Creates and returns the `instanceHandle`.
    * Returns `null` if the `instanceHandle` is not retained at this moment.
    */
-  jsi::Value getInstanceHandle(jsi::Runtime &runtime) const;
+  ABI33_0_0jsi::Value getInstanceHandle(ABI33_0_0jsi::Runtime &runtime) const;
 
   /*
    * Deprecated. Do not use.
@@ -66,8 +66,8 @@ class EventTarget {
 
  private:
   mutable bool enabled_{false}; // Protected by `EventEmitter::DispatchMutex()`.
-  mutable jsi::WeakObject weakInstanceHandle_; // Protected by `jsi::Runtime &`.
-  mutable jsi::Value strongInstanceHandle_; // Protected by `jsi::Runtime &`.
+  mutable ABI33_0_0jsi::WeakObject weakInstanceHandle_; // Protected by `ABI33_0_0jsi::Runtime &`.
+  mutable ABI33_0_0jsi::Value strongInstanceHandle_; // Protected by `ABI33_0_0jsi::Runtime &`.
   Tag tag_;
 };
 

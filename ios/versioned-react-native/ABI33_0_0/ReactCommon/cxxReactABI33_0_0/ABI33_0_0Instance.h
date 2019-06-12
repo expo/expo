@@ -30,8 +30,8 @@ class RAMBundleRegistry;
 struct InstanceCallback {
   virtual ~InstanceCallback() {}
   virtual void onBatchComplete() {}
-  virtual void incrementPendingJSCalls() {}
-  virtual void decrementPendingJSCalls() {}
+  virtual void incrementPendingABI33_0_0JSCalls() {}
+  virtual void decrementPendingABI33_0_0JSCalls() {}
 };
 
 class RN_EXPORT Instance {
@@ -61,7 +61,7 @@ public:
   bool isBatchActive();
   void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
-  void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
+  void callABI33_0_0JSCallback(uint64_t callbackId, folly::dynamic &&params);
 
   // This method is experimental, and may be modified or removed.
   void registerBundle(uint32_t bundleId, const std::string& bundlePath);

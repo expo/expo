@@ -389,9 +389,9 @@
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
-      "source_files": "ReactCommon/ABI33_0_0jsiexecutor/jsireact/*.{cpp,h}",
-      "private_header_files": "ReactCommon/ABI33_0_0jsiexecutor/jsireact/*.h",
-      "header_dir": "jsireact",
+      "source_files": "ReactCommon/ABI33_0_0jsiexecutor/ABI33_0_0jsireact/*.{cpp,h}",
+      "private_header_files": "ReactCommon/ABI33_0_0jsiexecutor/ABI33_0_0jsireact/*.h",
+      "header_dir": "ABI33_0_0jsireact",
       "pod_target_xcconfig": {
         "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\", \"$(PODS_TARGET_SRCROOT)/ReactCommon/ABI33_0_0jsiexecutor\""
       }

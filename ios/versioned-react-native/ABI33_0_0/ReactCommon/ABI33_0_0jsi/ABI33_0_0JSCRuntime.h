@@ -9,9 +9,9 @@
 #include <memory.h>
 
 namespace facebook {
-namespace jsc {
+namespace ABI33_0_0jsc {
 
-std::unique_ptr<jsi::Runtime> makeJSCRuntime();
+std::unique_ptr<ABI33_0_0jsi::Runtime> makeABI33_0_0JSCRuntime();
 
-} // namespace jsc
+} // namespace ABI33_0_0jsc
 } // namespace facebook

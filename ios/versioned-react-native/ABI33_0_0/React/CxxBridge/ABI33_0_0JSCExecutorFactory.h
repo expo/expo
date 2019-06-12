@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include <jsireact/ABI33_0_0JSIExecutor.h>
+#include <ABI33_0_0jsireact/ABI33_0_0JSIExecutor.h>
 
 namespace facebook {
 namespace ReactABI33_0_0 {
 
-class JSCExecutorFactory : public JSExecutorFactory {
+class ABI33_0_0JSCExecutorFactory : public JSExecutorFactory {
 public:
-  explicit JSCExecutorFactory(
-      JSIExecutor::RuntimeInstaller runtimeInstaller)
+  explicit ABI33_0_0JSCExecutorFactory(
+      ABI33_0_0JSIExecutor::RuntimeInstaller runtimeInstaller)
       : runtimeInstaller_(std::move(runtimeInstaller)) {}
 
   std::unique_ptr<JSExecutor> createJSExecutor(
@@ -23,7 +23,7 @@ public:
       std::shared_ptr<MessageQueueThread> jsQueue) override;
 
 private:
-  JSIExecutor::RuntimeInstaller runtimeInstaller_;
+  ABI33_0_0JSIExecutor::RuntimeInstaller runtimeInstaller_;
 };
 
 } // namespace ReactABI33_0_0

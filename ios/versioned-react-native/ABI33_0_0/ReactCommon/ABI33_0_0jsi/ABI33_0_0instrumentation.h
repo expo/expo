@@ -10,7 +10,7 @@
 #include <ABI33_0_0jsi/ABI33_0_0jsi.h>
 
 namespace facebook {
-namespace jsi {
+namespace ABI33_0_0jsi {
 
 /// Methods for starting and collecting instrumentation, an \c Instrumentation
 /// instance is associated with a particular \c Runtime instance, which it
@@ -21,7 +21,7 @@ class Instrumentation {
 
   /// Returns GC statistics as a JSON-encoded string, with an object containing
   /// "type" and "version" fields outermost. "type" is a string, unique to a
-  /// particular implementation of \c jsi::Instrumentation, and "version" is a
+  /// particular implementation of \c ABI33_0_0jsi::Instrumentation, and "version" is a
   /// number to indicate any revision to that implementation and its output
   /// format.
   ///
@@ -38,7 +38,7 @@ class Instrumentation {
   /// function can be called at any time, and should produce information that is
   /// correct at the instant it is called (i.e, not stale).
   ///
-  /// \return a jsi Value containing whichever statistics the runtime supports
+  /// \return a ABI33_0_0jsi Value containing whichever statistics the runtime supports
   ///   for its heap.
   virtual Value getHeapInfo(bool includeExpensive) = 0;
 
@@ -72,5 +72,5 @@ class Instrumentation {
   virtual void dumpProfilerSymbolsToFile(const std::string& fileName) const = 0;
 };
 
-} // namespace jsi
+} // namespace ABI33_0_0jsi
 } // namespace facebook

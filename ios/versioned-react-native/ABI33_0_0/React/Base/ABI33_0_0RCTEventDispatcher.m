@@ -65,7 +65,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
 {
-  [_bridge enqueueJSCall:@"ABI33_0_0RCTNativeAppEventEmitter"
+  [_bridge enqueueABI33_0_0JSCall:@"ABI33_0_0RCTNativeAppEventEmitter"
                   method:@"emit"
                     args:body ? @[name, body] : @[name]
               completion:NULL];
@@ -73,7 +73,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
 
 - (void)sendDeviceEventWithName:(NSString *)name body:(id)body
 {
-  [_bridge enqueueJSCall:@"ABI33_0_0RCTDeviceEventEmitter"
+  [_bridge enqueueABI33_0_0JSCall:@"ABI33_0_0RCTDeviceEventEmitter"
                   method:@"emit"
                     args:body ? @[name, body] : @[name]
               completion:NULL];
@@ -87,7 +87,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
   }
 
   name = ABI33_0_0RCTNormalizeInputEventName(name);
-  [_bridge enqueueJSCall:@"ABI33_0_0RCTEventEmitter"
+  [_bridge enqueueABI33_0_0JSCall:@"ABI33_0_0RCTEventEmitter"
                   method:@"receiveEvent"
                     args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]
               completion:NULL];
@@ -197,7 +197,7 @@ ABI33_0_0RCT_EXPORT_MODULE()
 
 - (void)dispatchEvent:(id<ABI33_0_0RCTEvent>)event
 {
-  [_bridge enqueueJSCall:[[event class] moduleDotMethod] args:[event arguments]];
+  [_bridge enqueueABI33_0_0JSCall:[[event class] moduleDotMethod] args:[event arguments]];
 }
 
 - (dispatch_queue_t)methodQueue

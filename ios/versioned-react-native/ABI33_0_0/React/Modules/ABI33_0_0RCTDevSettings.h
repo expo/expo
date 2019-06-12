@@ -37,7 +37,7 @@
 @property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isNuclideDebuggingAvailable;
-@property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;
+@property (nonatomic, readonly) BOOL isABI33_0_0JSCSamplingProfilerAvailable;
 
 /**
  * Whether the bridge is connected to a remote JS executor.

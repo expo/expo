@@ -57,7 +57,7 @@ void RuntimeEventBeat::induce() const
 #endif
 
   isBusy_ = true;
-  runtimeExecutor_([=](jsi::Runtime &runtime) mutable {
+  runtimeExecutor_([=](ABI33_0_0jsi::Runtime &runtime) mutable {
     this->beat(runtime);
     isBusy_ = false;
 #ifndef NDEBUG

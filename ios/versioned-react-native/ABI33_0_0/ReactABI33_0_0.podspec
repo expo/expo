@@ -201,9 +201,9 @@ Pod::Spec.new do |s|
     ss.dependency             "DoubleConversion"
     ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "ReactCommon/ABI33_0_0jsiexecutor/jsireact/*.{cpp,h}"
-    ss.private_header_files = "ReactCommon/ABI33_0_0jsiexecutor/jsireact/*.h"
-    ss.header_dir           = "jsireact"
+    ss.source_files         = "ReactCommon/ABI33_0_0jsiexecutor/ABI33_0_0jsireact/*.{cpp,h}"
+    ss.private_header_files = "ReactCommon/ABI33_0_0jsiexecutor/ABI33_0_0jsireact/*.h"
+    ss.header_dir           = "ABI33_0_0jsireact"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\", \"$(PODS_TARGET_SRCROOT)/ReactCommon/ABI33_0_0jsiexecutor\"" }
   end
 

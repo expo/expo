@@ -95,7 +95,7 @@ ABI33_0_0RCT_EXTERN NSString *ABI33_0_0RCTBridgeModuleNameForClass(Class bridgeM
 
 /**
  * Experimental.
- * Check/set if JSI-bound NativeModule is enabled. By default it's off.
+ * Check/set if ABI33_0_0JSI-bound NativeModule is enabled. By default it's off.
  */
 ABI33_0_0RCT_EXTERN BOOL ABI33_0_0RCTTurboModuleEnabled(void);
 ABI33_0_0RCT_EXTERN void ABI33_0_0RCTEnableTurboModule(BOOL enabled);
@@ -136,8 +136,8 @@ ABI33_0_0RCT_EXTERN void ABI33_0_0RCTEnableTurboModule(BOOL enabled);
  * It is primarily intended for use by modules that require two-way communication
  * with the JavaScript code. Safe to call from any thread.
  */
-- (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
-- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion;
+- (void)enqueueABI33_0_0JSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
+- (void)enqueueABI33_0_0JSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion;
 
 /**
  * This method registers the file path of an additional JS segment by its ID.

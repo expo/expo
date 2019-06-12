@@ -8,10 +8,10 @@
 #include <folly/dynamic.h>
 #include <ABI33_0_0jsi/ABI33_0_0jsi.h>
 
-using namespace facebook::jsi;
+using namespace facebook::ABI33_0_0jsi;
 
 namespace facebook {
-namespace jsi {
+namespace ABI33_0_0jsi {
 
 Value valueFromDynamic(Runtime& runtime, const folly::dynamic& dyn) {
   switch (dyn.type()) {
@@ -78,7 +78,7 @@ folly::dynamic dynamicFromValue(Runtime& runtime, const Value& value) {
         if (prop.isUndefined()) {
           continue;
         }
-        // The JSC conversion uses JSON.stringify, which substitutes
+        // The ABI33_0_0JSC conversion uses JSON.stringify, which substitutes
         // null for a function, so we do the same here.  Just dropping
         // the pair might also work, but would require more testing.
         if (prop.isObject() && prop.getObject(runtime).isFunction(runtime)) {

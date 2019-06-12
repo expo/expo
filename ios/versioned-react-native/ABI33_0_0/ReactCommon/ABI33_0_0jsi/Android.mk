@@ -7,7 +7,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := jsi
+LOCAL_MODULE := ABI33_0_0jsi
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
@@ -15,6 +15,6 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/..
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 
 LOCAL_CFLAGS := -fexceptions -frtti -O3
-LOCAL_SHARED_LIBRARIES := libfolly_json libjsc glog
+LOCAL_SHARED_LIBRARIES := libfolly_json libABI33_0_0jsc glog
 
 include $(BUILD_STATIC_LIBRARY)

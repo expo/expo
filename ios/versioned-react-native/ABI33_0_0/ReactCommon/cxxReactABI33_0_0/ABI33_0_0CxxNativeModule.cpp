@@ -27,7 +27,7 @@ std::function<void(folly::dynamic)> makeCallback(
   auto id = callbackId.asInt();
   return [winstance = std::move(instance), id](folly::dynamic args) {
     if (auto instance = winstance.lock()) {
-      instance->callJSCallback(id, std::move(args));
+      instance->callABI33_0_0JSCallback(id, std::move(args));
     }
   };
 }

@@ -33,7 +33,7 @@
 #import <cxxReactABI33_0_0/ABI33_0_0ModuleRegistry.h>
 #import <cxxReactABI33_0_0/ABI33_0_0RAMBundleRegistry.h>
 #import <cxxReactABI33_0_0/ReactABI33_0_0Marker.h>
-#import <jsireact/ABI33_0_0JSIExecutor.h>
+#import <ABI33_0_0jsireact/ABI33_0_0JSIExecutor.h>
 
 #import "ABI33_0_0JSCExecutorFactory.h"
 #import "ABI33_0_0NSDataBigString.h"
@@ -56,7 +56,7 @@ static NSString *const ABI33_0_0RCTJSThreadName = @"com.facebook.ReactABI33_0_0.
 
 typedef void (^ABI33_0_0RCTPendingCall)();
 
-using namespace facebook::jsi;
+using namespace facebook::ABI33_0_0jsi;
 using namespace facebook::ReactABI33_0_0;
 
 /**
@@ -326,7 +326,7 @@ struct ABI33_0_0RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSCExecutorFactory>(nullptr);
+      executorFactory = std::make_shared<ABI33_0_0JSCExecutorFactory>(nullptr);
     }
   } else {
     id<ABI33_0_0RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -896,7 +896,7 @@ struct ABI33_0_0RCTInstanceCallback : public InstanceCallback {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
-    [self enqueueJSCall:@"HMRClient"
+    [self enqueueABI33_0_0JSCall:@"HMRClient"
                  method:@"enable"
                    args:@[@"ios", path, host, ABI33_0_0RCTNullIfNil(port)]
              completion:NULL];  }
@@ -1097,7 +1097,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *
 - (void)logMessage:(NSString *)message level:(NSString *)level
 {
   if (ABI33_0_0RCT_DEBUG && _valid) {
-    [self enqueueJSCall:@"ABI33_0_0RCTLog"
+    [self enqueueABI33_0_0JSCall:@"ABI33_0_0RCTLog"
                  method:@"logIfNoNativeHook"
                    args:@[level, message]
              completion:NULL];
@@ -1175,7 +1175,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *
 /**
  * Public. Can be invoked from any thread.
  */
-- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
+- (void)enqueueABI33_0_0JSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
 {
   if (!self.valid) {
     return;
@@ -1184,7 +1184,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *
   /**
    * AnyThread
    */
-  ABI33_0_0RCT_PROFILE_BEGIN_EVENT(ABI33_0_0RCTProfileTagAlways, @"-[ABI33_0_0RCTCxxBridge enqueueJSCall:]", nil);
+  ABI33_0_0RCT_PROFILE_BEGIN_EVENT(ABI33_0_0RCTProfileTagAlways, @"-[ABI33_0_0RCTCxxBridge enqueueABI33_0_0JSCall:]", nil);
 
   ABI33_0_0RCTProfileBeginFlowEvent();
   __weak __typeof(self) weakSelf = self;
@@ -1237,7 +1237,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *
     }
 
     if (strongSelf->_ReactABI33_0_0Instance) {
-      strongSelf->_ReactABI33_0_0Instance->callJSCallback([cbID unsignedLongLongValue], convertIdToFollyDynamic(args ?: @[]));
+      strongSelf->_ReactABI33_0_0Instance->callABI33_0_0JSCallback([cbID unsignedLongLongValue], convertIdToFollyDynamic(args ?: @[]));
     }
   }];
 }
@@ -1288,12 +1288,12 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *
       object:self->_parentBridge userInfo:@{@"bridge": self}];
     if (isRAMBundle(script)) {
       [self->_performanceLogger markStartForTag:ABI33_0_0RCTPLRAMBundleLoad];
-      auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
+      auto ramBundle = std::make_unique<ABI33_0_0JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
       std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
       [self->_performanceLogger markStopForTag:ABI33_0_0RCTPLRAMBundleLoad];
       [self->_performanceLogger setValue:scriptStr->size() forTag:ABI33_0_0RCTPLRAMStartupCodeSize];
       if (self->_ReactABI33_0_0Instance) {
-        auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory());
+        auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), ABI33_0_0JSIndexedRAMBundle::buildFactory());
         self->_ReactABI33_0_0Instance->loadRAMBundle(std::move(registry), std::move(scriptStr),
                                             sourceUrlStr.UTF8String, !async);
       }
@@ -1350,7 +1350,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *
     #endif
     ABI33_0_0RCTProfileInit(self);
 
-    [self enqueueJSCall:@"Systrace" method:@"setEnabled" args:@[@YES] completion:NULL];
+    [self enqueueABI33_0_0JSCall:@"Systrace" method:@"setEnabled" args:@[@YES] completion:NULL];
   }];
 }
 
@@ -1359,7 +1359,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *
   ABI33_0_0RCTAssertMainQueue();
 
   [self ensureOnJavaScriptThread:^{
-    [self enqueueJSCall:@"Systrace" method:@"setEnabled" args:@[@NO] completion:NULL];
+    [self enqueueABI33_0_0JSCall:@"Systrace" method:@"setEnabled" args:@[@NO] completion:NULL];
     ABI33_0_0RCTProfileEnd(self, ^(NSString *log) {
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);

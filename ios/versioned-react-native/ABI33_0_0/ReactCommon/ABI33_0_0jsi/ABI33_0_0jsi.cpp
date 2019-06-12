@@ -12,7 +12,7 @@
 #include <ABI33_0_0jsi/ABI33_0_0jsi.h>
 
 namespace facebook {
-namespace jsi {
+namespace ABI33_0_0jsi {
 
 namespace detail {
 
@@ -214,7 +214,7 @@ bool Value::strictEquals(Runtime& runtime, const Value& a, const Value& b) {
 
 double Value::asNumber() const {
   if (!isNumber()) {
-    throw JSINativeException("Value is not an Object");
+    throw ABI33_0_0JSINativeException("Value is not an Object");
   }
 
   return getNumber();
@@ -305,26 +305,26 @@ JSError::JSError(Runtime& rt, std::string msg, std::string stack)
 }
 
 JSError::JSError(std::string what, Runtime& rt, Value&& value)
-    : JSIException(std::move(what)) {
+    : ABI33_0_0JSIException(std::move(what)) {
   setValue(rt, std::move(value));
 }
 
 void JSError::setValue(Runtime& rt, Value&& value) {
-  value_ = std::make_shared<jsi::Value>(std::move(value));
+  value_ = std::make_shared<ABI33_0_0jsi::Value>(std::move(value));
 
   try {
     if ((message_.empty() || stack_.empty()) && value_->isObject()) {
       auto obj = value_->getObject(rt);
 
       if (message_.empty()) {
-        jsi::Value message = obj.getProperty(rt, "message");
+        ABI33_0_0jsi::Value message = obj.getProperty(rt, "message");
         if (!message.isUndefined()) {
           message_ = message.toString(rt).utf8(rt);
         }
       }
 
       if (stack_.empty()) {
-        jsi::Value stack = obj.getProperty(rt, "stack");
+        ABI33_0_0jsi::Value stack = obj.getProperty(rt, "stack");
         if (!stack.isUndefined()) {
           stack_ = stack.toString(rt).utf8(rt);
         }
@@ -349,5 +349,5 @@ void JSError::setValue(Runtime& rt, Value&& value) {
   }
 }
 
-} // namespace jsi
+} // namespace ABI33_0_0jsi
 } // namespace facebook
