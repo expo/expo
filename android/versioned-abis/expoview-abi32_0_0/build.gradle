@@ -49,12 +49,12 @@ android {
   }
 }
 
+
 configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r224109'
   }
 }
-
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])

@@ -163,7 +163,7 @@ public class BillingManager implements PurchasesUpdatedListener {
             mBillingUpdatesListener.onPurchasesUpdated(mPurchases);
         } else {
             Bundle response = formatResponse(result, null);
-            InAppPurchasesModule.mEventEmitter.emit(PURCHASES_UPDATED_EVENT, response);
+            InAppPurchasesModule.sEventEmitter.emit(PURCHASES_UPDATED_EVENT, response);
         }
     }
 

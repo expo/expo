@@ -43,6 +43,6 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
         response.putParcelableArrayList("results", results);
         response.putInt("responseCode", BillingResponseCode.OK);
 
-        InAppPurchasesModule.mEventEmitter.emit(BillingManager.PURCHASES_UPDATED_EVENT, response);
+        InAppPurchasesModule.sEventEmitter.emit(BillingManager.PURCHASES_UPDATED_EVENT, response);
     }
 }

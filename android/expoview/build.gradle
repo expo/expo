@@ -138,7 +138,6 @@ dependencies {
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
 
-
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:33.0.0'
   addUnimodulesDependencies([

@@ -19,7 +19,7 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
 
   private BillingManager mBillingManager;
   private ModuleRegistry mModuleRegistry;
-  protected static EventEmitter mEventEmitter;
+  protected static EventEmitter sEventEmitter;
 
   public InAppPurchasesModule(Context context) {
     super(context);
@@ -41,7 +41,7 @@ public class InAppPurchasesModule extends ExportedModule implements ModuleRegist
     if (activity == null) {
       promise.reject("E_ACTIVITY_UNAVAILABLE", "Activity is not available");
     }
-    mEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
+    sEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
     mBillingManager = new BillingManager(activity);
     mBillingManager.startConnectionAndQueryHistory(promise);
   }
