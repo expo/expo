@@ -7,7 +7,6 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <UMCore/UMJavaScriptContextProvider.h>
 #import <UMReactNativeAdapter/UMBridgeModule.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 
 @interface UMReactNativeAdapter : NSObject <UMInternalModule, UMBridgeModule, UMAppLifecycleService, UMUIManager, UMJavaScriptContextProvider, UMModuleRegistryConsumer>
 

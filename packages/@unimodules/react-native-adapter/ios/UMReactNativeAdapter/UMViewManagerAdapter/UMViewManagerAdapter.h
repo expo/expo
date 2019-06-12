@@ -3,7 +3,6 @@
 #import <React/RCTViewManager.h>
 #import <UMCore/UMViewManager.h>
 #import <UMReactNativeAdapter/UMBridgeModule.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 
 // UMViewManagerAdapter is an RN wrapper around UMCore's UMViewManager.
 // For each exported view manager is it subclassed so that React Native
