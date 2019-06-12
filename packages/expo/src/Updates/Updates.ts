@@ -1,8 +1,22 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
+import Constants from 'expo-constants'
 
 import ExponentUpdates from './ExponentUpdates';
+
+type Manifest = typeof Constants.manifest
+
+interface UpdateEvent {
+  /* Type of the event */
+  type: 'downloadStart' | 'downloadProgress' | 'downloadFinished' | 'noUpdateAvailable' | 'error',
+  /* If `type === Expo.Updates.EventType.DOWNLOAD_FINISHED`, the manifest of the newly downlaoded update. Undefined otherwise. */
+  manifest?: Manifest,
+  /* If `type === Expo.Updates.EventType.ERROR`, the error message. Undefined otherwise. */
+  message?: string,
+}
+
+type UpdateEventListener = (event:UpdateEvent) => any
 
 export async function reload(): Promise<void> {
   await ExponentUpdates.reload();
@@ -12,15 +26,16 @@ export async function reloadFromCache(): Promise<void> {
   await ExponentUpdates.reloadFromCache();
 }
 
-export async function checkForUpdateAsync(): Promise<{
-  isAvailable: boolean,
-  manifest: any,
-}> {
+export async function checkForUpdateAsync() {
   if (!ExponentUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
   const result = await ExponentUpdates.checkForUpdateAsync();
-  let returnObj: any = {
+
+  const returnObj:{
+    isAvailable: boolean,
+    manifest?: Manifest,
+  } = {
     isAvailable: !!result,
   };
   if (result) {
@@ -29,10 +44,7 @@ export async function checkForUpdateAsync(): Promise<{
   return returnObj;
 }
 
-export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<{
-  isNew: boolean,
-  manifest: any,
-}> {
+export async function fetchUpdateAsync({ eventListener }: {eventListener?:UpdateEventListener} = {}) {
   if (!ExponentUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
@@ -46,7 +58,11 @@ export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<{
   } finally {
     subscription && subscription.remove();
   }
-  let returnObj: any = {
+
+  const returnObj: {
+    isNew: boolean,
+    manifest?: Manifest,
+  } = {
     isNew: !!result,
   };
   if (result) {
