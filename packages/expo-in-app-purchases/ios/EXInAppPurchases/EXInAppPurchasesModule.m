@@ -345,13 +345,22 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 - (NSDictionary *)getTransactionData:(SKPaymentTransaction *)transaction acknowledged:(BOOL)acknowledged
 {
   NSData *receiptData = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
+
+  // Get original transaction info if any
+  SKPaymentTransaction * originalTransaction = transaction.originalTransaction;
+  NSString *originalTransactionId = originalTransaction ? originalTransaction.transactionIdentifier : [NSString string];
+  NSNumber *originalTransactionTime = originalTransaction ?
+    @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000) : @(0);
+
   return @{
           @"acknowledged": @(acknowledged),
           @"productId": transaction.payment.productIdentifier,
           @"purchaseToken": transaction.transactionIdentifier,
           @"purchaseState": @(transaction.transactionState),
           @"purchaseTime": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
-          @"transactionReceipt": [receiptData base64EncodedStringWithOptions:0]
+          @"transactionReceipt": [receiptData base64EncodedStringWithOptions:0],
+          @"originalPurchaseTime": originalTransactionTime,
+          @"originalPurchaseToken": originalTransactionId
           };
 }
 

@@ -40,6 +40,8 @@ export interface Purchase {
   orderId?: string, // Android only
   packageName?: string, // Android only
   transactionReceipt?: string // iOS only
+  originalPurchaseTime?: string // iOS only
+  originalPurchaseToken?: string // iOS only
 }
 export interface ItemDetails {
   description: string,

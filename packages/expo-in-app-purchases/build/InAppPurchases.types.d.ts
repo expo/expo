@@ -36,6 +36,8 @@ export interface Purchase {
     orderId?: string;
     packageName?: string;
     transactionReceipt?: string;
+    originalPurchaseTime?: string;
+    originalPurchaseToken?: string;
 }
 export interface ItemDetails {
     description: string;
