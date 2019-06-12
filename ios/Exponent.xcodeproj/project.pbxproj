@@ -2967,6 +2967,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";
+				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -3035,6 +3036,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";
+				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
