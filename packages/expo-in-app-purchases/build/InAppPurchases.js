@@ -52,7 +52,7 @@ export async function finishTransactionAsync(purchaseToken, consumeItem) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
-    return await ExpoInAppPurchases.finishTransactionAsync(purchaseToken, consumeItem);
+    await ExpoInAppPurchases.finishTransactionAsync(purchaseToken, consumeItem);
 }
 export async function getBillingResponseCodeAsync() {
     if (!connected) {
