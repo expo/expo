@@ -31,11 +31,17 @@
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-// used for initializing scoped modules which don't tie in to any kernel service.
-#define EX_KERNEL_SERVICE_NONE @"EXKernelServiceNone"
+#import <React/RCTCxxBridgeDelegate.h>
+#import <cxxreact/JSExecutor.h>
+#import <jsireact/RCTTurboModuleManager.h>
+#import <React/JSCExecutorFactory.h>
+#import <strings.h>
+
+RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 
 // this is needed because RCTPerfMonitor does not declare a public interface
 // anywhere that we can import.
@@ -45,35 +51,6 @@
 - (void)show;
 
 @end
-
-static NSMutableDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses;
-void EXRegisterScopedModule(Class, ...);
-void EXRegisterScopedModule(Class moduleClass, ...)
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    EXScopedModuleClasses = [NSMutableDictionary dictionary];
-  });
-  
-  NSString *kernelServiceClassName;
-  va_list argumentList;
-  NSMutableDictionary *unversionedKernelServiceClassNames = [[NSMutableDictionary alloc] init];
-  
-  va_start(argumentList, moduleClass);
-    while ((kernelServiceClassName = va_arg(argumentList, NSString*))) {
-      if ([kernelServiceClassName isEqualToString:@"nil"]) {
-        unversionedKernelServiceClassNames[kernelServiceClassName] = EX_KERNEL_SERVICE_NONE;
-      } else {
-        unversionedKernelServiceClassNames[kernelServiceClassName] = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
-      }
-    }
-  va_end(argumentList);
-  
-  NSString *moduleClassName = NSStringFromClass(moduleClass);
-  if (moduleClassName) {
-    EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassNames;
-  }
-}
 
 @interface RCTBridgeHack <NSObject>
 
@@ -85,13 +62,14 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
+@property (nonatomic, strong) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXVersionManager
 
 - (instancetype)initWithFatalHandler:(void (^)(NSError *))fatalHandler
-                         logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
+                         logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
   if (self = [super init]) {
@@ -251,11 +229,12 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 }
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
-                         logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
+                         logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
+  RCTEnableTurboModule(YES);
   RCTSetFatalHandler(fatalHandler);
-  RCTSetLogThreshold(threshold);
+  RCTSetLogThreshold((RCTLogLevel) threshold);
   RCTSetLogFunction(logFunction);
 }
 
@@ -340,11 +319,11 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
   EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
-  UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
-  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
+  _moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
+  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:_moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
 
-  id<UMFileSystemInterface> fileSystemModule = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<UMFileSystemInterface> fileSystemModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   NSString *localStorageDirectory = [fileSystemModule.documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
   [extraModules addObject:[[RCTAsyncLocalStorage alloc] initWithStorageDirectory:localStorageDirectory]];
 
@@ -354,6 +333,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 - (NSArray *)_newScopedModulesWithExperienceId: (NSString *)experienceId services:(NSDictionary *)services params:(NSDictionary *)params
 {
   NSMutableArray *result = [NSMutableArray array];
+  NSDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses = EXGetScopedModuleClasses();
   if (EXScopedModuleClasses) {
     [EXScopedModuleClasses enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull scopedModuleClassName, NSDictionary * _Nonnull kernelServiceClassNames, BOOL * _Nonnull stop) {
       NSMutableDictionary *moduleServices = [[NSMutableDictionary alloc] init];
@@ -379,6 +359,22 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     }];
   }
   return result;
+}
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+  if (moduleClass == [UMNativeModulesProxy class]) {
+    return [[UMNativeModulesProxy alloc] initWithModuleRegistry:_moduleRegistry];
+  }
+  return nullptr;
+}
+
+- (Class)getModuleClassFromName:(const char *)name
+{
+  if (strcasecmp(name, "NativeUnimoduleProxy") == 0) {
+    return [UMNativeModulesProxy class];
+  }
+  return nil;
 }
 
 @end
