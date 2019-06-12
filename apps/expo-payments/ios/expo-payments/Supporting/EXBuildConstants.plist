@@ -16,6 +16,6 @@
 	<key>TEMPORARY_SDK_VERSION</key>
 	<string>33.0.0</string>
 	<key>developmentUrl</key>
-	<string>exp9df16c4018364f73bdf8c9e883108056://192.168.86.62:19000</string>
+	<string>exp9df16c4018364f73bdf8c9e883108056://10.1.10.42:19000</string>
 </dict>
 </plist>
