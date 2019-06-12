@@ -1,18 +1,18 @@
 /* @flow */
-
+import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
+import { MaterialIcons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { Ionicons } from '@expo/vector-icons';
-import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { connect } from 'react-redux';
 
-import Colors from '../constants/Colors';
 import SearchBar from '../components/SearchBar';
+import Colors from '../constants/Colors';
 import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../FeatureFlags';
-import isUserAuthenticated from '../utils/isUserAuthenticated';
 import isIPhoneX from '../utils/isIPhoneX';
+import isUserAuthenticated from '../utils/isUserAuthenticated';
 
 let TabTitles: Object = {
   new: 'New projects',
@@ -36,7 +36,7 @@ class SearchButton extends React.Component {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Ionicons name="md-search" size={27} color="#000" />
+        <MaterialIcons name="search" size={27} color="#000" />
       </TouchableNativeFeedback>
     );
   }
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   titleBarAndroid: {
     height: 79,
     backgroundColor: '#fff',
-    paddingTop: 26,
+    paddingTop: Constants.statusBarHeight,
     marginBottom: 0,
     ...navBarBorder,
   },
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   rightButtonAndroid: {
     position: 'absolute',
     right: 0,
-    top: 24,
+    top: Constants.statusBarHeight,
     bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',

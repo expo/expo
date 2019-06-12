@@ -1,9 +1,8 @@
 /* @flow */
-
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { MaterialIcons } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default class LikeButton extends React.Component {
   render() {
@@ -14,9 +13,9 @@ export default class LikeButton extends React.Component {
         <TouchableNativeFeedbackSafe
           {...this.props}
           style={[styles.container, liked && styles.containerLiked]}>
-          <Ionicons
+          <MaterialIcons
             style={[styles.icon, liked && styles.iconLiked]}
-            name={liked ? 'md-heart' : 'md-heart-empty'}
+            name={liked ? 'heart' : 'heart-empty'}
             size={14}
           />
           <Text style={[styles.text, liked && styles.textLiked]}>{liked ? 'Liked' : 'Like'}</Text>

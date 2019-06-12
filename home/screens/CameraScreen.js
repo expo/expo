@@ -359,13 +359,13 @@ export default class CameraScreen extends React.Component {
         <Text style={styles.pictureQualityLabel}>Picture quality</Text>
         <View style={styles.pictureSizeChooser}>
           <TouchableOpacity onPress={this.previousPictureSize} style={{ padding: 6 }}>
-            <Ionicons name="md-arrow-dropleft" size={14} color="white" />
+            <MaterialIcons name="arrow-dropleft" size={14} color="white" />
           </TouchableOpacity>
           <View style={styles.pictureSizeLabel}>
             <Text style={{ color: 'white' }}>{this.state.pictureSize}</Text>
           </View>
           <TouchableOpacity onPress={this.nextPictureSize} style={{ padding: 6 }}>
-            <Ionicons name="md-arrow-dropright" size={14} color="white" />
+            <MaterialIcons name="arrow-dropright" size={14} color="white" />
           </TouchableOpacity>
         </View>
       </View>

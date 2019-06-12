@@ -1,10 +1,9 @@
 /* @flow */
 
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { withNavigation } from 'react-navigation';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-
+import { withNavigation } from 'react-navigation';
 import Colors from '../constants/Colors';
 
 @withNavigation
@@ -15,7 +14,7 @@ export default class CloseButton extends React.Component {
         hitSlop={{ top: 10, left: 10, right: 10, bottom: 10 }}
         onPress={this._handlePress}
         style={styles.buttonContainer}>
-        <Ionicons name="md-close" size={28} color={Colors.tintColor} />
+        <MaterialIcons name="close" size={28} color={Colors.tintColor} />
       </TouchableOpacity>
     );
   }
