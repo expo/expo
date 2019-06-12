@@ -19,7 +19,7 @@
   "expo-constants": "~5.0.1",
   "expo-contacts": "~5.0.2",
   "expo-crypto": "~5.0.1",
-  "expo-document-picker": "~5.0.1",
+  "expo-document-picker": "~5.0.2",
   "expo-face-detector": "~5.0.1",
   "expo-facebook": "~5.0.1",
   "expo-file-system": "~5.0.1",
