@@ -1,18 +1,15 @@
 /* @flow */
-
 import React from 'react';
 import { Keyboard, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 
-import SessionActions from '../redux/SessionActions';
-
 import Analytics from '../api/Analytics';
-import Alerts from '../constants/Alerts';
 import AuthApi from '../api/AuthApi';
 import CloseButton from '../components/CloseButton';
-import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
+import Colors from '../constants/Colors';
+import SessionActions from '../redux/SessionActions';
 
 const DEBUG = false;
 

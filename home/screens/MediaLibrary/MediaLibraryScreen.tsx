@@ -15,7 +15,6 @@ import {
 import { NavigationEvents, NavigationScreenConfig, NavigationScreenProps } from 'react-navigation';
 import { connect } from 'react-redux';
 
-import HeadingText from '../../components/HeadingText';
 import ProfileActions from '../../redux/ProfileActions';
 import Store from '../../redux/Store';
 import MediaLibraryCell from './MediaLibraryCell';

@@ -1,13 +1,11 @@
 /**
  * @flow
  */
-
 import Constants from 'expo-constants';
-import _ from 'lodash';
 import React from 'react';
 import {
-  AppState,
   Alert,
+  AppState,
   Clipboard,
   Platform,
   RefreshControl,
@@ -17,27 +15,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { withNavigationFocus, withNavigation } from 'react-navigation';
+import { withNavigation, withNavigationFocus } from 'react-navigation';
 import { connect } from 'react-redux';
-import ScrollView from '../components/NavigationScrollView';
-import ApiV2HttpClient from '../api/ApiV2HttpClient';
-import Environment from '../utils/Environment';
-import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
-import Alerts from '../constants/Alerts';
-import Colors from '../constants/Colors';
-import DevIndicator from '../components/DevIndicator';
-import HistoryActions from '../redux/HistoryActions';
-import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
-import NoProjectTools from '../components/NoProjectTools';
-import NoProjectsOpen from '../components/NoProjectsOpen';
-import ProjectTools from '../components/ProjectTools';
-import SharedStyles from '../constants/SharedStyles';
-import SmallProjectCard from '../components/SmallProjectCard';
-import Store from '../redux/Store';
-import Connectivity from '../api/Connectivity';
-import getSnackId from '../utils/getSnackId';
 
+import ApiV2HttpClient from '../api/ApiV2HttpClient';
+import Connectivity from '../api/Connectivity';
+import DevIndicator from '../components/DevIndicator';
+import ScrollView from '../components/NavigationScrollView';
+import NoProjectsOpen from '../components/NoProjectsOpen';
+import NoProjectTools from '../components/NoProjectTools';
+import OpenProjectByURLButton from '../components/OpenProjectByURLButton';
+import ProjectTools from '../components/ProjectTools';
+import SmallProjectCard from '../components/SmallProjectCard';
+import Colors from '../constants/Colors';
+import SharedStyles from '../constants/SharedStyles';
+import HistoryActions from '../redux/HistoryActions';
+import Store from '../redux/Store';
+import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
+import Environment from '../utils/Environment';
 import extractReleaseChannel from '../utils/extractReleaseChannel';
+import getSnackId from '../utils/getSnackId';
 
 const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
 const PROJECT_UPDATE_INTERVAL = 10000;

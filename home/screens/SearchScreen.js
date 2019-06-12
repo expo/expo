@@ -1,11 +1,10 @@
 import Constants from 'expo-constants';
-import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
-
-import gql from 'graphql-tag';
-import { groupBy, debounce } from 'lodash';
-import { graphql } from 'react-apollo';
 import { EventEmitter } from 'fbemitter';
+import gql from 'graphql-tag';
+import { debounce, groupBy } from 'lodash';
+import React from 'react';
+import { graphql } from 'react-apollo';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import SearchBar from '../components/SearchBar';
 import SearchResults from '../components/SearchResults';

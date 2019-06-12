@@ -1,5 +1,6 @@
 /* @flow */
 
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import React from 'react';
 import {
   Image,
@@ -12,10 +13,8 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
-
 import Colors from '../constants/Colors';
 import LikeButtonContainer from '../containers/LikeButtonContainer';
 import UrlUtils from '../utils/UrlUtils';

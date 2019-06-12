@@ -1,13 +1,13 @@
 /* @flow */
-
-import React from 'react';
-import { Alert } from 'react-native';
-import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+import React from 'react';
+import { graphql } from 'react-apollo';
+import { Alert } from 'react-native';
+
+import Analytics from '../api/Analytics';
+import Connectivity from '../api/Connectivity';
 import LikeButton from '../components/LikeButton';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
-import Connectivity from '../api/Connectivity';
-import Analytics from '../api/Analytics';
 
 const LikeProjectMutation = gql`
   mutation Home_PerformLike($appId: ID!) {
@@ -57,7 +57,7 @@ export default class LikeButtonContainer extends React.Component {
   };
 
   _handlePressAsync = async () => {
-    if (!await Connectivity.isAvailableAsync()) {
+    if (!(await Connectivity.isAvailableAsync())) {
       this._alertNoInternetConnection();
       return;
     }

@@ -1,25 +1,23 @@
 /* @flow */
-
+import { Entypo, Ionicons } from '@expo/vector-icons';
+import { createBrowserApp } from '@react-navigation/web';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
-import { createBrowserApp } from '@react-navigation/web';
+import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { Entypo, Ionicons } from '@expo/vector-icons';
 
-import ProjectsScreen from '../screens/ProjectsScreen';
+import Colors from '../constants/Colors';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
+import ProjectsScreen from '../screens/ProjectsScreen';
+import QRCodeScreen from '../screens/QRCodeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-import QRCodeScreen from '../screens/QRCodeScreen';
-import UserSettingsScreen from '../screens/UserSettingsScreen';
-import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
+import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
-
-import Colors from '../constants/Colors';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 const ProjectsStack = createStackNavigator(

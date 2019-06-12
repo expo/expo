@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { BaseButton } from 'react-native-gesture-handler';
+
 import ScrollView from '../components/NavigationScrollView';
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';

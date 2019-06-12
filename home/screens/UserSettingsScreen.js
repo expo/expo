@@ -1,5 +1,5 @@
 /* @flow */
-
+import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import React from 'react';
 import {
@@ -11,7 +11,6 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
 
 import Analytics from '../api/Analytics';
 import Colors from '../constants/Colors';
@@ -76,9 +75,9 @@ export default class UserSettingsScreen extends React.Component {
 
   _renderMenuGestureOptions() {
     const { legacyMenuGesture } = this.props;
-    const twoFingerGestureDescription = `Two-finger ${forceTouchAvailable
-      ? 'force touch'
-      : 'long-press'}`;
+    const twoFingerGestureDescription = `Two-finger ${
+      forceTouchAvailable ? 'force touch' : 'long-press'
+    }`;
 
     return (
       <View>

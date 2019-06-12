@@ -1,22 +1,17 @@
-import React from 'react';
-import { Alert, StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
-import * as FaceDetector from 'expo-face-detector';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import * as Permissions from 'expo-permissions';
-import * as FileSystem from 'expo-file-system';
 import { Camera } from 'expo-camera';
 import Constants from 'expo-constants';
+import * as FaceDetector from 'expo-face-detector';
+import * as FileSystem from 'expo-file-system';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
+import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import isIPhoneX from 'react-native-is-iphonex';
 import { withNavigation } from 'react-navigation';
-import Store from '../redux/Store';
+
 import ProfileActions from '../redux/ProfileActions';
-import {
-  Ionicons,
-  MaterialIcons,
-  Foundation,
-  MaterialCommunityIcons,
-  Octicons,
-} from '@expo/vector-icons';
+import Store from '../redux/Store';
 
 interface Picture {
   width: number;

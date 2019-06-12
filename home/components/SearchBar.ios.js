@@ -11,7 +11,6 @@ import {
   View,
 } from 'react-native';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
-
 import Layout from '../constants/Layout';
 import ExponentKernel from '../universal/ExponentKernel';
 

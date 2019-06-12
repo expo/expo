@@ -3,26 +3,22 @@
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
-
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
 
 @withNavigation
 export default class ProfileUnauthenticated extends React.Component {
   render() {
-    const title = (Platform.OS === 'ios')
-          ? 'Sign in to Continue'
-          : 'Your Profile';
-    const description = (Platform.OS === 'ios')
-          ? 'Sign in or create an Expo account to view your projects.'
-          : 'To access your own projects, please sign in or create an Expo account.';
+    const title = Platform.OS === 'ios' ? 'Sign in to Continue' : 'Your Profile';
+    const description =
+      Platform.OS === 'ios'
+        ? 'Sign in or create an Expo account to view your projects.'
+        : 'To access your own projects, please sign in or create an Expo account.';
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <Text style={styles.titleText}>{title}</Text>
 
-        <Text style={styles.descriptionText}>
-          {description}
-        </Text>
+        <Text style={styles.descriptionText}>{description}</Text>
 
         {this._renderSignInButton()}
         <View style={{ marginBottom: 20 }} />

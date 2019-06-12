@@ -1,15 +1,15 @@
 /* @flow */
 
+import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import React from 'react';
 import {
   ActivityIndicator,
-  TouchableOpacity,
   Platform,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 
 export default class PrimaryButton extends React.Component {
   render() {

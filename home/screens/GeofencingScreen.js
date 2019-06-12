@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { Notifications } from 'expo';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -6,7 +7,6 @@ import React from 'react';
 import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
 import { NavigationEvents } from 'react-navigation';
-import { MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../components/PrimaryButton';
 
@@ -219,9 +219,7 @@ async function getSavedRegions() {
 if (Platform.OS !== 'android') {
   TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
     const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
-    const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${
-      region.longitude
-    } and radius: ${region.radius}m`;
+    const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${region.longitude} and radius: ${region.radius}m`;
 
     await Notifications.presentLocalNotificationAsync({
       title: 'Expo Geofencing',

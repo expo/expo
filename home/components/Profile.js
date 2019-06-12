@@ -4,9 +4,17 @@ import dedent from 'dedent';
 import { Asset, BlurView, Constants } from 'expo';
 import { take, takeRight } from 'lodash';
 import React from 'react';
-import { ActivityIndicator, Animated, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Animated,
+  Image,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
-
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';

@@ -1,33 +1,31 @@
 /* @flow */
-
+import { Entypo, Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import {
   createAppContainer,
-  createStackNavigator,
   createBottomTabNavigator,
+  createStackNavigator,
 } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { Entypo, Ionicons } from '@expo/vector-icons';
 
-import ProjectsScreen from '../screens/ProjectsScreen';
+import Colors from '../constants/Colors';
+import CameraScreen from '../screens/CameraScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
+import ExploreScreen from '../screens/ExploreScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
-import ExploreScreen from '../screens/ExploreScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import CameraScreen from '../screens/CameraScreen';
 import MediaLibraryScreen from '../screens/MediaLibrary/MediaLibraryScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
+import ProjectsScreen from '../screens/ProjectsScreen';
+import QRCodeScreen from '../screens/QRCodeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-import QRCodeScreen from '../screens/QRCodeScreen';
-import UserSettingsScreen from '../screens/UserSettingsScreen';
-import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
+import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
-
-import Colors from '../constants/Colors';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 const ProjectsStack = createStackNavigator(

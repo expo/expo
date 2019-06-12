@@ -4,7 +4,6 @@ import React from 'react';
 import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import { withNavigation } from 'react-navigation';
-
 import Colors from '../constants/Colors';
 import ProjectCard from './ProjectCard';
 import SmallProjectCard from './SmallProjectCard';
@@ -71,7 +70,7 @@ export default class ProjectList extends React.PureComponent {
           if (props.renderLoadingIndicator) {
             return <ScrollView {...props} />;
           } else {
-            return <InfiniteScrollView {...props} />
+            return <InfiniteScrollView {...props} />;
           }
         }}
         canLoadMore={this._canLoadMore()}

@@ -1,11 +1,8 @@
 /* @flow */
-
-import React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import FadeIn from 'react-native-fade-in-image';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
-import { take } from 'lodash';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 
@@ -16,7 +13,7 @@ export default class SeeAllProjectsButton extends React.Component {
   };
 
   render() {
-    let { snacks, maxIconCount } = this.props;
+    let { snacks } = this.props;
 
     if (!snacks || !snacks.length) {
       return <View />;

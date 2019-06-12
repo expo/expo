@@ -1,5 +1,4 @@
 /* @flow */
-
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { throttle } from 'lodash';
 import React from 'react';

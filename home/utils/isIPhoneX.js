@@ -1,4 +1,5 @@
-import { Platform, Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
+
 const IPHONE_XS_HEIGHT = 812; // iPhone X and XS
 const IPHONE_XR_HEIGHT = 896; // iPhone XR and XS Max
 const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window');

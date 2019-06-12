@@ -2,8 +2,8 @@ import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import HomeApp from './HomeApp';
 import ApolloClient from './api/ApolloClient';
+import HomeApp from './HomeApp';
 import Store from './redux/Store';
 
 export default class App extends React.Component {

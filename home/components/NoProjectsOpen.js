@@ -1,7 +1,6 @@
 /* @flow */
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-
 import Colors from '../constants/Colors';
 
 const NoProjectsOpen = React.memo(({ isAuthenticated }) => {

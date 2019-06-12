@@ -1,25 +1,11 @@
 /* @flow */
-
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import React from 'react';
-import {
-  Image,
-  Keyboard,
-  Linking,
-  Platform,
-  Share,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Linking, Platform, Share, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
-import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
-import FadeIn from 'react-native-fade-in-image';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 function isDescriptionEmpty(description) {
   if (!description || description === 'No description') {

@@ -1,5 +1,4 @@
 /* @flow */
-
 import { createRouter } from 'react-navigation';
 
 export default createRouter(
