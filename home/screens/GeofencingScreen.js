@@ -1,14 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Notifications } from 'expo';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
 import { NavigationEvents } from 'react-navigation';
 
 import Button from '../components/PrimaryButton';
+import * as PermissionUtils from '../utils/PermissionUtils';
 
 const GEOFENCING_TASK = 'geofencing';
 const REGION_RADIUSES = [30, 50, 75, 100, 150, 200];
@@ -29,10 +29,9 @@ export default class GeofencingScreen extends React.Component {
   };
 
   didFocus = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const status = await PermissionUtils.requestLocationAysnc();
 
-    if (status !== 'granted') {
-      AppState.addEventListener('change', this.handleAppStateChange);
+    if (!status) {
       this.setState({
         error:
           'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
@@ -62,19 +61,6 @@ export default class GeofencingScreen extends React.Component {
         longitudeDelta: 0.002,
       },
     });
-  };
-
-  handleAppStateChange = nextAppState => {
-    if (nextAppState !== 'active') {
-      return;
-    }
-
-    if (this.state.initialRegion) {
-      AppState.removeEventListener('change', this.handleAppStateChange);
-      return;
-    }
-
-    this.didFocus();
   };
 
   canToggleGeofencing() {

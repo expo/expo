@@ -1,8 +1,7 @@
 /* @flow */
 import React from 'react';
-import { StyleSheet, Platform, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 import { HeaderBackButton, withNavigation, withNavigationFocus } from 'react-navigation';
-
 import Colors from '../constants/Colors';
 import ExponentKernel from '../universal/ExponentKernel';
 

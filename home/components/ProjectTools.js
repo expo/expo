@@ -1,15 +1,13 @@
 /**
  * @flow
  */
-
 import Constants from 'expo-constants';
 import React from 'react';
 import { AppState, Clipboard, View } from 'react-native';
 
 import Environment from '../utils/Environment';
-
-import QRCodeButton from './QRCodeButton';
 import OpenFromClipboardButton from './OpenFromClipboardButton';
+import QRCodeButton from './QRCodeButton';
 
 const CLIPBOARD_POLL_INTERVAL = 2000;
 

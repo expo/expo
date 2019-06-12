@@ -1,13 +1,11 @@
 /* @flow */
-
-import React from 'react';
-import { Keyboard, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
-
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { withNavigation } from 'react-navigation';
+import * as PermissionUtils from '../utils/PermissionUtils';
 import Colors from '../constants/Colors';
-import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 
 @withNavigation
 export default class QRCodeButton extends React.Component {
@@ -44,10 +42,8 @@ export default class QRCodeButton extends React.Component {
   }
 
   _handlePressAsync = async () => {
-    if (await requestCameraPermissionsAsync()) {
+    if (await PermissionUtils.requestQRAysnc()) {
       this.props.navigation.navigate('QRCode');
-    } else {
-      alert('In order to use the QR Code scanner you need to provide camera permissions');
     }
   };
 }

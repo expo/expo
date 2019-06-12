@@ -1,9 +1,7 @@
 import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
   ActivityIndicator,
-  Button,
   Dimensions,
   FlatList,
   ListRenderItem,
@@ -17,9 +15,8 @@ import { connect } from 'react-redux';
 
 import ProfileActions from '../../redux/ProfileActions';
 import Store from '../../redux/Store';
+import * as PermissionUtils from '../../utils/PermissionUtils';
 import MediaLibraryCell from './MediaLibraryCell';
-
-const RNButton = Button;
 
 const COLUMNS = 3;
 const PAGE_SIZE = COLUMNS * 10;
@@ -46,7 +43,6 @@ interface State {
   assets: MediaLibrary.Asset[];
   endCursor?: string;
   hasNextPage?: boolean;
-  permission?: Permissions.PermissionStatus;
   refreshing: boolean;
   mediaType: MediaLibrary.MediaTypeValue;
   sortBy: MediaLibrary.SortByKey;
@@ -70,8 +66,13 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
   libraryChangeSubscription?: { remove: () => void };
 
   componentDidFocus = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    this.setState({ permission: status, assets: [], endCursor: undefined, hasNextPage: undefined });
+    const hasPermission = await PermissionUtils.requestCameraRollAysnc();
+    this.setState({
+      permission: hasPermission,
+      assets: [],
+      endCursor: undefined,
+      hasNextPage: undefined,
+    });
     this.loadMoreAssets();
 
     if (this.libraryChangeSubscription) {
@@ -193,14 +194,14 @@ export default class MediaLibraryScreen extends React.Component<NavigationScreen
     const { assets, permission, refreshing } = this.state;
 
     if (!permission) {
-      return null;
-    }
-    if (permission !== 'granted') {
+      if (permission === null) {
+        return null;
+      }
       return (
         <View style={styles.permissions}>
           <Text>
-            Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access
-            in Settings.
+            Missing Gallery permission. To continue, you'll need to allow media gallery access in
+            Settings.
           </Text>
         </View>
       );

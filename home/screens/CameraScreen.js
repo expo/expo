@@ -4,7 +4,7 @@ import { Camera } from 'expo-camera';
 import Constants from 'expo-constants';
 import * as FaceDetector from 'expo-face-detector';
 import * as FileSystem from 'expo-file-system';
-import * as Permissions from 'expo-permissions';
+import * as PermissionUtils from '../utils/PermissionUtils';
 import React from 'react';
 import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import isIPhoneX from 'react-native-is-iphonex';
@@ -71,7 +71,6 @@ interface State {
   faces: any[];
   newPhotos: boolean;
   permissionsGranted: boolean;
-  permission?: Permissions.PermissionStatus;
   pictureSize?: any;
   pictureSizes: any[];
   pictureSizeId: number;
@@ -99,7 +98,7 @@ export default class CameraScreen extends React.Component {
     faceDetecting: false,
     faces: [],
     newPhotos: false,
-    permissionsGranted: false,
+    permissionsGranted: null,
     pictureSizes: [],
     pictureSizeId: 0,
     showGallery: false,
@@ -109,8 +108,8 @@ export default class CameraScreen extends React.Component {
   camera;
 
   async componentWillMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ permission: status, permissionsGranted: status === 'granted' });
+    const permissionsGranted = await PermissionUtils.requestCameraAysnc();
+    this.setState({ permissionsGranted });
   }
 
   componentDidMount() {
@@ -280,10 +279,10 @@ export default class CameraScreen extends React.Component {
 
   renderNoPermissions = () => (
     <View style={styles.noPermissions}>
-      {this.state.permission && (
+      {this.state.hasPermissions !== null && (
         <View>
           <Text style={{ color: '#4630ec', fontWeight: 'bold', textAlign: 'center', fontSize: 24 }}>
-            Permission {this.state.permission.toLowerCase()}!
+            No Camera Access
           </Text>
           <Text style={{ color: '#595959', textAlign: 'center', fontSize: 20 }}>
             You'll need to enable the camera permission to continue.

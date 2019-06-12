@@ -1,5 +1,7 @@
 /* @flow */
-
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import React from 'react';
 import {
   Keyboard,
@@ -10,10 +12,7 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import Constants from 'expo-constants';
-import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';

@@ -1,11 +1,10 @@
 /* @flow */
-
+import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
+import { Ionicons } from '@expo/vector-icons';
+import { take } from 'lodash';
 import React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import FadeIn from 'react-native-fade-in-image';
-import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
-import { take } from 'lodash';
 
 import Colors from '../constants/Colors';
 

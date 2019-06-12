@@ -20,7 +20,7 @@ import {
 import DevIndicator from '../components/DevIndicator';
 import FriendlyUrls from '../legacy/FriendlyUrls';
 import ExponentKernel from '../universal/ExponentKernel';
-import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
+import * as PermissionUtils from '../utils/PermissionUtils';
 
 let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 
@@ -148,9 +148,11 @@ export default class MenuView extends React.Component {
   _renderNUXRow() {
     let tooltipMessage;
     if (Constants.isDevice) {
-      tooltipMessage = 'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that you can shake your device to get back to it at any time.';
+      tooltipMessage =
+        'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that you can shake your device to get back to it at any time.';
     } else {
-      tooltipMessage = 'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that in an iOS Simulator you can press \u2318D to get back to it at any time.';
+      tooltipMessage =
+        'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that in an iOS Simulator you can press \u2318D to get back to it at any time.';
     }
     let headingStyles = MENU_NARROW_SCREEN
       ? [styles.nuxHeading, styles.nuxHeadingNarrow]
@@ -294,10 +296,8 @@ export default class MenuView extends React.Component {
   }
 
   _onOpenQRCode = async () => {
-    if (await requestCameraPermissionsAsync()) {
+    if (await PermissionUtils.requestQRAysnc()) {
       ExponentKernel.selectQRReader();
-    } else {
-      alert('In order to use the QR Code scanner you need to provide camera permissions');
     }
   };
 
