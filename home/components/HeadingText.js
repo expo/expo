@@ -1,15 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-export default class HeadingText extends React.Component<{ style?: StyleProp<ViewStyle> }> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={[styles.headingText, this.props.style]}>{this.props.children}</Text>
-      </View>
-    );
-  }
-}
+const HeadingText = React.memo(({ style, ...props }) => (
+  <View style={styles.container}>
+    <Text style={[styles.headingText, style]} {...props} />
+  </View>
+));
+
+export default HeadingText;
 
 const styles = StyleSheet.create({
   container: {

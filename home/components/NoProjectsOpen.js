@@ -1,31 +1,26 @@
 /* @flow */
-
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 
-export default class NoProjectsOpen extends React.Component {
-  render() {
-    const { isAuthenticated } = this.props;
-    let message;
-    if (isAuthenticated) {
-      message = 'No projects are currently open.';
-    } else {
-      message = 'Sign in to your Expo account to see the projects you have recently been working on.'
-    }
+const NoProjectsOpen = React.memo(({ isAuthenticated }) => {
+  const message = isAuthenticated
+    ? 'No projects are currently open.'
+    : 'Sign in to your Expo account to see the projects you have recently been working on.';
 
-    return (
-      <View style={[styles.container, styles.bottomBorder]}>
-        <View style={styles.infoContainer}>
-          <View style={styles.subtitleContainer}>
-            <Text style={styles.subtitleText}>{message}</Text>
-          </View>
+  return (
+    <View style={[styles.container, styles.bottomBorder]}>
+      <View style={styles.infoContainer}>
+        <View style={styles.subtitleContainer}>
+          <Text style={styles.subtitleText}>{message}</Text>
         </View>
       </View>
-    );
-  }
-}
+    </View>
+  );
+});
+
+export default NoProjectsOpen;
 
 const styles = StyleSheet.create({
   container: {
@@ -56,7 +51,7 @@ const styles = StyleSheet.create({
       ios: {
         fontWeight: '500',
       },
-      android: {
+      default: {
         fontWeight: '400',
         marginTop: 1,
       },

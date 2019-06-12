@@ -4,26 +4,22 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default class LikeButton extends React.Component {
-  render() {
-    let { liked } = this.props;
+const LikeButton = React.memo(({ liked, style, ...props }) => (
+  <View style={style}>
+    <TouchableNativeFeedbackSafe
+      {...props}
+      style={[styles.container, liked && styles.containerLiked]}>
+      <MaterialIcons
+        style={[styles.icon, liked && styles.iconLiked]}
+        name={liked ? 'heart' : 'heart-empty'}
+        size={14}
+      />
+      <Text style={[styles.text, liked && styles.textLiked]}>{liked ? 'Liked' : 'Like'}</Text>
+    </TouchableNativeFeedbackSafe>
+  </View>
+));
 
-    return (
-      <View style={this.props.style}>
-        <TouchableNativeFeedbackSafe
-          {...this.props}
-          style={[styles.container, liked && styles.containerLiked]}>
-          <MaterialIcons
-            style={[styles.icon, liked && styles.iconLiked]}
-            name={liked ? 'heart' : 'heart-empty'}
-            size={14}
-          />
-          <Text style={[styles.text, liked && styles.textLiked]}>{liked ? 'Liked' : 'Like'}</Text>
-        </TouchableNativeFeedbackSafe>
-      </View>
-    );
-  }
-}
+export default LikeButton;
 
 const styles = StyleSheet.create({
   container: {
