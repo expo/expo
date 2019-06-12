@@ -1,17 +1,17 @@
 {
   "name": "yoga",
-  "version": "0.59.8.React",
+  "version": "0.60.0-rc.1.React",
   "license": {
     "type": "MIT"
   },
-  "homepage": "https://facebook.github.io/yoga/",
-  "documentation_url": "https://facebook.github.io/yoga/docs/api/c/",
+  "homepage": "https://yogalayout.com",
+  "documentation_url": "https://yogalayout.com/docs/",
   "summary": "Yoga is a cross-platform layout engine which implements Flexbox.",
   "description": "Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.",
   "authors": "Facebook",
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.59.8"
+    "tag": "v0.60.0-rc.1"
   },
   "module_name": "yoga",
   "requires_arc": false,
@@ -28,5 +28,5 @@
     "tvos": "9.2"
   },
   "source_files": "yoga/**/*.{cpp,h}",
-  "public_header_files": "yoga/{Yoga,YGEnums,YGMacros,YGValue}.h"
+  "public_header_files": "yoga/{Yoga,YGEnums,YGMacros,YGValue,YGStyle,CompactValue,YGFloatOptional,Yoga-internal,YGNode,YGConfig,YGLayout,YGMarker}.h"
 }

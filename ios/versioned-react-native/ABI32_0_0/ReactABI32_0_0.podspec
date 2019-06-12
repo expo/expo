@@ -321,7 +321,7 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTCameraRoll" do |ss|
     ss.dependency             "ReactABI32_0_0/Core"
-    ss.dependency             'React/RCTImage'
+    ss.dependency             'ReactABI32_0_0/RCTImage'
     ss.source_files         = "Libraries/CameraRoll/*.{h,m}"
   end
 
@@ -364,7 +364,7 @@ Pod::Spec.new do |s|
   s.subspec "RCTWebSocket" do |ss|
     ss.dependency             "ReactABI32_0_0/Core"
     ss.dependency             "ReactABI32_0_0/RCTBlob"
-    ss.dependency             "ReactABI32_0_0/fishhook"
+    ss.dependency             "React-fishhook"
     ss.source_files         = "Libraries/WebSocket/*.{h,m}"
   end
 

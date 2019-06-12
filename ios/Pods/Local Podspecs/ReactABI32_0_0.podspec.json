@@ -569,7 +569,7 @@
         "ReactABI32_0_0/Core": [
 
         ],
-        "React/RCTImage": [
+        "ReactABI32_0_0/RCTImage": [
 
         ]
       },
@@ -650,7 +650,7 @@
         "ReactABI32_0_0/RCTBlob": [
 
         ],
-        "ReactABI32_0_0/fishhook": [
+        "React-fishhook": [
 
         ]
       },

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI33_0_0/EXBarCodeScanner/ABI33_0_0EXBarCodeScanner/ABI33_0_0EXBarCodeScannerModule.h

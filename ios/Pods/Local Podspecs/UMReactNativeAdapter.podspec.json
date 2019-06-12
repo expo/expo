@@ -12,11 +12,17 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "UMReactNativeAdapter/**/*.{h,m}",
-  "preserve_paths": "UMReactNativeAdapter/**/*.{h,m}",
+  "source_files": "UMReactNativeAdapter/**/*.{h,m,mm}",
+  "preserve_paths": "UMReactNativeAdapter/**/*.{h,m,mm}",
   "requires_arc": true,
   "dependencies": {
     "React": [
+
+    ],
+    "React-turbomodule-core": [
+
+    ],
+    "React-jsi": [
 
     ],
     "UMCore": [
