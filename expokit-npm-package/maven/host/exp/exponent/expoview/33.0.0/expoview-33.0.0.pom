@@ -14,12 +14,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.webkit</groupId>
-      <artifactId>android-jsc</artifactId>
-      <version>r241213</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>com.facebook.react</groupId>
       <artifactId>react-native</artifactId>
       <version>33.0.0</version>
@@ -83,6 +77,12 @@
       <groupId>com.facebook.infer.annotation</groupId>
       <artifactId>infer-annotation</artifactId>
       <version>0.11.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webkit</groupId>
+      <artifactId>android-jsc</artifactId>
+      <version>r224109</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
