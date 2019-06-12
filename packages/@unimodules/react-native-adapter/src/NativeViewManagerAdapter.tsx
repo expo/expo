@@ -1,7 +1,8 @@
 import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 import React from 'react';
-import { NativeModules, UIManager, ViewPropTypes, requireNativeComponent } from 'react-native';
+import { UIManager, ViewPropTypes, requireNativeComponent } from 'react-native';
+import NativeUnimoduleProxy from './NativeUnimoduleProxy';
 
 // To make the transition from React Native's `requireNativeComponent` to Expo's
 // `requireNativeViewManager` as easy as possible, `requireNativeViewManager` is a drop-in
@@ -22,9 +23,8 @@ const ViewPropTypesKeys = Object.keys(ViewPropTypes);
  */
 export function requireNativeViewManager<P = any>(viewName: string): React.ComponentType<P> {
   if (__DEV__) {
-    const { NativeUnimoduleProxy } = NativeModules;
-    if (!NativeUnimoduleProxy.viewManagersNames.includes(viewName)) {
-      const exportedViewManagerNames = NativeUnimoduleProxy.viewManagersNames.join(', ');
+    if (!NativeUnimoduleProxy.getConstants().viewManagersNames.includes(viewName)) {
+      const exportedViewManagerNames = NativeUnimoduleProxy.getConstants().viewManagersNames.join(', ');
       console.warn(
         `The native view manager required by name (${viewName}) from NativeViewManagerAdapter isn't exported by @unimodules/react-native-adapter. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`
       );

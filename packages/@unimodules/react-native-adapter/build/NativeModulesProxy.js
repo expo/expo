@@ -1,12 +1,13 @@
 import { NativeModules } from 'react-native';
-const NativeProxy = NativeModules.NativeUnimoduleProxy;
+import NativeProxy from './NativeUnimoduleProxy';
+const NativeProxyConstants = NativeProxy ? NativeProxy.getConstants() : null;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 const NativeModulesProxy = {};
-if (NativeProxy) {
-    Object.keys(NativeProxy[exportedMethodsKey]).forEach(moduleName => {
-        NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
-        NativeProxy[exportedMethodsKey][moduleName].forEach(methodInfo => {
+if (NativeProxyConstants) {
+    Object.keys(NativeProxyConstants[exportedMethodsKey]).forEach(moduleName => {
+        NativeModulesProxy[moduleName] = NativeProxyConstants[modulesConstantsKey][moduleName] || {};
+        NativeProxyConstants[exportedMethodsKey][moduleName].forEach(methodInfo => {
             NativeModulesProxy[moduleName][methodInfo.name] = async (...args) => {
                 const { key, argumentsCount } = methodInfo;
                 if (argumentsCount !== args.length) {
@@ -25,7 +26,7 @@ if (NativeProxy) {
     });
 }
 else {
-    console.warn(`The "UMNativeModulesProxy" native module is not exported through NativeModules; verify that @unimodules/react-native-adapter's native code is linked properly`);
+    console.warn(`The "UMNativeModulesProxy" native module is not exported; verify that @unimodules/react-native-adapter's native code is linked properly`);
 }
 export default NativeModulesProxy;
 //# sourceMappingURL=NativeModulesProxy.js.map
