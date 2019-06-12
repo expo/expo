@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "expo": "^33.0.0-alpha.web.2",
-    "react": "16.8.3",
-    "react-native": "0.59.8"
+    "react": "16.8.6",
+    "react-native": "0.60.0-rc.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",

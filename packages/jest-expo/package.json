@@ -24,7 +24,7 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "react": "16.8.3"
+    "react": "16.8.6"
   },
   "gitHead": "49f285013c22996f5d03958708761be385e6cab4",
   "bugs": {
