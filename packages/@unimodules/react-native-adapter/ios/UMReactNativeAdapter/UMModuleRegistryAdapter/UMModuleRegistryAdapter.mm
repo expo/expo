@@ -3,6 +3,7 @@
 #import <UMReactNativeAdapter/UMViewManagerAdapter.h>
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 #import <UMReactNativeAdapter/UMViewManagerAdapterClassesRegistry.h>
+#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 
 @interface UMModuleRegistryAdapter ()
 
@@ -30,11 +31,13 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray array];
-  
+
+#ifndef RN_TURBO_MODULE_ENABLED
   UMNativeModulesProxy *nativeModulesProxy = [[UMNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
-  
+
   [extraModules addObject:nativeModulesProxy];
-  
+#endif
+
   for (UMViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
     Class viewManagerAdapterClass = [_viewManagersClassesRegistry viewManagerAdapterClassForViewManager:viewManager];
     [extraModules addObject:[[viewManagerAdapterClass alloc] initWithViewManager:viewManager]];

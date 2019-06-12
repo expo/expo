@@ -49,7 +49,20 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
   return YES;
 }
 
+#ifdef RN_TURBO_MODULE_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::UMNativeModulesProxySpecJSI>(self, jsInvoker);
+}
+#endif
+
+// TODO: Remove once only a turbo module
 - (NSDictionary *)constantsToExport
+{
+  return [self getConstants];
+}
+
+- (NSDictionary *)getConstants
 {
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
