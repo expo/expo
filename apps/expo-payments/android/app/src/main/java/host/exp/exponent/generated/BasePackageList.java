@@ -17,7 +17,6 @@ public class BasePackageList {
         new expo.modules.barcodescanner.BarCodeScannerPackage(),
         new expo.modules.brightness.BrightnessPackage(),
         new expo.modules.calendar.CalendarPackage(),
-        new expo.modules.camera.CameraPackage(),
         new expo.modules.constants.ConstantsPackage(),
         new expo.modules.contacts.ContactsPackage(),
         new expo.modules.crypto.CryptoPackage(),

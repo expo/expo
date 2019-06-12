@@ -49,7 +49,7 @@ allprojects {
     }
     // For detach
     maven {
-      url "$rootDir/../node_modules/expokit/maven"
+      url "$rootDir/../../../node_modules/expokit/maven"
     }
     maven {
       // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
@@ -59,7 +59,7 @@ allprojects {
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
-      url "$rootDir/../node_modules/jsc-android/dist"
+      url "$rootDir/../../../node_modules/jsc-android/dist"
     }
     flatDir {
       dirs 'libs'
