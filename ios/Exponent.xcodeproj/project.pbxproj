@@ -3327,6 +3327,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -3361,6 +3362,7 @@
 				STRIP_STYLE = "non-global";
 				SWIFT_OBJC_BRIDGING_HEADER = "Exponent-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
