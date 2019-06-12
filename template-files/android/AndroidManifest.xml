@@ -57,6 +57,7 @@
       android:name=".LauncherActivity"
       android:exported="true"
       android:launchMode="singleTask"
+      android:screenOrientation="portrait"
       android:theme="@android:style/Theme.Translucent.NoTitleBar">
       <!-- START LAUNCHER INTENT FILTERS -->
       <intent-filter>
