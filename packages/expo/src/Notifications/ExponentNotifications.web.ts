@@ -1,3 +1,5 @@
+let currentBadgeNumber = 0;
+
 export default {
   async getExponentPushTokenAsync(): Promise<void> {},
   async getDevicePushTokenAsync(config: { [key: string]: any }): Promise<void> {},
@@ -18,6 +20,19 @@ export default {
   async dismissAllNotifications(): Promise<void> {},
   async cancelScheduledNotification(notificationId: string): Promise<void> {},
   async cancelAllScheduledNotifications(): Promise<void> {},
-  //   getBadgeNumberAsync(): Promise<void> {},
-  //   setBadgeNumberAsync(badgeNumber: number): Promise<void> {},
+  getBadgeNumberAsync(): Promise<number> {
+    return currentBadgeNumber;
+  },
+  setBadgeNumberAsync(badgeNumber: number): Promise<void> {
+    currentBadgeNumber = badgeNumber;
+    
+    // Update title
+    const match = document.title.match(new RegExp('\(\d*\) (.*)'));
+    const originalTitle = match ? match[2] : document.title;
+    if (currentBadgeNumber) {
+      document.title = `(${currentBadgeNumber}) ${originalTitle}`;
+    } else {
+      document.title = originalTitle;
+    }
+  },
 };
