@@ -59,7 +59,6 @@ export async function requestAsync(permission, shouldRequest, redirectReason) {
   } else {
     status = (await Permissions.getAsync(permission)).status;
   }
-  console.log({ status });
   if (status === 'denied' || (status === 'undetermined' && shouldRequest)) {
     // Prompt to open settings and change the permission manually.
     // When the user changes the permissions the app will reset so we should
@@ -97,9 +96,6 @@ export async function requestAsync(permission, shouldRequest, redirectReason) {
         { cancelable: true }
       );
     });
-
-    // TODO: Bacon: Maybe unify alerts here
-    return false;
   }
   return status === 'granted';
 }
