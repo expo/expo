@@ -23,21 +23,20 @@ import {
 } from 'expo-in-app-purchases';
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      items: [],
-      history: [],
-    };
-    this.queryPurchaseHistory = this.queryPurchaseHistory.bind(this);
-    this.renderItem = this.renderItem.bind(this);
-    this.renderHistoryRecord = this.renderHistoryRecord.bind(this);
-  }
+  state = {
+    items: [],
+    history: [],
+    responseCode: 0,
+  };
 
   async componentDidMount() {
+    // This method must be called first to initialize listeners and billing client
     const history = await connectAsync();
 
+    /*
+      These item entries are created in App Store Connect and Google Play Console respectively.
+      If you want to add more or edit their attributes you can do so there.
+    */
     const items = Platform.select({
       ios: [
         'dev.expo.products.premium',
@@ -47,20 +46,24 @@ export default class App extends React.Component {
       ],
       android: ['gas', 'premium', 'gold_yearly', 'gold_monthly'],
     });
+
+    // Get product details
     const { responseCode, results } = await getProductsAsync(items);
     if (responseCode === ResponseCode.OK) {
       this.setState({ items: results, history: history.results });
     }
 
+    // Set purchase listener
     onPurchase(({ responseCode, results, errorCode }) => {
       if (responseCode === ResponseCode.OK) {
         for (const purchase of results) {
+          console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
             finishTransactionAsync(purchase.purchaseToken, true);
           }
         }
       } else if (responseCode === ResponseCode.USER_CANCELED) {
-        console.log('Why did you cancel?? 😠');
+        console.log('User canceled');
       } else {
         console.warn(
           `Something went wrong with the purchase. Received response code ${responseCode} and errorCode ${errorCode}`
@@ -74,7 +77,7 @@ export default class App extends React.Component {
   }
 
   async queryPurchaseHistory() {
-    const { responseCode, results } = await getPurchaseHistoryAsync(false);
+    const { responseCode, results } = await getPurchaseHistoryAsync(true);
     if (responseCode === ResponseCode.OK) {
       this.setState({ history: results });
     }
@@ -91,7 +94,6 @@ export default class App extends React.Component {
         <Text>Product ID: {item.productId}</Text>
         <Text>Type: {item.type}</Text>
         <Text>Subscription Period: {item.subscriptionPeriod}</Text>
-        {Platform.OS === 'android' ? <Text>SKU Details Token: {item.skuDetailsToken}</Text> : null}
         <View style={styles.buttonContainer}>
           <Button title="Buy" onPress={() => purchaseItemAsync(item.productId)} />
         </View>
@@ -115,7 +117,7 @@ export default class App extends React.Component {
 
   async getBillingResult() {
     const responseCode = await getBillingResponseCodeAsync();
-    console.log(`Got response code: ${responseCode}`);
+    this.setState({ responseCode });
   }
 
   render() {
@@ -127,11 +129,14 @@ export default class App extends React.Component {
         {this.state.items.map(item => this.renderItem(item))}
         <Text style={styles.itemTitle}>History</Text>
         <View style={styles.buttonContainer}>
-          <Button title="Query History" onPress={this.queryPurchaseHistory} />
+          <Button title="Query History" onPress={() => this.queryPurchaseHistory()} />
         </View>
         {this.state.history.map(historyRecord => this.renderHistoryRecord(historyRecord))}
         <View style={styles.buttonContainer}>
-          <Button title="Log Response Code" onPress={this.getBillingResult} />
+          <Button title="Update Response Code" onPress={() => this.getBillingResult()} />
+        </View>
+        <View style={styles.container}>
+          <Text style={styles.itemTitle}>{this.state.responseCode}</Text>
         </View>
       </ScrollView>
     );
