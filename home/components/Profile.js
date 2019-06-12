@@ -1,21 +1,11 @@
 /* @flow */
 import { connectActionSheet } from '@expo/react-native-action-sheet';
-import FadeIn from '@expo/react-native-fade-in-image';
 import dedent from 'dedent';
-import { BlurView, Constants, Asset } from 'expo';
+import { Asset, BlurView, Constants } from 'expo';
 import { take, takeRight } from 'lodash';
 import React from 'react';
-import {
-  ActivityIndicator,
-  Animated,
-  Image,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Dimensions,
-} from 'react-native';
+import { ActivityIndicator, Animated, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
@@ -24,10 +14,9 @@ import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
 import PrimaryButton from './PrimaryButton';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SeeAllSnacksButton from './SeeAllSnacksButton';
+import SettingsButton from './SettingsButton';
 import SmallProjectCard from './SmallProjectCard';
 import SnackCard from './SnackCard';
-import isIPhoneX from 'react-native-is-iphonex';
-import SettingsButton from './SettingsButton';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
