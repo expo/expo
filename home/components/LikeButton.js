@@ -1,6 +1,6 @@
 /* @flow */
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -9,7 +9,7 @@ const LikeButton = React.memo(({ liked, style, ...props }) => (
     <TouchableNativeFeedbackSafe
       {...props}
       style={[styles.container, liked && styles.containerLiked]}>
-      <MaterialIcons
+      <Ionicons
         style={[styles.icon, liked && styles.iconLiked]}
         name={liked ? 'heart' : 'heart-empty'}
         size={14}
