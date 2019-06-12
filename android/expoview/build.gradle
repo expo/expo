@@ -114,15 +114,13 @@ task generateDynamicMacros(type: Exec) {
 gradle.taskGraph.whenReady {
   generateDynamicMacros.execute()
 }
-// WHEN_VERSIONING_REMOVE_TO_HERE
 
 configurations.all {
   resolutionStrategy {
-    force 'org.webkit:android-jsc:r224109'
+    force 'org.webkit:android-jsc:r241213'
   }
 }
 
-// WHEN_VERSIONING_REMOVE_FROM_HERE
 // Import gradle helpers for unimodules.
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 // WHEN_VERSIONING_REMOVE_TO_HERE
@@ -137,6 +135,8 @@ dependencies {
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
+
+  api 'org.webkit:android-jsc:r241213' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:33.0.0'
@@ -188,7 +188,6 @@ dependencies {
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   api 'com.squareup.okio:okio:1.13.0'
   api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
-  api 'org.webkit:android-jsc:r224109'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies

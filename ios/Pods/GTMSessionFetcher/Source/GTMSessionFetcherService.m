@@ -374,18 +374,14 @@ NSString *const kGTMSessionFetcherServiceSessionKey
 }
 
 // Internal utility. Returns a fetcher's delegate if it's a dispatcher, or nil if the fetcher
-// is its own delegate (possibly via proxy) and has no dispatcher.
+// is its own delegate and has no dispatcher.
 - (GTMSessionFetcherSessionDelegateDispatcher *)delegateDispatcherForFetcher:(GTMSessionFetcher *)fetcher {
   GTMSessionCheckNotSynchronized(self);
 
   NSURLSession *fetcherSession = fetcher.session;
   if (fetcherSession) {
     id<NSURLSessionDelegate> fetcherDelegate = fetcherSession.delegate;
-    // If the delegate is non-nil and claims to be a GTMSessionFetcher, there is no dispatcher;
-    // assume the fetcher is the delegate or has been proxied (some third-party frameworks
-    // are known to swizzle NSURLSession to proxy its delegate).
-    BOOL hasDispatcher = (fetcherDelegate != nil &&
-                          ![fetcherDelegate isKindOfClass:[GTMSessionFetcher class]]);
+    BOOL hasDispatcher = (fetcherDelegate != nil && fetcherDelegate != fetcher);
     if (hasDispatcher) {
       GTMSESSION_ASSERT_DEBUG([fetcherDelegate isKindOfClass:[GTMSessionFetcherSessionDelegateDispatcher class]],
                               @"Fetcher delegate class: %@", [fetcherDelegate class]);

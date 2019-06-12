@@ -400,7 +400,7 @@ PODS:
   - EXConstants (5.0.0):
     - UMConstantsInterface
     - UMCore
-  - EXContacts (5.0.0):
+  - EXContacts (5.0.1):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -442,11 +442,9 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (5.0.0):
+  - EXImagePicker (5.0.1):
     - UMCore
     - UMFileSystemInterface
-  - EXInAppPurchases (1.0.0):
-    - UMCore
   - EXKeepAwake (5.0.0):
     - UMCore
   - EXLinearGradient (5.0.0):
@@ -489,7 +487,7 @@ PODS:
   - EXSMS (5.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXSpeech (5.0.0):
+  - EXSpeech (5.0.1):
     - UMCore
   - EXSQLite (5.0.0):
     - UMCore
@@ -502,7 +500,7 @@ PODS:
   - EXVideoThumbnails (1.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXWebBrowser (5.0.0):
+  - EXWebBrowser (5.0.1):
     - UMCore
   - Fabric (1.10.1)
   - FBAudienceNetwork (5.1.1)
@@ -554,17 +552,17 @@ PODS:
     - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
     - GTMSessionFetcher/Core (~> 1.1)
   - GoogleSymbolUtilities (1.1.2)
-  - GoogleToolboxForMac/DebugUtils (2.2.1):
-    - GoogleToolboxForMac/Defines (= 2.2.1)
-  - GoogleToolboxForMac/Defines (2.2.1)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.1)":
-    - GoogleToolboxForMac/DebugUtils (= 2.2.1)
-    - GoogleToolboxForMac/Defines (= 2.2.1)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.1)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.2.1)"
+  - GoogleToolboxForMac/DebugUtils (2.2.0):
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+  - GoogleToolboxForMac/Defines (2.2.0)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.0)":
+    - GoogleToolboxForMac/DebugUtils (= 2.2.0)
+    - GoogleToolboxForMac/Defines (= 2.2.0)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.0)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.2.0)"
   - GoogleUtilities (1.3.2):
     - GoogleSymbolUtilities (~> 1.1)
-  - GTMSessionFetcher/Core (1.2.2)
+  - GTMSessionFetcher/Core (1.2.1)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.3)
   - React (0.59.8):
@@ -1127,7 +1125,6 @@ DEPENDENCIES:
   - EXHaptics (from `../packages/expo-haptics/ios`)
   - EXImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../packages/expo-image-picker/ios`)
-  - EXInAppPurchases (from `../packages/expo-in-app-purchases/ios`)
   - EXKeepAwake (from `../packages/expo-keep-awake/ios`)
   - EXLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
@@ -1588,9 +1585,6 @@ EXTERNAL SOURCES:
   EXImagePicker:
     :path: !ruby/object:Pathname
     path: "../packages/expo-image-picker/ios"
-  EXInAppPurchases:
-    :path: !ruby/object:Pathname
-    path: "../packages/expo-in-app-purchases/ios"
   EXKeepAwake:
     :path: !ruby/object:Pathname
     path: "../packages/expo-keep-awake/ios"
@@ -1853,8 +1847,8 @@ SPEC CHECKSUMS:
   EXCalendar: e0539468aae24ec9b40aff116319b2162edf0197
   EXCamera: 06d071d11378051a64bb057f4c1ee486eb69dccc
   EXConstants: f1d63f5bcf9a790fea747ceba6411b7814005191
-  EXContacts: bf2934834ce03cc72757f1286e48d611485ea629
-  EXCrypto: 56f8a80bc2f33dbb9fd6da7f72f14c737e1e84be
+  EXContacts: cba6db9b4d8ef590c2185711a648fa32d90041b9
+  EXCrypto: fdec92b3f9740e1c27858688d3cff33002f1ff44
   EXDocumentPicker: 03566e97f55139cf76e0a85b2afdb29abb3f46c8
   EXFacebook: 670578e816563084201dc850b91dc2b8b8578189
   EXFaceDetector: 792006f355edf50b24486989688750f16640e553
@@ -1865,8 +1859,7 @@ SPEC CHECKSUMS:
   EXGoogleSignIn: 587267bcbf0a91ee43f0f330f8b635f478c87895
   EXHaptics: a64f2916f185d04069c13a3c8344505e905eb54d
   EXImageManipulator: ac30d215c758fac8fc538e36e7e8b3b764051fb9
-  EXImagePicker: 215e12ca7d90c89153b2938d7394a5083f081292
-  EXInAppPurchases: 36bc8335662ff8c6c95e4a919b022c0ead774f99
+  EXImagePicker: 20b9c4f2e31c76f50442030378aea86a0d76d55a
   EXKeepAwake: f32951b626366e82aeac9330060fff8139bdf67d
   EXLinearGradient: 300bcb612bdaf51a8ca4ee9ad6b6a23418e69736
   EXLocalAuthentication: 8e56d578de3eb01ddcb535346dc84fe306e46161
@@ -1882,11 +1875,11 @@ SPEC CHECKSUMS:
   EXSensors: 8a3357b51127d378e4a497e9ad7600ac08e64625
   EXSharing: 2081f6e359b965e5f78e0fd855c80581c2568260
   EXSMS: a9b5c82b4f290271779270eb51e2c3be80ab9dff
-  EXSpeech: 813993a8391ffece8d24219c4813d81499e2b424
+  EXSpeech: f776ab5b625dfb9df7806b22bdf54a99a27658b5
   EXSQLite: f9758487946197b7879c1d089d4104b0e1262bff
   EXTaskManager: 00fb4f979f079ab32a252997c560e06bdeada952
   EXVideoThumbnails: da67fad3894cbe6bbc82824cc771e84fded3180a
-  EXWebBrowser: b4d4b09020c16eabde86652667f31ff2e759a3eb
+  EXWebBrowser: 7851e76980a3abe7639c069aea965a326197b744
   Fabric: f6f21452846788bb44595d73e9909d79d328e617
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
@@ -1901,9 +1894,9 @@ SPEC CHECKSUMS:
   GoogleNetworkingUtilities: 3edd3a8161347494f2da60ea0deddc8a472d94cb
   GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
   GoogleSymbolUtilities: 631ee17048aa5e9ab133470d768ea997a5ef9b96
-  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
+  GoogleToolboxForMac: ff31605b7d66400dcec09bed5861689aebadda4d
   GoogleUtilities: 8bbc733218aad26306f9d4a253823986110e3358
-  GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
+  GTMSessionFetcher: 32aeca0aa144acea523e1c8e053089dec2cb98ca
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
@@ -1927,6 +1920,6 @@ SPEC CHECKSUMS:
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: bd77b697fc78ff53e5e91ca9ea5a67676723450b
+PODFILE CHECKSUM: 991898749c6dcc9e08b48c213c2933afe968c43e
 
 COCOAPODS: 1.6.2

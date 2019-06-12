@@ -31,7 +31,6 @@
 #if DEBUG
 
 #import <stdarg.h>
-#import <Foundation/Foundation.h>
 #import "GTMDefines.h"
 
 static void GTMAssertSelectorNilOrImplementedWithReturnTypeAndArguments(id obj, SEL sel, const char *retType, ...) {
