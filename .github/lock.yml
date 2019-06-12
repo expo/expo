@@ -20,7 +20,7 @@ lockComment: >
   related bugs.
 
 # Assign `resolved` as the reason for locking. Set to `false` to disable
-setLockReason: true
+setLockReason: false
 
 # Limit to only `issues` or `pulls`
 only: issues
