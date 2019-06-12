@@ -16,6 +16,7 @@ import {
 } from '@expo/vector-icons';
 
 import GalleryScreen from './GalleryScreen';
+import { face, landmarks } from '../../components/Face';
 
 interface Picture {
   width: number;
@@ -24,8 +25,6 @@ interface Picture {
   base64?: string;
   exif?: any;
 }
-
-const landmarkSize = 2;
 
 const flashModeOrder: { [key: string]: string } = {
   off: 'on',
@@ -210,69 +209,15 @@ export default class CameraScreen extends React.Component<{}, State> {
     return <GalleryScreen onPress={this.toggleView} />;
   }
 
-  renderFace({ bounds, faceID, rollAngle, yawAngle }: FaceDetector.FaceFeature) {
-    return (
-      <View
-        key={faceID}
-        style={[
-          styles.face,
-          {
-            ...bounds.size,
-            left: bounds.origin.x,
-            top: bounds.origin.y,
-            transform: [
-              { perspective: 600 },
-              { rotateZ: `${rollAngle!.toFixed(0)}deg` },
-              { rotateY: `${yawAngle!.toFixed(0)}deg` },
-            ],
-          },
-        ]}>
-        <Text style={styles.faceText}>ID: {faceID}</Text>
-        <Text style={styles.faceText}>rollAngle: {rollAngle!.toFixed(0)}</Text>
-        <Text style={styles.faceText}>yawAngle: {yawAngle!.toFixed(0)}</Text>
-      </View>
-    );
-  }
-
-  renderLandmarksOfFace(face: FaceDetector.FaceFeature) {
-    const renderLandmark = (position?: { x: number; y: number }) =>
-      position && (
-        <View
-          style={[
-            styles.landmark,
-            {
-              left: position.x - landmarkSize / 2,
-              top: position.y - landmarkSize / 2,
-            },
-          ]}
-        />
-      );
-    return (
-      <View key={`landmarks-${face.faceID}`}>
-        {renderLandmark(face.leftEyePosition)}
-        {renderLandmark(face.rightEyePosition)}
-        {renderLandmark(face.leftEarPosition)}
-        {renderLandmark(face.rightEarPosition)}
-        {renderLandmark(face.leftCheekPosition)}
-        {renderLandmark(face.rightCheekPosition)}
-        {renderLandmark(face.leftMouthPosition)}
-        {renderLandmark(face.mouthPosition)}
-        {renderLandmark(face.rightMouthPosition)}
-        {renderLandmark(face.noseBasePosition)}
-        {renderLandmark(face.bottomMouthPosition)}
-      </View>
-    );
-  }
-
   renderFaces = () => (
     <View style={styles.facesContainer} pointerEvents="none">
-      {this.state.faces.map(this.renderFace)}
+      {this.state.faces.map(face)}
     </View>
   );
 
   renderLandmarks = () => (
     <View style={styles.facesContainer} pointerEvents="none">
-      {this.state.faces.map(this.renderLandmarksOfFace)}
+      {this.state.faces.map(landmarks)}
     </View>
   );
 
@@ -517,28 +462,6 @@ const styles = StyleSheet.create({
     right: 0,
     left: 0,
     top: 0,
-  },
-  face: {
-    padding: 10,
-    borderWidth: 2,
-    borderRadius: 2,
-    position: 'absolute',
-    borderColor: '#FFD700',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  landmark: {
-    width: landmarkSize,
-    height: landmarkSize,
-    position: 'absolute',
-    backgroundColor: 'red',
-  },
-  faceText: {
-    color: '#FFD700',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    margin: 10,
-    backgroundColor: 'transparent',
   },
   row: {
     flexDirection: 'row',
