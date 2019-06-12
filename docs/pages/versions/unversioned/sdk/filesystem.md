@@ -304,9 +304,12 @@ Take a `file://` URI and convert it into content URI (`content://`) so that it c
 #### Example
 
 ```javascript
-FileSystem.getContentUriAsync(fileUri).then(contentUri => {
-  console.log(contentUri);
-  IntentLauncher.startActivityAsync('android.intent.action.VIEW', { data: contentUri.uri });
+FileSystem.getContentUriAsync(uri).then(cUri => {
+  console.log(cUri);
+  IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+    data: cUri.uri,
+    flags: 1
+  });
 });
 ```
 

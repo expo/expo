@@ -533,7 +533,6 @@ public class FileSystemModule extends ExportedModule {
         result.putString("uri", cUriFromFile(file).toString());
         promise.resolve(result);
       }
-
     }
     catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -546,7 +545,7 @@ public class FileSystemModule extends ExportedModule {
       Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
       return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
     } catch (Exception e) {
-      return Uri.fromFile(file);
+      throw e;
     }
   }
 
@@ -650,7 +649,7 @@ public class FileSystemModule extends ExportedModule {
       promise.reject(e);
     }
   }
-  
+
   private static byte[] getInputStreamBytes(InputStream inputStream) throws IOException {
     byte[] bytesResult;
     ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
