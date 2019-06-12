@@ -92,13 +92,12 @@ export default class ExploreScreen extends React.Component {
           </View>
         </View>
       );
-    } else {
-      return (
-        <View style={styles.titleBarIOS}>
-          <SearchBar.PlaceholderButton />
-        </View>
-      );
     }
+    return (
+      <View style={styles.titleBarIOS}>
+        <SearchBar.PlaceholderButton />
+      </View>
+    );
   }
 
   _handlePressUsername = (username: string) => {
