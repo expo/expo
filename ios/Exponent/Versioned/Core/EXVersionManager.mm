@@ -33,11 +33,17 @@
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-// used for initializing scoped modules which don't tie in to any kernel service.
-#define EX_KERNEL_SERVICE_NONE @"EXKernelServiceNone"
+#import <React/RCTCxxBridgeDelegate.h>
+#import <React/CoreModulesPlugins.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
+#import <React/JSCExecutorFactory.h>
+#import <strings.h>
+
+RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 
 // this is needed because RCTPerfMonitor does not declare a public interface
 // anywhere that we can import.
@@ -47,35 +53,6 @@
 - (void)show;
 
 @end
-
-static NSMutableDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses;
-void EXRegisterScopedModule(Class, ...);
-void EXRegisterScopedModule(Class moduleClass, ...)
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    EXScopedModuleClasses = [NSMutableDictionary dictionary];
-  });
-  
-  NSString *kernelServiceClassName;
-  va_list argumentList;
-  NSMutableDictionary *unversionedKernelServiceClassNames = [[NSMutableDictionary alloc] init];
-  
-  va_start(argumentList, moduleClass);
-    while ((kernelServiceClassName = va_arg(argumentList, NSString*))) {
-      if ([kernelServiceClassName isEqualToString:@"nil"]) {
-        unversionedKernelServiceClassNames[kernelServiceClassName] = EX_KERNEL_SERVICE_NONE;
-      } else {
-        unversionedKernelServiceClassNames[kernelServiceClassName] = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
-      }
-    }
-  va_end(argumentList);
-  
-  NSString *moduleClassName = NSStringFromClass(moduleClass);
-  if (moduleClassName) {
-    EXScopedModuleClasses[moduleClassName] = unversionedKernelServiceClassNames;
-  }
-}
 
 @interface RCTBridgeHack <NSObject>
 
@@ -110,7 +87,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
  */
 - (instancetype)initWithParams:(NSDictionary *)params
                   fatalHandler:(void (^)(NSError *))fatalHandler
-                   logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
+                   logFunction:(RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
 {
   if (self = [super init]) {
@@ -286,11 +263,12 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 }
 
 - (void)configureABIWithFatalHandler:(void (^)(NSError *))fatalHandler
-                         logFunction:(void (^)(NSInteger, NSInteger, NSString *, NSNumber *, NSString *))logFunction
+                         logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
+  RCTEnableTurboModule(YES);
   RCTSetFatalHandler(fatalHandler);
-  RCTSetLogThreshold(threshold);
+  RCTSetLogThreshold((RCTLogLevel) threshold);
   RCTSetLogFunction(logFunction);
 }
 
@@ -375,6 +353,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 - (NSArray *)_newScopedModulesWithExperienceId: (NSString *)experienceId services:(NSDictionary *)services params:(NSDictionary *)params
 {
   NSMutableArray *result = [NSMutableArray array];
+  NSDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses = EXGetScopedModuleClasses();
   if (EXScopedModuleClasses) {
     [EXScopedModuleClasses enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull scopedModuleClassName, NSDictionary * _Nonnull kernelServiceClassNames, BOOL * _Nonnull stop) {
       NSMutableDictionary *moduleServices = [[NSMutableDictionary alloc] init];
@@ -400,6 +379,20 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     }];
   }
   return result;
+}
+
+- (Class)getModuleClassFromName:(const char *)name
+{
+  return RCTCoreModulesClassProvider(name);
+}
+
+/**
+ Returns a pure C++ object wrapping an exported unimodule instance.
+ */
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return nullptr;
 }
 
 @end
