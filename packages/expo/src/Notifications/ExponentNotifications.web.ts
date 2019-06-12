@@ -20,10 +20,10 @@ export default {
   async dismissAllNotifications(): Promise<void> {},
   async cancelScheduledNotification(notificationId: string): Promise<void> {},
   async cancelAllScheduledNotifications(): Promise<void> {},
-  getBadgeNumberAsync(): Promise<number> {
+  async getBadgeNumberAsync(): Promise<number> {
     return currentBadgeNumber;
   },
-  setBadgeNumberAsync(badgeNumber: number): Promise<void> {
+  async setBadgeNumberAsync(badgeNumber: number): Promise<void> {
     currentBadgeNumber = badgeNumber;
     
     // Update title
