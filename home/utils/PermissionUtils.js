@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import * as IntentLauncherAndroid from 'expo-intent-launcher';
+import * as IntentLauncher from 'expo-intent-launcher';
 import * as Permissions from 'expo-permissions';
 import { Alert, Linking, Platform } from 'react-native';
 
@@ -79,8 +79,8 @@ export async function requestAsync(permission, shouldRequest, redirectReason) {
               if (Platform.OS === 'android') {
                 const { manifest: { android: { package: packageName } = {} } = {} } = Constants;
                 try {
-                  await IntentLauncherAndroid.startActivityAsync(
-                    IntentLauncherAndroid.ACTION_APPLICATION_DETAILS_SETTINGS,
+                  await IntentLauncher.startActivityAsync(
+                    IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
                     { data: 'package:' + packageName }
                   );
                 } catch (error) {
