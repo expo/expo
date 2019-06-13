@@ -17,9 +17,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ScrollView, withNavigationFocus, withNavigation } from 'react-navigation';
+import { withNavigationFocus, withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
-
+import ScrollView from '../components/NavigationScrollView';
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
