@@ -14,8 +14,7 @@ exemptLabels: []
 lockLabel: outdated
 
 # Comment to post before locking. Set to `false` to disable
-lockComment: >
-  This thread has been automatically 🔒locked🔒 since there has not been any recent activity after it was closed. Oftentimes the underlying causes of old issues and steps to reproduce them are different from those of new issues. Please open a new issue for related bugs.
+lockComment: false
 
 # Assign `resolved` as the reason for locking. Set to `false` to disable
 setLockReason: false
