@@ -38,6 +38,8 @@ export default class OpenFromClipboardButton extends React.Component {
           </Text>
         </View>
       );
+    } else if (!isValid) {
+      return null;
     }
 
     return (

@@ -149,6 +149,14 @@ The administrator of the Apple Enterprise account will need to make you an App M
 
 ![Apple Development Portal Permissions](/static/images/adhoc-builds-apple-org.png)
 
+## App crashes / App icon is blacked out
+
+If your app icon is blacked out like [this](/static/images/adhoc-builds-black-icon.jpg) or if it crashes at the splash screen like [this](/static/images/adhoc-builds-app-crash.gif), check that your Adhoc provisioning profile is still valid. You can do this by navigating to the Apple Development Portal [profile list](https://developer.apple.com/account/resources/profiles/list). The Expo client Ad hoc profile should be prefixed with `*[expo]` for a bundle identifier that starts with `dev.expo.client`.
+
+An invalid profile can be caused by revoking the distribution certificate or disabling the iOS devices associated with the profile. You can fix this by associating valid certificates and devices to the profile and pressing `Save` from the Apple Development Portal interface.
+
+![Invalid Profile](/static/images/adhoc-builds-invalid-profile.png)
+
 ## Registering multiple iOS devices
 
 You can register multiple iOS devices by submitting multiple requests to build the Expo client. We've currently limited one iOS device registration per build request.

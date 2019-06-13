@@ -14,3 +14,4 @@ export { Constants };
 export { Font };
 export { Icon };
 export { LinearGradient } from 'expo-linear-gradient';
+export { SQLite } from 'expo-sqlite';

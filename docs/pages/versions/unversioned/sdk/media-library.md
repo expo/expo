@@ -44,8 +44,7 @@ Fetches a page of assets matching the provided criteria.
   - **first (_number_)** -- The maximum number of items on a single page.
   - **after (_string_)** -- Asset ID of the last item returned on the previous page.
   - **album (_string_ | _Album_)** -- [Album](#album) or its ID to get assets from specific album.
-  - **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean`
-  - value that means whether to use ascending order.
+  - **sortBy (_array_)** -- An array of [SortBy](#expomedialibrarysortby) keys. By default, all keys are sorted in descending order, however you can also pass a pair `[key, ascending]` where the second item is a `boolean` value that means whether to use ascending order. Note that if the `SortBy.default` key is used, then `ascending` argument will not matter. 
     Earlier items have higher priority when sorting out the results.
     If empty, this method will use the default sorting that is provided by the platform.
   - **mediaType (_array_)** -- An array of [MediaType](#expomedialibrarymediatype) types. By default `MediaType.photo` is set.

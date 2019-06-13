@@ -43,4 +43,11 @@ Object.defineProperties(module.exports, {
       return require('expo-linear-gradient').LinearGradient;
     },
   },
+
+  SQLite: {
+    enumerable: true,
+    get() {
+      return require('expo-sqlite').SQLite;
+    },
+  },
 });
