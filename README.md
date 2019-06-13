@@ -31,7 +31,7 @@ Note: We support building the clients only on macOS.
 #### iOS
 - Make sure you have latest non-beta Xcode installed.
 - Run `git lfs pull`.
-- Run `./generate-files-ios.js` in the `tools-public` directory.
+- Run `et ios-generate-dynamic-macros`.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android

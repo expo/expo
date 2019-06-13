@@ -882,11 +882,11 @@ async function regeneratePodsAsync() {
   ]);
 
   if (result) {
-    shell.exec('cd ../tools-public && ./generate-files-ios.js && cd -');
+    shell.exec('et ios-generate-dynamic-macros');
     shell.exec('cd ../ios && pod install && cd -');
     console.log('Regenerated Podfile and installed new pods. You can now try to build the project in Xcode.');
   } else {
-    console.log('Skipped pods regeneration. You might want to run `./generate-files-ios.sh` in `tools-public`, then `pod install` in `ios` to configure Xcode project.');
+    console.log('Skipped pods regeneration. You might want to run `et ios-generate-dynamic-macros`, then `pod install` in `ios` to configure Xcode project.');
   }
 }
 

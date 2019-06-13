@@ -62,6 +62,7 @@ jarjar-rules.txt
 /ios/Exponent/Supporting/EXBuildConstants.plist.json
 /ios/Exponent/Supporting/EXBuildConstants.plist
 /ios/Exponent/Supporting/GoogleService-Info.plist
+/ios/Exponent/Supporting/Info.plist.backup
 /android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
 /android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
 .kernel-ngrok-url

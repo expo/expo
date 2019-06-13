@@ -972,12 +972,11 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/spawn-async@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.4.0.tgz#39f7777bdee22e1f48d03898c9ed2f150a7f4cbd"
-  integrity sha512-jE9zSZ14eOfKxXs+WJZofweKtsAeuQiOpntsb+zp8Ti9/wk+9ZjKkffdld7UfANr8asmzuJYnEoVyL+hMy3SWw==
+"@expo/spawn-async@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.5.0.tgz#799827edd8c10ef07eb1a2ff9dcfe081d596a395"
+  integrity sha512-LB7jWkqrHo+5fJHNrLAFdimuSXQ2MQ4lA7SQW5bf/HbsXuV2VrT/jN/M8f/KoWt0uJMGN4k/j7Opx4AvOOxSew==
   dependencies:
-    "@types/cross-spawn" "^6.0.0"
     cross-spawn "^6.0.5"
 
 "@expo/webpack-config@^0.5.6":
@@ -1409,13 +1408,6 @@
   version "3.4.32"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.32.tgz#aa0e9616b9435ccad02bc52b5b454ffc2c70ba28"
   integrity sha512-4r8qa0quOvh7lGD0pre62CAb1oni1OO6ecJLGCezTmhQ8Fz50Arx9RUszryR8KlgK6avuSXvviL6yWyViQABOg==
-  dependencies:
-    "@types/node" "*"
-
-"@types/cross-spawn@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@types/cross-spawn/-/cross-spawn-6.0.0.tgz#320aaf1d1a12979f1b84fe7a5590a7e860bf3a80"
-  integrity sha512-evp2ZGsFw9YKprDbg8ySgC9NA15g3YgiI8ANkGmKKvvi0P2aDGYLPxQIC5qfeKNUOe3TjABVGuah6omPRpIYhg==
   dependencies:
     "@types/node" "*"
 

@@ -98,15 +98,16 @@ android {
 import org.apache.tools.ant.taskdefs.condition.Os
 
 task generateDynamicMacros(type: Exec) {
-  environment "EXPO_ANDROID_GRADLE_TASK_NAMES", "${gradle.startParameter.taskNames}"
+  def configuration = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") } ? "release" : "debug"
+
+  workingDir '../../tools/expotools/bin'
+
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    // This gets run from the 'app' directory
-    workingDir '../../tools-public'
-    commandLine 'cmd.exe', '/c', 'generate-dynamic-macros-cli.js --buildConstantsPath ./src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java --platform android'
+    commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
   } else {
     // NOTE(brentvatne): this is a common install path for node
     environment 'PATH', "${environment.PATH}:/usr/local/bin"
-    commandLine '../../tools-public/generate-dynamic-macros-android.sh'
+    commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
   }
 }
 
