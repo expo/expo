@@ -236,7 +236,7 @@ NS_SWIFT_NAME(InstanceID)
  *                          passed to the UIApplicationDelegate's
  *                          `didRegisterForRemoteNotificationsWithDeviceToken` method.
  *                          The value for `apns_sandbox` should be a boolean (or an
- *                          NSNumber representing a BOOL in Objective C) set to true if
+ *                          NSNumber representing a BOOL in Objective-C) set to true if
  *                          your app is a debug build, which means that the APNs
  *                          device token is for the sandbox environment. It should be
  *                          set to false otherwise. If the `apns_sandbox` key is not

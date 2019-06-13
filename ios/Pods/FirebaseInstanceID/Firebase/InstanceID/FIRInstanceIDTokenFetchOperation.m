@@ -137,7 +137,6 @@ NSString *const kFIRInstanceIDFirebaseUserAgentKey = @"X-firebase-client";
     return;
   }
   NSDictionary *parsedResponse = [self parseFetchTokenResponse:dataResponse];
-  _FIRInstanceIDDevAssert(parsedResponse.count, @"Invalid registration response");
 
   if ([parsedResponse[@"token"] length]) {
     [self finishWithResult:FIRInstanceIDTokenOperationSucceeded

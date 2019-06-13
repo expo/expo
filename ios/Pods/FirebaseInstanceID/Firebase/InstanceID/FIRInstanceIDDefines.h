@@ -45,26 +45,3 @@
 #endif
 
 #endif
-
-// Debug Assert
-#ifndef _FIRInstanceIDDevAssert
-// we directly invoke the NSAssert handler so we can pass on the varargs
-// (NSAssert doesn't have a macro we can use that takes varargs)
-#if !defined(NS_BLOCK_ASSERTIONS)
-#define _FIRInstanceIDDevAssert(condition, ...)                                                   \
-  do {                                                                                            \
-    if (!(condition)) {                                                                           \
-      [[NSAssertionHandler currentHandler]                                                        \
-          handleFailureInFunction:(NSString *)[NSString stringWithUTF8String:__PRETTY_FUNCTION__] \
-                             file:(NSString *)[NSString stringWithUTF8String:__FILE__]            \
-                       lineNumber:__LINE__                                                        \
-                      description:__VA_ARGS__];                                                   \
-    }                                                                                             \
-  } while (0)
-#else  // !defined(NS_BLOCK_ASSERTIONS)
-#define _FIRInstanceIDDevAssert(condition, ...) \
-  do {                                          \
-  } while (0)
-#endif  // !defined(NS_BLOCK_ASSERTIONS)
-
-#endif  // _FIRInstanceIDDevAssert
