@@ -2,7 +2,7 @@
 title: Customizing Webpack
 ---
 
-When you run `expo start --web` or `expo build:web` the CLI will check to see if your project has a `webpack.config.js` in the root directory. If the project doesn't then Expo will continue it's process with the default `@expo/webpack-config` (preferred).
+When you run `expo start --web` or `expo build:web` the CLI will check to see if your project has a `webpack.config.js` in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
 
 > This is akin to `react-scripts` & `create-react-app`.
 
