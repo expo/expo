@@ -103,13 +103,13 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
 }
 
 UM_EXPORT_METHOD_AS(finishTransactionAsync,
-                    finishTransactionAsync:(NSString *)purchaseToken
-                    consume:(BOOL)consume // ignore
+                    finishTransactionAsync:(NSString *)transactionId
+                    consume:(BOOL)consume // ignore on iOS
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  SKPaymentTransaction *transaction = _pendingTransactions[purchaseToken];
-  _pendingTransactions[purchaseToken] = nil;
+  SKPaymentTransaction *transaction = _pendingTransactions[transactionId];
+  _pendingTransactions[transactionId] = nil;
   if (transaction != nil) {
     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
   }
@@ -117,7 +117,7 @@ UM_EXPORT_METHOD_AS(finishTransactionAsync,
 }
 
 UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
-                    getPurchaseHistoryAsync:(BOOL)refresh // ignore
+                    getPurchaseHistoryAsync:(BOOL)refresh // ignore on iOS
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -355,12 +355,12 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   return @{
            @"acknowledged": @(acknowledged),
            @"productId": transaction.payment.productIdentifier,
-           @"purchaseToken": transaction.transactionIdentifier,
+           @"orderId": transaction.transactionIdentifier,
            @"purchaseState": @(transaction.transactionState),
            @"purchaseTime": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
            @"transactionReceipt": [receiptData base64EncodedStringWithOptions:0],
            @"originalPurchaseTime": originalTransactionTime,
-           @"originalPurchaseToken": originalTransactionId
+           @"originalOrderId": originalTransactionId
            };
 }
 

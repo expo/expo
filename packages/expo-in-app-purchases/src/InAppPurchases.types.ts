@@ -26,7 +26,7 @@ export enum ErrorCode {
   ITEM_NOT_OWNED = 9,
   CLOUD_SERVICE = 10,
   PRIVACY_UNACKNOWLEDGED = 11,
-  UNATHORIZED_REQUEST = 12,
+  UNAUTHORIZED_REQUEST = 12,
   INVALID_IDENTIFIER = 13,
   MISSING_PARAMS = 14,
 }
@@ -34,14 +34,14 @@ export enum ErrorCode {
 export interface Purchase {
   acknowledged: boolean,
   productId: string,
-  purchaseToken: string
   purchaseState: number,
   purchaseTime: number,
-  orderId?: string, // Android only
+  orderId: string,
   packageName?: string, // Android only
-  transactionReceipt?: string // iOS only
+  purchaseToken?: string // Android only
+  originalOrderId?: string // iOS only
   originalPurchaseTime?: string // iOS only
-  originalPurchaseToken?: string // iOS only
+  transactionReceipt?: string // iOS only
 }
 export interface ItemDetails {
   description: string,

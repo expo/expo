@@ -19,7 +19,7 @@ export var ErrorCode;
     ErrorCode[ErrorCode["ITEM_NOT_OWNED"] = 9] = "ITEM_NOT_OWNED";
     ErrorCode[ErrorCode["CLOUD_SERVICE"] = 10] = "CLOUD_SERVICE";
     ErrorCode[ErrorCode["PRIVACY_UNACKNOWLEDGED"] = 11] = "PRIVACY_UNACKNOWLEDGED";
-    ErrorCode[ErrorCode["UNATHORIZED_REQUEST"] = 12] = "UNATHORIZED_REQUEST";
+    ErrorCode[ErrorCode["UNAUTHORIZED_REQUEST"] = 12] = "UNAUTHORIZED_REQUEST";
     ErrorCode[ErrorCode["INVALID_IDENTIFIER"] = 13] = "INVALID_IDENTIFIER";
     ErrorCode[ErrorCode["MISSING_PARAMS"] = 14] = "MISSING_PARAMS";
 })(ErrorCode || (ErrorCode = {}));

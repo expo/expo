@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'io.fabric.tools:gradle:1.26.1'
+    classpath 'io.fabric.tools:gradle:1.29.0'
   }
 }
 apply plugin: 'com.android.application'

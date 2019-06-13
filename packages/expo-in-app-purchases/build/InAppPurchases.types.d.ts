@@ -23,21 +23,21 @@ export declare enum ErrorCode {
     ITEM_NOT_OWNED = 9,
     CLOUD_SERVICE = 10,
     PRIVACY_UNACKNOWLEDGED = 11,
-    UNATHORIZED_REQUEST = 12,
+    UNAUTHORIZED_REQUEST = 12,
     INVALID_IDENTIFIER = 13,
     MISSING_PARAMS = 14
 }
 export interface Purchase {
     acknowledged: boolean;
     productId: string;
-    purchaseToken: string;
     purchaseState: number;
     purchaseTime: number;
-    orderId?: string;
+    orderId: string;
     packageName?: string;
-    transactionReceipt?: string;
+    purchaseToken?: string;
+    originalOrderId?: string;
     originalPurchaseTime?: string;
-    originalPurchaseToken?: string;
+    transactionReceipt?: string;
 }
 export interface ItemDetails {
     description: string;

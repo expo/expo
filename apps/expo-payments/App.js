@@ -59,7 +59,7 @@ export default class App extends React.Component {
         for (const purchase of results) {
           console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
-            finishTransactionAsync(purchase.purchaseToken, true);
+            finishTransactionAsync(purchase, true);
           }
         }
       } else if (responseCode === ResponseCode.USER_CANCELED) {
@@ -102,16 +102,17 @@ export default class App extends React.Component {
   }
 
   renderHistoryRecord(record) {
+    const key = Platform.OS === 'android' ? record.purchaseToken : record.orderId;
     return (
-      <View key={record.purchaseToken}>
+      <View key={key}>
         <Text style={styles.itemTitle}>Product ID: {record.productId}</Text>
-        <Text>Purchase Token: {record.purchaseToken}</Text>
         <Text>Acknowledged: {record.acknowledged ? 'True' : 'False'}</Text>
         <Text>Purchase State: {record.purchaseState}</Text>
         <Text>Purchase Time: {record.purchaseTime}</Text>
+        <Text>Order ID: {record.orderId}</Text>
+        {Platform.OS === 'android' ? <Text>Purchase Token: {record.purchaseToken}</Text> : null}
         {Platform.OS === 'android' ? <Text>Package Name: {record.packageName}</Text> : null}
-        {Platform.OS === 'android' ? <Text>Order ID: {record.orderId}</Text> : null}
-        {Platform.OS === 'ios' ? <Text>Original Purchase Token: {record.originalPurchaseToken}</Text> : null}
+        {Platform.OS === 'ios' ? <Text>Original Order ID: {record.originalOrderId}</Text> : null}
         {Platform.OS === 'ios' ? <Text>Original Purchase Time: {record.originalPurchaseTime}</Text> : null}
       </View>
     );

@@ -48,11 +48,12 @@ export async function setPurchaseListener(callback) {
         callback(result);
     });
 }
-export async function finishTransactionAsync(purchaseToken, consumeItem) {
+export async function finishTransactionAsync(purchase, consumeItem) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
-    await ExpoInAppPurchases.finishTransactionAsync(purchaseToken, consumeItem);
+    const transactionId = Platform.OS === 'android' ? purchase.purchaseToken : purchase.orderId;
+    await ExpoInAppPurchases.finishTransactionAsync(transactionId, consumeItem);
 }
 export async function getBillingResponseCodeAsync() {
     if (!connected) {

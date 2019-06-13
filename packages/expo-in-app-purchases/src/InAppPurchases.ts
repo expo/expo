@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
-import { QueryResponse, ResponseCode, ErrorCode } from './InAppPurchases.types';
+import { QueryResponse, Purchase, ResponseCode, ErrorCode } from './InAppPurchases.types';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 
 const errors = {
@@ -66,12 +66,13 @@ export async function setPurchaseListener(callback: (result) => void): Promise<v
   });
 }
 
-export async function finishTransactionAsync(purchaseToken: string, consumeItem: boolean): Promise<void> {
+export async function finishTransactionAsync(purchase: Purchase, consumeItem: boolean): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  await ExpoInAppPurchases.finishTransactionAsync(purchaseToken, consumeItem);
+  const transactionId = Platform.OS === 'android' ? purchase.purchaseToken : purchase.orderId;
+  await ExpoInAppPurchases.finishTransactionAsync(transactionId, consumeItem);
 }
 
 export async function getBillingResponseCodeAsync(): Promise<number> {
