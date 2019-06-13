@@ -20,8 +20,7 @@ If you create a new Webpack config or make any changes to it you'll need to rest
 ```ts
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 
-// Expo CLI will await this method so let's future proof
-// it by using await on the default config.
+// Expo CLI will await this method so you can optionally return a promise.
 module.exports = async function(env, argv) {
   const config = await createExpoWebpackConfigAsync(env, argv);
   // If you want to add a new alias to the config.
