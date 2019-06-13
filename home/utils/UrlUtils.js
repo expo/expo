@@ -44,3 +44,4 @@ export default {
     return url.format(components);
   },
 };
+
