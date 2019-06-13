@@ -17,3 +17,7 @@ export function getExpotoolsDir(): string {
 export function getBinDir(): string {
   return path.join(getExpotoolsDir(), 'bin');
 }
+
+export function getPackagesDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'packages');
+}
