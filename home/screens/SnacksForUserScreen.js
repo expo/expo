@@ -1,6 +1,6 @@
 /* @flow */
-import React from 'react';
 
+import React from 'react';
 import MySnacksListContainer from '../containers/MySnacksListContainer';
 import OtherUserSnackListContainer from '../containers/OtherUserSnackListContainer';
 
