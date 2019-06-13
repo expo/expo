@@ -56,7 +56,7 @@ export async function purchaseItemAsync(itemId: string, oldItem?: string): Promi
   await ExpoInAppPurchases.purchaseItemAsync(...args);
 }
 
-export async function onPurchase(callback: (result) => void): Promise<void> {
+export async function setPurchaseListener(callback: (result) => void): Promise<void> {
   if (purchaseUpdatedSubscription) {
     purchaseUpdatedSubscription.remove();
   }

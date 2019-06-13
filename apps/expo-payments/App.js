@@ -18,7 +18,7 @@ import {
   finishTransactionAsync,
   disconnectAsync,
   ResponseCode,
-  onPurchase,
+  setPurchaseListener,
   ErrorCode,
 } from 'expo-in-app-purchases';
 
@@ -54,7 +54,7 @@ export default class App extends React.Component {
     }
 
     // Set purchase listener
-    onPurchase(({ responseCode, results, errorCode }) => {
+    setPurchaseListener(({ responseCode, results, errorCode }) => {
       if (responseCode === ResponseCode.OK) {
         for (const purchase of results) {
           console.log(`Successfully purchased ${purchase.productId}`);

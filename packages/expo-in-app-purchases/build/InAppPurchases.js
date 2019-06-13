@@ -40,7 +40,7 @@ export async function purchaseItemAsync(itemId, oldItem) {
     const args = Platform.OS === 'android' ? [itemId, oldItem] : [itemId];
     await ExpoInAppPurchases.purchaseItemAsync(...args);
 }
-export async function onPurchase(callback) {
+export async function setPurchaseListener(callback) {
     if (purchaseUpdatedSubscription) {
         purchaseUpdatedSubscription.remove();
     }
