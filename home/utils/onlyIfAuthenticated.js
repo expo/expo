@@ -1,7 +1,7 @@
 /* @flow */
+
 import React from 'react';
 import { connect } from 'react-redux';
-
 import isUserAuthenticated from './isUserAuthenticated';
 
 @connect(data => Authenticated.getDataProps(data))
