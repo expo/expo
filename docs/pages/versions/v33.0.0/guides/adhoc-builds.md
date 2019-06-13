@@ -154,7 +154,7 @@ The administrator of the Apple Enterprise account will need to make you an App M
 
 ## App crashes / App icon is blacked out
 
-If your app icon is blacked out like [this](/static/images/adhoc-builds-black-icon.jpg) or if it crashes at the splash screen like [this](/static/images/adhoc-builds-app-crash.gif), check that your Adhoc provisioning profile is still valid. You can do this by navigating to the Apple Development Portal [profile list](https://developer.apple.com/account/resources/profiles/list). The Expo client Ad hoc profile should be prefixed with `*[expo]` for a bundle identifier that starts with `dev.expo.client`.
+If your app icon is blacked out like [this](/static/images/adhoc-builds-black-icon.jpg) or if it crashes at the splash screen like [this](/static/images/adhoc-builds-app-crash.gif), check that your ad hoc provisioning profile is still valid. You can do this by navigating to the Apple Development Portal [profile list](https://developer.apple.com/account/resources/profiles/list). The Expo client ad hoc profile should be prefixed with `*[expo]` for a bundle identifier that starts with `dev.expo.client`.
 
 An invalid profile can be caused by revoking the distribution certificate or disabling the iOS devices associated with the profile. You can fix this by associating valid certificates and devices to the profile and pressing `Save` from the Apple Development Portal interface.
 
@@ -168,26 +168,26 @@ An invalid profile can be caused by revoking the distribution certificate or dis
 
 ### Creating a new certificate (recommended)
 
-This will create a new iOS distribution certificate with a password. This option won't be available if you've already reached Apple's limits of 2 active certificates in your development account.
+This will create a new iOS distribution certificate with a password. This option won't be available if you've already reached Apple's limit of two active certificates in your developer account.
 
 ### Revoking existing certificates
 
-Revoking an existing distribution certificate associated with an App is safe if:
+Revoking an existing distribution certificate associated with an app is safe if:
 
-- Your App is distributed through the App Store and you are **NOT** on an Apple Enterprise account.
+- Your app is distributed through the App Store and you are **NOT** on an Apple Enterprise account.
 
-Revoking an existing distribution certificate associated with an App is **NOT** safe if:
+Revoking an existing distribution certificate associated with an app is **NOT** safe if:
 
-- Your App is distributed through the App Store and you are on an Apple Enterprise account.
-- Your App is distributed Ad hoc (distributed outside of the App Store for testing purposes).
+- Your app is distributed through the App Store and you are on an Apple Enterprise account.
+- Your app is distributed ad hoc (distributed outside of the App Store for testing purposes).
 
-An App Store App gets re-signed with an Apple certificate when it goes on the store with non Enterprise accounts. Revoking the certificate therefore won't affect it. Enterprise Apps and Apps distributed Ad hoc use the original certificate, which means revoking it will cause the App to stop functioning on all devices it is installed on.
+An App Store app gets re-signed with an Apple certificate when it goes on the store with non-Enterprise accounts. Revoking the certificate therefore won't affect it. Enterprise Apps and Apps distributed ad hoc use the original certificate, which means revoking it will cause the app to stop functioning on all devices it is installed on.
 
 ### Uploading existing certificate
 
-If you have a password protected certificate, you can provide the path to your `.p12` file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
+If you have a password-protected certificate, you can provide the path to your `.p12` file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
 
-**Note:** this guide recommends leaving the P12's password blank, but a P12 password is required to upload your own certificate to Expo's service. Please enter a password when prompted.
+**Note:** this guide recommends leaving the P12's password blank, but a **P12 password is required** to upload your own certificate to Expo's service. Please enter a password when prompted.
 
 ## Push key CLI options
 
@@ -195,7 +195,7 @@ If you have a password protected certificate, you can provide the path to your `
 
 ### Creating a new push key (recommended)
 
-This will create a new push key. This option won't be available if you've already reached Apple's limits of 2 active keys in your development account.
+This will create a new push key. This option won't be available if you've already reached Apple's limit of two active keys in your developer account.
 
 ### Revoking existing push keys
 
