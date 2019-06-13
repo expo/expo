@@ -195,7 +195,7 @@ If you have a password-protected certificate, you can provide the path to your `
 
 ### Creating a new push key (recommended)
 
-This will create a new push key. This option won't be available if you've already reached Apple's limits of 2 active keys in your development account.
+This will create a new push key. This option won't be available if you've already reached Apple's limit of two active keys in your developer account.
 
 ### Revoking existing push keys
 
