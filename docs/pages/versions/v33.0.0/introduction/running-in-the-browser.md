@@ -106,7 +106,7 @@ To use Expo for both web and native:
 - Delete the `index.js` because `AppEntry` uses the `App.js` file in your root directory as the main component.
   - You don't need to invoke `ReactDOM.render` or `AppRegistry.registerComponent` because `AppEntry` will do this for you for each platform.
 
-Are we missing something here? Let us know on our [forums](forums) or on our [feature requests board](canny).
+Are we missing something here? Let us know on our [forums][forums] or on our [feature requests board][canny].
 
 [rnw]: https://github.com/necolas/react-native-web/
 [forums]: http://forums.expo.io/
