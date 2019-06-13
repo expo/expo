@@ -10,10 +10,10 @@
     "templates"
   ],
   "scripts": {
-    "build": "tsc --watch",
+    "build": "tsc",
+    "watch": "tsc --watch",
     "clean": "rm -rf build",
-    "et": "bin/expotools.js",
-    "prepare": "tsc"
+    "et": "bin/expotools.js"
   },
   "bin": {
     "et": "bin/expotools.js",
