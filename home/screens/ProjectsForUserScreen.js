@@ -1,6 +1,6 @@
 /* @flow */
-import React from 'react';
 
+import React from 'react';
 import MyProjectsListContainer from '../containers/MyProjectsListContainer';
 import OtherUserProjectListContainer from '../containers/OtherUserProjectListContainer';
 
