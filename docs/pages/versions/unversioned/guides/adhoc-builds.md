@@ -168,7 +168,7 @@ An invalid profile can be caused by revoking the distribution certificate or dis
 
 ### Creating a new certificate (recommended)
 
-This will create a new iOS distribution certificate with a password. This option won't be available if you've already reached Apple's limits of 2 active certificates in your development account.
+This will create a new iOS distribution certificate with a password. This option won't be available if you've already reached Apple's limit of two active certificates in your developer account.
 
 ### Revoking existing certificates
 
