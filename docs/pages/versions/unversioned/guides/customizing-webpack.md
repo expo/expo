@@ -53,4 +53,4 @@ Deleting any of these files will cause Expo CLI to fall back to their respective
 
 - Customizing the favicon icon.
 - Adding third-party API code to the `<head/>` in your `index.html`.
-- Changing the caching policy in the `serve.json`.
+- Changing the caching policy in the `serve.json` file
