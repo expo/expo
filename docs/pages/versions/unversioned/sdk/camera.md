@@ -43,7 +43,7 @@ export default class CameraExample extends React.Component {
 
   render() {
     const { hasCameraPermission } = this.state;
-    if (hasCameraPermission === null) {
+    if (hasCameraPermission === null || hasCameraPermission === undefined) {
       return <View />;
     } else if (hasCameraPermission === false) {
       return <Text>No access to camera</Text>;
