@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <GoogleMobileVision/GoogleMobileVision.h>
 #import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
 
 @interface EXFaceDetectorManager : NSObject <UMFaceDetectorManager>

@@ -78,7 +78,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI31_0_0EXConstantsInterface"
     ss.dependency         "ABI31_0_0EXContacts"
     ss.dependency         "ABI31_0_0EXCore"
-#    ss.dependency         "ABI31_0_0EXFaceDetector"
+    ss.dependency         "ABI31_0_0EXFaceDetector"
     ss.dependency         "ABI31_0_0EXFaceDetectorInterface"
     ss.dependency         "ABI31_0_0EXFileSystem"
     ss.dependency         "ABI31_0_0EXFileSystemInterface"

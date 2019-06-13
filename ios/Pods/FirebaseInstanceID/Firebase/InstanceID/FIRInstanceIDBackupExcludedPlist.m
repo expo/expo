@@ -16,6 +16,7 @@
 
 #import "FIRInstanceIDBackupExcludedPlist.h"
 
+#import "FIRInstanceIDDefines.h"
 #import "FIRInstanceIDLogger.h"
 
 typedef enum : NSUInteger {
@@ -62,6 +63,9 @@ typedef enum : NSUInteger {
 
   // Successfully wrote contents -- change the in-memory contents
   self.cachedPlistContents = [dict copy];
+
+  _FIRInstanceIDDevAssert([[NSFileManager defaultManager] fileExistsAtPath:path],
+                          @"Error writing data to non-backed up plist %@.plist", self.fileName);
 
   NSURL *URL = [NSURL fileURLWithPath:path];
   if (error) {

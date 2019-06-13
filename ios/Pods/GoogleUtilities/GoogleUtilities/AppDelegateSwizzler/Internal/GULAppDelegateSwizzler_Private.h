@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (GULMutableDictionary *)interceptors;
 
+#ifdef GUL_APP_DELEGATE_TESTING  // Methods only used in tests.
+
 /** Deletes all the registered interceptors. */
 + (void)clearInterceptors;
 
@@ -48,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
  *  @return The original app delegate instance that was proxied.
  */
 + (id<GULApplicationDelegate>)originalDelegate;
+
+#endif  // GUL_APP_DELEGATE_TESTING
 
 @end
 

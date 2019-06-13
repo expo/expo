@@ -16,6 +16,8 @@
 
 #import "FIRInstanceIDVersionUtilities.h"
 
+#import "FIRInstanceIDDefines.h"
+
 // Convert the macro to a string
 #define STR(x) STR_EXPAND(x)
 #define STR_EXPAND(x) #x
@@ -39,6 +41,7 @@ void FIRInstanceIDParseCurrentLibraryVersion() {
     // Parse versions
     // major, minor, patch[-beta#]
     allVersions = [daylightVersion componentsSeparatedByString:kSemanticVersioningSeparator];
+    _FIRInstanceIDDevAssert(allVersions.count == 3, @"Invalid versioning of FIRInstanceID library");
     if (allVersions.count == 3) {
       majorVersion = [allVersions[0] intValue];
       minorVersion = [allVersions[1] intValue];
@@ -46,6 +49,9 @@ void FIRInstanceIDParseCurrentLibraryVersion() {
       // Parse patch and beta versions
       NSArray *patchAndBetaVersion =
           [allVersions[2] componentsSeparatedByString:kBetaVersionPrefix];
+      _FIRInstanceIDDevAssert(patchAndBetaVersion.count <= 2,
+                              @"Invalid versioning of FIRInstanceID library");
+
       if (patchAndBetaVersion.count == 2) {
         patchVersion = [patchAndBetaVersion[0] intValue];
         betaVersion = [patchAndBetaVersion[1] intValue];

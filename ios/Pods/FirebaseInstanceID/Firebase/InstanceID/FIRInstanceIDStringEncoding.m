@@ -1,3 +1,5 @@
+#import "FIRInstanceIDDefines.h"
+
 //
 //  FIRInstanceIDStringEncoding.m
 //
@@ -20,8 +22,6 @@
 // a CocoaPods GTM dependency. Hence we use our own version of StringEncoding.
 
 #import "FIRInstanceIDStringEncoding.h"
-
-#import "FIRInstanceIDLogger.h"
 
 enum { kUnknownChar = -1, kPaddingChar = -2, kIgnoreChar = -3 };
 
@@ -138,11 +138,7 @@ static inline int lcm(int a, int b) {
     while (outPos < outLen) outBuf[outPos++] = paddingChar_;
   }
 
-  if (outPos != outLen) {
-    FIRInstanceIDLoggerError(kFIRInstanceIDStringEncodingBufferUnderflow,
-                             @"Underflowed output buffer");
-    return nil;
-  }
+  _FIRInstanceIDDevAssert(outPos == outLen, @"Underflowed output buffer");
   [outData setLength:outPos];
 
   return [[NSString alloc] initWithData:outData encoding:NSASCIIStringEncoding];
@@ -197,9 +193,7 @@ static inline int lcm(int a, int b) {
   }
 
   // Shorten buffer if needed due to padding chars
-  if (outPos > outLen) {
-    FIRInstanceIDLoggerError(kFIRInstanceIDStringEncodingBufferOverflow, @"Overflowed buffer");
-  }
+  _FIRInstanceIDDevAssert(outPos <= outLen, @"Overflowed buffer");
   [outData setLength:outPos];
 
   return outData;

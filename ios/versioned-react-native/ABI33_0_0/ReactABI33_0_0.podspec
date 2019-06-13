@@ -105,7 +105,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI33_0_0EXCrypto"
     ss.dependency         "ABI33_0_0EXDocumentPicker"
     ss.dependency         "ABI33_0_0EXFacebook"
-#    ss.dependency         "ABI33_0_0EXFaceDetector"
+    ss.dependency         "ABI33_0_0EXFaceDetector"
     ss.dependency         "ABI33_0_0EXFileSystem"
     ss.dependency         "ABI33_0_0EXFont"
     ss.dependency         "ABI33_0_0EXGL"

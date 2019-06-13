@@ -18,6 +18,7 @@
 
 #import "FIRInstanceIDBackupExcludedPlist.h"
 #import "FIRInstanceIDConstants.h"
+#import "FIRInstanceIDDefines.h"
 #import "FIRInstanceIDKeyPair.h"
 #import "FIRInstanceIDKeyPairUtilities.h"
 #import "FIRInstanceIDKeychain.h"
@@ -44,6 +45,7 @@ NSString *const kFIRInstanceIDKeyPairSubType = @"";
 
 // Query the key with NSData format
 NSData *FIRInstanceIDKeyDataWithTag(NSString *tag) {
+  _FIRInstanceIDDevAssert([tag length], @"Invalid tag for keychain specified");
   if (![tag length]) {
     return NULL;
   }
@@ -57,6 +59,7 @@ NSData *FIRInstanceIDKeyDataWithTag(NSString *tag) {
 
 // Query the key given a tag
 SecKeyRef FIRInstanceIDCachedKeyRefWithTag(NSString *tag) {
+  _FIRInstanceIDDevAssert([tag length], @"Invalid tag for keychain specified");
   if (!tag.length) {
     return NULL;
   }
@@ -296,6 +299,8 @@ NSString *FIRInstanceIDCreationTimeKeyWithSubtype(NSString *subtype) {
 + (FIRInstanceIDKeyPair *)keyPairForPrivateKeyTag:(NSString *)privateKeyTag
                                      publicKeyTag:(NSString *)publicKeyTag
                                             error:(NSError *__autoreleasing *)error {
+  _FIRInstanceIDDevAssert([privateKeyTag length] && [publicKeyTag length],
+                          @"Invalid tags for keypair");
   if (![privateKeyTag length] || ![publicKeyTag length]) {
     if (error) {
       *error = [NSError errorWithFIRInstanceIDErrorCode:kFIRInstanceIDErrorCodeInvalidKeyPairTags];

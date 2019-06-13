@@ -258,6 +258,8 @@ static FIRInstanceID *gInstanceID;
                             scope:(NSString *)scope
                           options:(NSDictionary *)options
                           handler:(FIRInstanceIDTokenHandler)handler {
+  _FIRInstanceIDDevAssert(handler != nil && [authorizedEntity length] && [scope length],
+                          @"Invalid authorizedEntity or scope to new token");
   if (!handler) {
     FIRInstanceIDLoggerError(kFIRInstanceIDMessageCodeInstanceID000,
                              kFIRInstanceIDInvalidNilHandlerError);
@@ -365,6 +367,9 @@ static FIRInstanceID *gInstanceID;
 - (void)deleteTokenWithAuthorizedEntity:(NSString *)authorizedEntity
                                   scope:(NSString *)scope
                                 handler:(FIRInstanceIDDeleteTokenHandler)handler {
+  _FIRInstanceIDDevAssert(handler != nil && [authorizedEntity length] && [scope length],
+                          @"Invalid authorizedEntity or scope to delete token");
+
   if (!handler) {
     FIRInstanceIDLoggerError(kFIRInstanceIDMessageCodeInstanceID001,
                              kFIRInstanceIDInvalidNilHandlerError);
@@ -457,6 +462,8 @@ static FIRInstanceID *gInstanceID;
 #pragma mark - Identity
 
 - (void)getIDWithHandler:(FIRInstanceIDHandler)handler {
+  _FIRInstanceIDDevAssert(handler, @"Invalid nil handler to getIdentity");
+
   if (!handler) {
     FIRInstanceIDLoggerError(kFIRInstanceIDMessageCodeInstanceID003,
                              kFIRInstanceIDInvalidNilHandlerError);
@@ -490,6 +497,8 @@ static FIRInstanceID *gInstanceID;
 }
 
 - (void)deleteIDWithHandler:(FIRInstanceIDDeleteHandler)handler {
+  _FIRInstanceIDDevAssert(handler, @"Invalid nil handler to delete Identity");
+
   if (!handler) {
     FIRInstanceIDLoggerError(kFIRInstanceIDMessageCodeInstanceID004,
                              kFIRInstanceIDInvalidNilHandlerError);

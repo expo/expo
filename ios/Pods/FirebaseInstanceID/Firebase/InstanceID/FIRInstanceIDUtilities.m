@@ -23,6 +23,7 @@
 #import <GoogleUtilities/GULUserDefaults.h>
 #import "FIRInstanceID.h"
 #import "FIRInstanceIDConstants.h"
+#import "FIRInstanceIDDefines.h"
 #import "FIRInstanceIDLogger.h"
 
 // Convert the macro to a string

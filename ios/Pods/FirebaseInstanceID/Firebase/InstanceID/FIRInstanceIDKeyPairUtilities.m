@@ -18,6 +18,7 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
+#import "FIRInstanceIDDefines.h"
 #import "FIRInstanceIDKeyPair.h"
 #import "FIRInstanceIDLogger.h"
 #import "FIRInstanceIDStringEncoding.h"

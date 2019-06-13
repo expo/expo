@@ -17,6 +17,7 @@
 #import "FIRInstanceIDTokenOperation.h"
 
 #import "FIRInstanceIDCheckinPreferences.h"
+#import "FIRInstanceIDDefines.h"
 #import "FIRInstanceIDKeyPair.h"
 #import "FIRInstanceIDKeyPairUtilities.h"
 #import "FIRInstanceIDLogger.h"
@@ -132,6 +133,7 @@ static NSString *const kFIRInstanceIDParamFCMLibVersion = @"X-cliv";
 
   // Quickly validate whether or not the operation has all it needs to begin
   BOOL checkinfoAvailable = [self.checkinPreferences hasCheckinInfo];
+  _FIRInstanceIDDevAssert(checkinfoAvailable, @"Cannot fetch token invalid checkin state");
   if (!checkinfoAvailable) {
     FIRInstanceIDErrorCode errorCode = kFIRInstanceIDErrorCodeRegistrarFailedToCheckIn;
     [self finishWithResult:FIRInstanceIDTokenOperationError
