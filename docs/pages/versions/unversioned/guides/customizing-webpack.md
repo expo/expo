@@ -8,7 +8,7 @@ When you run `expo start --web` or `expo build:web` the CLI will check to see if
 
 If you need to edit the config the best way to do this is by running `expo customize:web` and selecting the `webpack.config.js` option.
 This will install `@expo/webpack-config` as a devDependency and create a template `webpack.config.js` into your project.
-You can now make changes to the default config then return it for the CLI to use.
+You can now make changes to a config object based on the default config and return it for Expo CLI to use.
 Deleting the config will cause Expo to fallback on the default again.
 
 If you create a new Webpack config or make any changes to it you'll need to restart your Webpack dev server with `expo start --web`.
