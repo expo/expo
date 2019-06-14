@@ -1,11 +1,2 @@
-import CodedError from './CodedError';
-export { CodedError };
-/**
- * A class for errors to be thrown when a property is accessed which is
- * unavailable, unsupported, or not currently implemented on the running
- * platform.
- */
-export declare class UnavailabilityError extends CodedError {
-    constructor(moduleName: string, propertyName: string);
-}
+export { CodedError, UnavailabilityError } from '@unimodules/react-native-adapter';
 export { default as deprecate } from './deprecate';
