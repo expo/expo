@@ -2,13 +2,13 @@
 title: InAppPurchases
 ---
 
-An API to accept payments for in-app products. Internally relies on the [Google Play Billing](https://developer.android.com/google/play/billing/billing_library_overview) library on Android and [Storekit](https://developer.apple.com/documentation/storekit?language=objc) framework on iOS.
+An API to accept payments for in-app products. Internally, this relies on the [Google Play Billing](https://developer.android.com/google/play/billing/billing_library_overview) library on Android and the [Storekit](https://developer.apple.com/documentation/storekit?language=objc) framework on iOS.
 
 ## Installation
 
 This module is currently only available in the [bare](../../introduction/managed-vs-bare/#bare-workflow) workflow.
 
-Note that in-app purchases require physical devices to work and therefore cannot be tested on simulators.
+> Note that in-app purchases require physical devices to work and therefore **cannot be tested on simulators**.
 
 ## Setup
 
@@ -16,7 +16,7 @@ Note that in-app purchases require physical devices to work and therefore cannot
 
 In order to use the In-App Purchases API on iOS, you’ll need to sign the [Paid Applications Agreement](https://help.apple.com/app-store-connect/#/devb6df5ee51) and set up your banking and tax information. You also need to enable the [In-App Purchases capability](https://help.apple.com/xcode/mac/current/#/dev88ff319e7) for your app in Xcode.
 
-Next, create an entry for your app in [App Store Connect](https://appstoreconnect.apple.com/) and configure your in-app purchases, including details such as name, pricing, and description that highlight the features and functionality of your in-app products. Make sure each product's status says `Ready to Submit`, otherwise it will not be queryable from within your app while you are testing. Be sure to add any necessary metadata to do so. You do not need to actually submit your app or its products to test purchases in sandbox mode.
+Next, create an entry for your app in [App Store Connect](https://appstoreconnect.apple.com/) and configure your in-app purchases, including details (such as name, pricing, and description) that highlight the features and functionality of your in-app products. Make sure each product's status says `Ready to Submit`, otherwise it will not be queryable from within your app when you are testing. Be sure to add any necessary metadata to do so including uploading a screenshot (this can be anything when you're testing) and review notes. You do not need to actually submit your app or its products to test purchases in sandbox mode.
 
 Now you can create a [sandbox account](https://help.apple.com/app-store-connect/#/dev8b997bee1) to test in-app purchases before you make your app available.
 
@@ -60,7 +60,7 @@ if (history.responseCode === ResponseCode.OK) {
 
 Retrieves the product details (price, description, title, etc) for each item that you inputted in the Google Play Console and App Store Connect. This queries both in-app products and subscriptions so there's no need to pass those in separately.
 
-Note that you must retrieve an item's details before you attempt to purchase it via `purchaseItemAsync` so this is a prerequisite to buying a product even if you have the item details bundled in your app or on your own servers.
+**You must** retrieve an item's details before you attempt to purchase it via `purchaseItemAsync`. This is a prerequisite to buying a product even if you have the item details bundled in your app or on your own servers.
 
 If any of the product IDs passed in are invalid and don't exist, you will not receive an `ItemDetails` object corresponding to that ID. For example, if you pass in four product IDs in but one of them has a typo, you will only get three response objects back.
 
@@ -93,7 +93,7 @@ if (responseCode === ResponseCode.OK) {
 
 ### `InAppPurchases.setPurchaseListener(callback: (result: QueryResponse) => void)`
 
-Sets a callback that handles incoming purchases. This must be set before any calls to `purchaseItemAsync` are made. Otherwise, those transactions will be lost. Remember to set the purchase listener globally, and not inside a specific screen, to ensure that you receive incomplete transactions, subscriptions, and deferred transactions.
+Sets a callback that handles incoming purchases. This must be set before any calls to `purchaseItemAsync` are made. Otherwise, those transactions will be lost. Remember to **set the purchase listener globally**, and not inside a specific screen, to ensure that you receive incomplete transactions, subscriptions, and deferred transactions.
 
 Purchases can either be instantiated by the user (via `purchaseItemAsync`) or they can come from subscription renewals or unfinished transactions on iOS (e.g. if your app exits before `finishTransactionAsync` was called).
 
@@ -157,6 +157,8 @@ if (responseCode === ResponseCode.OK) {
 
 Initiates the purchase flow to buy the item associated with this productId. This function is void and the result must be handled in the callback that you passed in to `setPurchaseListener`. This will display a prompt to the user which will allow them to either buy the item or cancel the purchase.
 
+Remember, you have to query an item's details via `getProductsAsync` and set the purchase listener before you attempt to buy an item.
+
 #### Arguments
 
 - **productId (_string_)** -- The product ID of the item you want to buy.
@@ -177,13 +179,16 @@ renderItem(item) {
         </View>
     );
 }
+
+// To replace a subscription on Android
+await purchaseItemAsync('gold_monthly', 'gold_yearly');
 ```
 
 ### `InAppPurchases.finishTransactionAsync(purchase: Purchase, consumeItem: boolean)`
 
 Marks a transaction as completed. This must be called on successful purchases only after you have successfully processed the transaction and unlocked the functionality purchased by the user.
 
-On Android, this will either "acknowledge" or "consume" the purchase depending on the value of `consumeItem`. Consuming a purchase allows it to be bought more than once. You cannot buy an item again until it's consumed. Both consuming and acknowledging let Google know that you are done processing the transaction. Acknowledging indicates that this is a one time purchase (e.g. premium upgrade), rather than a consumable. If you do not acknowledge or consume a purchase within three days, the user automatically receives a refund, and Google Play revokes the purchase.
+On Android, this will either "acknowledge" or "consume" the purchase depending on the value of `consumeItem`. Acknowledging indicates that this is a one time purchase (e.g. premium upgrade), whereas consuming a purchase allows it to be bought more than once. You cannot buy an item again until it's consumed. Both consuming and acknowledging let Google know that you are done processing the transaction. If you do not acknowledge or consume a purchase within three days, the user automatically receives a refund, and Google Play revokes the purchase.
 
 On iOS, this will mark the transaction as finished and prevent it from reappearing in the purchase listener callback. It will also let the user know their purchase was successful.
 
@@ -196,7 +201,7 @@ On iOS, this will mark the transaction as finished and prevent it from reappeari
 #### Example
 ```javascript
 if (!purchase.acknowledged) {
-    finishTransactionAsync(purchase, false); // or true for consumables
+    await finishTransactionAsync(purchase, false); // or true for consumables
 }
 ```
 
