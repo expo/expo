@@ -7,20 +7,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import abi32_0_0.expo.core.ModuleRegistry;
-import abi32_0_0.expo.core.interfaces.ExpoMethod;
-import abi32_0_0.expo.core.ExportedModule;
-import abi32_0_0.expo.core.Promise;
-import abi32_0_0.expo.core.interfaces.ModuleRegistryConsumer;
-import abi32_0_0.expo.modules.facedetector.tasks.FileFaceDetectionAsyncTask;
 import abi32_0_0.expo.modules.facedetector.tasks.FileFaceDetectionCompletionListener;
+import abi32_0_0.expo.modules.facedetector.tasks.FileFaceDetectionTask;
+import abi32_0_0.expo.core.ExportedModule;
+import abi32_0_0.expo.core.ModuleRegistry;
+import abi32_0_0.expo.core.Promise;
+import abi32_0_0.expo.core.interfaces.ExpoMethod;
+import abi32_0_0.expo.interfaces.facedetector.FaceDetector;
+import abi32_0_0.expo.interfaces.facedetector.FaceDetectorProvider;
 
-public class FaceDetectorModule extends ExportedModule implements ModuleRegistryConsumer {
+public class FaceDetectorModule extends ExportedModule {
   private static final String TAG = "ExpoFaceDetector";
 
-  private static final String MODE_OPTION_KEY = "mode";
-  private static final String DETECT_LANDMARKS_OPTION_KEY = "detectLandmarks";
-  private static final String RUN_CLASSIFICATIONS_OPTION_KEY = "runClassifications";
+  private static final String MODE_OPTION_KEY = "Mode";
+  private static final String DETECT_LANDMARKS_OPTION_KEY = "Landmarks";
+  private static final String RUN_CLASSIFICATIONS_OPTION_KEY = "Classifications";
 
   private ModuleRegistry mModuleRegistry;
 
@@ -37,9 +38,9 @@ public class FaceDetectorModule extends ExportedModule implements ModuleRegistry
   public Map<String, Object> getConstants() {
     return Collections.unmodifiableMap(new HashMap<String, Object>() {
       {
-        put("Mode", getFaceDetectionModeConstants());
-        put("Landmarks", getFaceDetectionLandmarksConstants());
-        put("Classifications", getFaceDetectionClassificationsConstants());
+        put(MODE_OPTION_KEY, getFaceDetectionModeConstants());
+        put(DETECT_LANDMARKS_OPTION_KEY, getFaceDetectionLandmarksConstants());
+        put(RUN_CLASSIFICATIONS_OPTION_KEY, getFaceDetectionClassificationsConstants());
       }
 
       private Map<String, Object> getFaceDetectionModeConstants() {
@@ -74,7 +75,7 @@ public class FaceDetectorModule extends ExportedModule implements ModuleRegistry
   @ExpoMethod
   public void detectFaces(HashMap<String, Object> options, final Promise promise) {
     // TODO: Check file scope
-    new FileFaceDetectionAsyncTask(detectorForOptions(options, getContext()), options, new FileFaceDetectionCompletionListener() {
+    new FileFaceDetectionTask(detectorForOptions(options, getContext()), options, new FileFaceDetectionCompletionListener() {
       @Override
       public void resolve(Bundle result) {
         promise.resolve(result);
@@ -87,27 +88,16 @@ public class FaceDetectorModule extends ExportedModule implements ModuleRegistry
     }).execute();
   }
 
-  @Override
   public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
-  private static ExpoFaceDetector detectorForOptions(HashMap<String, Object> options, Context context) {
-    ExpoFaceDetector detector = new ExpoFaceDetector(context);
-    detector.setTrackingEnabled(false);
+  private FaceDetector detectorForOptions(HashMap<String, Object> options, Context context) {
+    FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProvider.class);
 
-    if(options.get(MODE_OPTION_KEY) != null) {
-      detector.setMode(((Number) options.get(MODE_OPTION_KEY)).intValue());
-    }
+    FaceDetector faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context);
+    faceDetector.setSettings(options);
 
-    if(options.get(RUN_CLASSIFICATIONS_OPTION_KEY) != null) {
-      detector.setClassificationType(((Number) options.get(RUN_CLASSIFICATIONS_OPTION_KEY)).intValue());
-    }
-
-    if(options.get(DETECT_LANDMARKS_OPTION_KEY) != null) {
-      detector.setLandmarkType(((Number) options.get(DETECT_LANDMARKS_OPTION_KEY)).intValue());
-    }
-
-    return detector;
+    return faceDetector;
   }
 }

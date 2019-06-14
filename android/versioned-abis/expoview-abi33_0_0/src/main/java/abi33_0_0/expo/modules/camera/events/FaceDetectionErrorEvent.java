@@ -5,12 +5,15 @@ import android.support.v4.util.Pools;
 
 import abi33_0_0.org.unimodules.core.interfaces.services.EventEmitter;
 import abi33_0_0.org.unimodules.interfaces.facedetector.FaceDetector;
+
 import abi33_0_0.expo.modules.camera.CameraViewManager;
 
 public class FaceDetectionErrorEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<FaceDetectionErrorEvent> EVENTS_POOL = new Pools.SynchronizedPool<>(3);
   private FaceDetector mFaceDetector;
-  private FaceDetectionErrorEvent() {}
+
+  private FaceDetectionErrorEvent() {
+  }
 
   public static FaceDetectionErrorEvent obtain(FaceDetector faceDetector) {
     FaceDetectionErrorEvent event = EVENTS_POOL.acquire();
@@ -42,10 +45,6 @@ public class FaceDetectionErrorEvent extends EventEmitter.BaseEvent {
   }
 
   private boolean isFaceDetectorOperational() {
-    if (mFaceDetector == null) {
-      return false;
-    }
-
-    return mFaceDetector.isOperational();
+    return mFaceDetector != null;
   }
 }

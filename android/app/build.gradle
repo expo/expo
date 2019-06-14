@@ -94,9 +94,6 @@ devicefarm {
 configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r241213'
-    force 'com.google.android.gms:play-services-basement:16.1.0'
-    force 'com.google.android.gms:play-services-vision:17.0.2'
-    // TODO: Remove once finished with migration to MLKit
   }
 }
 

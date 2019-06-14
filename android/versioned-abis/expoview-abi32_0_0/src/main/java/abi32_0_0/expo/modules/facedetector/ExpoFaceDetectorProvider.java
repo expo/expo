@@ -7,11 +7,12 @@ import java.util.List;
 
 import abi32_0_0.expo.core.interfaces.InternalModule;
 import abi32_0_0.expo.interfaces.facedetector.FaceDetector;
+import abi32_0_0.expo.interfaces.facedetector.FaceDetectorProvider;
 
-public class FaceDetectorProvider implements abi32_0_0.expo.interfaces.facedetector.FaceDetectorProvider, InternalModule {
+public class ExpoFaceDetectorProvider implements FaceDetectorProvider, InternalModule {
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.singletonList((Class) abi32_0_0.expo.interfaces.facedetector.FaceDetectorProvider.class);
+    return Collections.singletonList((Class) FaceDetectorProvider.class);
   }
 
   public FaceDetector createFaceDetectorWithContext(Context context) {
