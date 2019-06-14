@@ -45,8 +45,8 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     public static final int BILLING_MANAGER_NOT_INITIALIZED  = -1;
     public static final String PURCHASES_UPDATED_EVENT = "Expo.purchasesUpdated";
-    public static final String PURCHASING_ITEM = "Purchasing Item";
     public static final String ACKNOWLEDGING_PURCHASE = "Acknowledging Item";
+    public static final String INAPP_SUB_PERIOD = "P0D";
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
 
     protected static final HashMap<String, Promise> promises = new HashMap<>();
@@ -282,19 +282,21 @@ public class BillingManager implements PurchasesUpdatedListener {
         Runnable queryToExecute = new Runnable() {
             @Override
             public void run() {
+                // Query in app product history
                 mBillingClient.queryPurchaseHistoryAsync(SkuType.INAPP,
                 new PurchaseHistoryResponseListener() {
                     @Override
                     public void onPurchaseHistoryResponse(BillingResult billingResult,
                                                           final List<PurchaseHistoryRecord> inAppList) {
 
+                        // Query subscription history
                         mBillingClient.queryPurchaseHistoryAsync(SkuType.SUBS, new PurchaseHistoryResponseListener() {
                             @Override
                             public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseList) {
                                 purchaseList.addAll(inAppList);
                                 ArrayList<Bundle> bundles = new ArrayList<>();
                                 for (PurchaseHistoryRecord record : purchaseList) {
-                                    bundles.add(convertPurchaseHistory(record));
+                                    bundles.add(purchaseHistoryToBundle(record));
                                 }
 
                                 Bundle response = formatResponse(billingResult, bundles);
@@ -309,15 +311,15 @@ public class BillingManager implements PurchasesUpdatedListener {
         executeServiceRequest(queryToExecute);
     }
 
+    /**
+     * Format the result of a Purchase or Sku Details query depending on the result code
+     */
     public static Bundle formatResponse(BillingResult billingResult, ArrayList<? extends Parcelable> results) {
         Bundle response = new Bundle();
         int responseCode = billingResult.getResponseCode();
         if(responseCode == BillingResponseCode.OK) {
             response.putInt("responseCode", OK);
-            response.putParcelableArrayList("results", results);
-            if (results == null) {
-                response.putParcelableArrayList("results", new ArrayList<Parcelable>());
-            }
+            response.putParcelableArrayList("results", results != null ? results : new ArrayList<Parcelable>());
         } else if (responseCode == BillingResponseCode.USER_CANCELED) {
             response.putInt("responseCode", USER_CANCELED);
         } else {
@@ -372,8 +374,13 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     }
 
-    private static Bundle convertSku(SkuDetails skuDetails) {
+    private static Bundle skuToBundle(SkuDetails skuDetails) {
         Bundle bundle = new Bundle();
+
+        String subscriptionPeriod =
+                skuDetails.getType().equals(SkuType.SUBS) ?
+                skuDetails.getSubscriptionPeriod() :
+                INAPP_SUB_PERIOD;
 
         bundle.putString("description", skuDetails.getDescription());
         bundle.putString("price", skuDetails.getPrice());
@@ -382,12 +389,12 @@ public class BillingManager implements PurchasesUpdatedListener {
         bundle.putString("productId", skuDetails.getSku());
         bundle.putString("title", skuDetails.getTitle());
         bundle.putString("type", skuDetails.getType());
-        bundle.putString("subscriptionPeriod", skuDetails.getSubscriptionPeriod());
+        bundle.putString("subscriptionPeriod", subscriptionPeriod);
 
         return bundle;
     }
 
-    public static Bundle convertPurchase(Purchase purchase) {
+    public static Bundle purchaseToBundle(Purchase purchase) {
         Bundle bundle = new Bundle();
 
         bundle.putBoolean("acknowledged", purchase.isAcknowledged());
@@ -401,7 +408,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         return bundle;
     }
 
-    private static Bundle convertPurchaseHistory(PurchaseHistoryRecord purchaseRecord) {
+    private static Bundle purchaseHistoryToBundle(PurchaseHistoryRecord purchaseRecord) {
         Bundle bundle = new Bundle();
 
         // PurchaseHistoryRecord is a subset of Purchase
@@ -426,7 +433,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         List<Purchase> purchasesList = result.getPurchasesList();
         ArrayList<Bundle> results = new ArrayList<>();
         for (Purchase purchase : purchasesList) {
-            results.add(convertPurchase(purchase));
+            results.add(purchaseToBundle(purchase));
         }
 
         // Update purchases inventory with new list of purchases
@@ -477,7 +484,7 @@ public class BillingManager implements PurchasesUpdatedListener {
                     ArrayList<Bundle> results = new ArrayList<>();
                     for (SkuDetails skuDetails : skuDetailsList) {
                         mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
-                        results.add(convertSku(skuDetails));
+                        results.add(skuToBundle(skuDetails));
                     }
                     Bundle response = formatResponse(billingResult, results);
                     promise.resolve(response);

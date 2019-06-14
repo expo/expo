@@ -38,7 +38,7 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
         Bundle response = new Bundle();
         ArrayList<Bundle> results = new ArrayList<>();
         for (Purchase purchase : purchaseList) {
-            results.add(BillingManager.convertPurchase(purchase));
+            results.add(BillingManager.purchaseToBundle(purchase));
         }
         response.putParcelableArrayList("results", results);
         response.putInt("responseCode", BillingResponseCode.OK);
