@@ -52,6 +52,8 @@ export async function finishTransactionAsync(purchase, consumeItem) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
+    if (purchase.acknowledged)
+        return;
     const transactionId = Platform.OS === 'android' ? purchase.purchaseToken : purchase.orderId;
     await ExpoInAppPurchases.finishTransactionAsync(transactionId, consumeItem);
 }
