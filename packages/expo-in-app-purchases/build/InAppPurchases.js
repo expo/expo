@@ -36,9 +36,7 @@ export async function purchaseItemAsync(itemId, oldItem) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
-    // Replacing old item is only supported on Android
-    const args = Platform.OS === 'android' ? [itemId, oldItem] : [itemId];
-    await ExpoInAppPurchases.purchaseItemAsync(...args);
+    await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
 }
 export async function setPurchaseListener(callback) {
     if (purchaseUpdatedSubscription) {

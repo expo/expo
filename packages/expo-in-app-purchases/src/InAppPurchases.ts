@@ -51,9 +51,7 @@ export async function purchaseItemAsync(itemId: string, oldItem?: string): Promi
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  // Replacing old item is only supported on Android
-  const args = Platform.OS === 'android' ? [itemId, oldItem] : [itemId];
-  await ExpoInAppPurchases.purchaseItemAsync(...args);
+  await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
 }
 
 export async function setPurchaseListener(callback: (result) => void): Promise<void> {

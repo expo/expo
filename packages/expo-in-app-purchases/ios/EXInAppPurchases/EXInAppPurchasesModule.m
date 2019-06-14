@@ -82,6 +82,7 @@ UM_EXPORT_METHOD_AS(getProductsAsync,
 
 UM_EXPORT_METHOD_AS(purchaseItemAsync,
                     purchaseItemAsync:(NSString *)productIdentifier
+                    replace:(NSString *)oldItem // ignore on iOS
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
