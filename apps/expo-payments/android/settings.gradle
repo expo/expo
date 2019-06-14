@@ -1,0 +1,20 @@
+include ':app'
+
+// Import gradle helpers for unimodules.
+apply from: '../../../node_modules/react-native-unimodules/gradle.groovy'
+
+// Include unimodules.
+includeUnimodulesProjects(
+    modulesPaths : [
+        '../../../../node_modules',
+    ],
+    configuration: 'api',
+    target       : 'react-native',
+    exclude      : [
+        'unimodules-face-detector-interface',
+        'expo-face-detector',
+        'expo-payments-stripe',
+        'expo-video-thumbnails',
+        'expo-camera'
+    ]
+)
