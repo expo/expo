@@ -13,9 +13,13 @@ Try the [playlist example app](http://expo.io/@community/playlist) (source code 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
 
 ## API
-
+In unmanaged apps:
 ```js
 import { Audio } from 'expo-av';
+```
+In managed apps:
+```js
+import { Audio } from 'expo';
 ```
 
 ## Enabling Audio and customizing Audio Mode
