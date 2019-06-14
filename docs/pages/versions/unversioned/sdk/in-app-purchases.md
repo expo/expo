@@ -45,6 +45,17 @@ This method *must* be called before anything else, otherwise an error will be th
 
 A `Promise` that is resolved with a `QueryResponse` that contains an array of `Purchase` objects. This represents the user's previous purchase history and returns the same result as `getPurchaseHistoryAsync()`.
 
+
+#### Example
+```javascript
+const history = await connectAsync();
+if (history.responseCode === ResponseCode.OK) {
+    history.results.forEach(result => {
+        // Restore history if needed
+    });
+}
+```
+
 ### `InAppPurchases.getProductsAsync(itemList: string[])`
 
 Retrieves the product details (price, description, title, etc) for each item that you inputted in the Google Play Console and App Store Connect. This queries both in-app products and subscriptions so there's no need to pass those in separately.
@@ -61,9 +72,28 @@ If any of the product IDs passed in are invalid and don't exist, you will not re
 
 A `Promise` that is resolved with a `QueryResponse` containing `ItemDetails` objects in the results array.
 
+#### Example
+```javascript
+/*
+These product IDs must match the item entries you created in the App Store Connect and Google Play Console.
+If you want to add more or edit their attributes you can do so there.
+*/
+const items = Platform.select({
+    ios: ['dev.products.gas', 'dev.products.premium', 'dev.products.gold_monthly', 'dev.products.gold_yearly'],
+    android: ['gas', 'premium', 'gold_monthly', 'gold_yearly'],
+});
+
+// Retrieve product details
+const { responseCode, results } = await getProductsAsync(items);
+if (responseCode === ResponseCode.OK) {
+    this.setState({ items: results });
+}
+
+```
+
 ### `InAppPurchases.setPurchaseListener(callback: (result: QueryResponse) => void)`
 
-Sets a callback that handles incoming purchases. This must be set before any calls to `purchaseItemAsync` are made. Otherwise, those transactions will be lost.
+Sets a callback that handles incoming purchases. This must be set before any calls to `purchaseItemAsync` are made. Otherwise, those transactions will be lost. Remember to set the purchase listener globally, and not inside a specific screen, to ensure that you receive incomplete transactions, subscriptions, and deferred transactions.
 
 Purchases can either be instantiated by the user (via `purchaseItemAsync`) or they can come from subscription renewals or unfinished transactions on iOS (e.g. if your app exits before `finishTransactionAsync` was called).
 
@@ -72,6 +102,30 @@ Note that on iOS, the results array will only contain one item: the one that was
 #### Arguments
 
 - **callback (_(result: QueryResponse) => void_)** -- The callback function you want to run when there is an update to the purchases.
+
+#### Example
+```javascript
+// Set purchase listener
+setPurchaseListener(({ responseCode, results, errorCode }) => {
+    if (responseCode === ResponseCode.OK) {
+        for (const purchase of results) {
+            if (!purchase.acknowledged) {
+                console.log(`Successfully purchased ${purchase.productId}`);
+                // Process transaction here and unlock content
+
+                // Then when you're done...
+                finishTransactionAsync(purchase, true);
+            }
+        }
+    } else if (responseCode === ResponseCode.USER_CANCELED) {
+        console.log('User canceled');
+    } else { // Either received an error or deferred purchase (iOS only)
+        console.warn(
+            `Something went wrong with the purchase. Received response code ${responseCode} and errorCode ${errorCode}`
+        );
+    }
+});
+```
 
 ### `InAppPurchases.getPurchaseHistoryAsync(refresh?: boolean)`
 
@@ -89,6 +143,16 @@ On iOS, the refresh boolean is ignored and it returns the purchase history in th
 
 A `Promise` that is resolved with a `QueryResponse` that contains an array of `Purchase` objects.
 
+#### Example
+```javascript
+const { responseCode, results } = await getPurchaseHistoryAsync();
+if (responseCode === ResponseCode.OK) {
+    results.forEach(result => {
+        // Handle purchase history
+    })
+}
+```
+
 ### `InAppPurchases.purchaseItemAsync(productId: string, oldItem?: string)`
 
 Initiates the purchase flow to buy the item associated with this productId. This function is void and the result must be handled in the callback that you passed in to `setPurchaseListener`. This will display a prompt to the user which will allow them to either buy the item or cancel the purchase.
@@ -98,6 +162,22 @@ Initiates the purchase flow to buy the item associated with this productId. This
 - **productId (_string_)** -- The product ID of the item you want to buy.
 
 - **oldItem (_string_)** -- The product ID of the item you want to replace with this new purchase, typically a subscription such as when a user upgrades from monthly to yearly (Android only).
+
+#### Example
+```javascript
+renderItem(item) {
+    // Render product details with a "Buy" button
+    return (
+        <View key={item.productId}>
+            ...
+            <View style={styles.buttonContainer}>
+                <Button title="Buy" onPress={() => purchaseItemAsync(item.productId)} />
+            </View>
+            ...
+        </View>
+    );
+}
+```
 
 ### `InAppPurchases.finishTransactionAsync(purchase: Purchase, consumeItem: boolean)`
 
@@ -113,6 +193,13 @@ On iOS, this will mark the transaction as finished and prevent it from reappeari
 
 - **consumeItem (_boolean_)** -- A boolean indicating whether or not the item is a consumable (Android only)
 
+#### Example
+```javascript
+if (!purchase.acknowledged) {
+    finishTransactionAsync(purchase, false); // or true for consumables
+}
+```
+
 ### `InAppPurchases.getBillingResponseCodeAsync()`
 
 Returns the last response code. This is more descriptive on Android since there is native support for retrieving the billing response code.
@@ -125,11 +212,24 @@ On iOS, this will return `ResponseCode.OK` if you are connected or `ResponseCode
 
 - **responseCode (_ResponseCode_)** -- A number indicating the last billing response code.
 
+#### Example
+```javascript
+const responseCode = await getBillingResponseCodeAsync();
+if (responseCode !== ResponseCode.OK) {
+    // Either we're not connected or the last response returned an error (Android)
+}
+```
+
 ### `InAppPurchases.disconnectAsync()`
 
 Removes listeners, both internally and the one set in `setPurchaseListener`, and cleans up memory. Call this when you are done using the In-App Purchases API in your app.
 
 No other methods can be used until the next time you call `connectAsync`.
+
+#### Example
+```javascript
+await disconnectAsync();
+```
 
 ## Object Types
 
