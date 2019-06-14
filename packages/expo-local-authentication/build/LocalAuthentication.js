@@ -22,13 +22,13 @@ export async function isEnrolledAsync() {
     }
     return await ExpoLocalAuthentication.isEnrolledAsync();
 }
-export async function authenticateAsync(promptMessageIOS = 'Authenticate') {
+export async function authenticateAsync(promptMessageIOS = 'Authenticate', options = {}) {
     if (!ExpoLocalAuthentication.authenticateAsync) {
         throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
     }
     if (Platform.OS === 'ios') {
         invariant(typeof promptMessageIOS === 'string' && promptMessageIOS.length, 'LocalAuthentication.authenticateAsync must be called with a non-empty string on iOS');
-        const result = await ExpoLocalAuthentication.authenticateAsync(promptMessageIOS);
+        const result = await ExpoLocalAuthentication.authenticateAsync(promptMessageIOS, options);
         if (result.warning) {
             console.warn(result.warning);
         }
