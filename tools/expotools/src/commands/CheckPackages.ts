@@ -67,7 +67,7 @@ async function action(options) {
 }
 
 function consoleErrorOutput(output: string, label: string, color: (string) => string): void {
-  const lines = output.trim().split(/\n/g);
+  const lines = output.trim().split(/\r\n?|\n/g);
   console.error(lines.map(line => `${chalk.gray(label)} ${color(line)}`).join('\n'));
 }
 
