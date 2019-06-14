@@ -533,6 +533,9 @@ public class FileSystemModule extends ExportedModule {
         result.putString("uri", cUriFromFile(file).toString());
         promise.resolve(result);
       }
+      else{
+        promise.reject("E_DIRECTORY_NOT_READ","No readable files with the uri: " + uri);
+      }
     }
     catch (Exception e) {
       Log.e(TAG, e.getMessage());
