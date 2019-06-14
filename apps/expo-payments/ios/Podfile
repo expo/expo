@@ -11,7 +11,7 @@ target 'expo-payments' do
     :inhibit_warnings => true
 
   # Install unimodules
-  require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+  require_relative '../../../node_modules/react-native-unimodules/cocoapods.rb'
   options = { modules_paths: ['../../../packages'] }
   use_unimodules!(options)
 
