@@ -13,6 +13,14 @@ export enum ResponseCode {
   DEFERRED = 3,
 }
 
+export enum PurchaseState {
+  PURCHASING = 0,
+  PURCHASED = 1,
+  FAILED = 2,
+  RESTORED = 3,
+  DEFERRED = 4,
+}
+
 export enum ErrorCode {
   UNKNOWN = 0,
   PAYMENT_INVALID = 1,

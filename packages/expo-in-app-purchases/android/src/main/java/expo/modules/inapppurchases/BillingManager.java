@@ -328,7 +328,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     }
 
     /**
-     * Convert native error code to match TS enum
+     * Convert native error code to match corresponding TS enum
      */
     private static int errorCodeNativeToJS(int responseCode) {
         switch(responseCode) {
@@ -356,6 +356,22 @@ public class BillingManager implements PurchasesUpdatedListener {
         return 0;
     }
 
+    /**
+     * Convert native purchase state to match corresponding TS enum
+     */
+    private static int purchaseStateNativeToJS(int purchaseState) {
+        switch(purchaseState) {
+            case Purchase.PurchaseState.PENDING:
+                return 0;
+            case Purchase.PurchaseState.PURCHASED:
+                return 1;
+            case Purchase.PurchaseState.UNSPECIFIED_STATE:
+                return 2;
+        }
+        return 0;
+
+    }
+
     private static Bundle convertSku(SkuDetails skuDetails) {
         Bundle bundle = new Bundle();
 
@@ -377,7 +393,7 @@ public class BillingManager implements PurchasesUpdatedListener {
         bundle.putBoolean("acknowledged", purchase.isAcknowledged());
         bundle.putString("orderId", purchase.getOrderId());
         bundle.putString("productId", purchase.getSku());
-        bundle.putInt("purchaseState", purchase.getPurchaseState());
+        bundle.putInt("purchaseState", purchaseStateNativeToJS(purchase.getPurchaseState()));
         bundle.putLong("purchaseTime", purchase.getPurchaseTime());
         bundle.putString("packageName", purchase.getPackageName());
         bundle.putString("purchaseToken", purchase.getPurchaseToken());

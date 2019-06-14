@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
-import { QueryResponse, Purchase, ResponseCode, ErrorCode } from './InAppPurchases.types';
+import { QueryResponse, Purchase, PurchaseState, ResponseCode, ErrorCode } from './InAppPurchases.types';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 
 const errors = {
@@ -16,6 +16,7 @@ let connected = false;
 let purchaseUpdatedSubscription: Subscription;
 
 export {
+  PurchaseState,
   ResponseCode,
   ErrorCode,
 }

@@ -5,6 +5,14 @@ export var ResponseCode;
     ResponseCode[ResponseCode["ERROR"] = 2] = "ERROR";
     ResponseCode[ResponseCode["DEFERRED"] = 3] = "DEFERRED";
 })(ResponseCode || (ResponseCode = {}));
+export var PurchaseState;
+(function (PurchaseState) {
+    PurchaseState[PurchaseState["PURCHASING"] = 0] = "PURCHASING";
+    PurchaseState[PurchaseState["PURCHASED"] = 1] = "PURCHASED";
+    PurchaseState[PurchaseState["FAILED"] = 2] = "FAILED";
+    PurchaseState[PurchaseState["RESTORED"] = 3] = "RESTORED";
+    PurchaseState[PurchaseState["DEFERRED"] = 4] = "DEFERRED";
+})(PurchaseState || (PurchaseState = {}));
 export var ErrorCode;
 (function (ErrorCode) {
     ErrorCode[ErrorCode["UNKNOWN"] = 0] = "UNKNOWN";
