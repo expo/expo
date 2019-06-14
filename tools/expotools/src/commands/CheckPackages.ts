@@ -40,7 +40,13 @@ async function action(options) {
           }
         }
         if (options.test) {
-          await runScriptAsync(pkg, 'test', ['--watch', 'false', '--passWithNoTests']);
+          const args = ['--watch', 'false', '--passWithNoTests'];
+
+          if (process.env.CI) {
+            // Limit to one worker on CIs
+            args.push('--maxWorkers', '1');
+          }
+          await runScriptAsync(pkg, 'test', args);
         }
         console.log(`✨ ${chalk.bold.green(pkg.name)} checks passed.`);
         passesCount++;
