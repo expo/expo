@@ -181,7 +181,7 @@ Revoking an existing distribution certificate associated with an app is **NOT** 
 - Your app is distributed through the App Store and you are on an Apple Enterprise account.
 - Your app is distributed ad hoc (distributed outside of the App Store for testing purposes).
 
-An App Store app gets re-signed with an Apple certificate when it goes on the store with non-Enterprise accounts. Revoking the certificate therefore won't affect it. Enterprise Apps and Apps distributed ad hoc use the original certificate, which means revoking it will cause the app to stop functioning on all devices it is installed on.
+An App Store app gets re-signed with an Apple certificate when it goes on the store with non-Enterprise accounts. Revoking the certificate therefore won't affect it. Enterprise apps and apps distributed ad hoc use the original certificate, which means revoking it will cause the app to stop functioning on all devices it is installed on.
 
 ### Uploading existing certificate
 
