@@ -8,7 +8,21 @@ An API to accept payments for in-app products. Internally, this relies on the [G
 
 This module is currently only available in the [bare](../../introduction/managed-vs-bare/#bare-workflow) workflow.
 
-> Note that in-app purchases require physical devices to work and therefore **cannot be tested on simulators**.
+You must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+
+### Add the package to your dependencies
+
+```
+npm install expo-in-app-purchases
+```
+
+### Configure for iOS
+
+Run `pod install` in the ios directory after installing the npm package.
+
+### Configure for Android
+
+No additional set up necessary.
 
 ## Setup
 
@@ -28,7 +42,7 @@ On Android, you must first create an entry for your app and upload a release APK
 
 Then to test your purchases, you must publish your app to a closed or open testing track in Google Play. Note that it may take a few hours for the app to be available for testers. Ensure the testers you invite (including yourself) opt in to your app's test. On your test’s opt-in URL, your testers will get an explanation of what it means to be a tester and a link to opt-in. At this point, they're all set and can start making purchases once they download your app or build from source. For more information on testing, follow [these instructions](https://developer.android.com/google/play/billing/billing_testing).
 
-> Remember: in-app products are associated with your specific Bundle/Application ID and cannot be queried from other apps.
+> Note that in-app purchases require physical devices to work on both platforms and therefore **cannot be tested on simulators**.
 
 ## API
 
@@ -59,7 +73,7 @@ if (history.responseCode === ResponseCode.OK) {
 
 ### `InAppPurchases.getProductsAsync(itemList: string[])`
 
-Retrieves the product details (price, description, title, etc) for each item that you inputted in the Google Play Console and App Store Connect. This queries both in-app products and subscriptions so there's no need to pass those in separately.
+Retrieves the product details (price, description, title, etc) for each item that you inputted in the Google Play Console and App Store Connect. These products are associated with your app's specific Application/Bundle ID and cannot be retrieved from other apps. This queries both in-app products and subscriptions so there's no need to pass those in separately.
 
 You must retrieve an item's details *before* you attempt to purchase it via `purchaseItemAsync`. This is a prerequisite to buying a product even if you have the item details bundled in your app or on your own servers.
 
