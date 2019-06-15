@@ -90,6 +90,9 @@ import * as ImageManipulator from 'expo-image-manipulator';
 // Image Picker
 import * as ImagePicker from 'expo-image-picker';
 
+// In-App Purchases
+import * as InAppPurchases from 'expo-in-app-purchases';
+
 // Intent Launcher
 import * as IntentLauncher from 'expo-intent-launcher';
 
