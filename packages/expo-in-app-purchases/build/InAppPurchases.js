@@ -69,7 +69,6 @@ export async function disconnectAsync() {
         throw new ConnectionError(errors.ALREADY_DISCONNECTED);
     }
     await ExpoInAppPurchases.disconnectAsync();
-    purchaseUpdatedSubscription.remove();
     connected = false;
 }
 class ConnectionError extends CodedError {

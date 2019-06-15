@@ -91,7 +91,6 @@ export async function disconnectAsync(): Promise<void> {
     throw new ConnectionError(errors.ALREADY_DISCONNECTED);
   }
   await ExpoInAppPurchases.disconnectAsync();
-  purchaseUpdatedSubscription.remove();
   connected = false;
 }
 
