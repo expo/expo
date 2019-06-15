@@ -30,7 +30,7 @@ No additional set up necessary.
 
 In order to use the In-App Purchases API on iOS, you’ll need to sign the [Paid Applications Agreement](https://help.apple.com/app-store-connect/#/devb6df5ee51) and set up your banking and tax information. You also need to enable the [In-App Purchases capability](https://help.apple.com/xcode/mac/current/#/dev88ff319e7) for your app in Xcode.
 
-Next, create an entry for your app in [App Store Connect](https://appstoreconnect.apple.com/) and configure your in-app purchases, including details (such as name, pricing, and description) that highlight the features and functionality of your in-app products. Make sure each product's status says `Ready to Submit`, otherwise it will not be queryable from within your app when you are testing. Be sure to add any necessary metadata to do so including uploading a screenshot (this can be anything when you're testing) and review notes. You do not need to actually submit your app or its products to test purchases in sandbox mode.
+Next, create an entry for your app in [App Store Connect](https://appstoreconnect.apple.com/) and configure your in-app purchases, including details (such as name, pricing, and description) that highlight the features and functionality of your in-app products. Make sure each product's status says `Ready to Submit`, otherwise it will not be queryable from within your app when you are testing. Be sure to add any necessary metadata to do so including uploading a screenshot (this can be anything when you're testing) and review notes. Your app's status must also say `Ready to Submit` but you do not need to actually submit your app or its products for review to test purchases in sandbox mode.
 
 Now you can create a [sandbox account](https://help.apple.com/app-store-connect/#/dev8b997bee1) to test in-app purchases before you make your app available.
 
@@ -142,6 +142,68 @@ setPurchaseListener(({ responseCode, results, errorCode }) => {
 });
 ```
 
+### `InAppPurchases.purchaseItemAsync(productId: string, oldItem?: string)`
+
+Initiates the purchase flow to buy the item associated with this `productId`. This will display a prompt to the user that will allow them to either buy the item or cancel the purchase. When the purchase completes, the result must be handled in the callback that you passed in to `setPurchaseListener`.
+
+Remember, you have to query an item's details via `getProductsAsync` and set the purchase listener before you attempt to buy an item.
+
+[Apple](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/Subscriptions.html) and [Google](https://developer.android.com/google/play/billing/billing_subscriptions) both have their own workflows for dealing with subscriptions. In general, you can deal with them in the same way you do one-time purchases but there are caveats including if a user decides to cancel before the expiration date. To check the status of a subscription, you can use the [Google Play Developer](https://developers.google.com/android-publisher/api-ref/purchases/subscriptions/get) API on Android and the [Status Update Notifications](https://developer.apple.com/documentation/storekit/in-app_purchase/enabling_status_update_notifications) service on iOS.
+
+#### Arguments
+
+- **productId (_string_)** -- The product ID of the item you want to buy.
+
+- **oldItem (_string_)** -- The product ID of the item that the user is upgrading or downgrading from. This is mandatory for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly one for the identical content (Android only).
+
+#### Returns
+
+A `Promise` that resolves when the purchase is done processing. To get the actual result of the purchase, you must handle purchase events inside the `setPurchaseListener` callback.
+
+#### Example
+```javascript
+renderItem(item) {
+    // Render product details with a "Buy" button
+    return (
+        <View key={item.productId}>
+            ...
+            <View style={styles.buttonContainer}>
+                <Button title="Buy" onPress={() => purchaseItemAsync(item.productId)} />
+            </View>
+            ...
+        </View>
+    );
+}
+
+// To replace a subscription on Android
+await purchaseItemAsync('gold_monthly', 'gold_yearly');
+```
+
+### `InAppPurchases.finishTransactionAsync(purchase: Purchase, consumeItem: boolean)`
+
+Marks a transaction as completed. This *must* be called on successful purchases only after you have verified the transaction and unlocked the functionality purchased by the user.
+
+On Android, this will either "acknowledge" or "consume" the purchase depending on the value of `consumeItem`. Acknowledging indicates that this is a one time purchase (e.g. premium upgrade), whereas consuming a purchase allows it to be bought more than once. You cannot buy an item again until it's consumed. Both consuming and acknowledging let Google know that you are done processing the transaction. If you do not acknowledge or consume a purchase within three days, the user automatically receives a refund, and Google Play revokes the purchase.
+
+On iOS, this will mark the transaction as finished and prevent it from reappearing in the purchase listener callback. It will also let the user know their purchase was successful.
+
+`consumeItem` is ignored on iOS because you must specify whether an item is a consumable or non-consumable in it's product entry in App Store Connect, whereas on Android you indicate an item is consumable at runtime.
+
+> Make sure that you verify each purchase to prevent faulty transactions and protect against fraud *before* you call `finishTransactionAsync`. On iOS, you can validate the purchase's `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html). On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
+
+#### Arguments
+
+- **purchase (_Purchase_)** -- The purchase you want to mark as completed.
+
+- **consumeItem (_boolean_)** -- A boolean indicating whether or not the item is a consumable (Android only)
+
+#### Example
+```javascript
+if (!purchase.acknowledged) {
+    await finishTransactionAsync(purchase, false); // or true for consumables
+}
+```
+
 ### `InAppPurchases.getPurchaseHistoryAsync(refresh?: boolean)`
 
 Retrieves the user's previous purchase history.
@@ -168,68 +230,6 @@ if (responseCode === ResponseCode.OK) {
 }
 ```
 
-### `InAppPurchases.purchaseItemAsync(productId: string, oldItem?: string)`
-
-Initiates the purchase flow to buy the item associated with this productId. This function returns null as the result must be handled in the callback that you passed in to `setPurchaseListener`. This will display a prompt to the user which will allow them to either buy the item or cancel the purchase.
-
-Remember, you have to query an item's details via `getProductsAsync` and set the purchase listener before you attempt to buy an item.
-
-[Apple](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/Subscriptions.html) and [Google](https://developer.android.com/google/play/billing/billing_subscriptions) both have their own workflows for dealing with subscriptions. In general, you can deal with them in the same way you do one-time purchases but there are caveats including if a user decides to cancel before the expiration date. To check the status of a subscription, you can use the [Google Play Developer](https://developers.google.com/android-publisher/api-ref/purchases/subscriptions/get) API on Android and the [Status Update Notifications](https://developer.apple.com/documentation/storekit/in-app_purchase/enabling_status_update_notifications) service on iOS, both of which are REST APIs.
-
-#### Arguments
-
-- **productId (_string_)** -- The product ID of the item you want to buy.
-
-- **oldItem (_string_)** -- The product ID of the item that the user is upgrading or downgrading from. This is mandatory for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly one for the identical content (Android only).
-
-#### Returns
-
-A `Promise` that resolves with `null` when the purchase is done processing.
-
-#### Example
-```javascript
-renderItem(item) {
-    // Render product details with a "Buy" button
-    return (
-        <View key={item.productId}>
-            ...
-            <View style={styles.buttonContainer}>
-                <Button title="Buy" onPress={() => purchaseItemAsync(item.productId)} />
-            </View>
-            ...
-        </View>
-    );
-}
-
-// To replace a subscription on Android
-await purchaseItemAsync('gold_monthly', 'gold_yearly');
-```
-
-### `InAppPurchases.finishTransactionAsync(purchase: Purchase, consumeItem: boolean)`
-
-Marks a transaction as completed. This must be called on successful purchases only after you have verified the transaction and unlocked the functionality purchased by the user.
-
-On Android, this will either "acknowledge" or "consume" the purchase depending on the value of `consumeItem`. Acknowledging indicates that this is a one time purchase (e.g. premium upgrade), whereas consuming a purchase allows it to be bought more than once. You cannot buy an item again until it's consumed. Both consuming and acknowledging let Google know that you are done processing the transaction. If you do not acknowledge or consume a purchase within three days, the user automatically receives a refund, and Google Play revokes the purchase.
-
-On iOS, this will mark the transaction as finished and prevent it from reappearing in the purchase listener callback. It will also let the user know their purchase was successful.
-
-`consumeItem` is ignored on iOS because you must specify whether an item is a consumable or non-consumable in it's product entry in App Store Connect, whereas on Android you indicate an item is consumable at runtime.
-
-> Make sure that you verify each purchase to prevent faulty transactions and protect against fraud *before* you call `finishTransactionAsync`. On iOS, you can validate the purchase's `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html). On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
-
-#### Arguments
-
-- **purchase (_Purchase_)** -- The purchase you want to mark as completed.
-
-- **consumeItem (_boolean_)** -- A boolean indicating whether or not the item is a consumable (Android only)
-
-#### Example
-```javascript
-if (!purchase.acknowledged) {
-    await finishTransactionAsync(purchase, false); // or true for consumables
-}
-```
-
 ### `InAppPurchases.getBillingResponseCodeAsync()`
 
 Returns the last response code. This is more descriptive on Android since there is native support for retrieving the billing response code.
@@ -240,7 +240,7 @@ On iOS, this will return `ResponseCode.OK` if you are connected or `ResponseCode
 
 #### Returns
 
-- **responseCode (_ResponseCode_)** -- A number indicating the last billing response code.
+A `Promise` that resolves with an integer representing the `ResponseCode`.
 
 #### Example
 ```javascript
@@ -258,7 +258,7 @@ No other methods can be used until the next time you call `connectAsync`.
 
 #### Returns
 
-A promise that resolves with `null` when finished disconnecting.
+A `Promise` that resolves when finished disconnecting.
 
 #### Example
 ```javascript
