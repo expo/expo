@@ -27,43 +27,44 @@ async function action(options) {
       // If the package doesn't have build or test script, just skip it.
       continue;
     }
-
-    if (!only.includes(pkg.name)) {
+    if (only.length > 0 && !only.includes(pkg.name)) {
       continue;
     }
-      console.log(`🔍 Checking the ${chalk.bold.green(pkg.name)} package ...`);
+    console.log(`🔍 Checking the ${chalk.bold.green(pkg.name)} package ...`);
 
-      try {
-        if (options.build) {
-          await runScriptAsync(pkg, 'build');
+    try {
+      if (options.build) {
+        await runScriptAsync(pkg, 'build');
 
-          if (options.uniformityCheck) {
-            await checkBuildUniformityAsync(pkg);
-          }
+        if (options.uniformityCheck) {
+          await checkBuildUniformityAsync(pkg);
         }
-        if (options.test) {
-          const args = ['--watch', 'false', '--passWithNoTests'];
-
-          if (process.env.CI) {
-            // Limit to one worker on CIs
-            args.push('--maxWorkers', '1');
-          }
-          await runScriptAsync(pkg, 'test', args);
-        }
-        console.log(`✨ ${chalk.bold.green(pkg.name)} checks passed.`);
-        passesCount++;
-      } catch (error) {
-        failsCount++;
       }
-      console.log();
+      if (options.test) {
+        const args = ['--watch', 'false', '--passWithNoTests'];
+
+        if (process.env.CI) {
+          // Limit to one worker on CIs
+          args.push('--maxWorkers', '1');
+        }
+        await runScriptAsync(pkg, 'test', args);
+      }
+      console.log(`✨ ${chalk.bold.green(pkg.name)} checks passed.`);
+      passCount++;
+    } catch (error) {
+      failureCount++;
     }
+    console.log();
   }
 
-  if (failsCount === 0) {
-    console.log(chalk.bold.green(`🏁 All ${passesCount} packages passed.`));
+  if (failureCount === 0) {
+    console.log(chalk.bold.green(`🏁 All ${passCount} packages passed.`));
     process.exit(0);
   } else {
-    console.log(`${chalk.green(`🏁 ${passesCount} packages passed`)}, ${chalk.magenta(`${failsCount} ${failsCount === 1 ? 'package' : 'packages'} failed.`)}`);
+    console.log(
+      `${chalk.green(`🏁 ${passCount} packages passed`)},`,
+      `${chalk.magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed.`)}`
+    );
     process.exit(1);
   }
 }
@@ -79,11 +80,11 @@ async function runScriptAsync(pkg: Package, scriptName: string, args: string[] =
     console.log(chalk.gray(`🤷‍♂️ Script \`${chalk.cyan(scriptName)}\` not found`));
     return;
   }
+  const spawnArgs = [scriptName, ...args];
+
+  console.log(`🏃‍♀️ Running \`${chalk.cyan(`yarn ${spawnArgs.join(' ')}`)}\` ...`);
+
   try {
-    const spawnArgs = [scriptName, ...args];
-
-    console.log(`🏃‍♀️ Running \`${chalk.cyan(`yarn ${spawnArgs.join(' ')}`)}\` ...`);
-
     await spawnAsync('yarn', spawnArgs, {
       stdio: 'pipe',
       cwd: pkg.path,
@@ -107,10 +108,7 @@ async function checkBuildUniformityAsync(pkg: Package): Promise<void> {
     stdio: 'pipe',
     cwd: pkg.path,
   });
-  const lines = child.stdout.split(/\r\n?|\n/g);
-
-  // remove last line, it's always empty
-  lines.pop();
+  const lines = child.stdout ? child.stdout.trim().split(/\r\n?|\n/g) : [];
 
   if (lines.length > 0) {
     console.error(chalk.bold.red(`The following build files need to be rebuilt and committed:`));
@@ -128,9 +126,13 @@ async function getListOfPackagesAsync(dir: string = PACKAGES_DIR, packages: Pack
 
   for (const dirName of dirs) {
     const packagePath = path.join(dir, dirName);
+    const packageJsonPath = path.join(packagePath, 'package.json');
 
-    try {
-      const packageJson = require(path.join(packagePath, 'package.json'));
+    if (!(await fs.lstat(packagePath)).isDirectory()) {
+      continue;
+    }
+    if (await fs.exists(packageJsonPath)) {
+      const packageJson = require(packageJsonPath);
       const scripts = packageJson && packageJson.scripts || {};
 
       packages.push({
@@ -138,11 +140,9 @@ async function getListOfPackagesAsync(dir: string = PACKAGES_DIR, packages: Pack
         name: packageJson.name,
         scripts,
       });
-    } catch (error) {
-      // It might be a namespace. Recursively add packages under namespaced directory.
-      if (dirName.startsWith('@')) {
-        await getListOfPackagesAsync(packagePath, packages);
-      }
+    } else {
+      // Recursively add packages under directories without package.json file.
+      await getListOfPackagesAsync(packagePath, packages);
     }
   }
   return packages;
@@ -154,7 +154,7 @@ export default (program: Command) => {
     .option('--no-build', 'Whether to skip `yarn run build` check.', false)
     .option('--no-test', 'Whether to skip `yarn run test` check.', false)
     .option('--no-uniformity-check', 'Whether to check the uniformity of committed and generated build files.', false)
-    .option('-o, --only <package names>', 'Comma-separated list of package names to check', '')
+    .option('-o, --only <package names>', 'Comma-separated list of package names to check.', '')
     .description('Checks if packages build successfully and their tests pass.')
     .asyncAction(action);
 };
