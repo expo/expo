@@ -117,7 +117,7 @@ async function checkBuildUniformityAsync(pkg: Package): Promise<void> {
       console.error(chalk.yellow(path.relative(pkg.path, filePath)));
     });
 
-    throw new Error('Build folder has uncommitted changes after building.');
+    throw new Error(`The build folder for ${pkg.name} has uncommitted changes after building.`);
   }
 }
 
