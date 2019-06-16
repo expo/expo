@@ -19,8 +19,8 @@ async function action(options) {
   const packages = await getListOfPackagesAsync();
   const only = options.only ? options.only.split(/\s*,\s*/g) : [];
 
-  let passesCount = 0;
-  let failsCount = 0;
+  let passCount = 0;
+  let failureCount = 0;
 
   for (const pkg of packages) {
     if (!pkg.scripts.build && !pkg.scripts.test) {
@@ -28,8 +28,10 @@ async function action(options) {
       continue;
     }
 
-    if (only.length === 0 || only.includes(pkg.name)) {
-      console.log(`🔍 Checking ${chalk.bold.green(pkg.name)} package ...`);
+    if (!only.includes(pkg.name)) {
+      continue;
+    }
+      console.log(`🔍 Checking the ${chalk.bold.green(pkg.name)} package ...`);
 
       try {
         if (options.build) {
@@ -61,7 +63,7 @@ async function action(options) {
     console.log(chalk.bold.green(`🏁 All ${passesCount} packages passed.`));
     process.exit(0);
   } else {
-    console.log(`${chalk.green(`🏁 ${passesCount} packages passed`)}, ${chalk.magenta(`${failsCount} packages failed.`)}`);
+    console.log(`${chalk.green(`🏁 ${passesCount} packages passed`)}, ${chalk.magenta(`${failsCount} ${failsCount === 1 ? 'package' : 'packages'} failed.`)}`);
     process.exit(1);
   }
 }
@@ -78,7 +80,7 @@ async function runScriptAsync(pkg: Package, scriptName: string, args: string[] =
     return;
   }
   try {
-    const spawnArgs = ['run', scriptName, ...args];
+    const spawnArgs = [scriptName, ...args];
 
     console.log(`🏃‍♀️ Running \`${chalk.cyan(`yarn ${spawnArgs.join(' ')}`)}\` ...`);
 
@@ -111,7 +113,7 @@ async function checkBuildUniformityAsync(pkg: Package): Promise<void> {
   lines.pop();
 
   if (lines.length > 0) {
-    console.error(chalk.bold.red(`Detected uncommitted changes in the following build files:`));
+    console.error(chalk.bold.red(`The following build files need to be rebuilt and committed:`));
     lines.map(line => {
       const filePath = path.join(EXPO_DIR, line.replace(/^\s*\S+\s*/g, ''));
       console.error(chalk.yellow(path.relative(pkg.path, filePath)));
@@ -152,7 +154,7 @@ export default (program: Command) => {
     .option('--no-build', 'Whether to skip `yarn run build` check.', false)
     .option('--no-test', 'Whether to skip `yarn run test` check.', false)
     .option('--no-uniformity-check', 'Whether to check the uniformity of committed and generated build files.', false)
-    .option('-o, --only <package names>', 'Comma separated list of package names to check', '')
-    .description('Checks if packages are building and their tests are passing.')
+    .option('-o, --only <package names>', 'Comma-separated list of package names to check', '')
+    .description('Checks if packages build successfully and their tests pass.')
     .asyncAction(action);
 };
