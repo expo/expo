@@ -2,6 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 import { EventEmitter, Subscription } from '@unimodules/core';
 import UUID from 'uuid-js';
 import ExponentFileSystem from './ExponentFileSystem';
+import { Platform } from 'react-native';
 
 import {
   DownloadOptions,
@@ -15,6 +16,7 @@ import {
   WritingOptions,
   ProgressEvent,
 } from './FileSystem.types';
+import { platform } from 'os';
 
 if (!ExponentFileSystem) {
   console.warn(
@@ -67,6 +69,19 @@ export async function readAsStringAsync(
     throw new UnavailabilityError('expo-file-system', 'readAsStringAsync');
   }
   return await ExponentFileSystem.readAsStringAsync(fileUri, options || {});
+}
+
+export async function getContentUriAsync(fileUri: string): Promise<string> {
+  if (Platform.OS === 'android') {
+    if (!ExponentFileSystem.getContentUriAsync) {
+      throw new UnavailabilityError('expo-file-system', 'getContentUriAsync');
+    }
+    return await ExponentFileSystem.getContentUriAsync(fileUri);
+  } else {
+    return new Promise(function(resolve, reject) {
+      resolve(fileUri);
+    });
+  }
 }
 
 export async function writeAsStringAsync(
