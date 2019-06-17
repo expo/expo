@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="33.0.0" status="integration" publication="20190606122437"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="33.0.0" status="integration" publication="20190617151652"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -219,9 +219,7 @@
     <dependency org="com.theartofdev.edmodo" name="android-image-cropper" rev="2.7.0" conf="api-&gt;default"/>
     <dependency org="commons-codec" name="commons-codec" rev="1.10" conf="api-&gt;default"/>
     <dependency org="net.openid" name="appauth" rev="0.7.1" conf="api-&gt;default"/>
-    <dependency org="com.airbnb.android" name="lottie" rev="2.5.5" conf="api-&gt;default">
-      <exclude org="com.android.support" module="appcompat-v7"/>
-    </dependency>
+    <dependency org="com.airbnb.android" name="lottie" rev="2.5.6" conf="api-&gt;default"/>
     <dependency org="com.android.support" name="exifinterface" rev="28.0.0" conf="api-&gt;default"/>
     <dependency org="com.android.support" name="support-v4" rev="28.0.0" conf="api-&gt;default"/>
     <dependency org="com.android.support" name="customtabs" rev="28.0.0" conf="api-&gt;default"/>
@@ -250,7 +248,7 @@
     <dependency org="host.exp.exponent" name="expo-constants" rev="5.0.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-contacts" rev="5.0.2" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-crypto" rev="5.0.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-document-picker" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-document-picker" rev="5.0.2" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-face-detector" rev="5.0.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-facebook" rev="5.0.1" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-file-system" rev="5.0.1" conf="compileOnly-&gt;default"/>
@@ -399,7 +397,7 @@
     <dependency org="commons-codec" name="commons-codec" rev="1.10" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="net.openid" name="appauth" rev="0.7.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="customtabs" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.airbnb.android" name="lottie" rev="2.5.5" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.airbnb.android" name="lottie" rev="2.5.6" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="design" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="transition" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="cardview-v7" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
