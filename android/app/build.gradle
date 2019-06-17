@@ -95,6 +95,7 @@ devicefarm {
   devicePool System.getenv("DEVICEFARM_DEVICE_POOL")
   executionTimeoutMinutes 40
   authentication {
+
     accessKey System.getenv("AWS_ACCESS_KEY_ID")
     secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
   }
@@ -156,9 +157,7 @@ dependencies {
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
   implementation 'net.openid:appauth:0.4.1'
-  implementation('com.airbnb.android:lottie:2.5.5') {
-    exclude group: 'com.android.support', module: 'appcompat-v7'
-  }
+  implementation 'com.airbnb.android:lottie:2.5.6'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
