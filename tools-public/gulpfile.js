@@ -18,24 +18,7 @@ const {
 
 const logger = require('./logger');
 
-const ptool = './ptool';
-const _projects = './_projects';
-
 const argv = minimist(process.argv.slice(2));
-
-/**
- * Reads a _projects file and returns the project paths in it.
- */
-function pathsFromProjectsFile(projectsFile) {
-  let projectPaths = [];
-  let text = fs.readFileSync(projectsFile, 'utf8');
-  let regex = /\nproject=([^\n]*)/gm;
-  let match;
-  while ((match = regex.exec(text))) {
-    projectPaths.push(match[1]);
-  }
-  return projectPaths;
-}
 
 function createAndroidShellAppWithArguments() {
   validateArgv({
@@ -148,26 +131,6 @@ function setImageFunctions() {
   ImageUtils.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
 }
 
-let watcher = null;
-
-gulp.task('watch', function(done) {
-  assert(!watcher, 'gulp is already watching the Xcode projects');
-  let projectPaths = pathsFromProjectsFile(_projects);
-  let pbxprojPaths = projectPaths.map(function(projectPath) {
-    return path.join('..', projectPath, 'project.pbxproj');
-  });
-  watcher = gulp.watch(pbxprojPaths, gulp.series('ptool:pause-watch'));
-  done();
-});
-
-gulp.task('watch:stop', function(done) {
-  if (watcher) {
-    watcher.close();
-    watcher = null;
-  }
-  done();
-});
-
 // Shell app (android)
 gulp.task('android-shell-app', createAndroidShellAppWithArguments);
 gulp.task('update-android-shell-app', updateAndroidShellAppWithArguments);
@@ -179,7 +142,3 @@ gulp.task('ios:create-keychain', createIOSKeychainWithArguments);
 gulp.task('ios:import-cert-into-keychain', importCertIntoIOSKeychainWithArguments);
 gulp.task('ios:delete-keychain', deleteIOSKeychainWithArguments);
 gulp.task('ios:build-and-sign-ipa', buildAndSignIpaWithArguments);
-
-gulp.task('ptool', shell.task([`${ptool} ${_projects}`]));
-gulp.task('ptool:watch', gulp.series('ptool', 'watch'));
-gulp.task('ptool:pause-watch', gulp.series('watch:stop', 'ptool', 'watch'));
