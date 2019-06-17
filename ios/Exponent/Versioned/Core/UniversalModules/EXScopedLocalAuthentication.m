@@ -21,12 +21,12 @@
 }
 
 UM_EXPORT_METHOD_AS(authenticateAsync,
-                    authenticateAsync:(NSString *)reason
+                    authenticateWithOptions:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   BOOL isInExpoClient = _isInExpoClient;
-  [super authenticateAsync:reason resolve:^(NSDictionary *result) {
+  [super authenticateWithOptions:options resolve:^(NSDictionary *result) {
     if (isInExpoClient && [[self class] isFaceIdDevice]) {
       NSString *usageDescription = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"NSFaceIDUsageDescription"];
 

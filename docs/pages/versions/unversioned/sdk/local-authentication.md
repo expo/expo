@@ -38,9 +38,9 @@ Determine whether the device has saved fingerprints or facial data to use for au
 
 Returns a promise resolving to boolean value indicating whether the device has saved fingerprints or facial data for authentication.
 
-### `LocalAuthentication.authenticateAsync()`
+### `LocalAuthentication.authenticateAsync(options)`
 
-Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
+Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the device).
 
 > **Note:** When using the fingerprint module on Android, you need to provide a UI component to prompt the user to scan their fingerprint, as the OS has no default alert for it.
 
@@ -48,7 +48,9 @@ Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
 
 #### Arguments
 
-- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID or FaceID prompt.
+- **options (_object_)** -- An object of options.
+  - **promptMessage (_string_)** -- A message that is shown alongside the TouchID or FaceID prompt. (**iOS only**)
+  - **fallbackLabel (_string_)** -- Allows to customize the default `Use Passcode` label shown after several failed authentication attempts. Setting this option to an empty string disables fallback to device passcode. (**iOS only**)
 
 #### Returns
 

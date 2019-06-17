@@ -6,5 +6,7 @@ export enum AuthenticationType {
 }
 
 export type AuthOptions = {
+  // iOS only
+  promptMessage: string;
   fallbackLabel?: string;
 };
