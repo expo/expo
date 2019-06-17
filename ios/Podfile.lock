@@ -449,7 +449,7 @@ PODS:
     - UMCore
   - EXLinearGradient (5.0.0):
     - UMCore
-  - EXLocalAuthentication (5.0.0):
+  - EXLocalAuthentication (6.0.0-rc.0):
     - UMConstantsInterface
     - UMCore
   - EXLocalization (5.0.0):
@@ -1862,7 +1862,7 @@ SPEC CHECKSUMS:
   EXImagePicker: 20b9c4f2e31c76f50442030378aea86a0d76d55a
   EXKeepAwake: f32951b626366e82aeac9330060fff8139bdf67d
   EXLinearGradient: 300bcb612bdaf51a8ca4ee9ad6b6a23418e69736
-  EXLocalAuthentication: 8e56d578de3eb01ddcb535346dc84fe306e46161
+  EXLocalAuthentication: 99ce49f789d3174b6a9250eda6b3ab11a8abae38
   EXLocalization: fca4aad01c21f625c285b4a777ab72fd942639cc
   EXLocation: d1fb7359158f4306bd8d1843f58411e9997faf89
   EXMailComposer: 98a1cdfa54562c8ac41829d487bf1d4715c9db7b
@@ -1914,12 +1914,12 @@ SPEC CHECKSUMS:
   UMPermissionsInterface: 1d04595aa0da20732ce33d78f6f6c1cf6ebf51d6
   UMReactNativeAdapter: 90b3418908718243f8073b297a116c52a7a0fe5a
   UMSensorsInterface: d438f93649e5467cb60ab2667d81e46e800b188b
-  UMTaskManagerInterface: 796307812a43ec8e12130eeb8bdab5114a4a33cd
+  UMTaskManagerInterface: 6a61232bf7c1f227e9b0b2c1e945427a882aec5b
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
   yogaABI31_0_0: 52ac6cb3cb389bf301e284bb0139d86ffdcf2983
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: 991898749c6dcc9e08b48c213c2933afe968c43e
+PODFILE CHECKSUM: bd77b697fc78ff53e5e91ca9ea5a67676723450b
 
 COCOAPODS: 1.6.2
