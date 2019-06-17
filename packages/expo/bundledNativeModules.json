@@ -33,7 +33,7 @@
   "expo-intent-launcher": "~5.0.0",
   "expo-keep-awake": "~5.0.0",
   "expo-linear-gradient": "~5.0.0",
-  "expo-local-authentication": "~5.0.0",
+  "expo-local-authentication": "~6.0.0-rc.0",
   "expo-localization": "~5.0.0",
   "expo-location": "~5.0.0",
   "expo-mail-composer": "~5.0.0",
