@@ -1,3 +1,4 @@
+version: 2.1
 
 executors:
   # We add -l to all the shell commands to make it easier to use direnv
@@ -42,7 +43,6 @@ executors:
       CI: 1
 
 workflows:
- 
   client_shell_app:
     jobs:
       - hehe
