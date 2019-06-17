@@ -521,29 +521,27 @@ public class FileSystemModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void getContentUriAsync(String uri, Promise promise){
-    try{
+  public void getContentUriAsync(String uri, Promise promise) {
+    try {
       final Uri fileUri = Uri.parse(uri);
       ensurePermission(fileUri, Permission.WRITE);
       ensurePermission(fileUri, Permission.READ);
       checkIfFileDirExists(fileUri);
-      if("file".equals(fileUri.getScheme())){
+      if ("file".equals(fileUri.getScheme())) {
         File file = uriToFile(fileUri);
         Bundle result = new Bundle();
-        result.putString("uri", cUriFromFile(file).toString());
+        result.putString("uri", contentUriFromFile(file).toString());
         promise.resolve(result);
+      } else {
+        promise.reject("E_DIRECTORY_NOT_READ", "No readable files with the uri: " + uri + ". Please use other uri.");
       }
-      else{
-        promise.reject("E_DIRECTORY_NOT_READ","No readable files with the uri: " + uri);
-      }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
     }
   }
 
-  private Uri cUriFromFile(File file) {
+  private Uri contentUriFromFile(File file) {
     try {
       Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
       return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);

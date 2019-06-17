@@ -299,7 +299,7 @@ Returns an object with the following fields:
 
 ### `FileSystem.getContentUriAsync(fileUri)`
 
-Take a `file://` URI and convert it into content URI (`content://`) so that it can be access through other applications outside Expo.
+Take a `file://` URI and convert it into content URI (`content://`) so that it can be access by other applications outside of Expo.
 
 #### Example
 
