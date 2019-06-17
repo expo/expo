@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 110
-    versionName '2.11.0'
+    versionCode 114
+    versionName '2.11.4'
     // END VERSIONS
     ndk {
       // We use different `abiFilters` for distributing
