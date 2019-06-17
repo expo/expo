@@ -9,13 +9,14 @@ beforeEach(() => {
 
 afterEach(unmockAllProperties);
 
-it(`uses message on iOS`, async () => {
+it(`uses message and fallbackLabel on iOS`, async () => {
   mockPlatformIOS();
 
   const message = '<DEBUG_MESSAGE>';
-  await LocalAuthentication.authenticateAsync(message);
+  const options = {fallbackLabel: 'fallbackLabel'};
+  await LocalAuthentication.authenticateAsync(message, options);
 
-  expect(ExpoLocalAuthentication.authenticateAsync).toHaveBeenLastCalledWith(message);
+  expect(ExpoLocalAuthentication.authenticateAsync).toHaveBeenLastCalledWith(message, options);
 });
 
 it(`throws when an invalid message on is used iOS`, async () => {

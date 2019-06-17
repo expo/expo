@@ -62,11 +62,13 @@ UM_EXPORT_METHOD_AS(isEnrolledAsync,
 }
 
 UM_EXPORT_METHOD_AS(authenticateAsync,
-                    authenticateAsync:(NSString *)reason
+                    authenticateReason:(NSString *)reason
+                    options:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSString *warningMessage;
+  NSString *fallbackLabel = options[@"fallbackLabel"];
 
   if ([[self class] isFaceIdDevice]) {
     NSString *usageDescription = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"NSFaceIDUsageDescription"];
@@ -77,6 +79,10 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
   }
 
   LAContext *context = [LAContext new];
+
+  if (fallbackLabel != nil) {
+    context.localizedFallbackTitle = fallbackLabel;
+  }
 
   if (@available(iOS 11.0, *)) {
     context.interactionNotAllowed = false;
