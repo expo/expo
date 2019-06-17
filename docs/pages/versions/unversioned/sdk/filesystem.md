@@ -297,6 +297,32 @@ Returns an object with the following fields:
 
 - **resumeData (_string_)** -- The string which allows the api to resume a paused download.
 
+### `FileSystem.getContentUriAsync(fileUri)`
+
+Take a `file://` URI and convert it into content URI (`content://`) so that it can be access by other applications outside of Expo.
+
+#### Example
+
+```javascript
+FileSystem.getContentUriAsync(uri).then(cUri => {
+  console.log(cUri);
+  IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+    data: cUri.uri,
+    flags: 1
+  });
+});
+```
+
+#### Arguments
+
+- **fileUri (_string_)** -- The local URI of the file. If there is no file at this URI, an exception will be thrown.
+
+#### Returns
+
+Returns a Promise that resolves to an object with the following fields:
+
+- **uri (_string_)** -- A `content://` URI pointing to the file. This is the same as the `fileUri` input parameter but in different format.
+
 #### Example
 
 ```javascript
