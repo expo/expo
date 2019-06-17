@@ -31,6 +31,14 @@ Font.loadAsync({
 });
 ```
 
+When used it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, don't forget to set Font.processFontFamily as a preprocessor for StyleSheet.
+
+```javascript
+import * as Font from 'expo-font';
+import { StyleSheet } from 'react-native';
+StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+```
+
 #### Returns
 
 Returns a promise. The promise will be resolved when the fonts have finished loading.
