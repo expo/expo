@@ -6,7 +6,11 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Added `fallbackLabel` option to `LocalAuthentication.authenticateAsync` on iOS which allows to customize a title of the fallback button when the system doesn't recognize the user and asks to authenticate via device passcode. ([#4612](https://github.com/expo/expo/pull/4612) by [@changLiuUNSW](https://github.com/changLiuUNSW))
 
 ### 🐛 Bug fixes
 
