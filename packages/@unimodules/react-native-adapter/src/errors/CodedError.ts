@@ -3,7 +3,7 @@
  * Guarantees a `code` field that can be used to differentiate between different
  * types of errors without further subclassing Error.
  */
-export default class CodedError extends Error {
+export class CodedError extends Error {
   code: string;
   info?: any;
 

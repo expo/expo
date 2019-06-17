@@ -1,8 +1,5 @@
-import { Platform } from './AdapterProxy';
-
-import CodedError from './CodedError';
-
-export { CodedError };
+import { Platform } from '../index';
+import { CodedError } from './CodedError';
 
 /**
  * A class for errors to be thrown when a property is accessed which is
@@ -19,5 +16,3 @@ export class UnavailabilityError extends CodedError {
     );
   }
 }
-
-export { default as deprecate } from './deprecate';

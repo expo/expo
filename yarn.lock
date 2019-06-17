@@ -1365,7 +1365,7 @@
     babel-runtime "^6.23.0"
     exec-async "^2.2.0"
 
-"@expo/react-native-action-sheet@^2.0.1":
+"@expo/react-native-action-sheet@^2.0.1", "@expo/react-native-action-sheet@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@expo/react-native-action-sheet/-/react-native-action-sheet-2.1.0.tgz#7c3f6def52aee15ca7bd9e03cc0529e64618592c"
   integrity sha512-gtFPQp36pLZxd29vTov+ewaJ7Bd3obP5XxaphwaKZRBVtHrbfd5DvdMBKs8//Y19pRseKrskdATou3b8EKk8Sg==
@@ -1373,16 +1373,7 @@
     hoist-non-react-statics "^2.2.2"
     prop-types "^15.5.10"
 
-"@expo/react-native-fade-in-image@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@expo/react-native-fade-in-image/-/react-native-fade-in-image-1.1.1.tgz#f3126988c791324adbba807399899243c1a3a731"
-  integrity sha1-8xJpiMeRMkrbuoBzmYmSQ8GjpzE=
-  dependencies:
-    react-clone-referenced-element "^1.0.1"
-    react-mixin "^3.0.5"
-    react-timer-mixin "^0.13.3"
-
-"@expo/react-native-touchable-native-feedback-safe@^1.1.1":
+"@expo/react-native-touchable-native-feedback-safe@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@expo/react-native-touchable-native-feedback-safe/-/react-native-touchable-native-feedback-safe-1.1.2.tgz#7ef501d5d32140eed657f75f0de145d4a96244d8"
   integrity sha1-fvUB1dMhQO7WV/dfDeFF1KliRNg=
@@ -2097,6 +2088,14 @@
   version "1.0.0-alpha.8"
   resolved "https://registry.yarnpkg.com/@react-navigation/web/-/web-1.0.0-alpha.8.tgz#f06cbf222666a0f95778c3f43fefa9d9d2c9af83"
   integrity sha512-eDTl9br2qQtX2+JoQ3AVtNuOTzb+FOR+1LOFuqZY8FPdd49rhwVksh1u/gnt74Ggvc78F/cgPWS+V1a33tSNhQ==
+  dependencies:
+    history "^4.7.2"
+    query-string "^6.2.0"
+
+"@react-navigation/web@^1.0.0-alpha.8":
+  version "1.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@react-navigation/web/-/web-1.0.0-alpha.9.tgz#bb960fe7040a0cd1359b84b9921212a9468bace3"
+  integrity sha512-1UugAcTbJ/yJNLVvEIJ+hAp/KcwBiRU76vPvNXD1NLrU0ZzK1+GrxvzR7p4effMTJgPRkRzvz8tRNklv8YLLHQ==
   dependencies:
     history "^4.7.2"
     query-string "^6.2.0"
@@ -14642,6 +14641,15 @@ react-native-branch@2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-2.2.5.tgz#4074dd63b4973e6397d9ce50e97b57c77a518e9d"
   integrity sha1-QHTdY7SXPmOX2c5Q6XtXx3pRjp0=
+
+react-native-fade-in-image@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-fade-in-image/-/react-native-fade-in-image-1.5.0.tgz#efface43f9846b1d1ffd6c6894576cede710617d"
+  integrity sha512-I03XZzr9flUnGO9XqMsv1rWAcpvHR6bhPamKsM6S8kjgYeYFUAVT7qNmyB3bN+qfRFPMFEkSlXE1TqUG2pZ8vw==
+  dependencies:
+    react-clone-referenced-element "^1.0.1"
+    react-mixin "^3.0.5"
+    react-timer-mixin "^0.13.3"
 
 react-native-gesture-handler@1.2.1:
   version "1.2.1"
