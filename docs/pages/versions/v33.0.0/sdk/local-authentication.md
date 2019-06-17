@@ -48,7 +48,11 @@ Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
 
 #### Arguments
 
-- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID or FaceID prompt.
+- (**iOS only**) **promptMessage (_string_)** -- **optional** -- A message that is shown alongside the TouchID or FaceID prompt.
+
+- **options (_object_)** -- **optional** -- A map of options:
+
+  - (**iOS only**) **fallbackLabel (_string_)** -- **optional** -- by default specified 'Show Password' label. If set to empty string label is invisible.
 
 #### Returns
 
