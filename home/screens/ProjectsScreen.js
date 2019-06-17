@@ -328,7 +328,7 @@ export default class ProjectsScreen extends React.Component {
           Client version: {Constants.expoVersion}
         </Text>
         <Text style={styles.supportSdksText}>
-          Supports SDKs {Constants.supportedExpoSdks.map(
+          Supports SDK{Constants.supportedExpoSdks.length === 1 ? "" : "s"} {Constants.supportedExpoSdks.map(
             // Only displays the number before the first dot of each SDK version.
             (sdkVersion, index) => (index ? ', ' : '') + sdkVersion.substr(0, sdkVersion.indexOf('.'))
           )}
