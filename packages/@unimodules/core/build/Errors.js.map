@@ -1,1 +1,0 @@
-{"version":3,"file":"Errors.js","sourceRoot":"","sources":["../src/Errors.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,mBAAmB,EAAE,MAAM,kCAAkC,CAAC;AACnF,OAAO,EAAE,OAAO,IAAI,SAAS,EAAE,MAAM,aAAa,CAAC","sourcesContent":["export { CodedError, UnavailabilityError } from '@unimodules/react-native-adapter';\nexport { default as deprecate } from './deprecate';\n"]}
