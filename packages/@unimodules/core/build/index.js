@@ -1,3 +1,3 @@
 export * from './AdapterProxy';
-export * from './Errors';
+export { default as deprecate } from './deprecate';
 //# sourceMappingURL=index.js.map
