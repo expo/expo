@@ -34,6 +34,7 @@ async function action(options) {
 
     try {
       if (options.build) {
+        await runScriptAsync(pkg, 'clean');
         await runScriptAsync(pkg, 'build');
 
         if (options.uniformityCheck) {
