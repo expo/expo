@@ -6,6 +6,7 @@
 @interface EXLocalAuthentication : UMExportedModule
 
 - (void)authenticateAsync:(NSString *)reason
+                  options:(NSDictionary *)options
                   resolve:(UMPromiseResolveBlock)resolve
                    reject:(UMPromiseRejectBlock)reject;
 - (NSString *)convertErrorCode:(NSError *)error;

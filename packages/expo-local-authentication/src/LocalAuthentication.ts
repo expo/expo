@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
 
-import { AuthenticationType, LocalAuthenticationResult } from './LocalAuthentication.types';
+import { AuthenticationType, AuthOptions, LocalAuthenticationResult } from './LocalAuthentication.types';
 
 export { AuthenticationType, LocalAuthenticationResult };
 
@@ -30,7 +30,8 @@ export async function isEnrolledAsync(): Promise<boolean> {
 }
 
 export async function authenticateAsync(
-  promptMessageIOS: string = 'Authenticate'
+  promptMessageIOS: string = 'Authenticate',
+  options: AuthOptions = {}
 ): Promise<LocalAuthenticationResult> {
   if (!ExpoLocalAuthentication.authenticateAsync) {
     throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
@@ -42,7 +43,7 @@ export async function authenticateAsync(
       'LocalAuthentication.authenticateAsync must be called with a non-empty string on iOS'
     );
 
-    const result = await ExpoLocalAuthentication.authenticateAsync(promptMessageIOS);
+    const result = await ExpoLocalAuthentication.authenticateAsync(promptMessageIOS, options);
 
     if (result.warning) {
       console.warn(result.warning);
