@@ -327,6 +327,12 @@ export default class ProjectsScreen extends React.Component {
         <Text style={styles.expoVersionText} onPress={this._copyClientVersionToClipboard}>
           Client version: {Constants.expoVersion}
         </Text>
+        <Text style={styles.supportSdksText}>
+          Supports SDKs {Constants.supportedExpoSdks.map(
+            // Only displays the number before the first dot of each SDK version.
+            (sdkVersion, index) => (index ? ', ' : '') + sdkVersion.substr(0, sdkVersion.indexOf('.'))
+          )}
+        </Text>
       </View>
     );
   };
@@ -421,6 +427,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   expoVersionText: {
+    color: 'rgba(0,0,0,0.3)',
+    fontSize: 11,
+    marginBottom: 5,
+  },
+  supportSdksText: {
     color: 'rgba(0,0,0,0.3)',
     fontSize: 11,
   },
