@@ -1,4 +1,4 @@
-import { CodedError, deprecate } from '../index';
+import { CodedError, deprecate } from '@unimodules/core';
 
 const packageName = '@unimodules/core';
 
