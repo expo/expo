@@ -62,12 +62,12 @@ UM_EXPORT_METHOD_AS(isEnrolledAsync,
 }
 
 UM_EXPORT_METHOD_AS(authenticateAsync,
-                    authenticateReason:(NSString *)reason
-                    options:(NSDictionary *)options
+                    authenticateWithOptions:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSString *warningMessage;
+  NSString *reason = options[@"promptMessage"];
   NSString *fallbackLabel = options[@"fallbackLabel"];
 
   if ([[self class] isFaceIdDevice]) {
