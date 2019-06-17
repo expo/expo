@@ -4,17 +4,8 @@ executors:
   # We add -l to all the shell commands to make it easier to use direnv
   nix: &nix
     docker:
-      - image: lnl7/nix:2.1.2
-    # Symlink to the readline-enabled bash which is the default command of the container
-    shell: /run/current-system/sw/bin/bash -leo pipefail
+      - image: ubuntu:latest
     working_directory: ~/expo
-    environment:
-      # fastlane complains if these are not set
-      LC_ALL: en_US.UTF-8
-      LANG: en_US.UTF-8
-      FASTLANE_SKIP_UPDATE_CHECK: 1
-      FASTLANE_DISABLE_COLORS: 1
-      CI: 1
   android:
     <<: *nix
     resource_class: xlarge
