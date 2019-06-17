@@ -3,10 +3,10 @@
   <groupId>org.unimodules</groupId>
   <artifactId>unimodules-constants-interface</artifactId>
   <versioning>
-    <release>2.0.0</release>
+    <release>2.0.1</release>
     <versions>
-      <version>2.0.0</version>
+      <version>2.0.1</version>
     </versions>
-    <lastUpdated>20190605100735</lastUpdated>
+    <lastUpdated>20190617131536</lastUpdated>
   </versioning>
 </metadata>

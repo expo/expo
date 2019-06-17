@@ -64,14 +64,15 @@ export function dismissBrowser() {
     ExponentWebBrowser.dismissBrowser();
 }
 export async function openAuthSessionAsync(url, redirectUrl) {
-    // if (_authSessionIsNativelySupported()) {
-    //   if (!ExponentWebBrowser.openAuthSessionAsync) {
-    //     throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
-    //   }
-    //   return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
-    // } else {
-    return _openAuthSessionPolyfillAsync(url, redirectUrl);
-    // }
+    if (_authSessionIsNativelySupported()) {
+        if (!ExponentWebBrowser.openAuthSessionAsync) {
+            throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
+        }
+        return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
+    }
+    else {
+        return _openAuthSessionPolyfillAsync(url, redirectUrl);
+    }
 }
 export function dismissAuthSession() {
     if (_authSessionIsNativelySupported()) {
@@ -96,6 +97,12 @@ function _authSessionIsNativelySupported() {
     return versionNumber >= 11;
 }
 let _redirectHandler = null;
+/*
+ * openBrowserAsync on Android doesn't wait until closed, so we need to polyfill
+ * it with AppState
+ */
+// Store the `resolve` function from a Promise to fire when the AppState
+// returns to active
 let _onWebBrowserCloseAndroid = null;
 function _onAppStateChangeAndroid(state) {
     if (state === 'active' && _onWebBrowserCloseAndroid) {
@@ -136,7 +143,8 @@ async function _openAuthSessionPolyfillAsync(startUrl, returnUrl) {
         }
     }
     finally {
-        // We can't dismiss the browser on Android, only call this when it's available
+        // We can't dismiss the browser on Android, only call this when it's available.
+        // Users on Android need to manually press the 'x' button in Chrome Custom Tabs, sadly.
         if (ExponentWebBrowser.dismissBrowser) {
             ExponentWebBrowser.dismissBrowser();
         }

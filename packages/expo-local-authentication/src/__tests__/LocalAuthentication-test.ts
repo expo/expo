@@ -9,20 +9,23 @@ beforeEach(() => {
 
 afterEach(unmockAllProperties);
 
-it(`uses message on iOS`, async () => {
+it(`uses promptMessage and fallbackLabel on iOS`, async () => {
   mockPlatformIOS();
 
-  const message = '<DEBUG_MESSAGE>';
-  await LocalAuthentication.authenticateAsync(message);
+  const options = {
+    promptMessage: 'Authentication is required',
+    fallbackLabel: 'Use passcode',
+  };
+  await LocalAuthentication.authenticateAsync(options);
 
-  expect(ExpoLocalAuthentication.authenticateAsync).toHaveBeenLastCalledWith(message);
+  expect(ExpoLocalAuthentication.authenticateAsync).toHaveBeenLastCalledWith(options);
 });
 
-it(`throws when an invalid message on is used iOS`, async () => {
+it(`throws when an invalid message is used on iOS`, async () => {
   mockPlatformIOS();
 
   expect(LocalAuthentication.authenticateAsync(undefined)).rejects.toThrow();
-  expect(LocalAuthentication.authenticateAsync('')).rejects.toThrow();
+  expect(LocalAuthentication.authenticateAsync('' as any)).rejects.toThrow();
   expect(LocalAuthentication.authenticateAsync({} as any)).rejects.toThrow();
   expect(LocalAuthentication.authenticateAsync(123 as any)).rejects.toThrow();
 });
@@ -30,8 +33,9 @@ it(`throws when an invalid message on is used iOS`, async () => {
 it(`doesn't use a message on Android`, async () => {
   mockPlatformAndroid();
 
-  const message = '<DEBUG_MESSAGE>';
-  await LocalAuthentication.authenticateAsync(message);
+  await LocalAuthentication.authenticateAsync({
+    promptMessage: 'Authentication is required',
+  });
 
   expect(ExpoLocalAuthentication.authenticateAsync).toHaveBeenLastCalledWith();
 });
