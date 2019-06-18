@@ -72,7 +72,8 @@ describe('Location', () => {
   });
 
   describe('geocodeAsync', () => {
-    it('falls back to Google Maps API on Android without Google Play services', () => {
+    // TODO(@tsapeta): This doesn't work due to missing Google Maps API key.
+    xit('falls back to Google Maps API on Android without Google Play services', () => {
       mockPlatformAndroid();
       mockProperty(NativeModulesProxy.ExpoLocation, 'geocodeAsync', async () => {
         const error = new Error();

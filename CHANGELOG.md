@@ -6,7 +6,11 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Added `fallbackLabel` option to `LocalAuthentication.authenticateAsync` on iOS which allows to customize a title of the fallback button when the system doesn't recognize the user and asks to authenticate via device passcode. ([#4612](https://github.com/expo/expo/pull/4612) by [@changLiuUNSW](https://github.com/changLiuUNSW))
 
 ### 🐛 Bug fixes
 
@@ -90,6 +94,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed `EXC_BAD_ACCESS` crashes on startup on iOS below 12.0 by [@tsapeta](https://github.com/tsapeta) ([#4227](https://github.com/expo/expo/pull/4227))
 - fix `jest-expo` Jest executable not starting Node on Windows by [@Artorp](https://github.com/Artorp) ([#3477](https://github.com/expo/expo/pull/3477))
 - fixed crashes in `TaskManager` due to jobs queue being full by [@tsapeta](https://github.com/tsapeta) ([#4247](https://github.com/expo/expo/pull/4247))
+- allow console.log() function to log truncated large files instead of reporting a PayloadTooLargeError. [@vivianzzhu91](https://github.com/vivianzzhu91) ([#4419](https://github.com/expo/expo/pull/4419))
+- fixed sorting in `MediaLibrary.getAssetsAsync` by [@ninjaachibi](https://github.com/ninjaachibi) ([#4420](https://github.com/expo/expo/pull/4420))
 
 ## 32.0.0
 

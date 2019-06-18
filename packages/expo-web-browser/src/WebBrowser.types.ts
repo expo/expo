@@ -23,7 +23,8 @@ export type CustomTabsBrowsersResults = {
 };
 
 export type BrowserResult = {
-  type: 'cancel' | 'dismiss';
+  // cancel and dismiss are iOS only, opened is Android only
+  type: 'cancel' | 'dismiss' | 'opened';
 };
 
 export type RedirectResult = {

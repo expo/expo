@@ -38,7 +38,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 
@@ -47,7 +46,7 @@ import static expo.modules.google.signin.Serialization.getSignInOptions;
 import static expo.modules.google.signin.Serialization.jsonFromGoogleUser;
 import static expo.modules.google.signin.Serialization.scopesToString;
 
-public class GoogleSignInModule extends ExportedModule implements ModuleRegistryConsumer {
+public class GoogleSignInModule extends ExportedModule {
     public static final int RC_LOG_IN = 1737;
     public static final int RC_PLAY_SERVICES = 2404;
     public static final String MODULE_NAME = "ExpoGoogleSignIn";
@@ -69,7 +68,7 @@ public class GoogleSignInModule extends ExportedModule implements ModuleRegistry
     }
 
     @Override
-    public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    public void onCreate(ModuleRegistry moduleRegistry) {
 
         mModuleRegistry = moduleRegistry;
 

@@ -8,11 +8,9 @@ import java.util.List;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
 import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
-public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
-    implements ModuleRegistryConsumer {
+public class PublisherBannerViewManager extends ViewManager<PublisherBannerView> {
   public enum Events {
     EVENT_SIZE_CHANGE("onSizeChange"),
     EVENT_RECEIVE_AD("onAdViewDidReceiveAd"),
@@ -47,7 +45,7 @@ public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
   }
 

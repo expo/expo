@@ -19,15 +19,52 @@ def set_bundle_version_from_commit_count
   )
 end
 
-def clear_bundle_version
-  puts "removing CFBundleVersion..."
+# This will keep a copy of the original Info.plist
+@original_info_plist = nil
+
+def save_original_info_plist
   update_info_plist(
     xcodeproj: "ios/Exponent.xcodeproj",
     plist_path: "Exponent/Supporting/Info.plist",
     block: proc do |plist|
-      plist.delete("CFBundleVersion")
+      @original_info_plist = Marshal.load(Marshal.dump(plist))
     end
   )
+end
+
+def restore_original_info_plist
+  update_info_plist(
+    xcodeproj: "ios/Exponent.xcodeproj",
+    plist_path: "Exponent/Supporting/Info.plist",
+    block: proc do |plist|
+      puts "Restoring original Info.plist..."
+      plist.replace(@original_info_plist)
+    end
+  )
+end
+
+def remove_background_location
+  update_info_plist(
+    xcodeproj: "ios/Exponent.xcodeproj",
+    plist_path: "Exponent/Supporting/Info.plist",
+    block: proc do |plist|
+      puts "Removing background location permission strings and background mode..."
+
+      puts "Deleting NSLocationAlwaysAndWhenInUseUsageDescription key..."
+      plist.delete("NSLocationAlwaysAndWhenInUseUsageDescription")
+
+      puts "Deleting NSLocationAlwaysUsageDescription key..."
+      plist.delete("NSLocationAlwaysUsageDescription")
+
+      puts "Deleting location from UIBackgroundModes..."
+      plist["UIBackgroundModes"].delete("location")
+    end
+  )
+end
+
+def configure_for_app_store
+  puts "Configuring app for App Store submission..."
+  remove_background_location
 end
 
 platform :ios do
@@ -37,6 +74,7 @@ platform :ios do
     Actions.lane_context[SharedValues::VERSION_NUMBER] = get_version_number(
       xcodeproj: "./ios/Exponent.xcodeproj"
     )
+    save_original_info_plist
     set_bundle_version_from_commit_count
     setup_circle_ci
   end
@@ -103,6 +141,8 @@ platform :ios do
       "#{k.to_s.shellescape}=#{v.shellescape}"
     end.join ' '
 
+    configure_for_app_store
+
     gym(
       workspace: "ios/Exponent.xcworkspace",
       scheme: "Exponent",
@@ -118,7 +158,7 @@ platform :ios do
 
   after_all do |lane|
     # FileUtils.rm_rf(output_directory)
-    clear_bundle_version
+    restore_original_info_plist
   end
 
   error do |lane, exception|
@@ -171,7 +211,7 @@ platform :android do
 
   lane :devicefarm do
     commit_info = last_git_commit
-    channel = commit_info[:commit_hash] 
+    channel = commit_info[:commit_hash]
     ENV["TEST_SUITE_URI"] = "exp://exp.host/@exponent_ci_bot/test-suite/--/all?release-channel=#{channel}"
     ENV["TEST_CONFIG"] = {
       includeModules:  '.*',

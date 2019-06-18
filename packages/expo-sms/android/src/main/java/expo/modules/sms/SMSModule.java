@@ -15,10 +15,9 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class SMSModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener {
+public class SMSModule extends ExportedModule implements LifecycleEventListener {
   private static final String TAG = "ExpoSMS";
   private static final String ERROR_TAG = "E_SMS";
 
@@ -36,18 +35,21 @@ public class SMSModule extends ExportedModule implements ModuleRegistryConsumer,
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
+    if (mModuleRegistry.getModule(UIManager.class) != null) {
+      mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+    }
+  }
+
+  @Override
+  public void onDestroy() {
     // Unregister from old UIManager
     if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
     }
 
-    mModuleRegistry = moduleRegistry;
-
-    // Register to new UIManager
-    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-      mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
-    }
+    mModuleRegistry = null;
   }
 
   @ExpoMethod

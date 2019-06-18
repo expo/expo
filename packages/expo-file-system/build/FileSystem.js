@@ -30,6 +30,12 @@ export async function readAsStringAsync(fileUri, options) {
     }
     return await ExponentFileSystem.readAsStringAsync(fileUri, options || {});
 }
+export async function getContentUriAsync(fileUri) {
+    if (!ExponentFileSystem.getContentUriAsync) {
+        throw new UnavailabilityError('expo-file-system', 'getContentUriAsync');
+    }
+    return await ExponentFileSystem.getContentUriAsync(fileUri);
+}
 export async function writeAsStringAsync(fileUri, contents, options = {}) {
     if (!ExponentFileSystem.writeAsStringAsync) {
         throw new UnavailabilityError('expo-file-system', 'writeAsStringAsync');

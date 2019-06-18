@@ -1,10 +1,12 @@
 package expo.modules.filesystem;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
 
@@ -15,8 +17,8 @@ import org.apache.commons.io.IOUtils;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
 import org.unimodules.interfaces.filesystem.Permission;
@@ -56,7 +58,7 @@ import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
 
-public class FileSystemModule extends ExportedModule implements ModuleRegistryConsumer {
+public class FileSystemModule extends ExportedModule {
   private static final String NAME = "ExponentFileSystem";
   private static final String TAG = FileSystemModule.class.getSimpleName();
   private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
@@ -80,7 +82,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
@@ -515,6 +517,36 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void getContentUriAsync(String uri, Promise promise) {
+    try {
+      final Uri fileUri = Uri.parse(uri);
+      ensurePermission(fileUri, Permission.WRITE);
+      ensurePermission(fileUri, Permission.READ);
+      checkIfFileDirExists(fileUri);
+      if ("file".equals(fileUri.getScheme())) {
+        File file = uriToFile(fileUri);
+        Bundle result = new Bundle();
+        result.putString("uri", contentUriFromFile(file).toString());
+        promise.resolve(result);
+      } else {
+        promise.reject("E_DIRECTORY_NOT_READ", "No readable files with the uri: " + uri + ". Please use other uri.");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  private Uri contentUriFromFile(File file) {
+    try {
+      Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
+      return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+    } catch (Exception e) {
+      throw e;
     }
   }
 

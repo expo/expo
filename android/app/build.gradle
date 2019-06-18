@@ -34,11 +34,20 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 110
-    versionName '2.11.0'
+    versionCode 114
+    versionName '2.11.4'
     // END VERSIONS
     ndk {
+      // We use different `abiFilters` for distributing
+      // to be able to bundle old, incompatible SDKs.
+    
+      // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
       abiFilters 'armeabi-v7a', 'x86'
+      // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+     
+      /* UNCOMMENT WHEN DISTRIBUTING
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
+      END UNCOMMENT WHEN DISTRIBUTING */
     }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -86,6 +95,7 @@ devicefarm {
   devicePool System.getenv("DEVICEFARM_DEVICE_POOL")
   executionTimeoutMinutes 40
   authentication {
+
     accessKey System.getenv("AWS_ACCESS_KEY_ID")
     secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
   }
@@ -93,7 +103,7 @@ devicefarm {
 
 configurations.all {
   resolutionStrategy {
-    force 'org.webkit:android-jsc:r224109'
+    force 'org.webkit:android-jsc:r241213'
   }
 }
 
@@ -147,9 +157,7 @@ dependencies {
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
   implementation 'net.openid:appauth:0.4.1'
-  implementation('com.airbnb.android:lottie:2.5.5') {
-    exclude group: 'com.android.support', module: 'appcompat-v7'
-  }
+  implementation 'com.airbnb.android:lottie:2.5.6'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
@@ -215,6 +223,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
+  api 'org.webkit:android-jsc:r241213' // needs to be before react-native
   api 'com.facebook.react:react-native:33.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 

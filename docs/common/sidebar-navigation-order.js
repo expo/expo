@@ -60,6 +60,7 @@ const GUIDES = [
   'Using Firebase',
   'Using GraphQL',
   'Using Sentry',
+  'Using Bugsnag',
   'User Interface Component Libraries',
   'Crafting Educational Materials',
 ];

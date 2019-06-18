@@ -19,9 +19,8 @@ import {
 
 import DevIndicator from '../components/DevIndicator';
 import FriendlyUrls from '../legacy/FriendlyUrls';
+import ExponentKernel from '../universal/ExponentKernel';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
-
-const { ExponentKernel } = NativeModules;
 
 let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 

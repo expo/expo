@@ -7,13 +7,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.webkit.URLUtil;
-import android.util.Log;
+
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.utilities.FileUtilities;
 import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
 import org.unimodules.interfaces.filesystem.Permission;
@@ -25,7 +24,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VideoThumbnailsModule extends ExportedModule implements ModuleRegistryConsumer {
+public class VideoThumbnailsModule extends ExportedModule {
     private static final String TAG = "ExpoVideoThumbnails";
     private static final String ERROR_TAG = "E_VIDEO_THUMBNAILS";
 
@@ -45,7 +44,7 @@ public class VideoThumbnailsModule extends ExportedModule implements ModuleRegis
     }
 
     @Override
-    public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+    public void onCreate(ModuleRegistry moduleRegistry) {
         mModuleRegistry = moduleRegistry;
     }
 

@@ -5,6 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AppText, DocItem, Section } from '../ui-explorer';
 
 export const title = 'Accelerometer';
+export const label = 'Accelerometer';
 export const packageJson = require('expo-sensors/package.json');
 export const description = `Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d
 space.`;
