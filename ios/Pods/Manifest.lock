@@ -417,7 +417,7 @@ PODS:
     - FBSDKLoginKit
     - UMConstantsInterface
     - UMCore
-  - EXFaceDetector (5.0.0):
+  - EXFaceDetector (6.0.0-rc.0):
     - Firebase/Core
     - Firebase/MLVision
     - Firebase/MLVisionFaceModel
@@ -1938,7 +1938,7 @@ SPEC CHECKSUMS:
   EXCrypto: fdec92b3f9740e1c27858688d3cff33002f1ff44
   EXDocumentPicker: 03566e97f55139cf76e0a85b2afdb29abb3f46c8
   EXFacebook: 670578e816563084201dc850b91dc2b8b8578189
-  EXFaceDetector: 7a74da1840b871fd7cc77b35f4e5dc0e9a64938e
+  EXFaceDetector: 531fdafaa07a582cd898bacf05a68fa03b795d0d
   EXFileSystem: fd395ff6286bbcc355088f606116d094262b0463
   EXFont: 5f09ddaa51c0bbb7906f2ed61ea3de4491693e6b
   EXGL: 6091d335b1eb6db861c4366a0935c5974cd58ea3
@@ -2015,6 +2015,6 @@ SPEC CHECKSUMS:
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: bd77b697fc78ff53e5e91ca9ea5a67676723450b
+PODFILE CHECKSUM: 358169f20a3a30d9ecf4786b4504d8c73f17ac33
 
 COCOAPODS: 1.6.2

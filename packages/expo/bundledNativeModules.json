@@ -20,7 +20,7 @@
   "expo-contacts": "~5.0.1",
   "expo-crypto": "~5.0.0",
   "expo-document-picker": "~5.0.0",
-  "expo-face-detector": "~5.0.0",
+  "expo-face-detector": "~6.0.0-rc.0",
   "expo-facebook": "~5.0.0",
   "expo-file-system": "~5.0.0",
   "expo-font": "~5.0.0",
