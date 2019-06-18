@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { withNavigationFocus, withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
+import semver from 'semver';
 import ScrollView from '../components/NavigationScrollView';
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Environment from '../utils/Environment';
@@ -328,10 +329,10 @@ export default class ProjectsScreen extends React.Component {
           Client version: {Constants.expoVersion}
         </Text>
         <Text style={styles.supportSdksText}>
-          Supports SDK{Constants.supportedExpoSdks.length === 1 ? "" : "s"} {Constants.supportedExpoSdks.sort().map(
-            // Only displays the number before the first dot of each SDK version.
-            (sdkVersion, index) => (index ? ', ' : '') + sdkVersion.substr(0, sdkVersion.indexOf('.'))
-          )}
+          Supports SDK{Constants.supportedExpoSdks.length === 1 ? "" : "s"} {
+            // Displays the major version numbers of the SDKs in ascending order.
+            Constants.supportedExpoSdks.map(version => semver.major(version)).sort((a, b) => a - b).join(", ")
+          }
         </Text>
       </View>
     );
