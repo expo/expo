@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI33_0_0/Expo/Core/Api/Components/Svg/Elements/ABI33_0_0RNSVGDefs.h
