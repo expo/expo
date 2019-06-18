@@ -59,9 +59,9 @@ A map of options:
 - **behavior (_string_)** -- The type of login prompt to show. Must be one of the following values:
 
   - `'system'` (iOS default) -- Attempts to log in through the Facebook account currently signed in through the device Settings. This will fallback to `native` behavior on iOS 11+ as Facebook has been removed from iOS's Settings. iOS only.
+  - `'native'` (Android default) -- Attempts to log in through the native Facebook app, but the Facebook SDK may fallback to `browser` instead.
   - `'web'` -- Attempts to log in through a modal `UIWebView` pop up.
   - `'browser'` -- Attempts to log in through Safari or `SFSafariViewController`.
-  - `'native'` (Android default) -- Attempts to log in through the native Facebook app, but the Facebook SDK may fallback to `browser` instead.
 
 #### Returns
 
