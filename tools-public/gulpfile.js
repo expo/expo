@@ -11,28 +11,6 @@ const logger = require('./logger');
 
 const argv = minimist(process.argv.slice(2));
 
-function createAndroidShellAppWithArguments() {
-  validateArgv({
-    url: 'Must run with `--url MANIFEST_URL`',
-    sdkVersion: 'Must run with `--sdkVersion SDK_VERSION`',
-  });
-
-  setImageFunctions();
-
-  return AndroidShellApp.createAndroidShellAppAsync(argv);
-}
-
-function updateAndroidShellAppWithArguments() {
-  validateArgv({
-    url: 'Must run with `--url MANIFEST_URL`',
-    sdkVersion: 'Must run with `--sdkVersion SDK_VERSION`',
-  });
-
-  setImageFunctions();
-
-  return AndroidShellApp.updateAndroidShellAppAsync(argv);
-}
-
 function createIOSShellAppWithArguments() {
   setImageFunctions();
 
@@ -65,9 +43,6 @@ function setImageFunctions() {
   ImageUtils.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
 }
 
-// Shell app (android)
-gulp.task('android-shell-app', createAndroidShellAppWithArguments);
-gulp.task('update-android-shell-app', updateAndroidShellAppWithArguments);
 
 // iOS
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);
