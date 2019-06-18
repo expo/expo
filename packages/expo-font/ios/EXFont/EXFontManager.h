@@ -5,7 +5,9 @@
 
 @interface EXFontManager : NSObject
 
-+ (EXFont *)getFontForName:(NSString *)name;
-+ (void)setFont:(EXFont *)font forName:(NSString *)name;
+@property(nonatomic, strong) NSMutableDictionary *registry;
+- (instancetype)init;
+- (EXFont *)getFontForName:(NSString *)name;
+- (void)setFont:(EXFont *)font forName:(NSString *)name;
 
 @end

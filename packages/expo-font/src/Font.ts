@@ -10,11 +10,20 @@ import ExpoFontLoader from './ExpoFontLoader';
 type FontSource = string | number | Asset;
 
 const isWeb = Platform.OS === 'web';
+
+// Bare apps do not have any app ownership.
+const isBare = !Constants.appOwnership;
+
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};
 
 export function processFontFamily(name: string | null): string | null {
-  if (typeof name !== 'string' || Constants.systemFonts.includes(name) || name === 'System') {
+  if (
+    typeof name !== 'string' ||
+    Constants.systemFonts.includes(name) ||
+    name === 'System' ||
+    isBare
+  ) {
     return name;
   }
 
@@ -123,9 +132,10 @@ async function _loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
 }
 
 function _getNativeFontName(name: string): string {
-  if (isWeb) {
+  if (isWeb || isBare) {
     return name;
   }
+
   return `${Constants.sessionId}-${name}`;
 }
 

@@ -3,10 +3,15 @@ import Constants from 'expo-constants';
 import { Platform } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
 const isWeb = Platform.OS === 'web';
+// Bare apps do not have any app ownership.
+const isBare = !Constants.appOwnership;
 const loaded = {};
 const loadPromises = {};
 export function processFontFamily(name) {
-    if (typeof name !== 'string' || Constants.systemFonts.includes(name) || name === 'System') {
+    if (typeof name !== 'string' ||
+        Constants.systemFonts.includes(name) ||
+        name === 'System' ||
+        isBare) {
         return name;
     }
     if (name.includes(Constants.sessionId)) {
@@ -91,7 +96,7 @@ async function _loadSingleFontAsync(name, asset) {
     await ExpoFontLoader.loadAsync(_getNativeFontName(name), asset.localUri);
 }
 function _getNativeFontName(name) {
-    if (isWeb) {
+    if (isWeb || isBare) {
         return name;
     }
     return `${Constants.sessionId}-${name}`;
