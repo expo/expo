@@ -1,6 +1,6 @@
 {
   "name": "ABI33_0_0EXFaceDetector",
-  "version": "5.0.0-rc.0",
+  "version": "5.0.0",
   "summary": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "description": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "license": "MIT",
@@ -22,11 +22,14 @@
     "ABI33_0_0UMFaceDetectorInterface": [
 
     ],
-    "GoogleMobileVision/FaceDetector": [
-      "~> 1.1.0"
+    "Firebase/Core": [
+
     ],
-    "GoogleMobileVision/MVDataOutput": [
-      "~> 1.1.0"
+    "Firebase/MLVision": [
+
+    ],
+    "Firebase/MLVisionFaceModel": [
+
     ]
   }
 }

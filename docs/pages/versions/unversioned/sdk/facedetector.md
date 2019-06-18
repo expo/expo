@@ -37,6 +37,8 @@ In order to configure detector's behavior modules pass a settings object which i
 - **mode? (_FaceDetector.Constants.Mode_)** -- Whether to detect faces in fast or accurate mode. Use `FaceDetector.Constants.Mode.{fast, accurate}`.
 - **detectLandmarks? (_FaceDetector.Constants.Landmarks_)** -- Whether to detect and return landmarks positions on the face (ears, eyes, mouth, cheeks, nose). Use `FaceDetector.Constants.Landmarks.{all, none}`.
 - **runClassifications? (_FaceDetector.Constants.Classifications_)** -- Whether to run additional classifications on detected faces (smiling probability, open eye probabilities). Use `FaceDetector.Constants.Classifications.{all, none}`.
+- **minDetectionInterval? (_long_)** -- Minimal interval in milliseconds between two face detection events being submitted to JS. Defaults to 0. Use, when you expect lots of faces for long time and are afraid of JS Bridge being overloaded.
+- **tracking? (_boolean_)** - Flag to enable tracking of faces between frames. If true, each face will be returned with `faceID` attribute which should be consistent across frames. Defaults to `false`;
 
 Eg. you could use the following snippet to detect faces in fast mode without detecting landmarks or whether face is smiling:
 
@@ -50,6 +52,8 @@ import * as FaceDetector from 'expo-face-detector';
     mode: FaceDetector.Constants.Mode.fast,
     detectLandmarks: FaceDetector.Constants.Landmarks.none,
     runClassifications: FaceDetector.Constants.Classifications.none,
+    minDetectionInterval: 100,
+    tracking: true,
   }}
 />;
 ```
