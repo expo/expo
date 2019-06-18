@@ -16,7 +16,6 @@ import {
   WritingOptions,
   ProgressEvent,
 } from './FileSystem.types';
-import { platform } from 'os';
 
 if (!ExponentFileSystem) {
   console.warn(
