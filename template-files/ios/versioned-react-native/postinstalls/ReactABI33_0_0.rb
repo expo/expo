@@ -1,6 +1,6 @@
 
       # Generated postinstall: ReactABI33_0_0
-      if pod_name == 'ReactABI33_0_0'
+      if pod_name == 'ReactABI33_0_0' || pod_name == 'ABI33_0_0ExpoKit'
       target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['OTHER_CFLAGS'] = %w[
             -DkNeverRequested=ReactABI33_0_0kNeverRequested
