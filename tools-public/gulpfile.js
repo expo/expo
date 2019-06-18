@@ -7,8 +7,6 @@ const shell = require('gulp-shell');
 const minimist = require('minimist');
 const { ImageUtils, IosShellApp, IosIPABuilder: createIPABuilder } = require('@expo/xdl');
 
-const logger = require('./logger');
-
 const argv = minimist(process.argv.slice(2));
 
 function createIOSShellAppWithArguments() {
@@ -35,14 +33,10 @@ function validateArgv(errors) {
 
 function setImageFunctions() {
   const { resizeIconWithSharpAsync, getImageDimensionsWithSharpAsync } = require('./image-helpers');
-  logger.info(
-    { buildPhase: 'icons setup' },
-    'ImageUtils: setting image functions to alternative sharp implementations'
-  );
+  console.info('ImageUtils: setting image functions to alternative sharp implementations');
   ImageUtils.setResizeImageFunction(resizeIconWithSharpAsync);
   ImageUtils.setGetImageDimensionsFunction(getImageDimensionsWithSharpAsync);
 }
-
 
 // iOS
 gulp.task('ios-shell-app', createIOSShellAppWithArguments);
