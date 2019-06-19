@@ -34,11 +34,11 @@
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
-    "eslint": "^5.15.3",
+    "eslint": "^5.16.0",
     "eslint-config-universe": "^2.0.0-alpha.0",
-    "expo-cli": "^2.17.3",
+    "expo-cli": "^2.20.2",
     "expo-yarn-workspaces": "^1.1.0",
-    "prettier": "^1.16.4"
+    "prettier": "^1.18.2"
   },
   "resolutions": {}
 }
