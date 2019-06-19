@@ -330,8 +330,8 @@ export default class ProjectsScreen extends React.Component {
         </Text>
         <Text style={styles.supportSdksText}>
           Supports SDK{Constants.supportedExpoSdks.length === 1 ? "" : "s"} {
-            // Displays the major version numbers of the SDKs in ascending order.
-            Constants.supportedExpoSdks.map(version => semver.major(version)).sort((a, b) => a - b).join(", ")
+            /* Displays the major version numbers of the SDKs in ascending order. */
+            Constants.supportedExpoSdks.map(semver.major).sort((a, b) => a - b).join(", ")
           }
         </Text>
       </View>
