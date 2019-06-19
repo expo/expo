@@ -218,11 +218,17 @@ async function generatePodspecsAsync(
   versionName,
   versionNumber
 ) {
-  const { React, yoga, ...universalModules } = versionedPodNames;
+  const { React, yoga, ExpoKit, ...universalModules } = versionedPodNames;
   await generateReactPodspecAsync(
     newVersionPath,
     versionedPodNames,
     versionName,
+    universalModules,
+    versionNumber
+  );
+  await generateExpoKitPodspecAsync(
+    newVersionPath,
+    versionedPodNames,
     universalModules,
     versionNumber
   );
@@ -265,6 +271,69 @@ async function generatePodspecsAsync(
 }
 
 /**
+ * Transforms ExpoKit.podspec, versioning Expo namespace, React pod name, replacing original ExpoKit podspecs
+ * with Expo and ExpoOptional.
+ * @param specfilePath location of ExpoKit.podspec to modify, e.g. /versioned-react-native/someversion/
+ * @param versionedReactPodName name of the new pod (and podfile)
+ * @param universalModulesPodNames versioned names of universal modules
+ * @param versionNumber "XX.X.X"
+ */
+async function generateExpoKitPodspecAsync(
+  specfilePath,
+  versionedPodNames,
+  universalModulesPodNames,
+  versionNumber
+) {
+  const versionedReactPodName = versionedPodNames.React;
+  const versionedExpoKitPodName = versionedPodNames.ExpoKit;
+  let specFilename = `${specfilePath}/ExpoKit.podspec`;
+
+  // rename spec to newPodName
+  let sedPattern = `s/\\(s\\.name[[:space:]]*=[[:space:]]\\)"ExpoKit"/\\1"${versionedExpoKitPodName}"/g`;
+  shell.exec(`sed -i -- '${sedPattern}' ${specFilename}`);
+
+  // further processing that sed can't do very well
+  await _transformFileContentsAsync(specFilename, fileString => {
+    // `universalModulesPodNames` contains only versioned unimodules,
+    // so we fall back to the original name if the module is not there
+    const universalModulesDependencies = Modules.getAllNativeForExpoClientOnPlatform('ios', versionNumber).map(
+      ({ podName }) => `ss.dependency         "${universalModulesPodNames[podName] || podName}"`
+    ).join(`
+    `);
+    const externalDependencies = EXTERNAL_REACT_ABI_DEPENDENCIES.map(
+      podName => `ss.dependency         "${podName}"`
+    ).join(`
+    `);
+    let subspec =
+ `s.subspec "Expo" do |ss|
+    ss.source_files     = "Expo/Core/**/*.{h,m,mm}"
+
+    ss.dependency         "${versionedReactPodName}/Core"
+    ${universalModulesDependencies}
+    ${externalDependencies}
+  end
+
+  s.subspec "ExpoOptional" do |ss|
+    ss.dependency         "${versionedExpoKitPodName}/Expo"
+    ss.source_files     = "Expo/Optional/**/*.{h,m,mm}"
+  end`;
+    fileString = fileString.replace(
+      /(s\.subspec ".+?"[\S\s]+?(?=end\b)end\b[\s]+)+/g,
+      `${subspec}\n`
+    );
+
+    return fileString;
+  });
+
+  // move podspec to ${versionedExpoKitPodName}.podspec
+  shell.exec(
+    `mv ${specFilename} ${specfilePath}/${versionedExpoKitPodName}.podspec`
+  );
+
+  return;
+}
+
+/**
 *  @param specfilePath location of React.podspec to modify, e.g. /versioned-react-native/someversion/
 *  @param versionedReactPodName name of the new pod (and podfile)
 */
@@ -295,35 +364,6 @@ async function generateReactPodspecAsync(
 
   // further processing that sed can't do very well
   await _transformFileContentsAsync(specFilename, fileString => {
-    // after the Core subspec, insert new subspec pointing at exponent native modules
-
-    // `universalModulesPodNames` contains only versioned unimodules,
-    // so we fall back to the original name if the module is not there
-    const universalModulesDependencies = Modules.getAllNativeForExpoClientOnPlatform('ios', versionNumber).map(
-      ({ podName }) => `ss.dependency         "${universalModulesPodNames[podName] || podName}"`
-    ).join(`
-    `);
-    const externalDependencies = EXTERNAL_REACT_ABI_DEPENDENCIES.map(
-      podName => `ss.dependency         "${podName}"`
-    ).join(`
-    `);
-    let subspec = `
-  s.subspec "Expo" do |ss|
-    ss.dependency         "React/Core"
-    ${universalModulesDependencies}
-    ${externalDependencies}
-    ss.source_files     = "Expo/Core/**/*.{h,m}"
-  end
-
-  s.subspec "ExpoOptional" do |ss|
-    ss.dependency         "React/Expo"
-    ss.source_files     = "Expo/Optional/**/*.{h,m}"
-  end`;
-    fileString = fileString.replace(
-      /(s\.subspec "Core"[.\S\s]+?(?=end\b)end\b)/g,
-      `$1\n${subspec}`
-    );
-
     // replace React/* dependency with ${versionedReactPodName}/*
     fileString = fileString.replace(
       /(ss\.dependency\s+)"React\/(\S+)"/g,
@@ -449,7 +489,9 @@ async function generatePodfileDepsAsync(
       'RCTText',
       'RCTVibration',
       'RCTWebSocket',
-      'CxxBridge',
+      'CxxBridge'
+    ]
+    pod '${versionedPodNames.ExpoKit}', :inhibit_warnings => true, :path => '${versionedReactPodPath}', :subspecs => [
       ${expoDepsTemplateParam}
     ]
     ${yogaPodDependency}
@@ -502,7 +544,7 @@ async function generatePodfileDepsAsync(
   const indent = '  '.repeat(6);
   let config = `
       # Generated postinstall: ${versionedPodNames.React}
-      if pod_name == '${versionedPodNames.React}'
+      if pod_name == '${versionedPodNames.React}' || pod_name == '${versionedPodNames.ExpoKit}'
       target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['OTHER_CFLAGS'] = %w[
             ${configValues.join(`\n${indent}`)}
@@ -650,11 +692,11 @@ function getConfigsFromArguments(versionNumber, rootPath) {
     .concat(versionPathComponents)
     .join('/');
 
-  let podsToVersion = getPodsToVersion();
-  let versionedPodNames = {};
-  podsToVersion.forEach(pod => {
-    versionedPodNames[pod] = `${pod}${versionName}`;
-  });
+  let versionedPodNames = {
+    React: `React${versionName}`,
+    yoga: `yoga${versionName}`,
+    ExpoKit: `${versionName}ExpoKit`,
+  };
   Modules.getVersionableModulesForPlatform('ios', versionNumber)
     .forEach(({ podName }) => {
       versionedPodNames[podName] = `${versionName}${podName}`;
@@ -671,11 +713,6 @@ function getConfigsFromArguments(versionNumber, rootPath) {
 
 function getCppLibrariesToVersion() {
   return ['cxxreact', 'jsi', 'jsiexecutor', 'jsinspector', 'yoga', 'fabric'];
-}
-
-function getPodsToVersion() {
-  // Universal modules are added in getConfigsForArguments
-  return ['React', 'yoga'];
 }
 
 function getVersionedCppLibraryName(unversionedLibraryName, newVersionName) {
@@ -741,6 +778,7 @@ exports.addVersionAsync = async function addVersionAsync(
   shell.exec(
     `cp -R ${rootPath}/ios/Exponent/Versioned ${newVersionPath}/Expo`
   );
+  shell.exec(`cp ${rootPath}/ExpoKit.podspec ${newVersionPath}/.`);
 
   // some files in the Optional spec should be omitted from versioned code
   const excludedOptionalDirectories = getExcludedOptionalDirectories();
