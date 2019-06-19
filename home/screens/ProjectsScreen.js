@@ -329,10 +329,11 @@ export default class ProjectsScreen extends React.Component {
           Client version: {Constants.expoVersion}
         </Text>
         <Text style={styles.supportSdksText}>
-          Supports SDK{Constants.supportedExpoSdks.length === 1 ? "" : "s"} {
-            /* Displays the major version numbers of the SDKs in ascending order. */
-            Constants.supportedExpoSdks.map(semver.major).sort((a, b) => a - b).join(", ")
-          }
+          Supports SDK{Constants.supportedExpoSdks.length === 1 ? '' : 's'}{' '}
+          {Constants.supportedExpoSdks
+            .map(semver.major)
+            .sort((a, b) => a - b)
+            .join(', ')}
         </Text>
       </View>
     );
