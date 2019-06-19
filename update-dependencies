@@ -43,4 +43,4 @@ yarn add --dev --ignore-workspace-root-check \
   prettier@latest
 
 # Update all yarn.lock files
-nix run -f $nixdir fd yarn parallel bash --command bash -c "fd -a yarn.lock $scriptdir | xargs -n 1 dirname | parallel -j 1 'cd {} && echo {} && yarn install --force'"
+nix run -f $nixdir fd yarn parallel bash --command bash -c "fd -a yarn.lock -E react-native-lab $scriptdir | xargs -n 1 dirname | parallel -j 1 'cd {} && echo {} && yarn install --force'"
