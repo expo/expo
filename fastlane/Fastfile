@@ -120,7 +120,7 @@ platform :ios do
       destination: "generic/platform=iOS",
       archive: true,
       archive_path: directory + "/Exponent.xcarchive",
-      xcargs: "-UseModernBuildSystem=NO CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO"
+      xcargs: "CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO"
     )
   end
 
