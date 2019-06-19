@@ -40,7 +40,7 @@ We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/en/c
 "jest": {
   "preset": "jest-expo",
   "transformIgnorePatterns": [
-    "node_modules/(?!((jest-)?react-native|react-clone-referenced-element|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|sentry-expo|native-base))"
+    "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|sentry-expo|native-base)"
   ]
 }
 ```
