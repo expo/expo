@@ -1,4 +1,6 @@
-let currentBadgeNumber = 0;
+import badgin from '@approvals-cloud/badgin'
+
+let currentBadgeNumber = 0
 
 export default {
   async getExponentPushTokenAsync(): Promise<void> {},
@@ -24,15 +26,7 @@ export default {
     return currentBadgeNumber;
   },
   async setBadgeNumberAsync(badgeNumber: number): Promise<void> {
-    currentBadgeNumber = badgeNumber;
-    
-    // Update title
-    const match = document.title.match(new RegExp('\(\d*\) (.*)'));
-    const originalTitle = match ? match[2] : document.title;
-    if (currentBadgeNumber) {
-      document.title = `(${currentBadgeNumber}) ${originalTitle}`;
-    } else {
-      document.title = originalTitle;
-    }
+    currentBadgeNumber = badgeNumber
+    badgin.set(badgeNumber)
   },
 };
