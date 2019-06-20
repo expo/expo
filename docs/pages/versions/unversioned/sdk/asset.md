@@ -6,7 +6,7 @@ This module provides an interface to Expo's asset system. An asset is any file t
 
 ## Installation
 
-For Managed projects, you'll need to run `expo install expo-asset`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-asset).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-asset`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-asset).
 
 ## API
 

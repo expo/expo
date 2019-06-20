@@ -6,7 +6,7 @@ A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES cont
 
 ## Installation
 
-For Managed projects, you'll need to run `expo install expo-gl`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-gl).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-gl`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-gl).
 
 ## API
 

@@ -8,7 +8,7 @@ Note: Session tracking may not work correctly when running Experiences in the ma
 
 ## Installation
 
-For Managed projects, you'll need to run `expo install expo-analytics-amplitude`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-analytics-amplitude`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude).
 
 ## API
 
