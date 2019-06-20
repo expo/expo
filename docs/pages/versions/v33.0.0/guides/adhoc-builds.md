@@ -136,11 +136,21 @@ You're all set to use the custom version of the Expo client, containing features
 
 # Troubleshooting
 
-## Push Notifications aren't working
+## Fixing Disabled Services
+
+### Push Notifications
+
+**Note:** Push Notifications are temporarily disabled until we support API tokens for our Push Notification system.
 
 If you choose not to upload your Push Notifications credentials, Push Notifications will not work on the Expo client. In order to get an Expo client with Push Notifications enabled, you will need to submit another build request and upload or create your push credentials at the prompt.
 
+We also require you to be logged in order to store your Push credentials.
+
 If you are experiencing a different problem with Push Notifications, refer to the [main article](https://docs.expo.io/versions/latest/guides/push-notifications/) for more information.
+
+### Google Maps
+
+You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag `--config <path-to-app.json>`. Make sure you set your API key in `ios.config.googleMapsApiKey` as described [here](https://docs.expo.io/versions/latest/sdk/map-view/#deploying-google-maps-to-a-standalone-app).
 
 ## Cannot generate/revoke credentials
 
