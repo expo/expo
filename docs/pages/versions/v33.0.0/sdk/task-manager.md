@@ -10,7 +10,7 @@ Some features of this module are used by other modules under the hood. Here is a
 
 ## Installation
 
-For Managed projects, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
 
 ## Configuration for standalone apps
 

@@ -6,7 +6,7 @@ A React component that renders a native blur view on iOS and falls back to a sem
 
 ## Installation
 
-For Managed projects, you'll need to run `expo install expo-blur`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-blur).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-blur`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-blur).
 
 ## Usage
 
