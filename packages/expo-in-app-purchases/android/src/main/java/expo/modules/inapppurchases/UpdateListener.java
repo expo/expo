@@ -9,6 +9,7 @@ import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.Purchase;
 
+import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.Promise;
 
 /**
@@ -16,6 +17,11 @@ import org.unimodules.core.Promise;
  */
 public class UpdateListener implements BillingManager.BillingUpdatesListener {
     private static final String TAG = "UpdateListener";
+    private EventEmitter mEventEmitter;
+
+    public UpdateListener(EventEmitter eventEmitter) {
+        mEventEmitter = eventEmitter;
+    }
 
     @Override
     public void onBillingClientSetupFinished() {}
@@ -43,6 +49,6 @@ public class UpdateListener implements BillingManager.BillingUpdatesListener {
         response.putParcelableArrayList("results", results);
         response.putInt("responseCode", BillingResponseCode.OK);
 
-        InAppPurchasesModule.sEventEmitter.emit(BillingManager.PURCHASES_UPDATED_EVENT, response);
+        mEventEmitter.emit(BillingManager.PURCHASES_UPDATED_EVENT, response);
     }
 }

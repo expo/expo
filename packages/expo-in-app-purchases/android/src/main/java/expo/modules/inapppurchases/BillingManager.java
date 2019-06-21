@@ -24,6 +24,7 @@ import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
+import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.Promise;
 
 import java.util.HashMap;
@@ -53,6 +54,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     private final List<Purchase> mPurchases = new ArrayList<>();
     private final HashMap<String, SkuDetails> mSkuDetailsMap = new HashMap<>();
     private BillingClient mBillingClient;
+    private EventEmitter mEventEmitter;
     private boolean mIsServiceConnected;
     private final Activity mActivity;
     private BillingUpdatesListener mBillingUpdatesListener;
@@ -76,9 +78,10 @@ public class BillingManager implements PurchasesUpdatedListener {
         void onServiceConnected(BillingResult resultCode);
     }
 
-    public BillingManager(Activity activity) {
+    public BillingManager(Activity activity, EventEmitter eventEmitter) {
         mActivity = activity;
-        mBillingUpdatesListener = new UpdateListener();
+        mEventEmitter = eventEmitter;
+        mBillingUpdatesListener = new UpdateListener(eventEmitter);
         mBillingClient =
                 BillingClient
                         .newBuilder(activity)
@@ -163,7 +166,7 @@ public class BillingManager implements PurchasesUpdatedListener {
             mBillingUpdatesListener.onPurchasesUpdated(mPurchases);
         } else {
             Bundle response = formatResponse(result, null);
-            InAppPurchasesModule.sEventEmitter.emit(PURCHASES_UPDATED_EVENT, response);
+            mEventEmitter.emit(PURCHASES_UPDATED_EVENT, response);
         }
     }
 

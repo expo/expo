@@ -19,7 +19,7 @@ public class InAppPurchasesModule extends ExportedModule implements RegistryLife
 
   private BillingManager mBillingManager;
   private ModuleRegistry mModuleRegistry;
-  protected static EventEmitter sEventEmitter;
+  private EventEmitter mEventEmitter;
 
   public InAppPurchasesModule(Context context) {
     super(context);
@@ -41,8 +41,8 @@ public class InAppPurchasesModule extends ExportedModule implements RegistryLife
     if (activity == null) {
       promise.reject("E_ACTIVITY_UNAVAILABLE", "Activity is not available");
     }
-    sEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-    mBillingManager = new BillingManager(activity);
+    mEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
+    mBillingManager = new BillingManager(activity, mEventEmitter);
     mBillingManager.startConnectionAndQueryHistory(promise);
   }
 
