@@ -1,3 +1,5 @@
+const lazyImportsBlacklist = require('./lazy-imports-blacklist');
+
 module.exports = function(api, options) {
   const isWeb = api.caller(isTargetWeb);
 
@@ -5,12 +7,32 @@ module.exports = function(api, options) {
     return getWebConfig(options.web);
   }
 
-  return getNativeConfig();
+  return getNativeConfig(options);
 };
 
-function getNativeConfig() {
+function getNativeConfig(options) {
+  // Note that if `options.lazy` is not set (i.e., `null` or `undefined`),
+  // `metro-react-native-babel-preset` will handle it.
+  const lazy_option = options && options.lazy;
   return {
-    presets: ['module:metro-react-native-babel-preset'],
+    presets: [
+      [
+        // TODO: use the actual plugin - but somehow `module:metro-react-native-babel-preset` is not up-to-date yet (need a version after this commit: https://github.com/facebook/metro/commit/23e3503dde5f914f3e642ef214f508d0a699851d)
+        require('./node_modules/metro-react-native-babel-preset'),
+        {
+          lazyImportExportTransform:
+            lazy_option === true
+              ? require_name => {
+                  // Do not lazy-initialize packages that are local imports (similar to `lazy: true` behavior)
+                  // or are in the blacklist.
+                  return !(require_name.includes('./') || lazyImportsBlacklist.has(require_name));
+                }
+              : // Pass the option directly to `metro-react-native-babel-preset`
+                // (which in turns pass it to `babel-plugin-transform-modules-commonjs`).
+                lazy_option,
+        },
+      ],
+    ],
     plugins: [
       [
         'babel-plugin-module-resolver',
