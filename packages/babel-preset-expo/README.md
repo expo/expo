@@ -17,7 +17,7 @@ The value of `lazy` has a few possible effects:
 
 - `false` - No lazy initialization of any imported module.
 
-- `true` - Do not lazy-initialize local imports (e.g., `./foo`) and do not lazy-initialize certain Expo packages that have side effects, but lazy-init all other dependencies.
+- `true` - Lazy-init all imported modules except local imports (e.g., `./foo`), certain Expo packages that have side effects, and the two cases mentioned [here](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy).
 
 - `Array<string>` - [babel-plugin-transform-modules-commonjs](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy) will handle it.
 
