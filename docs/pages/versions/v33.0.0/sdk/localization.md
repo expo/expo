@@ -31,7 +31,7 @@ i18n.locale = Localization.locale;
 export default class LitView extends React.Component {
   render() {
     return (
-      <Text>
+      <Text style={{ flex: 1, paddingTop: 50, alignSelf: 'center' }}>
         {i18n.t('foo')} {i18n.t('bar', { someValue: Date.now() })}
       </Text>
     );

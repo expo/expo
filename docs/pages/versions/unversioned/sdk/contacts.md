@@ -828,7 +828,7 @@ This table illustrates what fields will be added on demand to every contact.
 
 ### SDK 29
 
-- The `thumnail` field has been deprecated, use `image` on both platforms instead.
+- The `thumbnail` field has been deprecated, use `image` on both platforms instead.
 - On iOS `image` is now `rawImage`. There is no Android version of `rawImage`.
 - Images now return a localUri instead of Base64 string.
 - Base64 string is now returned in a encodable format.

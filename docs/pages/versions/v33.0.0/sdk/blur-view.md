@@ -12,11 +12,11 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-<SnackEmbed snackId="Bkbb_XnHW" />
+<SnackEmbed snackId="@charliecruzan/blurviewexample" />
 
 <br />
 
-<SnackEmbed snackId="BJM8eV3rZ" />
+<SnackEmbed snackId="@charliecruzan/blurviewanimatedexample" />
 
 ## API
 

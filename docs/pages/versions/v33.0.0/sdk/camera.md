@@ -89,10 +89,6 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 ## API
 
 ```js
-// in managed apps:
-import { Camera } from 'expo';
-
-// in bare apps:
 import { Camera } from 'expo-camera';
 ```
 

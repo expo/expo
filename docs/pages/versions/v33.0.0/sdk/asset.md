@@ -75,9 +75,9 @@ The [`Asset`](#asset) instance for the asset
 #### Example
 
 ```javascript
-const imageURI = Asset.fromModule(require('./images/hello.jpg')).uri;
+const imageURI = Asset.fromModule(require('./assets/snack-icon.png')).uri;
 ```
 
-On running this piece of code, `imageURI` gives the remote URI that the contents of `images/hello.jpg` can be read from. The path is resolved relative to the source file that this code is evaluated in.
+On running this piece of code, `imageURI` gives the remote URI that the contents of `assets/snack-icon.png` can be read from. The path is resolved relative to the source file that this code is evaluated in.
 
 #

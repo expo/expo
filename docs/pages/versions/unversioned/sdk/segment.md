@@ -118,7 +118,7 @@ Manually flush the event queue. You shouldn't need to call this in most cases.
 > ([Source – Segment docs](https://segment.com/docs/sources/mobile/ios/#opt-out))
 
 ```js
-import { Segment } from 'expo';
+import * as Segment from 'expo-analytics-segment';
 
 Segment.setEnabledAsync(false);
 

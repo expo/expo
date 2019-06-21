@@ -11,11 +11,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-// in managed apps:
-import { DangerZone } from 'expo';
-const { DeviceMotion } = DangerZone;
-
-// in bare apps:
 import { DeviceMotion } from 'expo-sensors';
 ```
 
@@ -56,4 +51,3 @@ Subscribe for updates to DeviceMotion.
 
 - **intervalMs (_number_)** Desired interval in milliseconds between
   DeviceMotion updates.
-

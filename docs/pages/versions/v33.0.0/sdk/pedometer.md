@@ -12,7 +12,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ## Usage
 
-<SnackEmbed snackId="S1gdfOb4Z" />
+<SnackEmbed snackId="@charliecruzan/letsgoforawalk" />
 
 ## API
 

@@ -12,7 +12,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 ## Usage
 
-<SnackEmbed snackId="r116LYJne" />
+<SnackEmbed snackId="@charliecruzan/webbrowserexample" />
 <br />
 
 ### Handling deep links from the WebBrowser

@@ -12,11 +12,11 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-<SnackEmbed snackId="BJbef43HW" />
+<SnackEmbed snackId="@charliecruzan/lineargradientexample" />
 
 <br />
 
-<SnackEmbed snackId="r1pvMV3HW" />
+<SnackEmbed snackId="@charliecruzan/lineargradienttransparencyexample" />
 
 ## API
 
