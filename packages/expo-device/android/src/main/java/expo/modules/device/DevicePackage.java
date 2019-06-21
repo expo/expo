@@ -14,9 +14,4 @@ public class DevicePackage extends BasePackage {
   public List<ExportedModule> createExportedModules(Context context) {
     return Collections.singletonList((ExportedModule) new DeviceModule(context));
   }
-
-  @Override
-  public List<ViewManager> createViewManagers(Context context) {
-    return Collections.singletonList((ViewManager) new DeviceViewManager());
-  }
 }
