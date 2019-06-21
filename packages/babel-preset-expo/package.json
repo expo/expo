@@ -41,7 +41,7 @@
     "@babel/preset-env": "^7.3.1",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-react-native-web": "^0.11.2",
-    "metro-react-native-babel-preset": "^0.51.1"
+    "metro-react-native-babel-preset": "^0.54.1"
   },
   "devDependencies": {
     "jest": "^24.7.1"
