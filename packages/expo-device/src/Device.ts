@@ -5,8 +5,6 @@ import {
   deviceNamesByCode,
 } from './Device.types';
 
-export { default as ExpoDeviceInfoView } from './ExpoDeviceView';
-
 import { Platform } from '@unimodules/core';
 
 export const brand = ExpoDevice.brand;
