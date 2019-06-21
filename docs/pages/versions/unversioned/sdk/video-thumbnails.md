@@ -33,11 +33,11 @@ Returns `{ uri, width, height }` where `uri` is a URI to the created image (usea
 ### Basic Example
 
 ```javascript
-import React, { Component } from 'react';
+import React from 'react';
 import { StyleSheet, Button, View, Image, Text } from 'react-native';
-import { VideoThumbnails } from 'expo';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 
-export default class App extends Component {
+export default class App extends React.Component {
   state = {
     image: null,
   };
