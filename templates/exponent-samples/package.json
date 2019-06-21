@@ -1,0 +1,18 @@
+{
+  "name": "@expo/samples",
+  "version": "3.0.3",
+  "description": "Sample components for new project templates",
+  "main": "index.js",
+  "author": "Expo",
+  "license": "MIT",
+  "dependencies": {
+    "react-native-platform-touchable": "^1.1.1"
+  },
+  "peerDependencies": {
+    "@expo/vector-icons": "*",
+    "expo-constants": "*",
+    "expo-web-browser": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}
