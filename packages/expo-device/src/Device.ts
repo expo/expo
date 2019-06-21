@@ -3,9 +3,9 @@ import ExpoDevice from './ExpoDevice';
 import {
   devicesWithNotch,
   deviceNamesByCode,
-} from './Device.types';
+} from './DeviceConstants';
 
-import { Platform } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 
 export const brand = ExpoDevice.brand;
 export const carrier = ExpoDevice.carrier;
@@ -66,20 +66,17 @@ export async function getMACAddressAsync(): Promise<string> {
 }
 
 export async function isAirplaneModeAsync(): Promise<boolean | string> {
-  if (Platform.OS === 'android') {
-    return await ExpoDevice.isAirplaneModeAsync();
-  } else {
-    return Promise.reject('This platform does not support this method');
+  if (!ExpoDevice.isAirplaneModeAsync) {
+    throw new UnavailabilityError('expo-device', 'isAirplaneModeAsync')
   }
+  return await ExpoDevice.isAirplaneModeAsync();
 }
 
 export async function hasSystemFeatureAsync(feature: string): Promise<boolean | string> {
-  if (Platform.OS === 'android') {
-    return await ExpoDevice.hasSystemFeatureAsync(feature);
-  } else {
-    return Promise.reject('This platform does not support this method');
+  if (!ExpoDevice.hasSystemFeatureAsync) {
+    throw new UnavailabilityError('expo-device', 'isAirplaneModeAsync')
   }
-}
+  return await ExpoDevice.hasSystemFeatureAsync(feature);}
 
 export async function isPinOrFingerprintSetAsync(): Promise<boolean>{
   return await ExpoDevice.isPinOrFingerprintSetAsync();

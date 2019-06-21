@@ -1,4 +1,3 @@
-export { default as ExpoDeviceInfoView } from './ExpoDeviceView';
 export declare const brand: any;
 export declare const carrier: any;
 export declare const manufacturer: any;
