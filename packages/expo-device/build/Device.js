@@ -63,7 +63,7 @@ export async function isAirplaneModeAsync() {
 }
 export async function hasSystemFeatureAsync(feature) {
     if (!ExpoDevice.hasSystemFeatureAsync) {
-        throw new UnavailabilityError('expo-device', 'isAirplaneModeAsync');
+        throw new UnavailabilityError('expo-device', 'hasSystemFeatureAsync');
     }
     return await ExpoDevice.hasSystemFeatureAsync(feature);
 }

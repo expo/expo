@@ -53,7 +53,7 @@ export function hasNotch(): boolean {
     ) !== -1
   );
 }
-export async function getFreeDiskStorageAsync(): Promise<String> {
+export async function getFreeDiskStorageAsync(): Promise<string> {
   return await ExpoDevice.getFreeDiskStorageAsync();
 }
 
@@ -74,7 +74,7 @@ export async function isAirplaneModeAsync(): Promise<boolean | string> {
 
 export async function hasSystemFeatureAsync(feature: string): Promise<boolean | string> {
   if (!ExpoDevice.hasSystemFeatureAsync) {
-    throw new UnavailabilityError('expo-device', 'isAirplaneModeAsync')
+    throw new UnavailabilityError('expo-device', 'hasSystemFeatureAsync')
   }
   return await ExpoDevice.hasSystemFeatureAsync(feature);}
 
@@ -82,6 +82,6 @@ export async function isPinOrFingerprintSetAsync(): Promise<boolean>{
   return await ExpoDevice.isPinOrFingerprintSetAsync();
 }
 
-export async function getUserAgentAsync(): Promise<String>{
+export async function getUserAgentAsync(): Promise<string>{
   return await ExpoDevice.getUserAgentAsync();
 }
