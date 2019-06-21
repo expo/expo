@@ -1,13 +1,6 @@
 self: super:
 
 {
-  # TODO: Delete this after removing `native_target` usage from xdl podfile template
-  cocoapods = super.bundlerApp {
-    pname = "cocoapods";
-    gemdir = ./cocoapods;
-    exes = [ "pod" ];
-  };
-
   fastlane =
     assert (builtins.compareVersions "2.123.0" super.fastlane.version) == 1;
     super.bundlerApp {

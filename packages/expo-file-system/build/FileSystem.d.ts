@@ -6,9 +6,10 @@ export declare const cacheDirectory: string | null;
 export declare const bundledAssets: string | null, bundleDirectory: string | null;
 export declare function getInfoAsync(fileUri: string, options?: {
     md5?: boolean;
-    cache?: boolean;
+    size?: boolean;
 }): Promise<FileInfo>;
 export declare function readAsStringAsync(fileUri: string, options?: ReadingOptions): Promise<string>;
+export declare function getContentUriAsync(fileUri: string): Promise<string>;
 export declare function writeAsStringAsync(fileUri: string, contents: string, options?: WritingOptions): Promise<void>;
 export declare function deleteAsync(fileUri: string, options?: {
     idempotent?: boolean;

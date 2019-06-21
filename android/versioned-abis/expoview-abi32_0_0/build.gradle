@@ -28,6 +28,11 @@ repositories {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
@@ -119,9 +124,7 @@ dependencies {
   api 'com.yqritc:android-scalablevideoview:1.0.1'
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.4.1'
-  api('com.airbnb.android:lottie:2.5.5') {
-    exclude group: 'com.android.support', module: 'appcompat-v7'
-  }
+  api 'com.airbnb.android:lottie:2.5.6'
   api 'io.branch.sdk.android:library:2.17.1'
   api "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
   api 'com.google.firebase:firebase-core:16.0.1'
@@ -139,7 +142,8 @@ dependencies {
 
   // expo-camera
   implementation 'com.google.android:cameraview:1.0.0'
-  implementation 'com.google.android.gms:play-services-vision:15.0.2'
+  implementation 'com.google.firebase:firebase-ml-vision:20.0.0'
+  implementation 'com.google.firebase:firebase-ml-vision-face-model:17.0.2'
 
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
@@ -154,7 +158,7 @@ dependencies {
   implementation 'com.google.android.gms:play-services-wallet:15.0.1' //may need 10.+
 
   // expo-location
-  implementation 'com.google.android.gms:play-services-location:15.0.1'
+  implementation 'com.google.android.gms:play-services-location:16.0.0'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }

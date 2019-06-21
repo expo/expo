@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="33.0.0" status="integration" publication="20190605120808"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="33.0.0" status="integration" publication="20190617151652"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -175,7 +175,7 @@
   </publications>
   <dependencies>
     <dependency org="com.android.tools.build" name="aapt2" rev="3.3.2-5309881" conf="_internal_aapt2_binary-&gt;default">
-      <artifact name="aapt2" type="jar" ext="jar" m:classifier="linux" conf="_internal_aapt2_binary"/>
+      <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
     <dependency org="com.raizlabs.android" name="DBFlow-Compiler" rev="2.2.1" conf="annotationProcessor-&gt;default"/>
     <dependency org="com.jakewharton" name="butterknife-compiler" rev="9.0.0" conf="annotationProcessor-&gt;default"/>
@@ -219,9 +219,7 @@
     <dependency org="com.theartofdev.edmodo" name="android-image-cropper" rev="2.7.0" conf="api-&gt;default"/>
     <dependency org="commons-codec" name="commons-codec" rev="1.10" conf="api-&gt;default"/>
     <dependency org="net.openid" name="appauth" rev="0.7.1" conf="api-&gt;default"/>
-    <dependency org="com.airbnb.android" name="lottie" rev="2.5.5" conf="api-&gt;default">
-      <exclude org="com.android.support" module="appcompat-v7"/>
-    </dependency>
+    <dependency org="com.airbnb.android" name="lottie" rev="2.5.6" conf="api-&gt;default"/>
     <dependency org="com.android.support" name="exifinterface" rev="28.0.0" conf="api-&gt;default"/>
     <dependency org="com.android.support" name="support-v4" rev="28.0.0" conf="api-&gt;default"/>
     <dependency org="com.android.support" name="customtabs" rev="28.0.0" conf="api-&gt;default"/>
@@ -233,65 +231,65 @@
     <dependency org="com.squareup.okhttp3" name="okhttp" rev="3.10.0" conf="api-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.10.0" conf="api-&gt;default"/>
     <dependency org="com.google.android.exoplayer" name="extension-okhttp" rev="2.9.2" conf="api-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-core" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-react-native-adapter" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-ads-admob" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-ads-facebook" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-analytics-amplitude" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-analytics-segment" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-app-auth" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-app-loader-provider" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-av" rev="5.0.1" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-background-fetch" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-brightness" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-calendar" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-camera" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-constants" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-contacts" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-crypto" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-document-picker" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-face-detector" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-facebook" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-file-system" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-permissions" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sensors" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-font" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-gl" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-google-sign-in" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-haptics" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-image-manipulator" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-image-picker" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-intent-launcher" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-keep-awake" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-linear-gradient" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-local-authentication" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-localization" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-location" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-mail-composer" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-media-library" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-font-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-image-loader-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-print" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-random" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-secure-store" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sharing" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sms" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-speech" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-sqlite" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-task-manager" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-video-thumbnails" rev="1.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="host.exp.exponent" name="expo-web-browser" rev="5.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-barcode-scanner-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-camera-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-constants-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-face-detector-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-file-system-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-sensors-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-task-manager-interface" rev="2.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-core" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-react-native-adapter" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-ads-admob" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-ads-facebook" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-analytics-amplitude" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-analytics-segment" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-app-auth" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-app-loader-provider" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-av" rev="5.0.2" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-background-fetch" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-brightness" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-calendar" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-camera" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-constants" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-contacts" rev="5.0.2" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-crypto" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-document-picker" rev="5.0.2" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-face-detector" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-facebook" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-file-system" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-font" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl-cpp" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-gl" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-google-sign-in" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-haptics" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-image-manipulator" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-image-picker" rev="5.0.2" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-intent-launcher" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-keep-awake" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-linear-gradient" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-local-authentication" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-localization" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-location" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-mail-composer" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-media-library" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-payments-stripe" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-permissions" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-print" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-random" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-secure-store" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sensors" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sharing" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sms" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-speech" rev="5.0.2" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-sqlite" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-task-manager" rev="5.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-video-thumbnails" rev="1.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-web-browser" rev="5.0.2" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-barcode-scanner-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-camera-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-constants-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-face-detector-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-file-system-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-font-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-image-loader-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-sensors-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-task-manager-interface" rev="2.0.1" conf="compileOnly-&gt;default"/>
     <dependency org="com.facebook.soloader" name="soloader" rev="0.6.0" conf="compileOnly-&gt;default"/>
     <dependency org="org.glassfish" name="javax.annotation" rev="3.1.1" conf="compileOnly-&gt;default"/>
     <dependency org="com.amplitude" name="android-sdk" rev="2.9.2" conf="compileOnly-&gt;default"/>
@@ -399,7 +397,7 @@
     <dependency org="commons-codec" name="commons-codec" rev="1.10" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="net.openid" name="appauth" rev="0.7.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="customtabs" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.airbnb.android" name="lottie" rev="2.5.5" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.airbnb.android" name="lottie" rev="2.5.6" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="design" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="transition" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="cardview-v7" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
