@@ -3,10 +3,13 @@ include ':app'
 // Import gradle helpers for unimodules.
 apply from: '../../../node_modules/react-native-unimodules/gradle.groovy'
 
+include ':unimodules-core'
+project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../../../packages/@unimodules/core/android')
+
 // Include unimodules.
 includeUnimodulesProjects(
     modulesPaths : [
-        '../../../../node_modules',
+        '../../../../packages',
     ],
     configuration: 'api',
     target       : 'react-native',

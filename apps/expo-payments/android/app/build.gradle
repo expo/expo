@@ -104,7 +104,7 @@ apply from: 'expo.gradle'
 apply from: "../../../../node_modules/react-native-unimodules/gradle.groovy"
 
 dependencies {
-  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  implementation fileTree(dir: 'libs', include: ['*.aar'])
 
   implementation 'com.android.support:multidex:1.0.1'
 
@@ -172,25 +172,20 @@ dependencies {
   testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
-  
   implementation('host.exp.exponent:expoview:33.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
-  
 
-
-  
   api 'org.webkit:android-jsc:r241213' // needs to be before react-native
   api 'com.facebook.react:react-native:33.0.0'
-  
 
+  implementation project(':unimodules-core')
 
-  
   addUnimodulesDependencies([
       modulesPaths : [
-        '../../../../node_modules'
+        '../../../../packages'
       ],
       configuration: 'api',
       target       : 'react-native',
