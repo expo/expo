@@ -2,7 +2,7 @@
 
 This is an ejected Expo app that can be used to test the `expo-in-app-purchases` module.
 
-It has a bundle ID of `dev.expo.Payments` and an application ID of `com.example.payments`.
+It has a bundle ID of `dev.expo.Payments` and an application ID of `com.expo.payments`.
 This is important because it matches the app entries we set up in [App Store Connect](https://appstoreconnect.apple.com/)
 and [Google Play Console](https://developer.android.com/distribute/console/) respectively.
 

@@ -74,7 +74,7 @@
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <intent-filter>
-        <data android:scheme="exp9df16c4018364f73bdf8c9e883108056"/>
+        <data android:scheme="exp9b50379834b84a25b56894264479a0a3"/>
 
         <action android:name="android.intent.action.VIEW"/>
 
@@ -168,7 +168,7 @@
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="expo.modules.payments.stripe.f85727e5-65eb-416e-9c87-ca5ac1b33b73" />
+            <data android:scheme="expo.modules.payments.stripe.bc415d89-bca9-4577-a596-28a3103c9d99" />
         </intent-filter>
     </activity>
     <!-- Versioned Activity for Stripe -->
@@ -348,7 +348,7 @@
     <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
 
-    <meta-data android:name="standaloneStripeScheme" android:value="f85727e5-65eb-416e-9c87-ca5ac1b33b73" />
+    <meta-data android:name="standaloneStripeScheme" android:value="bc415d89-bca9-4577-a596-28a3103c9d99" />
   </application>
 
 </manifest>

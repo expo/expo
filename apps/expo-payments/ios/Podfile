@@ -12,8 +12,12 @@ target 'expo-payments' do
 
   # Install unimodules
   require_relative '../../../node_modules/react-native-unimodules/cocoapods.rb'
-  options = { modules_paths: ['../../../packages'] }
-  use_unimodules!(options)
+  use_unimodules!(
+    exclude: [
+      'expo-face-detector',
+      'expo-payments-stripe',
+    ],
+  )
 
   pod 'React',
     :path => "../node_modules/react-native",
@@ -65,6 +69,7 @@ target 'expo-payments' do
           
         end
       end
+
 
       if ['Amplitude-iOS','Analytics','AppAuth','Branch','CocoaLumberjack','FBSDKCoreKit','FBSDKLoginKit','FBSDKShareKit','GPUImage','JKBigInteger2'].include? pod_name
         target_installation_result.native_target.build_configurations.each do |config|
