@@ -168,7 +168,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
       return BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
     } catch (Exception e) {
-      e.printStackTrace();
+      Log.e(TAG, e.getMessage());
     }
     return null;
   }
@@ -205,7 +205,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       StatFs root = new StatFs(Environment.getRootDirectory().getAbsolutePath());
       return BigInteger.valueOf(root.getBlockCountLong()).multiply(BigInteger.valueOf(root.getBlockSizeLong()));
     } catch (Exception e) {
-      e.printStackTrace();
+      Log.e(TAG, e.getMessage());
     }
     return null;
   }
@@ -284,7 +284,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       String stringValue = storage.toString();
       promise.resolve(stringValue);
     } catch (NullPointerException e) {
-      e.printStackTrace();
+      Log.e(TAG, e.getMessage());
       promise.reject(e);
     }
   }
@@ -344,7 +344,9 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
             macAddress = res1.toString();
           }
         }
-      } catch (Exception ex) {
+      } catch (Exception e) {
+        Log.e(TAG, e.getMessage());
+        promise.reject(e);
       }
     }
 
@@ -353,20 +355,18 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
   @ExpoMethod
   public void isAirplaneModeAsync(Promise promise) {
-    boolean isAirPlaneMode;
 
-    isAirPlaneMode = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+    boolean isAirPlaneMode = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
 
     promise.resolve(isAirPlaneMode);
   }
 
   @ExpoMethod
   public void hasSystemFeatureAsync(String feature, Promise promise) {
-    if (feature == null || feature == "") {
+    if (feature == null || feature.equals("")) {
       promise.resolve(false);
       return;
     }
-
     boolean hasFeature = mContext.getApplicationContext().getPackageManager().hasSystemFeature(feature);
     promise.resolve(hasFeature);
   }
