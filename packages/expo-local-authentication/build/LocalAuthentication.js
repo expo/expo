@@ -28,7 +28,7 @@ export async function authenticateAsync(options = { promptMessage: 'Authenticate
     }
     // Warn if using an old API - to be removed in SDK35.
     if (typeof options === 'string') {
-        console.warn('String argument in LocalAuthentication.authenticateAsync has been deprecated. Please use options object with \`promptMessage\` key instead.');
+        console.warn('String argument in LocalAuthentication.authenticateAsync has been deprecated. Please use options object with `promptMessage` key instead.');
         options = { promptMessage: options };
     }
     if (Platform.OS === 'ios') {

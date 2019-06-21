@@ -203,7 +203,7 @@ dependencies {
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-gcm:16.1.0'
-  api 'com.google.android.gms:play-services-analytics:16.0.7'
+  api 'com.google.android.gms:play-services-analytics:16.0.8'
   api 'com.google.android.gms:play-services-maps:16.1.0'
   api 'com.google.android.gms:play-services-auth:16.0.1'
   api 'com.google.android.gms:play-services-location:16.0.0'
@@ -228,8 +228,8 @@ dependencies {
   api "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
   api "com.android.support:customtabs:${safeExtGet("supportLibVersion", "28.0.0")}"
   api "com.android.support:design:${safeExtGet("supportLibVersion", "28.0.0")}"
-  api 'com.google.firebase:firebase-core:16.0.7'
-  api 'com.google.firebase:firebase-messaging:17.4.0'
+  api 'com.google.firebase:firebase-core:16.0.9'
+  api 'com.google.firebase:firebase-messaging:18.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   api 'com.jakewharton:butterknife:9.0.0'
   annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'

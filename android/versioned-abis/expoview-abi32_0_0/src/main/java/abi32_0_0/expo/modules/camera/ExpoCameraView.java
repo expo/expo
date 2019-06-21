@@ -37,7 +37,7 @@ import abi32_0_0.expo.interfaces.facedetector.FaceDetectorProvider;
 import abi32_0_0.expo.interfaces.permissions.Permissions;
 import abi32_0_0.expo.modules.camera.tasks.BarCodeScannerAsyncTask;
 import abi32_0_0.expo.modules.camera.tasks.BarCodeScannerAsyncTaskDelegate;
-import abi32_0_0.expo.modules.camera.tasks.FaceDetectorAsyncTask;
+import abi32_0_0.expo.modules.camera.tasks.FaceDetectorTask;
 import abi32_0_0.expo.modules.camera.tasks.FaceDetectorAsyncTaskDelegate;
 import abi32_0_0.expo.modules.camera.tasks.PictureSavedDelegate;
 import abi32_0_0.expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
@@ -76,6 +76,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
     super(themedReactContext, true);
     mModuleRegistry = moduleRegistry;
     initBarCodeScanner();
+    setChildrenDrawingOrderEnabled(true);
 
     mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
 
@@ -136,7 +137,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
           double scaleY = (double) cameraView.getHeight() / (dimensions.getHeight() * density);
 
           FaceDetectorAsyncTaskDelegate delegate = (FaceDetectorAsyncTaskDelegate) cameraView;
-          new FaceDetectorAsyncTask(delegate, mFaceDetector, data, width, height, correctRotation, getFacing(), scaleX, scaleY).execute();
+          FaceDetectorTask task = new FaceDetectorTask(delegate, mFaceDetector, data, width, height, correctRotation, getFacing() == CameraView.FACING_FRONT, scaleX, scaleY);
+          task.execute();
         }
       }
     });
@@ -332,6 +334,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onFaceDetectionError(FaceDetector faceDetector) {
+    faceDetectorTaskLock = false;
     if (!mShouldDetectFaces) {
       return;
     }

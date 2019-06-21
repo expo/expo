@@ -10,7 +10,7 @@
     "ios": "10.0"
   },
   "source": {
-    "git": "https://github.com/expo/unimodules-task-manager-interface.git"
+    "git": "https://github.com/expo/expo.git"
   },
   "source_files": "UMTaskManagerInterface/**/*.{h,m}",
   "preserve_paths": "UMTaskManagerInterface/**/*.{h,m}",
