@@ -12,12 +12,8 @@ target 'expo-payments' do
 
   # Install unimodules
   require_relative '../../../node_modules/react-native-unimodules/cocoapods.rb'
-  use_unimodules!(
-    exclude: [
-      'expo-face-detector',
-      'expo-payments-stripe',
-    ],
-  )
+  options = { modules_paths: ['../../../packages'] }
+  use_unimodules!(options)
 
   pod 'React',
     :path => "../node_modules/react-native",
