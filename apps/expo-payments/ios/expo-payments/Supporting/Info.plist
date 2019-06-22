@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Expo Payments</string>
+	<string>expo-payments</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Expo Payments</string>
+	<string>expo-payments</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -23,7 +23,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>exp9b50379834b84a25b56894264479a0a3</string>
+				<string>exp9df16c4018364f73bdf8c9e883108056</string>
 			</array>
 		</dict>
 		<dict>
@@ -59,23 +59,23 @@
 		<true/>
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Allow Expo Payments to access your calendar</string>
+	<string>Allow expo-payments to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow Expo Payments to use your camera</string>
+	<string>Allow expo-payments to use your camera</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Allow Expo Payments to access your contacts</string>
+	<string>Allow expo-payments to access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Expo Payments to use your location</string>
+	<string>Allow expo-payments to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow Expo Payments to access your microphone</string>
+	<string>Allow expo-payments to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Expo Payments to access your device's accelerometer</string>
+	<string>Allow expo-payments to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Give Expo Payments permission to save photos</string>
+	<string>Give expo-payments permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give Expo Payments permission to access your photos</string>
+	<string>Give expo-payments permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>Allow Expo Payments to access your reminders</string>
+	<string>Allow expo-payments to access your reminders</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

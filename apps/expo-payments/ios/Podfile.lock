@@ -18,8 +18,8 @@ PODS:
   - CocoaLumberjack/Default (3.2.1)
   - CocoaLumberjack/Extensions (3.2.1):
     - CocoaLumberjack/Default
-  - Crashlytics (3.13.2):
-    - Fabric (~> 1.10.2)
+  - Crashlytics (3.13.1):
+    - Fabric (~> 1.10.1)
   - DoubleConversion (1.1.6)
   - EXAdsAdMob (5.0.0):
     - Google-Mobile-Ads-SDK
@@ -61,7 +61,7 @@ PODS:
   - EXConstants (5.0.0):
     - UMConstantsInterface
     - UMCore
-  - EXContacts (5.0.1):
+  - EXContacts (5.0.0):
     - UMCore
     - UMFileSystemInterface
     - UMPermissionsInterface
@@ -103,7 +103,7 @@ PODS:
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
-  - EXImagePicker (5.0.1):
+  - EXImagePicker (5.0.0):
     - UMCore
     - UMFileSystemInterface
   - EXInAppPurchases (1.0.0):
@@ -178,7 +178,7 @@ PODS:
   - EXSMS (5.0.0):
     - UMCore
     - UMPermissionsInterface
-  - EXSpeech (5.0.1):
+  - EXSpeech (5.0.0):
     - UMCore
   - EXSQLite (5.0.0):
     - UMCore
@@ -191,9 +191,9 @@ PODS:
   - EXVideoThumbnails (1.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXWebBrowser (5.0.1):
+  - EXWebBrowser (5.0.0):
     - UMCore
-  - Fabric (1.10.2)
+  - Fabric (1.10.1)
   - FBAudienceNetwork (5.1.1)
   - FBSDKCoreKit (4.40.0):
     - Bolts (~> 1.9)
@@ -647,7 +647,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 0d98d22745a9b68bcb4fa6dc1c6a92b64d4fdd7b
   CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
-  Crashlytics: 611738c7847f8291a1a51084e35987b86ba6b3ee
+  Crashlytics: 5aa8e90dcbf2f34898b4f5a0037787531246cca0
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: fb69a1d1b0fbec35f513e1ba54814859d0a5f0b9
   EXAdsFacebook: 4e48bbd9bce73a8ccec1a192d2428dde8a262a0a
@@ -662,8 +662,8 @@ SPEC CHECKSUMS:
   EXCalendar: e0539468aae24ec9b40aff116319b2162edf0197
   EXCamera: 06d071d11378051a64bb057f4c1ee486eb69dccc
   EXConstants: f1d63f5bcf9a790fea747ceba6411b7814005191
-  EXContacts: cba6db9b4d8ef590c2185711a648fa32d90041b9
-  EXCrypto: fdec92b3f9740e1c27858688d3cff33002f1ff44
+  EXContacts: bf2934834ce03cc72757f1286e48d611485ea629
+  EXCrypto: 56f8a80bc2f33dbb9fd6da7f72f14c737e1e84be
   EXDocumentPicker: 03566e97f55139cf76e0a85b2afdb29abb3f46c8
   EXFacebook: 670578e816563084201dc850b91dc2b8b8578189
   EXFaceDetector: 792006f355edf50b24486989688750f16640e553
@@ -674,7 +674,7 @@ SPEC CHECKSUMS:
   EXGoogleSignIn: 587267bcbf0a91ee43f0f330f8b635f478c87895
   EXHaptics: a64f2916f185d04069c13a3c8344505e905eb54d
   EXImageManipulator: ac30d215c758fac8fc538e36e7e8b3b764051fb9
-  EXImagePicker: 20b9c4f2e31c76f50442030378aea86a0d76d55a
+  EXImagePicker: 215e12ca7d90c89153b2938d7394a5083f081292
   EXInAppPurchases: 36bc8335662ff8c6c95e4a919b022c0ead774f99
   EXKeepAwake: f32951b626366e82aeac9330060fff8139bdf67d
   EXLinearGradient: 300bcb612bdaf51a8ca4ee9ad6b6a23418e69736
@@ -693,12 +693,12 @@ SPEC CHECKSUMS:
   EXSensors: 8a3357b51127d378e4a497e9ad7600ac08e64625
   EXSharing: 2081f6e359b965e5f78e0fd855c80581c2568260
   EXSMS: a9b5c82b4f290271779270eb51e2c3be80ab9dff
-  EXSpeech: f776ab5b625dfb9df7806b22bdf54a99a27658b5
+  EXSpeech: 813993a8391ffece8d24219c4813d81499e2b424
   EXSQLite: f9758487946197b7879c1d089d4104b0e1262bff
   EXTaskManager: 00fb4f979f079ab32a252997c560e06bdeada952
   EXVideoThumbnails: da67fad3894cbe6bbc82824cc771e84fded3180a
-  EXWebBrowser: 7851e76980a3abe7639c069aea965a326197b744
-  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
+  EXWebBrowser: b4d4b09020c16eabde86652667f31ff2e759a3eb
+  Fabric: f6f21452846788bb44595d73e9909d79d328e617
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
   FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
@@ -730,9 +730,9 @@ SPEC CHECKSUMS:
   UMPermissionsInterface: 1d04595aa0da20732ce33d78f6f6c1cf6ebf51d6
   UMReactNativeAdapter: 90b3418908718243f8073b297a116c52a7a0fe5a
   UMSensorsInterface: d438f93649e5467cb60ab2667d81e46e800b188b
-  UMTaskManagerInterface: 6a61232bf7c1f227e9b0b2c1e945427a882aec5b
+  UMTaskManagerInterface: 796307812a43ec8e12130eeb8bdab5114a4a33cd
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: 8694759749328219e2dc04e1020afd8de6c5425b
+PODFILE CHECKSUM: 056e3cef967962058e1984fe18e57da3006cae23
 
 COCOAPODS: 1.6.2
