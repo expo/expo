@@ -45,10 +45,10 @@
   EXFont *exFont = nil;
 
   // Did we get a new family, and if so, is it associated with an EXFont?
-  if (_fontFamilyPrefix != nil && [family hasPrefix:_fontFamilyPrefix]) {
+  if (_fontFamilyPrefix && [family hasPrefix:_fontFamilyPrefix]) {
     NSString *suffix = [family substringFromIndex:_fontFamilyPrefix.length];
     exFont = [_manager getFontForName:suffix];
-  } else if (_fontFamilyPrefix == nil) {
+  } else if (!_fontFamilyPrefix) {
     exFont = [_manager getFontForName:family];
   }
 

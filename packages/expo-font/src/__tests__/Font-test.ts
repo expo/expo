@@ -27,9 +27,9 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('within expo client', () => {
+describe('within Expo client', () => {
   beforeAll(() => {
-    jest.mock('expo-constants', () => ({
+    jest.doMock('expo-constants', () => ({
       manifest: {},
       sessionId: 'testsession',
       systemFonts: ['Helvetica', 'Helvetica Neue'],
@@ -308,7 +308,7 @@ describe('within expo client', () => {
 
 describe('in standalone app', () => {
   beforeAll(() => {
-    jest.mock('expo-constants', () => ({
+    jest.doMock('expo-constants', () => ({
       manifest: {},
       sessionId: 'testsession',
       systemFonts: ['Helvetica', 'Helvetica Neue'],
@@ -329,7 +329,7 @@ describe('in standalone app', () => {
 
 describe('in bare workflow', () => {
   beforeAll(() => {
-    jest.mock('expo-constants', () => ({
+    jest.doMock('expo-constants', () => ({
       manifest: {},
       sessionId: 'testsession',
       systemFonts: ['Helvetica', 'Helvetica Neue'],

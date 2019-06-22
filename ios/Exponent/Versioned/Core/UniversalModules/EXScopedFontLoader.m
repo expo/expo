@@ -10,7 +10,7 @@ static NSString *expoPrefix = @"ExpoFont-";
 @implementation EXScopedFontLoader
 
 - (instancetype)init {
-    return [super initWithFontFamilyPrefix:expoPrefix];
+  return [super initWithFontFamilyPrefix:expoPrefix];
 }
 
 @end
