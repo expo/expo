@@ -11,15 +11,15 @@ import {
 } from 'react-native';
 import {
   connectAsync,
+  setPurchaseListener,
   getProductsAsync,
   getPurchaseHistoryAsync,
   purchaseItemAsync,
   getBillingResponseCodeAsync,
   finishTransactionAsync,
   disconnectAsync,
-  ResponseCode,
-  setPurchaseListener,
-  ErrorCode,
+  IAPResponseCode,
+  IAPErrorCode,
 } from 'expo-in-app-purchases';
 
 export default class App extends React.Component {
@@ -49,20 +49,20 @@ export default class App extends React.Component {
 
     // Get product details
     const { responseCode, results } = await getProductsAsync(items);
-    if (responseCode === ResponseCode.OK) {
+    if (responseCode === IAPResponseCode.OK) {
       this.setState({ items: results, history: history.results });
     }
 
     // Set purchase listener
     setPurchaseListener(({ responseCode, results, errorCode }) => {
-      if (responseCode === ResponseCode.OK) {
+      if (responseCode === IAPResponseCode.OK) {
         for (const purchase of results) {
           console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
             finishTransactionAsync(purchase, true);
           }
         }
-      } else if (responseCode === ResponseCode.USER_CANCELED) {
+      } else if (responseCode === IAPResponseCode.USER_CANCELED) {
         console.log('User canceled');
       } else {
         console.warn(
@@ -78,7 +78,7 @@ export default class App extends React.Component {
 
   async queryPurchaseHistory() {
     const { responseCode, results } = await getPurchaseHistoryAsync(true);
-    if (responseCode === ResponseCode.OK) {
+    if (responseCode === IAPResponseCode.OK) {
       this.setState({ history: results });
     }
   }
