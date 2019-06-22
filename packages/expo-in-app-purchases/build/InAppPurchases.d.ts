@@ -1,10 +1,10 @@
-import { QueryResponse, Purchase, PurchaseState, ResponseCode, ErrorCode } from './InAppPurchases.types';
-export { PurchaseState, ResponseCode, ErrorCode, };
-export declare function connectAsync(): Promise<QueryResponse>;
-export declare function getProductsAsync(itemList: string[]): Promise<QueryResponse>;
-export declare function getPurchaseHistoryAsync(refresh?: boolean): Promise<QueryResponse>;
+import { IAPQueryResponse, InAppPurchase, InAppPurchaseState, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
+export { InAppPurchaseState, IAPResponseCode, IAPErrorCode, };
+export declare function connectAsync(): Promise<IAPQueryResponse>;
+export declare function getProductsAsync(itemList: string[]): Promise<IAPQueryResponse>;
+export declare function getPurchaseHistoryAsync(refresh?: boolean): Promise<IAPQueryResponse>;
 export declare function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void>;
 export declare function setPurchaseListener(callback: (result: any) => void): Promise<void>;
-export declare function finishTransactionAsync(purchase: Purchase, consumeItem: boolean): Promise<void>;
+export declare function finishTransactionAsync(purchase: InAppPurchase, consumeItem: boolean): Promise<void>;
 export declare function getBillingResponseCodeAsync(): Promise<number>;
 export declare function disconnectAsync(): Promise<void>;

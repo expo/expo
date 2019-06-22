@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
-import { QueryResponse, Purchase, PurchaseState, ResponseCode, ErrorCode } from './InAppPurchases.types';
+import { IAPQueryResponse, InAppPurchase, InAppPurchaseState, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 
 const errors = {
@@ -16,12 +16,12 @@ let connected = false;
 let purchaseUpdatedSubscription: Subscription;
 
 export {
-  PurchaseState,
-  ResponseCode,
-  ErrorCode,
+  InAppPurchaseState,
+  IAPResponseCode,
+  IAPErrorCode,
 }
 
-export async function connectAsync(): Promise<QueryResponse> {
+export async function connectAsync(): Promise<IAPQueryResponse> {
   if (connected) {
     throw new ConnectionError(errors.ALREADY_CONNECTED);
   }
@@ -31,7 +31,7 @@ export async function connectAsync(): Promise<QueryResponse> {
   return result;
 }
 
-export async function getProductsAsync(itemList: string[]): Promise<QueryResponse> {
+export async function getProductsAsync(itemList: string[]): Promise<IAPQueryResponse> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
@@ -39,7 +39,7 @@ export async function getProductsAsync(itemList: string[]): Promise<QueryRespons
   return await ExpoInAppPurchases.getProductsAsync(itemList);
 }
 
-export async function getPurchaseHistoryAsync(refresh?: boolean): Promise<QueryResponse> {
+export async function getPurchaseHistoryAsync(refresh?: boolean): Promise<IAPQueryResponse> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
@@ -60,12 +60,12 @@ export async function setPurchaseListener(callback: (result) => void): Promise<v
     purchaseUpdatedSubscription.remove();
   }
 
-  purchaseUpdatedSubscription = eventEmitter.addListener<QueryResponse>(PURCHASES_UPDATED_EVENT, result => {
+  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse>(PURCHASES_UPDATED_EVENT, result => {
     callback(result);
   });
 }
 
-export async function finishTransactionAsync(purchase: Purchase, consumeItem: boolean): Promise<void> {
+export async function finishTransactionAsync(purchase: InAppPurchase, consumeItem: boolean): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
@@ -77,10 +77,10 @@ export async function finishTransactionAsync(purchase: Purchase, consumeItem: bo
 
 export async function getBillingResponseCodeAsync(): Promise<number> {
   if (!connected) {
-    return ResponseCode.ERROR;
+    return IAPResponseCode.ERROR;
   }
   if (!ExpoInAppPurchases.getBillingResponseCodeAsync) {
-    return ResponseCode.OK;
+    return IAPResponseCode.OK;
   }
 
   return await ExpoInAppPurchases.getBillingResponseCodeAsync();

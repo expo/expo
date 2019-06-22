@@ -1,23 +1,22 @@
-export declare type ValidItemType = 'inapp' | 'subs';
-export interface QueryResponse {
-    responseCode: ResponseCode;
-    results?: Array<Purchase | ItemDetails>;
-    errorCode?: ErrorCode;
+export interface IAPQueryResponse {
+    responseCode: IAPResponseCode;
+    results?: Array<InAppPurchase | IAPItemDetails>;
+    errorCode?: IAPErrorCode;
 }
-export declare enum ResponseCode {
+export declare enum IAPResponseCode {
     OK = 0,
     USER_CANCELED = 1,
     ERROR = 2,
     DEFERRED = 3
 }
-export declare enum PurchaseState {
+export declare enum InAppPurchaseState {
     PURCHASING = 0,
     PURCHASED = 1,
     FAILED = 2,
     RESTORED = 3,
     DEFERRED = 4
 }
-export declare enum ErrorCode {
+export declare enum IAPErrorCode {
     UNKNOWN = 0,
     PAYMENT_INVALID = 1,
     SERVICE_DISCONNECTED = 2,
@@ -34,7 +33,7 @@ export declare enum ErrorCode {
     INVALID_IDENTIFIER = 13,
     MISSING_PARAMS = 14
 }
-export interface Purchase {
+export interface InAppPurchase {
     acknowledged: boolean;
     productId: string;
     purchaseState: number;
@@ -46,13 +45,13 @@ export interface Purchase {
     originalPurchaseTime?: string;
     transactionReceipt?: string;
 }
-export interface ItemDetails {
+export interface IAPItemDetails {
     description: string;
     price: string;
     priceAmountMicros: number;
     priceCurrencyCode: string;
     productId: string;
     title: string;
-    type: ValidItemType;
+    type: 'inapp' | 'subs';
     subscriptionPeriod?: string;
 }
