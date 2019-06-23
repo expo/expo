@@ -4,7 +4,7 @@ import { Platform } from '@unimodules/core';
 
 import ExpoFontLoader from './ExpoFontLoader';
 
-/**
+/*
  * A font source can be a URI, a module ID, or an Expo Asset.
  */
 type FontSource = string | number | Asset;
@@ -15,17 +15,24 @@ const isInClient = Constants.appOwnership === 'expo';
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};
 
-export function processFontFamily(name: string | null): string | null {
-  if (
-    typeof name !== 'string' ||
-    Constants.systemFonts.includes(name) ||
-    name === 'System' ||
-    !isInClient
-  ) {
-    return name;
-  }
+function fontFamilyNeedsScoping(name: string): boolean {
+  return (
+    isInClient &&
+    !Constants.systemFonts.includes(name) &&
+    name !== 'System' &&
+    !name.includes(Constants.sessionId)
+  );
+}
 
-  if (name.includes(Constants.sessionId)) {
+/*
+ * Used to transform font family names to the scoped name. This does not need to
+ * be called in standalone or bare apps but it will return unscoped font family
+ * names if it is called in those contexts.
+ * note(brentvatne): at some point we may want to warn if this is called
+ * outside of a managed app.
+ */
+export function processFontFamily(name: string | null): string | null {
+  if (!name || !fontFamilyNeedsScoping(name)) {
     return name;
   }
 
@@ -130,11 +137,11 @@ async function _loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
 }
 
 function _getNativeFontName(name: string): string {
-  if (isWeb || !isInClient) {
+  if (fontFamilyNeedsScoping(name)) {
+    return `${Constants.sessionId}-${name}`;
+  } else {
     return name;
   }
-
-  return `${Constants.sessionId}-${name}`;
 }
 
 declare var module: any;

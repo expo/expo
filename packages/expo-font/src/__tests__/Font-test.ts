@@ -27,7 +27,7 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('within Expo client', () => {
+describe('within expo client', () => {
   beforeAll(() => {
     jest.doMock('expo-constants', () => ({
       manifest: {},
@@ -36,6 +36,10 @@ describe('within Expo client', () => {
       appOwnership: 'expo',
     }));
   });
+
+  afterAll(() => {
+    jest.unmock('expo-constants');
+  })
 
   describe('loadAsync', () => {
     it(`completes after loading a font`, async () => {
@@ -316,6 +320,10 @@ describe('in standalone app', () => {
     }));
   });
 
+  afterAll(() => {
+    jest.unmock('expo-constants');
+  });
+
   it(`does not scope font names`, async () => {
     const fontName = 'test-font';
     const mockAsset = _createMockAsset();
@@ -328,13 +336,13 @@ describe('in standalone app', () => {
 });
 
 describe('in bare workflow', () => {
-  beforeAll(() => {
-    jest.doMock('expo-constants', () => ({
-      manifest: {},
-      sessionId: 'testsession',
-      systemFonts: ['Helvetica', 'Helvetica Neue'],
-    }));
-  });
+  // beforeAll(() => {
+  //   jest.doMock('expo-constants', () => ({
+  //     manifest: {},
+  //     sessionId: 'testsession',
+  //     systemFonts: ['Helvetica', 'Helvetica Neue'],
+  //   }));
+  // });
 
   it(`does not scope font names`, async () => {
     const fontName = 'test-font';
