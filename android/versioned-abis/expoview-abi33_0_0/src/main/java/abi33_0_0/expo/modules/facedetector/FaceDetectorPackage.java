@@ -1,19 +1,19 @@
-
 package abi33_0_0.expo.modules.facedetector;
 
 import android.content.Context;
 
+import abi33_0_0.org.unimodules.core.ExportedModule;
+import abi33_0_0.org.unimodules.core.interfaces.InternalModule;
+import abi33_0_0.org.unimodules.core.interfaces.Package;
+
 import java.util.Collections;
 import java.util.List;
 
-import abi33_0_0.org.unimodules.core.ExportedModule;
-import abi33_0_0.org.unimodules.core.BasePackage;
-import abi33_0_0.org.unimodules.core.interfaces.InternalModule;
+public class FaceDetectorPackage implements Package {
 
-public class FaceDetectorPackage extends BasePackage {
   @Override
   public List<InternalModule> createInternalModules(Context context) {
-    return Collections.singletonList((InternalModule) new FaceDetectorProvider());
+    return Collections.singletonList((InternalModule) new ExpoFaceDetectorProvider());
   }
 
   @Override

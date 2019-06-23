@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Bundle;
 
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;

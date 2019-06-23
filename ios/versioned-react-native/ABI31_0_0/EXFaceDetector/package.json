@@ -1,24 +1,45 @@
 {
   "name": "expo-face-detector",
-  "version": "1.0.2",
-  "description": "Expo Face Detector standalone universal module",
-  "main": "index.js",
+  "version": "5.0.0",
+  "description": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
+  "main": "build/FaceDetector.js",
+  "types": "build/FaceDetector.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
-    "react-native",
+    "ReactABI31_0_0-native",
     "expo",
     "face-detector",
     "face",
     "detection"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
-    "expo-core": "~1.1.0",
-    "expo-face-detector-interface": "~1.0.2",
-    "expo-permissions-interface": "~1.1.0"
+  "homepage": "https://docs.expo.io/versions/latest/sdk/facedetector/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "unimodules-face-detector-interface": "*",
+    "unimodules-permissions-interface": "*"
   },
   "devDependencies": {
-    "babel-preset-expo": "^4.0.0"
-  }
+    "expo-module-scripts": "^1.0.0"
+  },
+  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
 }

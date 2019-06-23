@@ -7,7 +7,7 @@ In order to use `BackgroundFetch` API in standalone and detached apps on iOS, yo
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-background-fetch`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
 
 ## API
 

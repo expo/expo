@@ -74,7 +74,7 @@ export default class ExpoApisScreen extends React.Component {
     // if after backgrounding the app and then clicking on a notification
     // to foreground the app
     setTimeout(() => alert(message), 1000);
-  }
+  };
 
   render() {
     // @ts-ignore
@@ -95,6 +95,7 @@ export default class ExpoApisScreen extends React.Component {
       'Contacts',
       'DocumentPicker',
       'FacebookLogin',
+      'FaceDetector',
       'FileSystem',
       'Font',
       'Geocoding',
@@ -139,5 +140,5 @@ export default class ExpoApisScreen extends React.Component {
         }
         return 0;
       });
-  }
+  };
 }

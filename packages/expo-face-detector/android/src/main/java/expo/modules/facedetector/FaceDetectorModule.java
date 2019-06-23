@@ -3,24 +3,26 @@ package expo.modules.facedetector;
 import android.content.Context;
 import android.os.Bundle;
 
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.interfaces.facedetector.FaceDetector;
+import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-
-import expo.modules.facedetector.tasks.FileFaceDetectionAsyncTask;
 import expo.modules.facedetector.tasks.FileFaceDetectionCompletionListener;
+import expo.modules.facedetector.tasks.FileFaceDetectionTask;
 
 public class FaceDetectorModule extends ExportedModule {
   private static final String TAG = "ExpoFaceDetector";
 
-  private static final String MODE_OPTION_KEY = "mode";
-  private static final String DETECT_LANDMARKS_OPTION_KEY = "detectLandmarks";
-  private static final String RUN_CLASSIFICATIONS_OPTION_KEY = "runClassifications";
+  private static final String MODE_OPTION_KEY = "Mode";
+  private static final String DETECT_LANDMARKS_OPTION_KEY = "Landmarks";
+  private static final String RUN_CLASSIFICATIONS_OPTION_KEY = "Classifications";
 
   private ModuleRegistry mModuleRegistry;
 
@@ -37,9 +39,9 @@ public class FaceDetectorModule extends ExportedModule {
   public Map<String, Object> getConstants() {
     return Collections.unmodifiableMap(new HashMap<String, Object>() {
       {
-        put("Mode", getFaceDetectionModeConstants());
-        put("Landmarks", getFaceDetectionLandmarksConstants());
-        put("Classifications", getFaceDetectionClassificationsConstants());
+        put(MODE_OPTION_KEY, getFaceDetectionModeConstants());
+        put(DETECT_LANDMARKS_OPTION_KEY, getFaceDetectionLandmarksConstants());
+        put(RUN_CLASSIFICATIONS_OPTION_KEY, getFaceDetectionClassificationsConstants());
       }
 
       private Map<String, Object> getFaceDetectionModeConstants() {
@@ -74,7 +76,7 @@ public class FaceDetectorModule extends ExportedModule {
   @ExpoMethod
   public void detectFaces(HashMap<String, Object> options, final Promise promise) {
     // TODO: Check file scope
-    new FileFaceDetectionAsyncTask(detectorForOptions(options, getContext()), options, new FileFaceDetectionCompletionListener() {
+    new FileFaceDetectionTask(detectorForOptions(options, getContext()), options, new FileFaceDetectionCompletionListener() {
       @Override
       public void resolve(Bundle result) {
         promise.resolve(result);
@@ -92,22 +94,12 @@ public class FaceDetectorModule extends ExportedModule {
     mModuleRegistry = moduleRegistry;
   }
 
-  private static ExpoFaceDetector detectorForOptions(HashMap<String, Object> options, Context context) {
-    ExpoFaceDetector detector = new ExpoFaceDetector(context);
-    detector.setTrackingEnabled(false);
+  private FaceDetector detectorForOptions(HashMap<String, Object> options, Context context) {
+    FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProvider.class);
 
-    if(options.get(MODE_OPTION_KEY) != null) {
-      detector.setMode(((Number) options.get(MODE_OPTION_KEY)).intValue());
-    }
+    FaceDetector faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context);
+    faceDetector.setSettings(options);
 
-    if(options.get(RUN_CLASSIFICATIONS_OPTION_KEY) != null) {
-      detector.setClassificationType(((Number) options.get(RUN_CLASSIFICATIONS_OPTION_KEY)).intValue());
-    }
-
-    if(options.get(DETECT_LANDMARKS_OPTION_KEY) != null) {
-      detector.setLandmarkType(((Number) options.get(DETECT_LANDMARKS_OPTION_KEY)).intValue());
-    }
-
-    return detector;
+    return faceDetector;
   }
 }

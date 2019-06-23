@@ -146,7 +146,7 @@ import { Image, Text, View } from 'react-native';
 import { Asset, AppLoading, SplashScreen } from 'expo';
 
 export default class App extends React.Component {
-  state = { areReasourcesReady: false };
+  state = { areResourcesReady: false };
 
   constructor(props) {
     super(props);
@@ -155,12 +155,12 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.cacheResourcesAsync() // ask for resources
-      .then(() => this.setState({ areReasourcesReady: true })) // mark reasources as loaded
+      .then(() => this.setState({ areResourcesReady: true })) // mark resources as loaded
       .catch(error => console.error(`Unexpected error thrown when loading:\n${error.stack}`));
   }
 
   render() {
-    if (!this.state.areReasourcesReady) {
+    if (!this.state.areResourcesReady) {
       return null;
     }
 
