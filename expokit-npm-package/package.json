@@ -1,6 +1,6 @@
 {
   "name": "expokit",
-  "version": "33.0.3",
+  "version": "33.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "jsc-android": "^241213.2.0"
+    "jsc-android": "^224109.1.0"
   }
 }
