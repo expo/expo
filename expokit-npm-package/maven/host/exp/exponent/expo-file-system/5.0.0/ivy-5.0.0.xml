@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-file-system" revision="5.0.0" status="integration" publication="20190621003705"/>
+  <info organisation="host.exp.exponent" module="expo-file-system" revision="5.0.0" status="integration" publication="20190529143203"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -116,41 +116,11 @@
     <dependency org="commons-io" name="commons-io" rev="1.4" conf="implementation-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp" rev="3.10.0" conf="implementation-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.10.0" conf="implementation-&gt;default"/>
-    <dependency org="com.android.support" name="support-v4" rev="28.0.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.3.2" conf="lintClassPath-&gt;default"/>
     <dependency org="commons-codec" name="commons-codec" rev="1.10" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp" rev="3.10.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.squareup.okio" name="okio" rev="1.14.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.squareup.okhttp3" name="okhttp-urlconnection" rev="3.10.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-v4" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-compat" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-annotations" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="collections" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="runtime" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="common" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.core" name="common" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="versionedparcelable" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-media-compat" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-core-utils" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="documentfile" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="loader" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="livedata" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.core" name="runtime" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="livedata-core" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="viewmodel" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="localbroadcastmanager" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="print" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-core-ui" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="customview" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="viewpager" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="coordinatorlayout" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="drawerlayout" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="slidingpanelayout" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="interpolator" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="swiperefreshlayout" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="asynclayoutinflater" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="cursoradapter" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-fragment" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
   </dependencies>
 </ivy-module>
