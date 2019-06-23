@@ -13,7 +13,7 @@ module.exports = function(api, options) {
 function getNativeConfig(options) {
   // Note that if `options.lazy` is not set (i.e., `null` or `undefined`),
   // `metro-react-native-babel-preset` will handle it.
-  const lazy_option = options && options.lazy;
+  const lazyOption = options && options.lazy;
   return {
     presets: [
       [
@@ -21,15 +21,18 @@ function getNativeConfig(options) {
         require('./node_modules/metro-react-native-babel-preset'),
         {
           lazyImportExportTransform:
-            lazy_option === true
-              ? require_name => {
+            lazyOption === true
+              ? importModuleSpecifier => {
                   // Do not lazy-initialize packages that are local imports (similar to `lazy: true` behavior)
                   // or are in the blacklist.
-                  return !(require_name.includes('./') || lazyImportsBlacklist.has(require_name));
+                  return !(
+                    importModuleSpecifier.includes('./') ||
+                    lazyImportsBlacklist.has(importModuleSpecifier)
+                  );
                 }
               : // Pass the option directly to `metro-react-native-babel-preset`
                 // (which in turns pass it to `babel-plugin-transform-modules-commonjs`).
-                lazy_option,
+                lazyOption,
         },
       ],
     ],
