@@ -68,6 +68,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     constants.put("manifest", mManifest.toString());
     constants.put("nativeAppVersion", Constants.VERSION_NAME);
     constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
+    constants.put("supportedExpoSdks", Constants.SDK_VERSIONS_LIST);
 
     String appOwnership = getAppOwnership();
 
