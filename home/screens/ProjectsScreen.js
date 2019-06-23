@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { withNavigationFocus, withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
+import semver from 'semver';
 import ScrollView from '../components/NavigationScrollView';
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Environment from '../utils/Environment';
@@ -327,6 +328,13 @@ export default class ProjectsScreen extends React.Component {
         <Text style={styles.expoVersionText} onPress={this._copyClientVersionToClipboard}>
           Client version: {Constants.expoVersion}
         </Text>
+        <Text style={styles.supportSdksText}>
+          Supports SDK{Constants.supportedExpoSdks.length === 1 ? '' : 's'}{' '}
+          {Constants.supportedExpoSdks
+            .map(semver.major)
+            .sort((a, b) => a - b)
+            .join(', ')}
+        </Text>
       </View>
     );
   };
@@ -421,6 +429,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   expoVersionText: {
+    color: 'rgba(0,0,0,0.3)',
+    fontSize: 11,
+    marginBottom: 5,
+  },
+  supportSdksText: {
     color: 'rgba(0,0,0,0.3)',
     fontSize: 11,
   },
