@@ -39,7 +39,6 @@ export const uniqueId = ExpoDevice.uniqueId;
 export const isTablet = ExpoDevice.isTablet;
 export const deviceType = ExpoDevice.deviceType;
 export const deviceId = ExpoDevice.deviceId;
-export const totalDiskCapacity = ExpoDevice.totalDiskCapacity;
 export const supportedABIs = ExpoDevice.supportedABIs;
 export function hasNotch() {
     return (devicesWithNotch.findIndex(item => item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
@@ -52,11 +51,16 @@ export async function getFreeDiskStorageAsync() {
 export async function getIPAddressAsync() {
     return await ExpoDevice.getIPAddressAsync();
 }
-export async function getMACAddressAsync() {
-    return await ExpoDevice.getMACAddressAsync();
+export async function getMACAddressAsync(interfaceName) {
+    if (Platform.OS === "ios") {
+        return await ExpoDevice.getMACAddressAsync();
+    }
+    else {
+        return await ExpoDevice.getMACAddressAsync(interfaceName);
+    }
 }
 export async function isAirplaneModeEnabledAsync() {
-    if (!ExpoDevice.isAirplaneModeAsync) {
+    if (!ExpoDevice.isAirplaneModeEnabledAsync) {
         throw new UnavailabilityError('expo-device', 'isAirplaneModeEnabledAsync');
     }
     return await ExpoDevice.isAirplaneModeEnabledAsync();
@@ -75,5 +79,8 @@ export async function getUserAgentAsync() {
 }
 export async function getCarrierAsync() {
     return await ExpoDevice.getCarrierAsync();
+}
+export async function getTotalDiskCapacityAsync() {
+    return await ExpoDevice.getTotalDiskCapacityAsync();
 }
 //# sourceMappingURL=Device.js.map

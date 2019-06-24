@@ -33,14 +33,12 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-public class DeviceModule extends ExportedModule implements RegistryLifecycleListener {
+public class DeviceModule extends ExportedModule implements RegistryLifecycleListener, ActivityCompat.OnRequestPermissionsResultCallback {
   private static final String NAME = "ExpoDevice";
   private static final String TAG = DeviceModule.class.getSimpleName();
   private final int REQUEST_READ_PHONE_STATE = 1;
@@ -51,7 +49,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   private ActivityProvider mActivityProvider;
   private Activity mActivity;
   private String mPhoneNumber;
-  DeviceType deviceType;
+  private DeviceType deviceType;
 
   public DeviceModule(Context context) {
     super(context);
@@ -78,10 +76,8 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
 
   private WifiInfo getWifiInfo() {
-    if (this.wifiInfo == null) {
-      WifiManager manager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-      this.wifiInfo = manager.getConnectionInfo();
-    }
+    WifiManager manager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    this.wifiInfo = manager.getConnectionInfo();
     return this.wifiInfo;
   }
 
@@ -98,10 +94,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     mPhoneNumber = getPhoneNumber();
   }
 
-  public String getEventName() {
-    return "Exponent.isPinOrFingerprintSetUpdate";
-  }
-
+  @Override
   public void onRequestPermissionsResult(int requestCode,
                                          String[] permissions, int[] grantResults) {
     switch (requestCode) {
@@ -135,7 +128,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     Bundle constants = new Bundle();
 
     constants.putString("brand", Build.BRAND);
-    constants.putString("carrier", this.getCarrier());
     constants.putString("manufacturer", Build.MANUFACTURER);
     constants.putString("model", Build.MODEL);
     mPhoneNumber = this.getPhoneNumber();
@@ -143,7 +135,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     constants.putString("serialNumber", this.getSerial());
     constants.putString("systemName", "Android");
     constants.putString("deviceId", Build.BOARD);
-    constants.putLong("totalDiskCapacity", this.getTotalDiskCapacity().longValue());
     constants.putString("uniqueId", Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
     constants.putString("deviceType", deviceType.getValue());
     constants.putBoolean("isTablet", this.isTablet());
@@ -155,22 +146,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     constants.putLong("totalMemory", memInfo.totalMem);
 
     return constants;
-  }
-
-  private BigInteger getFreeDiskStorage() {
-    try {
-      StatFs external = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-      long availableBlocks;
-      long blockSize;
-
-      availableBlocks = external.getAvailableBlocksLong();
-      blockSize = external.getBlockSizeLong();
-
-      return BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
-    }
-    return null;
   }
 
   private String getCarrier() {
@@ -196,16 +171,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       }
     } catch (SecurityException se) {
       Log.e(TAG, se.getMessage());
-    }
-    return null;
-  }
-
-  private BigInteger getTotalDiskCapacity() {
-    try {
-      StatFs root = new StatFs(Environment.getRootDirectory().getAbsolutePath());
-      return BigInteger.valueOf(root.getBlockCountLong()).multiply(BigInteger.valueOf(root.getBlockSizeLong()));
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
     }
     return null;
   }
@@ -280,7 +245,14 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   @ExpoMethod
   public void getFreeDiskStorageAsync(Promise promise) {
     try {
-      BigInteger storage = this.getFreeDiskStorage();
+      StatFs external = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
+      long availableBlocks;
+      long blockSize;
+
+      availableBlocks = external.getAvailableBlocksLong();
+      blockSize = external.getBlockSizeLong();
+
+      BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
       String stringValue = storage.toString();
       promise.resolve(stringValue);
     } catch (NullPointerException e) {
@@ -297,16 +269,8 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
         ipAddress = Integer.reverseBytes(ipAddress);
       }
-
       byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
-
-      String ipAddressString;
-      try {
-        ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
-      } catch (Exception ex) {
-        Log.e("WIFIIP", "Unable to get host address.");
-        ipAddressString = null;
-      }
+      String ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
       promise.resolve(ipAddressString);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -315,60 +279,54 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void getMACAddressAsync(Promise promise) {
-
-    String macAddress = getWifiInfo().getMacAddress();
-
+  public void getMACAddressAsync(String interfaceName, Promise promise) {
     String permission = "android.permission.INTERNET";
     int res = mContext.checkCallingOrSelfPermission(permission);
 
+    String macAddress = "";
     if (res == PackageManager.PERMISSION_GRANTED) {
       try {
-        List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-        for (NetworkInterface nif : all) {
-          if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
-          byte[] macBytes = nif.getHardwareAddress();
-          if (macBytes == null) {
-            macAddress = "";
-          } else {
-
-            StringBuilder res1 = new StringBuilder();
-            for (byte b : macBytes) {
-              res1.append(String.format("%02X:", b));
-            }
-
-            if (res1.length() > 0) {
-              res1.deleteCharAt(res1.length() - 1);
-            }
-            macAddress = res1.toString();
+        List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+        for (NetworkInterface intf : interfaces) {
+          if (interfaceName != null) {
+            if (!intf.getName().equalsIgnoreCase(interfaceName)) continue;
           }
+          byte[] mac = intf.getHardwareAddress();
+          if (mac == null) {
+            macAddress = "";
+          }
+          StringBuilder buf = new StringBuilder();
+          for (byte aMac : mac) {
+            buf.append(String.format("%02X:", aMac));
+          }
+          if (buf.length() > 0) {
+            buf.deleteCharAt(buf.length() - 1);
+          }
+          macAddress = buf.toString();
+          break;
         }
       } catch (Exception e) {
         Log.e(TAG, e.getMessage());
         promise.reject(e);
       }
     }
-
     promise.resolve(macAddress);
   }
 
   @ExpoMethod
-  public void isAirplaneModeAsync(Promise promise) {
-
+  public void isAirplaneModeEnabledAsync(Promise promise) {
     boolean isAirPlaneMode = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
-
     promise.resolve(isAirPlaneMode);
   }
 
   @ExpoMethod
   public void hasSystemFeatureAsync(String feature, Promise promise) {
-    if (feature == null || feature.equals("")) {
-      promise.resolve(false);
-      return;
+    try {
+      promise.resolve(mContext.getApplicationContext().getPackageManager().hasSystemFeature(feature));
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
     }
-    boolean hasFeature = mContext.getApplicationContext().getPackageManager().hasSystemFeature(feature);
-    promise.resolve(hasFeature);
   }
 
   @ExpoMethod
@@ -381,5 +339,26 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public void getUserAgentAsync(Promise promise) {
     String userAgent = System.getProperty("http.agent");
     promise.resolve(userAgent);
+  }
+
+  @ExpoMethod
+  public void getCarrierAsync(Promise promise) {
+    try {
+      promise.resolve(this.getCarrier());
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void getTotalDiskCapacityAsync(Promise promise) {
+    try {
+      StatFs root = new StatFs(Environment.getRootDirectory().getAbsolutePath());
+      promise.resolve(BigInteger.valueOf(root.getBlockCountLong()).multiply(BigInteger.valueOf(root.getBlockSizeLong())).toString());
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
   }
 }
