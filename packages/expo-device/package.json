@@ -5,7 +5,12 @@
   "main": "build/Device.js",
   "types": "build/Device.d.ts",
   "scripts": {
-    "build": "expo-module build"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "keywords": [
     "react-native",
@@ -22,8 +27,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-device",
-  "peerDependencies": {
-    "@unimodules/core": "~1.0.0"
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "unimodules-constants-interface": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0",
   },
   "gitHead": "f213c9be2a909dae42a0a27d8aa4b9eac8e97be1"
 }
