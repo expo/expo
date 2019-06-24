@@ -42,12 +42,12 @@ export const totalDiskCapacity = ExpoDevice ? ExpoDevice.totalDiskCapacity : nul
 export const supportedABIs = ExpoDevice ? ExpoDevice.supportedABIs : null;
 export function hasNotch(): boolean {
   return (
-    devicesWithNotch.findIndex(
+    devicesWithNotch.some(
       item =>
         item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
         item.model.toLowerCase() ===
         (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())
-    ) !== -1
+    ) 
   );
 }
 export async function getFreeDiskStorageAsync(): Promise<string> {
