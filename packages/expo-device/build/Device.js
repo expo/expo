@@ -1,8 +1,9 @@
 import ExpoDevice from './ExpoDevice';
-import { devicesWithNotch, deviceNamesByCode } from './DeviceConstants';
+import { deviceNamesByCode } from './DeviceNameByCode';
+import { devicesWithNotch } from './DeviceWithNotchConst';
 import { Platform, UnavailabilityError } from '@unimodules/core';
-export const brand = ExpoDevice.brand;
-export const manufacturer = ExpoDevice.manufacturer;
+export const brand = ExpoDevice ? ExpoDevice.brand : null;
+export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 if (Platform.OS === 'ios') {
     var modelName;
     let deviceName;
@@ -28,7 +29,7 @@ if (Platform.OS === 'ios') {
     modelName = deviceName;
 }
 else {
-    modelName = ExpoDevice.model;
+    modelName = ExpoDevice ? ExpoDevice.model : null;
 }
 export const model = modelName;
 export const phoneNumber = ExpoDevice.phoneNumber;
@@ -41,9 +42,9 @@ export const deviceType = ExpoDevice.deviceType;
 export const deviceId = ExpoDevice.deviceId;
 export const supportedABIs = ExpoDevice.supportedABIs;
 export function hasNotch() {
-    return (devicesWithNotch.findIndex(item => item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
+    return (devicesWithNotch.some(item => item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
         item.model.toLowerCase() ===
-            (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())) !== -1);
+            (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())));
 }
 export async function getFreeDiskStorageAsync() {
     return await ExpoDevice.getFreeDiskStorageAsync();

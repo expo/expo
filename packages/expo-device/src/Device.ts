@@ -1,6 +1,7 @@
 import ExpoDevice from './ExpoDevice';
 
-import { devicesWithNotch, deviceNamesByCode } from './DeviceConstants';
+import { deviceNamesByCode } from './DeviceNameByCode';
+import { devicesWithNotch } from './DeviceWithNotchConst';
 
 import { Platform, UnavailabilityError } from '@unimodules/core';
 
