@@ -6,12 +6,5 @@
 module.exports = new Set([
   'expo',
   'expo-asset',
-  'expo-background-fetch',
-  'expo-constants',
-  'expo-file-system',
-  'expo-font',
-  'expo-location',
-  'expo-sqlite',
   'expo-task-manager',
-  'jest-expo',
 ]);
