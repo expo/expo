@@ -5,7 +5,6 @@
 
 module.exports = new Set([
   'expo',
-  'expo-app-auth',
   'expo-asset',
   'expo-av',
   'expo-background-fetch',
@@ -15,7 +14,6 @@ module.exports = new Set([
   'expo-crypto',
   'expo-file-system',
   'expo-font',
-  'expo-gl',
   'expo-haptics',
   'expo-image-manipulator',
   'expo-image-picker',
