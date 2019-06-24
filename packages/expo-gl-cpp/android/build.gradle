@@ -108,26 +108,34 @@ task prepareJSC(dependsOn: downloadJSC) {
   }
 }
 
-task buildNdkLib(dependsOn: prepareJSC, type: Exec) {
+task buildNdkLib(dependsOn: prepareJSC) {
   inputs.dir('src/main/jni')
   inputs.dir('../cpp')
   outputs.dir("$buildDir/expo-gl-ndk/all")
 
-  commandLine getNdkBuildFullPath(),
-      'NDK_PROJECT_PATH=null',
-      "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-      "NDK_OUT=$temporaryDir",
-      "NDK_LIBS_OUT=$buildDir/expo-gl-ndk/all",
-      "JSC_DIR=$buildDir/jsc",
-      '-C', file('src/main/jni').absolutePath,
-      '--jobs', Runtime.runtime.availableProcessors()
+  doLast {
+    exec {
+      commandLine getNdkBuildFullPath(),
+          'NDK_PROJECT_PATH=null',
+          "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
+          "NDK_OUT=$temporaryDir",
+          "NDK_LIBS_OUT=$buildDir/expo-gl-ndk/all",
+          "JSC_DIR=$buildDir/jsc",
+          '-C', file('src/main/jni').absolutePath,
+          '--jobs', Runtime.runtime.availableProcessors()
+    }
+  }
 }
 
-task cleanNdkLib(type: Exec) {
-  commandLine getNdkBuildFullPath(),
-      "JSC_DIR=$buildDir/jsc",
-      '-C', file('src/main/jni').absolutePath,
-      'clean'
+task cleanNdkLib {
+  doLast {
+    exec {
+      commandLine getNdkBuildFullPath(),
+          "JSC_DIR=$buildDir/jsc",
+          '-C', file('src/main/jni').absolutePath,
+          'clean'
+    }
+  }
 }
 
 task packageNdkLibs(dependsOn: buildNdkLib, type: Copy) {
