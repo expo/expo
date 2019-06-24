@@ -47,7 +47,7 @@ await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
 
 const { status } = await Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS);
 if (status === 'granted') {
-  Brightness.setSystemBrightness(0.5);
+  Brightness.setSystemBrightnessAsync(0.5);
 }
 ...
 ```
