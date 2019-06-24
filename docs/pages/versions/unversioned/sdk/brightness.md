@@ -14,7 +14,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Brightness from 'expo-brightness';
 ```
 
-### `Brightness.setBrightness(brightnessValue)`
+### `Brightness.setBrightnessAsync(brightnessValue)`
 
 Sets screen brightness.
 
@@ -30,7 +30,7 @@ Gets screen brightness.
 
 A `Promise` that is resolved with a number between 0 and 1, representing the current screen brightness.
 
-### `Brightness.setSystemBrightness(brightnessValue)`
+### `Brightness.setSystemBrightnessAsync(brightnessValue)`
 
 > **WARNING:** this method is experimental.
 
