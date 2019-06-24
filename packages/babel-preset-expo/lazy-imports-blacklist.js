@@ -3,8 +3,4 @@
  */
 'use strict';
 
-module.exports = new Set([
-  'expo',
-  'expo-asset',
-  'expo-task-manager',
-]);
+module.exports = new Set(['expo', 'expo-asset', 'expo-task-manager']);
