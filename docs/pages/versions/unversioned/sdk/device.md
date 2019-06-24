@@ -109,7 +109,9 @@ A boolean that represents the support for notch display.
 **Examples**
 
 ```js
-const hasNotch = Device.hasNotch();
+import { hasNotch } from 'expo-device';
+
+hasNotch(); // true or false
 ```
 
 ### `Device.getUserAgentAsync()`
