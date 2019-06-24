@@ -415,7 +415,7 @@ async function _preparePublishAsync({ libName, dir }, allConfigs, options) {
 }
 
 async function _bumpVersionsAsync(
-  { libName, dir, newVersion, shouldPublish, packageJson, isNativeModule, config },
+  { libName, dir, newVersion, shouldPublish, packageJson, config },
   allConfigs,
   options
 ) {
@@ -490,7 +490,7 @@ async function _bumpVersionsAsync(
     }
   }
 
-  if (isNativeModule && (config.android.includeInExpoClient || config.ios.includeInExpoClient)) {
+  if (config.android.includeInExpoClient || config.ios.includeInExpoClient) {
     await JsonFile.setAsync(
       path.join(ROOT_DIR, 'packages/expo/bundledNativeModules.json'),
       libName,
