@@ -12,7 +12,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Usage
 
-<SnackEmbed snackId="r116LYJne" />
+<SnackEmbed snackId="@charliecruzan/webbrowserexample" />
 <br />
 
 ### Handling deep links from the WebBrowser

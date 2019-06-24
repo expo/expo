@@ -16,7 +16,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ### Comprehensive Example
 
-Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@community/camerja](https://expo.io/@community/camerja).
+Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@documentation/camerja](https://expo.io/@documentation/camerja).
 
 `FaceDetector` is used in Gallery screen — it should detect faces on saved photos and show the probability that the face is smiling.
 
@@ -118,7 +118,7 @@ Detect faces on a picture.
 
 Returns a Promise that resolves to an object: `{ faces, image }` where `faces` is an array of the detected faces and `image` is an object containing `uri: string` of the image, `width: number` of the image in pixels, `height: number` of the image in pixels and `orientation: number` of the image (value conforms to the EXIF orientation tag standard).
 
-##### Detected face schema
+#### Detected face schema
 
 A detected face is an object containing at most following fields:
 
