@@ -1,5 +1,4 @@
 export declare const brand: any;
-export declare const carrier: any;
 export declare const manufacturer: any;
 export declare const model: any;
 export declare const phoneNumber: any;
@@ -16,7 +15,8 @@ export declare function hasNotch(): boolean;
 export declare function getFreeDiskStorageAsync(): Promise<string>;
 export declare function getIPAddressAsync(): Promise<string>;
 export declare function getMACAddressAsync(): Promise<string>;
-export declare function isAirplaneModeAsync(): Promise<boolean | string>;
+export declare function isAirplaneModeEnabledAsync(): Promise<boolean | string>;
 export declare function hasSystemFeatureAsync(feature: string): Promise<boolean | string>;
 export declare function isPinOrFingerprintSetAsync(): Promise<boolean>;
 export declare function getUserAgentAsync(): Promise<string>;
+export declare function getCarrierAsync(): Promise<string>;

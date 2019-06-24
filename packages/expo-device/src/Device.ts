@@ -1,14 +1,10 @@
 import ExpoDevice from './ExpoDevice';
 
-import {
-  devicesWithNotch,
-  deviceNamesByCode,
-} from './DeviceConstants';
+import { devicesWithNotch, deviceNamesByCode } from './DeviceConstants';
 
 import { Platform, UnavailabilityError } from '@unimodules/core';
 
 export const brand = ExpoDevice.brand;
-export const carrier = ExpoDevice.carrier;
 export const manufacturer = ExpoDevice.manufacturer;
 if (Platform.OS === 'ios') {
   var modelName;
@@ -31,7 +27,7 @@ if (Platform.OS === 'ios') {
   }
   modelName = deviceName;
 } else {
-  modelName = ExpoDevice.model
+  modelName = ExpoDevice.model;
 }
 export const model = modelName;
 export const phoneNumber = ExpoDevice.phoneNumber;
@@ -49,7 +45,8 @@ export function hasNotch(): boolean {
     devicesWithNotch.findIndex(
       item =>
         item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
-        item.model.toLowerCase() === ((Platform.OS === 'ios') ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())
+        item.model.toLowerCase() ===
+          (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())
     ) !== -1
   );
 }
@@ -65,23 +62,28 @@ export async function getMACAddressAsync(): Promise<string> {
   return await ExpoDevice.getMACAddressAsync();
 }
 
-export async function isAirplaneModeAsync(): Promise<boolean | string> {
+export async function isAirplaneModeEnabledAsync(): Promise<boolean | string> {
   if (!ExpoDevice.isAirplaneModeAsync) {
-    throw new UnavailabilityError('expo-device', 'isAirplaneModeAsync')
+    throw new UnavailabilityError('expo-device', 'isAirplaneModeEnabledAsync');
   }
-  return await ExpoDevice.isAirplaneModeAsync();
+  return await ExpoDevice.isAirplaneModeEnabledAsync();
 }
 
 export async function hasSystemFeatureAsync(feature: string): Promise<boolean | string> {
   if (!ExpoDevice.hasSystemFeatureAsync) {
-    throw new UnavailabilityError('expo-device', 'hasSystemFeatureAsync')
+    throw new UnavailabilityError('expo-device', 'hasSystemFeatureAsync');
   }
-  return await ExpoDevice.hasSystemFeatureAsync(feature);}
+  return await ExpoDevice.hasSystemFeatureAsync(feature);
+}
 
-export async function isPinOrFingerprintSetAsync(): Promise<boolean>{
+export async function isPinOrFingerprintSetAsync(): Promise<boolean> {
   return await ExpoDevice.isPinOrFingerprintSetAsync();
 }
 
-export async function getUserAgentAsync(): Promise<string>{
+export async function getUserAgentAsync(): Promise<string> {
   return await ExpoDevice.getUserAgentAsync();
+}
+
+export async function getCarrierAsync(): Promise<string> {
+  return await ExpoDevice.getCarrierAsync();
 }

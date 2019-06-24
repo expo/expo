@@ -1,8 +1,7 @@
 import ExpoDevice from './ExpoDevice';
-import { devicesWithNotch, deviceNamesByCode, } from './DeviceConstants';
+import { devicesWithNotch, deviceNamesByCode } from './DeviceConstants';
 import { Platform, UnavailabilityError } from '@unimodules/core';
 export const brand = ExpoDevice.brand;
-export const carrier = ExpoDevice.carrier;
 export const manufacturer = ExpoDevice.manufacturer;
 if (Platform.OS === 'ios') {
     var modelName;
@@ -44,7 +43,8 @@ export const totalDiskCapacity = ExpoDevice.totalDiskCapacity;
 export const supportedABIs = ExpoDevice.supportedABIs;
 export function hasNotch() {
     return (devicesWithNotch.findIndex(item => item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
-        item.model.toLowerCase() === ((Platform.OS === 'ios') ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())) !== -1);
+        item.model.toLowerCase() ===
+            (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())) !== -1);
 }
 export async function getFreeDiskStorageAsync() {
     return await ExpoDevice.getFreeDiskStorageAsync();
@@ -55,11 +55,11 @@ export async function getIPAddressAsync() {
 export async function getMACAddressAsync() {
     return await ExpoDevice.getMACAddressAsync();
 }
-export async function isAirplaneModeAsync() {
+export async function isAirplaneModeEnabledAsync() {
     if (!ExpoDevice.isAirplaneModeAsync) {
-        throw new UnavailabilityError('expo-device', 'isAirplaneModeAsync');
+        throw new UnavailabilityError('expo-device', 'isAirplaneModeEnabledAsync');
     }
-    return await ExpoDevice.isAirplaneModeAsync();
+    return await ExpoDevice.isAirplaneModeEnabledAsync();
 }
 export async function hasSystemFeatureAsync(feature) {
     if (!ExpoDevice.hasSystemFeatureAsync) {
@@ -72,5 +72,8 @@ export async function isPinOrFingerprintSetAsync() {
 }
 export async function getUserAgentAsync() {
     return await ExpoDevice.getUserAgentAsync();
+}
+export async function getCarrierAsync() {
+    return await ExpoDevice.getCarrierAsync();
 }
 //# sourceMappingURL=Device.js.map
