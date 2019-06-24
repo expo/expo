@@ -23,6 +23,8 @@ import { Barometer } from 'expo-sensors';
 
 ### `Barometer.isAvailableAsync()`
 
+> You should always check the sensor availability before attempting to use it.
+
 Returns a promise which resolves into a boolean denoting the availability of the device barometer.
 
 | OS      | Availability                |
