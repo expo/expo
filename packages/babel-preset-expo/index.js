@@ -17,8 +17,9 @@ function getNativeConfig(options) {
   return {
     presets: [
       [
-        // TODO: use the actual plugin - but somehow `module:metro-react-native-babel-preset` is not up-to-date yet (need a version after this commit: https://github.com/facebook/metro/commit/23e3503dde5f914f3e642ef214f508d0a699851d)
-        require('./node_modules/metro-react-native-babel-preset'),
+        // TODO: use `module:metro-react-native-babel-preset` after this package is updated to at least v0.53.1 in the root `node_modules`.
+        // Ref: https://github.com/expo/expo/pull/4685#discussion_r296462573
+        require('metro-react-native-babel-preset'),
         {
           lazyImportExportTransform:
             lazyOption === true
