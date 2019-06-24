@@ -124,7 +124,7 @@ UM_EXPORT_METHOD_AS(isPinOrFingerprintSetAsync, isPinOrFingerprintSetAsyncWithRe
   resolve(@[[NSNumber numberWithBool:isPinOrFingerprintSet]]);
 }
 
-UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejector:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
   NSString *returnString = [NSString stringWithFormat:@"%llu", self.freeDiskStorage];
   resolve(returnString);
