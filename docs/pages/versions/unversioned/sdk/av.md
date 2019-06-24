@@ -277,7 +277,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
 
   - `progressUpdateIntervalMillis` : the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
   - `positionMillis` : the desired position of playback in milliseconds.
-  - `seekMillisToleranceBefore` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)_
+  - `seekMillisToleranceBefore` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)]_
   - `seekMillisToleranceAfter` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)]_
   - `shouldPlay` : a boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`.
   - `rate` : the desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.

@@ -11,11 +11,6 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ## API
 
 ```js
-// in managed apps:
-import { DangerZone } from 'expo';
-const { DeviceMotion } = DangerZone;
-
-// in bare apps:
 import { DeviceMotion } from 'expo-sensors';
 ```
 
