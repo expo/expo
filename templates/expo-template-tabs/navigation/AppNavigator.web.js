@@ -10,4 +10,5 @@ const switchNavigator = createSwitchNavigator({
   Main: MainTabNavigator,
 });
 switchNavigator.path = '';
+
 export default createBrowserApp(switchNavigator, { history: 'hash' });
