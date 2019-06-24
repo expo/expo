@@ -31,4 +31,9 @@ export var IAPErrorCode;
     IAPErrorCode[IAPErrorCode["INVALID_IDENTIFIER"] = 13] = "INVALID_IDENTIFIER";
     IAPErrorCode[IAPErrorCode["MISSING_PARAMS"] = 14] = "MISSING_PARAMS";
 })(IAPErrorCode || (IAPErrorCode = {}));
+export var IAPItemType;
+(function (IAPItemType) {
+    IAPItemType[IAPItemType["INAPP"] = 0] = "INAPP";
+    IAPItemType[IAPItemType["SUBS"] = 1] = "SUBS";
+})(IAPItemType || (IAPItemType = {}));
 //# sourceMappingURL=InAppPurchases.types.js.map

@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
-import { IAPQueryResponse, InAppPurchase, InAppPurchaseState, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
+import { IAPQueryResponse, InAppPurchase, InAppPurchaseState, IAPItemType, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 
 const errors = {
@@ -19,6 +19,7 @@ export {
   InAppPurchaseState,
   IAPResponseCode,
   IAPErrorCode,
+  IAPItemType,
 }
 
 export async function connectAsync(): Promise<IAPQueryResponse> {

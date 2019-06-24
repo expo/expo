@@ -18,8 +18,6 @@ static NSString * const kEXPurchasesUpdatedEventName = @"Expo.purchasesUpdated";
 static NSString * const kEXQueryHistoryKey = @"QUERY_HISTORY";
 static NSString * const kEXQueryPurchasableKey = @"QUERY_PURCHASABLE";
 static NSString * const kEXInAppSubPeriod = @"P0D";
-static NSString * const kEXInApp = @"inapp";
-static NSString * const kEXSubs = @"subs";
 
 static const int OK = 0;
 static const int USER_CANCELED = 1;
@@ -325,7 +323,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 {
   // Use with caution: P0D also implies non-renewable subscription.
   NSString *subscriptionPeriod = [self getSubscriptionPeriod:product];
-  NSString *type = [subscriptionPeriod isEqualToString:kEXInAppSubPeriod] ? kEXInApp : kEXSubs;
+  NSNumber *type = [subscriptionPeriod isEqualToString:kEXInAppSubPeriod] ? @(0) : @(1);
   
   NSDecimalNumber *oneMillion = [[NSDecimalNumber alloc] initWithInt:1000000];
   NSDecimalNumber *priceAmountMicros = [product.price decimalNumberByMultiplyingBy:oneMillion];

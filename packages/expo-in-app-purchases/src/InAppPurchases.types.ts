@@ -37,6 +37,11 @@ export enum IAPErrorCode {
   MISSING_PARAMS = 14,
 }
 
+export enum IAPItemType {
+  INAPP = 0,
+  SUBS = 1,
+}
+
 export interface InAppPurchase {
   acknowledged: boolean,
   productId: string,
@@ -56,6 +61,6 @@ export interface IAPItemDetails {
   priceCurrencyCode: string,
   productId: string,
   title: string,
-  type: 'inapp' | 'subs',
+  type: IAPItemType,
   subscriptionPeriod?: string
 }

@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { CodedError, EventEmitter } from '@unimodules/core';
-import { InAppPurchaseState, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
+import { InAppPurchaseState, IAPItemType, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 const errors = {
     ALREADY_CONNECTED: 'Already connected to App Store',
@@ -11,7 +11,7 @@ const PURCHASES_UPDATED_EVENT = 'Expo.purchasesUpdated';
 const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 let connected = false;
 let purchaseUpdatedSubscription;
-export { InAppPurchaseState, IAPResponseCode, IAPErrorCode, };
+export { InAppPurchaseState, IAPResponseCode, IAPErrorCode, IAPItemType, };
 export async function connectAsync() {
     if (connected) {
         throw new ConnectionError(errors.ALREADY_CONNECTED);

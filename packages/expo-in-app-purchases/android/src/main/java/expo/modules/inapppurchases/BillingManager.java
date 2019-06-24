@@ -389,13 +389,15 @@ public class BillingManager implements PurchasesUpdatedListener {
         skuDetails.getSubscriptionPeriod() :
         INAPP_SUB_PERIOD;
 
+    int type = skuDetails.getType().equals(SkuType.INAPP) ? 0 : 1;
+
     bundle.putString("description", skuDetails.getDescription());
     bundle.putString("price", skuDetails.getPrice());
     bundle.putLong("priceAmountMicros", skuDetails.getPriceAmountMicros());
     bundle.putString("priceCurrencyCode", skuDetails.getPriceCurrencyCode());
     bundle.putString("productId", skuDetails.getSku());
     bundle.putString("title", skuDetails.getTitle());
-    bundle.putString("type", skuDetails.getType());
+    bundle.putInt("type", type);
     bundle.putString("subscriptionPeriod", subscriptionPeriod);
 
     return bundle;
