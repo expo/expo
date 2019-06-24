@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXDevice/EXDevice.h>
-#import "DeviceUID.h"
+#import <EXDevice/DeviceUID.h>
 #import <UMCore/UMUtilities.h>
 
 #include <ifaddrs.h>
@@ -121,7 +121,7 @@ UM_EXPORT_METHOD_AS(isPinOrFingerprintSetAsync, isPinOrFingerprintSetAsyncWithRe
   LAContext *context = [[LAContext alloc] init];
   BOOL isPinOrFingerprintSet = ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:nil]);
 #endif
-  resolve(@[[NSNumber numberWithBool:isPinOrFingerprintSet]]);
+  resolve(@(isPinOrFingerprintSet));
 }
 
 UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
@@ -225,7 +225,7 @@ typedef NS_ENUM(NSInteger, DeviceType) {
 - (NSDictionary *)constantsToExport
 {
   UIDevice *currentDevice = [UIDevice currentDevice];
-  NSString *uniqueId = [DeviceUID uid]; //TODO: need to import this
+  NSString *uniqueId = [EXDeviceUID uid]; //TODO: need to import this
   
   return @{
            @"brand": @"Apple",

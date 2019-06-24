@@ -1,7 +1,3 @@
-//
-//  DeviceUID.m
-//  EXDevice
-//
 //  Created by Robert Luo on 6/18/19.
 //
 
@@ -9,14 +5,14 @@
 // https://gist.github.com/miguelcma/e8f291e54b025815ca46
 // Modified as the original version crashes.
 
-#import "EXDeviceUID.h"
+#import <EXDevice/EXDeviceUID.h>
 
-@import UIKit;
+#import <UIKit/UIKit.h>
 
 @interface EXDeviceUID ()
 
-@property(nonatomic, strong, readonly) NSString *uidKey;
-@property(nonatomic, strong, readonly) NSString *uid;
+@property (nonatomic, strong, readonly) NSString *uidKey;
+@property (nonatomic, strong, readonly) NSString *uid;
 
 @end
 
