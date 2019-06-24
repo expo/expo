@@ -16,85 +16,91 @@ import { Device } from 'expo';
 
 ### Constants
 
-#### `Device.brand: string`
+- `Device.brand: string`
 
-Gets the device brand.
+  Gets the device brand.
 
-#### `Device.carrier: string`
+  - IOS: "Apple"
+  - Android: "Xiaomi"
 
-Gets the carrier name (network operator).
+- `Device.carrier: string`
 
-#### `Device.manufacturer: string`
+  Gets the carrier name (network operator).
 
-Gets the device manufacturer.
+- `Device.manufacturer: string`
 
-#### `Device.model: string`
+  Gets the device manufacturer.
 
-**iOS warning**: The list with device names is maintained by the community and could lag new devices. It is recommended to use `getDeviceId()` since it's more reliable and always up-to-date with new iOS devices. We do accept pull requests that add new iOS devices to the list with device names.
+  - IOS: "Apple"
+  - Android: "Google"
 
-Gets the device model.
+- `Device.model: string`
 
-#### `Device.phoneNumber: string` (Android Only)
+  **iOS warning**: The list with device names is maintained by the community and could lag new devices. It is recommended to use `deviceId` since it's more reliable and always up-to-date with new iOS devices. We do accept pull requests that add new iOS devices to the list with device names.
 
-Gets the device phone number.
+  Gets the device model.
 
-#### `Device.serialNumber: string` (Android Only)
+  - IOS: "iPhone XS Max"
+  - Android: "Pixel 2"
 
-Gets the device serial number.
+- `Device.phoneNumber: string` (Android Only)
 
-#### `Device.systemName: string`
+  Gets the device phone number.
 
-Gets the device OS name.
+- `Device.serialNumber: string` (Android Only)
 
-#### `Device.deviceId: string`
+  Gets the device serial number.
 
-Gets the device ID.
+- `Device.systemName: string`
 
-#### `Device.totalDiskCapacity: number`
+  Gets the device OS name.
 
-Gets full disk storage size, in bytes.
+- `Device.deviceId: string`
 
-#### `Device.totalMemory: number`
+  Gets the device ID.
 
-Gets the device total memory, in bytes.
+- `Device.totalMemory: number`
 
-#### `Device.uniqueId: string`
+  Gets the device total memory, in bytes.
 
-Gets the device unique ID.
+- `Device.uniqueId: string`
 
-#### `Device.isTablet: boolean`
+  Gets the device unique ID.
 
-Tells if the device is a tablet.
+- `Device.isTablet: boolean`
 
-#### `Device.deviceType: string`
+  Tells if the device is a tablet.
 
-Returns the device's type as a string, which will be one of:
+- `Device.deviceType: string`
+
+  Returns the device's type as a string, which will be one of:
 
 - `Handset`
 - `Tablet`
 - `Tv`
 - `Unknown`
 
-#### `Device.supportedABIs: string[]`
+- `Device.supportedABIs: string[]`
 
-Returns a list of supported processor architecture version
+  Returns a list of supported processor architecture version
 
-**Examples**
+  **Examples**
 
-```js
-Device.supportedABIs; // [ "arm64 v8", "Intel x86-64h Haswell", "arm64-v8a", "armeabi-v7a", "armeabi" ]
-```
+  ```js
+  Device.supportedABIs; // [ "arm64 v8", "Intel x86-64h Haswell", "arm64-v8a", "armeabi-v7a", "armeabi" ]
+  ```
 
 ### Methods
 
 - `Device.hasNotch()`
 - `Device.hasSystemFeatureAsync(feature)` (Android only)
-- `Device.getIPAddressAsync()`
+- `Device.getIpAddressAsync()`
 - `Device.getMACAddressAsync()`
-- `Device.isAirplaneModeAsync()` (Android only)
+- `Device.isAirplaneModeEnabledAsync()` (Android only)
 - `Device.isPinOrFingerprintSet()`
 - `Device.getFreeDiskStorageAsync()`
 - `Device.getUserAgentAsync()`
+- `Device.getTotalDiskCapacityAsync()`
 
 ## Methods
 
@@ -146,7 +152,23 @@ Device.getFreeDiskStorageAsync().then(storage => {
 });
 ```
 
-### `Device.getIPAddressAsync()`
+### `Device.getTotalDiskCapacityAsync()`
+
+Gets full disk storage size, in bytes.
+
+#### Returns
+
+A promise of string that represents the full disk storage size.
+
+**Examples**
+
+```js
+Device.getTotalDiskCapacityAsync().then(storage => {
+  //'17179869184'
+});
+```
+
+### `Device.getIpAddressAsync()`
 
 Gets the device current IP address.
 
@@ -157,28 +179,38 @@ A Promise that resolves to a string of IP address.
 **Examples**
 
 ```js
-Device.getIPAddressAsync().then(ip => {
+Device.getIpAddressAsync().then(ip => {
   // "92.168.32.44"
 });
 ```
 
-### `Device.getMACAddressAsync()`
-
+### `Device.getMACAddressAsync()` (IOS) / `Device.getMACAddressAsync(interfaceName)` (Android)
 Gets the network adapter MAC address.
+
+#### Arguments (Android Only)
+
+- **interfaceName (_string_)** -- A string of the interfaceName(eth0, wlan0 or NULL=use to get first interface).
+Returns MAC address of the given interface name.
 
 #### Returns
 
-A Promise that resolves to a string of the network adapter MAC address.
+A Promise that resolves to a string of the network adapter MAC address or empty string if there's no such address matching the interface.
 
 **Examples**
 
 ```js
+//ios
 Device.getMACAddressAsync().then(mac => {
+  // "E5:12:D8:E5:69:97"
+});
+
+//android
+Device.getMACAddressAsync('wlan0').then(mac => {
   // "E5:12:D8:E5:69:97"
 });
 ```
 
-### `Device.isAirplaneModeAsync()` (Android Only)
+### `Device.isAirplaneModeEnabledAsync()` (Android Only)
 
 Tells if the device is in AirPlaneMode.
 
@@ -189,7 +221,7 @@ Returns a `Promise<boolean>` that resolves to the `boolean` value for whether th
 **Examples**
 
 ```js
-Device.isAirPlaneModeAsync().then(airPlaneModeOn => {
+Device.isAirplaneModeEnabledAsync().then(airPlaneModeOn => {
   // false
 });
 ```
