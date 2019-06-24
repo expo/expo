@@ -16,7 +16,15 @@ import { Magnetometer } from 'expo-sensors';
 
 ### `Magnetometer.isAvailableAsync()`
 
+> You should always check the sensor availability before attempting to use it.
+
 Returns whether the magnetometer is enabled on the device.
+
+| OS      | Availability                |
+| ------- | --------------------------- |
+| iOS     | iOS 8+                      |
+| Android | Android 2.3+ (API Level 9+) |
+| Web     | `N/A`                       |
 
 #### Returns
 

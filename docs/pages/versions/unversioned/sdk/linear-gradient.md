@@ -12,11 +12,11 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-<SnackEmbed snackId="BJbef43HW" />
+<SnackEmbed snackId="@charliecruzan/lineargradientexample" />
 
 <br />
 
-<SnackEmbed snackId="r1pvMV3HW" />
+<SnackEmbed snackId="@charliecruzan/lineargradienttransparencyexample" />
 
 ## API
 

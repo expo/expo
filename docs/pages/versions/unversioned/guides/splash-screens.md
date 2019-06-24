@@ -89,7 +89,7 @@ Your app can be opened from the Expo client or in a standalone app, and it can b
 - **In the middle**, we are in the Expo client and we are loading a published app. Notice that again the splash image does not appear immediately.
 - **On the right**, we are in a standalone app. Notice that the splash image appears immediately.
 
-### Differences between environments - Android
+### Splash screen API limitations on Android
 
 Splash screen behaves in most cases exactly the same as in iOS case.
 
@@ -97,9 +97,9 @@ There is a slight difference when it comes down to **standalone Android applicat
 In this scenario extra attention should be paid to [`android.splash` section](../../workflow/configuration/#android) configuration inside [`app.json`](../../workflow/configuration/#android).
 
 Depending on the `resizeMode` you will get the following behavior:
-- **cover** - In this mode your app will be leveraging Android's ability to present a static bitmap at the very beginning of the application start. Unfortunately, Android (unlike iOS) is not supporting stretching provided image, so the application will just present given image centered on the screen.
-By default `splash.image` would be used as the `mdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](../../workflow/configuration/#android), from `mdpi` to `xxxhdpi`.
-- **contain** - As described in `cover` mode it isn't possible to dynamically adjust image to the screen size at the very beginning of the application start. Therefore, in this mode, at first only background color will be presented and then, when some view hierarchy is mounted, `splash.image` will be shown.
+- **contain** - on Android, the splash screen API is unable to stretch/scale the splash image (see the **native** mode). As a result, the `contain` mode will initially display only the background color, and when the initial view hierarchy is mounted then `splash.image` will be displayed.
+- **cover** - this mode has the limitations as **contain** for the same reasons.
+- **native** - in this mode your app will be leveraging Android's ability to present a static bitmap while the application is starting up. Android (unlike iOS) does not support stretching the provided image, so the application will  present the given image centered on the screen. By default `splash.image` would be used as the `xxxdpi` resource. It's up to you to provide graphics that meet your expectations and fit the screen dimension. To achieve this, use different resolutions for [different device DPIs](../../workflow/configuration/#android), from `mdpi` to `xxxhdpi`.
 
 ### Ejected ExpoKit apps
 

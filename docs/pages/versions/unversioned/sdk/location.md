@@ -16,7 +16,7 @@ If you're using the iOS or Android Emulators, ensure that [Location is enabled](
 
 You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
-<SnackEmbed snackId="H14SNiW3g" />
+<SnackEmbed snackId="@charliecruzan/basiclocationexample" />
 
 ## API
 

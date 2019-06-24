@@ -34,6 +34,14 @@ Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or pres
 
 Either hit `Cmd+M`, or run `adb shell input keyevent 82` in your terminal window.
 
+## Redbox Errors and the Stack Trace
+
+When you encounter an error during development, you will see the React Native "Redbox" error screen. When you run your app it is transformed through babel and your code will no longer look the same as it does in your editor. 
+
+The error that is reported is exactly as it appears in the transformed/transpiled source. Under that error you will see the stack trace that tells you where the error comes from along with the line number. For example, in the following screenshot we know that the error came from the file `App.js` on line 11 and column (character) 19.
+
+![](/static/images/redbox.png)
+
 ## Debugging Javascript
 
 You can debug Expo apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc, as you would when debugging a web app.

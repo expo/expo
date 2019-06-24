@@ -672,8 +672,8 @@ Configuration for how and when the app should request OTA JavaScript updates
 
       /*
         Determines how the "image" will be displayed in the splash loading screen.
-        Must be one of "cover" or "contain", defaults to "contain".
-        Valid values: "cover", "contain"
+        Must be one of "cover", "contain" or "native", defaults to "contain".
+        Valid values: "cover", "contain", "native"
       */
       "resizeMode": STRING,
 
