@@ -30,15 +30,16 @@ if (Platform.OS === 'ios') {
   modelName = ExpoDevice ? ExpoDevice.model : null;
 }
 export const model = modelName;
-export const phoneNumber = ExpoDevice.phoneNumber;
-export const serialNumber = ExpoDevice.serialNumber;
-export const systemName = ExpoDevice.systemName;
-export const totalMemory = ExpoDevice.totalMemory;
-export const uniqueId = ExpoDevice.uniqueId;
-export const isTablet = ExpoDevice.isTablet;
-export const deviceType = ExpoDevice.deviceType;
-export const deviceId = ExpoDevice.deviceId;
-export const supportedABIs = ExpoDevice.supportedABIs;
+export const phoneNumber = ExpoDevice ? ExpoDevice.phoneNumber : null;
+export const serialNumber = ExpoDevice ? ExpoDevice.serialNumber : null;
+export const systemName = ExpoDevice ? ExpoDevice.systemName : null;
+export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
+export const uniqueId = ExpoDevice ? ExpoDevice.uniqueId : null;
+export const isTablet = ExpoDevice ? ExpoDevice.isTablet : null;
+export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
+export const deviceId = ExpoDevice ? ExpoDevice.deviceId : null;
+export const totalDiskCapacity = ExpoDevice ? ExpoDevice.totalDiskCapacity : null;
+export const supportedABIs = ExpoDevice ? ExpoDevice.supportedABIs : null;
 export function hasNotch(): boolean {
   return (
     devicesWithNotch.some(
