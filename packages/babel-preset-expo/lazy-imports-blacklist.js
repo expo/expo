@@ -6,7 +6,6 @@
 module.exports = new Set([
   'expo',
   'expo-asset',
-  'expo-av',
   'expo-background-fetch',
   'expo-constants',
   'expo-file-system',
