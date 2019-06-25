@@ -92,8 +92,8 @@ UM_EXPORT_METHOD_AS(getMACAddressAsync,
   resolve(address);
 }
 
-UM_EXPORT_METHOD_AS(getIPAddressAsync,
-                    getIPAddressAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getIpAddressAsync,
+                    getIpAddressAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
   NSString *address = @"0.0.0.0";
   struct ifaddrs *interfaces = NULL;

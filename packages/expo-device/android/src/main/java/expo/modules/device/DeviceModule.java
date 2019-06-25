@@ -262,7 +262,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void getIPAddressAsync(Promise promise) {
+  public void getIpAddressAsync(Promise promise) {
     try {
       Integer ipAddress = getWifiInfo().getIpAddress();
       // Convert little-endian to big-endianif needed
