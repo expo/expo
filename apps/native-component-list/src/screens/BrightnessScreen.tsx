@@ -39,7 +39,7 @@ export default class BrightnessScreen extends React.Component<{}, State> {
         sliderValue = this.state.systemBrightnessSlider;
       }
       return (
-        <View style={{ padding: 20 }}>
+        <View key={type} style={{ padding: 20 }}>
           <HeadingText>{type}</HeadingText>
           {type === 'SystemBrightness' && (
             <Button
