@@ -309,7 +309,7 @@ Details about the purchasable item that you inputted in App Store Connect and Go
 | price                 | _string_  | both      | The price formatted with the local currency symbol. Use this to display the price, not to make calculations.                                                  | `$1.99`                                                                                                                                                                                                                                                                                                                                                                  |
 | priceAmountMicros            | _number_  | both       | The price in micro-units, where 1,000,000 micro-units equal one unit of the currency. Use this for calculations.              | `1990000`                                                                                                                                                                                                                                                                                                      |
 | priceCurrencyCode                | _string_  | both      | The local currency code from the ISO 4217 code list.               | `USD`, `CAN`, `RUB`                                                                                                                                                                                                                                                                                                                                                                   |
-| type                  | _IAPItemType_  | both       | The type of the purchase. Note that this is not very accurate on iOS as this data is only available on iOS 11.2 and higher and non-renewable subscriptions always return `IAPItemType.INAPP`.                                      |  `IAPItemType.INAPP`, `IAPItemType.SUBS`                                                                                                                                                                                          |
+| type                  | _IAPItemType_  | both       | The type of the purchase. Note that this is not very accurate on iOS as this data is only available on iOS 11.2 and higher and non-renewable subscriptions always return `IAPItemType.PURCHASE`.                                      |  `IAPItemType.PURCHASE`, `IAPItemType.SUBSCRIPTION`                                                                                                                                                                                          |
 | subscriptionPeriod             | _string_ | both   | The length of a subscription period specified in ISO 8601 format. In-app purchases return `P0D`. On iOS, non-renewable subscriptions also return `P0D`.      | `P0D`, `P6W`, `P3M`, `P6M`, `P1Y` |
 
 ## Enum Types
@@ -331,8 +331,8 @@ Details about the purchasable item that you inputted in App Store Connect and Go
 
 ### `InAppPurchases.IAPItemType`
 
-- **`IAPItemType.INAPP`** - One time purchase or consumable.
-- **`IAPItemType.SUBS`** - Subscription.
+- **`IAPItemType.PURCHASE`** - One time purchase or consumable.
+- **`IAPItemType.SUBSCRIPTION`** - Subscription.
 
 ### `InAppPurchases.IAPErrorCode`
 
