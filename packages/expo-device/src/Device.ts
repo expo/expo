@@ -55,8 +55,8 @@ export async function getFreeDiskStorageAsync(): Promise<string> {
   return await ExpoDevice.getFreeDiskStorageAsync();
 }
 
-export async function getIPAddressAsync(): Promise<string> {
-  return await ExpoDevice.getIPAddressAsync();
+export async function getIpAddressAsync(): Promise<string> {
+  return await ExpoDevice.getIpAddressAsync();
 }
 
 export async function getMACAddressAsync(interfaceName: string): Promise<string> {

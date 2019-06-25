@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoDevice.web.js","sourceRoot":"","sources":["../src/ExpoDevice.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,YAAY,CAAC;IACtB,CAAC;CACF,CAAA","sourcesContent":["export default {\n  get name(): string {\n    return \"ExpoDevice\";\n  }\n}"]}
