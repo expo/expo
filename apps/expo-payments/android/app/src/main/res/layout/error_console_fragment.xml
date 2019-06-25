@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_gravity="top"
+  android:gravity="top"
+  android:orientation="vertical"
+  tools:context="host.exp.exponent.experience.ErrorActivity">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/console_editText"
+    android:layout_centerHorizontal="true"
+    android:layout_marginLeft="40dp"
+    android:layout_marginRight="40dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:weightSum="2"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+
+    <host.exp.exponent.views.ExponentImageButton
+      android:id="@+id/console_home_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:background="@android:color/transparent"
+      android:src="@drawable/ic_home_white_36dp"
+      android:textColor="@color/colorPrimaryDark"
+      android:textSize="15sp"/>
+
+    <host.exp.exponent.views.ExponentImageButton
+      android:id="@+id/console_reload_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:background="@android:color/transparent"
+      android:src="@drawable/ic_refresh_white_36dp"
+      android:textColor="@color/colorPrimaryDark"
+      android:textSize="15sp"/>
+  </LinearLayout>
+
+  <ListView
+      android:id="@+id/list_view"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:paddingBottom="10dp"
+      android:paddingLeft="10dp"
+      android:paddingRight="10dp"
+      android:background="@color/white" />
+
+
+</LinearLayout>
