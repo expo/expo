@@ -8,6 +8,7 @@ import Button from '../components/Button';
 interface State {
   initBrightness: { [type: string]: number };
   sliderBrightness: { [type: string]: number };
+  systemBrightnessPermissionGranted: boolean;
 }
 
 const brightnessTypes: string[] = ['Brightness', 'SystemBrightness'];
@@ -20,6 +21,7 @@ export default class BrightnessScreen extends React.Component<{}, State> {
   readonly state: State = {
     initBrightness: {},
     sliderBrightness: {},
+    systemBrightnessPermissionGranted: true,
   };
 
   componentDidMount() {
@@ -29,6 +31,12 @@ export default class BrightnessScreen extends React.Component<{}, State> {
 
     Brightness.getSystemBrightnessAsync().then(value => {
       this.setState({ initBrightness: { ...this.state.initBrightness, SystemBrightness: value } });
+    });
+
+    Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS).then(result => {
+      if (result.status !== 'granted') {
+        this.setState({ systemBrightnessPermissionGranted: false });
+      }
     });
   }
 
@@ -42,6 +50,9 @@ export default class BrightnessScreen extends React.Component<{}, State> {
               title="Permissions.SYSTEM_BRIGHTNESS"
               onPress={() => {
                 Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS).then(result => {
+                  if (result.status === 'granted') {
+                    this.setState({ systemBrightnessPermissionGranted: true });
+                  }
                   alert(JSON.stringify(result, null, 2));
                 });
               }}
@@ -51,7 +62,10 @@ export default class BrightnessScreen extends React.Component<{}, State> {
           <Button
             title={'get' + type + 'Async'}
             onPress={() => {
-              Brightness.getBrightnessAsync().then(value => {
+              (type === 'Brightness'
+                ? Brightness.getBrightnessAsync()
+                : Brightness.getSystemBrightnessAsync()
+              ).then(value => {
                 alert(value);
               });
             }}
@@ -64,6 +78,7 @@ export default class BrightnessScreen extends React.Component<{}, State> {
           <Slider
             {...this.props}
             value={this.state.initBrightness[type] || 0}
+            disabled={type === 'SystemBrightness' && !this.state.systemBrightnessPermissionGranted}
             onValueChange={value => {
               this.setState({
                 sliderBrightness: { ...this.state.sliderBrightness, [type]: value },
