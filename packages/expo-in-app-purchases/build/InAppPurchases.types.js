@@ -33,7 +33,7 @@ export var IAPErrorCode;
 })(IAPErrorCode || (IAPErrorCode = {}));
 export var IAPItemType;
 (function (IAPItemType) {
-    IAPItemType[IAPItemType["INAPP"] = 0] = "INAPP";
-    IAPItemType[IAPItemType["SUBS"] = 1] = "SUBS";
+    IAPItemType[IAPItemType["PURCHASE"] = 0] = "PURCHASE";
+    IAPItemType[IAPItemType["SUBSCRIPTION"] = 1] = "SUBSCRIPTION";
 })(IAPItemType || (IAPItemType = {}));
 //# sourceMappingURL=InAppPurchases.types.js.map

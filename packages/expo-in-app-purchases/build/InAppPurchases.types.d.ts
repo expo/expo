@@ -34,8 +34,8 @@ export declare enum IAPErrorCode {
     MISSING_PARAMS = 14
 }
 export declare enum IAPItemType {
-    INAPP = 0,
-    SUBS = 1
+    PURCHASE = 0,
+    SUBSCRIPTION = 1
 }
 export interface InAppPurchase {
     acknowledged: boolean;

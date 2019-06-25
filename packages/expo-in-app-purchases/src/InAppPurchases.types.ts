@@ -38,8 +38,8 @@ export enum IAPErrorCode {
 }
 
 export enum IAPItemType {
-  INAPP = 0,
-  SUBS = 1,
+  PURCHASE = 0,
+  SUBSCRIPTION = 1,
 }
 
 export interface InAppPurchase {
