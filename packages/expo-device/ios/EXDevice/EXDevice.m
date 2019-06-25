@@ -125,7 +125,7 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
 UM_EXPORT_METHOD_AS(isPinOrFingerprintSetAsync, isPinOrFingerprintSetAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  BOOL isPinOrFingerprintSet = false;
+  BOOL isPinOrFingerprintSet = NO;
 #else
   LAContext *context = [[LAContext alloc] init];
   BOOL isPinOrFingerprintSet = ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:nil]);
@@ -240,7 +240,7 @@ typedef NS_ENUM(NSInteger, DeviceType) {
            @"brand": @"Apple",
            @"deviceType": [DeviceTypeValues objectAtIndex: [self getDeviceType]] ?: [NSNull null],
            @"deviceName": currentDevice.name, //TODO, ADD TO JS AS WELL
-           @"deviceId": self.deviceId ?: [NSNull null],
+           @"deviceId": [self deviceId] ?: [NSNull null],
            //           @"freeDiskStorage": @(self.freeDiskStorage),
            //           @"isEmulator": @NO,
            @"isTablet": @(self.isTablet),
@@ -250,8 +250,8 @@ typedef NS_ENUM(NSInteger, DeviceType) {
            //           @"serialNumber": @"undefined4", // ANDROID ONLY
            @"supportedABIs": @[[self getCPUType]],
            @"systemName": currentDevice.systemName,
-           @"totalMemory": @(self.totalMemory),
-           @"totalDiskCapacity": @(self.totalDiskCapacity),
+           @"totalMemory": @([self totalMemory]),
+           @"totalDiskCapacity": @([self totalDiskCapacity]),
            @"uniqueId": uniqueId,
            };
 }
