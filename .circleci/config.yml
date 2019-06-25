@@ -325,6 +325,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
+      - run: ~/project/tools-public/generate-files-ios.js
       - run: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
@@ -339,6 +340,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
+      - run: ~/project/tools-public/generate-files-ios.js
       - run:
           name: Build Expo Client and upload tarball
           command: |
