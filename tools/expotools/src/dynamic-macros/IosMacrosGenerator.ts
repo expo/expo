@@ -25,8 +25,6 @@ async function modifyInfoPlistAsync(infoPlistPath: string, templateSubstitutions
     chalk.cyan(path.relative(EXPO_DIR, infoPlistPath)),
   );
 
-  await fs.copy(infoPlistPath, `${infoPlistPath}.backup`);
-
   const result = await IosPlist.modifyAsync(dir, filename, config => {
     if (templateSubstitutions.FABRIC_API_KEY) {
       config.Fabric = {
@@ -45,7 +43,12 @@ async function modifyInfoPlistAsync(infoPlistPath: string, templateSubstitutions
 }
 
 async function cleanInfoPlistBackupAsync(infoPlistPath: string): Promise<void> {
-  await fs.remove(`${infoPlistPath}.backup`);
+  try {
+    await IosPlist.cleanBackupAsync(path.dirname(infoPlistPath), 'Info', true);
+  } catch (error) {
+    console.error(`There was an error cleaning up Expo template files:\n${error.stack}`);
+    process.exit(1);
+  }
 }
 
 async function generateBuildConstantsFromMacrosAsync(
