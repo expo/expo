@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UMFontInterface/UMFontProcessorInterface.h>
-#import "EXFontManager.h"
+#import <EXFont/EXFontManager.h>
 
 @interface EXFontLoaderProcessor : NSObject <UMFontProcessorInterface>
 

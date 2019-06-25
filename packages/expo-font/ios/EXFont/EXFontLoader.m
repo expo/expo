@@ -59,7 +59,7 @@ UM_EXPORT_METHOD_AS(loadAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if ([_manager getFontForName:fontFamilyName]) {
+  if ([_manager fontForName:fontFamilyName]) {
     reject(@"E_FONT_ALREADY_EXISTS",
            [NSString stringWithFormat:@"Font with family name '%@' already loaded", fontFamilyName],
            nil);

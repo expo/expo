@@ -5,13 +5,18 @@
 #import "EXConstantsBinding.h"
 #import <UMConstantsInterface/UMConstantsInterface.h>
 
-static NSString *expoPrefix = @"ExpoFont-";
+NS_ASSUME_NONNULL_BEGIN
+
+NSString * const EXFontFamilyPrefix = @"ExpoFont-";
 
 @implementation EXScopedFontLoader
 
 - (instancetype)init {
-  return [super initWithFontFamilyPrefix:expoPrefix];
+  return [super initWithFontFamilyPrefix:EXFontFamilyPrefix];
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
+
 #endif

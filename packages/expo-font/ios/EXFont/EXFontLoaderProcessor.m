@@ -47,9 +47,9 @@
   // Did we get a new family, and if so, is it associated with an EXFont?
   if (_fontFamilyPrefix && [family hasPrefix:_fontFamilyPrefix]) {
     NSString *suffix = [family substringFromIndex:_fontFamilyPrefix.length];
-    exFont = [_manager getFontForName:suffix];
+    exFont = [_manager fontForName:suffix];
   } else if (!_fontFamilyPrefix) {
-    exFont = [_manager getFontForName:family];
+    exFont = [_manager fontForName:family];
   }
 
   // Did the passed-in UIFont come from an EXFont?

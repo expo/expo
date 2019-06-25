@@ -19,7 +19,6 @@ public class FontLoaderModule extends ExportedModule {
   private static final String ASSET_SCHEME = "asset://";
   private static final String EXPORTED_NAME = "ExpoFontLoader";
   private ModuleRegistry mModuleRegistry;
-  private String fontFamilyPrefix = "";
 
   public FontLoaderModule(Context context) {
     super(context);
@@ -35,6 +34,9 @@ public class FontLoaderModule extends ExportedModule {
     try {
       // TODO(nikki): make sure path is in experience's scope
       Typeface typeface;
+
+      // TODO: remove Expo references
+      // https://github.com/expo/expo/pull/4652#discussion_r296630843
       String prefix = "";
       if (isScoped()) {
         prefix = "ExpoFont-";

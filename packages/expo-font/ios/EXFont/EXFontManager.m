@@ -2,6 +2,12 @@
 
 #import <EXFont/EXFontManager.h>
 
+@interface EXFontManager ()
+
+@property (nonatomic, strong, readonly) NSMutableDictionary *registry;
+
+@end
+
 @implementation EXFontManager
 
 - (instancetype)init
@@ -12,7 +18,7 @@
   return self;
 }
 
-- (EXFont *)getFontForName:(NSString *)name
+- (EXFont *)fontForName:(NSString *)name
 {
   return _registry[name];
 }
