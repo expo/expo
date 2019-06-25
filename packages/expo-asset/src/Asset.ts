@@ -1,5 +1,3 @@
-import './Asset.fx';
-
 import { Platform } from '@unimodules/core';
 import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';

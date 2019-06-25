@@ -1,4 +1,3 @@
-import './Asset.fx';
 import * as AssetSources from './AssetSources';
 declare type AssetDescriptor = {
     name: string;
