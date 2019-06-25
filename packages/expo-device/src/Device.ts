@@ -31,7 +31,6 @@ if (Platform.OS === 'ios') {
   modelName = ExpoDevice ? ExpoDevice.model : null;
 }
 export const model = modelName;
-export const phoneNumber = ExpoDevice ? ExpoDevice.phoneNumber : null;
 export const serialNumber = ExpoDevice ? ExpoDevice.serialNumber : null;
 export const systemName = ExpoDevice ? ExpoDevice.systemName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
@@ -96,4 +95,8 @@ export async function getCarrierAsync(): Promise<string> {
 
 export async function getTotalDiskCapacityAsync(): Promise<string> {
   return await ExpoDevice.getTotalDiskCapacityAsync();
+}
+
+export async function getPhoneNumberAsync(): Promise<string> {
+  return await ExpoDevice.getPhoneNumberAsync();
 }

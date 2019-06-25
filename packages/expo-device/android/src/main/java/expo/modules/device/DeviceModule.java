@@ -48,13 +48,12 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   private WifiInfo wifiInfo;
   private ActivityProvider mActivityProvider;
   private Activity mActivity;
+  private DeviceType mDeviceType;
   private String mPhoneNumber;
-  private DeviceType deviceType;
 
   public DeviceModule(Context context) {
     super(context);
     mContext = context;
-    deviceType = this.getDeviceType(context);
   }
 
   public enum DeviceType {
@@ -91,7 +90,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     mModuleRegistry = moduleRegistry;
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mActivity = mActivityProvider.getCurrentActivity();
-    mPhoneNumber = getPhoneNumber();
   }
 
   @Override
@@ -102,11 +100,17 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
         // If request is cancelled, the result arrays are empty.
         if (grantResults.length > 0
             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-          mPhoneNumber = getPhoneNumber();
+            try{
+              TelephonyManager telMgr = (TelephonyManager) mContext.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+              mPhoneNumber = telMgr.getLine1Number();
+            }
+            catch(SecurityException se){
+              throw se;
+            }
         } else {
           // permission denied, boo! Disable the
           // functionality that depends on this permission.
-          mPhoneNumber = "No permission granted to get phone number";
+          mPhoneNumber = "No permission to read the phone state.";
         }
         return;
       }
@@ -117,33 +121,33 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<>();
 
-    Bundle bundle = getBundledConstants();
-    for (String key : bundle.keySet()) {
-      constants.put(key, bundle.get(key));
+    constants.put("brand", Build.BRAND);
+    constants.put("manufacturer", Build.MANUFACTURER);
+    constants.put("model", Build.MODEL);
+    constants.put("serialNumber", this.getSerial());
+    String systeName = "";
+    if(android.os.Build.VERSION.SDK_INT < 23){
+      systeName = "Android";
     }
-    return constants;
-  }
-
-  private Bundle getBundledConstants() {
-    Bundle constants = new Bundle();
-
-    constants.putString("brand", Build.BRAND);
-    constants.putString("manufacturer", Build.MANUFACTURER);
-    constants.putString("model", Build.MODEL);
-    mPhoneNumber = this.getPhoneNumber();
-    constants.putString("phoneNumber", mPhoneNumber);
-    constants.putString("serialNumber", this.getSerial());
-    constants.putString("systemName", "Android");
-    constants.putString("deviceId", Build.BOARD);
-    constants.putString("uniqueId", Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
-    constants.putString("deviceType", deviceType.getValue());
-    constants.putBoolean("isTablet", this.isTablet());
-    constants.putStringArray("supportedABIs", Build.SUPPORTED_ABIS);
+    else{
+      systeName = Build.VERSION.BASE_OS;
+      if(systeName.length() == 0){
+        systeName = "Android";
+      }
+    }
+    constants.put("systemName", systeName);
+    constants.put("deviceId", Build.BOARD);
+    constants.put("uniqueId", Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
+    constants.put("supportedABIs", Build.SUPPORTED_ABIS);
 
     ActivityManager actMgr = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
     actMgr.getMemoryInfo(memInfo);
-    constants.putLong("totalMemory", memInfo.totalMem);
+    constants.put("totalMemory", memInfo.totalMem);
+
+    mDeviceType = getDeviceType(mContext);
+    constants.put("deviceType", mDeviceType.getValue());
+    constants.put("isTablet", mDeviceType.getValue().equals("Tablet"));
 
     return constants;
   }
@@ -154,23 +158,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       return telMgr.getNetworkOperatorName();
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
-    }
-    return null;
-  }
-
-  private String getPhoneNumber() {
-    try {
-      int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE);
-
-      if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
-
-      } else {
-        TelephonyManager telMgr = (TelephonyManager) mContext.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-        return telMgr.getLine1Number();
-      }
-    } catch (SecurityException se) {
-      Log.e(TAG, se.getMessage());
     }
     return null;
   }
@@ -195,11 +182,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     // Get display metrics to see if we can differentiate handsets and tablets.
     // NOTE: for API level 16 the metrics will exclude window decor.
     DisplayMetrics metrics = new DisplayMetrics();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      windowManager.getDefaultDisplay().getRealMetrics(metrics);
-    } else {
-      windowManager.getDefaultDisplay().getMetrics(metrics);
-    }
+    windowManager.getDefaultDisplay().getMetrics(metrics);
 
     // Calculate physical size.
     double widthInches = metrics.widthPixels / (double) metrics.xdpi;
@@ -236,10 +219,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       }
       return null;
     }
-  }
-
-  private boolean isTablet() {
-    return deviceType.getValue() == "Tablet";
   }
 
   @ExpoMethod
@@ -361,4 +340,24 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       promise.reject(e);
     }
   }
+
+  @ExpoMethod
+  public void getPhoneNumberAsync(Promise promise) {
+    try {
+      int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE);
+
+      if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
+
+      } else {
+        TelephonyManager telMgr = (TelephonyManager) mContext.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+        mPhoneNumber = telMgr.getLine1Number();
+      }
+      promise.resolve(mPhoneNumber);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
 }

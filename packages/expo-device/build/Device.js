@@ -32,7 +32,6 @@ else {
     modelName = ExpoDevice ? ExpoDevice.model : null;
 }
 export const model = modelName;
-export const phoneNumber = ExpoDevice ? ExpoDevice.phoneNumber : null;
 export const serialNumber = ExpoDevice ? ExpoDevice.serialNumber : null;
 export const systemName = ExpoDevice ? ExpoDevice.systemName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
@@ -84,5 +83,8 @@ export async function getCarrierAsync() {
 }
 export async function getTotalDiskCapacityAsync() {
     return await ExpoDevice.getTotalDiskCapacityAsync();
+}
+export async function getPhoneNumberAsync() {
+    return await ExpoDevice.getPhoneNumberAsync();
 }
 //# sourceMappingURL=Device.js.map

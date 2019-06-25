@@ -1,7 +1,6 @@
 export declare const brand: any;
 export declare const manufacturer: any;
 export declare const model: any;
-export declare const phoneNumber: any;
 export declare const serialNumber: any;
 export declare const systemName: any;
 export declare const totalMemory: any;
@@ -21,3 +20,4 @@ export declare function isPinOrFingerprintSetAsync(): Promise<boolean>;
 export declare function getUserAgentAsync(): Promise<string>;
 export declare function getCarrierAsync(): Promise<string>;
 export declare function getTotalDiskCapacityAsync(): Promise<string>;
+export declare function getPhoneNumberAsync(): Promise<string>;
