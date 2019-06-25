@@ -1,9 +1,10 @@
+import './Asset.fx';
 import { Platform } from '@unimodules/core';
 import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';
 import computeMd5 from 'blueimp-md5';
 import { getAssetByID } from './AssetRegistry';
-import resolveAssetSource, { setCustomSourceTransformer } from './resolveAssetSource';
+import resolveAssetSource from './resolveAssetSource';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as EmbeddedAssets from './EmbeddedAssets';
@@ -196,14 +197,4 @@ export class Asset {
 }
 Asset.byHash = {};
 Asset.byUri = {};
-// Override React Native's asset resolution for `Image` components
-setCustomSourceTransformer(resolver => {
-    try {
-        const asset = Asset.fromMetadata(resolver.asset);
-        return resolver.fromSource(asset.downloaded ? asset.localUri : asset.uri);
-    }
-    catch (e) {
-        return resolver.defaultAsset();
-    }
-});
 //# sourceMappingURL=Asset.js.map
