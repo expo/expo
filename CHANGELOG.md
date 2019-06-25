@@ -15,6 +15,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🐛 Bug fixes
 
+- fixed `BarCodeScanner` blocking UI when defining custom `barCodeTypes` on iOS by [@sjchmiela](https://github.com/sjchmiela)
+
 ## 33.0.0
 
 ### 🛠 Breaking changes
