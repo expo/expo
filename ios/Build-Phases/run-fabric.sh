@@ -7,4 +7,5 @@ if [ -z "$EXPO_TOOLS_DIR" ]; then
 fi
 
 source ${EXPO_TOOLS_DIR}/source-login-scripts.sh
-${EXPO_TOOLS_DIR}/expotools/bin/expotools.js ios-run-fabric
+export PATH="${SRCROOT}/../bin:$PATH"
+et ios-run-fabric

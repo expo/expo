@@ -7,4 +7,5 @@ if [ -z "$EXPO_TOOLS_DIR" ]; then
 fi
 
 source ${EXPO_TOOLS_DIR}/source-login-scripts.sh
-${EXPO_TOOLS_DIR}/expotools/bin/expotools.js ios-generate-dynamic-macros --configuration ${CONFIGURATION}
+export PATH="${SRCROOT}/../bin:$PATH"
+et ios-generate-dynamic-macros --configuration ${CONFIGURATION}
