@@ -143,7 +143,8 @@ dependencies {
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
-      target       : 'react-native'
+      target       : 'react-native',
+      exclude      : ['expo-in-app-purchases']
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -155,7 +156,8 @@ dependencies {
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'api',
-      target       : 'react-native'
+      target       : 'react-native',
+      exclude      : ['expo-in-app-purchases']
   ])
 
   // Versioned react native
