@@ -6,7 +6,4 @@
 
 @interface EXDevice : UMExportedModule <UMModuleRegistryConsumer>
 
-@property (nonatomic) bool isEmulator;
-@property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
-
 @end

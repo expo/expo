@@ -30,6 +30,8 @@
 }
 
 @property (nonatomic, strong) NSString *webViewUserAgent;
+@property (nonatomic) bool isEmulator;
+@property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
 
 @end
 
@@ -53,7 +55,7 @@ UM_EXPORT_METHOD_AS(getUserAgentAsync,
 {
   __weak EXDevice *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    __strong EXDevice *strongSelf = weakSelf;
+    EXDevice *strongSelf = weakSelf;
     if (strongSelf) {
       if (!strongSelf.webViewUserAgent) {
         // We need to retain the webview because it runs an async task.
