@@ -31,7 +31,6 @@
     "request-promise-native": "^1.0.5",
     "rimraf": "^2.6.2",
     "sharp": "^0.21.0",
-    "shelljs": "^0.7.0",
     "uuid": "^3.1.0"
   }
 }
