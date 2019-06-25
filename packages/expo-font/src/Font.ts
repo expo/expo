@@ -4,7 +4,7 @@ import { Platform } from '@unimodules/core';
 
 import ExpoFontLoader from './ExpoFontLoader';
 
-/*
+/**
  * A font source can be a URI, a module ID, or an Expo Asset.
  */
 type FontSource = string | number | Asset;
@@ -24,7 +24,7 @@ function fontFamilyNeedsScoping(name: string): boolean {
   );
 }
 
-/*
+/**
  * Used to transform font family names to the scoped name. This does not need to
  * be called in standalone or bare apps but it will return unscoped font family
  * names if it is called in those contexts.
