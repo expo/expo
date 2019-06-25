@@ -6,8 +6,8 @@ import HeadingText from '../components/HeadingText';
 import Button from '../components/Button';
 
 interface State {
-  brightnessSlider: number;
-  systemBrightnessSlider: number;
+  initBrightness: { [type: string]: number };
+  sliderBrightness: { [type: string]: number };
 }
 
 const brightnessTypes: string[] = ['Brightness', 'SystemBrightness'];
@@ -18,26 +18,22 @@ export default class BrightnessScreen extends React.Component<{}, State> {
   };
 
   readonly state: State = {
-    brightnessSlider: -1,
-    systemBrightnessSlider: -1,
+    initBrightness: {},
+    sliderBrightness: {},
   };
 
   componentDidMount() {
     Brightness.getBrightnessAsync().then(value => {
-      this.setState({ brightnessSlider: value });
+      this.setState({ initBrightness: { ...this.state.initBrightness, Brightness: value } });
     });
 
     Brightness.getSystemBrightnessAsync().then(value => {
-      this.setState({ systemBrightnessSlider: value });
+      this.setState({ initBrightness: { ...this.state.initBrightness, SystemBrightness: value } });
     });
   }
 
   render() {
     let views = brightnessTypes.map(type => {
-      let sliderValue = this.state.brightnessSlider;
-      if (type === 'SystemBrightness') {
-        sliderValue = this.state.systemBrightnessSlider;
-      }
       return (
         <View key={type} style={{ padding: 20 }}>
           <HeadingText>{type}</HeadingText>
@@ -63,17 +59,18 @@ export default class BrightnessScreen extends React.Component<{}, State> {
           />
           <Text style={{ marginBottom: -2 }}>
             {'set' + type + 'Async: '}
-            {sliderValue && +sliderValue.toFixed(3)}
+            {(this.state.sliderBrightness[type] || this.state.initBrightness[type] || 0).toFixed(3)}
           </Text>
           <Slider
             {...this.props}
-            value={sliderValue}
+            value={this.state.initBrightness[type] || 0}
             onValueChange={value => {
+              this.setState({
+                sliderBrightness: { ...this.state.sliderBrightness, [type]: value },
+              });
               if (type === 'Brightness') {
-                this.setState({ brightnessSlider: value });
                 Brightness.setBrightnessAsync(value);
               } else {
-                this.setState({ systemBrightnessSlider: value });
                 Brightness.setSystemBrightnessAsync(value);
               }
             }}
