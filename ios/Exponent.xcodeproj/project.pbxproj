@@ -2352,6 +2352,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "set -exo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nsource ${EXPONENT_TOOLS_DIR}/source-login-scripts.sh\nexport PATH=\"${SRCROOT}/../bin:$PATH\"\n${EXPONENT_TOOLS_DIR}/generate-dynamic-macros-cli.js --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/EXBuildConstants.plist\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios --configuration ${CONFIGURATION}\n";
+			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nsource ${EXPONENT_TOOLS_DIR}/source-login-scripts.sh\nexport PATH=\"${SRCROOT}/../bin:$PATH\"\n${EXPONENT_TOOLS_DIR}/generate-dynamic-macros-cli.js --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/EXBuildConstants.plist\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios --configuration ${CONFIGURATION}\n";
 		};
 		78F81D401B70746F000E5595 /* Fabric */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2959,7 +2960,7 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
+				PRODUCT_BUNDLE_IDENTIFIER = hhost.exp.Exponent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";
@@ -3028,7 +3029,7 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
+				PRODUCT_BUNDLE_IDENTIFIER = hhost.exp.Exponent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";

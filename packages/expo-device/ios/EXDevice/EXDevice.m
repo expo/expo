@@ -77,6 +77,13 @@ UM_EXPORT_METHOD_AS(getUserAgentAsync,
   });
 }
 
+UM_EXPORT_METHOD_AS(getCarrierAsync,
+                    getCarrierAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(self.carrier ?: [NSNull null]);
+}
+
 UM_EXPORT_METHOD_AS(getMACAddressAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
@@ -229,7 +236,6 @@ typedef NS_ENUM(NSInteger, DeviceType) {
   
   return @{
            @"brand": @"Apple",
-           @"carrier": self.carrier ?: [NSNull null],
            @"deviceType": [DeviceTypeValues objectAtIndex: [self getDeviceType]] ?: [NSNull null],
            @"deviceName": currentDevice.name, //TODO, ADD TO JS AS WELL
            @"deviceId": self.deviceId ?: [NSNull null],
