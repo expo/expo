@@ -22,10 +22,8 @@ export default program => {
     .option('--sdk <string>', 'SDK version')
     .option('--platform <string>', 'Platform (`android`, `ios` or `both`) on which to apply change')
     .description(
-      `
-  Updates SDK version supported by Turtle on staging (creates a new record in versions table in rethink).
-  Use promote-versions-to-prod to update SDK version on production.
-      `
+`Updates SDK version supported by Turtle on staging (creates a new record in versions table in rethink).
+Use promote-versions-to-prod to update SDK version on production.`
     )
     .asyncAction(action);
 };
