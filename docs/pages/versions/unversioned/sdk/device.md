@@ -11,7 +11,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-import { Device } from 'expo';
+import * as Device from 'expo-device';
 ```
 
 ### Constants
