@@ -12,7 +12,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Usage
 
-<SnackEmbed snackId="S1gdfOb4Z" />
+<SnackEmbed snackId="@charliecruzan/letsgoforawalk" />
 
 ## API
 

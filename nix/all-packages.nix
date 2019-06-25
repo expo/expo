@@ -7,6 +7,11 @@ self: super:
       pname = "fastlane";
       gemdir = ./fastlane;
       exes = [ "fastlane" ];
+      buildInputs = [ super.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/fastlane \
+          --set FASTLANE_SKIP_UPDATE_CHECK 1
+      '';
     };
 
   nodejs = super.nodejs-10_x;

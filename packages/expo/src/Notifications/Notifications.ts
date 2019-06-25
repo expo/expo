@@ -3,57 +3,15 @@ import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
 import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
+import { UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
-
-type Notification = {
-  origin: 'selected' | 'received';
-  data: any;
-  remote: boolean;
-  isMultiple: boolean;
-};
-
-type LocalNotification = {
-  title: string;
-  // How should we deal with body being required on iOS but not on Android?
-  body?: string;
-  data?: any;
-  categoryId?: string;
-  ios?: {
-    sound?: boolean;
-  };
-  android?: {
-    channelId?: string;
-    icon?: string;
-    color?: string;
-    sticky?: boolean;
-    link?: string;
-  };
-};
-
-type Channel = {
-  name: string;
-  description?: string;
-  priority?: string;
-  sound?: boolean;
-  vibrate?: boolean | number[];
-  badge?: boolean;
-};
-
-type ActionType = {
-  actionId: string;
-  buttonTitle: string;
-  isDestructive?: boolean;
-  isAuthenticationRequired?: boolean;
-  textInput?: {
-    submitButtonTitle: string;
-    placeholder: string;
-  };
-};
-
-// Android assigns unique number to each notification natively.
-// Since that's not supported on iOS, we generate an unique string.
-type LocalNotificationId = string | number;
-
+import {
+  Notification,
+  LocalNotification,
+  Channel,
+  ActionType,
+  LocalNotificationId,
+} from './Notifications.types';
 let _emitter;
 let _initialNotification;
 
@@ -192,6 +150,9 @@ export default {
 
   /* Re-export */
   getExpoPushTokenAsync(): Promise<string> {
+    if (!ExponentNotifications.getExponentPushTokenAsync) {
+      throw new UnavailabilityError('Expo.Notifications', 'getExpoPushTokenAsync');
+    }
     if (!Constants.isDevice) {
       throw new Error(`Must be on a physical device to get an Expo Push Token`);
     }
@@ -200,8 +161,12 @@ export default {
 
   getDevicePushTokenAsync: (config: {
     gcmSenderId?: string;
-  }): Promise<{ type: string; data: string }> =>
-    ExponentNotifications.getDevicePushTokenAsync(config || {}),
+  }): Promise<{ type: string; data: string }> => {
+    if (!ExponentNotifications.getDevicePushTokenAsync) {
+      throw new UnavailabilityError('Expo.Notifications', 'getDevicePushTokenAsync');
+    }
+    return ExponentNotifications.getDevicePushTokenAsync(config || {});
+  },
 
   createChannelAndroidAsync(id: string, channel: Channel): Promise<void> {
     if (Platform.OS !== 'android') {
@@ -217,8 +182,8 @@ export default {
   },
 
   deleteChannelAndroidAsync(id: string): Promise<void> {
-    if (Platform.OS === 'ios') {
-      console.warn('deleteChannelAndroidAsync(...) has no effect on iOS');
+    if (Platform.OS !== 'android') {
+      console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
       return Promise.resolve();
     }
     // This codepath will never be triggered in SDK 28 and above
@@ -236,8 +201,8 @@ export default {
     _validateNotification(notification);
     let nativeNotification = _processNotification(notification);
 
-    if (Platform.OS === 'ios') {
-      return ExponentNotifications.presentLocalNotification(nativeNotification);
+    if (Platform.OS !== 'android') {
+      return await ExponentNotifications.presentLocalNotification(nativeNotification);
     } else {
       let _channel;
       if (nativeNotification.channelId) {
@@ -340,10 +305,15 @@ export default {
       }
     }
 
-    if (Platform.OS === 'ios') {
+    if (Platform.OS !== 'android') {
       if (options.repeat) {
-        console.warn('Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.');
-        return ExponentNotifications.legacyScheduleLocalRepeatingNotification(nativeNotification, options);
+        console.warn(
+          'Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.'
+        );
+        return ExponentNotifications.legacyScheduleLocalRepeatingNotification(
+          nativeNotification,
+          options
+        );
       }
 
       return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
@@ -376,20 +346,18 @@ export default {
 
   /* Dismiss currently shown notification with ID (Android only) */
   async dismissNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
-    if (Platform.OS === 'android') {
-      return ExponentNotifications.dismissNotification(notificationId);
-    } else {
-      throw new Error('Dismissing notifications is not supported on iOS');
+    if (!ExponentNotifications.dismissNotification) {
+      throw new UnavailabilityError('Expo.Notifications', 'dismissNotification');
     }
+    return await ExponentNotifications.dismissNotification(notificationId);
   },
 
   /* Dismiss all currently shown notifications (Android only) */
   async dismissAllNotificationsAsync(): Promise<void> {
-    if (Platform.OS === 'android') {
-      return ExponentNotifications.dismissAllNotifications();
-    } else {
-      throw new Error('Dismissing notifications is not supported on iOS');
+    if (!ExponentNotifications.dismissAllNotifications) {
+      throw new UnavailabilityError('Expo.Notifications', 'dismissAllNotifications');
     }
+    return await ExponentNotifications.dismissAllNotifications();
   },
 
   /* Cancel scheduled notification notification with ID */
@@ -426,7 +394,7 @@ export default {
 
   async setBadgeNumberAsync(number: number): Promise<void> {
     if (!ExponentNotifications.setBadgeNumberAsync) {
-      return;
+      throw new UnavailabilityError('Expo.Notifications', 'setBadgeNumberAsync');
     }
     return ExponentNotifications.setBadgeNumberAsync(number);
   },

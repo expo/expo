@@ -21,7 +21,7 @@ import * as MediaLibrary from 'expo-media-library';
 Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera/).
 
 ```js
-const { uri } = await camera.takePictureAsync();
+const { uri } = await Camera.takePictureAsync();
 const asset = await MediaLibrary.createAssetAsync(uri);
 ```
 
