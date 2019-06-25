@@ -983,10 +983,10 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/webpack-config@^0.5.14":
-  version "0.5.14"
-  resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.5.14.tgz#f61abf94165503e23de7cce3949f31ae60dc6c33"
-  integrity sha512-HUl6p23myN94ClaAOi+rcqvQS7qPs+uZ+p6wumDS9uvzHkUNBtVcYVL5qmdcHD4SjA+6cwo+2k3mQ6VrDCygCQ==
+"@expo/webpack-config@^0.5.15":
+  version "0.5.15"
+  resolved "https://registry.yarnpkg.com/@expo/webpack-config/-/webpack-config-0.5.15.tgz#c0d26df5233721897599138582ea4dd4767b4df8"
+  integrity sha512-StnLroRlkacsJSacC7NESIBGz2EIVicFdpk+YOkyTGd0SJD3ZmtD4WfvcQ2wrVZczZW1CTncTCqKIdDQOmc7Vw==
   dependencies:
     "@babel/core" "^7.0.0"
     "@babel/polyfill" "^7.2.5"
@@ -1034,10 +1034,10 @@
     mime "^2.4.0"
     tempy "^0.3.0"
 
-"@expo/xdl@^55.0.5":
-  version "55.0.5"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-55.0.5.tgz#7f5c54d91dd28a8fab0673227f55cebdcff3c1e1"
-  integrity sha512-S9F9fBfy6SQ5b3zOFY11y4xzGrGdZ8TbdlMFLDoO9chy39hbff9XotVfR/c1TXy5VmF5sarIt1iI8ayA2U+41Q==
+"@expo/xdl@^55.0.6":
+  version "55.0.6"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-55.0.6.tgz#ac3608afa420661302e63d8d0cbce0802c28d447"
+  integrity sha512-4ErQfkw7HQfpngwQMa+YxTTrxPe+ICCV0Jg7efbt3qQ2Db6BWKVRpuLGFXp/aL40PdboostCtH0CzW5FTSYaDg==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.0.3"
@@ -1047,7 +1047,7 @@
     "@expo/osascript" "^2.0.1"
     "@expo/schemer" "1.2.5"
     "@expo/spawn-async" "1.5.0"
-    "@expo/webpack-config" "^0.5.14"
+    "@expo/webpack-config" "^0.5.15"
     analytics-node "3.3.0"
     axios v0.19.0-beta.1
     chalk "2.4.1"
@@ -1104,6 +1104,7 @@
     url-join "4.0.0"
     util.promisify "1.0.0"
     uuid "3.3.2"
+    validator "11.0.0"
     webpack "4.24.0"
     webpack-dev-server "3.2.0"
     xmldom "0.1.27"
@@ -10374,6 +10375,11 @@ validate-npm-package-name@^3.0.0:
   integrity sha1-X6kS2B630MdK/BQN5zF/DKffQ34=
   dependencies:
     builtins "^1.0.3"
+
+validator@11.0.0:
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-11.0.0.tgz#fb10128bfb1fd14ce4ed36b79fc94289eae70667"
+  integrity sha512-+wnGLYqaKV2++nUv60uGzUJyJQwYVOin6pn1tgEiFCeCQO60yeu3Og9/yPccbBX574kxIcEJicogkzx6s6eyag==
 
 value-or-function@^3.0.0:
   version "3.0.0"
