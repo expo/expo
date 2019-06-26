@@ -20,8 +20,8 @@ import * as Device from 'expo-device';
 
   Gets the device brand.
 
-  - IOS: "Apple"
-  - Android: "Xiaomi"
+  - iOS: `"Apple"`
+  - Android: eg. `"Xiaomi"`
 
 - `Device.carrier: string`
 
@@ -31,8 +31,8 @@ import * as Device from 'expo-device';
 
   Gets the device manufacturer.
 
-  - IOS: "Apple"
-  - Android: "Google"
+  - iOS: `"Apple"`
+  - Android: eg. `"Google"`
 
 - `Device.model: string`
 
@@ -40,8 +40,8 @@ import * as Device from 'expo-device';
 
   Gets the device model.
 
-  - IOS: "iPhone XS Max"
-  - Android: "Pixel 2"
+  - iOS: eg. `"iPhone XS Max"`
+  - Android: eg. `"Pixel 2"`
 
 - `Device.serialNumber: string` (Android Only)
 
@@ -71,10 +71,10 @@ import * as Device from 'expo-device';
 
   Returns the device's type as a string, which will be one of:
 
-- `Handset`
-- `Tablet`
-- `Tv`
-- `Unknown`
+  - `Handset`
+  - `Tablet`
+  - `Tv`
+  - `Unknown`
 
 - `Device.supportedABIs: string[]`
 
@@ -139,13 +139,13 @@ Gets available storage size, in bytes.
 
 #### Returns
 
-A promise of string that represents the storage size.
+A promise of number that represents the storage size.
 
 **Examples**
 
 ```js
 Device.getFreeDiskStorageAsync().then(storage => {
-  //'5608296448'
+  //5608296448
 });
 ```
 
@@ -155,13 +155,13 @@ Gets full disk storage size, in bytes.
 
 #### Returns
 
-A promise of string that represents the full disk storage size.
+A promise of number that represents the full disk storage size.
 
 **Examples**
 
 ```js
 Device.getTotalDiskCapacityAsync().then(storage => {
-  //'17179869184'
+  //17179869184
 });
 ```
 
@@ -181,13 +181,13 @@ Device.getIpAddressAsync().then(ip => {
 });
 ```
 
-### `Device.getMACAddressAsync()` (IOS) / `Device.getMACAddressAsync(interfaceName)` (Android)
+### `Device.getMACAddressAsync(interfaceName?: string)`
+
 Gets the network adapter MAC address.
 
 #### Arguments (Android Only)
 
-- **interfaceName (_string_)** -- A string of the interfaceName(eth0, wlan0 or NULL=use to get first interface).
-Returns MAC address of the given interface name.
+- **interfaceName (_string_)** -- A string representing interface name (`eth0`, `wlan0`) or `null`, meaning the method should fetch MAC address of the first available interface. (On iOS this argument is ignored.)
 
 #### Returns
 
@@ -196,12 +196,12 @@ A Promise that resolves to a string of the network adapter MAC address or empty 
 **Examples**
 
 ```js
-//ios
+//iOS
 Device.getMACAddressAsync().then(mac => {
   // "E5:12:D8:E5:69:97"
 });
 
-//android
+//Android
 Device.getMACAddressAsync('wlan0').then(mac => {
   // "E5:12:D8:E5:69:97"
 });
@@ -209,7 +209,7 @@ Device.getMACAddressAsync('wlan0').then(mac => {
 
 ### `Device.getPhoneNumberAsync()` (Android only)
 
-Gets the device phone number. 
+Gets the device phone number.
 
 Would prompt the user for permission to read the phone to access the phone number.
 
@@ -227,11 +227,11 @@ Device.getPhoneNumberAsync().then(phoneNumber => {
 
 ### `Device.isAirplaneModeEnabledAsync()` (Android Only)
 
-Tells if the device is in AirPlaneMode.
+Tells if the device is in airplane mode.
 
 #### Returns
 
-Returns a `Promise<boolean>` that resolves to the `boolean` value for whether the device is in airplane mode or not.
+Returns a Promise that resolves to the `boolean` value for whether the device is in airplane mode or not.
 
 **Examples**
 
@@ -256,9 +256,7 @@ Returns a `Promise<boolean>` that resolves the `boolean` value for whether the d
 **Examples**
 
 ```js
-Device.hasSystemFeatureAsync('amazon.hardware.fire_tv').then(hasFeature => {
-  // true or false
-});
+await Device.hasSystemFeatureAsync('amazon.hardware.fire_tv'); // true or false
 ```
 
 ### `Device.isPinOrFingerprintSet()`
@@ -267,7 +265,7 @@ Tells if a PIN number or a fingerprint was set for the device.
 
 #### Returns
 
-Returns a `Promise<boolean>` that resolves the `boolean` value for whether the device has set a Pin or Fingerprint.
+Returns a Promise that resolves the `boolean` value for whether the device has set a Pin or Fingerprint.
 
 **Examples**
 
