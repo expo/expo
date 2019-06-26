@@ -312,6 +312,9 @@
 		E396BB759F55EA40EB120B5A /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */; };
 		F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
 		F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */; };
+		F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */; };
+		F12A1ABB22ABD6ED008542C6 /* cleanup-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */; };
+		F12A1ABD22ABE400008542C6 /* run-fabric.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1ABC22ABE400008542C6 /* run-fabric.sh */; };
 		F1389D0C21C3A507006CEB1A /* RNForceTouchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = F1389D0B21C3A507006CEB1A /* RNForceTouchHandler.m */; };
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
@@ -951,6 +954,9 @@
 		F11E530E21601058007ACF56 /* EXHeadlessAppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppLoader.h; sourceTree = "<group>"; };
 		F11E530F21601059007ACF56 /* EXHeadlessAppRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppRecord.h; sourceTree = "<group>"; };
 		F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppLoader.m; sourceTree = "<group>"; };
+		F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-dynamic-macros.sh"; sourceTree = "<group>"; };
+		F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cleanup-dynamic-macros.sh"; sourceTree = "<group>"; };
+		F12A1ABC22ABE400008542C6 /* run-fabric.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "run-fabric.sh"; sourceTree = "<group>"; };
 		F1389D0A21C3A506006CEB1A /* RNForceTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNForceTouchHandler.h; sourceTree = "<group>"; };
 		F1389D0B21C3A507006CEB1A /* RNForceTouchHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNForceTouchHandler.m; sourceTree = "<group>"; };
 		F1545BF720877E39002DAC67 /* EXMenuWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXMenuWindow.h; sourceTree = "<group>"; };
@@ -1298,6 +1304,7 @@
 				B56C65BF20476834002B2424 /* Client */,
 				78CEE2C21ACD07D70095B124 /* Exponent */,
 				B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */,
+				F12A1AB722ABD461008542C6 /* Build-Phases */,
 				B505BA0F20CAF77A0046ACFB /* Tests */,
 				3050F5A98E56E9379C36ABD2 /* Frameworks */,
 				A17682721BE42C7F0057BBF2 /* Libraries */,
@@ -2151,6 +2158,16 @@
 			path = HeadlessApp;
 			sourceTree = "<group>";
 		};
+		F12A1AB722ABD461008542C6 /* Build-Phases */ = {
+			isa = PBXGroup;
+			children = (
+				F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */,
+				F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */,
+				F12A1ABC22ABE400008542C6 /* run-fabric.sh */,
+			);
+			path = "Build-Phases";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2290,12 +2307,15 @@
 				B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */,
 				B5E49B631D1347B800AA6436 /* EXSDKVersions.plist in Resources */,
 				B5E49B691D1348E800AA6436 /* EXShell.plist in Resources */,
+				F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */,
 				78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */,
 				B5EF826F1F55B8F100FC7424 /* launch_icon.png in Resources */,
+				F12A1ABD22ABE400008542C6 /* run-fabric.sh in Resources */,
 				B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */,
 				B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */,
 				B5E628FE1E32F05A00629A55 /* kernel-manifest.json in Resources */,
 				78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */,
+				F12A1ABB22ABD6ED008542C6 /* cleanup-dynamic-macros.sh in Resources */,
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
@@ -2352,6 +2372,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "set -exo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nsource ${EXPONENT_TOOLS_DIR}/source-login-scripts.sh\nexport PATH=\"${SRCROOT}/../bin:$PATH\"\n${EXPONENT_TOOLS_DIR}/generate-dynamic-macros-cli.js --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/EXBuildConstants.plist\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios --configuration ${CONFIGURATION}\n";
+			shellScript = "$SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
 		};
 		78F81D401B70746F000E5595 /* Fabric */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2366,6 +2387,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\nEXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nsource ${EXPONENT_TOOLS_DIR}/source-login-scripts.sh\nexport PATH=\"${SRCROOT}/../bin:$PATH\"\n${EXPONENT_TOOLS_DIR}/run-fabric-ios.js --fabricPath \"${PODS_ROOT}/Fabric/run\" --iosPath \"${SRCROOT}\"\n";
+			shellScript = "$SRCROOT/Build-Phases/run-fabric.sh\n";
 		};
 		998600B63FF60AF3734A2A4F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2448,6 +2470,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nsource ${EXPONENT_TOOLS_DIR}/source-login-scripts.sh\nexport PATH=\"${SRCROOT}/../bin:$PATH\"\n${EXPONENT_TOOLS_DIR}/cleanup-dynamic-macros.js --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios\n";
+			shellScript = "$SRCROOT/Build-Phases/cleanup-dynamic-macros.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

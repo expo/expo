@@ -366,7 +366,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: ~/project/tools-public/generate-files-ios.js
+      - run: et ios-generate-dynamic-macros
       - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
           name: Build iOS shell app for real devices

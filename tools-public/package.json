@@ -4,12 +4,6 @@
   "private": true,
   "author": "650 Industries",
   "license": "Copyright 2013-present 650 Industries",
-  "bin": {
-    "generate-dynamic-macros": "./generate-dynamic-macros-cli.js",
-    "cleanup-dynamic-macros": "./cleanup-dynamic-macros.js",
-    "run-fabric-ios.js": "./run-fabric-ios.js",
-    "generate-files-ios": "./generate-files-ios.js"
-  },
   "dependencies": {
     "@expo/json-file": "^8.0.0",
     "@expo/mux": "^1.0.6",
