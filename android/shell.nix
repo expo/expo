@@ -94,6 +94,7 @@ mkShell rec {
     git
     nodejs
     openjdk8
+    yarn
   ];
 
   passthru = { inherit ndk ndkRoot; };
