@@ -511,4 +511,4 @@ jobs:
       - decrypt_secrets_if_possible
       - run:
           working_directory: ~/expo/apps/test-suite
-          command: ./publish.sh
+          command: nix run expo.procps --command ./publish.sh
