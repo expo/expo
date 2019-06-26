@@ -97,17 +97,20 @@ android {
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
-task generateDynamicMacros(type: Exec) {
-  def configuration = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") } ? "release" : "debug"
+task generateDynamicMacros {
+  doLast {
+    exec {
+      def configuration = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") } ? "release" : "debug"
 
-  workingDir '../../tools/expotools/bin'
+      workingDir '../../tools/expotools/bin'
 
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
-  } else {
-    // NOTE(brentvatne): this is a common install path for node
-    environment 'PATH', "${environment.PATH}:/usr/local/bin"
-    commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+      } else {
+        environment 'PATH', "${project.projectDir}/../../bin:${environment.PATH}"
+        commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+      }
+    }
   }
 }
 
