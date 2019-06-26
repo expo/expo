@@ -11,10 +11,13 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -236,6 +239,33 @@ public class PushNotificationHelper {
                   return intent;
                 }
               });
+            }
+
+            if (body != null) {
+              try {
+                JSONObject bodyObject = new JSONObject(body);
+                // TODO: Consider the name - what is the best name to not confuse with user custom data.
+                // TODO: Make this a constant?
+                if (bodyObject.has("_richContent")) {
+                  final JSONObject richContent = bodyObject.getJSONObject("_richContent");
+                  // TODO: Need to consider the multiple notifications case above
+                  if (richContent.has("image")) {
+                    final String imageURL = richContent.getString("image");
+                    try {
+                      // TODO: fix `java.lang.IllegalStateException: Unrecognized type of request` when URL is invalid.
+                      Bitmap imageBitmap = Picasso.with(context).load(imageURL).get();
+                      notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle()
+                          .bigPicture(imageBitmap) // TODO: SET A LOADING IMAGE? But it seems that the notification will only be shown after it is fully loaded.
+                          .setBigContentTitle(message));
+                    } catch (IOException ie) {
+                      // It means that the image is not loaded correctly.
+                      // Do nothing.
+                    }
+                  }
+                }
+              } catch (JSONException e) {
+                // Do nothing. Something is wrong with the user-provided data payload.
+              }
             }
 
             // Add icon
