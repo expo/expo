@@ -2,8 +2,7 @@
 
 #import <UMCore/UMExportedModule.h>
 #import <Foundation/Foundation.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXDevice : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXDevice : UMExportedModule
 
 @end

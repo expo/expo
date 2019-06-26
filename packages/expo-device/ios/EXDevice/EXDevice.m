@@ -31,7 +31,6 @@
 
 @property (nonatomic, strong) NSString *webViewUserAgent;
 @property (nonatomic) bool isEmulator;
-@property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
 
 @end
 
@@ -44,10 +43,6 @@ UM_EXPORT_MODULE(ExpoDevice);
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  _moduleRegistry = moduleRegistry;
-}
 
 UM_EXPORT_METHOD_AS(getUserAgentAsync,
                     getWebViewUserAgentWithResolver:(UMPromiseResolveBlock)resolve
@@ -213,7 +208,7 @@ typedef NS_ENUM(NSInteger, DeviceType) {
   NSDictionary *storage = [self getStorageDictionary];
   
   if (storage) {
-    NSNumber *fileSystemSizeInBytes = [storage objectForKey: NSFileSystemSize];
+    NSNumber *fileSystemSizeInBytes = storage[NSFileSystemSize];
     totalSpace = [fileSystemSizeInBytes unsignedLongLongValue];
   }
   return totalSpace;
