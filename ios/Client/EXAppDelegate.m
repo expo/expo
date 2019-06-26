@@ -13,19 +13,7 @@
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
-
-#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
-#import <EXAppAuth/EXAppAuthSessionsManager.h>
-#endif
-
-#if __has_include(<GoogleSignIn/GoogleSignIn.h>)
-#import <GoogleSignIn/GoogleSignIn.h>
-#endif
-
-#if __has_include(<EXFacebook/EXFacebook.h>)
-#import <EXFacebook/EXFacebook.h>
-#import <FBSDKCoreKit/FBSDKCoreKit.h>
-#endif
+#import "Firebase.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,30 +23,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppDelegate
 
+@synthesize window = _window;
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
   CrashlyticsKit.delegate = [ExpoKit sharedInstance]; // this must be set prior to init'ing fabric.
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
-
-#if __has_include(<EXFacebook/EXFacebook.h>)
-  if ([EXFacebook facebookAppIdFromNSBundle]) {
-    [[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];
-  }
-#endif
+  [FIRApp configure];
 
   if ([application applicationState] != UIApplicationStateBackground) {
     // App launched in foreground
     [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
   }
-  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] applicationDidFinishLaunchingWithOptions:launchOptions];
+
+ [super application:application didFinishLaunchingWithOptions:launchOptions];
+
   return YES;
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
   [self _setUpUserInterfaceForApplication:application withLaunchOptions:nil];
+
+  [super applicationWillEnterForeground:application];
 }
 
 - (void)_setUpUserInterfaceForApplication:(UIApplication *)application withLaunchOptions:(nullable NSDictionary *)launchOptions
@@ -75,66 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
   _window.rootViewController = _rootViewController;
 
   [_window makeKeyAndVisible];
-}
-
-#pragma mark - Background Fetch
-
-- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-{
-  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:UMTaskLaunchReasonBackgroundFetch userInfo:nil completionHandler:completionHandler];
-}
-
-#pragma mark - Handling URLs
-
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
-{
-  id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
-  NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
-#if __has_include(<EXAppAuth/EXAppAuthSessionsManager.h>)
-  if ([(EXAppAuthSessionsManager *)[UMModuleRegistryProvider getSingletonModuleForClass:EXAppAuthSessionsManager.class] application:app openURL:url options:options]) {
-    return YES;
-  }
-#endif
-#if __has_include(<GoogleSignIn/GoogleSignIn.h>)
-  if ([[GIDSignIn sharedInstance] handleURL:url
-                          sourceApplication:sourceApplication
-                                 annotation:annotation]) {
-    return YES;
-  }
-#endif
-#if __has_include(<EXFacebook/EXFacebook.h>)
-  if ([EXFacebook facebookAppIdFromNSBundle]) {
-    if ([[FBSDKApplicationDelegate sharedInstance] application:app
-                                                       openURL:url
-                                                       options:options]) {
-      return YES;
-    }
-  }
-#endif
-  return [[ExpoKit sharedInstance] application:app openURL:url sourceApplication:sourceApplication annotation:annotation];
-}
-
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
-{
-  return [[ExpoKit sharedInstance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-}
-
-#pragma mark - Notifications
-
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token
-{
-  [[ExpoKit sharedInstance] application:application didRegisterForRemoteNotificationsWithDeviceToken:token];
-}
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
-{
-  [[ExpoKit sharedInstance] application:application didFailToRegisterForRemoteNotificationsWithError:err];
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
-{
-  [[ExpoKit sharedInstance] application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-  [(EXTaskService *)[UMModuleRegistryProvider getSingletonModuleForClass:EXTaskService.class] runTasksWithReason:UMTaskLaunchReasonRemoteNotification userInfo:userInfo completionHandler:completionHandler];
 }
 
 // TODO: Remove once SDK31 is phased out

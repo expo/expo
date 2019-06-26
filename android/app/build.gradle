@@ -16,8 +16,12 @@ repositories {
   maven { url 'https://maven.fabric.io/public' }
 }
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 android {
-  compileSdkVersion 27
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -26,15 +30,24 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 106
-    versionName '2.10.7'
+    versionCode 114
+    versionName '2.11.4'
     // END VERSIONS
     ndk {
+      // We use different `abiFilters` for distributing
+      // to be able to bundle old, incompatible SDKs.
+    
+      // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
       abiFilters 'armeabi-v7a', 'x86'
+      // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+     
+      /* UNCOMMENT WHEN DISTRIBUTING
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
+      END UNCOMMENT WHEN DISTRIBUTING */
     }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -75,9 +88,6 @@ android {
   packagingOptions {
     pickFirst "**"
   }
-  configurations.all {
-    resolutionStrategy.force 'com.android.support:design:27.1.0'
-  }
 }
 
 devicefarm {
@@ -85,6 +95,7 @@ devicefarm {
   devicePool System.getenv("DEVICEFARM_DEVICE_POOL")
   executionTimeoutMinutes 40
   authentication {
+
     accessKey System.getenv("AWS_ACCESS_KEY_ID")
     secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
   }
@@ -92,7 +103,7 @@ devicefarm {
 
 configurations.all {
   resolutionStrategy {
-    force 'org.webkit:android-jsc:r224109'
+    force 'org.webkit:android-jsc:r241213'
   }
 }
 
@@ -102,27 +113,26 @@ apply from: 'expo.gradle'
 END UNCOMMENT WHEN DISTRIBUTING */
 // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
+apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
   implementation 'com.android.support:multidex:1.0.1'
 
   // Our dependencies
-  implementation 'com.android.support:appcompat-v7:27.1.1'
+  implementation "com.android.support:appcompat-v7:$supportLibVersion"
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation 'com.android.support:appcompat-v7:27.1.1'
-  implementation 'com.facebook.android:facebook-android-sdk:4.37.0'
+  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:8.4.0'
+  implementation 'com.jakewharton:butterknife:9.0.0'
   implementation 'de.greenrobot:eventbus:2.4.0'
-
-  // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  implementation 'com.amplitude:android-sdk:2.9.2'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
   implementation 'com.google.android.gms:play-services-gcm:15.0.1'
@@ -147,16 +157,13 @@ dependencies {
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
   implementation 'net.openid:appauth:0.4.1'
-  implementation('com.airbnb.android:lottie:2.5.5') {
-    exclude group: 'com.android.support', module: 'appcompat-v7'
-  }
-  implementation 'io.branch.sdk.android:library:2.17.1'
+  implementation 'com.airbnb.android:lottie:2.5.6'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  implementation 'com.android.support:exifinterface:27.1.1'
+  implementation "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
   implementation 'com.squareup.okio:okio:1.9.0'
-  implementation 'com.facebook.soloader:soloader:0.5.1'
+  implementation 'com.facebook.soloader:soloader:0.6.0'
 
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
@@ -166,7 +173,7 @@ dependencies {
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
   androidTestImplementation 'com.android.support.test:runner:1.0.1'
-  androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+  androidTestImplementation "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "28.0.0")}"
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
   androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
@@ -178,7 +185,7 @@ dependencies {
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:32.0.0@aar') {
+  implementation('host.exp.exponent:expoview:33.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -195,6 +202,11 @@ dependencies {
 
   // ADD_NEW_SDKS_HERE
 
+
+  // BEGIN_SDK_33
+  implementation(project(':expoview-abi33_0_0'))
+  // END_SDK_33
+
   // BEGIN_SDK_32
   implementation(project(':expoview-abi32_0_0'))
   // END_SDK_32
@@ -203,89 +215,47 @@ dependencies {
   implementation(project(':expoview-abi31_0_0'))
   // END_SDK_31
 
-  // BEGIN_SDK_30
-  implementation(project(':expoview-abi30_0_0'))
-  // END_SDK_30
-
-  // BEGIN_SDK_29
-  implementation(project(':expoview-abi29_0_0'))
-  // END_SDK_29
-
-  // BEGIN_SDK_28
-  implementation(project(':expoview-abi28_0_0'))
-  // END_SDK_28
-
-  // BEGIN_SDK_27
-  implementation(project(':expoview-abi27_0_0'))
-  // END_SDK_27
-
-  // BEGIN_SDK_26
-  implementation(project(':expoview-abi26_0_0'))
-  // END_SDK_26
+  // This is not needed in shell apps, the Amplitude module will include this dep if installed
+  // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
+  implementation 'com.amplitude:android-sdk:2.9.2'
 
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:32.0.0'
-  api 'host.exp.exponent:expo-app-loader-provider:4.0.0'
-  api 'org.unimodules:unimodules-core:1.0.0'
-  api 'org.unimodules:unimodules-constants-interface:1.0.0'
-  api 'host.exp.exponent:expo-constants:4.0.0'
-  api 'host.exp.exponent:expo-document-picker:4.0.0'
-  api 'org.unimodules:unimodules-file-system-interface:1.0.0'
-  api 'host.exp.exponent:expo-file-system:4.0.0'
-  api 'org.unimodules:unimodules-image-loader-interface:1.0.0'
-  api 'host.exp.exponent:expo-permissions:4.0.0'
-  api 'org.unimodules:unimodules-permissions-interface:1.0.0'
-  api 'org.unimodules:unimodules-sensors-interface:1.0.0'
-  api 'org.unimodules:unimodules-react-native-adapter:1.0.0'
-  api 'host.exp.exponent:expo-task-manager:4.0.0'
-  api 'org.unimodules:unimodules-task-manager-interface:1.0.0'
-
-  // Optional universal modules, could be removed
-  // along with references in MainActivity
-  api 'host.exp.exponent:expo-ads-admob:4.0.0'
-  api 'host.exp.exponent:expo-ads-facebook:4.0.0'
-  api 'host.exp.exponent:expo-analytics-amplitude:4.0.0'
-  api 'host.exp.exponent:expo-app-auth:4.0.0'
-  api 'host.exp.exponent:expo-av:4.1.0'
-  api 'host.exp.exponent:expo-analytics-segment:4.0.0'
-  api 'org.unimodules:unimodules-barcode-scanner-interface:1.0.0'
-  api 'host.exp.exponent:expo-barcode-scanner:4.0.0'
-  api 'host.exp.exponent:expo-brightness:4.0.0'
-  api 'host.exp.exponent:expo-calendar:4.0.0'
-  api 'org.unimodules:unimodules-camera-interface:1.0.0'
-  api 'host.exp.exponent:expo-camera:4.0.0'
-  api 'host.exp.exponent:expo-contacts:4.0.0'
-  api 'host.exp.exponent:expo-facebook:4.0.0'
-  api 'host.exp.exponent:expo-face-detector:4.0.0'
-  api 'org.unimodules:unimodules-face-detector-interface:1.0.0'
-  api 'host.exp.exponent:expo-font:4.0.0'
-  api 'host.exp.exponent:expo-gl-cpp:4.0.0'
-  api 'host.exp.exponent:expo-gl:4.0.0'
-  api 'host.exp.exponent:expo-google-sign-in:4.0.0'
-  api 'host.exp.exponent:expo-haptics:4.0.0'
-  api 'host.exp.exponent:expo-image-manipulator:4.0.0'
-  api 'host.exp.exponent:expo-image-picker:4.0.0'
-  api 'host.exp.exponent:expo-intent-launcher:4.0.0'
-  api 'host.exp.exponent:expo-local-authentication:4.0.0'
-  api 'host.exp.exponent:expo-localization:4.0.0'
-  api 'host.exp.exponent:expo-location:4.0.0'
-  api 'host.exp.exponent:expo-media-library:4.0.0'
-  api 'host.exp.exponent:expo-print:4.0.0'
-  api 'host.exp.exponent:expo-secure-store:4.0.0'
-  api 'host.exp.exponent:expo-sensors:4.0.0'
-  api 'host.exp.exponent:expo-sharing:2.0.0'
-  api 'host.exp.exponent:expo-sms:4.0.0'
-  api 'host.exp.exponent:expo-linear-gradient:4.0.0'
-  api 'host.exp.exponent:expo-keep-awake:4.0.0'
-  api 'host.exp.exponent:expo-background-fetch:4.0.0'
-  api 'host.exp.exponent:expo-mail-composer:4.0.0'
-  api 'host.exp.exponent:expo-speech:4.0.0'
-  api 'host.exp.exponent:expo-sqlite:4.0.0'
-  api 'host.exp.exponent:expo-web-browser:4.0.0'
+  api 'org.webkit:android-jsc:r241213' // needs to be before react-native
+  api 'com.facebook.react:react-native:33.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
+
+  // WHEN_DETACHING_REMOVE_FROM_HERE
+  /* UNCOMMENT WHEN DISTRIBUTING
+  addMavenUnimodulesDependencies([
+      modulesPaths : [
+        '../enabled-modules'
+      ],
+      configuration: 'api',
+      target       : 'react-native'
+  ])
+  END UNCOMMENT WHEN DISTRIBUTING */
+  // WHEN_DETACHING_REMOVE_TO_HERE
+
+  /* UNCOMMENT WHEN DETACHING
+  addUnimodulesDependencies([
+      modulesPaths : [
+        '../../node_modules'
+      ],
+      configuration: 'api',
+      target       : 'react-native',
+      exclude      : [
+        // You can exclude unneeded modules here, eg.
+        // 'unimodules-face-detector-interface',
+        // 'expo-face-detector'
+
+        // Adding a name here will also remove the package
+        // from auto-generated BasePackageList.java
+      ]
+  ])
+  END UNCOMMENT WHEN DETACHING */
 }
 
 // This has to be down here for some reason

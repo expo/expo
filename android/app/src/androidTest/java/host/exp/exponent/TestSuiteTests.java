@@ -140,10 +140,10 @@ public class TestSuiteTests extends BaseTestClass {
 
   @Rule
   public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
-    Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS,
-    Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
+      Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS,
+      Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
+      Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+      Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
   );
 
   @Test
@@ -156,6 +156,14 @@ public class TestSuiteTests extends BaseTestClass {
 
     KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES = true;
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
+  }
+
+  @Ignore
+  @Test
+  @ExpoTestSuiteTest
+  @ExpoSdkVersionTest("33.0.0")
+  public void sdk33TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-33-0-0", false);
   }
 
   @Ignore
@@ -174,39 +182,8 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-31-0-0", false);
   }
 
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("30.0.0")
-  public void sdk30TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-30-0-0", false);
-  }
-
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("28.0.0")
-  public void sdk28TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-28-0-0", false);
-  }
-
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("27.0.0")
-  public void sdk27TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-27-0-0", false);
-  }
-
-  @Ignore
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("26.0.0")
-  public void sdk26TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-26-0-0", false);
-  }
-
   @Test
   @ExpoAlwaysPassThroughFilter
-  public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {}
+  public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {
+  }
 }

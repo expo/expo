@@ -1,6 +1,7 @@
 import React from 'react';
-import { Audio, Asset } from 'expo';
+import { Asset } from 'expo-asset';
 import { ScrollView, StyleSheet, PixelRatio } from 'react-native';
+import { Audio } from 'expo-av';
 
 import ListButton from '../../components/ListButton';
 import HeadingText from '../../components/HeadingText';

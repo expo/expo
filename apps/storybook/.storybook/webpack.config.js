@@ -3,9 +3,10 @@ const webpackConfig = require('./webpack.config.expo');
 const merge = require('webpack-merge');
 
 module.exports = function({ mode, config }, argv) {
-  const expoConfig = webpackConfig(
-    { [config.mode]: true, projectRoot: path.resolve(__dirname, '../') },
-    argv
-  );
+  const props =
+    mode.toLowerCase() === 'production'
+      ? { production: true, development: false }
+      : { production: false, development: true };
+  const expoConfig = webpackConfig({ ...props, projectRoot: path.resolve(__dirname, '../') }, argv);
   return merge(expoConfig, config);
 };

@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import prettyFormat from 'pretty-format';
 import parseErrorStack, { StackFrame } from 'react-native/Libraries/Core/Devtools/parseErrorStack';
-import symbolicateStackTrace from './symbolicateStackTrace';
+import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
 
 import { LogData, LogLevel } from './RemoteLogging';
 import ReactNodeFormatter from './format/ReactNodeFormatter';
@@ -73,7 +73,18 @@ function _stringifyLogData(data: unknown[]): string[] {
     if (typeof item === 'string') {
       return item;
     } else {
-      return prettyFormat(item, { plugins: [ReactNodeFormatter] });
+      // define the max length for log msg to be first 10000 characters
+      const LOG_MESSAGE_MAX_LENGTH = 10000;
+      let result = prettyFormat(item, { plugins: [ReactNodeFormatter] });
+      // check the size of string returned
+      if (result.length > LOG_MESSAGE_MAX_LENGTH) {
+        let truncatedResult = result.substring(0, LOG_MESSAGE_MAX_LENGTH);
+        // truncate the result string to the max length
+        truncatedResult += `...(truncated to the first ${LOG_MESSAGE_MAX_LENGTH} characters)`;
+        return truncatedResult;
+      } else {
+        return result;
+      }
     }
   });
 }

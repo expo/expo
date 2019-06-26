@@ -12,10 +12,9 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.interfaces.font.FontManager;
 
-public class FontLoaderModule extends ExportedModule implements ModuleRegistryConsumer {
+public class FontLoaderModule extends ExportedModule {
   private static final String ASSET_SCHEME = "asset://";
   private static final String EXPORTED_NAME = "ExpoFontLoader";
   private ModuleRegistry mModuleRegistry;
@@ -56,7 +55,7 @@ public class FontLoaderModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

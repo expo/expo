@@ -268,18 +268,21 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
 }
 
 + (NSArray *)uploadFetchersForBackgroundSessions {
-  // Collect the background session upload fetchers that are still in memory.
-  NSPointerArray *uploadFetcherPointerArray = [self uploadFetcherPointerArrayForBackgroundSessions];
-  [uploadFetcherPointerArray compact];
   NSMutableSet *restoredSessionIdentifiers = [[NSMutableSet alloc] init];
   NSMutableArray *uploadFetchers = [[NSMutableArray alloc] init];
-  for (GTMSessionUploadFetcher *uploadFetcher in uploadFetcherPointerArray) {
-    NSString *sessionIdentifier = uploadFetcher.chunkFetcher.sessionIdentifier;
-    if (sessionIdentifier) {
-      [restoredSessionIdentifiers addObject:sessionIdentifier];
-      [uploadFetchers addObject:uploadFetcher];
+  NSPointerArray *uploadFetcherPointerArray = [self uploadFetcherPointerArrayForBackgroundSessions];
+
+  // Collect the background session upload fetchers that are still in memory.
+  @synchronized(uploadFetcherPointerArray) {
+    [uploadFetcherPointerArray compact];
+    for (GTMSessionUploadFetcher *uploadFetcher in uploadFetcherPointerArray) {
+      NSString *sessionIdentifier = uploadFetcher.chunkFetcher.sessionIdentifier;
+      if (sessionIdentifier) {
+        [restoredSessionIdentifiers addObject:sessionIdentifier];
+        [uploadFetchers addObject:uploadFetcher];
+      }
     }
-  }
+  }  // @synchronized(uploadFetcherPointerArray)
 
   // The system may have other ongoing background upload sessions. Restore upload fetchers for those
   // too.
@@ -1785,14 +1788,16 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
       _useBackgroundSessionOnChunkFetchers = useBackgroundSession;
       NSPointerArray *uploadFetcherPointerArrayForBackgroundSessions =
           [[self class] uploadFetcherPointerArrayForBackgroundSessions];
-      if (_useBackgroundSessionOnChunkFetchers) {
-        [uploadFetcherPointerArrayForBackgroundSessions addPointer:(__bridge void *)self];
-      } else {
-        [[self class] removePointer:(__bridge void *)self
-                   fromPointerArray:uploadFetcherPointerArrayForBackgroundSessions];
-      }
+      @synchronized(uploadFetcherPointerArrayForBackgroundSessions) {
+        if (_useBackgroundSessionOnChunkFetchers) {
+          [uploadFetcherPointerArrayForBackgroundSessions addPointer:(__bridge void *)self];
+        } else {
+          [[self class] removePointer:(__bridge void *)self
+                     fromPointerArray:uploadFetcherPointerArrayForBackgroundSessions];
+        }
+      }  // @synchronized(uploadFetcherPointerArrayForBackgroundSessions)
     }
-  }  // @synchronized(self
+  }  // @synchronized(self)
 }
 
 - (BOOL)canFetchWithBackgroundSession {

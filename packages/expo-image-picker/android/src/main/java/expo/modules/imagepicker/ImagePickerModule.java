@@ -37,7 +37,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.permissions.Permissions;
 
@@ -55,7 +54,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ImagePickerModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class ImagePickerModule extends ExportedModule implements ActivityEventListener {
 
   public static final String TAG = "ExponentImagePicker";
   public static final String MISSING_ACTIVITY = "MISSING_ACTIVITY";
@@ -434,6 +433,16 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
               } else {
                 extension = ".gif";
               }
+            } else if (type.contains("bmp")) {
+              // If we allow editing, the result image won't ever be a BMP as the cropper doesn't support it.
+              // Let's convert to PNG in such case.
+              if (allowsEditing) {
+                extension = ".png";
+                compressFormat = Bitmap.CompressFormat.PNG;
+              } else {
+                extension = ".bmp";
+                compressFormat = null; //BMP is not compressed
+              }
             } else if (!type.contains("jpeg")) {
               System.out.println(TAG + " Image type not supported. Falling back to JPEG instead.");
               extension = ".jpg";
@@ -737,7 +746,7 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
@@ -794,7 +803,7 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
 
     public static Uri contentUriFromFile(File file, Application application) {
       try {
-        return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+        return FileProvider.getUriForFile(application, application.getPackageName() + ".ImagePickerFileProvider", file);
       } catch (Exception e) {
         return Uri.fromFile(file);
       }
@@ -816,5 +825,3 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
   }
 
 }
-
-

@@ -1,10 +1,12 @@
 package expo.modules.filesystem;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
 
@@ -15,8 +17,8 @@ import org.apache.commons.io.IOUtils;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
 import org.unimodules.interfaces.filesystem.Permission;
@@ -56,7 +58,7 @@ import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
 
-public class FileSystemModule extends ExportedModule implements ModuleRegistryConsumer {
+public class FileSystemModule extends ExportedModule {
   private static final String NAME = "ExponentFileSystem";
   private static final String TAG = FileSystemModule.class.getSimpleName();
   private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
@@ -64,6 +66,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   private static final String HEADER_KEY = "headers";
 
   private ModuleRegistry mModuleRegistry;
+  private OkHttpClient mClient;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
@@ -79,7 +82,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
@@ -100,6 +103,14 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
 
   private File uriToFile(Uri uri) {
     return new File(uri.getPath());
+  }
+
+  private void checkIfFileDirExists(Uri uri) throws IOException {
+    File file = uriToFile(uri);
+    File dir = file.getParentFile();
+    if (!dir.exists()) {
+      throw new IOException("Directory for " + file.getPath() + " doesn't exist.");
+    }
   }
 
   private EnumSet<Permission> permissionsForPath(String path) {
@@ -446,6 +457,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     try {
       final Uri uri = Uri.parse(uriStr);
       ensurePermission(uri, Permission.WRITE);
+      checkIfFileDirExists(uri);
 
       if (!url.contains(":")) {
         Context context = getContext();
@@ -474,7 +486,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
             requestBuilder.addHeader(key, headers.get(key).toString());
           }
         }
-        getOkHttpClientBuilder().build().newCall(requestBuilder.build()).enqueue(new Callback() {
+        getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
             Log.e(TAG, e.getMessage());
@@ -509,9 +521,40 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @ExpoMethod
+  public void getContentUriAsync(String uri, Promise promise) {
+    try {
+      final Uri fileUri = Uri.parse(uri);
+      ensurePermission(fileUri, Permission.WRITE);
+      ensurePermission(fileUri, Permission.READ);
+      checkIfFileDirExists(fileUri);
+      if ("file".equals(fileUri.getScheme())) {
+        File file = uriToFile(fileUri);
+        Bundle result = new Bundle();
+        result.putString("uri", contentUriFromFile(file).toString());
+        promise.resolve(result);
+      } else {
+        promise.reject("E_DIRECTORY_NOT_READ", "No readable files with the uri: " + uri + ". Please use other uri.");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  private Uri contentUriFromFile(File file) {
+    try {
+      Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
+      return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+    } catch (Exception e) {
+      throw e;
+    }
+  }
+
+  @ExpoMethod
   public void downloadResumableStartAsync(String url, final String fileUriStr, final String uuid, final Map<String, Object> options, final String resumeData, final Promise promise) {
     try {
       final Uri fileUri = Uri.parse(fileUriStr);
+      checkIfFileDirExists(fileUri);
       if (!("file".equals(fileUri.getScheme()))) {
         throw new IOException("Unsupported scheme for location '" + fileUri + "'.");
       }
@@ -547,10 +590,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       };
 
       OkHttpClient client =
-          getOkHttpClientBuilder()
-              .connectTimeout(60, TimeUnit.SECONDS)
-              .readTimeout(60, TimeUnit.SECONDS)
-              .writeTimeout(60, TimeUnit.SECONDS)
+          getOkHttpClient().newBuilder()
               .addNetworkInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
@@ -773,13 +813,21 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     void update(long bytesRead, long contentLength, boolean done);
   }
 
-  private OkHttpClient.Builder getOkHttpClientBuilder() {
-    CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    if (cookieHandler != null) {
-      builder.cookieJar(new JavaNetCookieJar(cookieHandler));
+  private synchronized OkHttpClient getOkHttpClient() {
+    if (mClient == null) {
+      OkHttpClient.Builder builder =
+          new OkHttpClient.Builder()
+              .connectTimeout(60, TimeUnit.SECONDS)
+              .readTimeout(60, TimeUnit.SECONDS)
+              .writeTimeout(60, TimeUnit.SECONDS);
+
+      CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
+      if (cookieHandler != null) {
+        builder.cookieJar(new JavaNetCookieJar(cookieHandler));
+      }
+      mClient = builder.build();
     }
-    return builder;
+    return mClient;
   }
 
   private String md5(File file) throws IOException {

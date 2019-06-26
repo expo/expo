@@ -6,15 +6,11 @@ Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate th
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-local-authentication).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-local-authentication`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-local-authentication).
 
 ## API
 
 ```js
-// in managed apps:
-import { LocalAuthentication } from 'expo';
-
-// in bare apps:
 import * as LocalAuthentication from 'expo-local-authentication';
 ```
 
@@ -32,7 +28,7 @@ Determine what kinds of authentications are available on the device.
 
 #### Returns
 
-Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported.
+Returns a promise resolving to an array containing `LocalAuthentication.AuthenticationType.{FINGERPRINT, FACIAL_RECOGNITION}`. A value of `1` indicates Fingerprint support and `2` indicates Facial Recognition support. Eg: `[1,2]` means the device has both types supported. If neither authentication type is supported, returns an empty array.
 
 ### `LocalAuthentication.isEnrolledAsync()`
 
@@ -42,9 +38,9 @@ Determine whether the device has saved fingerprints or facial data to use for au
 
 Returns a promise resolving to boolean value indicating whether the device has saved fingerprints or facial data for authentication.
 
-### `LocalAuthentication.authenticateAsync()`
+### `LocalAuthentication.authenticateAsync(options)`
 
-Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
+Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the device).
 
 > **Note:** When using the fingerprint module on Android, you need to provide a UI component to prompt the user to scan their fingerprint, as the OS has no default alert for it.
 
@@ -52,7 +48,9 @@ Attempts to authenticate via Fingerprint (or FaceID on iPhone X).
 
 #### Arguments
 
-- (**iOS only**) **promptMessage (_string_)** A message that is shown alongside the TouchID or FaceID prompt.
+- **options (_object_)** -- An object of options.
+  - **promptMessage (_string_)** -- A message that is shown alongside the TouchID or FaceID prompt. (**iOS only**)
+  - **fallbackLabel (_string_)** -- Allows to customize the default `Use Passcode` label shown after several failed authentication attempts. Setting this option to an empty string disables fallback to device passcode. (**iOS only**)
 
 #### Returns
 
@@ -61,4 +59,3 @@ Returns a promise resolving to an object containing `success`, a boolean indicat
 ### `LocalAuthentication.cancelAuthenticate() - (Android Only)`
 
 Cancels the fingerprint authentication flow.
-

@@ -4,7 +4,6 @@
 
 #import <EXFileSystem/EXDownloadDelegate.h>
 #import <EXFileSystem/EXFileSystem.h>
-#import <EXFileSystem/EXFileSystemManagerService.h>
 
 #import <CommonCrypto/CommonDigest.h>
 
@@ -12,7 +11,6 @@
 #import <EXFileSystem/EXFileSystemAssetLibraryHandler.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMFileSystemInterface/UMFileSystemManagerInterface.h>
 #import <UMFileSystemInterface/UMFilePermissionModuleInterface.h>
 
 
@@ -49,7 +47,9 @@ NSString * const EXDownloadProgressEventName = @"Exponent.downloadProgress";
 @property (nonatomic, strong) NSMutableDictionary<NSString *, EXDownloadResumable*> *downloadObjects;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<UMFileSystemManager> fileSystemManager;
+@property (nonatomic, strong) NSString *documentDirectory;
+@property (nonatomic, strong) NSString *cachesDirectory;
+@property (nonatomic, strong) NSString *bundleDirectory;
 
 @end
 
@@ -82,11 +82,12 @@ UM_REGISTER_MODULE();
   return @[@protocol(UMFileSystemInterface)];
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithDocumentDirectory:(NSString *)documentDirectory cachesDirectory:(NSString *)cachesDirectory bundleDirectory:(NSString *)bundleDirectory
 {
   if (self = [super init]) {
-    _documentDirectory = [self documentDirectoryForExperienceId:experienceId];
-    _cachesDirectory = [self cachesDirectoryForExperienceId:experienceId];
+    _documentDirectory = documentDirectory;
+    _cachesDirectory = cachesDirectory;
+    _bundleDirectory = bundleDirectory;
     _downloadObjects = [NSMutableDictionary dictionary];
     [EXFileSystem ensureDirExistsWithPath:_documentDirectory];
     [EXFileSystem ensureDirExistsWithPath:_cachesDirectory];
@@ -94,21 +95,31 @@ UM_REGISTER_MODULE();
   return self;
 }
 
+- (instancetype)init
+{
+  NSArray<NSString *> *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *documentDirectory = [documentPaths objectAtIndex:0];
+
+  NSArray<NSString *> *cachesPaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  NSString *cacheDirectory = [cachesPaths objectAtIndex:0];
+
+  return [self initWithDocumentDirectory:documentDirectory
+                         cachesDirectory:cacheDirectory
+                         bundleDirectory:[NSBundle mainBundle].bundlePath];
+}
+
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  _fileSystemManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemManager)];
 }
 
 - (NSDictionary *)constantsToExport
 {
-  NSString *bundleDirectory = [_fileSystemManager bundleDirectoryForExperienceId:_moduleRegistry.experienceId];
   return @{
-           @"documentDirectory": [NSURL fileURLWithPath:_documentDirectory].absoluteString,
-           @"cacheDirectory": [NSURL fileURLWithPath:_cachesDirectory].absoluteString,
-           @"bundleDirectory":  bundleDirectory != nil ? [NSURL fileURLWithPath:bundleDirectory].absoluteString : [NSNull null],
-           @"bundledAssets": [_fileSystemManager bundledAssetsForExperienceId:_moduleRegistry.experienceId] ?: [NSNull null],
+           @"documentDirectory": _documentDirectory ? [NSURL fileURLWithPath:_documentDirectory].absoluteString : [NSNull null],
+           @"cacheDirectory": _cachesDirectory ? [NSURL fileURLWithPath:_cachesDirectory].absoluteString : [NSNull null],
+           @"bundleDirectory": _bundleDirectory ? [NSURL fileURLWithPath:_bundleDirectory].absoluteString : [NSNull null]
            };
 }
 
@@ -525,6 +536,12 @@ UM_EXPORT_METHOD_AS(downloadAsync,
 {
   NSURL *url = [NSURL URLWithString:uriString];
   NSURL *localUri = [NSURL URLWithString:localUriString];
+  if (!([self checkIfFileDirExists:localUri.path])) {
+    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
+           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", localUriString],
+           nil);
+    return;
+  }
   if (!([self permissionsForURI:localUri] & UMFileSystemPermissionWrite)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", localUri],
@@ -574,6 +591,12 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
 {
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUrl = [NSURL URLWithString:fileUri];
+  if (!([self checkIfFileDirExists:localUrl.path])) {
+    reject(@"E_FILESYSTEM_WRONG_DESTINATION",
+           [NSString stringWithFormat:@"Directory for %@ doesn't exist.", fileUri],
+           nil);
+    return;
+  }
   if (![localUrl.scheme isEqualToString:@"file"]) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"Cannot download to '%@': only 'file://' URI destinations are supported.", fileUri],
@@ -724,9 +747,7 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 - (UMFileSystemPermissionFlags)_permissionsForPath:(NSString *)path
 {
-  return [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMFilePermissionModuleInterface)]
-          getPathPermissions:(NSString *)path
-          scopedDirs:@[_documentDirectory, _cachesDirectory]];
+  return [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMFilePermissionModuleInterface)] getPathPermissions:(NSString *)path];
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
@@ -740,13 +761,24 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 - (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri
 {
-  if ([uri.scheme isEqualToString:@"assets-library"]) {
+  NSArray *validSchemas = @[
+                            @"assets-library",
+                            @"http",
+                            @"https",
+                            ];
+  if ([validSchemas containsObject:uri.scheme]) {
     return UMFileSystemPermissionRead;
   }
   if ([uri.scheme isEqualToString:@"file"]) {
     return [self _permissionsForPath:uri.path];
   }
   return UMFileSystemPermissionNone;
+}
+
+- (BOOL)checkIfFileDirExists:(NSString *)path
+{
+  NSString *dir = [path stringByDeletingLastPathComponent];
+  return [[NSFileManager defaultManager] fileExistsAtPath:dir];
 }
 
 #pragma mark - Class methods
@@ -770,16 +802,6 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   return YES;
 }
 
-- (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
-{
-  return [EXFileSystem documentDirectoryForExperienceId:experienceId];
-}
-
-- (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
-{
-  return [EXFileSystem cachesDirectoryForExperienceId:experienceId];
-}
-
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension
 {
   return [EXFileSystem generatePathInDirectory:directory withExtension:extension];
@@ -791,20 +813,6 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
   [EXFileSystem ensureDirExistsWithPath:directory];
   return [directory stringByAppendingPathComponent:fileName];
-}
-
-+ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId
-{
-  NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *documentDirectory = [paths objectAtIndex:0];
-  return documentDirectory;
-}
-
-+ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId
-{
-  NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-  NSString *cacheDirectory = [paths objectAtIndex:0];
-  return cacheDirectory;
 }
 
 @end

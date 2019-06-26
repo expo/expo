@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Label } from './DocItem';
 import AppText from './AppText';
 import ExternalLink from './ExternalLink';
 import insertBetween from './insertBetween';
+import rem from './rem';
 
 const Title = ({ children }) => (
   <AppText accessibilityRole="heading" style={styles.title}>
@@ -26,45 +28,62 @@ const Divider = () => <View style={styles.divider} />;
 
 const SourceLink = ({ uri }) => (
   <ExternalLink
-    href={`https://github.com/necolas/react-native-web/tree/master/packages/website/storybook/${uri}`}
+    href={`https://github.com/expo/expo/tree/master/apps/storybook/stories/${uri}`}
     style={styles.link}>
-    View source code on GitHub
+    Edit this page on GitHub
   </ExternalLink>
 );
 
-const UIExplorer = ({ children, description, sections, title, url }) => (
+const IssuesLink = ({ label }) => (
+  <ExternalLink href={`https://github.com/expo/expo/labels/${label}`} style={styles.link}>
+    View open issues for {label}
+  </ExternalLink>
+);
+
+// TODO: Bacon: Add Canny button https://expo.canny.io/
+const UIExplorer = ({ children, packageName, description, sections, title, url, label }) => (
   <View style={styles.root}>
     <Title>{title}</Title>
-    {description}
+    {packageName && (
+      <View style={{ alignItems: 'flex-start', marginTop: 8 }}>
+        <Label
+          accessibilityRole="link"
+          target="_blank"
+          href={`https://npmjs.com/package/${packageName}`}>
+          {packageName}
+        </Label>
+      </View>
+    )}
+    {description && <Description>{description}</Description>}
     {children}
     {url && <SourceLink uri={url} />}
+    {label && <IssuesLink label={label} />}
   </View>
 );
 
 const styles = StyleSheet.create({
   root: {
-    padding: '1rem',
     flex: 1,
     flexBasis: 'auto',
   },
   divider: {
-    height: '1.3125rem',
+    height: rem(1.3125),
   },
   title: {
-    fontSize: '2rem',
+    fontSize: rem(2),
   },
   description: {
     color: '#666',
     display: 'flex',
     flexDirection: 'column',
-    fontSize: '1.25rem',
-    marginTop: 'calc(0.5 * 1.3125rem)',
-    marginBottom: 'calc(1.5 * 1.3125rem)',
+    fontSize: rem(1.25),
+    marginTop: rem(0.5 * 1.3125),
+    marginBottom: rem(1.5 * 1.3125),
   },
   link: {
     color: '#1B95E0',
-    fontSize: '1rem',
-    marginTop: 'calc(0.5 * 1.3125rem)',
+    fontSize: rem(1),
+    marginTop: rem(0.5 * 1.3125),
     textDecorationLine: 'underline',
   },
 });

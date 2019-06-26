@@ -5,6 +5,9 @@ import NativeModulesProxy from './NativeModulesProxy';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
 
+import { CodedError } from './errors/CodedError';
+import { UnavailabilityError } from './errors/UnavailabilityError';
+
 export const Platform = {
   OS: ReactNativePlatform.OS,
 };
@@ -15,4 +18,7 @@ export {
   Subscription,
   SyntheticPlatformEmitter,
   requireNativeViewManager,
+
+  CodedError,
+  UnavailabilityError,
 };

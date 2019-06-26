@@ -2,8 +2,9 @@
 
 #import "EXGoogleAuthManager.h"
 
-#import <GoogleSignIn/GoogleSignIn.h>
 #import <AppAuth.h>
+
+@import GoogleSignIn;
 
 @interface EXGoogleAuthManager ()
 

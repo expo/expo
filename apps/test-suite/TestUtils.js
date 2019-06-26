@@ -1,7 +1,7 @@
 'use strict';
 
 import { Platform, NativeModules } from 'react-native';
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
 
 const { ExponentTest } = NativeModules;
 
@@ -59,7 +59,7 @@ export function getTestModules() {
     require('./tests/AdMobRewarded'),
     require('./tests/FBBannerAd'),
   ];
-  if (!ExponentTest.isInCI) {
+  if (ExponentTest && !ExponentTest.isInCI) {
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
     // Requires interaction (sign in popup)

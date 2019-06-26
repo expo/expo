@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash.mapvalues';
+import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
@@ -45,7 +45,9 @@ function ensureNativeProps(options) {
     const propsKeys = Object.keys(newProps);
     // barCodeTypes is deprecated
     if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
+        console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
         newProps.barCodeScannerSettings = {
+            // @ts-ignore
             barCodeTypes: newProps.barCodeTypes,
         };
     }

@@ -101,7 +101,7 @@ abstract public class VirtualView extends ReactViewGroup {
         super.invalidate();
     }
 
-    private void clearCache() {
+    void clearCache() {
         canvasDiagonal = -1;
         canvasHeight = -1;
         canvasWidth = -1;

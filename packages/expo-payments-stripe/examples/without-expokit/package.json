@@ -5,20 +5,21 @@
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "preinstall": "rm -rf node_modules/expo*",
+    "preinstall": "rm -rf node_modules/*",
     "postinstall": "rm -rf node_modules/expo-payments-stripe/examples"
   },
   "dependencies": {
-    "react": "16.6.1",
-    "react-native": "^0.57.5",
+    "react": "16.8.3",
+    "react-dom": "^16.8.6",
+    "react-native": "0.59.8",
     "react-navigation": "2.6.2",
     "expo-payments-stripe": "file:../../",
-    "expo-core": "file:../../../expo-core",
-    "expo-react-native-adapter": "file:../../../expo-react-native-adapter",
+    "@unimodules/core": "file:../../../@unimodules/core",
+    "@unimodules/react-native-adapter": "file:../../../@unimodules/react-native-adapter",
     "expo-permissions": "file:../../../expo-permissions",
-    "expo-permissions-interface": "file:../../../expo-permissions-interface",
-    "expo-image-loader-interface": "file:../../../expo-image-loader-interface",
-    "expo-font-interface": "file:../../../expo-font-interface"
+    "unimodules-permissions-interface": "file:../../../unimodules-permissions-interface",
+    "unimodules-image-loader-interface": "file:../../../unimodules-image-loader-interface",
+    "unimodules-font-interface": "file:../../../unimodules-font-interface"
   },
   "devDependencies": {
     "babel-preset-react-native-stage-0": "^1.0.1",

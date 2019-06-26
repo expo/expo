@@ -14,20 +14,20 @@ target 'example' do
   pod 'EXPaymentsStripe',
     :path => "../node_modules/expo-payments-stripe/ios",
     :inhibit_warnings => true
-  pod 'EXPermissionsInterface',
-    :path => "../node_modules/expo-permissions-interface/ios",
+  pod 'UMPermissionsInterface',
+    :path => "../node_modules/unimodules-permissions-interface/ios",
     :inhibit_warnings => true
-  pod 'EXCore',
-    :path => "../node_modules/expo-core/ios",
+  pod 'UMCore',
+    :path => "../node_modules/@unimodules/core/ios",
     :inhibit_warnings => true
-  pod 'EXReactNativeAdapter',
-    :path => "../node_modules/expo-react-native-adapter/ios",
+  pod 'UMReactNativeAdapter',
+    :path => "../node_modules/@unimodules/react-native-adapter/ios",
     :inhibit_warnings => true
-  pod 'EXFontInterface',
-      :path => "../node_modules/expo-font-interface/ios",
+  pod 'UMFontInterface',
+      :path => "../node_modules/unimodules-font-interface/ios",
       :inhibit_warnings => true
-  pod 'EXImageLoaderInterface',
-    :path => "../node_modules/expo-image-loader-interface/ios",
+  pod 'UMImageLoaderInterface',
+    :path => "../node_modules/unimodules-image-loader-interface/ios",
     :inhibit_warnings => true
   pod 'React',
     :path => "../node_modules/react-native",

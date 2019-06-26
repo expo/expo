@@ -12,11 +12,11 @@ import java.util.Map;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ModuleRegistryReadyNotifier;
 import org.unimodules.adapters.react.NativeModulesProxy;
-import org.unimodules.adapters.react.ReactAdapterPackage;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
@@ -30,8 +30,6 @@ import versioned.host.exp.exponent.modules.universal.sensors.ScopedMagnetometerU
 import versioned.host.exp.exponent.modules.universal.sensors.ScopedRotationVectorSensorService;
 
 public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements ScopedModuleRegistryAdapter {
-  protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
-
   public ExpoModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
     super(moduleRegistryProvider);
   }
@@ -75,8 +73,8 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
     for (NativeModule otherModule : otherModules) {
-      if (otherModule instanceof ModuleRegistryConsumer) {
-        moduleRegistry.addRegistryConsumer((ModuleRegistryConsumer) otherModule);
+      if (otherModule instanceof RegistryLifecycleListener) {
+        moduleRegistry.registerExtraListener((RegistryLifecycleListener) otherModule);
       }
     }
 

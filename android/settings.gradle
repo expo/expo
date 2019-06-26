@@ -1,4 +1,7 @@
-include ':app', ':expoview'
+include ':app'
+
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+include ':expoview'
 project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
 include ':ReactAndroid'
@@ -6,41 +9,27 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi33_0_0",
     "abi32_0_0",
     "abi31_0_0",
-    "abi30_0_0",
-    "abi29_0_0",
-    "abi28_0_0",
-    "abi27_0_0",
-    "abi26_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 // Import gradle helpers for unimodules.
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
 // Include unimodules.
-includeUnimodulesProjects([
+includeUnimodulesProjects(
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+[
     modulesPaths: ['../../packages'],
     target: 'react-native',
     exclude: [
-        'expo-firebase-analytics',
-        'expo-firebase-app',
-        'expo-firebase-auth',
-        'expo-firebase-crashlytics',
-        'expo-firebase-database',
-        'expo-firebase-firestore',
-        'expo-firebase-functions',
-        'expo-firebase-instance-id',
-        'expo-firebase-invites',
-        'expo-firebase-links',
-        'expo-firebase-messaging',
-        'expo-firebase-notifications',
-        'expo-firebase-performance',
-        'expo-firebase-remote-config',
-        'expo-firebase-storage',
         'expo-module-template',
     ]
-])
+]
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
+)

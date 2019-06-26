@@ -23,22 +23,22 @@ expo-gl requires that you also install and configure [expo-gl-cpp](https://githu
 npm install expo-gl
 ```
 
+### Compatibility
+
+To use `expo-gl` with React Native 0.58.0 or newer you will need to use `5.x.x` version of `expo-gl` and at least `0.4.0` of `react-native-unimodules`. Here is the table showing compatibility between these three packages:
+
+| expo-gl | react-native-unimodules | react-native |
+| ------- | ----------------------- | ------------ |
+| <=4.x.x | 0.3.x                   | <=0.57.x     |
+| >=5.0.0 | >=0.4.0                 | *            |
+
 ### Configure for iOS
 
 Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.gl.GLPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new GLPackage()
-), Arrays.<SingletonModule>asList());
-```
+No additional set up necessary.
 
 # Contributing
 

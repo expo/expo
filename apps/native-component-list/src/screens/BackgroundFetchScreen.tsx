@@ -1,7 +1,8 @@
 import React from 'react';
 import format from 'date-format';
 import { NavigationEvents } from 'react-navigation';
-import { BackgroundFetch, TaskManager } from 'expo';
+import * as TaskManager from 'expo-task-manager';
+import * as BackgroundFetch from 'expo-background-fetch';
 import { AppState, AsyncStorage, StyleSheet, Text, View, AppStateStatus } from 'react-native';
 
 import Button from '../components/Button';

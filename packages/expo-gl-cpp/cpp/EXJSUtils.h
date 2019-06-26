@@ -1,6 +1,7 @@
 #ifndef __EXJSUTILS_H__
 #define __EXJSUTILS_H__
 
+#include <stdint.h>
 
 #include <JavaScriptCore/JSBase.h>
 #include <JavaScriptCore/JSValueRef.h>
@@ -124,22 +125,6 @@ EXJS_MAP_EXT(OFFSET, _EXJS_LITERAL(;), _EXJS_UNPACK_NUMBER, __VA_ARGS__)
 
 // If JavaScriptCore doesn't have JSTypedArray.h we declare the minimum stuff we need from it
 #ifndef EXJS_USE_JSC_TYPEDARRAY_HEADER
-
-typedef enum {
-    kJSTypedArrayTypeInt8Array,
-    kJSTypedArrayTypeInt16Array,
-    kJSTypedArrayTypeInt32Array,
-    kJSTypedArrayTypeUint8Array,
-    kJSTypedArrayTypeUint8ClampedArray,
-    kJSTypedArrayTypeUint16Array,
-    kJSTypedArrayTypeUint32Array,
-    kJSTypedArrayTypeFloat32Array,
-    kJSTypedArrayTypeFloat64Array,
-    kJSTypedArrayTypeArrayBuffer,
-    kJSTypedArrayTypeNone,
-} JSTypedArrayType;
-
-typedef void (*JSTypedArrayBytesDeallocator)(void* bytes, void* deallocatorContext);
 
 JS_EXPORT JSTypedArrayType JSValueGetTypedArrayType(JSContextRef ctx, JSValueRef value, JSValueRef* exception);
 JS_EXPORT size_t JSObjectGetArrayBufferByteLength(JSContextRef ctx, JSObjectRef object, JSValueRef* exception);

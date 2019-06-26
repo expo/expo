@@ -1,6 +1,6 @@
 import { Subscription } from '@unimodules/core';
 export declare type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
-export declare type SortByKey = 'default' | 'id' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
+export declare type SortByKey = 'default' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
 export declare type SortByValue = [SortByKey, boolean] | SortByKey;
 export declare type MediaTypeObject = {
     audio: 'audio';
@@ -10,7 +10,6 @@ export declare type MediaTypeObject = {
 };
 export declare type SortByObject = {
     default: 'default';
-    id: 'id';
     mediaType: 'mediaType';
     width: 'width';
     height: 'height';

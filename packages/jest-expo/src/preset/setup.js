@@ -4,6 +4,9 @@
  */
 'use strict';
 
+// whatwg-fetch@3 expects "self" to be globally defined
+global.self = global;
+
 const { Response, Request, Headers, fetch } = require('whatwg-fetch');
 global.Response = Response;
 global.Request = Request;
@@ -11,7 +14,6 @@ global.Headers = Headers;
 global.fetch = fetch;
 
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
-
 const createMockConstants = require('./createMockConstants');
 
 // window isn't defined as of react-native 0.45+ it seems
@@ -30,6 +32,12 @@ const mockImageLoader = {
 };
 Object.defineProperty(mockNativeModules, 'ImageLoader', mockImageLoader);
 Object.defineProperty(mockNativeModules, 'ImageViewManager', mockImageLoader);
+
+Object.defineProperty(mockNativeModules, 'LinkingManager', {
+  configurable: true,
+  enumerable: true,
+  get: () => mockNativeModules.Linking,
+});
 
 const mockPlatformConstants = {
   configurable: true,
@@ -123,6 +131,13 @@ Object.defineProperty(mockNativeModules.UIManager, 'RCTView', {
   }),
 });
 
+Object.defineProperty(mockNativeModules.UIManager, 'takeSnapshot', {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  value: jest.fn(),
+});
+
 const modulesConstants = mockNativeModules.NativeUnimoduleProxy.modulesConstants;
 mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
   ...modulesConstants,
@@ -133,18 +148,16 @@ mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
 };
 
 jest.mock('expo-file-system', () => ({
-  FileSystem: {
-    downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
-    getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
-    readAsStringAsync: jest.fn(),
-    writeAsStringAsync: jest.fn(),
-    deleteAsync: jest.fn(),
-    moveAsync: jest.fn(),
-    copyAsync: jest.fn(),
-    makeDirectoryAsync: jest.fn(),
-    readDirectoryAsync: jest.fn(),
-    createDownloadResumable: jest.fn(),
-  },
+  downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
+  getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
+  readAsStringAsync: jest.fn(() => Promise.resolve()),
+  writeAsStringAsync: jest.fn(() => Promise.resolve()),
+  deleteAsync: jest.fn(() => Promise.resolve()),
+  moveAsync: jest.fn(() => Promise.resolve()),
+  copyAsync: jest.fn(() => Promise.resolve()),
+  makeDirectoryAsync: jest.fn(() => Promise.resolve()),
+  readDirectoryAsync: jest.fn(() => Promise.resolve()),
+  createDownloadResumable: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
@@ -221,4 +234,14 @@ jest.mock('@unimodules/react-native-adapter', () => {
   }
 
   return ReactNativeAdapter;
+});
+
+// The UIManager module is not idempotent and causes issues if we load it again after resetting
+// the modules with Jest.
+let UIManager;
+jest.doMock('react-native/Libraries/ReactNative/UIManager', () => {
+  if (!UIManager) {
+    UIManager = require.requireActual('react-native/Libraries/ReactNative/UIManager');
+  }
+  return UIManager;
 });

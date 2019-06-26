@@ -2,7 +2,9 @@
 
 import React from 'react';
 import { Platform } from 'react-native';
-import { Camera, Permissions, Video } from 'expo';
+import { Video } from 'expo-av';
+import * as Permissions from 'expo-permissions';
+import { Camera } from 'expo-camera';
 import * as TestUtils from '../TestUtils';
 
 import { waitFor, mountAndWaitFor as originalMountAndWaitFor, retryForStatus } from './helpers';

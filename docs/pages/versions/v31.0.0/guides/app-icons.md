@@ -28,6 +28,6 @@ The most straightforward way to provide an icon for your app is to provide the [
 - You may still want to follow some of the [Apple best practices](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) to ensure your icon looks professional, such as testing your icon on different wallpapers, and avoiding text besides your product's wordmark.
 - Provide something that's at least 512x512 pixels. Since you already need 1024x1024 for iOS, it won't hurt to just provide that here as well.
 
-### Expo Client and Web
+### Expo client and Web
 
 - If your app contains `privacy: public` in [app.json](../../workflow/configuration/), it will show up on your expo.io profile. We will mask your icon to have rounded corners in that circumstance, so if it already looks reasonable on iOS, it will probably look good here as well.

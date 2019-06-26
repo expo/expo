@@ -15,10 +15,9 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class AdSettingsManager extends ExportedModule implements LifecycleEventListener, ModuleRegistryConsumer {
+public class AdSettingsManager extends ExportedModule implements LifecycleEventListener {
 
   final static private String TAG = AdSettingsManager.class.getName();
 
@@ -34,20 +33,21 @@ public class AdSettingsManager extends ExportedModule implements LifecycleEventL
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    if (mModuleRegistry != null) {
-      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
-      if (uiManager != null) {
-        uiManager.unregisterLifecycleEventListener(this);
-      }
-    }
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
-    if (mModuleRegistry != null) {
-      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
-      if (uiManager != null) {
-        uiManager.registerLifecycleEventListener(this);
-      }
+    UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+    if (uiManager != null) {
+      uiManager.registerLifecycleEventListener(this);
     }
+  }
+
+  @Override
+  public void onDestroy() {
+    UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+    if (uiManager != null) {
+      uiManager.unregisterLifecycleEventListener(this);
+    }
+    mModuleRegistry = null;
   }
 
   @Override

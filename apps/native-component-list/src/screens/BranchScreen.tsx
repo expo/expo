@@ -1,13 +1,12 @@
 import React from 'react';
 import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import { Constants, DangerZone } from 'expo';
+import Constants from 'expo-constants';
 
-let Branch: any = null;
-
+let Branch = null;
 try {
-  Branch = DangerZone.Branch;
+  Branch = require('react-native-branch').default;
 } catch (e) {
-  // do nothing
+  console.log('Branch is not supported on this platform.', e);
 }
 
 export default class BranchScreen extends React.Component {

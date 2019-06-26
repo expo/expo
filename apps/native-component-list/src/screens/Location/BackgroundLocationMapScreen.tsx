@@ -1,9 +1,13 @@
 import React from 'react';
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import { NavigationEvents } from 'react-navigation';
+import { NavigationEvents, NavigationScreenProp } from 'react-navigation';
 import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
-import { Location, MapView, Permissions, TaskManager } from 'expo';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+
+import MapView from 'react-native-maps';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+import * as TaskManager from 'expo-task-manager';
 
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
@@ -22,8 +26,21 @@ const locationAccuracyStates: { [key in Location.Accuracy]: Location.Accuracy } 
   [Location.Accuracy.BestForNavigation]: Location.Accuracy.Lowest,
 };
 
+const locationActivityTypes: { [key in Location.ActivityType]: Location.ActivityType | undefined } = {
+  [Location.ActivityType.Other]: Location.ActivityType.AutomotiveNavigation,
+  [Location.ActivityType.AutomotiveNavigation]: Location.ActivityType.Fitness,
+  [Location.ActivityType.Fitness]: Location.ActivityType.OtherNavigation,
+  [Location.ActivityType.OtherNavigation]: Location.ActivityType.Airborne,
+  [Location.ActivityType.Airborne]: undefined,
+};
+
+interface Props {
+  navigation: NavigationScreenProp<{}, any>;
+}
+
 interface State {
   accuracy: Location.Accuracy;
+  activityType?: Location.ActivityType;
   isTracking: boolean;
   savedLocations: [];
   geofencingRegions: [];
@@ -32,7 +49,7 @@ interface State {
   error?: string;
 }
 
-export default class BackgroundLocationMapScreen extends React.Component<{}, State> {
+export default class BackgroundLocationMapScreen extends React.Component<Props, State> {
   static navigationOptions = {
     title: 'Background location',
   };
@@ -50,6 +67,12 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
   eventSubscription?: EventSubscription;
 
   didFocus = async () => {
+    if (!await Location.isBackgroundLocationAvailableAsync()) {
+      alert('Background location is not available in this application.');
+      this.props.navigation.goBack();
+      return;
+    }
+
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (status !== 'granted') {
@@ -81,6 +104,7 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
 
     this.setState({
       accuracy,
+      activityType: task && task.options.activityType,
       isTracking,
       showsBackgroundLocationIndicator: task && task.options.showsBackgroundLocationIndicator,
       savedLocations,
@@ -116,6 +140,8 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
   async startLocationUpdates(accuracy = this.state.accuracy) {
     await Location.startLocationUpdatesAsync(LOCATION_UPDATES_TASK, {
       accuracy,
+      activityType: this.state.activityType,
+      pausesUpdatesAutomatically: this.state.activityType != null,
       showsBackgroundLocationIndicator: this.state.showsBackgroundLocationIndicator,
       deferredUpdatesInterval: 60 * 1000, // 1 minute
       deferredUpdatesDistance: 100, // 100 meters
@@ -177,6 +203,20 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
     });
   }
 
+  toggleActivityType = () => {
+    if (this.state.activityType) {
+      const nextActivityType = locationActivityTypes[this.state.activityType];
+      this.setState({ activityType: nextActivityType });
+    } else {
+      this.setState({ activityType: Location.ActivityType.Other });
+    }
+
+    if (this.state.isTracking) {
+      // Restart background task with the new activity type
+      this.startLocationUpdates();
+    }
+  }
+
   onCenterMap = async () => {
     const { coords } = await Location.getCurrentPositionAsync();
     const mapView = this.mapViewRef.current;
@@ -231,11 +271,19 @@ export default class BackgroundLocationMapScreen extends React.Component<{}, Sta
             <View style={styles.buttonsColumn}>
               {Platform.OS === 'android' ? null : (
                 <Button style={styles.button} onPress={this.toggleLocationIndicator}>
-                  <Text>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
-                  <Text> background </Text>
-                  <FontAwesome name="location-arrow" size={20} color="white" />
-                  <Text> indicator</Text>
+                  <View style={styles.buttonContentWrapper}>
+                    <Text style={styles.text}>{this.state.showsBackgroundLocationIndicator ? 'Hide' : 'Show'}</Text>
+                    <Text style={styles.text}> background </Text>
+                    <FontAwesome name="location-arrow" size={20} color="white" />
+                    <Text style={styles.text}> indicator</Text>
+                  </View>
                 </Button>
+              )}
+              {Platform.OS === 'android' ? null : (
+                <Button style={styles.button}
+                  onPress={this.toggleActivityType}
+                  title={this.state.activityType ? `Activity type: ${Location.ActivityType[this.state.activityType]}` : 'No activity type'}
+                />
               )}
               <Button
                 title={`Accuracy: ${Location.Accuracy[this.state.accuracy]}`}
@@ -325,6 +373,13 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     marginVertical: 5,
+  },
+  buttonContentWrapper: {
+    flexDirection: 'row',
+  },
+  text: {
+    color: 'white',
+    fontWeight: '700',
   },
   errorText: {
     fontSize: 15,

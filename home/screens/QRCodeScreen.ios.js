@@ -1,12 +1,12 @@
 /* @flow */
 
+import { Camera } from 'expo-camera';
+import { throttle } from 'lodash';
 import React from 'react';
 import { Linking, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Camera } from 'expo';
-import { throttle } from 'lodash';
-import isIPhoneX from '../utils/isIPhoneX';
 
 import Layout from '../constants/Layout';
+import isIPhoneX from '../utils/isIPhoneX';
 
 export default class BarCodeScreen extends React.Component {
   static navigationOptions = {

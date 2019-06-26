@@ -8,7 +8,7 @@ import { NativeAdIconView } from './AdIconView';
 import { NativeAdMediaView } from './AdMediaView';
 import AdsManager from './NativeAdsManager';
 
-let NativeAdLayout: React.ComponentType = requireNativeViewManager('NativeAdLayout');
+let NativeAdLayout: React.ComponentType | null = Platform.OS === 'android' ? requireNativeViewManager('NativeAdLayout') : null;
 
 type AdContainerProps<P> = {
   adsManager: AdsManager;
@@ -102,7 +102,7 @@ export default function withNativeAd<P>(
           </NativeAdView>
       );
 
-      if (Platform.OS === 'android') {
+      if (NativeAdLayout) {
         return (
           <NativeAdLayout>
             {viewHierarchy}

@@ -41,7 +41,7 @@ do
 done < $TOOLS_DIR/android-packages-to-rename.txt
 
 # Rename packages in jars
-java -jar $TOOLS_DIR/jarjar-1.4.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
+java -jar $TOOLS_DIR/jarjar-1.4.1.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
 
 # fix annotations
 unzip expoview/libs/ReactAndroid-temp/annotations.zip -d expoview/libs/ReactAndroid-temp/annotations
@@ -69,16 +69,15 @@ do
   echo "rule temporarydontversion.$PACKAGE.** $PACKAGE.@1" >> jarjar-rules.txt
 done < $TOOLS_DIR/android-packages-to-keep.txt
 
-java -jar $TOOLS_DIR/jarjar-1.4.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
+java -jar $TOOLS_DIR/jarjar-1.4.1.jar process jarjar-rules.txt expoview/libs/ReactAndroid-temp/classes.jar expoview/libs/ReactAndroid-temp/classes.jar
 
 
 pushd expoview/libs/ReactAndroid-temp
 # Update the manifest. This is used for deduping in the build process
 sed -i '' "s/com\.facebook\.react/$ABI_VERSION\.com\.facebook\.react/g" AndroidManifest.xml
 
-# Can't rename libgnustl_shared so remove. We share the copy from ReactAndroid.
-rm jni/armeabi-v7a/libgnustl_shared.so
-rm jni/x86/libgnustl_shared.so
+# Can't rename libc++_shared so remove. We share the copy from ReactAndroid.
+rm -rf jni/*/libc++_shared.so
 
 # Zip into aar
 set +e
@@ -89,7 +88,9 @@ popd
 
 # Put aar into local maven repo
 mvn install:install-file -e -Dfile=expoview/libs/ReactAndroid-release-$ABI_VERSION.aar -DgroupId=host.exp -DartifactId=reactandroid-$ABI_VERSION -Dversion=1.0.0 -Dpackaging=aar
-cp -r ~/.m2/repository/host/exp/reactandroid-$ABI_VERSION/ maven/host/exp/reactandroid-$ABI_VERSION
+mkdir -p versioned-abis/expoview-$ABI_VERSION/maven/host/exp/reactandroid-$ABI_VERSION
+cp -r ~/.m2/repository/host/exp/reactandroid-$ABI_VERSION/ versioned-abis/expoview-$ABI_VERSION/maven/host/exp/reactandroid-$ABI_VERSION
+rm expoview/libs/ReactAndroid-release-$ABI_VERSION.aar
 
 # Add new aar to expoview/build.gradle
 NEWLINE='\
@@ -97,7 +98,7 @@ NEWLINE='\
 SED_APPEND_COMMAND=" a$NEWLINE"
 REPLACE_TEXT='DO NOT MODIFY'
 ADD_NEW_SDKS_HERE='ADD_NEW_SDKS_HERE'
-sed -i '' "/$ADD_NEW_SDKS_HERE/$SED_APPEND_COMMAND$ADD_NEW_SDKS_HERE$NEWLINE$NEWLINE\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ implementation(project(':expoview-$ABI_VERSION'))$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" app/build.gradle
+sed -i '' "/$ADD_NEW_SDKS_HERE/$SED_APPEND_COMMAND$NEWLINE$NEWLINE\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ implementation(project(':expoview-$ABI_VERSION'))$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" app/build.gradle
 sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ api 'host.exp:reactandroid-$ABI_VERSION:1.0.0'$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" expoview/build.gradle
 
 # Update Constants.java

@@ -60,6 +60,7 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 - (void)unbindFromView;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)handleGesture:(nonnull id)recognizer;
+- (BOOL)containsPointInView;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 

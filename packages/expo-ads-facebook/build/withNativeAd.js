@@ -3,7 +3,7 @@ import React from 'react';
 import { Platform, findNodeHandle } from 'react-native';
 import { requireNativeViewManager } from '@unimodules/core';
 import AdsManager from './NativeAdsManager';
-let NativeAdLayout = requireNativeViewManager('NativeAdLayout');
+let NativeAdLayout = Platform.OS === 'android' ? requireNativeViewManager('NativeAdLayout') : null;
 /**
  * A higher-order function that wraps the given `Component` type and returns a new container
  * component type that passes in an extra `nativeAd` prop to the wrapped component.
@@ -106,7 +106,7 @@ export default function withNativeAd(Component) {
               </AdIconViewContext.Provider>
             </AdMediaViewContext.Provider>
           </NativeAdView>);
-            if (Platform.OS === 'android') {
+            if (NativeAdLayout) {
                 return (<NativeAdLayout>
             {viewHierarchy}
           </NativeAdLayout>);

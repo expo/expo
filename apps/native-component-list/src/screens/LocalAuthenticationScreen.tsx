@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { LocalAuthentication } from 'expo';
+import * as LocalAuthentication from 'expo-local-authentication';
 import Button from '../components/Button';
 
 interface State {
@@ -32,13 +32,14 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
   authenticate = async () => {
     this.setState({ waiting: true });
     try {
-      const result = await LocalAuthentication.authenticateAsync(
-        'This message only shows up on iOS'
-      );
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: 'This message only shows up on iOS',
+        fallbackLabel: '',
+      });
       if (result.success) {
         alert('Authenticated!');
       } else {
-        alert('Failed to authenticate');
+        alert('Failed to authenticate, reason: ' + result.error);
       }
     } finally {
       this.setState({ waiting: false });
@@ -93,7 +94,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
         />
         <Button
           onPress={this.checkAuthenticationsTypes}
-          title="Check aunthentications types available on the device"
+          title="Check authentications types available on the device"
         />
       </View>
     );

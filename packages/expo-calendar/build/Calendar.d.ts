@@ -1,6 +1,6 @@
 declare type RecurringEventOptions = {
     futureEvents?: boolean;
-    instanceStartDate?: string;
+    instanceStartDate?: string | Date;
 };
 export interface Calendar {
     id?: string;
@@ -33,17 +33,17 @@ export declare type Event = {
     calendarId?: string;
     title?: string;
     location?: string;
-    creationDate?: string;
-    lastModifiedDate?: string;
+    creationDate?: string | Date;
+    lastModifiedDate?: string | Date;
     timeZone?: string;
     endTimeZone?: string;
     url?: string;
     notes?: string;
     alarms?: Alarm[];
     recurrenceRule?: RecurrenceRule;
-    startDate?: string;
-    endDate?: string;
-    originalStartDate?: string;
+    startDate?: string | Date;
+    endDate?: string | Date;
+    originalStartDate?: string | Date;
     isDetached?: boolean;
     allDay?: boolean;
     availability?: string;
@@ -62,8 +62,8 @@ export interface Reminder {
     calendarId?: string;
     title?: string;
     location?: string;
-    creationDate?: string;
-    lastModifiedDate?: string;
+    creationDate?: string | Date;
+    lastModifiedDate?: string | Date;
     timeZone?: string;
     url?: string;
     notes?: string;
@@ -72,7 +72,7 @@ export interface Reminder {
     startDate?: string | Date;
     dueDate?: string | Date;
     completed?: boolean;
-    completionDate?: string;
+    completionDate?: string | Date;
 }
 declare type Attendee = {
     id?: string;

@@ -1,5 +1,4 @@
-// tslint:disable max-classes-per-file
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import React from 'react';
 import Example from './Example';
 
@@ -8,9 +7,9 @@ class LineExample extends React.Component {
 
   render() {
     return (
-      <Svg height="100" width="100">
+      <Svg.Svg height="100" width="100">
         <Svg.Line x1="10%" y1="10%" x2="90%" y2="90%" stroke="red" strokeWidth="2" />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -20,7 +19,7 @@ class LineWithStrokeLinecap extends React.Component {
 
   render() {
     return (
-      <Svg height="100" width="200">
+      <Svg.Svg height="100" width="200">
         <Svg.Line
           x1="40"
           y1="10"
@@ -40,15 +39,15 @@ class LineWithStrokeLinecap extends React.Component {
           strokeWidth="10"
           strokeLinecap="square"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg height="20" width="20">
+  <Svg.Svg height="20" width="20">
     <Svg.Line x1="0" y1="0" x2="20" y2="20" stroke="red" strokeWidth="1" />
-  </Svg>
+  </Svg.Svg>
 );
 
 const Line: Example = {

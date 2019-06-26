@@ -2,20 +2,22 @@
 
 #import "EXConstantsBinding.h"
 #import "EXUnversioned.h"
+#import "EXVersions.h"
 
 @interface EXConstantsBinding ()
 
+@property (nonatomic, strong) NSString *appOwnership;
+@property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, strong) NSDictionary *unversionedConstants;
 
 @end
 
 @implementation EXConstantsBinding : EXConstantsService
 
-@synthesize appOwnership = _appOwnership;
-
 - (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId]) {
+  if (self = [super init]) {
+    _experienceId = experienceId;
     _unversionedConstants = params[@"constants"];
     if (_unversionedConstants && _unversionedConstants[@"appOwnership"]) {
       _appOwnership = _unversionedConstants[@"appOwnership"];
@@ -27,8 +29,9 @@
 - (NSDictionary *)constants
 {
   NSMutableDictionary *constants = [[super constants] mutableCopy];
-  
+
   [constants setValue:[self expoClientVersion] forKey:@"expoVersion"];
+  [constants setValue:[self supportedExpoSdks] forKey:@"supportedExpoSdks"];
 
   BOOL isDetached = NO;
 #ifdef EX_DETACHED
@@ -40,6 +43,15 @@
   if (_unversionedConstants) {
     [constants addEntriesFromDictionary:_unversionedConstants];
   }
+
+  if ([constants[@"appOwnership"] isEqualToString:@"expo"]) {
+    NSMutableDictionary *platform = [constants[@"platform"] mutableCopy];
+    NSMutableDictionary *ios = [platform[@"ios"] mutableCopy];
+    [ios setValue:[NSNull null] forKey:@"buildNumber"];
+    [platform setValue:ios forKey:@"ios"];
+    [constants setValue:platform forKey:@"platform"];
+  }
+
   return constants;
 }
 
@@ -52,6 +64,11 @@
     // not correct in standalone apps
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
   }
+}
+
+- (NSArray *)supportedExpoSdks
+{
+  return [EXVersions sharedInstance].versions[@"sdkVersions"];
 }
 
 @end

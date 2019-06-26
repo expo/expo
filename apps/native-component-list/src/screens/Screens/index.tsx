@@ -1,12 +1,6 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import {
-  Text,
-  View,
-  FlatList,
-  StyleSheet,
-  TouchableHighlight,
-} from 'react-native';
+import { Text, View, FlatList, StyleSheet, TouchableHighlight } from 'react-native';
 import { createStackNavigator, createSwitchNavigator, NavigationScreenProps } from 'react-navigation';
 
 import Container from './container';
@@ -28,6 +22,7 @@ class MainScreen extends React.Component<NavigationScreenProps> {
         style={styles.list}
         data={data}
         ItemSeparatorComponent={ItemSeparator}
+        keyExtractor={item => item}
         renderItem={props => (
           <MainScreenItem
             item={props.item}

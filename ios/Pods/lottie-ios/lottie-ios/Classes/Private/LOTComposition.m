@@ -21,6 +21,9 @@
 }
 
 + (nullable instancetype)animationNamed:(nonnull NSString *)animationName inBundle:(nonnull NSBundle *)bundle {
+  if (!animationName) {
+    return nil;
+  }
   NSArray *components = [animationName componentsSeparatedByString:@"."];
   animationName = components.firstObject;
   
@@ -35,7 +38,7 @@
   
   if (@available(iOS 9.0, *)) {
     if (!jsonData) {
-      jsonData = [[NSDataAsset alloc] initWithName:animationName].data;
+      jsonData = [[NSDataAsset alloc] initWithName:animationName bundle:bundle].data;
     }
   }
   

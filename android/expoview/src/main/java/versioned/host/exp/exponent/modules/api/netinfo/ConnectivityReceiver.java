@@ -92,6 +92,10 @@ abstract class ConnectivityReceiver {
   }
 
   String getEffectiveConnectionType(NetworkInfo networkInfo) {
+    if (networkInfo == null) {
+      return EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+    }
+
     switch (networkInfo.getSubtype()) {
       case TelephonyManager.NETWORK_TYPE_1xRTT:
       case TelephonyManager.NETWORK_TYPE_CDMA:
@@ -130,13 +134,13 @@ abstract class ConnectivityReceiver {
 
   private void sendConnectivityChangedEvent() {
     getReactContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit("networkStatusDidChange", createConnectivityEventMap());
+        .emit("netInfo.networkStatusDidChange", createConnectivityEventMap());
   }
 
   private WritableMap createConnectivityEventMap() {
     WritableMap event = new WritableNativeMap();
-    event.putString("connectionType", mConnectionType);
-    event.putString("effectiveConnectionType", mEffectiveConnectionType);
+    event.putString("type", mConnectionType);
+    event.putString("effectiveType", mEffectiveConnectionType);
     return event;
   }
 }

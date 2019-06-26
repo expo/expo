@@ -1,23 +1,23 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import {
   createAppContainer,
   createStackNavigator,
-  createSwitchNavigator,
   createBottomTabNavigator,
 } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
-import BackgroundLocationScreen from '../screens/BackgroundLocationScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
+import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import CameraScreen from '../screens/CameraScreen';
+import MediaLibraryScreen from '../screens/MediaLibrary/MediaLibraryScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
@@ -106,13 +106,16 @@ const ExploreStack = createStackNavigator(
 const ProfileStack = createStackNavigator(
   {
     Profile: ProfileScreen,
+    Camera: CameraScreen,
     UserSettings: UserSettingsScreen,
     ProjectsForUser: ProjectsForUserScreen,
     SnacksForUser: SnacksForUserScreen,
+    MediaLibrary: MediaLibraryScreen,
   },
   {
     initialRouteName: 'Profile',
     defaultNavigationOptions,
+    headerMode: 'screen',
     navigationOptions: {
       tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, focused),
       tabBarLabel: 'Profile',
@@ -126,7 +129,7 @@ const ProfileStack = createStackNavigator(
 const DiagnosticsStack = createStackNavigator(
   {
     Diagnostics: DiagnosticsScreen,
-    BackgroundLocation: BackgroundLocationScreen,
+    Location: LocationDiagnosticsScreen,
     Geofencing: GeofencingScreen,
   },
   {

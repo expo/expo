@@ -1,6 +1,6 @@
 'use strict';
 
-import { SecureStore } from 'expo';
+import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
 export const name = 'SecureStore';

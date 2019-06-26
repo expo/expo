@@ -12,43 +12,40 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-
 import android.text.format.DateUtils;
-
-import de.greenrobot.event.EventBus;
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import host.exp.exponent.Constants;
-import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.fcm.FcmRegistrationIntentService;
-import host.exp.exponent.kernel.ExponentUrls;
-import host.exp.exponent.network.ExpoHttpCallback;
-import host.exp.exponent.network.ExpoResponse;
-import host.exp.exponent.network.ExponentNetwork;
-import host.exp.exponent.storage.ExperienceDBObject$Adapter;
-import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.AsyncCondition;
-import host.exp.exponent.utils.JSONUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.errors.InvalidArgumentException;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TimeZone;
 
+import de.greenrobot.event.EventBus;
+import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.fcm.FcmRegistrationIntentService;
+import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.network.ExpoHttpCallback;
+import host.exp.exponent.network.ExpoResponse;
+import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
+import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ColorParser;
+import host.exp.exponent.utils.JSONUtils;
 import host.exp.expoview.R;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class NotificationHelper {
 
@@ -280,7 +277,7 @@ public class NotificationHelper {
           badge
       );
     } catch (Exception e) {
-      EXL.e(TAG,"Could not create channel from stored JSON Object: " + e.getMessage());
+      EXL.e(TAG, "Could not create channel from stored JSON Object: " + e.getMessage());
     }
   }
 
@@ -332,7 +329,7 @@ public class NotificationHelper {
           }
           channel.setVibrationPattern(pattern);
         } else if (vibrate instanceof Boolean && (Boolean) vibrate) {
-          channel.setVibrationPattern(new long[] { 0, 500 });
+          channel.setVibrationPattern(new long[]{0, 500});
         }
       }
 
@@ -434,7 +431,7 @@ public class NotificationHelper {
               }
               builder.setVibrate(pattern);
             } else if (storedChannelDetails.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE, false)) {
-              builder.setVibrate(new long[] { 0, 500 });
+              builder.setVibrate(new long[]{0, 500});
             }
           } catch (Exception e) {
             EXL.e(TAG, "Failed to set vibrate settings on notification from stored channel: " + e.getMessage());
@@ -462,7 +459,7 @@ public class NotificationHelper {
     if (data.containsKey("body")) {
       builder.setContentText((String) data.get("body"));
       builder.setStyle(new NotificationCompat.BigTextStyle().
-          bigText((String)data.get("body")));
+          bigText((String) data.get("body")));
     }
 
     if (data.containsKey("count")) {
@@ -504,7 +501,7 @@ public class NotificationHelper {
 
               if (data.containsKey("categoryId")) {
                 final String manifestUrl = experience.manifestUrl;
-                NotificationActionCenter.setCategory((String)data.get("categoryId"), builder, context, new IntentProvider() {
+                NotificationActionCenter.setCategory((String) data.get("categoryId"), builder, context, new IntentProvider() {
                   @Override
                   public Intent provide() {
                     Class activityClass = KernelConstants.MAIN_ACTIVITY_CLASS;
@@ -581,14 +578,16 @@ public class NotificationHelper {
     if (options.containsKey("time")) {
       try {
         Object suppliedTime = options.get("time");
-        if (suppliedTime instanceof String) {
+        if (suppliedTime instanceof Number) {
+          time = ((Number) suppliedTime).longValue() - System.currentTimeMillis();
+        } else if (suppliedTime instanceof String) { // TODO: DELETE WHEN SDK 32 IS DEPRECATED
           DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
           format.setTimeZone(TimeZone.getTimeZone("UTC"));
           time = format.parse((String) suppliedTime).getTime() - System.currentTimeMillis();
         } else {
-          time = Long.valueOf((String) suppliedTime) - System.currentTimeMillis();
+          throw new InvalidArgumentException("Invalid time provided: " + suppliedTime);
         }
-      } catch (ParseException e) {
+      } catch (Exception e) {
         listener.onFailure(e);
         return;
       }

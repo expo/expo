@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Platform, ScrollView, TextInput, View } from 'react-native';
-import { SecureStore } from 'expo';
+import * as SecureStore from 'expo-secure-store';
 import ListButton from '../components/ListButton';
 
 interface State {

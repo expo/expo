@@ -1,6 +1,7 @@
-import AppText from './AppText';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import AppText from './AppText';
+import rem from './rem';
 
 const SectionTitle = ({ children }) => (
   <AppText accessibilityRole="heading" aria-level="2" style={styles.sectionTitle}>
@@ -17,8 +18,8 @@ const Section = ({ children, title }) => (
 
 const styles = StyleSheet.create({
   sectionTitle: {
-    fontSize: '1.3125rem',
-    marginBottom: '1.3125rem',
+    fontSize: rem(1.3125),
+    marginBottom: rem(1.3125),
     fontWeight: 'bold',
   },
 });

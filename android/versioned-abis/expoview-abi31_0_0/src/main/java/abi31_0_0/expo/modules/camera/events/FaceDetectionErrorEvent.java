@@ -42,10 +42,6 @@ public class FaceDetectionErrorEvent extends EventEmitter.BaseEvent {
   }
 
   private boolean isFaceDetectorOperational() {
-    if (mFaceDetector == null) {
-      return false;
-    }
-
-    return mFaceDetector.isOperational();
+    return mFaceDetector != null;
   }
 }

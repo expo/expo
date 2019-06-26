@@ -64,178 +64,10 @@
       }
     },
     {
-      "name": "Expo",
-      "dependencies": {
-        "ReactABI32_0_0/Core": [
-
-        ],
-        "ABI32_0_0EXAdsAdMob": [
-
-        ],
-        "ABI32_0_0EXAppAuth": [
-
-        ],
-        "ABI32_0_0EXAppLoaderProvider": [
-
-        ],
-        "ABI32_0_0EXBackgroundFetch": [
-
-        ],
-        "ABI32_0_0EXBarCodeScanner": [
-
-        ],
-        "ABI32_0_0EXBarCodeScannerInterface": [
-
-        ],
-        "ABI32_0_0EXCamera": [
-
-        ],
-        "ABI32_0_0EXCameraInterface": [
-
-        ],
-        "ABI32_0_0EXConstants": [
-
-        ],
-        "ABI32_0_0EXConstantsInterface": [
-
-        ],
-        "ABI32_0_0EXContacts": [
-
-        ],
-        "ABI32_0_0EXCore": [
-
-        ],
-        "ABI32_0_0EXErrors": [
-
-        ],
-        "ABI32_0_0EXFaceDetector": [
-
-        ],
-        "ABI32_0_0EXFaceDetectorInterface": [
-
-        ],
-        "ABI32_0_0EXFileSystem": [
-
-        ],
-        "ABI32_0_0EXFileSystemInterface": [
-
-        ],
-        "ABI32_0_0EXFont": [
-
-        ],
-        "ABI32_0_0EXFontInterface": [
-
-        ],
-        "ABI32_0_0EXGoogleSignIn": [
-
-        ],
-        "ABI32_0_0EXGL": [
-
-        ],
-        "EXGL-CPP": [
-
-        ],
-        "ABI32_0_0EXImageLoaderInterface": [
-
-        ],
-        "ABI32_0_0EXLocalAuthentication": [
-
-        ],
-        "ABI32_0_0EXLocalization": [
-
-        ],
-        "ABI32_0_0EXLocation": [
-
-        ],
-        "ABI32_0_0EXMediaLibrary": [
-
-        ],
-        "ABI32_0_0EXPermissions": [
-
-        ],
-        "ABI32_0_0EXPermissionsInterface": [
-
-        ],
-        "ABI32_0_0EXPrint": [
-
-        ],
-        "ABI32_0_0EXReactNativeAdapter": [
-
-        ],
-        "ABI32_0_0EXSegment": [
-
-        ],
-        "ABI32_0_0EXSensors": [
-
-        ],
-        "ABI32_0_0EXSensorsInterface": [
-
-        ],
-        "ABI32_0_0EXSMS": [
-
-        ],
-        "ABI32_0_0EXTaskManager": [
-
-        ],
-        "ABI32_0_0EXTaskManagerInterface": [
-
-        ],
-        "Amplitude-iOS": [
-
-        ],
-        "Analytics": [
-
-        ],
-        "AppAuth": [
-
-        ],
-        "FBAudienceNetwork": [
-
-        ],
-        "FBSDKCoreKit": [
-
-        ],
-        "FBSDKLoginKit": [
-
-        ],
-        "GoogleSignIn": [
-
-        ],
-        "GoogleMaps": [
-
-        ],
-        "Google-Maps-iOS-Utils": [
-
-        ],
-        "lottie-ios": [
-
-        ],
-        "JKBigInteger2": [
-
-        ],
-        "Branch": [
-
-        ],
-        "Google-Mobile-Ads-SDK": [
-
-        ]
-      },
-      "source_files": "Expo/Core/**/*.{h,m}"
-    },
-    {
-      "name": "ExpoOptional",
-      "dependencies": {
-        "ReactABI32_0_0/Expo": [
-
-        ]
-      },
-      "source_files": "Expo/Optional/**/*.{h,m}"
-    },
-    {
       "name": "CxxBridge",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ],
         "ReactABI32_0_0/Core": [
 
@@ -267,7 +99,7 @@
       "name": "RCTFabric",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ],
         "ReactABI32_0_0/Core": [
 
@@ -298,7 +130,7 @@
       "name": "ABI32_0_0jschelpers",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ],
         "ReactABI32_0_0/PrivateDatabase": [
 
@@ -341,7 +173,7 @@
           "1.63.0"
         ],
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -359,7 +191,7 @@
           "name": "activityindicator",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -374,7 +206,7 @@
           "name": "attributedstring",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -389,7 +221,7 @@
           "name": "core",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -404,7 +236,7 @@
           "name": "debug",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -419,7 +251,7 @@
           "name": "graphics",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -434,7 +266,7 @@
           "name": "scrollview",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -449,7 +281,7 @@
           "name": "text",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -464,7 +296,7 @@
           "name": "textlayoutmanager",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -479,7 +311,7 @@
           "name": "uimanager",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -494,7 +326,7 @@
           "name": "view",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ],
             "ABI32_0_0yoga": [
 
@@ -514,7 +346,7 @@
       "name": "RCTFabricSample",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",

@@ -1,18 +1,19 @@
 import React from 'react';
+import { Audio } from 'expo-av';
 import { StyleProp, ViewStyle } from 'react-native';
-import { AV, Asset } from 'expo';
+import { Asset } from 'expo-asset';
 
 import Player from './Player';
 
 type PlaybackSource =
   | number
   | {
-    uri: string;
-    overrideFileExtensionAndroid?: string;
-    headers?: {
-      [fieldName: string]: string;
-    };
-  }
+      uri: string;
+      overrideFileExtensionAndroid?: string;
+      headers?: {
+        [fieldName: string]: string;
+      };
+    }
   | Asset;
 
 interface Props {
@@ -42,7 +43,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     shouldCorrectPitch: false,
   };
 
-  _sound?: AV.Audio.Sound;
+  _sound?: Audio.Sound;
 
   componentDidMount() {
     this._loadSoundAsync(this.props.source);
@@ -54,10 +55,16 @@ export default class AudioPlayer extends React.Component<Props, State> {
     }
   }
 
+  componentWillUnmount() {
+    if (this._sound) {
+      this._sound.unloadAsync();
+    }
+  }
+
   _loadSoundAsync = async (source: PlaybackSource) => {
-    const soundObject = new AV.Audio.Sound();
+    const soundObject = new Audio.Sound();
     try {
-      await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 100 });
+      await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 150 });
       soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
       const status = await soundObject.getStatusAsync();
       this._updateStateToStatus(status);
@@ -65,7 +72,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     } catch (error) {
       this.setState({ errorMessage: error.message });
     }
-  }
+  };
 
   _updateStateToStatus = (status: any) => this.setState(status);
 
@@ -82,10 +89,10 @@ export default class AudioPlayer extends React.Component<Props, State> {
   _setRateAsync = async (
     rate: number,
     shouldCorrectPitch: boolean,
-    pitchCorrectionQuality = AV.Audio.PitchCorrectionQuality.Low
+    pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low
   ) => {
     await this._sound!.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
-  }
+  };
 
   render() {
     return (

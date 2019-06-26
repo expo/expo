@@ -1,13 +1,13 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
-import { Svg } from 'expo';
+import * as Svg from 'react-native-svg';
 import Example from './Example';
 
 class RectExample extends React.Component {
   static title = 'Rect';
   render() {
     return (
-      <Svg width="200" height="60">
+      <Svg.Svg width="200" height="60">
         <Svg.Rect
           x="5%"
           y="5%"
@@ -18,7 +18,7 @@ class RectExample extends React.Component {
           stroke="rgb(0,0,0)"
           strokeDasharray="5,10"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -27,7 +27,7 @@ class RectStrokeFill extends React.Component {
   static title = '`stroke` and `fill` Rect';
   render() {
     return (
-      <Svg width="100" height="100">
+      <Svg.Svg width="100" height="100">
         <Svg.Rect
           x="20"
           y="20"
@@ -39,7 +39,7 @@ class RectStrokeFill extends React.Component {
           strokeWidth="5"
           strokeOpacity="0.5"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -48,7 +48,7 @@ class RoundedRect extends React.Component {
   static title = 'A rectangle with rounded corners';
   render() {
     return (
-      <Svg width="100" height="100">
+      <Svg.Svg width="100" height="100">
         <Svg.Rect
           x="20"
           y="20"
@@ -60,7 +60,7 @@ class RoundedRect extends React.Component {
           stroke="pink"
           strokeWidth="5"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -69,7 +69,7 @@ class EllipseRect extends React.Component {
   static title = 'Rect with different `rx` and `ry`';
   render() {
     return (
-      <Svg width="100" height="100">
+      <Svg.Svg width="100" height="100">
         <Svg.Rect
           x="20"
           y="20"
@@ -81,7 +81,7 @@ class EllipseRect extends React.Component {
           stroke="pink"
           strokeWidth="5"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
@@ -90,7 +90,7 @@ class RoundOverflowRect extends React.Component {
   static title = 'Rect with `rx` or `ry` overflowed';
   render() {
     return (
-      <Svg width="100" height="100">
+      <Svg.Svg width="100" height="100">
         <Svg.Rect
           x="20"
           y="20"
@@ -101,13 +101,13 @@ class RoundOverflowRect extends React.Component {
           stroke="pink"
           strokeWidth="5"
         />
-      </Svg>
+      </Svg.Svg>
     );
   }
 }
 
 const icon = (
-  <Svg width="20" height="20">
+  <Svg.Svg width="20" height="20">
     <Svg.Rect
       x="3"
       y="5"
@@ -117,7 +117,7 @@ const icon = (
       strokeWidth="2"
       stroke="rgb(255,0,0)"
     />
-  </Svg>
+  </Svg.Svg>
 );
 
 const Rect: Example = {

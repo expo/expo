@@ -4,25 +4,18 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { echo, exec, cp, find, rm, mkdir } = require('shelljs');
-const escapeRegExp = require('lodash.escaperegexp');
+const escapeRegExp = require('lodash/escapeRegExp');
 
 module.exports = function updateVendoredNativeModule(options) {
   options.recursive = options.recursive === undefined
     ? true
     : options.recursive;
+  options.installableInManagedApps = options.installableInManagedApps === undefined
+    ? true
+    : options.installableInManagedApps;
 
   const TMP_DIR = path.join(os.tmpdir(), options.name);
-  const TMP_IOS_DIR = path.join(TMP_DIR, options.sourceIosPath);
-  const TMP_ANDROID_DIR = path.join(TMP_DIR, options.sourceAndroidPath);
   const REPO_URL = options.repoUrl;
-  const TARGET_IOS_DIR = path.resolve(
-    __filename,
-    `../../ios/Exponent/Versioned/Core/${options.targetIosPath}`
-  );
-  const TARGET_ANDROID_DIR = path.resolve(
-    __filename,
-    `../../android/expoview/src/main/java/versioned/host/exp/exponent/${options.targetAndroidPath}`
-  );
 
   function findObjcFiles(dir, recursive) {
     const regex = recursive
@@ -63,7 +56,18 @@ module.exports = function updateVendoredNativeModule(options) {
     rm(file);
   }
 
+  function updateBundledNativeModules(updater) {
+    echo('Updating bundledNativeModules.json...');
+    let filename = path.join(__dirname, '../packages/expo/bundledNativeModules.json');
+    let data = JSON.parse(fs.readFileSync(filename, 'utf8'));
+    let json = JSON.stringify(updater(data), null, 2);
+    fs.writeFileSync(filename, json + '\n');
+  }
+
   let { argv } = options;
+
+  const executeAndroid = (argv.android || argv.allPlatforms) && options.sourceAndroidPath && options.targetAndroidPath;
+  const executeIOS = (argv.ios || argv.allPlatforms) && options.sourceIosPath && options.sourceIosPath;
 
   if (!(argv.ios || argv.android || argv.allPlatforms)) {
     echo(`Must specify --ios, --android, or --allPlatforms`);
@@ -75,14 +79,6 @@ module.exports = function updateVendoredNativeModule(options) {
   // Cleanup
   if (!options.skipCleanup) {
     rm('-rf', TMP_DIR);
-    if (argv.ios || argv.allPlatforms) {
-      rm('-rf', TARGET_IOS_DIR);
-      mkdir('-p', TARGET_IOS_DIR);
-    }
-    if (argv.android || argv.allPlatforms) {
-      rm('-rf', TARGET_ANDROID_DIR);
-      mkdir('-p', TARGET_ANDROID_DIR);
-    }
   }
 
   exec(`git clone ${REPO_URL} ${TMP_DIR}`);
@@ -92,7 +88,19 @@ module.exports = function updateVendoredNativeModule(options) {
   echo(`Using version at ${argv.commit || 'master'}`);
 
   // iOS
-  if (argv.ios || argv.allPlatforms) {
+  if (executeIOS) {
+
+    const TMP_IOS_DIR = path.join(TMP_DIR, options.sourceIosPath);
+    const TARGET_IOS_DIR = path.resolve(
+      __filename,
+      `../../ios/Exponent/Versioned/Core/${options.targetIosPath}`
+    );
+
+    if(!options.skipCleanup) {
+      echo(`Removing iOS files...`);
+      rm('-rf', TARGET_IOS_DIR);
+      mkdir('-p', TARGET_IOS_DIR);
+    }
     echo(`Copying iOS files...`);
     let objcFiles = findObjcFiles(TMP_IOS_DIR, options.recursive);
     for (let objcFile of objcFiles) {
@@ -111,7 +119,19 @@ module.exports = function updateVendoredNativeModule(options) {
   }
 
   // Android
-  if (argv.android || argv.allPlatforms) {
+  if (executeAndroid) {
+    
+    const TMP_ANDROID_DIR = path.join(TMP_DIR, options.sourceAndroidPath);
+    const TARGET_ANDROID_DIR = path.resolve(
+      __filename,
+      `../../android/expoview/src/main/java/versioned/host/exp/exponent/${options.targetAndroidPath}`
+    );
+
+    if(!options.skipCleanup) {
+      echo(`Removing Android files...`);
+      rm('-rf', TARGET_ANDROID_DIR);
+      mkdir('-p', TARGET_ANDROID_DIR);
+    }
     echo(`Copying Android files...`);
     let javaFiles = findAndroidFiles(TMP_ANDROID_DIR);
     for (let javaFile of javaFiles) {
@@ -125,6 +145,18 @@ module.exports = function updateVendoredNativeModule(options) {
       renamePackageAndroid(file);
     });
   }
+
+  updateBundledNativeModules(bundledNativeModules => {
+    let { name, version } = JSON.parse(fs.readFileSync(path.join(TMP_DIR, 'package.json'), 'utf8'));
+    if (options.installableInManagedApps) {
+      bundledNativeModules[name] = `~${version}`;
+      echo(`Updated ${name} version number in bundledNativeModules.json`);
+    } else if (bundledNativeModules[name]) {
+      delete bundledNativeModules[name];
+      echo(`Removed non-installable package ${name} from bundledNativeModules.json`);
+    }
+    return bundledNativeModules;
+  });
 
   echo(
     `Finished updating ${options.name}, make sure to update files in the Xcode project (if you updated iOS) ` +

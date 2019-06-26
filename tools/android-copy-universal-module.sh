@@ -15,18 +15,18 @@ find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname 'flutter' -type d -pr
 
 while read PACKAGE
 do
-  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g"
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g"
 done < ../tools/android-packages-to-keep.txt
 
 # Rename references to react native
 while read PACKAGE
 do
-  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(]\)$PACKAGE/\1$ABI_VERSION.$PACKAGE/g"
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(]\)$PACKAGE/\1$ABI_VERSION.$PACKAGE/g"
 done < ../tools/android-packages-to-rename.txt
 
 while read PACKAGE
 do
-  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(]\)temporarydonotversion.$PACKAGE/\1$PACKAGE/g"
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(]\)temporarydonotversion.$PACKAGE/\1$PACKAGE/g"
 done < ../tools/android-packages-to-keep.txt
 
 popd

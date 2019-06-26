@@ -5,6 +5,10 @@
 
 #import <UMCore/UMUtilities.h>
 
+static NSString* const WebBrowserErrorCode = @"WebBrowser";
+static NSString* const WebBrowserControlsColorKey = @"controlsColor";
+static NSString* const WebBrowserToolbarColorKey = @"toolbarColor";
+
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
 
 @property (nonatomic, copy) UMPromiseResolveBlock redirectResolve;
@@ -17,9 +21,6 @@
 #pragma clang diagnostic pop
 
 @end
-
-NSString *EXWebBrowserErrorCode = @"EXWebBrowser";
-
 
 @implementation EXWebBrowser
 {
@@ -96,14 +97,12 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
   } else {
     safariVC = [[SFSafariViewController alloc] initWithURL:url];
   }
-  
-  NSString *toolbarColorKey = @"toolbarColor";
-  if([[arguments allKeys] containsObject:toolbarColorKey]) {
-    safariVC.preferredBarTintColor = [EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
+
+  if([[arguments allKeys] containsObject:WebBrowserToolbarColorKey]) {
+    safariVC.preferredBarTintColor = [EXWebBrowser convertHexColorString:arguments[WebBrowserToolbarColorKey]];
   }
-  NSString *controlsColorKey = @"controlsColor";
-  if([[arguments allKeys] containsObject:controlsColorKey]) {
-    safariVC.preferredControlTintColor = [EXWebBrowser convertHexColorString:arguments[toolbarColorKey]];
+  if([[arguments allKeys] containsObject:WebBrowserControlsColorKey]) {
+    safariVC.preferredControlTintColor = [EXWebBrowser convertHexColorString:arguments[WebBrowserControlsColorKey]];
   }
   safariVC.delegate = self;
 
@@ -200,7 +199,7 @@ UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
  */
 - (BOOL)initializeWebBrowserWithResolver:(UMPromiseResolveBlock)resolve andRejecter:(UMPromiseRejectBlock)reject {
   if (_redirectResolve) {
-    reject(EXWebBrowserErrorCode, @"Another WebBrowser is already being presented.", nil);
+    reject(WebBrowserErrorCode, @"Another WebBrowser is already being presented.", nil);
     return NO;
   }
   _redirectReject = reject;

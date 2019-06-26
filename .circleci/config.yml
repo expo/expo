@@ -108,6 +108,13 @@ executors:
     # Symlink to the readline-enabled bash which is the default command of the container
     shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
+    environment:
+      # fastlane complains if these are not set
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+      FASTLANE_SKIP_UPDATE_CHECK: 1
+      FASTLANE_DISABLE_COLORS: 1
+      CI: 1
   android:
     <<: *nix
     resource_class: xlarge
@@ -131,6 +138,9 @@ executors:
       # fastlane complains if these are not set
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
+      FASTLANE_SKIP_UPDATE_CHECK: 1
+      FASTLANE_DISABLE_COLORS: 1
+      CI: 1
 
 workflows:
   docs:
@@ -144,6 +154,7 @@ workflows:
             branches:
               only:
                 - master
+                - /.*all-ci.*/
       - docs_deploy:
           requires:
             - docs_approve_deploy
@@ -153,7 +164,7 @@ workflows:
     jobs:
       - expo_sdk
       - web_test_suite
-      - web_storybook_ui
+      - web_storybook
       - babel_preset
 
   # Android and iOS clients
@@ -167,8 +178,6 @@ workflows:
       - android_test_suite:
           requires:
             - test_suite_publish
-      - shell_app_sim_base_ios
-      - shell_app_base_android
       - client_android_approve_google_play:
           type: approval
           requires:
@@ -176,7 +185,8 @@ workflows:
           filters:
             branches:
               only:
-                - /^sdk-\d+$/
+                - /sdk-\d+/
+                - /.*all-ci.*/
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
@@ -185,13 +195,38 @@ workflows:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
 
+  shell_app:
+    jobs:
+      - shell_app_ios_approve_build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - shell_app_ios_build:
+          requires:
+            - shell_app_ios_approve_build
+      - shell_app_android_approve_build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - shell_app_android_build:
+          requires:
+            - shell_app_android_approve_build
+
   client_shell_app:
     jobs:
-      - expo_client_before_approval
       - expo_client_approve_build:
           type: approval
-          requires:
-            - expo_client_before_approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
       - expo_client_build:
           requires:
             - expo_client_approve_build
@@ -207,84 +242,7 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/@unimodules/core
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/@unimodules/react-native-adapter
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-barcode-scanner
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-ads-admob
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-analytics-segment
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-app-auth
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-asset
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-camera
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-constants
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-contacts
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-crypto
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-analytics-amplitude
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-face-detector
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-facebook
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-font
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-file-system
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-gl
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-google-sign-in
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-local-authentication
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-localization
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-permissions
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-random
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-secure-store
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-sensors
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-sms
+      - run: expotools check-packages
 
   web_test_suite:
     executor: web
@@ -300,7 +258,7 @@ jobs:
           command: test:web:ci
           working_directory: ~/expo/apps/test-suite
 
-  web_storybook_ui:
+  web_storybook:
     executor: web
     steps:
       - install_nix
@@ -311,7 +269,7 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       - yarn:
-          command: build-storybook
+          command: test:web:ci
           working_directory: ~/expo/apps/storybook
 
   babel_preset:
@@ -367,17 +325,10 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
+      - run: ~/project/tools-public/generate-files-ios.js
       - run: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
-
-  expo_client_before_approval:
-    executor: js
-    steps:
-      - run:
-          name: Approve expo_client_approve_build if you wish to build Expo Client shell app
-          command: |
-            echo "Go, find and approve expo_client_approve_build job to trigger building an Expo Client shell app"
 
   expo_client_build:
     executor: mac
@@ -389,6 +340,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
+      - run: ~/project/tools-public/generate-files-ios.js
       - run:
           name: Build Expo Client and upload tarball
           command: |
@@ -399,12 +351,12 @@ jobs:
               -zcf "/tmp/$TARBALL" \
               expo-client-build/Exponent.xcarchive \
               ios
-            ~/project/bin/aws --version s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
       - run:
           name: Expo Client shell app url
           command: echo "Expo Client shell app tarball uploaded to s3://exp-artifacts/ios-expo-client-$CIRCLE_SHA1.tar.gz"
 
-  shell_app_sim_base_ios:
+  shell_app_ios_build:
     executor: mac
     steps:
       - install_nix
@@ -417,26 +369,47 @@ jobs:
       - run: ~/project/tools-public/generate-files-ios.js
       - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
-          name: Build ios shell app simulator
+          name: Build iOS shell app for real devices
+          working_directory: ~/project/tools-public
+          no_output_timeout: 30m
+          command: nix run expo.procps --command gulp ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+      - run:
+          name: Build iOS shell app for simulators
           working_directory: ~/project/tools-public
           no_output_timeout: 30m
           command: nix run expo.procps --command gulp ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
+      - run:
+          name: Package and upload release tarball
+          working_directory: ~/project
+          no_output_timeout: 40m
+          command: |
+              export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+              tar \
+                -zcf "/tmp/$TARBALL" \
+                package.json \
+                exponent-view-template \
+                shellAppBase-builds \
+                shellAppWorkspaces \
+                ios
+              ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+              echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+              echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
 
-  shell_app_base_android:
+  shell_app_android_build:
     executor: android
     steps:
       - setup
       - run: echo 'export S3_URI=s3://exp-artifacts/android-shell-builder-$CIRCLE_SHA1.tar.gz' >> $BASH_ENV
-      - run:
-          name: "Skip job if tarball has already been uploaded"
-          command: bin/aws s3 ls $S3_URI && circleci step halt
       - decrypt_secrets_if_possible
       - yarn_install:
           working_directory: ~/expo/tools-public
       - yarn_install:
           working_directory: ~/expo/tools
-      - run: ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
-      - run: bin/aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+      - run: |
+          aws s3 ls $S3_URI || {
+            ./buildAndroidTarballLocally.sh # TODO: put in fastlane?
+            aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
+          }
 
   android_test_suite:
     executor: android
@@ -453,6 +426,9 @@ jobs:
             --keep AWS_ACCESS_KEY_ID \
             --keep AWS_SECRET_ACCESS_KEY \
             --keep SSL_CERT_FILE \
+            --keep FASTLANE_SKIP_UPDATE_CHECK \
+            --keep FASTLANE_DISABLE_COLORS \
+            --keep CI \
             --run "fastlane android devicefarm"
       - save_gradle_cache
 
@@ -473,6 +449,9 @@ jobs:
             --keep ANDROID_KEYSTORE_PASSWORD \
             --keep ANDROID_KEY_ALIAS \
             --keep ANDROID_KEY_PASSWORD \
+            --keep FASTLANE_SKIP_UPDATE_CHECK \
+            --keep FASTLANE_DISABLE_COLORS \
+            --keep CI \
             --run "fastlane android build build_type:Release"
       - save_gradle_cache
       - save_cache:

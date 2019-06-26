@@ -21,7 +21,6 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.interfaces.permissions.Permissions;
 
@@ -41,13 +40,12 @@ import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_CREATION_T
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_DEFAULT;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_DURATION;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_HEIGHT;
-import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_ID;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MEDIA_TYPE;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MODIFICATION_TIME;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_WIDTH;
 
 
-public class MediaLibraryModule extends ExportedModule implements ModuleRegistryConsumer {
+public class MediaLibraryModule extends ExportedModule {
 
   private MediaStoreContentObserver mImagesObserver = null;
   private MediaStoreContentObserver mVideosObserver = null;
@@ -80,7 +78,6 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
         put("SortBy", Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
             put("default", SORT_BY_DEFAULT);
-            put("id", SORT_BY_ID);
             put("creationTime", SORT_BY_CREATION_TIME);
             put("modificationTime", SORT_BY_MODIFICATION_TIME);
             put("mediaType", SORT_BY_MEDIA_TYPE);
@@ -95,7 +92,7 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

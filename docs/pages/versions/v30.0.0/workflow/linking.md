@@ -87,7 +87,7 @@ On iOS, `Linking.canOpenURL` requires additional configuration to query other ap
   }
 ```
 
-If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in standalone apps, because it requires native changes that will not be applied when testing in Expo Client.
+If you don't specify this list, `Linking.canOpenURL` may return `false` regardless of whether the device has the app installed. Note that this configuration can only be tested in standalone apps, because it requires native changes that will not be applied when testing in Expo client.
 
 ## Linking to your app
 

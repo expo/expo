@@ -25,7 +25,8 @@ Note: We support building the clients only on macOS.
 - Install [nix](https://nixos.org/nix) (currently `curl https://nixos.org/nix/install | sh`)
 - Install [direnv](http://direnv.net/) (to do this with nix, run `nix-env -iA nixpkgs.direnv`)
 - Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`)
-- Run `yarn` in the `tools-public` directory.
+- Run `yarn` in the root and `tools-public` directories.
+- Run `yarn build` in the `packages/expo` directory.
 
 #### iOS
 - Make sure you have latest non-beta Xcode installed.

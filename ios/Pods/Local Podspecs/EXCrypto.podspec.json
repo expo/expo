@@ -1,11 +1,11 @@
 {
   "name": "EXCrypto",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "summary": "Expo universal module for crypto",
   "description": "Expo universal module for crypto",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-crypto",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/crypto/",
   "platforms": {
     "ios": "10.0"
   },

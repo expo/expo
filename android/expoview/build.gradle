@@ -6,7 +6,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '32.0.0'
+version = '33.0.0'
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -37,6 +37,10 @@ uploadArchives {
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -46,7 +50,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0'
   }
 }
 
@@ -57,15 +61,20 @@ repositories {
 }
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+  }
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
     versionName "1.0"
     ndk {
-      abiFilters 'armeabi-v7a', 'x86'
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
     }
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
@@ -100,21 +109,21 @@ task generateDynamicMacros(type: Exec) {
     commandLine '../../tools-public/generate-dynamic-macros-android.sh'
   }
 }
-preBuild.dependsOn generateDynamicMacros
-// WHEN_VERSIONING_REMOVE_TO_HERE
+
+// Automatically generate dynamic macros once the task graph is ready. It ensures this task to be executed before all other tasks.
+gradle.taskGraph.whenReady {
+  generateDynamicMacros.execute()
+}
 
 configurations.all {
   resolutionStrategy {
-    force 'org.webkit:android-jsc:r224109'
+    force 'org.webkit:android-jsc:r241213'
   }
 }
 
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-// WHEN_VERSIONING_REMOVE_FROM_HERE
 // Import gradle helpers for unimodules.
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 // WHEN_VERSIONING_REMOVE_TO_HERE
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
@@ -126,123 +135,43 @@ dependencies {
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
-  // Current react native
-  /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:32.0.0'
-  api 'host.exp.exponent:expo-app-loader-provider:4.0.0'
-  api 'org.unimodules:unimodules-core:1.0.0'
-  api 'host.exp.exponent:expo-constants:4.0.0'
-  api 'org.unimodules:unimodules-constants-interface:1.0.0'
-  api 'host.exp.exponent:expo-document-picker:4.0.0'
-  api 'host.exp.exponent:expo-file-system:4.0.0'
-  api 'org.unimodules:unimodules-file-system-interface:1.0.0'
-  api 'host.exp.exponent:expo-permissions:4.0.0'
-  api 'org.unimodules:unimodules-permissions-interface:1.0.0'
-  api 'org.unimodules:unimodules-react-native-adapter:1.0.0'
-  api 'host.exp.exponent:expo-secure-store:4.0.0'
-  api 'org.unimodules:unimodules-sensors-interface:1.0.0'
-  api 'host.exp.exponent:expo-task-manager:4.0.0'
-  api 'org.unimodules:unimodules-task-manager-interface:1.0.0'
 
-  // Optional universal modules
-  compileOnly 'host.exp.exponent:expo-ads-admob:4.0.0'
-  compileOnly 'host.exp.exponent:expo-ads-facebook:4.0.0'
-  compileOnly 'host.exp.exponent:expo-analytics-amplitude:4.0.0'
-  compileOnly 'host.exp.exponent:expo-analytics-segment:4.0.0'
-  compileOnly 'host.exp.exponent:expo-app-auth:4.0.0'
-  compileOnly 'host.exp.exponent:expo-av:4.1.0'
-  compileOnly 'host.exp.exponent:expo-background-fetch:4.0.0'
-  compileOnly 'host.exp.exponent:expo-barcode-scanner:4.0.0'
-  compileOnly 'org.unimodules:unimodules-barcode-scanner-interface:1.0.0'
-  compileOnly 'host.exp.exponent:expo-brightness:4.0.0'
-  compileOnly 'host.exp.exponent:expo-calendar:4.0.0'
-  compileOnly 'host.exp.exponent:expo-camera:4.0.0'
-  compileOnly 'org.unimodules:unimodules-camera-interface:1.0.0'
-  compileOnly 'host.exp.exponent:expo-contacts:4.0.0'
-  compileOnly 'host.exp.exponent:expo-crypto:4.0.0'
-  compileOnly 'host.exp.exponent:expo-face-detector:4.0.0'
-  compileOnly 'host.exp.exponent:expo-facebook:4.0.0'
-  compileOnly 'host.exp.exponent:expo-font:4.0.0'
-  compileOnly 'host.exp.exponent:expo-gl:4.0.0'
-  compileOnly 'host.exp.exponent:expo-gl-cpp:4.0.0'
-  compileOnly 'host.exp.exponent:expo-google-sign-in:4.0.0'
-  compileOnly 'host.exp.exponent:expo-haptics:4.0.0'
-  compileOnly 'org.unimodules:unimodules-image-loader-interface:1.0.0'
-  compileOnly 'host.exp.exponent:expo-image-manipulator:4.0.0'
-  compileOnly 'host.exp.exponent:expo-image-picker:4.0.0'
-  compileOnly 'host.exp.exponent:expo-intent-launcher:4.0.0'
-  compileOnly 'host.exp.exponent:expo-keep-awake:4.0.0'
-  compileOnly 'host.exp.exponent:expo-linear-gradient:4.0.0'
-  compileOnly 'host.exp.exponent:expo-local-authentication:4.0.0'
-  compileOnly 'host.exp.exponent:expo-localization:4.0.0'
-  compileOnly 'host.exp.exponent:expo-location:4.0.0'
-  compileOnly 'host.exp.exponent:expo-mail-composer:4.0.0'
-  compileOnly 'host.exp.exponent:expo-media-library:4.0.0'
-  compileOnly 'host.exp.exponent:expo-payments-stripe:4.0.0'
-  compileOnly 'host.exp.exponent:expo-print:4.0.0'
-  compileOnly 'host.exp.exponent:expo-random:4.0.0'
-  compileOnly 'host.exp.exponent:expo-sensors:4.0.0'
-  compileOnly 'host.exp.exponent:expo-sharing:2.0.0'
-  compileOnly 'host.exp.exponent:expo-sms:4.0.0'
-  compileOnly 'host.exp.exponent:expo-speech:4.0.0'
-  compileOnly 'host.exp.exponent:expo-sqlite:4.0.0'
-  compileOnly 'host.exp.exponent:expo-web-browser:4.0.0'
+  api 'org.webkit:android-jsc:r241213' // needs to be before react-native
+
+  /* UNCOMMENT WHEN DISTRIBUTING
+  api 'com.facebook.react:react-native:33.0.0'
+  addUnimodulesDependencies([
+      modulesPaths : ['../../packages'],
+      configuration: 'compileOnly',
+      target       : 'react-native',
+      exclude      : ['expo-in-app-purchases']
+  ])
   END UNCOMMENT WHEN DISTRIBUTING */
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
   // Universal modules
-  // They're defined as "api" so we don't have to define them again in app/build.gradle
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'api',
       target       : 'react-native',
-      exclude      : [
-          'expo-firebase-analytics',
-          'expo-firebase-app',
-          'expo-firebase-auth',
-          'expo-firebase-crashlytics',
-          'expo-firebase-database',
-          'expo-firebase-firestore',
-          'expo-firebase-functions',
-          'expo-firebase-instance-id',
-          'expo-firebase-invites',
-          'expo-firebase-links',
-          'expo-firebase-messaging',
-          'expo-firebase-notifications',
-          'expo-firebase-performance',
-          'expo-firebase-remote-config',
-          'expo-firebase-storage',
-          'expo-module-template',
-      ]
+      exclude      : ['expo-in-app-purchases']
   ])
 
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_33
+  api 'host.exp:reactandroid-abi33_0_0:1.0.0'
+  // END_SDK_33
   // BEGIN_SDK_32
   api 'host.exp:reactandroid-abi32_0_0:1.0.0'
   // END_SDK_32
   // BEGIN_SDK_31
   api 'host.exp:reactandroid-abi31_0_0:1.0.0'
   // END_SDK_31
-  // BEGIN_SDK_30
-  api 'host.exp:reactandroid-abi30_0_0:1.0.0'
-  // END_SDK_30
-  // BEGIN_SDK_29
-  api 'host.exp:reactandroid-abi29_0_0:1.0.0'
-  // END_SDK_29
-  // BEGIN_SDK_28
-  api 'host.exp:reactandroid-abi28_0_0:1.0.0'
-  // END_SDK_28
-  // BEGIN_SDK_27
-  api 'host.exp:reactandroid-abi27_0_0:1.0.0'
-  // END_SDK_27
-  // BEGIN_SDK_26
-  api 'host.exp:reactandroid-abi26_0_0:1.0.0'
-  // END_SDK_26
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -255,17 +184,16 @@ dependencies {
   api 'com.facebook.fresco:imagepipeline-okhttp3:1.0.1'
   api 'com.facebook.stetho:stetho:1.3.1' // do we need this?
   api 'com.facebook.stetho:stetho-okhttp3:1.3.1' // do we need this?
-  compileOnly 'com.facebook.soloader:soloader:0.5.1'
+  compileOnly 'com.facebook.soloader:soloader:0.6.0'
   api 'com.google.code.findbugs:jsr305:3.0.2'
   api 'com.squareup.okhttp3:okhttp:3.6.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
   api 'com.squareup.okio:okio:1.13.0'
   api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
-  api 'org.webkit:android-jsc:r224109'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api 'com.android.support:appcompat-v7:27.1.1'
+  api "com.android.support:appcompat-v7:${safeExtGet("supportLibVersion", "28.0.0")}"
   api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
     transitive = true
   }
@@ -273,11 +201,11 @@ dependencies {
   api 'de.greenrobot:eventbus:2.4.0'
 
   // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  provided 'com.amplitude:android-sdk:2.9.2'
+  compileOnly 'com.amplitude:android-sdk:2.9.2'
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-gcm:16.1.0'
-  api 'com.google.android.gms:play-services-analytics:16.0.7'
+  api 'com.google.android.gms:play-services-analytics:16.0.8'
   api 'com.google.android.gms:play-services-maps:16.1.0'
   api 'com.google.android.gms:play-services-auth:16.0.1'
   api 'com.google.android.gms:play-services-location:16.0.0'
@@ -291,21 +219,22 @@ dependencies {
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   // debugApi 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
-  api 'commons-io:commons-io:1.4'
+  api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
   api 'commons-codec:commons-codec:1.10'
-  api 'net.openid:appauth:0.4.1'
-  api('com.airbnb.android:lottie:2.5.5') {
-    exclude group: 'com.android.support', module: 'appcompat-v7'
-  }
-  api 'io.branch.sdk.android:library:2.17.1'
-  api 'com.android.support:exifinterface:27.1.1'
-  api 'com.google.firebase:firebase-core:16.0.7'
-  api 'com.google.firebase:firebase-messaging:17.4.0'
+  api 'net.openid:appauth:0.7.1'
+  api 'com.airbnb.android:lottie:2.5.6'
+  compileOnly 'io.branch.sdk.android:library:2.17.1'
+  api "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:customtabs:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:design:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api 'com.google.firebase:firebase-core:16.0.9'
+  api 'com.google.firebase:firebase-messaging:18.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:8.4.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+  api 'com.jakewharton:butterknife:9.0.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system
