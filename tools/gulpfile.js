@@ -19,7 +19,6 @@ const updateVendoredNativeModule = require('./update-vendored-native-module');
 const outdatedVendoredNativeModules = require('./outdated-vendored-native-modules');
 const AndroidExpolib = require('./android-versioning/android-expolib');
 const androidVersionLibraries = require('./android-versioning/android-version-libraries');
-const { publishPackagesAsync } = require('./publish-packages');
 
 function updateExpoViewWithArguments() {
   if (!argv.abi) {
@@ -341,6 +340,3 @@ const versioningArgs = task => {
 gulp.task(GENERATE_LIBRARY_WRAPPERS, async () =>
   androidVersionLibraries.generateSharedObjectWrappers(versioningArgs(GENERATE_LIBRARY_WRAPPERS))
 );
-
-// Publish packages
-gulp.task(`publish-packages`, publishPackagesAsync);
