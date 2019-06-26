@@ -199,16 +199,16 @@ typedef NS_ENUM(NSInteger, DeviceType) {
 }
 
 
-- (unsigned long long) totalMemory {
+- (unsigned long long)totalMemory {
   return [NSProcessInfo processInfo].physicalMemory;
 }
 
-- (NSDictionary *) getStorageDictionary {
+- (NSDictionary *)getStorageDictionary {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   return [[NSFileManager defaultManager] attributesOfFileSystemForPath:[paths lastObject] error: nil];
 }
 
-- (uint64_t) totalDiskCapacity {
+- (uint64_t)totalDiskCapacity {
   uint64_t totalSpace = 0;
   NSDictionary *storage = [self getStorageDictionary];
   
@@ -219,7 +219,7 @@ typedef NS_ENUM(NSInteger, DeviceType) {
   return totalSpace;
 }
 
-- (uint64_t) freeDiskStorage {
+- (uint64_t)freeDiskStorage {
   uint64_t freeSpace = 0;
   NSDictionary *storage = [self getStorageDictionary];
   
@@ -238,9 +238,9 @@ typedef NS_ENUM(NSInteger, DeviceType) {
   
   return @{
            @"brand": @"Apple",
-           @"deviceType": [DeviceTypeValues objectAtIndex: [self getDeviceType]] ?: [NSNull null],
+           @"deviceType": UMNullIfNil([DeviceTypeValues objectAtIndex: [self getDeviceType]] ),
            @"deviceName": currentDevice.name, //TODO, ADD TO JS AS WELL
-           @"deviceId": [self deviceId] ?: [NSNull null],
+           @"deviceId": UMNullIfNil([self deviceId]),
            //           @"freeDiskStorage": @(self.freeDiskStorage),
            //           @"isEmulator": @NO,
            @"isTablet": @(self.isTablet),
