@@ -232,7 +232,7 @@ export default class IosMacrosGenerator {
     );
   }
 
-  async cleanupAsync({ infoPlistPath }): Promise<void> {
-    await cleanInfoPlistBackupAsync(infoPlistPath);
+  async cleanupAsync(options): Promise<void> {
+    await cleanInfoPlistBackupAsync(options.infoPlistPath);
   }
 }

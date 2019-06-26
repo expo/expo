@@ -145,7 +145,7 @@ export async function updateExpoKitAndroidAsync(
   });
 
   let expokitPackageJson = new JsonFile(path.join(expokitNpmPackageDir, 'package.json'));
-  let expokitNpmVersion = await expokitPackageJson.getAsync('version');
+  let expokitNpmVersion = await expokitPackageJson.getAsync('version', null);
 
   versions.sdkVersions[sdkVersion].androidExpoViewUrl = `https://s3.amazonaws.com/${BUCKET}/${key}`;
   versions.sdkVersions[sdkVersion].expokitNpmPackage = `expokit@${expokitNpmVersion}`;
