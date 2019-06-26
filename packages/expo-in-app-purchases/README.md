@@ -19,7 +19,7 @@ npm install expo-in-app-purchases
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `pod install` in the `ios` directory after installing the npm package.
 
 ### Configure for Android
 
