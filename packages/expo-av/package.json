@@ -37,5 +37,8 @@
     "babel-preset-expo": "^5.0.0",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "bbb5e571305640a9440180c0a5d7cdfdd9ed4fe9"
+  "gitHead": "bbb5e571305640a9440180c0a5d7cdfdd9ed4fe9",
+  "dependencies": {
+    "nullthrows": "^1.1.1"
+  }
 }
