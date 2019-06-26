@@ -323,6 +323,7 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
+      - run: expotools ios-generate-dynamic-macros
       - run: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
@@ -360,7 +361,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: et ios-generate-dynamic-macros
+      - run: expotools ios-generate-dynamic-macros
       - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
           name: Build iOS shell app for real devices
@@ -511,4 +512,4 @@ jobs:
       - decrypt_secrets_if_possible
       - run:
           working_directory: ~/expo/apps/test-suite
-          command: nix run expo.procps --command ./publish.sh
+          command: ./publish.sh
