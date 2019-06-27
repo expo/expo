@@ -43,10 +43,6 @@ import * as Device from 'expo-device';
   - iOS: eg. `"iPhone XS Max"`
   - Android: eg. `"Pixel 2"`
 
-- `Device.serialNumber: string` (Android Only)
-
-  Gets the device serial number.
-
 - `Device.systemName: string`
 
   Gets the device OS name.
@@ -98,6 +94,7 @@ import * as Device from 'expo-device';
 - `Device.getUserAgentAsync()`
 - `Device.getTotalDiskCapacityAsync()`
 - `Device.getPhoneNumberAsync()` (Android only)
+- `Device.getSerialNumberAsync()` (Android only)
 
 ## Methods
 
@@ -222,6 +219,24 @@ A Promise that resolves to a number of current phone number.
 ```js
 Device.getPhoneNumberAsync().then(phoneNumber => {
   // +15555215558
+});
+```
+
+### `Device.getSerialNumberAsync()` (Android only)
+
+Gets the device serial number.
+
+Would prompt the user for permission to read the phone to access the phone number.
+
+#### Returns
+
+A Promise that resolves to a string of serial number of current device.
+
+**Examples**
+
+```js
+Device.getSerialNumberAsync().then(serialNumber => {
+  // FA81H1A01245
 });
 ```
 
