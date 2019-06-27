@@ -18,7 +18,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
   [self downloadDataFromURL:url successBlock:^(NSData *data, NSURLResponse *response) {
-    if ([[NSFileManager defaultManager] createFileAtPath:destinationPath contents:data attributes:nil]) {
+    if ([NSFileManager.defaultManager createFileAtPath:destinationPath contents:data attributes:nil]) {
       successBlock(data, response);
     } else {
       errorBlock([NSError errorWithDomain:kEXUpdatesFileDownloaderErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Could not write to path: %@", destinationPath]}], response);
@@ -30,7 +30,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  NSURLSessionConfiguration *configuration = _urlSessionConfiguration ?: [NSURLSessionConfiguration defaultSessionConfiguration];
+  NSURLSessionConfiguration *configuration = _urlSessionConfiguration ?: NSURLSessionConfiguration.defaultSessionConfiguration;
 
   // also pass any custom cache policy onto this specific request
   NSURLRequestCachePolicy cachePolicy = _urlSessionConfiguration ? _urlSessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
@@ -65,7 +65,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
   // TODO(eric): add more fields here
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
 
-  NSString *binaryVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+  NSString *binaryVersion = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
   [request setValue:binaryVersion forHTTPHeaderField:@"Expo-Binary-Version"];
 
   NSString *releaseChannel = [EXUpdatesConfig sharedInstance].releaseChannel;
