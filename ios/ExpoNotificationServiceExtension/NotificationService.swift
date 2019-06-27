@@ -32,12 +32,12 @@ class NotificationService: UNNotificationServiceExtension {
 		}
 	}
 
-	func downloadAttachment(fromURL attachmentURLString: String?, callback: ((UNNotificationAttachment?) -> Void)?) {
+	func downloadAttachment(fromURL attachmentURLString: String?, callback: @escaping (UNNotificationAttachment?) -> Void) {
 		if let attachmentURLString = attachmentURLString, let attachmentURL = URL(string: attachmentURLString) {
 			URLSession.shared.downloadTask(with: attachmentURL) { (location, response, downloadError) in
 				if let downloadError = downloadError {
 					print("URLSession: Error with downloading the rich content attachment: \(downloadError.localizedDescription)")
-					callback?(nil)
+					callback(nil)
 					return
 				}
 
@@ -47,7 +47,7 @@ class NotificationService: UNNotificationServiceExtension {
 					do {
 						try FileManager.default.moveItem(at: location, to: temporaryURL)
 						let attachment = try? UNNotificationAttachment(identifier: attachmentURLString, url: temporaryURL)
-						callback?(attachment)
+						callback(attachment)
 						try? FileManager.default.removeItem(at: temporaryURL)
 					} catch let attachmentError {
 						print("Error with using the rich content attachment: \(attachmentError)")
@@ -56,7 +56,7 @@ class NotificationService: UNNotificationServiceExtension {
 				}
 				}.resume()
 		} else {
-			callback?(nil)
+			callback(nil)
 		}
 	}
 
