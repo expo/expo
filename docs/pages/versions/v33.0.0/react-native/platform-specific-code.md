@@ -133,20 +133,20 @@ React Native will automatically pick up the right file based on the running plat
 
 ## Native-specific extensions (i.e. sharing code with NodeJS and Web)
 
-You can also use the `.native.js` extension when a module needs to be shared between NodeJS/Web and React Native but it has no Android/iOS differences. This is specially useful for projects that has common code shared among React Native and ReactJS.
+You can also use the `.native.js` or `.web.js` extensions when a module needs to be shared between NodeJS/Web and React Native but it has no Android/iOS differences, or vice versa. This is especially useful for projects that have common code shared among React Native and ReactJS.
 
 For example, say you have the following files in your project:
 
 
 ```sh
 
-Container.js # picked up by Webpack, Rollup or any other Web bundler
+Container.web.js # picked up by Webpack, Rollup or any other Web bundler
 Container.native.js # picked up by the React Native bundler for both Android and iOS (Metro)
 
 ```
 
 
-You can still require it without the `.native` extension, as follows:
+You can still require it without the `.native` / `.web` extension, as follows:
 
 
 ```javascript
@@ -157,4 +157,3 @@ import Container from './Container';
 
 
 **Pro tip:** Configure your Web bundler to ignore `.native.js` extensions in order to avoid having unused code in your production bundle, thus reducing the final bundle size.
-
