@@ -141,8 +141,7 @@ UM_EXPORT_METHOD_AS(isPinOrFingerprintSetAsync, isPinOrFingerprintSetAsyncWithRe
 
 UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSString *returnString = [NSString stringWithFormat:@"%llu", self.freeDiskStorage];
-  resolve(returnString);
+  resolve([self freeDiskStorage]);
 }
 
 - (NSString *)deviceId
@@ -205,8 +204,8 @@ typedef NS_ENUM(NSInteger, DeviceType) {
 }
 
 
-- (unsigned long long)totalMemory {
-  return [NSProcessInfo processInfo].physicalMemory;
+- (NSNumber *)totalMemory {
+  return [NSNumber numberWithUnsignedLongLong:[NSProcessInfo processInfo].physicalMemory];
 }
 
 - (NSDictionary *)documentFileSystemAttributes {
@@ -214,26 +213,24 @@ typedef NS_ENUM(NSInteger, DeviceType) {
   return [[NSFileManager defaultManager] attributesOfFileSystemForPath:[paths lastObject] error: nil];
 }
 
-- (uint64_t)totalDiskCapacity {
-  uint64_t totalSpace = 0;
+- (NSNumber *)totalDiskCapacity {
   NSDictionary *storage = [self documentFileSystemAttributes];
   
   if (storage) {
     NSNumber *fileSystemSizeInBytes = storage[NSFileSystemSize];
-    totalSpace = [fileSystemSizeInBytes unsignedLongLongValue];
+    return fileSystemSizeInBytes;
   }
-  return totalSpace;
+  return nil;
 }
 
-- (uint64_t)freeDiskStorage {
-  uint64_t freeSpace = 0;
+- (NSNumber *)freeDiskStorage {
   NSDictionary *storage = [self documentFileSystemAttributes];
   
   if (storage) {
-    NSNumber *freeFileSystemSizeInBytes = [storage objectForKey: NSFileSystemFreeSize];
-    freeSpace = [freeFileSystemSizeInBytes unsignedLongLongValue];
+    NSNumber *freeFileSystemSizeInBytes = storage[NSFileSystemFreeSize];
+    return freeFileSystemSizeInBytes;
   }
-  return freeSpace;
+  return nil;
 }
 
 
@@ -256,8 +253,8 @@ typedef NS_ENUM(NSInteger, DeviceType) {
            //           @"serialNumber": @"undefined4", // ANDROID ONLY
            @"supportedABIs": @[[self getCPUType]],
            @"systemName": currentDevice.systemName,
-           @"totalMemory": @([self totalMemory]),
-           @"totalDiskCapacity": @([self totalDiskCapacity]),
+           @"totalMemory": [self totalMemory] ?: @(0),
+           @"totalDiskCapacity": [self totalDiskCapacity],
            @"uniqueId": uniqueId,
            };
 }
