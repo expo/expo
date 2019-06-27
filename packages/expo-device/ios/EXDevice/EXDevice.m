@@ -171,29 +171,21 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
 #endif
 }
 
-/*device types*/
-typedef NS_ENUM(NSInteger, DeviceType) {
-  DeviceTypeHandset,
-  DeviceTypeTablet,
-  DeviceTypeTv,
-  DeviceTypeUnknown
-};
 
-#define DeviceTypeValues [NSArray arrayWithObjects: @"Handset", @"Tablet", @"Tv", @"Unknown", nil]
-
-- (DeviceType)getDeviceType
+- (NSString *)deviceType
 {
   switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
-    case UIUserInterfaceIdiomPhone: return DeviceTypeHandset;
-    case UIUserInterfaceIdiomPad: return DeviceTypeTablet;
-    case UIUserInterfaceIdiomTV: return DeviceTypeTv;
-    default: return DeviceTypeUnknown;
+    case UIUserInterfaceIdiomPhone: return @"Handset";
+    case UIUserInterfaceIdiomPad: return @"Tablet";
+    case UIUserInterfaceIdiomTV: return @"Tv";
+    default: return @"Unknown";
   }
 }
 
 - (bool) isTablet
 {
-  return [self getDeviceType] == DeviceTypeTablet;
+//  return [[self deviceType] isEqualToString:@"Tablet"];
+  return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
 }
 
 - (NSString *)getCPUType {
@@ -241,12 +233,12 @@ typedef NS_ENUM(NSInteger, DeviceType) {
   
   return @{
            @"brand": @"Apple",
-           @"deviceType": UMNullIfNil([DeviceTypeValues objectAtIndex: [self getDeviceType]] ),
+           @"deviceType": UMNullIfNil([self deviceType]),
            @"deviceName": currentDevice.name, //TODO, ADD TO JS AS WELL
            @"deviceId": UMNullIfNil([self deviceId]),
            //           @"freeDiskStorage": @(self.freeDiskStorage),
            //           @"isEmulator": @NO,
-           @"isTablet": @(self.isTablet),
+           @"isTablet": @([self isTablet]),
            @"manufacturer": @"Apple",
            //           @"model": self.deviceId, // DON'T WORRY ABOUT FOR NOW
            //           @"phoneNumber": @"undefined3", // ANDROID ONLY
