@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Bundle;
 import android.util.Log;
 import android.os.Build;
 import android.os.Environment;
@@ -33,6 +32,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.ByteOrder;
+import java.security.AccessControlException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,15 +41,15 @@ import java.util.Map;
 public class DeviceModule extends ExportedModule implements RegistryLifecycleListener, ActivityCompat.OnRequestPermissionsResultCallback {
   private static final String NAME = "ExpoDevice";
   private static final String TAG = DeviceModule.class.getSimpleName();
-  private final int REQUEST_READ_PHONE_STATE = 1;
+  private final int REQUEST_READ_PHONE_STATE_SERIAL = 1;
+  private final int REQUEST_READ_PHONE_STATE_PHONENUMBER = 2;
 
   private ModuleRegistry mModuleRegistry;
   private Context mContext;
-  private WifiInfo wifiInfo;
   private ActivityProvider mActivityProvider;
   private Activity mActivity;
-  private DeviceType mDeviceType;
-  private String mPhoneNumber;
+  private String mPhoneNumber = "";
+  private String mSerialNumber = "";
 
   public DeviceModule(Context context) {
     super(context);
@@ -75,9 +75,13 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
 
   private WifiInfo getWifiInfo() {
-    WifiManager manager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-    this.wifiInfo = manager.getConnectionInfo();
-    return this.wifiInfo;
+    try {
+      WifiManager manager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+      return manager.getConnectionInfo();
+    } catch (NullPointerException e) {
+      Log.e(TAG, e.getMessage());
+      throw e;
+    }
   }
 
   @Override
@@ -93,49 +97,13 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @Override
-  public void onRequestPermissionsResult(int requestCode,
-                                         String[] permissions, int[] grantResults) {
-    switch (requestCode) {
-      case REQUEST_READ_PHONE_STATE: {
-        // If request is cancelled, the result arrays are empty.
-        if (grantResults.length > 0
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            try{
-              TelephonyManager telMgr = (TelephonyManager) mContext.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-              mPhoneNumber = telMgr.getLine1Number();
-            }
-            catch(SecurityException se){
-              throw se;
-            }
-        } else {
-          // permission denied, boo! Disable the
-          // functionality that depends on this permission.
-          mPhoneNumber = "No permission to read the phone state.";
-        }
-        return;
-      }
-    }
-  }
-
-  @Override
   public Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<>();
 
     constants.put("brand", Build.BRAND);
     constants.put("manufacturer", Build.MANUFACTURER);
     constants.put("model", Build.MODEL);
-    constants.put("serialNumber", this.getSerial());
-    String systeName = "";
-    if(android.os.Build.VERSION.SDK_INT < 23){
-      systeName = "Android";
-    }
-    else{
-      systeName = Build.VERSION.BASE_OS;
-      if(systeName.length() == 0){
-        systeName = "Android";
-      }
-    }
-    constants.put("systemName", systeName);
+    constants.put("systemName", this.getSystemName());
     constants.put("deviceId", Build.BOARD);
     constants.put("uniqueId", Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
     constants.put("supportedABIs", Build.SUPPORTED_ABIS);
@@ -145,21 +113,24 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     actMgr.getMemoryInfo(memInfo);
     constants.put("totalMemory", memInfo.totalMem);
 
-    mDeviceType = getDeviceType(mContext);
+    DeviceType mDeviceType = getDeviceType(mContext);
     constants.put("deviceType", mDeviceType.getValue());
     constants.put("isTablet", mDeviceType.getValue().equals("Tablet"));
 
     return constants;
   }
 
-  private String getCarrier() {
-    try {
-      TelephonyManager telMgr = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-      return telMgr.getNetworkOperatorName();
-    } catch (NullPointerException e) {
-      Log.e(TAG, e.getMessage());
+  private String getSystemName() {
+    String systemName = "";
+    if (android.os.Build.VERSION.SDK_INT < 23) {
+      systemName = "Android";
+    } else {
+      systemName = Build.VERSION.BASE_OS;
+      if (systemName.length() == 0) {
+        systemName = "Android";
+      }
     }
-    return null;
+    return systemName;
   }
 
   private static DeviceType getDeviceType(Context context) {
@@ -201,23 +172,64 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     }
   }
 
-  private String getSerial() {
-    if (android.os.Build.VERSION.SDK_INT < 26) {
-      return Build.SERIAL;
-    } else {
-      try {
-        int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE);
-
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
-
+  @Override
+  public void onRequestPermissionsResult(int requestCode,
+                                         String[] permissions, int[] grantResults) {
+    switch (requestCode) {
+      case REQUEST_READ_PHONE_STATE_PHONENUMBER: {
+        // If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          try {
+            TelephonyManager telMgr = (TelephonyManager) mContext.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+            mPhoneNumber = telMgr.getLine1Number();
+          } catch (SecurityException | NullPointerException e) {
+            throw e;
+          }
         } else {
-          return Build.getSerial();
+          throw new AccessControlException("No access to read phone state");
         }
-      } catch (SecurityException se) {
-        Log.e(TAG, se.getMessage());
       }
-      return null;
+      case REQUEST_READ_PHONE_STATE_SERIAL: {
+        // If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          try {
+            if (android.os.Build.VERSION.SDK_INT < 26) {
+              mSerialNumber = Build.SERIAL;
+            } else {
+              mSerialNumber = Build.getSerial();
+            }
+          } catch (SecurityException | NullPointerException e) {
+            throw e;
+          }
+        } else {
+          throw new AccessControlException("No access to read phone state");
+        }
+      }
+    }
+  }
+
+  @ExpoMethod
+  public void getSerialNumberAsync(Promise promise) {
+    try {
+      int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE);
+
+      if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE_SERIAL);
+      }
+      if (!mSerialNumber.equals("")) {
+        promise.resolve(mSerialNumber);
+      } else {
+        if (android.os.Build.VERSION.SDK_INT < 26) {
+          promise.resolve(Build.SERIAL);
+        } else {
+          promise.resolve(Build.getSerial());
+        }
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
     }
   }
 
@@ -232,8 +244,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       blockSize = external.getBlockSizeLong();
 
       BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
-      String stringValue = storage.toString();
-      promise.resolve(stringValue);
+      promise.resolve(storage.doubleValue());
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
@@ -288,8 +299,9 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
         Log.e(TAG, e.getMessage());
         promise.reject(e);
       }
+    } else {
+      promise.reject(new AccessControlException("No permission granted to access the Internet"));
     }
-    promise.resolve(macAddress);
   }
 
   @ExpoMethod
@@ -323,7 +335,8 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   @ExpoMethod
   public void getCarrierAsync(Promise promise) {
     try {
-      promise.resolve(this.getCarrier());
+      TelephonyManager telMgr = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+      promise.resolve(telMgr.getNetworkOperatorName());
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
@@ -334,7 +347,8 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public void getTotalDiskCapacityAsync(Promise promise) {
     try {
       StatFs root = new StatFs(Environment.getRootDirectory().getAbsolutePath());
-      promise.resolve(BigInteger.valueOf(root.getBlockCountLong()).multiply(BigInteger.valueOf(root.getBlockSizeLong())).toString());
+      BigInteger capacity = BigInteger.valueOf(root.getBlockCountLong()).multiply(BigInteger.valueOf(root.getBlockSizeLong()));
+      promise.resolve(capacity.doubleValue());
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
@@ -342,22 +356,23 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void getPhoneNumberAsync(Promise promise) {
+  public void getPhoneNumberAsync(final Promise promise) {
     try {
       int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE);
 
       if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
-
+        ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE_PHONENUMBER);
+      }
+      if (!mPhoneNumber.equals("")) {
+        promise.resolve(mPhoneNumber);
+        mPhoneNumber = "";
       } else {
         TelephonyManager telMgr = (TelephonyManager) mContext.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-        mPhoneNumber = telMgr.getLine1Number();
+        promise.resolve(telMgr.getLine1Number());
       }
-      promise.resolve(mPhoneNumber);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
     }
   }
-
 }

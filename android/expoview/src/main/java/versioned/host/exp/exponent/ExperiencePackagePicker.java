@@ -68,6 +68,7 @@ public class ExperiencePackagePicker {
       new ConstantsPackage(),
       new ContactsPackage(),
       new CryptoPackage(),
+      new DevicePackage(),
       new DocumentPickerPackage(),
       new FacebookPackage(),
       new FaceDetectorPackage(),
@@ -99,8 +100,7 @@ public class ExperiencePackagePicker {
       new StripePackage(),
       new TaskManagerPackage(),
       new VideoThumbnailsPackage(),
-      new WebBrowserPackage(),
-      new DevicePackage()
+      new WebBrowserPackage()
   );
 
   /**
