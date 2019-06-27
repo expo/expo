@@ -199,14 +199,14 @@ typedef NS_ENUM(NSInteger, DeviceType) {
   return [NSProcessInfo processInfo].physicalMemory;
 }
 
-- (NSDictionary *)getStorageDictionary {
+- (NSDictionary *)documentFileSystemAttributes {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   return [[NSFileManager defaultManager] attributesOfFileSystemForPath:[paths lastObject] error: nil];
 }
 
 - (uint64_t)totalDiskCapacity {
   uint64_t totalSpace = 0;
-  NSDictionary *storage = [self getStorageDictionary];
+  NSDictionary *storage = [self documentFileSystemAttributes];
   
   if (storage) {
     NSNumber *fileSystemSizeInBytes = storage[NSFileSystemSize];
@@ -217,7 +217,7 @@ typedef NS_ENUM(NSInteger, DeviceType) {
 
 - (uint64_t)freeDiskStorage {
   uint64_t freeSpace = 0;
-  NSDictionary *storage = [self getStorageDictionary];
+  NSDictionary *storage = [self documentFileSystemAttributes];
   
   if (storage) {
     NSNumber *freeFileSystemSizeInBytes = [storage objectForKey: NSFileSystemFreeSize];
