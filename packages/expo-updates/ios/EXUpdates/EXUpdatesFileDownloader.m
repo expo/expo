@@ -8,9 +8,36 @@ NSString * const kEXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader
 NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
 
 @interface EXUpdatesFileDownloader () <NSURLSessionDataDelegate>
+
+@property (nonatomic, strong) NSURLSession *session;
+@property (nonatomic, strong) NSURLSessionConfiguration *sessionConfiguration;
+
 @end
 
 @implementation EXUpdatesFileDownloader
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _sessionConfiguration = NSURLSessionConfiguration.defaultSessionConfiguration;
+    _session = [NSURLSession sessionWithConfiguration:_sessionConfiguration delegate:self delegateQueue:nil];
+  }
+  return self;
+}
+
+- (instancetype)initWithURLSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration
+{
+  if (self = [super init]) {
+    _sessionConfiguration = sessionConfiguration ?: NSURLSessionConfiguration.defaultSessionConfiguration;
+    _session = [NSURLSession sessionWithConfiguration:_sessionConfiguration delegate:self delegateQueue:nil];
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  [_session finishTasksAndInvalidate];
+}
 
 - (void)downloadFileFromURL:(NSURL *)url
                      toPath:(NSString *)destinationPath
@@ -30,17 +57,14 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  NSURLSessionConfiguration *configuration = _urlSessionConfiguration ?: NSURLSessionConfiguration.defaultSessionConfiguration;
+  // pass any custom cache policy onto this specific request
+  NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
 
-  // also pass any custom cache policy onto this specific request
-  NSURLRequestCachePolicy cachePolicy = _urlSessionConfiguration ? _urlSessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
-
-  NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:kEXUpdatesDefaultTimeoutInterval];
   [self _setHTTPHeaderFields:request];
 
   __weak typeof(self) weakSelf = self;
-  NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+  NSURLSessionDataTask *task = [_session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
       if (httpResponse.statusCode != 200) {
@@ -57,7 +81,6 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
     }
   }];
   [task resume];
-  [session finishTasksAndInvalidate];
 }
 
 - (void)_setHTTPHeaderFields:(NSMutableURLRequest *)request

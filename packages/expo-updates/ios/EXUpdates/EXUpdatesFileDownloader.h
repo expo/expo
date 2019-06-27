@@ -7,7 +7,7 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURLResponse 
 
 @interface EXUpdatesFileDownloader : NSObject
 
-@property (nonatomic, strong) NSURLSessionConfiguration *urlSessionConfiguration; // default is `defaultSessionConfiguration`
+- (instancetype)initWithURLSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration;
 
 - (void)downloadDataFromURL:(NSURL *)url
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
