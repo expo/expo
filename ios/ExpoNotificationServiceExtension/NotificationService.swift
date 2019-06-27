@@ -19,8 +19,8 @@ class NotificationService: UNNotificationServiceExtension {
 
 		if let bestAttemptContent = bestAttemptContent, let notificationBody = request.content.userInfo["body"] as? [String: Any] {
 			// Display priority: video > audio > image
-			if let richContent = notificationBody["_richContent"] as? [String: Any], let attachmentUrlString = (richContent["video"] ?? richContent["audio"] ?? richContent["image"]) as? String {
-				downloadAttachment(url: attachmentUrlString) { attachment in
+			if let richContent = notificationBody["_richContent"] as? [String: Any], let attachmentURLString = (richContent["video"] ?? richContent["audio"] ?? richContent["image"]) as? String {
+				downloadAttachment(fromURL: attachmentURLString) { attachment in
 					if let attachment = attachment {
 						bestAttemptContent.attachments = [attachment]
 					}
@@ -32,9 +32,9 @@ class NotificationService: UNNotificationServiceExtension {
 		}
 	}
 
-	func downloadAttachment(url attachmentUrlString: String?, callback: ((UNNotificationAttachment?) -> Void)?) {
-		if let attachmentUrlString = attachmentUrlString, let attachmentUrl = URL(string: attachmentUrlString) {
-			URLSession.shared.downloadTask(with: attachmentUrl) { (location, response, downloadError) in
+	func downloadAttachment(fromURL attachmentURLString: String?, callback: ((UNNotificationAttachment?) -> Void)?) {
+		if let attachmentURLString = attachmentURLString, let attachmentURL = URL(string: attachmentURLString) {
+			URLSession.shared.downloadTask(with: attachmentURL) { (location, response, downloadError) in
 				if let downloadError = downloadError {
 					print("URLSession: Error with downloading the rich content attachment: \(downloadError.localizedDescription)")
 					callback?(nil)
@@ -43,12 +43,12 @@ class NotificationService: UNNotificationServiceExtension {
 
 				if let location = location {
 					// Prefix the filename with a random UUID to avoid having file with the same file name during `moveItem`.
-					let temporaryUrl = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + attachmentUrl.lastPathComponent)
+					let temporaryURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + attachmentURL.lastPathComponent)
 					do {
-						try FileManager.default.moveItem(at: location, to: temporaryUrl)
-						let attachment = try? UNNotificationAttachment(identifier: attachmentUrl.absoluteString, url: temporaryUrl)
+						try FileManager.default.moveItem(at: location, to: temporaryURL)
+						let attachment = try? UNNotificationAttachment(identifier: attachmentURLString, url: temporaryURL)
 						callback?(attachment)
-						try? FileManager.default.removeItem(at: temporaryUrl)
+						try? FileManager.default.removeItem(at: temporaryURL)
 					} catch let attachmentError {
 						print("Error with using the rich content attachment: \(attachmentError)")
 						callback?(nil)
