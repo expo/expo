@@ -105,8 +105,6 @@ task generateDynamicMacros(type: Exec) {
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
     commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
   } else {
-    // NOTE(brentvatne): this is a common install path for node
-    environment 'PATH', "${environment.PATH}:/usr/local/bin"
     commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
   }
 }
