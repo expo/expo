@@ -99,7 +99,17 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
   int success = 0;
   // retrieve the current interfaces - returns 0 on success
   success = getifaddrs(&interfaces);
-  if (success == 0) {
+  
+  //reject if we fail to retrieve any interfaces
+  if (success != 0) {
+    // Free memory
+    freeifaddrs(interfaces);
+    
+    reject(@"E_NO_IFADDRS", @"No network interfaces could be retrieved.", nil);
+    return;
+  }
+  
+  else if (success == 0) {
     // Loop through linked list of interfaces
     temp_addr = interfaces;
     while(temp_addr != NULL) {
