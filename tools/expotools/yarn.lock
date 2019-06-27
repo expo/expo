@@ -1034,10 +1034,10 @@
     mime "^2.4.0"
     tempy "^0.3.0"
 
-"@expo/xdl@^55.0.7":
-  version "55.0.7"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-55.0.7.tgz#863c0af130b038b6657abb5a373784dccff232a8"
-  integrity sha512-wPbBTNaUWEbMTgJWpWAtAomF8i5Y0NKunwCBA/Ogx+gAQTry96VOewXr4zaIYNAqYcPgzD8P1sIAj+tIUeLqhA==
+"@expo/xdl@^55.0.11-alpha.0":
+  version "55.0.11-alpha.0"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-55.0.11-alpha.0.tgz#a1156ac99ac36a7bb45afed5bfc9e27c66cd2a70"
+  integrity sha512-Gr1W9cbCKr7feF6raRuGcPF1Wlj6qk7OG0Re0Pfmcizk72dRyevnF/6Olh+ZkNhZ+fiCYpEGQn9kCOHnA0UOkw==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.0.3"

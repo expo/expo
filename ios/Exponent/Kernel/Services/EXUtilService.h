@@ -5,7 +5,7 @@
 
 @interface EXUtilService : UMSingletonModule
 
-- (UIViewController *)currentViewController;
+- (nullable UIViewController *)currentViewController;
 
 - (nullable NSDictionary *)launchOptions;
 

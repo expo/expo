@@ -78,7 +78,7 @@ static const NSString *kTrackingEnabled = @"tracking";
     result.classificationMode = [values[kRunClassificationsOptionName] longValue];
   }
   if([values objectForKey:kTrackingEnabled]) {
-    result.trackingEnabled = values[kTrackingEnabled];
+    result.trackingEnabled = [values[kTrackingEnabled] boolValue];
   }
   return result;
 }

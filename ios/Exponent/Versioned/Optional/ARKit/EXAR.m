@@ -220,7 +220,8 @@ RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(getPlaneDetection, NSString *, getPlaneDet
 }
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
 RCT_REMAP_METHOD(setPlaneDetection,
                  planeDetection:(ARPlaneDetection)planeDetection)
 {
@@ -247,6 +248,7 @@ RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(performHitTest,
   return [_arSessionManager performHitTest:point types:types];
 }
 
+#pragma clang diagnostic pop
 #else
 
 RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(performHitTest,
@@ -324,12 +326,11 @@ RCT_REMAP_METHOD(setWorldOriginAsync,
     reject(@"E_AR_WORLD_ORIGIN", @"setWorldOriginAsync requires an array of 16 numbers.", nil);
     return;
   }
-  matrix_float4x4 origin = {
-    [worldOrigin[0] floatValue],[worldOrigin[1] floatValue],[worldOrigin[2] floatValue],[worldOrigin[3] floatValue],
-    [worldOrigin[4] floatValue],[worldOrigin[5] floatValue],[worldOrigin[6] floatValue],[worldOrigin[7] floatValue],
-    [worldOrigin[8] floatValue],[worldOrigin[9] floatValue],[worldOrigin[10] floatValue],[worldOrigin[11] floatValue],
-    [worldOrigin[12] floatValue],[worldOrigin[13] floatValue],[worldOrigin[14] floatValue],[worldOrigin[15] floatValue],
-  };
+  vector_float4 v1 = { [worldOrigin[0] floatValue],[worldOrigin[1] floatValue],[worldOrigin[2] floatValue],[worldOrigin[3] floatValue] };
+  vector_float4 v2 = { [worldOrigin[4] floatValue],[worldOrigin[5] floatValue],[worldOrigin[6] floatValue],[worldOrigin[7] floatValue] };
+  vector_float4 v3 = { [worldOrigin[8] floatValue],[worldOrigin[9] floatValue],[worldOrigin[10] floatValue],[worldOrigin[11] floatValue] };
+  vector_float4 v4 = { [worldOrigin[12] floatValue],[worldOrigin[13] floatValue],[worldOrigin[14] floatValue],[worldOrigin[15] floatValue] };
+  matrix_float4x4 origin = { v1, v2, v3, v4 };
   [_arSessionManager setWorldOrigin:origin];
    resolve(@{});
 }

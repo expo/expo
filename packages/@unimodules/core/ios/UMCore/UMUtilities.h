@@ -7,13 +7,13 @@
 
 @interface UMUtilities : NSObject <UMInternalModule, UMUtilitiesInterface, UMModuleRegistryConsumer>
 
-+ (void)performSynchronouslyOnMainThread:(void (^)(void))block;
++ (void)performSynchronouslyOnMainThread:(nonnull void (^)(void))block;
 + (CGFloat)screenScale;
-+ (UIColor *)UIColor:(id)json;
-+ (NSDate *)NSDate:(id)json;
-+ (NSString *)hexStringWithCGColor:(CGColorRef)color;
++ (nullable UIColor *)UIColor:(nullable id)json;
++ (nullable NSDate *)NSDate:(nullable id)json;
++ (nonnull NSString *)hexStringWithCGColor:(nonnull CGColorRef)color;
 
-- (UIViewController *)currentViewController;
+- (nullable UIViewController *)currentViewController;
 - (nullable NSDictionary *)launchOptions;
 
 @end
