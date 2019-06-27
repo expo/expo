@@ -173,7 +173,7 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
         if (error) result[RNBranchLinkOpenedNotificationErrorKey] = error;
         if (params) {
             result[RNBranchLinkOpenedNotificationParamsKey] = params;
-          BOOL clickedBranchLink = [params[@"+clicked_branch_link"] boolValue];
+            BOOL clickedBranchLink = [params[@"+clicked_branch_link"] boolValue];
 
             if (clickedBranchLink) {
                 BranchUniversalObject *branchUniversalObject = [BranchUniversalObject objectWithDictionary:params];
