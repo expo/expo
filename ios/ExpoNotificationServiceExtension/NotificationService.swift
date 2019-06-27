@@ -51,7 +51,7 @@ class NotificationService: UNNotificationServiceExtension {
 						try? FileManager.default.removeItem(at: temporaryURL)
 					} catch let attachmentError {
 						print("Error with using the rich content attachment: \(attachmentError)")
-						callback?(nil)
+						callback(nil)
 					}
 				}
 				}.resume()
