@@ -17,7 +17,7 @@ NSTimeInterval const kEXUpdatesDefaultTimeoutInterval = 60;
                successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  [self downloadDataFromURL:url successBlock:^(NSData * _Nonnull data, NSURLResponse * _Nonnull response) {
+  [self downloadDataFromURL:url successBlock:^(NSData *data, NSURLResponse *response) {
     if ([[NSFileManager defaultManager] createFileAtPath:destinationPath contents:data attributes:nil]) {
       successBlock(data, response);
     } else {
