@@ -105,7 +105,6 @@ task generateDynamicMacros(type: Exec) {
   if (Os.isFamily(Os.FAMILY_WINDOWS)) {
     commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
   } else {
-    environment 'PATH', "${project.projectDir}/../../bin:${environment.PATH}"
     commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
   }
 }
