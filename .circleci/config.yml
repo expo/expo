@@ -336,6 +336,7 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
+      - run: expotools ios-generate-dynamic-macros
       - run:
           name: Build Expo Client and upload tarball
           command: |
