@@ -31,7 +31,6 @@ if (Platform.OS === 'ios') {
   modelName = ExpoDevice ? ExpoDevice.model : null;
 }
 export const model = modelName;
-export const serialNumber = ExpoDevice ? ExpoDevice.serialNumber : null;
 export const systemName = ExpoDevice ? ExpoDevice.systemName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
 export const uniqueId = ExpoDevice ? ExpoDevice.uniqueId : null;
@@ -41,16 +40,14 @@ export const deviceId = ExpoDevice ? ExpoDevice.deviceId : null;
 export const totalDiskCapacity = ExpoDevice ? ExpoDevice.totalDiskCapacity : null;
 export const supportedABIs = ExpoDevice ? ExpoDevice.supportedABIs : null;
 export function hasNotch(): boolean {
-  return (
-    devicesWithNotch.some(
-      item =>
-        item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
-        item.model.toLowerCase() ===
+  return devicesWithNotch.some(
+    item =>
+      item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
+      item.model.toLowerCase() ===
         (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())
-    ) 
   );
 }
-export async function getFreeDiskStorageAsync(): Promise<string> {
+export async function getFreeDiskStorageAsync(): Promise<number> {
   return await ExpoDevice.getFreeDiskStorageAsync();
 }
 
@@ -59,10 +56,9 @@ export async function getIpAddressAsync(): Promise<string> {
 }
 
 export async function getMACAddressAsync(interfaceName: string): Promise<string> {
-  if(Platform.OS === "ios"){
+  if (Platform.OS === 'ios') {
     return await ExpoDevice.getMACAddressAsync();
-  }
-  else{
+  } else {
     return await ExpoDevice.getMACAddressAsync(interfaceName);
   }
 }
@@ -93,10 +89,17 @@ export async function getCarrierAsync(): Promise<string> {
   return await ExpoDevice.getCarrierAsync();
 }
 
-export async function getTotalDiskCapacityAsync(): Promise<string> {
+export async function getTotalDiskCapacityAsync(): Promise<number> {
   return await ExpoDevice.getTotalDiskCapacityAsync();
 }
 
 export async function getPhoneNumberAsync(): Promise<string> {
   return await ExpoDevice.getPhoneNumberAsync();
+}
+
+export async function getSerialNumberAsync(): Promise<string> {
+  if (!ExpoDevice.getSerialNumberAsync) {
+    throw new UnavailabilityError('expo-device', 'getSerialNumberAsync');
+  }
+  return await ExpoDevice.getSerialNumberAsync();
 }

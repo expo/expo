@@ -1,7 +1,6 @@
 export declare const brand: any;
 export declare const manufacturer: any;
 export declare const model: any;
-export declare const serialNumber: any;
 export declare const systemName: any;
 export declare const totalMemory: any;
 export declare const uniqueId: any;
@@ -11,7 +10,7 @@ export declare const deviceId: any;
 export declare const totalDiskCapacity: any;
 export declare const supportedABIs: any;
 export declare function hasNotch(): boolean;
-export declare function getFreeDiskStorageAsync(): Promise<string>;
+export declare function getFreeDiskStorageAsync(): Promise<number>;
 export declare function getIpAddressAsync(): Promise<string>;
 export declare function getMACAddressAsync(interfaceName: string): Promise<string>;
 export declare function isAirplaneModeEnabledAsync(): Promise<boolean | string>;
@@ -19,5 +18,6 @@ export declare function hasSystemFeatureAsync(feature: string): Promise<boolean>
 export declare function isPinOrFingerprintSetAsync(): Promise<boolean>;
 export declare function getUserAgentAsync(): Promise<string>;
 export declare function getCarrierAsync(): Promise<string>;
-export declare function getTotalDiskCapacityAsync(): Promise<string>;
+export declare function getTotalDiskCapacityAsync(): Promise<number>;
 export declare function getPhoneNumberAsync(): Promise<string>;
+export declare function getSerialNumberAsync(): Promise<string>;

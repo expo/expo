@@ -32,7 +32,6 @@ else {
     modelName = ExpoDevice ? ExpoDevice.model : null;
 }
 export const model = modelName;
-export const serialNumber = ExpoDevice ? ExpoDevice.serialNumber : null;
 export const systemName = ExpoDevice ? ExpoDevice.systemName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
 export const uniqueId = ExpoDevice ? ExpoDevice.uniqueId : null;
@@ -42,9 +41,9 @@ export const deviceId = ExpoDevice ? ExpoDevice.deviceId : null;
 export const totalDiskCapacity = ExpoDevice ? ExpoDevice.totalDiskCapacity : null;
 export const supportedABIs = ExpoDevice ? ExpoDevice.supportedABIs : null;
 export function hasNotch() {
-    return (devicesWithNotch.some(item => item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
+    return devicesWithNotch.some(item => item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
         item.model.toLowerCase() ===
-            (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())));
+            (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase()));
 }
 export async function getFreeDiskStorageAsync() {
     return await ExpoDevice.getFreeDiskStorageAsync();
@@ -53,7 +52,7 @@ export async function getIpAddressAsync() {
     return await ExpoDevice.getIpAddressAsync();
 }
 export async function getMACAddressAsync(interfaceName) {
-    if (Platform.OS === "ios") {
+    if (Platform.OS === 'ios') {
         return await ExpoDevice.getMACAddressAsync();
     }
     else {
@@ -86,5 +85,11 @@ export async function getTotalDiskCapacityAsync() {
 }
 export async function getPhoneNumberAsync() {
     return await ExpoDevice.getPhoneNumberAsync();
+}
+export async function getSerialNumberAsync() {
+    if (!ExpoDevice.getSerialNumberAsync) {
+        throw new UnavailabilityError('expo-device', 'getSerialNumberAsync');
+    }
+    return await ExpoDevice.getSerialNumberAsync();
 }
 //# sourceMappingURL=Device.js.map
