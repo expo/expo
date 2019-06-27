@@ -1180,6 +1180,7 @@ DEPENDENCIES:
   - Amplitude-iOS (~> 3.8)
   - Analytics (~> 3.5)
   - AppAuth (~> 0.4)
+  - Bolts (= 1.9.0)
   - Branch (~> 0.24.2)
   - CocoaLumberjack (~> 3.2.1)
   - Crashlytics (~> 3.8)
@@ -2024,6 +2025,6 @@ SPEC CHECKSUMS:
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: 0652efee8139fb4a8e3abcfde285427ad0f3afc7
+PODFILE CHECKSUM: 9638a455ea3207e997d89181c6ebeba0d6c5daf7
 
 COCOAPODS: 1.7.1

@@ -123,7 +123,7 @@ UM_EXPORT_METHOD_AS(close,
   sqlite3_stmt *statement;
   NSMutableArray *resultRows = [NSMutableArray arrayWithCapacity:0];
   NSMutableArray *entry;
-  long insertId = 0;
+  long long insertId = 0;
   int rowsAffected = 0;
   int i;
 

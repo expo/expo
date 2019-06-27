@@ -69,15 +69,15 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
     [_kernelLinkingDelegate linkingModule:self didOpenUrl:URL.absoluteString];
     resolve(@YES);
   } else {
-    __block BOOL opened = NO;
     [EXUtil performSynchronouslyOnMainThread:^{
-      opened = [RCTSharedApplication() openURL:URL];
+      [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
+        if (success) {
+          resolve(nil);
+        } else {
+          reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+        }
+      }];
     }];
-    if (opened) {
-      resolve(nil);
-    } else {
-      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
-    }
   }
 }
 

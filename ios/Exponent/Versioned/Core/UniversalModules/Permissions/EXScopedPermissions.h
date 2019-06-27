@@ -9,7 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol EXPermissionsScopedModuleDelegate
 
 - (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId;
-- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId DEPRECATED_ATTRIBUTE; // used in SDKs 29–32
+// TODO: Remove once SDK32 is phased out
+- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId; // used in SDKs 29–32
 - (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
 
 @end
