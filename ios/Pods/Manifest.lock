@@ -589,8 +589,8 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXFacebook (5.0.0):
-    - FBSDKCoreKit
-    - FBSDKLoginKit
+    - FBSDKCoreKit (~> 4.0)
+    - FBSDKLoginKit (~> 4.0)
     - UMConstantsInterface
     - UMCore
   - EXFaceDetector (6.0.0-rc.0):
@@ -1946,7 +1946,7 @@ SPEC CHECKSUMS:
   EXContacts: cba6db9b4d8ef590c2185711a648fa32d90041b9
   EXCrypto: fdec92b3f9740e1c27858688d3cff33002f1ff44
   EXDocumentPicker: 03566e97f55139cf76e0a85b2afdb29abb3f46c8
-  EXFacebook: 670578e816563084201dc850b91dc2b8b8578189
+  EXFacebook: 40860eb8eceb9c4e3e91471363d375c7ca11d86f
   EXFaceDetector: 531fdafaa07a582cd898bacf05a68fa03b795d0d
   EXFileSystem: fd395ff6286bbcc355088f606116d094262b0463
   EXFont: 5f09ddaa51c0bbb7906f2ed61ea3de4491693e6b
