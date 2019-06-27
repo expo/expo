@@ -8,7 +8,6 @@ const { Modules } = require('@expo/xdl');
 const chalk = require('chalk');
 const fs = require('fs-extra');
 
-const { saveKernelBundlesAsync } = require('./bundle-tasks');
 const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
 const {
   addVersionAsync,
@@ -314,8 +313,6 @@ gulp.task('update-react-native-netinfo', () => {
   });
 });
 
-// Upload kernel bundles
-gulp.task('bundle', saveKernelBundlesAsync);
 gulp.task('android-jarjar-on-aar', androidVersionLibraries.runJarJarOnAAR);
 gulp.task('android-version-libraries', androidVersionLibraries.versionLibrary);
 
