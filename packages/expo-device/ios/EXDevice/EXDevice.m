@@ -202,7 +202,7 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
 
 - (NSDictionary *)documentFileSystemAttributes {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  return [[NSFileManager defaultManager] attributesOfFileSystemForPath:[paths lastObject] error: nil];
+  return [[NSFileManager defaultManager] attributesOfFileSystemForPath:[paths lastObject] error:nil];
 }
 
 - (NSNumber *)totalDiskCapacity {
