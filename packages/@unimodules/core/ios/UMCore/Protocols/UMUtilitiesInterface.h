@@ -6,6 +6,6 @@
 
 - (nullable NSDictionary *)launchOptions;
 
-- (UIViewController *)currentViewController;
+- (nullable UIViewController *)currentViewController;
 
 @end

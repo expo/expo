@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import "EXCameraManager.h"
+#import <EXCamera/EXCameraManager.h>
 
 @interface EXCameraUtils : NSObject
 
@@ -24,7 +24,8 @@
 + (UIImage *)generatePhotoOfSize:(CGSize)size;
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
 + (NSString *)writeImage:(NSData *)image toPath:(NSString *)path;
-+ (void)updatePhotoMetadata:(CMSampleBufferRef)imageSampleBuffer withAdditionalData:(NSDictionary *)additionalData inResponse:(NSMutableDictionary *)response;
++ (void)updateExifMetadata:(NSDictionary *)metadata withAdditionalData:(NSDictionary *)additionalData inResponse:(NSMutableDictionary *)response;
++ (void)updateImageSampleMetadata:(CMSampleBufferRef)imageSampleBuffer withAdditionalData:(NSDictionary *)additionalData inResponse:(NSMutableDictionary *)response;
 
 @end
 
