@@ -3,7 +3,7 @@ import * as FileSystem from 'expo-file-system';
 import Constants from 'expo-constants';
 import computeMd5 from 'blueimp-md5';
 import { getAssetByID } from './AssetRegistry';
-import resolveAssetSource, { setCustomSourceTransformer } from './resolveAssetSource';
+import resolveAssetSource from './resolveAssetSource';
 
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
@@ -239,13 +239,3 @@ export class Asset {
     }
   }
 }
-
-// Override React Native's asset resolution for `Image` components
-setCustomSourceTransformer(resolver => {
-  try {
-    const asset = Asset.fromMetadata(resolver.asset);
-    return resolver.fromSource(asset.downloaded ? asset.localUri! : asset.uri);
-  } catch (e) {
-    return resolver.defaultAsset();
-  }
-});
