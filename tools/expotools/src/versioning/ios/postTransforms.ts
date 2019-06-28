@@ -1,6 +1,15 @@
-'use strict';
+import chalk from 'chalk';
 
-const chalk = require('chalk');
+interface TransformConfig {
+  input: string;
+  versionPrefix: string;
+}
+
+interface TransformPattern {
+  paths: string | string[];
+  replace: RegExp | string;
+  with: string;
+}
 
 const transformFunctions = [
   // TODO: move previous transforming steps here as well
@@ -8,7 +17,7 @@ const transformFunctions = [
   postTransforms,
 ];
 
-function injectMacros({ versionPrefix }) {
+function injectMacros({ versionPrefix }: TransformConfig): TransformPattern[] {
   return [
     {
       // add a macro ABIXX_0_0EX_REMOVE_VERSION(str) to RCTDefines
@@ -45,7 +54,7 @@ function injectMacros({ versionPrefix }) {
   ]
 }
 
-function postTransforms({ versionPrefix }) {
+function postTransforms({ versionPrefix }: TransformConfig): TransformPattern[] {
   return [
     // react-native
     {
@@ -122,7 +131,7 @@ function postTransforms({ versionPrefix }) {
 
 async function runTransformPipelineIOSAsync({ targetPath, input, versionPrefix }) {
   let output = input;
-  const matches = [];
+  const matches: { value: string, line: number, replacedWith: string }[] = [];
 
   for (const transformFunction of transformFunctions) {
     const result = await transformFunction({ input: output, versionPrefix });
@@ -138,7 +147,7 @@ async function runTransformPipelineIOSAsync({ targetPath, input, versionPrefix }
 
             matches.push({
               value: RegExp.lastMatch,
-              line: RegExp.leftContext.split(/\n/g).length,
+              line: (RegExp as unknown as { leftContext: string }).leftContext.split(/\n/g).length,
               replacedWith: transform.with.replace(/\$[1-9]/g, m => regExpCaptures[m]),
             });
             output = newOutput;
@@ -154,7 +163,7 @@ async function runTransformPipelineIOSAsync({ targetPath, input, versionPrefix }
 
     for (const match of matches) {
       console.log(
-        `${chalk.gray(match.line)}:`,
+        `${chalk.gray(String(match.line))}:`,
         chalk.blue(match.value.trimRight()),
         chalk.red('->'),
         chalk.green(match.replacedWith.trimRight()),
@@ -166,7 +175,7 @@ async function runTransformPipelineIOSAsync({ targetPath, input, versionPrefix }
   return output;
 }
 
-function pathMatchesTransformPaths(path, transformPaths) {
+function pathMatchesTransformPaths(path: string, transformPaths: string | string[]): boolean {
   if (typeof transformPaths === 'string') {
     return path.includes(transformPaths);
   }
@@ -176,14 +185,17 @@ function pathMatchesTransformPaths(path, transformPaths) {
   return false;
 }
 
+type RegExpCapturesKeys = '$1' | '$2' | '$3' | '$4' | '$5' | '$6' | '$7' | '$8' | '$9';
+type RegExpCaptures = { [key in RegExpCapturesKeys]?: string };
+
 // Copies `$1`-`$9` fields from RegExp as they would be overwritten by `replace` function where we use these captures.
-function copyRegExpCaptures() {
+function copyRegExpCaptures(): RegExpCaptures {
   return Array(9).fill(0).map((value, index) => `$${index + 1}`).reduce((acc, key) => {
     acc[key] = RegExp[key];
     return acc;
   }, {});
 }
 
-module.exports = {
+export {
   runTransformPipelineIOSAsync,
 };
