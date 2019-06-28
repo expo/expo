@@ -28,7 +28,6 @@
 @interface EXDevice() {
 }
 
-@property (nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) NSString *webViewUserAgent;
 @property (nonatomic) bool isEmulator;
 
@@ -50,25 +49,27 @@ UM_EXPORT_METHOD_AS(getUserAgentAsync,
 {
   __weak EXDevice *weakSelf = self;
   EXDevice *strongSelf = weakSelf;
+  
+  __block WKWebView *webView;
+  
   if (!strongSelf.webViewUserAgent) {
     // We need to retain the webview because it runs an async task.
-    strongSelf.webView = [[WKWebView alloc] init];
+    webView = [[WKWebView alloc] init];
     
-    [strongSelf.webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+    [webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
       if (error) {
         reject(@"ERR_CONSTANTS", error.localizedDescription, error);
         
-        // Destroy the webview now that it's task is complete.
-        strongSelf.webView = nil;
-        
+        // Destroy the webview now that its task is complete.
+        webView = nil;
         return;
       }
       
       strongSelf.webViewUserAgent = [NSString stringWithFormat:@"%@", result];
       resolve(UMNullIfNil(strongSelf.webViewUserAgent));
       
-      // Destroy the webview now that it's task is complete.
-      strongSelf.webView = nil;
+      // Destroy the webview now that its task is complete.
+      webView = nil;
     }];
   } else {
     resolve(UMNullIfNil(strongSelf.webViewUserAgent));
