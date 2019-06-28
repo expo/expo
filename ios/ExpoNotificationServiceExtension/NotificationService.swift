@@ -41,9 +41,10 @@ class NotificationService: UNNotificationServiceExtension {
 					return
 				}
 
-				if let location = location {
+				if let location = location, let response = response {
 					// Prefix the filename with a random UUID to avoid having file with the same file name during `moveItem`.
-					let temporaryURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + attachmentURL.lastPathComponent)
+					// We also add a suffix (file extension) because sometimes the remote image might not a file extension but is nevertheless still an image/video/audio. Else `UNNotificationAttachment` won't know which type of the file it is.
+					let temporaryURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + attachmentURL.lastPathComponent + self.determineFileType(response.mimeType))
 					do {
 						try FileManager.default.moveItem(at: location, to: temporaryURL)
 						let attachment = try? UNNotificationAttachment(identifier: attachmentURLString, url: temporaryURL)
@@ -57,6 +58,31 @@ class NotificationService: UNNotificationServiceExtension {
 				}.resume()
 		} else {
 			callback(nil)
+		}
+	}
+
+	// Supported types: https://developer.apple.com/documentation/usernotifications/unnotificationattachment
+	func determineFileType(_ fileType: String?) -> String {
+		print("\(fileType)")
+		switch fileType {
+		case "image/jpeg":
+			return ".jpg"
+		case "image/gif":
+			return ".gif"
+		case "image/png":
+			return ".png"
+		case "video/mpeg":
+			return ".mpg"
+		case "video/mp4":
+			return ".mp4"
+		case "video/x-msvideo":
+			return ".avi"
+		case "audio/mpeg":
+			return ".mp3"
+		case "audio/wav":
+			return ".wav"
+		default:
+			return ""
 		}
 	}
 
