@@ -15,13 +15,7 @@ public class BezierNode extends Node {
     protected PointF b = new PointF();
     protected PointF c = new PointF();
 
-    public CubicBezierInterpolator(PointF start, PointF end) throws IllegalArgumentException {
-      if (start.x < 0 || start.x > 1) {
-        throw new IllegalArgumentException("startX value must be in the range [0, 1]");
-      }
-      if (end.x < 0 || end.x > 1) {
-        throw new IllegalArgumentException("endX value must be in the range [0, 1]");
-      }
+    public CubicBezierInterpolator(PointF start, PointF end) {
       this.start = start;
       this.end = end;
     }
