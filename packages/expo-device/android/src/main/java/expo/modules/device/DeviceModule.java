@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.app.ActivityCompat;
 import android.app.KeyguardManager;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
@@ -47,7 +46,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   private Context mContext;
   private ActivityProvider mActivityProvider;
   private Activity mActivity;
-  private Permissions mPermissions;
 
   public DeviceModule(Context context) {
     super(context);
@@ -92,7 +90,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     mModuleRegistry = moduleRegistry;
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mActivity = mActivityProvider.getCurrentActivity();
-    mPermissions = mModuleRegistry.getModule(Permissions.class);
   }
 
   @Override
@@ -187,6 +184,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
         promise.reject(e);
       }
     } else {
+      Permissions mPermissions = mModuleRegistry.getModule(Permissions.class);
       String permissionsTable[] = {Manifest.permission.READ_PHONE_STATE};
       mPermissions.askForPermissions(permissionsTable, new Permissions.PermissionsRequestListener() {
         @Override
@@ -331,39 +329,4 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       promise.reject(e);
     }
   }
-
-  @ExpoMethod
-  public void getPhoneNumberAsync(final Promise promise) {
-
-    int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE);
-    if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-      try {
-        TelephonyManager telMgr = (TelephonyManager) mContext.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-        promise.resolve(telMgr.getLine1Number());
-      } catch (SecurityException | NullPointerException e) {
-        Log.e(TAG, e.getMessage());
-        promise.reject(e);
-      }
-    } else {
-      String permissionsTable[] = { Manifest.permission.READ_PHONE_STATE};
-      mPermissions.askForPermissions(permissionsTable, new Permissions.PermissionsRequestListener() {
-        @Override
-        public void onPermissionsResult(int[] results) {
-          if (results[0] == PackageManager.PERMISSION_GRANTED) {
-            try {
-              TelephonyManager telMgr = (TelephonyManager) mContext.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-              promise.resolve(telMgr.getLine1Number());
-            } catch (SecurityException e) {
-              Log.e(TAG, e.getMessage());
-              promise.reject(e);
-            }
-          } else {
-            promise.reject(new SecurityException("User rejected permissions"));
-          }
-        }
-      });
-    }
-  }
-
-
 }

@@ -93,10 +93,6 @@ export async function getTotalDiskCapacityAsync(): Promise<number> {
   return await ExpoDevice.getTotalDiskCapacityAsync();
 }
 
-export async function getPhoneNumberAsync(): Promise<string> {
-  return await ExpoDevice.getPhoneNumberAsync();
-}
-
 export async function getSerialNumberAsync(): Promise<string> {
   if (!ExpoDevice.getSerialNumberAsync) {
     throw new UnavailabilityError('expo-device', 'getSerialNumberAsync');

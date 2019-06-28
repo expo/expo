@@ -83,9 +83,6 @@ export async function getCarrierAsync() {
 export async function getTotalDiskCapacityAsync() {
     return await ExpoDevice.getTotalDiskCapacityAsync();
 }
-export async function getPhoneNumberAsync() {
-    return await ExpoDevice.getPhoneNumberAsync();
-}
 export async function getSerialNumberAsync() {
     if (!ExpoDevice.getSerialNumberAsync) {
         throw new UnavailabilityError('expo-device', 'getSerialNumberAsync');

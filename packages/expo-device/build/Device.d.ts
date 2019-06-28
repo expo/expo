@@ -19,5 +19,4 @@ export declare function isPinOrFingerprintSetAsync(): Promise<boolean>;
 export declare function getUserAgentAsync(): Promise<string>;
 export declare function getCarrierAsync(): Promise<string>;
 export declare function getTotalDiskCapacityAsync(): Promise<number>;
-export declare function getPhoneNumberAsync(): Promise<string>;
 export declare function getSerialNumberAsync(): Promise<string>;
