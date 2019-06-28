@@ -6,19 +6,15 @@ In addition to the questions below, see the [Expo Forum](http://forums.expo.io/)
 
 ## How much does Expo cost?
 
-Expo is free.
+Expo is free and open source.
 
-Our plan is to keep it this way indefinitely.
-
-Expo is also open source, so you don't have to trust us to stick to that plan.
-
-We might eventually charge money for services built on top of Expo or for some kind of premium level of support and consulting.
+You can view the source for the Expo SDK and client at https://github.com/expo/expo
 
 ## How do you make money if Expo is free?
 
-Right now, we don't make any money. We have a small team that just wants to work on this, and we keep our expenses low and are mostly self-funded. We can keep working on this project like this for a while as long as there are people who want to use it.
+Just because you can run everything that Expo provides on your own hardware doesn't mean setting up and managing all of the services you need is the right fit for your team.
 
-We think if we can make Expo good enough, we can eventually help developers make money, and we could take a cut of that. This could be through helping them collect money from people using their software, or by helping them place ads in their apps, or other things. We don't really have a clear plan for this yet; our first priority is just to make Expo work really well and be as popular as possible.
+If that sounds like you, you can see what we offer at https://expo.io/developer-services
 
 ## What is the difference between Expo and React Native?
 
