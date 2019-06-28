@@ -20,10 +20,6 @@ BranchStandardEvent BranchStandardEventInitiatePurchase   = @"INITIATE_PURCHASE"
 BranchStandardEvent BranchStandardEventAddPaymentInfo     = @"ADD_PAYMENT_INFO";
 BranchStandardEvent BranchStandardEventPurchase           = @"PURCHASE";
 BranchStandardEvent BranchStandardEventSpendCredits       = @"SPEND_CREDITS";
-BranchStandardEvent BranchStandardEventSubscribe          = @"SUBSCRIBE";
-BranchStandardEvent BranchStandardEventStartTrial         = @"START_TRIAL";
-BranchStandardEvent BranchStandardEventClickAd            = @"CLICK_AD";
-BranchStandardEvent BranchStandardEventViewAd             = @"VIEW_AD";
 
 // Content Events
 
@@ -39,9 +35,6 @@ BranchStandardEvent BranchStandardEventCompleteRegistration   = @"COMPLETE_REGIS
 BranchStandardEvent BranchStandardEventCompleteTutorial       = @"COMPLETE_TUTORIAL";
 BranchStandardEvent BranchStandardEventAchieveLevel           = @"ACHIEVE_LEVEL";
 BranchStandardEvent BranchStandardEventUnlockAchievement      = @"UNLOCK_ACHIEVEMENT";
-BranchStandardEvent BranchStandardEventInvite                 = @"INVITE";
-BranchStandardEvent BranchStandardEventLogin                  = @"LOGIN";
-BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
 
 @implementation BranchEventRequest
 
@@ -78,14 +71,14 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
 		self.completion(dictionary, error);
 }
 
-#pragma mark BranchEventRequest NSSecureCoding
+#pragma mark BranchEventRequest NSCoding
 
 - (instancetype)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
 	if (!self) return self;
 
-	self.serverURL = [decoder decodeObjectOfClass:NSString.class forKey:@"serverURL"];
-	self.eventDictionary = [decoder decodeObjectOfClass:NSDictionary.class forKey:@"eventDictionary"];
+	self.serverURL = [decoder decodeObjectForKey:@"serverURL"];
+	self.eventDictionary = [decoder decodeObjectForKey:@"eventDictionary"];
     return self;
 }
 
@@ -93,10 +86,6 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
     [super encodeWithCoder:coder];
     [coder encodeObject:self.serverURL forKey:@"serverURL"];
     [coder encodeObject:self.eventDictionary forKey:@"eventDictionary"];
-}
-
-+ (BOOL) supportsSecureCoding {
-    return YES;
 }
 
 @end
@@ -108,7 +97,6 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
     NSMutableArray      *_contentItems;
 }
 @property (nonatomic, strong) NSString*  eventName;
-
 @end
 
 @implementation BranchEvent : NSObject
@@ -117,8 +105,6 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
     self = [super init];
     if (!self) return self;
     _eventName = name;
-    
-    _adType = BranchEventAdTypeNone;
     return self;
 }
 
@@ -141,7 +127,7 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
 
 + (instancetype) customEventWithName:(NSString*)name
                          contentItem:(BranchUniversalObject*)contentItem {
-    BranchEvent *e = [BranchEvent customEventWithName:name];
+    BranchEvent *e = [[BranchEvent alloc] initWithName:name];
     if (contentItem) {
         e.contentItems = (NSMutableArray*) @[ contentItem ];
     }
@@ -163,8 +149,6 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
 }
 
 - (void) setContentItems:(NSMutableArray<BranchUniversalObject *> *)contentItems {
-    
-    
     if ([contentItems isKindOfClass:[BranchUniversalObject class]]) {
         _contentItems = [NSMutableArray arrayWithObject:contentItems];
     } else
@@ -173,29 +157,9 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
     }
 }
 
-- (NSString *)jsonStringForAdType:(BranchEventAdType)adType {
-    switch (adType) {
-        case BranchEventAdTypeBanner:
-            return @"BANNER";
-            
-        case BranchEventAdTypeInterstitial:
-            return @"INTERSTITIAL";
-            
-        case BranchEventAdTypeRewardedVideo:
-            return @"REWARDED_VIDEO";
-            
-        case BranchEventAdTypeNative:
-            return @"NATIVE";
-            
-        case BranchEventAdTypeNone:
-        default:
-            return nil;
-    }
-}
-
 - (NSDictionary*) dictionary {
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
-    
+
     #define BNCFieldDefinesDictionaryFromSelf
     #include "BNCFieldDefines.h"
 
@@ -212,11 +176,6 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
     
     #include "BNCFieldDefines.h"
 
-    NSString *adTypeString = [self jsonStringForAdType:self.adType];
-    if (adTypeString.length > 0) {
-        [dictionary setObject:adTypeString forKey:@"ad_type"];
-    }
-    
     return dictionary;
 }
 
@@ -238,13 +197,6 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
         BranchStandardEventCompleteTutorial,
         BranchStandardEventAchieveLevel,
         BranchStandardEventUnlockAchievement,
-        BranchStandardEventInvite,
-        BranchStandardEventLogin,
-        BranchStandardEventReserve,
-        BranchStandardEventSubscribe,
-        BranchStandardEventStartTrial,
-        BranchStandardEventClickAd,
-        BranchStandardEventViewAd,
     ];
 }
 
@@ -255,39 +207,16 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
         return;
     }
 
-    NSDictionary *eventDictionary = [self buildEventDictionary];
-    BranchEventRequest *request = [self buildRequestWithEventDictionary:eventDictionary];
-    [[Branch getInstance] sendServerRequestWithoutSession:request];
-}
-
-- (BranchEventRequest *)buildRequestWithEventDictionary:(NSDictionary *)eventDictionary {
-    BNCPreferenceHelper *preferenceHelper = [BNCPreferenceHelper preferenceHelper];
-    
-    NSString *serverURL =
-    ([self.class.standardEvents containsObject:self.eventName])
-    ? [NSString stringWithFormat:@"%@/%@", preferenceHelper.branchAPIURL, @"v2/event/standard"]
-    : [NSString stringWithFormat:@"%@/%@", preferenceHelper.branchAPIURL, @"v2/event/custom"];
-    
-    BranchEventRequest *request =
-    [[BranchEventRequest alloc]
-     initWithServerURL:[NSURL URLWithString:serverURL]
-     eventDictionary:eventDictionary
-     completion:nil];
-    
-    return request;
-}
-
-- (NSDictionary *)buildEventDictionary {
     NSMutableDictionary *eventDictionary = [NSMutableDictionary new];
     eventDictionary[@"name"] = _eventName;
-    
+
     NSDictionary *propertyDictionary = [self dictionary];
     if (propertyDictionary.count) {
         eventDictionary[@"event_data"] = propertyDictionary;
     }
     eventDictionary[@"custom_data"] = eventDictionary[@"event_data"][@"custom_data"];
     eventDictionary[@"event_data"][@"custom_data"] = nil;
-    
+
     NSMutableArray *contentItemDictionaries = [NSMutableArray new];
     for (BranchUniversalObject *contentItem in self.contentItems) {
         NSDictionary *dictionary = [contentItem dictionary];
@@ -295,11 +224,24 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
             [contentItemDictionaries addObject:dictionary];
         }
     }
-    
+
     if (contentItemDictionaries.count) {
         eventDictionary[@"content_items"] = contentItemDictionaries;
     }
-    return eventDictionary;
+
+    BNCPreferenceHelper *preferenceHelper = [BNCPreferenceHelper preferenceHelper];
+    NSString *serverURL =
+        ([self.class.standardEvents containsObject:self.eventName])
+        ? [NSString stringWithFormat:@"%@/%@", preferenceHelper.branchAPIURL, @"v2/event/standard"]
+        : [NSString stringWithFormat:@"%@/%@", preferenceHelper.branchAPIURL, @"v2/event/custom"];
+
+    BranchEventRequest *request =
+		[[BranchEventRequest alloc]
+			initWithServerURL:[NSURL URLWithString:serverURL]
+			eventDictionary:eventDictionary
+			completion:nil];
+
+    [[Branch getInstance] sendServerRequestWithoutSession:request];
 }
 
 - (NSString*_Nonnull) description {

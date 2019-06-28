@@ -1,18 +1,25 @@
-/**
- @file          NSString+Branch.m
- @package       Branch-SDK
- @brief         NSString Additions
 
- @author        Edward Smith
- @date          February 2017
- @copyright     Copyright © 2017 Branch. All rights reserved.
-*/
+
+//--------------------------------------------------------------------------------------------------
+//
+//                                                                                 NSString+Branch.m
+//                                                                                  Branch.framework
+//
+//                                                                                NSString Additions
+//                                                                       Edward Smith, February 2017
+//
+//                                             -©- Copyright © 2017 Branch, all rights reserved. -©-
+//
+//--------------------------------------------------------------------------------------------------
+
 
 #import "NSString+Branch.h"
+
 
 __attribute__((constructor)) void BNCForceNSStringCategoryToLoad() {
     //  Nothing here, but forces linker to load the category.
 }
+
 
 @implementation NSString (Branch)
 

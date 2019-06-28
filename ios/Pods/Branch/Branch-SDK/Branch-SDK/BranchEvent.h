@@ -23,10 +23,6 @@ FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventInitiatePurcha
 FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventAddPaymentInfo;
 FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventPurchase;
 FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventSpendCredits;
-FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventSubscribe;
-FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventStartTrial;
-FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventClickAd;
-FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventViewAd;
 
 ///@name Content Events
 
@@ -42,17 +38,6 @@ FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventCompleteRegist
 FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventCompleteTutorial;
 FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventAchieveLevel;
 FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventUnlockAchievement;
-FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventInvite;
-FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventLogin;
-FOUNDATION_EXPORT BranchStandardEvent _Nonnull BranchStandardEventReserve;
-
-typedef NS_ENUM(NSInteger, BranchEventAdType) {
-    BranchEventAdTypeNone,
-    BranchEventAdTypeBanner,
-    BranchEventAdTypeInterstitial,
-    BranchEventAdTypeRewardedVideo,
-    BranchEventAdTypeNative
-};
 
 #pragma mark - BranchEvent
 
@@ -80,10 +65,6 @@ typedef NS_ENUM(NSInteger, BranchEventAdType) {
 @property (nonatomic, strong) NSString*_Nullable                affiliation;
 @property (nonatomic, strong) NSString*_Nullable                eventDescription;
 @property (nonatomic, strong) NSString*_Nullable                searchQuery;
-
-@property (nonatomic, assign) BranchEventAdType                 adType;
-
-
 @property (nonatomic, copy) NSMutableArray<BranchUniversalObject*>*_Nonnull       contentItems;
 @property (nonatomic, copy) NSMutableDictionary<NSString*, NSString*> *_Nonnull   customData;
 
@@ -94,7 +75,7 @@ typedef NS_ENUM(NSInteger, BranchEventAdType) {
 
 #pragma mark - BranchEventRequest
 
-@interface BranchEventRequest : BNCServerRequest <NSSecureCoding>
+@interface BranchEventRequest : BNCServerRequest <NSCoding>
 
 - (instancetype _Nonnull) initWithServerURL:(NSURL*_Nonnull)serverURL
                    eventDictionary:(NSDictionary*_Nullable)eventDictionary

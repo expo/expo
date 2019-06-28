@@ -1,0 +1,1 @@
+//# sourceMappingURL=Battery.types.js.map

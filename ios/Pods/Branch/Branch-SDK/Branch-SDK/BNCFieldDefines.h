@@ -138,7 +138,7 @@
 
     #define addBoolean(field, name) { \
         if (self.field) { \
-            dictionary[@#name] = (__bridge NSNumber*) kCFBooleanTrue; \
+            dictionary[@#name] = CFBridgingRelease(kCFBooleanTrue); \
         } \
     }
 

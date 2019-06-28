@@ -119,7 +119,7 @@
 
 @interface BNCStrongMatchHelper ()
 @property (assign, nonatomic) BOOL requestInProgress;
-@property (readwrite) BOOL shouldDelayInstallRequest;
+@property (assign, nonatomic) BOOL shouldDelayInstallRequest;
 @property (strong, nonatomic) UIWindow *primaryWindow;
 @property (strong, nonatomic) BNCMatchView *matchView;
 @property (strong, nonatomic) BNCMatchViewController *matchViewController;
@@ -148,11 +148,8 @@
     NSString *appDomainLinkURL;
     id ret = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"branch_app_domain"];
     if (ret) {
-        if ([ret isKindOfClass:[NSString class]]) {
-            appDomainLinkURL = ret;
-            if (!([appDomainLinkURL hasPrefix:@"https:"] || [appDomainLinkURL hasPrefix:@"http:"]))
-                appDomainLinkURL = [NSString stringWithFormat:@"https://%@", ret];
-        }
+        if ([ret isKindOfClass:[NSString class]])
+            appDomainLinkURL = [NSString stringWithFormat:@"https://%@", ret];
     } else {
         appDomainLinkURL = BNC_LINK_URL;
     }
@@ -265,8 +262,6 @@
 
 - (BOOL) willLoadViewControllerWithURL:(NSURL*)matchURL {
     if (self.primaryWindow) return NO;
-    if (!([matchURL.scheme isEqualToString:@"https"] || [matchURL.scheme isEqualToString:@"http"]))
-        return NO;
 
     //  Dynamically subclass the SFSafariViewController if available.
     //  This allows us to compile and link to an app that doesn't
@@ -301,13 +296,7 @@
     BNCLogDebugSDK(@"Safari is initializing.");
     self.primaryWindow = [UIViewController bnc_currentWindow];
 
-    @try {
-        self.matchViewController = [[BNCMatchViewControllerSubclass alloc] initWithURL:matchURL];
-    }
-    @catch (id e) {
-        BNCLogError(@"Can't create BNCMatchViewController with URL '%@': %@.", matchURL, e);
-        self.matchViewController = nil;
-    }
+    self.matchViewController = [[BNCMatchViewControllerSubclass alloc] initWithURL:matchURL];
     if (!self.matchViewController) return NO;
     
     self.matchViewController.delegate = self;

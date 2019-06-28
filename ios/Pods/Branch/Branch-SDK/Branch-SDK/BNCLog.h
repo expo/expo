@@ -132,9 +132,9 @@ extern void BNCLogWriteMessageFormat(
     BNCLogLevel logLevel,
     const char *_Nullable sourceFileName,
     int32_t sourceLineNumber,
-    NSString* _Nullable messageFormat,
+    id _Nullable messageFormat,
     ...
-) NS_FORMAT_FUNCTION(4,5);
+);
 
 /// Swift-friendly wrapper for BNCLogWriteMessageFormat
 extern void BNCLogWriteMessage(

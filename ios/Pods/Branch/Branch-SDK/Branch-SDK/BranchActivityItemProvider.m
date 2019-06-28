@@ -176,6 +176,7 @@
 #pragma mark - Internals
 
 + (NSString *)humanReadableChannelWithActivityType:(NSString *)activityString {
+    NSString *channel = activityString; //default
     NSDictionary *channelMappings = [[NSDictionary alloc] initWithObjectsAndKeys:
         @"Pasteboard",  UIActivityTypeCopyToPasteboard,
         @"Email",       UIActivityTypeMail,
@@ -195,7 +196,6 @@
         @"LINE",        @"jp.naver.line.Share",
 		@"Pinterest",   @"pinterest.ShareExtension",
         @"Skype",       @"com.skype.skype.sharingextension",
-        @"Apple Reminders", @"com.apple.reminders.RemindersEditorExtension",
 
         //  Keys for older app versions --
 
@@ -204,12 +204,11 @@
 
         nil
     ];
-    // Set to a more human readable string if we can identify it.
-    if (activityString) {
-        NSString*humanString = channelMappings[activityString];
-        if (humanString) activityString = humanString;
+    // Set to a more human readible sting if we can identify it
+    if ([channelMappings objectForKey:activityString]) {
+        channel = channelMappings[activityString];
     }
-    return activityString;
+    return channel;
 }
 
 - (NSDictionary *)paramsForChannel:(NSString *)channel {

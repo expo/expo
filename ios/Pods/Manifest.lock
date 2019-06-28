@@ -527,9 +527,9 @@ PODS:
     - Bolts/Tasks
   - Bolts/Tasks (1.9.0)
   - boost-for-react-native (1.63.0)
-  - Branch (0.27.1):
-    - Branch/Core (= 0.27.1)
-  - Branch/Core (0.27.1)
+  - Branch (0.24.2):
+    - Branch/Core (= 0.24.2)
+  - Branch/Core (0.24.2)
   - CocoaLumberjack (3.2.1):
     - CocoaLumberjack/Default (= 3.2.1)
     - CocoaLumberjack/Extensions (= 3.2.1)
@@ -562,6 +562,8 @@ PODS:
   - EXBarCodeScanner (5.0.0):
     - UMCore
     - UMImageLoaderInterface
+  - EXBattery (1.0.0):
+    - UMCore
   - EXBlur (5.0.0):
     - UMCore
   - EXBrightness (5.0.0):
@@ -1181,7 +1183,7 @@ DEPENDENCIES:
   - Analytics (~> 3.5)
   - AppAuth (~> 0.4)
   - Bolts (= 1.9.0)
-  - Branch (~> 0.27.1)
+  - Branch (~> 0.24.2)
   - CocoaLumberjack (~> 3.2.1)
   - Crashlytics (~> 3.8)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -1193,6 +1195,7 @@ DEPENDENCIES:
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
+  - EXBattery (from `../packages/expo-battery/ios`)
   - EXBlur (from `../packages/expo-blur/ios`)
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
@@ -1625,6 +1628,9 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     :path: !ruby/object:Pathname
     path: "../packages/expo-barcode-scanner/ios"
+  EXBattery:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-battery/ios"
   EXBlur:
     :path: !ruby/object:Pathname
     path: "../packages/expo-blur/ios"
@@ -1927,7 +1933,7 @@ SPEC CHECKSUMS:
   AppAuth: cd34aac431e5c77c46ec7f03935377faa8c5808b
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Branch: 1ace77c04b6e3efbf982bf4364f0662bfac156a0
+  Branch: 0d98d22745a9b68bcb4fa6dc1c6a92b64d4fdd7b
   CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
   Crashlytics: 5aa8e90dcbf2f34898b4f5a0037787531246cca0
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
@@ -1939,6 +1945,7 @@ SPEC CHECKSUMS:
   EXAV: c2c4f27b9be48c3093f0b3ac659cddde28f82cb7
   EXBackgroundFetch: 27a0f7edf94435ba0cae754c404d963018e98c39
   EXBarCodeScanner: 8f207ba31373d527408d7c8c4d197fdcdabe4444
+  EXBattery: f7243e77c504a5b929809adc030338de35f3462c
   EXBlur: 6671e100cf2d844e24d5afac72dc88a0124cf381
   EXBrightness: bf95e6eec3b9d5ba965e2dbf236d913884dd555a
   EXCalendar: e0539468aae24ec9b40aff116319b2162edf0197
@@ -2025,6 +2032,6 @@ SPEC CHECKSUMS:
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: 82ae11a28de46d1f66c094a46dfe534a8c8726e4
+PODFILE CHECKSUM: 060de318bff6f57fae5c34ad4faa263be8606e84
 
 COCOAPODS: 1.7.1
