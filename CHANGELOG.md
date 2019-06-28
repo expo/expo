@@ -4,6 +4,10 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ## master
 
+### 📚 3rd party library updates
+
+- `react-native-webview` updated from `5.8.0` to `5.12.0`
+
 ### 🛠 Breaking changes
 
 - Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
