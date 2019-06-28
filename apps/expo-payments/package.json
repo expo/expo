@@ -1,5 +1,7 @@
 {
   "main": "__generated__/AppEntry.js",
+  "name": "Expo Payments",
+  "version": "1.0.0",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
