@@ -310,8 +310,8 @@
 		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
 		E396BB759F55EA40EB120B5A /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */; };
-		ED1AA0A322C5329300C7D0CE /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1AA0A222C5329300C7D0CE /* NotificationService.swift */; };
-		ED1AA0A722C5329300C7D0CE /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = ED1AA0A022C5329200C7D0CE /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		EDCF2D4622C6A2EB00D1809C /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = EDCF2D4522C6A2EB00D1809C /* NotificationService.m */; };
+		EDCF2D4A22C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = EDCF2D4222C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
 		F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */; };
 		F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */; };
@@ -338,11 +338,11 @@
 			remoteGlobalIDString = 78CEE2BF1ACD07D70095B124;
 			remoteInfo = Exponent;
 		};
-		ED1AA0A522C5329300C7D0CE /* PBXContainerItemProxy */ = {
+		EDCF2D4822C6A2EB00D1809C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 78CEE2B81ACD07D70095B124 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = ED1AA09F22C5329200C7D0CE;
+			remoteGlobalIDString = EDCF2D4122C6A2EB00D1809C;
 			remoteInfo = ExpoNotificationServiceExtension;
 		};
 /* End PBXContainerItemProxy section */
@@ -354,7 +354,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				ED1AA0A722C5329300C7D0CE /* ExpoNotificationServiceExtension.appex in Embed App Extensions */,
+				EDCF2D4A22C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -973,9 +973,10 @@
 		CDBF79F820868287009B25D6 /* EXStoreReview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStoreReview.h; sourceTree = "<group>"; };
 		CDBF79F920868287009B25D6 /* EXStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStoreReview.m; sourceTree = "<group>"; };
 		EB9676B1E402ED70AEB10A7A /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		ED1AA0A022C5329200C7D0CE /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		ED1AA0A222C5329300C7D0CE /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
-		ED1AA0A422C5329300C7D0CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EDCF2D4222C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EDCF2D4422C6A2EB00D1809C /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		EDCF2D4522C6A2EB00D1809C /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; wrapsLines = 1; };
+		EDCF2D4722C6A2EB00D1809C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppRecord.m; sourceTree = "<group>"; };
 		F11E530E21601058007ACF56 /* EXHeadlessAppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppLoader.h; sourceTree = "<group>"; };
 		F11E530F21601059007ACF56 /* EXHeadlessAppRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppRecord.h; sourceTree = "<group>"; };
@@ -1019,7 +1020,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		ED1AA09D22C5329200C7D0CE /* Frameworks */ = {
+		EDCF2D3F22C6A2EB00D1809C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1339,7 +1340,7 @@
 				B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */,
 				F12A1AB722ABD461008542C6 /* Build-Phases */,
 				B505BA0F20CAF77A0046ACFB /* Tests */,
-				ED1AA0A122C5329300C7D0CE /* ExpoNotificationServiceExtension */,
+				EDCF2D4322C6A2EB00D1809C /* ExpoNotificationServiceExtension */,
 				3050F5A98E56E9379C36ABD2 /* Frameworks */,
 				A17682721BE42C7F0057BBF2 /* Libraries */,
 				78CEE2C11ACD07D70095B124 /* Products */,
@@ -1355,7 +1356,7 @@
 				78CEE2C01ACD07D70095B124 /* Exponent.app */,
 				B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */,
 				B505BA0E20CAF77A0046ACFB /* Tests.xctest */,
-				ED1AA0A022C5329200C7D0CE /* ExpoNotificationServiceExtension.appex */,
+				EDCF2D4222C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2182,11 +2183,12 @@
 			path = Cognito;
 			sourceTree = "<group>";
 		};
-		ED1AA0A122C5329300C7D0CE /* ExpoNotificationServiceExtension */ = {
+		EDCF2D4322C6A2EB00D1809C /* ExpoNotificationServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
-				ED1AA0A222C5329300C7D0CE /* NotificationService.swift */,
-				ED1AA0A422C5329300C7D0CE /* Info.plist */,
+				EDCF2D4422C6A2EB00D1809C /* NotificationService.h */,
+				EDCF2D4522C6A2EB00D1809C /* NotificationService.m */,
+				EDCF2D4722C6A2EB00D1809C /* Info.plist */,
 			);
 			path = ExpoNotificationServiceExtension;
 			sourceTree = "<group>";
@@ -2232,7 +2234,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				ED1AA0A622C5329300C7D0CE /* PBXTargetDependency */,
+				EDCF2D4922C6A2EB00D1809C /* PBXTargetDependency */,
 			);
 			name = Exponent;
 			productName = Exponent;
@@ -2277,13 +2279,13 @@
 			productReference = B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		ED1AA09F22C5329200C7D0CE /* ExpoNotificationServiceExtension */ = {
+		EDCF2D4122C6A2EB00D1809C /* ExpoNotificationServiceExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ED1AA0A822C5329300C7D0CE /* Build configuration list for PBXNativeTarget "ExpoNotificationServiceExtension" */;
+			buildConfigurationList = EDCF2D4B22C6A2EB00D1809C /* Build configuration list for PBXNativeTarget "ExpoNotificationServiceExtension" */;
 			buildPhases = (
-				ED1AA09C22C5329200C7D0CE /* Sources */,
-				ED1AA09D22C5329200C7D0CE /* Frameworks */,
-				ED1AA09E22C5329200C7D0CE /* Resources */,
+				EDCF2D3E22C6A2EB00D1809C /* Sources */,
+				EDCF2D3F22C6A2EB00D1809C /* Frameworks */,
+				EDCF2D4022C6A2EB00D1809C /* Resources */,
 			);
 			buildRules = (
 			);
@@ -2291,7 +2293,7 @@
 			);
 			name = ExpoNotificationServiceExtension;
 			productName = ExpoNotificationServiceExtension;
-			productReference = ED1AA0A022C5329200C7D0CE /* ExpoNotificationServiceExtension.appex */;
+			productReference = EDCF2D4222C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -2307,7 +2309,7 @@
 				TargetAttributes = {
 					78CEE2BF1ACD07D70095B124 = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = C8D8QTF339;
+						DevelopmentTeam = 77T9PEZRU7;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplePay = {
@@ -2340,7 +2342,7 @@
 						CreatedOnToolsVersion = 7.3.1;
 						TestTargetID = 78CEE2BF1ACD07D70095B124;
 					};
-					ED1AA09F22C5329200C7D0CE = {
+					EDCF2D4122C6A2EB00D1809C = {
 						CreatedOnToolsVersion = 10.2.1;
 						DevelopmentTeam = 77T9PEZRU7;
 						ProvisioningStyle = Automatic;
@@ -2364,7 +2366,7 @@
 				78CEE2BF1ACD07D70095B124 /* Exponent */,
 				B513333F1CE649FE00E9FC9E /* ExponentIntegrationTests */,
 				B505BA0D20CAF77A0046ACFB /* Tests */,
-				ED1AA09F22C5329200C7D0CE /* ExpoNotificationServiceExtension */,
+				EDCF2D4122C6A2EB00D1809C /* ExpoNotificationServiceExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -2408,7 +2410,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		ED1AA09E22C5329200C7D0CE /* Resources */ = {
+		EDCF2D4022C6A2EB00D1809C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2861,11 +2863,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		ED1AA09C22C5329200C7D0CE /* Sources */ = {
+		EDCF2D3E22C6A2EB00D1809C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED1AA0A322C5329300C7D0CE /* NotificationService.swift in Sources */,
+				EDCF2D4622C6A2EB00D1809C /* NotificationService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2882,10 +2884,10 @@
 			target = 78CEE2BF1ACD07D70095B124 /* Exponent */;
 			targetProxy = B51333451CE649FE00E9FC9E /* PBXContainerItemProxy */;
 		};
-		ED1AA0A622C5329300C7D0CE /* PBXTargetDependency */ = {
+		EDCF2D4922C6A2EB00D1809C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = ED1AA09F22C5329200C7D0CE /* ExpoNotificationServiceExtension */;
-			targetProxy = ED1AA0A522C5329300C7D0CE /* PBXContainerItemProxy */;
+			target = EDCF2D4122C6A2EB00D1809C /* ExpoNotificationServiceExtension */;
+			targetProxy = EDCF2D4822C6A2EB00D1809C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3233,7 +3235,7 @@
 			};
 			name = Release;
 		};
-		ED1AA0A922C5329300C7D0CE /* Debug */ = {
+		EDCF2D4C22C6A2EB00D1809C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3259,14 +3261,11 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.Exponent.ExpoNotificationServiceExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		ED1AA0AA22C5329300C7D0CE /* Release */ = {
+		EDCF2D4D22C6A2EB00D1809C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3287,8 +3286,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.Exponent.ExpoNotificationServiceExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -3332,11 +3329,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ED1AA0A822C5329300C7D0CE /* Build configuration list for PBXNativeTarget "ExpoNotificationServiceExtension" */ = {
+		EDCF2D4B22C6A2EB00D1809C /* Build configuration list for PBXNativeTarget "ExpoNotificationServiceExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				ED1AA0A922C5329300C7D0CE /* Debug */,
-				ED1AA0AA22C5329300C7D0CE /* Release */,
+				EDCF2D4C22C6A2EB00D1809C /* Debug */,
+				EDCF2D4D22C6A2EB00D1809C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
