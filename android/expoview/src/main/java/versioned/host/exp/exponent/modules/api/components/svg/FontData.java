@@ -66,7 +66,6 @@ class FontData {
         return PropHelper.fromRelative(
             string,
             0,
-            0,
             scale,
             fontSize
         );
@@ -84,7 +83,6 @@ class FontData {
                 fontSize = PropHelper.fromRelative(
                     string,
                     parentFontSize,
-                    0,
                     1,
                     parentFontSize
                 );

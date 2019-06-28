@@ -28,6 +28,7 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static com.facebook.react.uimanager.MatrixMathHelper.determinant;
@@ -44,7 +45,6 @@ import static com.facebook.react.uimanager.ViewProps.*;
 import static versioned.host.exp.exponent.modules.api.components.svg.RenderableView.CAP_ROUND;
 import static versioned.host.exp.exponent.modules.api.components.svg.RenderableView.FILL_RULE_NONZERO;
 import static versioned.host.exp.exponent.modules.api.components.svg.RenderableView.JOIN_ROUND;
-import static versioned.host.exp.exponent.modules.api.components.svg.RenderableView.VECTOR_EFFECT_DEFAULT;
 
 /**
  * ViewManager for all RNSVG views
@@ -74,7 +74,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
 
     class RenderableShadowNode extends LayoutShadowNode {
 
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "EmptyMethod"})
         @ReactPropGroup(
             names = {
                 ALIGN_SELF,
@@ -178,9 +178,6 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     }
 
     private static void decomposeMatrix() {
-        if (sTransformDecompositionArray.length != 16) {
-          throw new AssertionError();
-        }
 
         // output values
         final double[] perspective = sMatrixDecompositionContext.perspective;
@@ -934,6 +931,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         mClassName = svgclass.toString();
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return mClassName;
@@ -955,7 +953,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     }
 
     @ReactProp(name = "opacity", defaultFloat = 1f)
-    public void setOpacity(VirtualView node, float opacity) {
+    public void setOpacity(@Nonnull VirtualView node, float opacity) {
         node.setOpacity(opacity);
     }
 
@@ -1015,7 +1013,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         node.setStrokeLinejoin(strokeLinejoin);
     }
 
-    @ReactProp(name = "vectorEffect", defaultInt = VECTOR_EFFECT_DEFAULT)
+    @ReactProp(name = "vectorEffect")
     public void setVectorEffect(RenderableView node, int vectorEffect) {
         node.setVectorEffect(vectorEffect);
     }
@@ -1067,7 +1065,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     }
 
     @Override
-    protected void addEventEmitters(ThemedReactContext reactContext, VirtualView view) {
+    protected void addEventEmitters(@Nonnull ThemedReactContext reactContext, @Nonnull VirtualView view) {
         super.addEventEmitters(reactContext, view);
         view.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
             @Override
@@ -1093,13 +1091,14 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
      * the parent class of the ViewManager may rely on callback being executed.
      */
     @Override
-    protected void onAfterUpdateTransaction(VirtualView node) {
+    protected void onAfterUpdateTransaction(@Nonnull VirtualView node) {
         super.onAfterUpdateTransaction(node);
         invalidateSvgView(node);
     }
 
+    @Nonnull
     @Override
-    protected VirtualView createViewInstance(ThemedReactContext reactContext) {
+    protected VirtualView createViewInstance(@Nonnull ThemedReactContext reactContext) {
         switch (svgClass) {
             case RNSVGGroup:
                 return new GroupView(reactContext);

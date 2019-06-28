@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 @SuppressLint("ViewConstructor")
 class GroupView extends RenderableView {
     @Nullable ReadableMap mFont;
-    GlyphContext mGlyphContext;
+    private GlyphContext mGlyphContext;
 
     public GroupView(ReactContext reactContext) {
         super(reactContext);
