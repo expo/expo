@@ -7,6 +7,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 📚 3rd party library updates
 
 - `react-native-reanimated` updated from `1.0.1` to `1.1.0`
+- `react-native-svg` updated from `9.4.0` to `9.5.1`
 - `react-native-webview` updated from `5.8.0` to `5.12.0`
 
 ### 🛠 Breaking changes
