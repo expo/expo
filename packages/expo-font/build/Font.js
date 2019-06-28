@@ -12,7 +12,7 @@ function fontFamilyNeedsScoping(name) {
         name !== 'System' &&
         !name.includes(Constants.sessionId));
 }
-/*
+/**
  * Used to transform font family names to the scoped name. This does not need to
  * be called in standalone or bare apps but it will return unscoped font family
  * names if it is called in those contexts.
