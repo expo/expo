@@ -93,7 +93,6 @@ import * as Device from 'expo-device';
 - `Device.getFreeDiskStorageAsync()`
 - `Device.getUserAgentAsync()`
 - `Device.getTotalDiskCapacityAsync()`
-- `Device.getPhoneNumberAsync()` (Android only)
 - `Device.getSerialNumberAsync()` (Android only)
 
 ## Methods
@@ -201,24 +200,6 @@ Device.getMACAddressAsync().then(mac => {
 //Android
 Device.getMACAddressAsync('wlan0').then(mac => {
   // "E5:12:D8:E5:69:97"
-});
-```
-
-### `Device.getPhoneNumberAsync()` (Android only)
-
-Gets the device phone number.
-
-Would prompt the user for permission to read the phone to access the phone number.
-
-#### Returns
-
-A Promise that resolves to a number of current phone number.
-
-**Examples**
-
-```js
-Device.getPhoneNumberAsync().then(phoneNumber => {
-  // +15555215558
 });
 ```
 
