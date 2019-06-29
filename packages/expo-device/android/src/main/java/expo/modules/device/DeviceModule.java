@@ -168,21 +168,25 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     }
   }
 
+  private void getSerialNumber(final Promise promise) {
+    try {
+      if (android.os.Build.VERSION.SDK_INT < 26) {
+        promise.resolve(Build.SERIAL);
+      } else {
+        promise.resolve(Build.getSerial());
+      }
+    } catch (SecurityException e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_DEVICE", "User rejected permissions.");
+    }
+  }
+
   @ExpoMethod
   public void getSerialNumberAsync(final Promise promise) {
 
     int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE);
     if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-      try {
-        if (android.os.Build.VERSION.SDK_INT < 26) {
-          promise.resolve(Build.SERIAL);
-        } else {
-          promise.resolve(Build.getSerial());
-        }
-      } catch (SecurityException e) {
-        Log.e(TAG, e.getMessage());
-        promise.reject(e);
-      }
+      getSerialNumber(promise);
     } else {
       Permissions mPermissions = mModuleRegistry.getModule(Permissions.class);
       String permissionsTable[] = {Manifest.permission.READ_PHONE_STATE};
@@ -190,18 +194,9 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
         @Override
         public void onPermissionsResult(int[] results) {
           if (results[0] == PackageManager.PERMISSION_GRANTED) {
-            try {
-              if (android.os.Build.VERSION.SDK_INT < 26) {
-                promise.resolve(Build.SERIAL);
-              } else {
-                promise.resolve(Build.getSerial());
-              }
-            } catch (SecurityException e) {
-              Log.e(TAG, e.getMessage());
-              promise.reject(e);
-            }
+            getSerialNumber(promise);
           } else {
-            promise.reject(new SecurityException("User rejected permissions"));
+            promise.reject("ERR_DEVICE", "User rejected permissions.");
           }
         }
       });
@@ -212,17 +207,14 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public void getFreeDiskStorageAsync(Promise promise) {
     try {
       StatFs external = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-      long availableBlocks;
-      long blockSize;
-
-      availableBlocks = external.getAvailableBlocksLong();
-      blockSize = external.getBlockSizeLong();
+      long availableBlocks = external.getAvailableBlocksLong();
+      long blockSize = external.getBlockSizeLong();
 
       BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
       promise.resolve(storage.doubleValue());
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
-      promise.reject(e);
+      promise.reject("ERR_DEVICE", "No available free disk storage.");
     }
   }
 
@@ -239,7 +231,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       promise.resolve(ipAddressString);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject(e);
+      promise.reject("ERR_DEVICE", "Unknown Host Exception");
     }
   }
 
@@ -268,14 +260,15 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
             buf.deleteCharAt(buf.length() - 1);
           }
           macAddress = buf.toString();
+          promise.resolve(macAddress);
           break;
         }
       } catch (Exception e) {
         Log.e(TAG, e.getMessage());
-        promise.reject(e);
+        promise.reject("ERR_DEVICE", "Socket exception");
       }
     } else {
-      promise.reject(new AccessControlException("No permission granted to access the Internet"));
+      promise.reject("ERR_DEVICE","No permission granted to access the Internet");
     }
   }
 
@@ -287,12 +280,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
   @ExpoMethod
   public void hasSystemFeatureAsync(String feature, Promise promise) {
-    try {
-      promise.resolve(mContext.getApplicationContext().getPackageManager().hasSystemFeature(feature));
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject(e);
-    }
+    promise.resolve(mContext.getApplicationContext().getPackageManager().hasSystemFeature(feature));
   }
 
   @ExpoMethod
@@ -314,7 +302,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       promise.resolve(telMgr.getNetworkOperatorName());
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject(e);
+      promise.reject("ERR_DEVICE","Null pointer exception");
     }
   }
 
@@ -326,7 +314,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       promise.resolve(capacity.doubleValue());
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject(e);
+      promise.reject("ERR_DEVICE", "Unable to access total disk capacity");
     }
   }
 }
