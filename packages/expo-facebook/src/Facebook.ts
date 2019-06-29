@@ -6,6 +6,7 @@ type FacebookLoginResult = {
   type: string;
   token?: string;
   expires?: number;
+  declinedPermissions: string[];
 };
 
 type FacebookOptions = {
