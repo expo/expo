@@ -4,8 +4,8 @@ import { devicesWithNotch } from './DeviceWithNotchConst';
 import { Platform, UnavailabilityError } from '@unimodules/core';
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
+let modelName;
 if (Platform.OS === 'ios') {
-    var modelName;
     let deviceName;
     let deviceId = ExpoDevice.deviceId;
     if (deviceId) {
@@ -52,11 +52,11 @@ export async function getIpAddressAsync() {
     return await ExpoDevice.getIpAddressAsync();
 }
 export async function getMACAddressAsync(interfaceName) {
-    if (Platform.OS === 'ios') {
-        return await ExpoDevice.getMACAddressAsync();
+    if (Platform.OS === 'android') {
+        return await ExpoDevice.getMACAddressAsync(interfaceName);
     }
     else {
-        return await ExpoDevice.getMACAddressAsync(interfaceName);
+        return await ExpoDevice.getMACAddressAsync();
     }
 }
 export async function isAirplaneModeEnabledAsync() {

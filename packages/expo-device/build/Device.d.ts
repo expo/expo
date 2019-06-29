@@ -12,7 +12,7 @@ export declare const supportedABIs: any;
 export declare function hasNotch(): boolean;
 export declare function getFreeDiskStorageAsync(): Promise<number>;
 export declare function getIpAddressAsync(): Promise<string>;
-export declare function getMACAddressAsync(interfaceName: string): Promise<string>;
+export declare function getMACAddressAsync(interfaceName?: string): Promise<string>;
 export declare function isAirplaneModeEnabledAsync(): Promise<boolean | string>;
 export declare function hasSystemFeatureAsync(feature: string): Promise<boolean>;
 export declare function isPinOrFingerprintSetAsync(): Promise<boolean>;
