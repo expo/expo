@@ -745,7 +745,7 @@ export async function addVersionAsync(
   );
 
   // Validate the directories we need before doing anything
-  console.log(`Validating root directory ${rootPath} ...`);
+  console.log(`Validating root directory ${chalk.magenta(rootPath)} ...`);
   let isFilesystemReady = validateAddVersionDirectories(
     rootPath,
     newVersionPath

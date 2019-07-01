@@ -58,7 +58,7 @@ export async function getSDKVersionsAsync(platform: string): Promise<string[]> {
     }
   }
   // TODO: implementation for Android
-  return [];
+  throw new Error(`This task isn't supported on ${platform} yet.`);
 }
 
 export async function getOldestSDKVersionAsync(platform: string): Promise<string | undefined> {
