@@ -6,6 +6,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 //
 
+#include <CoreGraphics/CGGeometry.h>
 #import "NotificationService.h"
 
 @interface NotificationService ()
@@ -23,6 +24,7 @@
 
 
 	NSString *attachmentMediaURLString = nil;
+	NSDictionary *attachmentMediaOptions = @{};
 
 	NSDictionary *userInfo = request.content.userInfo;
 	if (userInfo && userInfo[@"body"] && userInfo[@"body"][@"_richContent"]) {
@@ -30,7 +32,12 @@
 		// Display priority: video > audio > image.
 		for (NSString* attachmentType in @[@"video", @"audio", @"image"]) {
 			if (richContent[attachmentType]) {
-				attachmentMediaURLString = richContent[attachmentType];
+				if ([richContent[attachmentType] isKindOfClass:[NSString class]]) {
+					attachmentMediaURLString = richContent[attachmentType];
+				} else {
+					attachmentMediaURLString = richContent[attachmentType][@"url"];
+					attachmentMediaOptions = richContent[attachmentType][@"options"];
+				}
 				break;
 			}
 		}
@@ -64,8 +71,21 @@
 				return;
 			}
 
+			NSMutableDictionary *options = [NSMutableDictionary dictionary];
+			if (attachmentMediaOptions[@"thumbnailHidden"] && [attachmentMediaOptions[@"thumbnailHidden"] boolValue]) {
+				options[UNNotificationAttachmentOptionsThumbnailHiddenKey] = @YES;
+			}
+			if (attachmentMediaOptions[@"thumbnailTime"] && [attachmentMediaOptions[@"thumbnailTime"] isKindOfClass:[NSNumber class]]) {
+				options[UNNotificationAttachmentOptionsThumbnailTimeKey] = attachmentMediaOptions[@"thumbnailTime"];
+			}
+			if (attachmentMediaOptions[@"thumbnailClippingRect"]) {
+				NSDictionary *clippingRectOptions = attachmentMediaOptions[@"thumbnailClippingRect"];
+				CGRect clippingRect = CGRectMake([clippingRectOptions[@"x"] doubleValue], [clippingRectOptions[@"y"] doubleValue], [clippingRectOptions[@"width"] doubleValue], [clippingRectOptions[@"height"] doubleValue]);
+				options[UNNotificationAttachmentOptionsThumbnailClippingRectKey] = (__bridge id _Nullable)CGRectCreateDictionaryRepresentation(clippingRect);
+			}
+
 			NSError *attachmentError = nil;
-			UNNotificationAttachment *attachment = [UNNotificationAttachment attachmentWithIdentifier:[temporaryURL absoluteString] URL:temporaryURL options:nil error:&attachmentError];
+			UNNotificationAttachment *attachment = [UNNotificationAttachment attachmentWithIdentifier:[temporaryURL absoluteString] URL:temporaryURL options:options error:&attachmentError];
 			if (attachmentError) {
 				self.contentHandler(self.bestAttemptContent);
 				return;
