@@ -1,6 +1,5 @@
 package host.exp.exponent.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -171,8 +170,6 @@ public class PermissionsHelper {
         return R.string.perm_fine_location;
       case android.Manifest.permission.ACCESS_COARSE_LOCATION:
         return R.string.perm_coarse_location;
-      case android.Manifest.permission.READ_PHONE_STATE:
-        return R.string.perm_read_phone_state;
       default:
         return -1;
     }
