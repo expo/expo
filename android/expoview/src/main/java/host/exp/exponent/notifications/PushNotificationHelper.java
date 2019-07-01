@@ -241,6 +241,11 @@ public class PushNotificationHelper {
               });
             }
 
+            // Add icon
+            if (!manifestUrl.equals(Constants.INITIAL_URL)) {
+              notificationBuilder.setLargeIcon(bitmap);
+            }
+
             if (body != null) {
               try {
                 JSONObject bodyObject = new JSONObject(body);
@@ -249,18 +254,19 @@ public class PushNotificationHelper {
                   // TODO: Need to consider the multiple notifications case above
                   if (richContent.has("image")) {
                     final String imageURL = richContent.getString("image");
-                    try {
-                      Bitmap imageBitmap = Picasso.with(context).load(imageURL).get();
+                    final Bitmap imageBitmap = loadRemoteImage(imageURL, context);
+                    if (imageBitmap != null) {
                       notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle()
                           .bigPicture(imageBitmap)
                           .setBigContentTitle(message));
-                    } catch (IOException ie) {
-                      // It means that the image is not loaded correctly.
-                      // Do nothing.
-                    } catch (IllegalStateException ise) {
-                      // It means the input URL is invalid.
-                      // Do nothing.
                     }
+                  }
+                }
+                if (bodyObject.has("_icon")) {
+                  final String iconURL = bodyObject.getString("_icon");
+                  final Bitmap iconBitmap = loadRemoteImage(iconURL, context);
+                  if (iconBitmap != null) {
+                    notificationBuilder.setLargeIcon(iconBitmap);
                   }
                 }
               } catch (JSONException e) {
@@ -268,14 +274,7 @@ public class PushNotificationHelper {
               }
             }
 
-            // Add icon
-            Notification notification;
-            if (!manifestUrl.equals(Constants.INITIAL_URL)) {
-              notification = notificationBuilder.setLargeIcon(bitmap).build();
-            } else {
-              // TODO: don't actually need to load bitmap in this case
-              notification = notificationBuilder.build();
-            }
+            Notification notification = notificationBuilder.build();
 
             // Display
             manager.notify(experienceId, notificationId, notification);
@@ -286,6 +285,21 @@ public class PushNotificationHelper {
         }).start();
       }
     });
+  }
+
+  private Bitmap loadRemoteImage(String imageURL, Context context) {
+    Bitmap imageBitmap = null;
+    try {
+      imageBitmap = Picasso.with(context).load(imageURL).get();
+    } catch (IOException ie) {
+      // It means the image is not loaded correctly.
+      // Do nothing.
+    } catch (IllegalStateException ise) {
+      // It means the input URL is invalid.
+      // Do nothing.
+    }
+
+    return imageBitmap;
   }
 
   private void addUnreadNotificationToMetadata(String experienceId, String message, int notificationId) {
