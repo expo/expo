@@ -37,7 +37,6 @@ export const uniqueId = ExpoDevice ? ExpoDevice.uniqueId : null;
 export const isTablet = ExpoDevice ? ExpoDevice.isTablet : null;
 export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
 export const deviceId = ExpoDevice ? ExpoDevice.deviceId : null;
-export const totalDiskCapacity = ExpoDevice ? ExpoDevice.totalDiskCapacity : null;
 export const supportedABIs = ExpoDevice ? ExpoDevice.supportedABIs : null;
 export function hasNotch(): boolean {
   return devicesWithNotch.some(
@@ -46,9 +45,6 @@ export function hasNotch(): boolean {
       item.model.toLowerCase() ===
         (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase())
   );
-}
-export async function getFreeDiskStorageAsync(): Promise<number> {
-  return await ExpoDevice.getFreeDiskStorageAsync();
 }
 
 export async function getIpAddressAsync(): Promise<string> {
@@ -87,10 +83,6 @@ export async function getUserAgentAsync(): Promise<string> {
 
 export async function getCarrierAsync(): Promise<string> {
   return await ExpoDevice.getCarrierAsync();
-}
-
-export async function getTotalDiskCapacityAsync(): Promise<number> {
-  return await ExpoDevice.getTotalDiskCapacityAsync();
 }
 
 export async function getSystemAvailableFeaturesAsync(): Promise<string[]> {

@@ -38,15 +38,11 @@ export const uniqueId = ExpoDevice ? ExpoDevice.uniqueId : null;
 export const isTablet = ExpoDevice ? ExpoDevice.isTablet : null;
 export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
 export const deviceId = ExpoDevice ? ExpoDevice.deviceId : null;
-export const totalDiskCapacity = ExpoDevice ? ExpoDevice.totalDiskCapacity : null;
 export const supportedABIs = ExpoDevice ? ExpoDevice.supportedABIs : null;
 export function hasNotch() {
     return devicesWithNotch.some(item => item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
         item.model.toLowerCase() ===
             (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase()));
-}
-export async function getFreeDiskStorageAsync() {
-    return await ExpoDevice.getFreeDiskStorageAsync();
 }
 export async function getIpAddressAsync() {
     return await ExpoDevice.getIpAddressAsync();
@@ -79,9 +75,6 @@ export async function getUserAgentAsync() {
 }
 export async function getCarrierAsync() {
     return await ExpoDevice.getCarrierAsync();
-}
-export async function getTotalDiskCapacityAsync() {
-    return await ExpoDevice.getTotalDiskCapacityAsync();
 }
 export async function getSystemAvailableFeaturesAsync() {
     if (!ExpoDevice.getSystemAvailableFeaturesAsync) {

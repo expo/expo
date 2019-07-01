@@ -7,10 +7,8 @@ export declare const uniqueId: any;
 export declare const isTablet: any;
 export declare const deviceType: any;
 export declare const deviceId: any;
-export declare const totalDiskCapacity: any;
 export declare const supportedABIs: any;
 export declare function hasNotch(): boolean;
-export declare function getFreeDiskStorageAsync(): Promise<number>;
 export declare function getIpAddressAsync(): Promise<string>;
 export declare function getMACAddressAsync(interfaceName?: string): Promise<string>;
 export declare function isAirplaneModeEnabledAsync(): Promise<boolean | string>;
@@ -18,5 +16,4 @@ export declare function hasSystemFeatureAsync(feature: string): Promise<boolean>
 export declare function hasLocalAuthenticationAsync(): Promise<boolean>;
 export declare function getUserAgentAsync(): Promise<string>;
 export declare function getCarrierAsync(): Promise<string>;
-export declare function getTotalDiskCapacityAsync(): Promise<number>;
 export declare function getSystemAvailableFeaturesAsync(): Promise<string[]>;
