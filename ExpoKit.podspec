@@ -26,10 +26,6 @@ Pod::Spec.new do |s|
     ss.dependency 'Crashlytics', '~> 3.8'
     ss.dependency 'FBAudienceNetwork', '5.1.1'
     ss.dependency 'FBSDKCoreKit', '4.40.0'
-    # We want to inhibit warnings in this pod and
-    # CocoaPods doesn't inhibit warnings for transient dependencies
-    # (it's a dependency of FBSDKCoreKit). Update when updating FBSDKCoreKit,
-    # remove once it stops depending on it.
     ss.dependency 'Bolts', '1.9.0'
     ss.dependency 'FBSDKLoginKit', '4.40.0'
     ss.dependency 'Fabric', '~> 1.6'
