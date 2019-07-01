@@ -249,7 +249,8 @@ public class PushNotificationHelper {
             if (body != null) {
               try {
                 JSONObject bodyObject = new JSONObject(body);
-                if (bodyObject.has("_richContent")) {
+                // Do not display any rich content if `isMultiple`.
+                if (!isMultiple && bodyObject.has("_richContent")) {
                   final JSONObject richContent = bodyObject.getJSONObject("_richContent");
                   // TODO: Need to consider the multiple notifications case above
                   if (richContent.has("image")) {
