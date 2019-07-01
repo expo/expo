@@ -253,7 +253,12 @@ public class PushNotificationHelper {
                   final JSONObject richContent = bodyObject.getJSONObject("_richContent");
                   // TODO: Need to consider the multiple notifications case above
                   if (richContent.has("image")) {
-                    final String imageURL = richContent.getString("image");
+                    String imageURL;
+                    if (richContent.get("image") instanceof String) {
+                      imageURL = richContent.getString("image");
+                    } else {
+                      imageURL = richContent.getJSONObject("image").getString("url");
+                    }
                     final Bitmap imageBitmap = loadRemoteImage(imageURL, context);
                     if (imageBitmap != null) {
                       notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle()
