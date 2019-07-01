@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
 if [ -f /etc/profile ]; then
-   # Define PS1 so that /etc/bashrc on macOS runs
-   if [ -z "$PS1" ]; then
-      PS1="$ "
-   fi
    source /etc/profile > /dev/null
 fi
 
