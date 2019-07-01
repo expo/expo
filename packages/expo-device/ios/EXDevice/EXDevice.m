@@ -163,13 +163,9 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
 
 - (NSString *)carrier
 {
-#if (TARGET_OS_TV)
-  return nil;
-#else
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
   CTCarrier *carrier = [netinfo subscriberCellularProvider];
   return carrier.carrierName;
-#endif
 }
 
 
