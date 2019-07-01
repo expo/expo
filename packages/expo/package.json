@@ -125,7 +125,7 @@
     "prop-types": "^15.6.0",
     "qs": "^6.5.0",
     "react-google-maps": "^9.4.5",
-    "react-native-branch": "2.2.5",
+    "react-native-branch": "~3.0.1",
     "react-native-gesture-handler": "1.2.1",
     "react-native-maps": "0.24.2",
     "react-native-reanimated": "~1.1.0",

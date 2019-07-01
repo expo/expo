@@ -313,6 +313,21 @@ gulp.task('update-react-native-netinfo', () => {
   });
 });
 
+gulp.task('update-react-native-branch', () => {
+  return updateVendoredNativeModule({
+    argv,
+    name: 'react-native-branch',
+    repoUrl: 'https://github.com/BranchMetrics/react-native-branch-deep-linking.git',
+    sourceIosPath: 'ios',
+    targetIosPath: 'Api/Standalone/Branch',
+    sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
+    targetAndroidPath: 'modules/api/standalone/branch',
+    sourceAndroidPackage: 'io.branch.rnbranch',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.standalone.branch',
+    recursive: false,
+  });
+});
+
 gulp.task('android-jarjar-on-aar', androidVersionLibraries.runJarJarOnAAR);
 gulp.task('android-version-libraries', androidVersionLibraries.versionLibrary);
 
