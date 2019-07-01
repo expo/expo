@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 package versioned.host.exp.exponent.modules.api.netinfo;
 
 import android.os.Build;
@@ -14,9 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
-/**
- * Module that monitors and provides information about the connectivity state of the device.
- */
+/** Module that monitors and provides information about the connectivity state of the device. */
 public class NetInfoModule extends ReactContextBaseJavaModule {
   public static final String NAME = "RNCNetInfo";
 
@@ -48,12 +45,7 @@ public class NetInfoModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getCurrentConnectivity(Promise promise) {
-    mConnectivityReceiver.getCurrentConnectivity(promise);
-  }
-
-  @ReactMethod
-  public void isConnectionMetered(Promise promise) {
-    mConnectivityReceiver.isConnectionMetered(promise);
+  public void getCurrentState(Promise promise) {
+    mConnectivityReceiver.getCurrentState(promise);
   }
 }

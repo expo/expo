@@ -4,15 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 package versioned.host.exp.exponent.modules.api.netinfo;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.net.ConnectivityManager;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.os.Build;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 
@@ -21,6 +22,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
  * method was added into Android from API level 24 (N) and we use it for all devices which support
  * it.
  */
+@TargetApi(Build.VERSION_CODES.N)
 class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
   private final ConnectivityNetworkCallback mNetworkCallback;
   private Network mNetwork = null;
@@ -36,6 +38,13 @@ class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
   void register() {
     try {
       getConnectivityManager().registerDefaultNetworkCallback(mNetworkCallback);
+
+      // If we currently have no active network, we are not going to get a callback below, so
+      // we
+      // should manually send a "none" event
+      if (getConnectivityManager().getActiveNetwork() == null) {
+        updateAndSend();
+      }
     } catch (SecurityException e) {
       setNoNetworkPermission();
     }
@@ -54,8 +63,8 @@ class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
 
   @SuppressLint("MissingPermission")
   private void updateAndSend() {
-    String connectionType = CONNECTION_TYPE_UNKNOWN;
-    String effectiveConnectionType = EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+    String connectionType = CONNECTION_TYPE_OTHER;
+    String cellularGeneration = null;
 
     if (mNetworkCapabilities != null) {
       if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
@@ -65,18 +74,20 @@ class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
 
         if (mNetwork != null) {
           NetworkInfo networkInfo = getConnectivityManager().getNetworkInfo(mNetwork);
-          effectiveConnectionType = getEffectiveConnectionType(networkInfo);
+          cellularGeneration = getEffectiveConnectionType(networkInfo);
         }
       } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
         connectionType = CONNECTION_TYPE_ETHERNET;
       } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
         connectionType = CONNECTION_TYPE_WIFI;
+      } else if (mNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+        connectionType = CONNECTION_TYPE_VPN;
       }
     } else {
       connectionType = CONNECTION_TYPE_NONE;
     }
 
-    updateConnectivity(connectionType, effectiveConnectionType);
+    updateConnectivity(connectionType, cellularGeneration);
   }
 
   private class ConnectivityNetworkCallback extends ConnectivityManager.NetworkCallback {
@@ -109,7 +120,8 @@ class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
     }
 
     @Override
-    public void onCapabilitiesChanged(Network network, NetworkCapabilities networkCapabilities) {
+    public void onCapabilitiesChanged(
+        Network network, NetworkCapabilities networkCapabilities) {
       mNetwork = network;
       mNetworkCapabilities = networkCapabilities;
       updateAndSend();
