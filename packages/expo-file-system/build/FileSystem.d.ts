@@ -26,6 +26,8 @@ export declare function makeDirectoryAsync(fileUri: string, options?: {
     intermediates?: boolean;
 }): Promise<void>;
 export declare function readDirectoryAsync(fileUri: string): Promise<string[]>;
+export declare function getFreeDiskStorageAsync(): Promise<number>;
+export declare function getTotalDiskCapacityAsync(): Promise<number>;
 export declare function downloadAsync(uri: string, fileUri: string, options?: DownloadOptions): Promise<DownloadResult>;
 export declare function createDownloadResumable(uri: string, fileUri: string, options?: DownloadOptions, callback?: DownloadProgressCallback, resumeData?: string): DownloadResumable;
 export declare class DownloadResumable {

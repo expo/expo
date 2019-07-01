@@ -168,21 +168,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void getFreeDiskStorageAsync(Promise promise) {
-    try {
-      StatFs external = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-      long availableBlocks = external.getAvailableBlocksLong();
-      long blockSize = external.getBlockSizeLong();
-
-      BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
-      promise.resolve(storage.doubleValue());
-    } catch (NullPointerException e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject("ERR_DEVICE", "No available free disk storage.");
-    }
-  }
-
-  @ExpoMethod
   public void getIpAddressAsync(Promise promise) {
     try {
       Integer ipAddress = getWifiInfo().getIpAddress();
@@ -269,18 +254,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject("ERR_DEVICE", "Null pointer exception");
-    }
-  }
-
-  @ExpoMethod
-  public void getTotalDiskCapacityAsync(Promise promise) {
-    try {
-      StatFs root = new StatFs(Environment.getRootDirectory().getAbsolutePath());
-      BigInteger capacity = BigInteger.valueOf(root.getBlockCountLong()).multiply(BigInteger.valueOf(root.getBlockSizeLong()));
-      promise.resolve(capacity.doubleValue());
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject("ERR_DEVICE", "Unable to access total disk capacity");
     }
   }
 

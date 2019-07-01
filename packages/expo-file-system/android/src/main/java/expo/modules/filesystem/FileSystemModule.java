@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StatFs;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.net.CookieHandler;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -648,6 +651,33 @@ public class FileSystemModule extends ExportedModule {
       Exception e = new IOException("No download object available");
       Log.e(TAG, e.getMessage());
       promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void getTotalDiskCapacityAsync(Promise promise) {
+    try {
+      StatFs root = new StatFs(Environment.getRootDirectory().getAbsolutePath());
+      BigInteger capacity = BigInteger.valueOf(root.getBlockCountLong()).multiply(BigInteger.valueOf(root.getBlockSizeLong()));
+      promise.resolve(capacity.doubleValue());
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity");
+    }
+  }
+
+  @ExpoMethod
+  public void getFreeDiskStorageAsync(Promise promise) {
+    try {
+      StatFs external = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
+      long availableBlocks = external.getAvailableBlocksLong();
+      long blockSize = external.getBlockSizeLong();
+
+      BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
+      promise.resolve(storage.doubleValue());
+    } catch (NullPointerException e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM", "No available free disk storage.");
     }
   }
 

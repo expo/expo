@@ -80,6 +80,12 @@ export async function readDirectoryAsync(fileUri) {
     }
     return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
 }
+export async function getFreeDiskStorageAsync() {
+    return await ExponentFileSystem.getFreeDiskStorageAsync();
+}
+export async function getTotalDiskCapacityAsync() {
+    return await ExponentFileSystem.getTotalDiskCapacityAsync();
+}
 export async function downloadAsync(uri, fileUri, options = {}) {
     if (!ExponentFileSystem.downloadAsync) {
         throw new UnavailabilityError('expo-file-system', 'downloadAsync');

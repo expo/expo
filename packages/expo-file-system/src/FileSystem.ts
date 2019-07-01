@@ -135,6 +135,13 @@ export async function readDirectoryAsync(fileUri: string): Promise<string[]> {
   return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
 }
 
+export async function getFreeDiskStorageAsync(): Promise<number> {
+  return await ExponentFileSystem.getFreeDiskStorageAsync();
+}
+export async function getTotalDiskCapacityAsync(): Promise<number> {
+  return await ExponentFileSystem.getTotalDiskCapacityAsync();
+}
+
 export async function downloadAsync(
   uri: string,
   fileUri: string,
