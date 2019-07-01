@@ -1,6 +1,6 @@
 {
   "main": "__generated__/AppEntry.js",
-  "name": "Expo Payments",
+  "name": "expo-payments",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
