@@ -429,6 +429,7 @@ type PushMessage = {
 
   /**
    * Displays the notification when the app is foreground.
+   * Defaults to `false`.
    */
   _displayInForeground?: boolean
 
