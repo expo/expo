@@ -130,7 +130,7 @@
     "react-native-maps": "0.24.2",
     "react-native-reanimated": "~1.1.0",
     "react-native-screens": "1.0.0-alpha.22",
-    "react-native-svg": "9.4.0",
+    "react-native-svg": "~9.5.1",
     "react-native-view-shot": "2.6.0",
     "react-native-webview": "5.12.0",
     "serialize-error": "^2.1.0",

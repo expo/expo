@@ -51,8 +51,8 @@ class TSpanView extends TextView {
     private Path mCachedPath;
     @Nullable String mContent;
     private TextPathView textPath;
-    ArrayList<String> emoji = new ArrayList<>();
-    ArrayList<Matrix> emojiTransforms = new ArrayList<>();
+    private final ArrayList<String> emoji = new ArrayList<>();
+    private final ArrayList<Matrix> emojiTransforms = new ArrayList<>();
 
     public TSpanView(ReactContext reactContext) {
         super(reactContext);
@@ -746,7 +746,7 @@ class TSpanView extends TextView {
                             break;
 
                         default:
-                            baselineShift -= PropHelper.fromRelative(baselineShiftString, mScale * fontSize, 0, mScale, fontSize);
+                            baselineShift -= PropHelper.fromRelative(baselineShiftString, mScale * fontSize, mScale, fontSize);
                     }
                     break;
             }
@@ -781,7 +781,7 @@ class TSpanView extends TextView {
                     if (nextWidth > 0) {
                         break;
                     }
-                    String nextLigature = current + String.valueOf(chars[nextIndex]);
+                    String nextLigature = current + chars[nextIndex];
                     ligature[nextIndex] = true;
                     current = nextLigature;
                     hasLigature = true;

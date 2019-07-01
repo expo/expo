@@ -19,21 +19,21 @@
 - (instancetype)initWithArray:(NSArray *)data NS_DESIGNATED_INITIALIZER;
 
 /**
+ * @abstract
  * For certain brushes we can fast path a combined fill and stroke.
  * For those brushes we override applyFillColor which sets the fill
  * color to be used by those batch paints. Those return YES.
  * We can't batch gradient painting in CoreGraphics, so those will
  * return NO and paint gets called instead.
- * @abstract
  */
 - (BOOL)applyFillColor:(CGContextRef)context opacity:(CGFloat)opacity;
 
 - (BOOL)applyStrokeColor:(CGContextRef)context opacity:(CGFloat)opacity;
 
 /**
+ * @abstract
  * paint fills the context with a brush. The context is assumed to
  * be clipped.
- * @abstract
  */
 - (void)paint:(CGContextRef)context opacity:(CGFloat)opacity painter:(RNSVGPainter *)painter bounds:(CGRect)bounds;
 
