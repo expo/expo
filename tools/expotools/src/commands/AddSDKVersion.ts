@@ -15,7 +15,7 @@ const EXPO_DIR = getExpoRepositoryRootDir();
 
 async function action(options: ActionOptions) {
   if (!options.platform) {
-    throw new Error('Run with `--platform <ios | android> --sdkVersion <SDK version>`.');
+    throw new Error('Run with `--platform <ios | android>`.');
   }
 
   const sdkVersion = options.sdkVersion || await getNextSDKVersionAsync(options.platform);
