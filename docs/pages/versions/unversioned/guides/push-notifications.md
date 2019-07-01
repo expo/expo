@@ -425,7 +425,12 @@ type PushMessage = {
    * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
    * applications, use plain `yourCategoryId`.
    */
-  _category?: string
+  _category?: string,
+
+  /**
+   * Displays the notification when the app is foreground.
+   */
+  _displayInForeground?: boolean
 
   // Android-specific fields
 

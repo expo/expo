@@ -56,9 +56,11 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-  // With UIUserNotifications framework, notifications were only shown while the app wasn't active.
-  // Let's stick to this behavior.
-  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+	// Notifications were only shown while the app wasn't active,
+	// or if the user specifies `_displayInForeground` to be `true`.
+  NSDictionary *userInfo = notification.request.content.userInfo;
+  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive ||
+     (userInfo && userInfo[@"body"] && userInfo[@"body"][@"_displayInForeground"] && [userInfo[@"body"][@"_displayInForeground"] boolValue])) {
     completionHandler(
                       UNNotificationPresentationOptionAlert +
                       UNNotificationPresentationOptionSound +
