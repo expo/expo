@@ -6,7 +6,7 @@ Provide information of devices on the application.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-device).
 
 ## API
 
@@ -21,18 +21,18 @@ import * as Device from 'expo-device';
   Gets the device brand.
 
   - iOS: `"Apple"`
-  - Android: eg. `"Xiaomi"`
+  - Android: e.g., `"Xiaomi"`
 
 - `Device.carrier: string`
 
-  Gets the carrier name (network operator).
+  Gets the carrier's name (network operator).
 
 - `Device.manufacturer: string`
 
   Gets the device manufacturer.
 
   - iOS: `"Apple"`
-  - Android: eg. `"Google"`
+  - Android: e.g., `"Google"`
 
 - `Device.model: string`
 
@@ -40,30 +40,42 @@ import * as Device from 'expo-device';
 
   Gets the device model.
 
-  - iOS: eg. `"iPhone XS Max"`
-  - Android: eg. `"Pixel 2"`
+  - iOS: e.g., `"iPhone XS Max"`
+  - Android: e.g., `"Pixel 2"`
 
 - `Device.systemName: string`
 
   Gets the device OS name.
 
-- `Device.deviceId: string`
+  - iOS: e.g., `"iOS"`
+  - Android: e.g., `"Android"`
 
-  Gets the device ID.
+- `Device.deviceId: string` (iOS only)
 
-- `Device.totalMemory: number`
+  Gets the device's mobile device codes types (machine id).
 
-  Gets the device total memory, in bytes.
+  - iOS: e.g., `"iPhone7,2"`
 
-- `Device.uniqueId: string`
+* `Device.totalMemory: number`
+
+  Gets the device's total memory, in bytes.
+
+* `Device.uniqueId: string`
 
   Gets the device unique ID.
 
-- `Device.isTablet: boolean`
+  **iOS**: This is IDFV or a random string if IDFV is unavaliable. UIS is stored in the iOS Keychain and NSUserDefaults. It can be carefully considered as constant cross-install unique identifier. But it could be manually changed if people override the value or Apple changed their implementationin iOS Keychain and NSUserDefaults.
+
+  **Android**: Prior to Oreo, this 64-bit number should remain constant for the lifetime of a device. It's a randomly generated value on the device's first boot.
+
+  - iOS: e.g., `"FCDBD8EF-62FC-4ECB-B2F5-92C9E79AC7F9"`
+  - Android: e.g., `"dd96dec43fb81c97"`
+
+* `Device.isTablet: boolean`
 
   Tells if the device is a tablet.
 
-- `Device.deviceType: string`
+* `Device.deviceType: string`
 
   Returns the device's type as a string, which will be one of:
 
@@ -72,28 +84,15 @@ import * as Device from 'expo-device';
   - `Tv`
   - `Unknown`
 
-- `Device.supportedABIs: string[]`
+* `Device.supportedABIs: string[]`
 
-  Returns a list of supported processor architecture version
+  Returns a list of supported processor architecture versions.
 
   **Examples**
 
   ```js
   Device.supportedABIs; // [ "arm64 v8", "Intel x86-64h Haswell", "arm64-v8a", "armeabi-v7a", "armeabi" ]
   ```
-
-### Methods
-
-- `Device.hasNotch()`
-- `Device.hasSystemFeatureAsync(feature)` (Android only)
-- `Device.getIpAddressAsync()`
-- `Device.getMACAddressAsync()`
-- `Device.isAirplaneModeEnabledAsync()` (Android only)
-- `Device.isPinOrFingerprintSet()`
-- `Device.getFreeDiskStorageAsync()`
-- `Device.getUserAgentAsync()`
-- `Device.getTotalDiskCapacityAsync()`
-- `Device.getSerialNumberAsync()` (Android only)
 
 ## Methods
 
@@ -103,7 +102,7 @@ Tells if the device has a notch.
 
 #### Returns
 
-A boolean that represents the support for notch display.
+A boolean value that specifies whether the device's main display has a notch.
 
 **Examples**
 
@@ -119,7 +118,7 @@ Gets the device User Agent.
 
 #### Returns
 
-A Promise that resolves to a string of User Agent.
+A Promise of string that represents the device user agent.
 
 **Examples**
 
@@ -135,7 +134,7 @@ Gets available storage size, in bytes.
 
 #### Returns
 
-A promise of number that represents the storage size.
+A Promise that resolves to the number of bytes that are free on the device's file system and available to applications.
 
 **Examples**
 
@@ -151,7 +150,7 @@ Gets full disk storage size, in bytes.
 
 #### Returns
 
-A promise of number that represents the full disk storage size.
+A Promise of number that represents the full disk storage size.
 
 **Examples**
 
@@ -163,11 +162,11 @@ Device.getTotalDiskCapacityAsync().then(storage => {
 
 ### `Device.getIpAddressAsync()`
 
-Gets the device current IP address.
+Gets the device's current IP address.
 
 #### Returns
 
-A Promise that resolves to a string of IP address.
+A Promise that resolves the current IP address of the device's main network interface, as a string. Can only be IPv4 address.
 
 **Examples**
 
@@ -179,15 +178,15 @@ Device.getIpAddressAsync().then(ip => {
 
 ### `Device.getMACAddressAsync(interfaceName?: string)`
 
-Gets the network adapter MAC address.
+Gets the specified network interface's MAC address.
 
 #### Arguments (Android Only)
 
-- **interfaceName (_string_)** -- A string representing interface name (`eth0`, `wlan0`) or `null`, meaning the method should fetch MAC address of the first available interface. (On iOS this argument is ignored.)
+- **interfaceName (_string_)** -- A string representing interface name (`eth0`, `wlan0`) or `null`, meaning the method should fetch the MAC address of the first available interface. (On iOS this argument is ignored.) If undefined interface name passed in, the method would reject the promise with corresponding message.
 
 #### Returns
 
-A Promise that resolves to a string of the network adapter MAC address or empty string if there's no such address matching the interface.
+A Promise that resolves to a string of the network adapter MAC address or return `null` if there's no such address matching the interface.
 
 **Examples**
 
@@ -203,24 +202,6 @@ Device.getMACAddressAsync('wlan0').then(mac => {
 });
 ```
 
-### `Device.getSerialNumberAsync()` (Android only)
-
-Gets the device serial number.
-
-Would prompt the user for permission to read the phone to access the phone number.
-
-#### Returns
-
-A Promise that resolves to a string of serial number of current device.
-
-**Examples**
-
-```js
-Device.getSerialNumberAsync().then(serialNumber => {
-  // FA81H1A01245
-});
-```
-
 ### `Device.isAirplaneModeEnabledAsync()` (Android Only)
 
 Tells if the device is in airplane mode.
@@ -232,14 +213,35 @@ Returns a Promise that resolves to the `boolean` value for whether the device is
 **Examples**
 
 ```js
-Device.isAirplaneModeEnabledAsync().then(airPlaneModeOn => {
+Device.isAirplaneModeEnabledAsync().then(airplaneModeOn => {
   // false
+});
+```
+
+### `Device.getSystemAvailableFeaturesAsync()` (Android Only)
+
+Get a list of features that are available on the system.
+
+#### Returns
+
+A Promise that resolves to an array of strings, each containing the name of the available feature on the current device system.
+
+**Examples**
+
+```js
+await Device.getSystemAvailableFeaturesAsync().then(allFeatures => {
+  // Array [
+  // "android.software.adoptable_storage",
+  // "android.hardware.sensor.accelerometer",
+  // "android.software.backup",
+  // "android.hardware.touchscreen"
+  // ]
 });
 ```
 
 ### `Device.hasSystemFeatureAsync(feature)` (Android Only)
 
-Tells if the device has a specific system feature.
+Tells if the device has a specific system feature. Can get all available system features in `Device.getSystemAvailableFeaturesAsync()`.
 
 #### Arguments
 
@@ -255,18 +257,18 @@ Returns a `Promise<boolean>` that resolves the `boolean` value for whether the d
 await Device.hasSystemFeatureAsync('amazon.hardware.fire_tv'); // true or false
 ```
 
-### `Device.isPinOrFingerprintSet()`
+### `Device.hasLocalAuthenticationAsync()`
 
-Tells if a PIN number or a fingerprint was set for the device.
+Tells if the device is secured by a PIN, pattern or password or a SIM card is currently locked.
 
 #### Returns
 
-Returns a Promise that resolves the `boolean` value for whether the device has set a Pin or Fingerprint.
+Returns a Promise that resolves the `boolean` value for whether the device has set a PIN, pattern or password or a SIM card is currently locked.
 
 **Examples**
 
 ```js
-Device.isPinOrFingerprintSet()(isPinOrFingerprintSet => {
+Device.hasLocalAuthenticationAsync()(hasLocalAuthentication => {
     // true or false
   }
 });
