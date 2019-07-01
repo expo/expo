@@ -144,7 +144,7 @@ You're all set to use the custom version of the Expo client, containing features
 
 If you choose not to upload your Push Notifications credentials, Push Notifications will not work on the Expo client. In order to get an Expo client with Push Notifications enabled, you will need to submit another build request and upload or create your push credentials at the prompt.
 
-We also require you to be logged in order to store your Push credentials.
+We also require you to be logged in order to store your Push Notification credentials.
 
 If you are experiencing a different problem with Push Notifications, refer to the [main article](https://docs.expo.io/versions/latest/guides/push-notifications/) for more information.
 
