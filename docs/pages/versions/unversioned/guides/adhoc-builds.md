@@ -150,7 +150,7 @@ If you are experiencing a different problem with Push Notifications, refer to th
 
 ### Google Maps
 
-You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your API key in `ios.config.googleMapsApiKey` as described [here](https://docs.expo.io/versions/latest/sdk/map-view/#deploying-google-maps-to-a-standalone-app).
+You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](https://docs.expo.io/versions/latest/sdk/map-view/#deploying-google-maps-to-a-standalone-app).
 
 ## Cannot generate/revoke credentials
 
