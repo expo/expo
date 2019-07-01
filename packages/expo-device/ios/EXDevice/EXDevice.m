@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXDevice/EXDevice.h>
-#import <EXDevice/DeviceUID.h>
+#import <EXDevice/EXDeviceUID.h>
 #import <UMCore/UMUtilities.h>
 
 #include <ifaddrs.h>
@@ -230,20 +230,15 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
 - (NSDictionary *)constantsToExport
 {
   UIDevice *currentDevice = [UIDevice currentDevice];
-  NSString *uniqueId = [EXDeviceUID uid]; //TODO: need to import this
+  NSString *uniqueId = [EXDeviceUID uid];
   
   return @{
            @"brand": @"Apple",
            @"deviceType": UMNullIfNil([self deviceType]),
-           @"deviceName": currentDevice.name, //TODO, ADD TO JS AS WELL
+           @"deviceName": currentDevice.name,
            @"deviceId": UMNullIfNil([self deviceId]),
-           //           @"freeDiskStorage": @(self.freeDiskStorage),
-           //           @"isEmulator": @NO,
            @"isTablet": @([self isTablet]),
            @"manufacturer": @"Apple",
-           //           @"model": self.deviceId, // DON'T WORRY ABOUT FOR NOW
-           //           @"phoneNumber": @"undefined3", // ANDROID ONLY
-           //           @"serialNumber": @"undefined4", // ANDROID ONLY
            @"supportedABIs": @[[self getCPUType]],
            @"systemName": currentDevice.systemName,
            @"totalMemory": [self totalMemory] ?: @(0),
