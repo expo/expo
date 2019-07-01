@@ -304,7 +304,6 @@ public class BillingManager implements PurchasesUpdatedListener {
                 }
               }
 
-
               // Query subscription history
               mBillingClient.queryPurchaseHistoryAsync(SkuType.SUBS, new PurchaseHistoryResponseListener() {
                 @Override
