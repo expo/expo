@@ -71,8 +71,8 @@ export async function hasSystemFeatureAsync(feature) {
     }
     return await ExpoDevice.hasSystemFeatureAsync(feature);
 }
-export async function isPinOrFingerprintSetAsync() {
-    return await ExpoDevice.isPinOrFingerprintSetAsync();
+export async function hasLocalAuthenticationAsync() {
+    return await ExpoDevice.hasLocalAuthenticationAsync();
 }
 export async function getUserAgentAsync() {
     return await ExpoDevice.getUserAgentAsync();
@@ -83,10 +83,10 @@ export async function getCarrierAsync() {
 export async function getTotalDiskCapacityAsync() {
     return await ExpoDevice.getTotalDiskCapacityAsync();
 }
-export async function getSerialNumberAsync() {
-    if (!ExpoDevice.getSerialNumberAsync) {
-        throw new UnavailabilityError('expo-device', 'getSerialNumberAsync');
+export async function getSystemAvailableFeaturesAsync() {
+    if (!ExpoDevice.getSystemAvailableFeaturesAsync) {
+        throw new UnavailabilityError('expo-device', 'getSystemAvailableFeaturesAsync');
     }
-    return await ExpoDevice.getSerialNumberAsync();
+    return await ExpoDevice.getSystemAvailableFeaturesAsync();
 }
 //# sourceMappingURL=Device.js.map

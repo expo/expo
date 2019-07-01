@@ -77,8 +77,8 @@ export async function hasSystemFeatureAsync(feature: string): Promise<boolean> {
   return await ExpoDevice.hasSystemFeatureAsync(feature);
 }
 
-export async function isPinOrFingerprintSetAsync(): Promise<boolean> {
-  return await ExpoDevice.isPinOrFingerprintSetAsync();
+export async function hasLocalAuthenticationAsync(): Promise<boolean> {
+  return await ExpoDevice.hasLocalAuthenticationAsync();
 }
 
 export async function getUserAgentAsync(): Promise<string> {
@@ -93,9 +93,9 @@ export async function getTotalDiskCapacityAsync(): Promise<number> {
   return await ExpoDevice.getTotalDiskCapacityAsync();
 }
 
-export async function getSerialNumberAsync(): Promise<string> {
-  if (!ExpoDevice.getSerialNumberAsync) {
-    throw new UnavailabilityError('expo-device', 'getSerialNumberAsync');
+export async function getSystemAvailableFeaturesAsync(): Promise<string[]> {
+  if (!ExpoDevice.getSystemAvailableFeaturesAsync) {
+    throw new UnavailabilityError('expo-device', 'getSystemAvailableFeaturesAsync');
   }
-  return await ExpoDevice.getSerialNumberAsync();
+  return await ExpoDevice.getSystemAvailableFeaturesAsync();
 }
