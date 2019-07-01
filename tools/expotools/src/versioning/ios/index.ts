@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import shell from 'shelljs';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
 import { Modules } from '@expo/xdl';
@@ -89,11 +88,10 @@ async function namespaceReactNativeFilesAsync(
       const targetPath = `${dirname}/${target}`;
 
       // perform sed find/replace
-      let cmd = transformPatterns
-        .map(pattern => `sed -i -- '${pattern}' ${filename}`)
-        .concat(`mv ${filename} ${targetPath}`)
-        .join(' && ');
-      shell.exec(cmd);
+      for (const pattern of transformPatterns) {
+        await spawnAsync('sed', ['-i', '--', pattern, filename]);
+        await fs.move(filename, targetPath);
+      }
 
       // perform transforms that sed can't express
       await _transformFileContentsAsync(targetPath, async (fileString) => {
@@ -240,7 +238,7 @@ async function generatePodspecsAsync(
   );
   const versionedUniversalModuleNames = Object.keys(universalModules);
 
-  versionedUniversalModuleNames.map(originalPodName => {
+  for (const originalPodName of versionedUniversalModuleNames) {
     const prefixedPodName = `${versionName}${originalPodName}`;
     const originalPodSpecPath = path.join(
       newVersionPath,
@@ -253,21 +251,16 @@ async function generatePodspecsAsync(
       `${prefixedPodName}.podspec`
     );
 
-    shell.exec(`mv ${originalPodSpecPath} ${prefixedPodSpecPath}`);
+    await fs.move(originalPodSpecPath, prefixedPodSpecPath);
 
     // Replaces versioned modules in the podspec eg. 'EXCore' => 'ABI28_0_0EXCore'
     // `E` flag is required for extended syntax which allows to use `(a|b)`
     const depsToReplace = versionedUniversalModuleNames.join('|');
-    shell.exec(
-      `sed -Ei -- "s/'(${depsToReplace})('|\\/)/'${versionName}\\1\\2/g" ${prefixedPodSpecPath}`
-    );
-
-    shell.exec(`sed -i -- 's/React/${React}/g' ${prefixedPodSpecPath}`);
-    shell.exec(
-      `sed -i -- 's/${versionName}UM${React}/${versionName}UMReact/g' ${prefixedPodSpecPath}`
-    );
-    shell.exec(`sed -i -- "s/'..', 'package.json'/'package.json'/g" ${prefixedPodSpecPath}`);
-  });
+    await spawnAsync('sed', ['-Ei', '--', `s/'(${depsToReplace})('|\\/)/'${versionName}\\1\\2/g`, prefixedPodSpecPath]);
+    await spawnAsync('sed', ['-i', '--', `s/React/${React}/g`, prefixedPodSpecPath]);
+    await spawnAsync('sed', ['-i', '--', `s/${versionName}UM${React}/${versionName}UMReact/g`, prefixedPodSpecPath]);
+    await spawnAsync('sed', ['-i', '--', "s/'..', 'package.json'/'package.json'/g", prefixedPodSpecPath]);
+  }
   return;
 }
 
@@ -287,11 +280,12 @@ async function generateExpoKitPodspecAsync(
 ) {
   const versionedReactPodName = versionedPodNames.React;
   const versionedExpoKitPodName = versionedPodNames.ExpoKit;
-  let specFilename = `${specfilePath}/ExpoKit.podspec`;
+  const specFilename = path.join(specfilePath, 'ExpoKit.podspec');
 
   // rename spec to newPodName
-  let sedPattern = `s/\\(s\\.name[[:space:]]*=[[:space:]]\\)"ExpoKit"/\\1"${versionedExpoKitPodName}"/g`;
-  shell.exec(`sed -i -- '${sedPattern}' ${specFilename}`);
+  const sedPattern = `s/\\(s\\.name[[:space:]]*=[[:space:]]\\)"ExpoKit"/\\1"${versionedExpoKitPodName}"/g`;
+
+  await spawnAsync('sed', ['-i', '--', sedPattern, specFilename]);
 
   // further processing that sed can't do very well
   await _transformFileContentsAsync(specFilename, fileString => {
@@ -327,9 +321,7 @@ async function generateExpoKitPodspecAsync(
   });
 
   // move podspec to ${versionedExpoKitPodName}.podspec
-  shell.exec(
-    `mv ${specFilename} ${specfilePath}/${versionedExpoKitPodName}.podspec`
-  );
+  await fs.move(specFilename, path.join(specfilePath, `${versionedExpoKitPodName}.podspec`));
 
   return;
 }
@@ -347,21 +339,18 @@ async function generateReactPodspecAsync(
 ) {
   const versionedReactPodName = versionedPodNames.React;
   const versionedYogaPodName = versionedPodNames.yoga;
-  let specFilename = `${specfilePath}/React.podspec`;
+  const specFilename = `${specfilePath}/React.podspec`;
 
   // rename spec to newPodName
-  let sedPattern = `s/\\(s\\.name[[:space:]]*=[[:space:]]\\)"React"/\\1"${versionedReactPodName}"/g`;
-  shell.exec(`sed -i -- '${sedPattern}' ${specFilename}`);
+  const sedPattern = `s/\\(s\\.name[[:space:]]*=[[:space:]]\\)"React"/\\1"${versionedReactPodName}"/g`;
+  await spawnAsync('sed', ['-i', '--', sedPattern, specFilename]);
 
   // rename header_dir
-  shell.exec(
-    `sed -i -- 's/^\\(.*header_dir.*\\)React\\(.*\\)$/\\1${versionedReactPodName}\\2/' ${specFilename}`
-  );
+  await spawnAsync('sed', ['-i', '--', 's/^\\(.*header_dir.*\\)React\\(.*\\)$/\\1${versionedReactPodName}\\2/', specFilename]);
 
   // point source at .
-  let newPodSource = `{ :path => "." }`;
-  sedPattern = `s/\\(s\\.source[[:space:]]*=[[:space:]]\\).*/\\1${newPodSource}/g`;
-  shell.exec(`sed -i -- '${sedPattern}' ${specFilename}`);
+  const newPodSource = `{ :path => "." }`;
+  await spawnAsync('sed', ['-i', '--', `s/\\(s\\.source[[:space:]]*=[[:space:]]\\).*/\\1${newPodSource}/g`, specfilePath]);
 
   // further processing that sed can't do very well
   await _transformFileContentsAsync(specFilename, fileString => {
@@ -374,7 +363,7 @@ async function generateReactPodspecAsync(
     fileString = fileString.replace('/RCTTV', `/${versionName}RCTTV`);
 
     // namespace cpp libraries
-    let cppLibraries = getCppLibrariesToVersion();
+    const cppLibraries = getCppLibrariesToVersion();
     cppLibraries.forEach(libraryName => {
       fileString = fileString.replace(
         new RegExp(`([^A-Za-z0-9_])${libraryName}([^A-Za-z0-9_])`, 'g'),
@@ -392,9 +381,7 @@ async function generateReactPodspecAsync(
   });
 
   // move podspec to ${versionedReactPodName}.podspec
-  shell.exec(
-    `mv ${specFilename} ${specfilePath}/${versionedReactPodName}.podspec`
-  );
+  await fs.move(specFilename, path.join(specfilePath, `${versionedReactPodName}.podspec`));
 
   return;
 }
@@ -434,9 +421,7 @@ async function generateYogaPodspecAsync(
   });
 
   // move podspec to ${versionedReactPodName}.podspec
-  shell.exec(
-    `mv ${specFilename} ${specfilePath}/${versionedYogaPodName}.podspec`
-  );
+  await fs.move(specFilename, path.join(specfilePath, `${versionedYogaPodName}.podspec`));
 
   return;
 }
@@ -592,7 +577,7 @@ async function removePodfileDepsAsync(templatesPath, versionedPodNames) {
     filesToRemove.forEach(fileToRemove => {
       try {
         fs.accessSync(fileToRemove, fs.F_OK);
-        shell.exec(`rm ${fileToRemove}`);
+        fs.removeSync(fileToRemove);
       } catch (e) {}
     });
   }
@@ -626,9 +611,8 @@ async function modifyVersionConfigAsync(configPath, transformConfig) {
   });
 
   // convert json config to plist for iOS
-  shell.exec(
-    `plutil -convert xml1 ${jsConfigFilename} -o ${configPath}/EXSDKVersions.plist`
-  );
+  await spawnAsync('plutil', ['-convert', 'xml1', jsConfigFilename, '-o', path.join(configPath, 'EXSDKVersions.plist')]);
+
   return;
 }
 
@@ -762,23 +746,43 @@ export async function addVersionAsync(
 
   // Clone react native latest version
   console.log(`Copying files from ${chalk.magenta(RELATIVE_RN_PATH)} ...`);
-  shell.exec(
-    [
-      `mkdir -p ${newVersionPath}`,
-      `cp -R ${rootPath}/${RELATIVE_RN_PATH}/React ${newVersionPath}/React`,
-      `cp -R ${rootPath}/${RELATIVE_RN_PATH}/Libraries ${newVersionPath}/Libraries`,
-      `cp ${rootPath}/${RELATIVE_RN_PATH}/React.podspec ${newVersionPath}/.`,
-      `cp ${rootPath}/${RELATIVE_RN_PATH}/package.json ${newVersionPath}/.`,
-      `find ${newVersionPath} -name '*.js' -type f -delete`,
-    ].join(' && ')
+
+  await fs.mkdirs(newVersionPath);
+  await fs.copy(
+    path.join(rootPath, RELATIVE_RN_PATH, 'React'),
+    path.join(newVersionPath, 'React'),
   );
+  await fs.copy(
+    path.join(rootPath, RELATIVE_RN_PATH, 'Libraries'),
+    path.join(newVersionPath, 'Libraries'),
+  );
+  await fs.copy(
+    path.join(rootPath, RELATIVE_RN_PATH, 'React.podspec'),
+    path.join(newVersionPath, 'React.podspec'),
+  );
+  await fs.copy(
+    path.join(rootPath, RELATIVE_RN_PATH, 'package.json'),
+    path.join(newVersionPath, 'package.json'),
+  );
+
+  console.log(`Removing unnecessary ${chalk.magenta('*.js')} files ...`);
+
+  const jsFiles = await glob(path.join(newVersionPath, '**', '*.js')) as string[];
+  
+  for (const jsFile of jsFiles) {
+    await fs.remove(jsFile);
+  }
 
   // Copy versioned exponent modules into the clone
   console.log(`Copying versioned native modules into the new Pod...`);
-  shell.exec(
-    `cp -R ${rootPath}/ios/Exponent/Versioned ${newVersionPath}/Expo`
+  await fs.copy(
+    path.join(rootPath, 'ios', 'Exponent', 'Versioned'),
+    path.join(newVersionPath, 'Expo'),
   );
-  shell.exec(`cp ${rootPath}/ExpoKit.podspec ${newVersionPath}/.`);
+  await fs.copy(
+    path.join(rootPath, 'ExpoKit.podspec'),
+    path.join(newVersionPath, 'ExpoKit.podspec'),
+  );
 
   // some files in the Optional spec should be omitted from versioned code
   const excludedOptionalDirectories = getExcludedOptionalDirectories();
@@ -820,7 +824,7 @@ export async function addVersionAsync(
   console.log(
     `Copying cpp libraries from ${chalk.magenta(path.join(RELATIVE_RN_PATH, 'ReactCommon'))} ...`
   );
-  let cppLibraries = getCppLibrariesToVersion();
+  const cppLibraries = getCppLibrariesToVersion();
   
   await fs.mkdirs(path.join(newVersionPath, 'ReactCommon'));
 
@@ -871,10 +875,13 @@ export async function addVersionAsync(
     config => addVersionToConfig(config, versionNumber)
   );
 
-  const removeExtraMinusMinusFilesCommand = `find ${newVersionPath} -name '*--' | xargs rm`;
-  console.log(`Removing any \`filename--\` files from the new pod (running ${removeExtraMinusMinusFilesCommand})`);
+  console.log('Removing any `filename--` files from the new pod ...');
+
   try {
-    shell.exec(removeExtraMinusMinusFilesCommand);
+    const minusMinusFiles = await glob(path.join(newVersionPath, '**', '*--'));
+    for (const minusMinusFile of minusMinusFiles) {
+      await fs.remove(minusMinusFile);
+    }
   } catch (error) {
     console.warn("The script wasn't able to remove any possible `filename--` files created by sed. Please ensure there are no such files manually.")
   }
@@ -929,7 +936,7 @@ export async function removeVersionAsync(
 
   // remove directory
   console.log(`Removing versioned files under ${chalk.magenta(path.relative(rootPath, newVersionPath))}...`);
-  shell.exec(`rm -rf ${newVersionPath}`);
+  await fs.remove(newVersionPath);
 
   // remove dep from main podfile
   console.log(
