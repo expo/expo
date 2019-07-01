@@ -2,14 +2,15 @@ package expo.modules.device;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.FeatureInfo;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.util.Log;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
-import android.support.v4.content.ContextCompat;
 import android.app.KeyguardManager;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
@@ -18,7 +19,6 @@ import android.app.UiModeManager;
 import android.view.WindowManager;
 import android.util.DisplayMetrics;
 import android.content.res.Configuration;
-import android.Manifest;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -26,19 +26,18 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.nio.ByteOrder;
-import java.security.AccessControlException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DeviceModule extends ExportedModule implements RegistryLifecycleListener {
+public class DeviceModule extends ExportedModule implements RegistryLifecycleListener{
   private static final String NAME = "ExpoDevice";
   private static final String TAG = DeviceModule.class.getSimpleName();
 
@@ -100,7 +99,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     constants.put("manufacturer", Build.MANUFACTURER);
     constants.put("model", Build.MODEL);
     constants.put("systemName", this.getSystemName());
-    constants.put("deviceId", Build.BOARD);
     constants.put("uniqueId", Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
     constants.put("supportedABIs", Build.SUPPORTED_ABIS);
 
@@ -115,6 +113,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
     return constants;
   }
+
 
   private String getSystemName() {
     String systemName = "";
@@ -168,41 +167,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     }
   }
 
-  private void getSerialNumber(final Promise promise) {
-    try {
-      if (android.os.Build.VERSION.SDK_INT < 26) {
-        promise.resolve(Build.SERIAL);
-      } else {
-        promise.resolve(Build.getSerial());
-      }
-    } catch (SecurityException e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject("ERR_DEVICE", "User rejected permissions.");
-    }
-  }
-
-  @ExpoMethod
-  public void getSerialNumberAsync(final Promise promise) {
-
-    int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE);
-    if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-      getSerialNumber(promise);
-    } else {
-      Permissions mPermissions = mModuleRegistry.getModule(Permissions.class);
-      String permissionsTable[] = {Manifest.permission.READ_PHONE_STATE};
-      mPermissions.askForPermissions(permissionsTable, new Permissions.PermissionsRequestListener() {
-        @Override
-        public void onPermissionsResult(int[] results) {
-          if (results[0] == PackageManager.PERMISSION_GRANTED) {
-            getSerialNumber(promise);
-          } else {
-            promise.reject("ERR_DEVICE", "User rejected permissions.");
-          }
-        }
-      });
-    }
-  }
-
   @ExpoMethod
   public void getFreeDiskStorageAsync(Promise promise) {
     try {
@@ -250,7 +214,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
           }
           byte[] mac = intf.getHardwareAddress();
           if (mac == null) {
-            macAddress = "";
+            macAddress = null;
           }
           StringBuilder buf = new StringBuilder();
           for (byte aMac : mac) {
@@ -263,12 +227,14 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
           promise.resolve(macAddress);
           break;
         }
+        //catch undefined network interface name
+        promise.reject("ERR_DEVICE", "Undefined interface name");
       } catch (Exception e) {
         Log.e(TAG, e.getMessage());
         promise.reject("ERR_DEVICE", "Socket exception");
       }
     } else {
-      promise.reject("ERR_DEVICE","No permission granted to access the Internet");
+      promise.reject("ERR_DEVICE", "No permission granted to access the Internet");
     }
   }
 
@@ -284,7 +250,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void isPinOrFingerprintSetAsync(Promise promise) {
+  public void hasLocalAuthenticationAsync(Promise promise) {
     KeyguardManager keyguardManager = (KeyguardManager) mContext.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE); //api 16+
     promise.resolve(keyguardManager.isKeyguardSecure());
   }
@@ -302,7 +268,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       promise.resolve(telMgr.getNetworkOperatorName());
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_DEVICE","Null pointer exception");
+      promise.reject("ERR_DEVICE", "Null pointer exception");
     }
   }
 
@@ -316,5 +282,17 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       Log.e(TAG, e.getMessage());
       promise.reject("ERR_DEVICE", "Unable to access total disk capacity");
     }
+  }
+
+  @ExpoMethod
+  public void getSystemAvailableFeaturesAsync(Promise promise) {
+    FeatureInfo[] allFeatures = mContext.getApplicationContext().getPackageManager().getSystemAvailableFeatures();
+    List<String> featureString = new ArrayList<>();
+    for (int i = 0; i < allFeatures.length; i++) {
+      if (allFeatures[i].name != null) {
+        featureString.add(allFeatures[i].name);
+      }
+    }
+    promise.resolve(featureString);
   }
 }
