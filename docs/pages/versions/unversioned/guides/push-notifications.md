@@ -285,6 +285,10 @@ type PushMessage = {
 
   /**
    * Rich content that accomplishes the push notification.
+   * Note that for iOS, the displaying priority is video > audio > image.
+   * In other words, if the message specifies both `video` and `image`,
+   * the video will be displayed on iOS devices (and the image will be
+   * displayed on Android devices).
    */
   richContent?: {
     /**
