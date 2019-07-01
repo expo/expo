@@ -284,6 +284,88 @@ type PushMessage = {
   ttl?: number,
 
   /**
+   * Rich content that accomplishes the push notification.
+   */
+  richContent?: {
+    /**
+     * Remote https url of an image that will be displayed with the notification.
+     * The image should not have an alpha channel.
+     * Image restrictions on iOS: https://developer.apple.com/documentation/usernotifications/unnotificationattachment.
+     * Image formats supported on Android: JPEG, PNG, and GIF (will not be animated).
+     */
+    image?: string | {
+      url: string,
+      options?: {
+        /**
+         * Whether the image's thumbnail will be displayed.
+         * Defaults to `false`.
+         */
+        thumbnailHidden?: boolean,
+
+        /**
+         * (iOS-specific field)
+         * The clipping rectangle for a thumbnail image. Each value in this key
+         * is a dictionary containing a unit rectangle whose values are in the
+         * range 0.0 to 1.0 and represent the portion of the original image that
+         * you want to display.
+         * For example, specifying `x: 0.25, y: 0.25, width: 0.5, height: 0.5`
+         * defines a clipping rectangle that shows only the center portion of
+         * the image.
+         * Learn more: https://developer.apple.com/documentation/usernotifications/unnotificationattachmentoptionsthumbnailclippingrectkey
+         */
+        thumbnailClippingRect?: {
+          x: number,
+          y: number,
+          width: number,
+          height: number
+        }
+      }
+    },
+
+    /**
+     * (iOS-specific field)
+     * Remote https url of an audio that will be displayed with the notification.
+     * Audio restrictions: https://developer.apple.com/documentation/usernotifications/unnotificationattachment
+     */
+    audio?: string,
+
+    /**
+     * (iOS-specific field)
+     * Remote https url of a video that will be displayed with the notification.
+     * Video restrictions: https://developer.apple.com/documentation/usernotifications/unnotificationattachment
+     */
+    video?: string | {
+      url: string,
+      options?: {
+        /**
+         * Whether the image's thumbnail will be displayed.
+         * Defaults to `false`.
+         */
+        thumbnailHidden?: boolean,
+
+        /**
+         * The clipping rectangle for a thumbnail image. Refer to the option
+         * `image.options.thumbnailClippingRect` above.
+         */
+        thumbnailClippingRect?: {
+          x: number,
+          y: number,
+          width: number,
+          height: number
+        },
+
+        /**
+         * For a video, it is the time (in seconds) into the video from which to
+         * grab the thumbnail image. For an animated image (i.e. a GIF file),
+         * it is the frame number of the animation to use as a thumbnail image.
+         * Learn more: https://developer.apple.com/documentation/usernotifications/unnotificationattachmentoptionsthumbnailtimekey
+         */
+        thumbnailTime?: number
+      }
+    }
+  },
+
+  /**
    * A timestamp since the UNIX epoch specifying when the message expires. This
    * has the same effect as the `ttl` field and is just an absolute timestamp
    * instead of a relative time.
@@ -342,6 +424,11 @@ type PushMessage = {
   _category?: string
 
   // Android-specific fields
+
+  /**
+   * Remote url of a custom icon that replaces the default notification icon.
+  */
+  icon?: string,
 
   /**
    * ID of the Notification Channel through which to display this notification
