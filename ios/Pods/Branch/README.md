@@ -1,14 +1,6 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/hyperium/hyper/master/LICENSE)
 
-## What's New
-### We are starting an SDK beta test program at Branch!
-
-Get priority updates and receive swag when you sign up and participate in the beta program.
-
-[Read about the Branch SDK Beta Program](https://github.com/BranchMetrics/ios-branch-deep-linking/wiki/The-Branch-SDK-Beta-Project)<br/>
-[Sign up for the Branch SDK Beta Program](https://docs.google.com/a/branch.io/forms/d/1fbXVFG11i-sQkd9pzHUu-U3B2qCBuwA64pVnsTQwQMo)
-
 # Branch Metrics iOS SDK Reference
 
 This is a repository of our open source iOS SDK, and the information presented here serves as a reference manual for our iOS SDK. See the table of contents below for a complete list of the content featured in this document.
@@ -29,7 +21,7 @@ ___
   + [Register for Branch key](#register-your-app)
   + [Add your Branch key](#add-your-branch-key-to-your-project)
   + [Register a URI scheme](#register-a-uri-scheme)
-  + [Support Universal Links](#support-universal-linking)
+  + [Support Universal Links](#support-universal-linking-ios-9-and-above)
 
 3. Branch general methods
   + [Get a Branch singleton](#get-a-singleton-branch-instance)
@@ -231,7 +223,23 @@ Branch *branch = [Branch getInstance];
 let branch: Branch = Branch.getInstance()
 ```
 
-##### Testing
+### Testing
+
+#### Test your Branch Integration
+
+Test your Branch Integration by calling `validateSDKIntegration` in your AppDelegate. Check your Xcode logs to make sure all the SDK Integration tests pass. Make sure to comment out or remove `validateSDKIntegration` in your production build.
+
+```swift
+Branch.getInstance().validateSDKIntegration()
+```
+
+```objc
+[[Branch getInstance] validateSDKIntegration];
+```
+
+##### Test Deeplink routing for your Branch links
+
+Append `?bnc_validate=true` to any of your app's Branch links and click it on your mobile device (not the Simulator!) to start the test. For instance, to validate a link like: `"https://<yourapp\>.app.link/NdJ6nFzRbK"` click on: `"https://<yourapp\>.app.link/NdJ6nFzRbK?bnc_validate=true"`
 
 ###### Objective-C
 
@@ -269,22 +277,21 @@ To deep link, Branch must initialize a session to check if the user originated f
     return YES;
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     BOOL branchHandled =
         [[Branch getInstance]
             application:application
                 openURL:url
-      sourceApplication:sourceApplication
-             annotation:annotation];
-
+                options:options];
     if (!branchHandled) {
         // do other deep link routing for the Facebook SDK, Pinterest SDK, etc
     }
     return YES;
 }
 
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *restorableObjects))restorationHandler {
     BOOL handledByBranch = [[Branch getInstance] continueUserActivity:userActivity];
 
     return handledByBranch;
@@ -308,13 +315,12 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
   return true
 }
 
-func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
-
+func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
     // Pass the url to the handle deep link call
-    let branchHandled = Branch.getInstance().application(application,
+    let branchHandled = Branch.getInstance().application(
+        application,
         open: url,
-        sourceApplication: sourceApplication,
-        annotation: annotation
+        options: options
     )
     if (!branchHandled) {
         // If not handled by Branch, do other deep link routing for the
@@ -324,10 +330,10 @@ func application(_ application: UIApplication, open url: URL, sourceApplication:
     return true
 }
 
-func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-    Branch.getInstance().continue(userActivity)
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+    let handledByBranch = Branch.getInstance().continue(userActivity)
 
-    return true
+    return handledByBranch
 }
 
 func application(_ application: UIApplication, didReceiveRemoteNotification launchOptions: [AnyHashable: Any]) -> Void {
@@ -588,7 +594,7 @@ The `BranchEvent` class can be simple to use. For example:
 ###### Objective-C
 
 ```objc
-[BranchEvent.standardEvent(BranchStandardEventAddToCart) logEvent];
+[[BranchEvent standardEvent:BranchStandardEventAddToCart] logEvent];
 ```
 
 ###### Swift
@@ -602,7 +608,7 @@ For best results use the Branch standard event names defined in `BranchEvent.h`.
 ###### Objective-C
 
 ```objc
-[BranchEvent.customEventWithName(@"User_Scanned_Item") logEvent];
+[[BranchEvent customEventWithName:@"User_Scanned_Item"] logEvent];
 ```
 
 ###### Swift
@@ -657,9 +663,9 @@ event.logEvent()
 
 ### Register Custom Events (Deprecated)
 
-The old `userCompletedAction:` methods of tracking user actions and events are deprecated and will go away eventually. Use the new `BranchEvent` to track user actions instead, as described above.
+**For Clients Using Referrals**
 
-Here is the legacy documentation:
+If you are using Branch's Referral feature, please use the legacy documentation provided below using the `userCompletedAction` methods. Do not upgrade to the new `BranchEvent` methods for tracking user actions mentioned above.
 
 #### Methods
 
@@ -728,7 +734,7 @@ statistics, such as total installs, referrals, and app link statistics.
 Call this method to enable checking for Apple Search Ads before Branch initialization.  This method
 must be called before you initialize your Branch session.
 
-Note that this will add about 1 second from call to initSession to callback due to Apple's latency.
+Note that this can add up to 10 seconds from call to initSession to callback due to Apple's latency.
 
 ###### Objective-C
 ```objc
@@ -1484,4 +1490,3 @@ The response will return an array that has been parsed from the following JSON:
 1. _1_ - A reward that was added manually.
 2. _2_ - A redemption of credits that occurred through our API or SDKs.
 3. _3_ - This is a very unique case where we will subtract credits automatically when we detect fraud.
-

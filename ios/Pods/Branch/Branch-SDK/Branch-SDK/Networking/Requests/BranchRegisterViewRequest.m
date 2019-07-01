@@ -67,15 +67,13 @@
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if ((self = [super initWithCoder:decoder])) {
-        _params = [decoder decodeObjectForKey:@"params"];
+        _params = [decoder decodeObjectOfClass:NSDictionary.class forKey:@"params"];
     }
-    
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
-    
     [coder encodeObject:self.params forKey:@"params"];
 }
 

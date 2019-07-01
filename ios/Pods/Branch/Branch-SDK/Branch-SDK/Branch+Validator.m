@@ -9,6 +9,8 @@
 #import "Branch+Validator.h"
 #import "BNCSystemObserver.h"
 #import "BranchConstants.h"
+#import "BNCApplication.h"
+#import "BNCEncodingUtils.h"
 
 void BNCForceBranchValidatorCategoryToLoad(void) {
     // Empty body but forces loader to load the category.
@@ -38,14 +40,15 @@ static inline void BNCAfterSecondsPerformBlockOnMainThread(NSTimeInterval second
 
 - (void) startValidation {
     BNCPreferenceHelper *preferenceHelper = [BNCPreferenceHelper preferenceHelper];
-    NSString *endpoint = [BRANCH_REQUEST_ENDPOINT_APP_LINK_SETTINGS stringByAppendingPathComponent:preferenceHelper.lastRunBranchKey];
+    NSString *endpoint =
+        [BRANCH_REQUEST_ENDPOINT_APP_LINK_SETTINGS stringByAppendingPathComponent:preferenceHelper.lastRunBranchKey];
     [[[BNCServerInterface alloc] init]
         getRequest:nil
         url:[preferenceHelper getAPIURL:endpoint]
         key:nil
-        callback:^(BNCServerResponse *response, NSError *error) {
+        callback:^ (BNCServerResponse *response, NSError *error) {
             if (error) {
-                [self showAlertWithTitle:@"" message:@""];
+                [self showAlertWithTitle:@"Error" message:error.localizedDescription];
             } else {
                 [self validateIntegrationWithServerResponse:response];
             }
@@ -53,47 +56,56 @@ static inline void BNCAfterSecondsPerformBlockOnMainThread(NSTimeInterval second
 }
 
 - (void) validateIntegrationWithServerResponse:(BNCServerResponse*)response {
-    NSString *passString = @"PASS";
-    NSString *errorString = @"ERROR";
+    NSString*passString = @"PASS";
+    NSString*errorString = @"ERROR";
 
+    // Decode the server message:
+    NSString*serverUriScheme    = BNCStringFromWireFormat(response.data[@"ios_uri_scheme"]) ?: @"";
+    NSString*serverBundleID     = BNCStringFromWireFormat(response.data[@"ios_bundle_id"]) ?: @"";
+    NSString*serverTeamID       = BNCStringFromWireFormat(response.data[@"ios_team_id"]) ?: @"";
+
+    // Verify:
     NSLog(@"** Initiating Branch integration verification **");
     NSLog(@"-------------------------------------------------");
 
-    NSLog(@"------ checking for URI scheme correctness ------");
-    NSString *serverUriScheme = response.data[@"ios_uri_scheme"];
+    NSLog(@"------ Checking for URI scheme correctness ------");
     NSString *clientUriScheme = [NSString stringWithFormat:@"%@%@", [BNCSystemObserver getDefaultUriScheme], @"://"];
     NSString *uriScheme = [serverUriScheme isEqualToString:clientUriScheme] ? passString : errorString;
-    NSString *uriSchemeMessage = [NSString stringWithFormat:@"%@: Dashboard Link Settings page '%@' compared to client side '%@'", uriScheme, serverUriScheme, clientUriScheme];
+    NSString *uriSchemeMessage =
+        [NSString stringWithFormat:@"%@: Dashboard Link Settings page '%@' compared to client side '%@'",
+            uriScheme, serverUriScheme, clientUriScheme];
     NSLog(@"%@",uriSchemeMessage);
     NSLog(@"-------------------------------------------------");
 
-    NSLog(@"-- checking for bundle identifier correctness ---");
-    NSString *serverBundleIdentifier = response.data[@"ios_bundle_id"];
-    NSString *clientBundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
-    NSString *bundleIdentifier = [serverBundleIdentifier isEqualToString:clientBundleIdentifier] ? passString : errorString;
-    NSString *bundleIdentifierMessage = [NSString stringWithFormat:@"%@: Dashboard Link Settings page '%@' compared to client side '%@'", bundleIdentifier, serverBundleIdentifier, clientBundleIdentifier];
+    NSLog(@"-- Checking for bundle identifier correctness ---");
+    NSString *clientBundleIdentifier = [[NSBundle mainBundle] bundleIdentifier] ?: @"";
+    NSString *bundleIdentifier = [serverBundleID isEqualToString:clientBundleIdentifier] ? passString : errorString;
+    NSString *bundleIdentifierMessage =
+        [NSString stringWithFormat:@"%@: Dashboard Link Settings page '%@' compared to client side '%@'",
+            bundleIdentifier, serverBundleID, clientBundleIdentifier];
     NSLog(@"%@",bundleIdentifierMessage);
     NSLog(@"-------------------------------------------------");
 
-    NSLog(@"----- checking for iOS Team ID correctness ------");
-    NSString *serverTeamId = response.data[@"ios_team_id"];
-    NSString *clientTeamId = [BNCSystemObserver getTeamIdentifier];
-    NSString *teamID = [serverTeamId isEqualToString:clientTeamId] ? passString : errorString;
-    NSString *teamIDMessage = [NSString stringWithFormat:@"%@: Dashboard Link Settings page '%@' compared to client side '%@'", teamID, serverTeamId, clientTeamId];
+    NSLog(@"----- Checking for iOS Team ID correctness ------");
+    NSString *clientTeamId = [BNCApplication currentApplication].teamID ?: @"";
+    NSString *teamID = [serverTeamID isEqualToString:clientTeamId] ? passString : errorString;
+    NSString *teamIDMessage =
+        [NSString stringWithFormat:@"%@: Dashboard Link Settings page '%@' compared to client side '%@'",
+            teamID, serverTeamID, clientTeamId];
     NSLog(@"%@",teamIDMessage);
     NSLog(@"-------------------------------------------------");
 
     if ([teamID isEqualToString:errorString] ||
         [bundleIdentifier isEqualToString:errorString] ||
         [uriScheme isEqualToString:errorString]) {
-        NSLog(@"%@: server side '%@' compared to client side '%@'.", errorString, serverTeamId, clientTeamId);
+        NSLog(@"%@: server side '%@' compared to client side '%@'.", errorString, serverTeamID, clientTeamId);
         NSLog(@"To fix your Dashboard settings head over to https://branch.app.link/link-settings-page");
         NSLog(@"If you see a null value on the client side, please temporarily add the following key-value pair to your plist: \n\t<key>AppIdentifierPrefix</key><string>$(AppIdentifierPrefix)</string>\n-> then re-run this test.");
         NSLog(@"-------------------------------------------------");
     }
 
     NSLog(@"-------------------------------------------------------------------------------------------------------------------");
-    NSLog(@"-----To test your deeplink routing append ?validate=true to any branch link and click it on your mobile device-----");
+    NSLog(@"-----To test your deeplink routing append ?bnc_validate=true to any branch link and click it on your mobile device-----");
     NSLog(@"-------------------------------------------------------------------------------------------------------------------");
 
     BOOL testsFailed = NO;
@@ -111,22 +123,22 @@ static inline void BNCAfterSecondsPerformBlockOnMainThread(NSTimeInterval second
             kFailMark,  serverUriScheme];
     }
 
-    if ([serverBundleIdentifier isEqualToString:clientBundleIdentifier]) {
+    if ([serverBundleID isEqualToString:clientBundleIdentifier]) {
         alertString = [alertString stringByAppendingFormat:@"%@App Bundle ID matches:\n\t'%@'\n",
-            kPassMark,  serverBundleIdentifier];
+            kPassMark,  serverBundleID];
     } else {
         testsFailed = YES;
         alertString = [alertString stringByAppendingFormat:@"%@App Bundle ID mismatch:\n\t'%@'\n",
-            kFailMark,  serverBundleIdentifier];
+            kFailMark,  serverBundleID];
     }
 
-    if ([serverTeamId isEqualToString:clientTeamId]) {
+    if ([serverTeamID isEqualToString:clientTeamId]) {
         alertString = [alertString stringByAppendingFormat:@"%@Team ID matches:\n\t'%@'\n",
-            kPassMark,  serverTeamId];
+            kPassMark,  serverTeamID];
     } else {
         testsFailed = YES;
         alertString = [alertString stringByAppendingFormat:@"%@Team ID mismatch:\n\t'%@'\n",
-            kFailMark,  serverTeamId];
+            kFailMark,  serverTeamID];
     }
 
     if (testsFailed) {
@@ -170,14 +182,20 @@ static inline void BNCAfterSecondsPerformBlockOnMainThread(NSTimeInterval second
 
 - (void) showNextStep {
     NSString *message =
-        @"\nGreat! Comment out the 'validateSDKIntegration' line in your app.\n\n"
+        @"\nGreat! Remove the 'validateSDKIntegration' line in your app.\n\n"
          "Next check your deep link routing.\n\n"
-         "Append '?validate=true' to any of your app's Branch links and "
-         "click it on your mobile device (not the Simulator!) to start the test.\n\n"
+         "Append '?bnc_validate=true' to any of your app's Branch links and "
+         "click on it on your mobile device (not the Simulator!) to start the test.\n\n"
          "For instance, to validate a link like:\n"
          "https://<yourapp>.app.link/NdJ6nFzRbK\n\n"
          "click on:\n"
-         "https://<yourapp>.app.link/NdJ6nFzRbK?validate=true";
+         "https://<yourapp>.app.link/NdJ6nFzRbK?bnc_validate=true";
+    NSLog(
+        @"\n----------------------------------------------------------------------------"
+         "\nBranch Integration Next Steps\n"
+         "\n"
+         "%@"
+         "\n----------------------------------------------------------------------------", message);
     [self showAlertWithTitle:@"Next Step" message:message];
 }
 
@@ -283,6 +301,7 @@ static inline void BNCAfterSecondsPerformBlockOnMainThread(NSTimeInterval second
             referringLink = [referringLink stringByAppendingString:@"/e/"];
         }
     }
+    referringLink = [referringLink stringByReplacingOccurrencesOfString:@"-alternate" withString:@""];
     return referringLink;
 }
 

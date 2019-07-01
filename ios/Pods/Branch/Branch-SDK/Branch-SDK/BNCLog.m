@@ -42,6 +42,7 @@ void BNCLogInternalErrorFunction(int linenumber, NSString*format, ...) {
 
 
 inline static void BNCLogInitializeClient_Internal() {
+    BNCLogInitialize();
     BNCLogClientInitializeFunctionPtr initFunction = BNCLogSetClientInitializeFunction(NULL);
     if (initFunction) {
         initFunction();
@@ -428,9 +429,8 @@ BOOL BNCLogByteWrapOpenURL_Internal(NSURL *url, long maxBytes) {
     NSString *record = BNCLogByteWrapReadNextRecord();
     while (record) {
         NSDate *date = nil;
-        NSString *dateString = @"";
         if (record.length >= 27) {
-            dateString = [record substringWithRange:NSMakeRange(0, 27)];
+            NSString *dateString = [record substringWithRange:NSMakeRange(0, 27)];
             date = [bnc_LogDateFormatter dateFromString:dateString];
         }
         if (!date || [date compare:lastDate] < 0) {
@@ -471,6 +471,7 @@ void BNCLogSetOutputToURLByteWrap(NSURL *_Nullable URL, long maxBytes) {
 static BNCLogLevel bnc_LogDisplayLevel = BNCLogLevelWarning;
 
 BNCLogLevel BNCLogDisplayLevel() {
+    BNCLogInitializeClient_Internal();
     __block BNCLogLevel level = BNCLogLevelAll;
     dispatch_sync(bnc_LogQueue, ^{
         level = bnc_LogDisplayLevel;

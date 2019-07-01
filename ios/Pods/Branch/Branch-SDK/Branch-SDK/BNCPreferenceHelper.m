@@ -511,10 +511,7 @@ static NSString * const BRANCH_PREFS_KEY_ANALYTICS_MANIFEST = @"bnc_branch_analy
 
 - (void)clearInstrumentationDictionary {
     @synchronized (self) {
-        NSArray *keys = [_instrumentationDictionary allKeys];
-        for (NSUInteger i = 0 ; i < [keys count]; i++) {
-            [_instrumentationDictionary removeObjectForKey:keys[i]];
-        }
+        [_instrumentationDictionary removeAllObjects];
     }
 }
 
@@ -606,7 +603,6 @@ static NSString * const BRANCH_PREFS_KEY_ANALYTICS_MANIFEST = @"bnc_branch_analy
         self.deviceFingerprintID = nil;
         self.userIdentity = nil;
         self.identityID = nil;
-        self.installParams = nil;
         */
         self.sessionID = nil;
         self.linkClickIdentifier = nil;
@@ -780,6 +776,11 @@ static NSString * const BRANCH_PREFS_KEY_ANALYTICS_MANIFEST = @"bnc_branch_analy
         }];
         [_persistPrefsQueue addOperation:newPersistOp];
     }
+}
+
++ (void) clearAll {
+    NSURL *prefsURL = [self.URLForPrefsFile copy];
+    if (prefsURL) [[NSFileManager defaultManager] removeItemAtURL:prefsURL error:nil];
 }
 
 #pragma mark - Reading From Persistence
