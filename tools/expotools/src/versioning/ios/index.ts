@@ -3,11 +3,11 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
-import { Modules } from '@expo/xdl';
 import spawnAsync from '@expo/spawn-async';
 
 import { runTransformPipelineIOSAsync } from './postTransforms';
 import { getIosDir } from '../../Directories';
+import { getListOfPackagesAsync } from '../../Packages';
 
 const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
 const RELATIVE_RN_PATH = './react-native-lab/react-native';
@@ -193,7 +193,7 @@ export async function versionReactNativeIOSFilesAsync(
   if (!filenames || !filenames.length) {
     throw new Error(`No files matched the given pattern: ${globQuery}`);
   }
-  let { versionName, versionedPodNames } = getConfigsFromArguments(
+  let { versionName, versionedPodNames } = await getConfigsFromArguments(
     versionNumber,
     '.'
   );
@@ -288,12 +288,13 @@ async function generateExpoKitPodspecAsync(
   await spawnAsync('sed', ['-i', '--', sedPattern, specFilename]);
 
   // further processing that sed can't do very well
-  await _transformFileContentsAsync(specFilename, fileString => {
+  await _transformFileContentsAsync(specFilename, async (fileString) => {
     // `universalModulesPodNames` contains only versioned unimodules,
     // so we fall back to the original name if the module is not there
-    const universalModulesDependencies = Modules.getAllNativeForExpoClientOnPlatform('ios', versionNumber).map(
-      ({ podName }) => `ss.dependency         "${universalModulesPodNames[podName] || podName}"`
-    ).join(`
+    const universalModulesDependencies = (await getListOfPackagesAsync())
+      .filter(pkg => pkg.isUnimodule() && pkg.isIncludedInExpoClientOnPlatform('ios'))
+      .map(({ podspecName }) => `ss.dependency         "${universalModulesPodNames[podspecName!] || podspecName}"`)
+      .join(`
     `);
     const externalDependencies = EXTERNAL_REACT_ABI_DEPENDENCIES.map(
       podName => `ss.dependency         "${podName}"`
@@ -350,7 +351,7 @@ async function generateReactPodspecAsync(
 
   // point source at .
   const newPodSource = `{ :path => "." }`;
-  await spawnAsync('sed', ['-i', '--', `s/\\(s\\.source[[:space:]]*=[[:space:]]\\).*/\\1${newPodSource}/g`, specfilePath]);
+  await spawnAsync('sed', ['-i', '--', `s/\\(s\\.source[[:space:]]*=[[:space:]]\\).*/\\1${newPodSource}/g`, specFilename]);
 
   // further processing that sed can't do very well
   await _transformFileContentsAsync(specFilename, fileString => {
@@ -451,11 +452,9 @@ async function generatePodfileDepsAsync(
   if (versionedPodNames.yoga) {
     yogaPodDependency = `pod '${versionedPodNames.yoga}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/ReactCommon/${versionName}yoga'`;
   }
-  const versionableUniversalModulesPods = Modules.getVersionableModulesForPlatform('ios', versionNumber)
-    .map(
-      ({ podName }) =>
-        `pod '${versionedPodNames[podName]}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/${podName}'`
-    )
+  const versionableUniversalModulesPods = (await getListOfPackagesAsync())
+    .filter(pkg => pkg.isVersionableOnPlatform('ios'))
+    .map(pkg => `pod '${versionedPodNames[pkg.podspecName!]}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/${pkg.podspecName}'`)
     .join('\n    ');
 
   // Add a dependency on newPodName
@@ -665,7 +664,7 @@ function validateRemoveVersionDirectories(rootPath, newVersionPath) {
   return isValid;
 }
 
-function getConfigsFromArguments(versionNumber, rootPath) {
+async function getConfigsFromArguments(versionNumber, rootPath) {
   let versionComponents = versionNumber.split('.');
   versionComponents = versionComponents.map(number => parseInt(number, 10));
   let versionName = 'ABI' + versionNumber.replace(/\./g, '_');
@@ -682,10 +681,15 @@ function getConfigsFromArguments(versionNumber, rootPath) {
     yoga: `yoga${versionName}`,
     ExpoKit: `${versionName}ExpoKit`,
   };
-  Modules.getVersionableModulesForPlatform('ios', versionNumber)
-    .forEach(({ podName }) => {
+
+  const packages = await getListOfPackagesAsync();
+
+  packages.forEach(pkg => {
+    const podName = pkg.podspecName;
+    if (podName && pkg.isVersionableOnPlatform('ios')) {
       versionedPodNames[podName] = `${versionName}${podName}`;
-    });
+    }
+  });
 
   return {
     versionName,
@@ -722,7 +726,7 @@ export async function addVersionAsync(
     newVersionRelativePath,
     newVersionPath,
     versionedPodNames,
-  } = getConfigsFromArguments(versionNumber, rootPath);
+  } = await getConfigsFromArguments(versionNumber, rootPath);
 
   console.log(
     `Adding ABI version ${chalk.cyan(versionNumber)} at ${chalk.magenta(path.relative(rootPath, newVersionPath))} with Pod name ${chalk.green(versionedPodNames.React)}`
@@ -800,12 +804,13 @@ export async function addVersionAsync(
 
   // Copy universal modules into the clone
   console.log(`Copying universal modules into the new Pods...`);
-  const modules = Modules.getVersionableModulesForPlatform('ios', versionNumber);
+  const packages = await getListOfPackagesAsync();
 
-  for (const { libName, podName } of modules) {
-    const modulePath = path.join(rootPath, RELATIVE_UNIVERSAL_MODULES_PATH, libName);
+  for (const pkg of packages) {
+    const modulePath = path.join(rootPath, RELATIVE_UNIVERSAL_MODULES_PATH, pkg.packageName);
+    const podName = pkg.podspecName;
 
-    if (await fs.exists(modulePath)) {
+    if (podName && await fs.exists(modulePath) && pkg.isVersionableOnPlatform('ios')) {
       await fs.copy(
         path.join(modulePath, 'ios'),
         path.join(newVersionPath, podName),
@@ -915,7 +920,7 @@ export async function removeVersionAsync(
   versionNumber: string,
   rootPath: string,
 ) {
-  let { newVersionPath, versionedPodNames } = getConfigsFromArguments(
+  let { newVersionPath, versionedPodNames } = await getConfigsFromArguments(
     versionNumber,
     rootPath
   );
