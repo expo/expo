@@ -4,8 +4,8 @@
 #import <EXDevice/EXDeviceUID.h>
 #import <UMCore/UMUtilities.h>
 
-#include <ifaddrs.h>
-#include <arpa/inet.h>
+#import <ifaddrs.h>
+#import <arpa/inet.h>
 #import <mach-o/arch.h>
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
@@ -98,19 +98,10 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
   struct ifaddrs *interfaces = NULL;
   struct ifaddrs *temp_addr = NULL;
   int success = 0;
-  // retrieve the current interfaces - returns 0 on success
+  // retrieve the current interfaces - On success, returns 0; on error, -1 is returned, and errno is set appropriately.
   success = getifaddrs(&interfaces);
   
-  //reject if we fail to retrieve any interfaces
-  if (success != 0) {
-    // Free memory
-    freeifaddrs(interfaces);
-    
-    reject(@"E_NO_IFADDRS", @"No network interfaces could be retrieved.", nil);
-    return;
-  }
-  
-  else if (success == 0) {
+  if (success == 0) {
     // Loop through linked list of interfaces
     temp_addr = interfaces;
     while(temp_addr != NULL) {
@@ -123,10 +114,13 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
       }
       temp_addr = temp_addr->ifa_next;
     }
+    resolve(address);
+  } else {
+    reject(@"E_NO_IFADDRS", @"No network interfaces could be retrieved.", nil);
   }
+  
   // Free memory
   freeifaddrs(interfaces);
-  resolve(address);
 }
 
 UM_EXPORT_METHOD_AS(isPinOrFingerprintSetAsync, isPinOrFingerprintSetAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
