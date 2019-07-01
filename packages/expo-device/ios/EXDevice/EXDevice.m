@@ -185,7 +185,6 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
 
 - (bool) isTablet
 {
-//  return [[self deviceType] isEqualToString:@"Tablet"];
   return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
 }
 

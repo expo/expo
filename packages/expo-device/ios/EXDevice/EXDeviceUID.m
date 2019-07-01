@@ -123,7 +123,6 @@
 
 + (NSString *)appleIFV {
   if(NSClassFromString(@"UIDevice") && [UIDevice instancesRespondToSelector:@selector(identifierForVendor)]) {
-    // only available in iOS >= 6.0
     return [[UIDevice currentDevice].identifierForVendor UUIDString];
   }
   return nil;
