@@ -1,7 +1,7 @@
 {
   "name": "expo-device",
-  "version": "1.0.0",
-  "description": "ExpoDevice standalone module",
+  "version": "0.0.1",
+  "description": "An universal module that gets physical information about the device running the application",
   "main": "build/Device.js",
   "types": "build/Device.d.ts",
   "scripts": {
