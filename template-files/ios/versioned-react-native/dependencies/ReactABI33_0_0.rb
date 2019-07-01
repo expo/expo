@@ -13,7 +13,9 @@
       'RCTText',
       'RCTVibration',
       'RCTWebSocket',
-      'CxxBridge',
+      'CxxBridge'
+    ]
+    pod 'ABI33_0_0ExpoKit', :inhibit_warnings => true, :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI33_0_0', :subspecs => [
       ${REACT_NATIVE_EXPO_SUBSPECS}
     ]
     pod 'yogaABI33_0_0', :inhibit_warnings => true, :path => '${VERSIONED_REACT_NATIVE_PATH}/ABI33_0_0/ReactCommon/ABI33_0_0yoga'

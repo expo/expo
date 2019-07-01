@@ -11,6 +11,4 @@
 
 @interface RNCNetInfo : RCTEventEmitter
 
-- (instancetype)initWithHost:(NSString *)host;
-
 @end
