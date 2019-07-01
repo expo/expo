@@ -430,7 +430,11 @@ exit:
     addString(osVersion,            os_version);
     addString(extensionType,        environment);
     addString(vendorId,             idfv);
-    addString(adId,                 idfa);
+    if ([BNCPreferenceHelper preferenceHelper].isDebug) {
+        dictionary[@"unidentified_device"] = (__bridge NSNumber*) kCFBooleanTrue;
+    } else {
+        addString(adId,             idfa);
+    }
     addString(browserUserAgent,     user_agent);
     addString(country,              country);
     addString(language,             language);
@@ -446,7 +450,7 @@ exit:
     #include "BNCFieldDefines.h"
 
     if (!self.isAdTrackingEnabled)
-        dictionary[@"limit_ad_tracking"] = CFBridgingRelease(kCFBooleanTrue);
+        dictionary[@"limit_ad_tracking"] = (__bridge NSNumber*) kCFBooleanTrue;
 
     NSString *s = nil;
     BNCPreferenceHelper *preferences = [BNCPreferenceHelper preferenceHelper];
@@ -458,7 +462,7 @@ exit:
     if (s.length) dictionary[@"device_fingerprint_id"] = s;
 
     if (preferences.limitFacebookTracking)
-        dictionary[@"limit_facebook_tracking"] = CFBridgingRelease(kCFBooleanTrue);
+        dictionary[@"limit_facebook_tracking"] = (__bridge NSNumber*) kCFBooleanTrue;
 
     dictionary[@"sdk"] = @"ios";
     dictionary[@"sdk_version"] = BNC_SDK_VERSION;

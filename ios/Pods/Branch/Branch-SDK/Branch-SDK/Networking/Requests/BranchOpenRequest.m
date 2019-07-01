@@ -63,7 +63,7 @@
     [self safeSetValue:preferenceHelper.universalLinkUrl forKey:BRANCH_REQUEST_KEY_UNIVERSAL_LINK_URL onDict:params];
     [self safeSetValue:preferenceHelper.externalIntentURI forKey:BRANCH_REQUEST_KEY_EXTERNAL_INTENT_URI onDict:params];
     if (preferenceHelper.limitFacebookTracking)
-        params[@"limit_facebook_tracking"] = CFBridgingRelease(kCFBooleanTrue);
+        params[@"limit_facebook_tracking"] = (__bridge NSNumber*) kCFBooleanTrue;
 
     NSMutableDictionary *cdDict = [[NSMutableDictionary alloc] init];
     BranchContentDiscoveryManifest *contentDiscoveryManifest = [BranchContentDiscoveryManifest getInstance];
@@ -232,16 +232,16 @@ typedef NS_ENUM(NSInteger, BNCUpdateState) {
     }
 
     NSString *referringURL = nil;
-    if (preferenceHelper.universalLinkUrl) {
+    if (preferenceHelper.universalLinkUrl.length) {
         referringURL = preferenceHelper.universalLinkUrl;
     }
-    else if (preferenceHelper.externalIntentURI) {
+    else if (preferenceHelper.externalIntentURI.length) {
         referringURL = preferenceHelper.externalIntentURI;
     }
     else {
         NSDictionary *sessionDataDict = [BNCEncodingUtils decodeJsonStringToDictionary:sessionData];
         NSString *link = sessionDataDict[BRANCH_RESPONSE_KEY_BRANCH_REFERRING_LINK];
-        if (link) referringURL = link;
+        if (link.length) referringURL = link;
     }
 
     // Clear link identifiers so they don't get reused on the next open

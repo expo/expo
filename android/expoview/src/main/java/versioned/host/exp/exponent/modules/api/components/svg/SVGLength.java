@@ -23,7 +23,7 @@ enum SVGLengthUnitType {
 class SVGLength {
     final double value;
     final SVGLengthUnitType unit;
-    SVGLength() {
+    private SVGLength() {
         value = 0;
         unit = SVGLengthUnitType.SVG_LENGTHTYPE_UNKNOWN;
     }
@@ -31,7 +31,7 @@ class SVGLength {
         value = number;
         unit = SVGLengthUnitType.SVG_LENGTHTYPE_NUMBER;
     }
-    SVGLength(String length) {
+    private SVGLength(String length) {
         length = length.trim();
         int stringLength = length.length();
         int percentIndex = stringLength - 1;
