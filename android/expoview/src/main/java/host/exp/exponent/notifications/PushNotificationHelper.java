@@ -249,30 +249,50 @@ public class PushNotificationHelper {
             if (body != null) {
               try {
                 JSONObject bodyObject = new JSONObject(body);
-                // Do not display any rich content if `isMultiple`.
-                if (!isMultiple && bodyObject.has("_richContent")) {
-                  final JSONObject richContent = bodyObject.getJSONObject("_richContent");
-                  // TODO: Need to consider the multiple notifications case above
-                  if (richContent.has("image")) {
-                    String imageURL;
-                    if (richContent.get("image") instanceof String) {
-                      imageURL = richContent.getString("image");
-                    } else {
-                      imageURL = richContent.getJSONObject("image").getString("url");
-                    }
-                    final Bitmap imageBitmap = loadRemoteImage(imageURL, context);
-                    if (imageBitmap != null) {
-                      notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle()
-                          .bigPicture(imageBitmap)
-                          .setBigContentTitle(message));
-                    }
-                  }
-                }
+
+                // Download and display the custom icon.
+                boolean hasCustomIcon = false;
                 if (bodyObject.has("_icon")) {
                   final String iconURL = bodyObject.getString("_icon");
                   final Bitmap iconBitmap = loadRemoteImage(iconURL, context);
                   if (iconBitmap != null) {
                     notificationBuilder.setLargeIcon(iconBitmap);
+                    hasCustomIcon = true;
+                  }
+                }
+
+                // Download and display the rich content (the image).
+                // Do not display any rich content if `isMultiple`.
+                if (!isMultiple && bodyObject.has("_richContent")) {
+                  final JSONObject richContent = bodyObject.getJSONObject("_richContent");
+                  if (richContent.has("image")) {
+                    String imageURL;
+                    JSONObject imageOptions = null;
+                    if (richContent.get("image") instanceof String) {
+                      imageURL = richContent.getString("image");
+                    } else {
+                      imageURL = richContent.getJSONObject("image").getString("url");
+                      imageOptions = richContent.getJSONObject("image").getJSONObject("options");
+                    }
+
+                    boolean thumbnailHidden = false;
+                    if (imageOptions != null && imageOptions.getBoolean("thumbnailHidden")) {
+                      thumbnailHidden = true;
+                    }
+
+                    final Bitmap imageBitmap = loadRemoteImage(imageURL, context);
+                    if (imageBitmap != null) {
+                      NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle()
+                          .bigPicture(imageBitmap)
+                          .setBigContentTitle(message);
+                      if (!hasCustomIcon && !thumbnailHidden) {
+                        // Make the rich content image the thumbnail too if there's no "icon" specified.
+                        // Ref: https://developer.android.com/training/notify-user/expanded#image-style
+                        bigPictureStyle.bigLargeIcon(null);
+                        notificationBuilder.setLargeIcon(imageBitmap);
+                      }
+                      notificationBuilder.setStyle(bigPictureStyle);
+                    }
                   }
                 }
               } catch (JSONException e) {
