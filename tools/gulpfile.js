@@ -144,13 +144,13 @@ gulp.task('update-react-native-gesture-handler-code', () => {
   return updateVendoredNativeModule({
       argv,
       name: 'react-native-gesture-handler',
-      repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+      repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
       sourceIosPath: 'ios',
       sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
       targetIosPath: 'Api/Components/GestureHandler',
       targetAndroidPath: 'modules/api/components/gesturehandler/react',
-      sourceAndroidPackage: 'com.swmansion.gesturehandler.react',
-      targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler.react',
+      sourceAndroidPackage: 'com.swmansion.gesturehandler',
+      targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       installableInManagedApps: true,
     });
   });
@@ -158,8 +158,8 @@ gulp.task('update-react-native-gesture-handler-code', () => {
   gulp.task('update-react-native-gesture-handler-lib', () => {
     return updateVendoredNativeModule({
       argv,
-      name: 'react-native-gesture-handler-lib',
-      repoUrl: 'https://github.com/expo/react-native-gesture-handler.git',
+      name: 'react-native-gesture-handler',
+      repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
       sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
       targetAndroidPath: 'modules/api/components/gesturehandler',
       sourceAndroidPackage: 'com.swmansion.gesturehandler',
@@ -310,6 +310,21 @@ gulp.task('update-react-native-netinfo', () => {
     sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
     targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
     installableInManagedApps: true,
+  });
+});
+
+gulp.task('update-react-native-branch', () => {
+  return updateVendoredNativeModule({
+    argv,
+    name: 'react-native-branch',
+    repoUrl: 'https://github.com/BranchMetrics/react-native-branch-deep-linking.git',
+    sourceIosPath: 'ios',
+    targetIosPath: 'Api/Standalone/Branch',
+    sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
+    targetAndroidPath: 'modules/api/standalone/branch',
+    sourceAndroidPackage: 'io.branch.rnbranch',
+    targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.standalone.branch',
+    recursive: false,
   });
 });
 

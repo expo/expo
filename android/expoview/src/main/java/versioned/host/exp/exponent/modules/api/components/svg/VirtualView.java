@@ -13,7 +13,6 @@ import android.view.ViewParent;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -22,8 +21,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.view.ReactViewGroup;
-
-import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
@@ -57,7 +54,7 @@ abstract public class VirtualView extends ReactViewGroup {
     Matrix mMatrix = new Matrix();
     Matrix mTransform = new Matrix();
     Matrix mInvMatrix = new Matrix();
-    Matrix mInvTransform = new Matrix();
+    final Matrix mInvTransform = new Matrix();
     boolean mInvertible = true;
     boolean mTransformInvertible = true;
     private RectF mClientRect;
@@ -384,7 +381,7 @@ abstract public class VirtualView extends ReactViewGroup {
      * @param length     length string
      * @return value in the current user coordinate system
      */
-    double fromRelativeFast(SVGLength length) {
+    private double fromRelativeFast(SVGLength length) {
         double unit;
         switch (length.unit) {
             case SVG_LENGTHTYPE_EMS:

@@ -263,7 +263,7 @@ NSArray<BNCCurrency>*_Nonnull BNCCurrencyAllCurrencies(void);
 @end
 
 
-@interface BranchCommerceEventRequest : BNCServerRequest <NSCoding>
+@interface BranchCommerceEventRequest : BNCServerRequest <NSSecureCoding>
 
 - (instancetype _Nonnull) initWithCommerceEvent:(BNCCommerceEvent*_Nonnull)commerceEvent
 							           metadata:(NSDictionary*_Nullable)dictionary
