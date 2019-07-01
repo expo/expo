@@ -6,6 +6,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 📚 3rd party library updates
 
+- `react-native-branch` updated from `2.2.5` to `3.0.1`
 - `react-native-reanimated` updated from `1.0.1` to `1.1.0`
 - `react-native-webview` updated from `5.8.0` to `5.12.0`
 
