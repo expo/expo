@@ -123,15 +123,15 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
   freeifaddrs(interfaces);
 }
 
-UM_EXPORT_METHOD_AS(isPinOrFingerprintSetAsync, isPinOrFingerprintSetAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(hasLocalAuthenticationAsync, hasLocalAuthenticationAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
 #if TARGET_OS_TV
-  BOOL isPinOrFingerprintSet = NO;
+  BOOL hasLocalAuthentication = NO;
 #else
   LAContext *context = [[LAContext alloc] init];
-  BOOL isPinOrFingerprintSet = ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:nil]);
+  BOOL hasLocalAuthentication = ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:nil]);
 #endif
-  resolve(@(isPinOrFingerprintSet));
+  resolve(@(hasLocalAuthentication));
 }
 
 UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
