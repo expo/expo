@@ -78,11 +78,7 @@ static NSString * const scopedIdentifierSeparator = @":";
     }
   }
 
-  // Notifications were only shown while the app wasn't active,
-  // or if the user specifies
-  // - `notification.iosDisplayInForeground` (in `app.json`), or
-  // - `_displayInForeground` (in the notification)
-  // to be `true`.
+  // Notifications were only shown while the app wasn't active or if the user specifies to do so.
   if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive || shouldDisplayInForeground) {
     completionHandler(
                       UNNotificationPresentationOptionAlert +
