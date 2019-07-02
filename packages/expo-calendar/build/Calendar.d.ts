@@ -107,7 +107,7 @@ declare type RecurrenceRule = {
 declare type OptionalKeys<T> = {
     [P in keyof T]?: T[P];
 };
-export declare function getCalendarsAsync(entityType?: string): Promise<void>;
+export declare function getCalendarsAsync(entityType?: string): Promise<Calendar[]>;
 export declare function createCalendarAsync(details?: OptionalKeys<Calendar>): Promise<string>;
 export declare function updateCalendarAsync(id: string, details?: OptionalKeys<Calendar>): Promise<string>;
 export declare function deleteCalendarAsync(id: string): Promise<void>;
