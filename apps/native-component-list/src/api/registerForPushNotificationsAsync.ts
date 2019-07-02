@@ -39,11 +39,11 @@ const demoBodies: { [type: string]: any } = {
     },
   },
   video: {
-    title: 'The Earth',
+    title: 'Out There Trailer',
     body:
-      'The shot pans over the nightside of Earth, into dawn and across part of the daylight side.\n\nSource: https://www.eso.org/public/videos/earth_2015_4k/',
+      'By the European Southern Observatory.\n\nSource: https://www.eso.org/public/videos/OutThere_trailer_en/',
     richContent: {
-      video: 'https://cdn.eso.org/videos/medium_podcast/earth_2015_4k.m4v',
+      video: 'https://cdn.eso.org/videos/medium_podcast/OutThere_trailer_en.mp4',
     },
   },
 };
