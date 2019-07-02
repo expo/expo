@@ -116,7 +116,7 @@ gradle.taskGraph.whenReady {
 
 configurations.all {
   resolutionStrategy {
-    force 'org.webkit:android-jsc:r241213'
+    force 'org.webkit:android-jsc:r245459'
   }
 }
 
@@ -135,7 +135,7 @@ dependencies {
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
 
-  api 'org.webkit:android-jsc:r241213' // needs to be before react-native
+  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:33.0.0'

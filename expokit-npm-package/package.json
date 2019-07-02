@@ -9,6 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "jsc-android": "^241213.2.0"
+    "jsc-android": "^245459.0.0"
   }
 }
