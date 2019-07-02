@@ -18,7 +18,7 @@
     "@expo/bunyan": "^1.8.10",
     "@expo/json-file": "^8.0.0",
     "@expo/mux": "^1.0.6",
-    "@expo/xdl": "~54.1.6-alpha.0",
+    "@expo/xdl": "55.0.14",
     "@exponent/spawn-async": "^1.2.4",
     "expo-cli": "^2.6.14",
     "fs-extra": "^4.0.2",
