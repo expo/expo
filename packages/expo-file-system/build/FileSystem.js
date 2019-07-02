@@ -81,9 +81,15 @@ export async function readDirectoryAsync(fileUri) {
     return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
 }
 export async function getFreeDiskStorageAsync() {
+    if (!ExponentFileSystem.getFreeDiskStorageAsync) {
+        throw new UnavailabilityError('expo-file-system', 'getFreeDiskStorageAsync');
+    }
     return await ExponentFileSystem.getFreeDiskStorageAsync();
 }
 export async function getTotalDiskCapacityAsync() {
+    if (!ExponentFileSystem.getTotalDiskCapacityAsync) {
+        throw new UnavailabilityError('expo-file-system', 'getTotalDiskCapacityAsync');
+    }
     return await ExponentFileSystem.getTotalDiskCapacityAsync();
 }
 export async function downloadAsync(uri, fileUri, options = {}) {
