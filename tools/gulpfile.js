@@ -70,7 +70,7 @@ gulp.task('assert-abi-argument', function(done) {
 gulp.task(
   'android-update-rn',
   gulp.series(
-    shell.task(['pushd ../android; ./gradlew :tools:execute; popd']),
+    shell.task([`pushd ../android; ./gradlew :tools:execute --args='${argv.abi}'; popd`]),
     gulp.parallel(
       AndroidExpolib.namespaceExpolibImportsAsync,
       AndroidExpolib.namespaceExpolibGradleDependenciesAsync
