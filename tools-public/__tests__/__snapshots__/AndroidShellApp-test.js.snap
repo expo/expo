@@ -28,7 +28,7 @@ android {
     versionCode 11
     versionName '22.0.0'
     ndk {
-      abiFilters 'armeabi-v7a', 'x86'
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
     }
     multiDexEnabled true
     testInstrumentationRunner \\"android.support.test.runner.AndroidJUnitRunner\\"
@@ -677,7 +677,7 @@ android {
     versionCode 1
     versionName \\"1.0\\"
     ndk {
-      abiFilters 'armeabi-v7a', 'x86'
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
     }
   }
 

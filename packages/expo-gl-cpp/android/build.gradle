@@ -174,7 +174,7 @@ android {
     versionName "5.0.1"
 
     ndk {
-      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86-64'
+      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
       moduleName 'expo-gl'
     }
 
