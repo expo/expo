@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
+import { TaskQueue } from 'cwait';
 import spawnAsync from '@expo/spawn-async';
 
 import { runTransformPipelineIOSAsync } from './postTransforms';
@@ -44,106 +45,110 @@ async function namespaceReactNativeFilesAsync(
 ) {
   const reactPodName = versionedPodNames.React;
   const transformRules = _getReactNativeTransformRules(versionPrefix, reactPodName);
+  const taskQueue = new TaskQueue(Promise, 4); // Transform up to 4 files simultaneously.
+  const transformPatternsCache = {};
 
-  let transformPatternsCache = {};
-  await Promise.all(
-    filenames.map(async (filename) => {
-      if (_isDirectory(filename)) {
-        return;
+  const transformSingleFile = taskQueue.wrap(async (filename) => {
+    if (_isDirectory(filename)) {
+      return;
+    }
+    // protect contents of EX_UNVERSIONED macro
+    let unversionedCaptures: string[] = [];
+    await _transformFileContentsAsync(filename, fileString => {
+      let pattern = /EX_UNVERSIONED\((.*)\)/g;
+      let match = pattern.exec(fileString);
+      while (match != null) {
+        unversionedCaptures.push(match[1]);
+        match = pattern.exec(fileString);
       }
-      // protect contents of EX_UNVERSIONED macro
-      let unversionedCaptures: string[] = [];
-      await _transformFileContentsAsync(filename, fileString => {
-        let pattern = /EX_UNVERSIONED\((.*)\)/g;
-        let match = pattern.exec(fileString);
-        while (match != null) {
-          unversionedCaptures.push(match[1]);
-          match = pattern.exec(fileString);
-        }
-        if (unversionedCaptures.length) {
-          return fileString.replace(pattern, UNVERSIONED_PLACEHOLDER);
-        }
-        return null;
-      });
-
-      // rename file
-      let dirname = path.dirname(filename);
-      let basename = path.basename(filename);
-      let target;
-      if (basename.startsWith('EX') || basename.includes('EXReact') || basename.includes('UMReact') || !basename.includes('React')) {
-        target = `${versionPrefix}${basename}`;
-      } else {
-        target = basename.replace(/React/g, reactPodName);
+      if (unversionedCaptures.length) {
+        return fileString.replace(pattern, UNVERSIONED_PLACEHOLDER);
       }
+      return null;
+    });
 
-      let transformPatterns;
-      if (transformPatternsCache[dirname]) {
-        transformPatterns = transformPatternsCache[dirname];
-      } else {
-        // filter transformRules to patterns which apply to this dirname
-        transformPatterns = _getTransformPatternsForDirname(transformRules, dirname);
-        transformPatternsCache[dirname] = transformPatterns;
-      }
+    // rename file
+    let dirname = path.dirname(filename);
+    let basename = path.basename(filename);
+    let target;
+    if (basename.startsWith('EX') || basename.includes('EXReact') || basename.includes('UMReact') || !basename.includes('React')) {
+      target = `${versionPrefix}${basename}`;
+    } else {
+      target = basename.replace(/React/g, reactPodName);
+    }
 
-      const targetPath = `${dirname}/${target}`;
+    let transformPatterns;
+    if (transformPatternsCache[dirname]) {
+      transformPatterns = transformPatternsCache[dirname];
+    } else {
+      // filter transformRules to patterns which apply to this dirname
+      transformPatterns = _getTransformPatternsForDirname(transformRules, dirname);
+      transformPatternsCache[dirname] = transformPatterns;
+    }
 
-      // perform sed find/replace
-      for (const pattern of transformPatterns) {
-        await spawnAsync('sed', ['-i', '--', pattern, filename]);
-        await fs.move(filename, targetPath);
-      }
+    const targetPath = path.join(dirname, target);
 
-      // perform transforms that sed can't express
-      await _transformFileContentsAsync(targetPath, async (fileString) => {
-        // rename misc imports, e.g. Layout.h
-        fileString = fileString.replace(
-          /(")((?:(?!ART)(?!YG)(?!RN)(?!AIR)(?![^J]SM)(?!RCT)(?!React)(?!REA)(?!FBSDK)(?!EX)(?!UM).)+)\.h(\W)/g,
-          `$1${versionPrefix}$2.h$3`
+    // Perform sed find & replace.
+    for (const pattern of transformPatterns) {
+      await spawnAsync('sed', ['-i', '--', pattern, filename]);
+    }
+
+    // Rename file to be prefixed.
+    await fs.move(filename, targetPath);
+
+    // perform transforms that sed can't express
+    await _transformFileContentsAsync(targetPath, async (fileString) => {
+      // rename misc imports, e.g. Layout.h
+      fileString = fileString.replace(
+        /(")((?:(?!ART)(?!YG)(?!RN)(?!AIR)(?![^J]SM)(?!RCT)(?!React)(?!REA)(?!FBSDK)(?!EX)(?!UM).)+)\.h(\W)/g,
+        `$1${versionPrefix}$2.h$3`
+      );
+
+      // rename cpp imports
+      getCppLibrariesToVersion().forEach(libraryName => {
+        let versionedLibraryName = getVersionedCppLibraryName(
+          libraryName,
+          versionPrefix
         );
-
-        // rename cpp imports
-        getCppLibrariesToVersion().forEach(libraryName => {
-          let versionedLibraryName = getVersionedCppLibraryName(
-            libraryName,
-            versionPrefix
+        if (libraryName === 'jsiexecutor') {
+          fileString = fileString.replace(
+            new RegExp('("|<)jsiReact(ABI\\d+_\\d+_\\d+)\/([^.]+)\\.h.', 'g'),
+            `<jsireact\/${versionPrefix}$3.h>`
           );
-          if (libraryName === 'jsiexecutor') {
-            fileString = fileString.replace(
-              new RegExp('("|<)jsiReact(ABI\\d+_\\d+_\\d+)\/([^.]+)\\.h.', 'g'),
-              `<jsireact\/${versionPrefix}$3.h>`
-            );
-          } else {
-            fileString = fileString.replace(
-              new RegExp(`<(${versionedLibraryName}|${libraryName})\/([^.]+)\\.h>`, 'g'),
-              (match, p1, p2) => {
-                const filename = p2.includes(versionPrefix) ? p2 : `${versionPrefix}${p2}`;
-                return `<${versionedLibraryName}\/${filename}.h>`;
-              }
-            );
-          }
-        });
-
-        // restore EX_UNVERSIONED contents
-        if (unversionedCaptures) {
-          let index = 0;
-          do {
-            fileString = fileString.replace(
-              UNVERSIONED_PLACEHOLDER,
-              unversionedCaptures[index]
-            );
-            index++;
-          } while (fileString.indexOf(UNVERSIONED_PLACEHOLDER) !== -1);
+        } else {
+          fileString = fileString.replace(
+            new RegExp(`<(${versionedLibraryName}|${libraryName})\/([^.]+)\\.h>`, 'g'),
+            (match, p1, p2) => {
+              const filename = p2.includes(versionPrefix) ? p2 : `${versionPrefix}${p2}`;
+              return `<${versionedLibraryName}\/${filename}.h>`;
+            }
+          );
         }
-
-        return await runTransformPipelineIOSAsync({
-          input: fileString,
-          targetPath,
-          versionPrefix,
-        });
       });
-      return; // process `filename`
-    })
-  );
+
+      // restore EX_UNVERSIONED contents
+      if (unversionedCaptures) {
+        let index = 0;
+        do {
+          fileString = fileString.replace(
+            UNVERSIONED_PLACEHOLDER,
+            unversionedCaptures[index]
+          );
+          index++;
+        } while (fileString.indexOf(UNVERSIONED_PLACEHOLDER) !== -1);
+      }
+
+      return await runTransformPipelineIOSAsync({
+        input: fileString,
+        targetPath,
+        versionPrefix,
+      });
+    });
+    return; // process `filename`
+  });
+
+  await Promise.all(filenames.map(transformSingleFile));
+
   return;
 }
 
@@ -895,9 +900,13 @@ export async function addVersionAsync(
   await regeneratePodsAsync();
 
   return;
-};
+}
 
-async function regeneratePodsAsync() {
+async function askToRegeneratePodsAsync(): Promise<boolean> {
+  if (process.env.CI) {
+    // If we're on the CI, let's regenerate Pods by default.
+    return true;
+  }
   const { result } = await inquirer.prompt<{ result: boolean }>([
     {
       type: 'confirm',
@@ -906,8 +915,11 @@ async function regeneratePodsAsync() {
       default: true,
     },
   ]);
+  return result;
+}
 
-  if (result) {
+async function regeneratePodsAsync() {
+  if (await askToRegeneratePodsAsync()) {
     await spawnAsync('expotools', ['ios-generate-dynamic-macros'], { stdio: 'inherit' });
     await spawnAsync('pod', ['install'], { stdio: 'inherit', cwd: getIosDir() });
     console.log('Regenerated Podfile and installed new pods. You can now try to build the project in Xcode.');

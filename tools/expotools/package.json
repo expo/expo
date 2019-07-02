@@ -45,6 +45,7 @@
     "chalk": "^2.1.0",
     "concat-stream": "^1.6.0",
     "connect": "^3.6.3",
+    "cwait": "^1.1.2",
     "express": "^4.16.0",
     "folder-hash": "^3.0.0",
     "freeport-async": "^1.1.1",
