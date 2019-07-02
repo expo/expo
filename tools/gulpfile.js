@@ -9,11 +9,6 @@ const chalk = require('chalk');
 const fs = require('fs-extra');
 
 const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
-const {
-  addVersionAsync,
-  removeVersionAsync,
-  versionReactNativeIOSFilesAsync,
-} = require('./ios-tasks');
 const updateVendoredNativeModule = require('./update-vendored-native-module');
 const outdatedVendoredNativeModules = require('./outdated-vendored-native-modules');
 const AndroidExpolib = require('./android-versioning/android-expolib');
@@ -32,27 +27,6 @@ function renameJNILibsWithABIArgument() {
   }
 
   return renameJNILibsAsync(argv.abi);
-}
-
-function addVersionWithArguments() {
-  if (!argv.abi) {
-    throw new Error('Run with `--abi <abi version> --root <path to expo project root>`');
-  }
-  return addVersionAsync(argv.abi, argv.root || '..');
-}
-
-function removeVersionWithArguments() {
-  if (!argv.abi) {
-    throw new Error('Run with `--abi <abi version> --root <path to expo project root>`');
-  }
-  return removeVersionAsync(argv.abi, argv.root || '..');
-}
-
-function versionIOSFilesWithArguments() {
-  if (!argv.abi || !argv.filenames) {
-    throw new Error('Run with --filenames=<glob pattern> --abi=<abi version>');
-  }
-  return versionReactNativeIOSFilesAsync(argv.filenames, argv.abi);
 }
 
 function runShellScriptWithABIArgument(script) {
@@ -112,11 +86,6 @@ gulp.task(
     'android-copy-universal-modules'
   )
 );
-
-// Versioning (ios)
-gulp.task('ios-add-version', addVersionWithArguments);
-gulp.task('ios-remove-version', removeVersionWithArguments);
-gulp.task('ios-version-files', versionIOSFilesWithArguments);
 
 // Update external dependencies
 gulp.task('outdated-native-dependencies', async () => {

@@ -47,3 +47,31 @@ export async function getProjectVersionsAsync(): Promise<ProjectVersions> {
     iosAppVersion,
   };
 }
+
+export async function getSDKVersionsAsync(platform: string): Promise<string[]> {
+  if (platform === 'ios') {
+    const sdkVersionsPath = path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting', 'sdkVersions.json');
+
+    if (await fs.exists(sdkVersionsPath)) {
+      const { sdkVersions } = await JsonFile.readAsync(sdkVersionsPath) as { sdkVersions: string[] };
+      return sdkVersions;
+    }
+  }
+  // TODO: implementation for Android
+  throw new Error(`This task isn't supported on ${platform} yet.`);
+}
+
+export async function getOldestSDKVersionAsync(platform: string): Promise<string | undefined> {
+  const sdkVersions = await getSDKVersionsAsync(platform);
+  return sdkVersions.sort(semver.compare)[0];
+}
+
+export async function getNextSDKVersionAsync(platform: string): Promise<string | undefined> {
+  const sdkVersions = await getSDKVersionsAsync(platform);
+  const newestVersion = sdkVersions.sort(semver.rcompare)[0];
+
+  if (!newestVersion) {
+    return;
+  }
+  return `${semver.major(semver.inc(newestVersion, 'major'))}.0.0`;
+}
