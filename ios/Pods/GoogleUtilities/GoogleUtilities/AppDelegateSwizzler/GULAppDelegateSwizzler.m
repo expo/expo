@@ -413,7 +413,7 @@ static dispatch_once_t sProxyAppDelegateRemoteNotificationOnceToken;
                                 toClass:appDelegateSubClass
                               realClass:realClass
        storeDestinationImplementationTo:realImplementationsBySelector];
-#endif  // TARGET_OS_IOS || TARGET_OS_TVOS
+#endif  // TARGET_OS_IOS || TARGET_OS_TV
 
 #if TARGET_OS_IOS
   // For application:openURL:sourceApplication:annotation:
