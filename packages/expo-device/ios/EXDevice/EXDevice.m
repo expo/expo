@@ -134,11 +134,6 @@ UM_EXPORT_METHOD_AS(hasLocalAuthenticationAsync, hasLocalAuthenticationAsyncWith
   resolve(@(hasLocalAuthentication));
 }
 
-UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
-{
-  resolve([self freeDiskStorage]);
-}
-
 - (NSString *)deviceId
 {
   struct utsname systemInfo;
@@ -190,31 +185,6 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
   return [NSNumber numberWithUnsignedLongLong:[NSProcessInfo processInfo].physicalMemory];
 }
 
-- (NSDictionary *)documentFileSystemAttributes {
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  return [[NSFileManager defaultManager] attributesOfFileSystemForPath:[paths lastObject] error:nil];
-}
-
-- (NSNumber *)totalDiskCapacity {
-  NSDictionary *storage = [self documentFileSystemAttributes];
-  
-  if (storage) {
-    NSNumber *fileSystemSizeInBytes = storage[NSFileSystemSize];
-    return fileSystemSizeInBytes;
-  }
-  return nil;
-}
-
-- (NSNumber *)freeDiskStorage {
-  NSDictionary *storage = [self documentFileSystemAttributes];
-  
-  if (storage) {
-    NSNumber *freeFileSystemSizeInBytes = storage[NSFileSystemFreeSize];
-    return freeFileSystemSizeInBytes;
-  }
-  return nil;
-}
-
 
 - (NSDictionary *)constantsToExport
 {
@@ -231,7 +201,6 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
            @"supportedABIs": @[[self getCPUType]],
            @"systemName": currentDevice.systemName,
            @"totalMemory": [self totalMemory] ?: @(0),
-           @"totalDiskCapacity": [self totalDiskCapacity],
            @"uniqueId": uniqueId,
            };
 }
