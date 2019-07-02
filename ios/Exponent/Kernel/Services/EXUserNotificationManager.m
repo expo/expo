@@ -4,6 +4,7 @@
 #import "EXKernel.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXEnvironment.h"
+#import "EXAppLoader.h"
 
 static NSString * const scopedIdentifierSeparator = @":";
 
@@ -56,11 +57,34 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-  // Notifications were only shown while the app wasn't active,
-  // or if the user specifies `_displayInForeground` to be `true`.
+  BOOL shouldDisplayInForeground = NO;
+
+  EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
+  if (visibleApp) {
+    NSDictionary *visibleAppManifest = visibleApp.appLoader.manifest;
+    if (visibleAppManifest && visibleAppManifest[@"notification"] && visibleAppManifest[@"notification"][@"iosDisplayInForeground"] && [visibleAppManifest[@"notification"][@"iosDisplayInForeground"] boolValue]) {
+      // If user specifically set `notification.iosDisplayInForeground` to be `true` in `app.json`.
+      shouldDisplayInForeground = YES;
+    }
+  }
+
   NSDictionary *userInfo = notification.request.content.userInfo;
-  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive ||
-     (userInfo && userInfo[@"body"] && userInfo[@"body"][@"_displayInForeground"] && [userInfo[@"body"][@"_displayInForeground"] boolValue])) {    completionHandler(
+  if (userInfo && userInfo[@"body"] && userInfo[@"body"][@"_displayInForeground"]) {
+    // If user specifically set `_displayInForeground` in the notification, it always override `notification.iosDisplayInForeground` in `app.json`.
+    if ([userInfo[@"body"][@"_displayInForeground"] boolValue]) {
+      shouldDisplayInForeground = YES;
+    } else {
+      shouldDisplayInForeground = NO;
+    }
+  }
+
+  // Notifications were only shown while the app wasn't active,
+  // or if the user specifies
+  // - `notification.iosDisplayInForeground` (in `app.json`), or
+  // - `_displayInForeground` (in the notification)
+  // to be `true`.
+  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive || shouldDisplayInForeground) {
+    completionHandler(
                       UNNotificationPresentationOptionAlert +
                       UNNotificationPresentationOptionSound +
                       UNNotificationPresentationOptionBadge
