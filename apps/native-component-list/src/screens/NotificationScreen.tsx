@@ -43,8 +43,24 @@ export default class NotificationScreen extends React.Component {
 
         <HeadingText>Push Notifications</HeadingText>
         <ListButton
-          onPress={this._sendNotificationAsync}
+          onPress={() => this._sendNotificationAsync('simple')}
           title="Send me a push notification"
+        />
+        <ListButton
+          onPress={() => this._sendNotificationAsync('image')}
+          title="Send me a push notification with an image"
+        />
+        <ListButton
+          onPress={() => this._sendNotificationAsync('audio')}
+          title="Send me a push notification with an audio"
+        />
+        <ListButton
+          onPress={() => this._sendNotificationAsync('gif')}
+          title="Send me a push notification with an animated image"
+        />
+        <ListButton
+          onPress={() => this._sendNotificationAsync('video')}
+          title="Send me a push notification with a video"
         />
 
         <HeadingText>Custom notification categories</HeadingText>
@@ -231,10 +247,10 @@ export default class NotificationScreen extends React.Component {
     Alert.alert(`Cleared the badge`);
   }
 
-  _sendNotificationAsync = async () => {
+  _sendNotificationAsync = async (type: string) => {
     const permission = await this._obtainRemoteNotifPermissionsAsync();
     if (permission.status === 'granted') {
-      registerForPushNotificationsAsync();
+      registerForPushNotificationsAsync(type);
     }
   }
 }
