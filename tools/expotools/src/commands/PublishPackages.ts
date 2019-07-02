@@ -686,13 +686,9 @@ async function _gitCommitAsync(allConfigs: Map<string, PipelineConfig>): Promise
   }
 }
 
-function _isIncludedInExpoClient(podspecName: string): Promise<boolean> {
-  return fs.existsSync(path.join(EXPO_DIR, `ios/Pods/Headers/Public/${podspecName}`));
-}
-
 async function _updatePodsAsync(allConfigs: Map<string, PipelineConfig>): Promise<void> {
   const podspecNames = [...allConfigs.values()]
-    .filter(config => config.pkg.podspecName && config.shouldPublish && _isIncludedInExpoClient(config.pkg.podspecName))
+    .filter(config => config.pkg.podspecName && config.shouldPublish && config.pkg.isIncludedInExpoClientOnPlatform('ios'))
     .map(config => config.pkg.podspecName) as string[];
 
   if (podspecNames.length === 0) {

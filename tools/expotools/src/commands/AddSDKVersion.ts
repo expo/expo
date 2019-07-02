@@ -1,4 +1,6 @@
 import chalk from 'chalk';
+import semver from 'semver';
+import inquirer from 'inquirer';
 import { Command } from '@expo/commander/typings';
 
 import * as IosVersioning from '../versioning/ios';
@@ -13,12 +15,37 @@ interface ActionOptions {
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 
+async function getNextOrAskForSDKVersionAsync(platform: string): Promise<string | undefined> {
+  const defaultSdkVersion = await getNextSDKVersionAsync(platform);
+
+  if (defaultSdkVersion && process.env.CI) {
+    console.log(`${chalk.red('`--sdkVersion`')} not provided - defaulting to ${chalk.cyan(defaultSdkVersion)}`);
+    return defaultSdkVersion;
+  }
+
+  const { sdkVersion } = await inquirer.prompt<{ sdkVersion: string }>([
+    {
+      type: 'input',
+      name: 'sdkVersion',
+      message: 'What is the SDK version that you want to add?',
+      default: defaultSdkVersion,
+      validate(value) {
+        if (!semver.valid(value)) {
+          return `Invalid version: ${chalk.cyan(value)}`;
+        }
+        return true;
+      },
+    }
+  ]);
+  return sdkVersion;
+}
+
 async function action(options: ActionOptions) {
   if (!options.platform) {
     throw new Error('Run with `--platform <ios | android>`.');
   }
 
-  const sdkVersion = options.sdkVersion || await getNextSDKVersionAsync(options.platform);
+  const sdkVersion = options.sdkVersion || await getNextOrAskForSDKVersionAsync(options.platform);
 
   if (!sdkVersion) {
     throw new Error('Next SDK version not found. Try to run with `--sdkVersion <SDK version>`.');

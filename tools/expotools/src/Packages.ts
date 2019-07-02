@@ -67,6 +67,7 @@ class Package {
 
   isIncludedInExpoClientOnPlatform(platform: 'ios'): boolean {
     if (platform === 'ios') {
+      // On iOS we can easily check whether the package is included in Expo client by checking if it is installed by Cocoapods.
       const { podspecName } = this;
       return podspecName != null && fs.existsSync(path.join(IOS_DIR, 'Pods', 'Headers', 'Public', podspecName));
     }
