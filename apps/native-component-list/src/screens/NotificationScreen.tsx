@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, ScrollView } from 'react-native';
+import { Alert, Platform, ScrollView } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import HeadingText from '../components/HeadingText';
@@ -248,6 +248,10 @@ export default class NotificationScreen extends React.Component {
   }
 
   _sendNotificationAsync = async (type: string) => {
+    if (type !== 'simple' && type !== 'image' && Platform.OS !== 'ios') {
+      alert('Notifications with rich content other than images are only supported on iOS.');
+      return;
+    }
     const permission = await this._obtainRemoteNotifPermissionsAsync();
     if (permission.status === 'granted') {
       registerForPushNotificationsAsync(type);
