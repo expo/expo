@@ -140,7 +140,7 @@ You're all set to use the custom version of the Expo client, containing features
 
 ### Push Notifications
 
-**Note:** Push Notifications are temporarily disabled until we support API tokens for our Push Notification system.
+**Note:** Push Notifications are currently unavailable with ad hoc clients until we complete our work to add an extra authentication layer to the Expo Push Notification service.
 
 <!--
 If you choose not to upload your Push Notifications credentials, Push Notifications will not work on the Expo client. In order to get an Expo client with Push Notifications enabled, you will need to submit another build request and upload or create your push credentials at the prompt.
