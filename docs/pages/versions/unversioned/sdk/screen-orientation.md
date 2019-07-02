@@ -30,6 +30,7 @@ import { ScreenOrientation } from 'expo';
 - [`ScreenOrientation.getOrientationLockAsync()`](#screenorientationgetorientationlockasync)
 - [`ScreenOrientation.getPlatformOrientationLockAsync()`](#screenorientationgetplatformorientationlockasync)
 - [`ScreenOrientation.supportsOrientationLockAsync(orientationLock)`](#screenorientationsupportsorientationlockasyncorientationlock)
+- [`ScreenOrientation.addOrientationChangeListener(listener)`](#screenorientationaddorientationchangelistenerlistener)
 - [`ScreenOrientation.removeOrientationChangeListeners()`](#screenorientationremoveorientationchangelisteners)
 - [`ScreenOrientation.removeOrientationChangeListener(subscription)`](#screenorientationremoveorientationchangelistenersubscription)
 
@@ -272,4 +273,3 @@ A [subscription object](https://github.com/expo/expo/blob/master/packages/expo-r
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK | The platform does not support the [`OrientationLock`](#screenorientationorientationlock) policy. |
 | ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK     | An invalid [`OrientationLock`](#screenorientationorientationlock) was passed in.                 |
-
