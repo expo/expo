@@ -13,7 +13,8 @@
     "scheme": "ncl",
     "notification": {
       "icon": "./assets/icons/notificationIcon.png",
-      "color": "#000000"
+      "color": "#000000",
+      "iosDisplayInForeground": true
     },
     "splash": {
       "image": "./assets/icons/loadingIcon.png"
