@@ -21,7 +21,7 @@ export default class BrightnessScreen extends React.Component<{}, State> {
   readonly state: State = {
     initBrightness: {},
     sliderBrightness: {},
-    systemBrightnessPermissionGranted: true,
+    systemBrightnessPermissionGranted: false,
   };
 
   componentDidMount() {
@@ -34,8 +34,8 @@ export default class BrightnessScreen extends React.Component<{}, State> {
     });
 
     Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS).then(result => {
-      if (result.status !== 'granted') {
-        this.setState({ systemBrightnessPermissionGranted: false });
+      if (result.status === 'granted') {
+        this.setState({ systemBrightnessPermissionGranted: true });
       }
     });
   }
