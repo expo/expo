@@ -470,7 +470,7 @@ async function action(options: ActionOptions) {
 
       const javaFiles = await findAndroidFilesAsync(sourceDir);
 
-      await copyFilesAsync(javaFiles, sourceDir, targetDir, () => {});
+      await copyFilesAsync(javaFiles, sourceDir, targetDir);
 
       const files = await findAndroidFilesAsync(targetDir);
 
