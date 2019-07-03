@@ -123,7 +123,7 @@ type OptionalKeys<T> = {
 };
 
 
-export async function getCalendarsAsync(entityType?: string): Promise<void> {
+export async function getCalendarsAsync(entityType?: string): Promise<Calendar[]> {
   if (!ExpoCalendar.getCalendarsAsync) {
     throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
   }
