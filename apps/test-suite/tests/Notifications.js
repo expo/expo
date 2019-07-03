@@ -273,11 +273,12 @@ export async function test(t) {
       },
     };
     t.describe('Push notifications related', () => {
-      async function sendPushNotificationAsync(type, done) {
+      async function sendPushNotificationAsync(type) {
+        let receivedPushNotification = false;
         const subscription = Notifications.addListener(async notification => {
           await testNotificationResponse(notification, demoBodies[type], type);
           subscription.remove();
-          done();
+          receivedPushNotification = true;
         });
         const token = await Notifications.getExpoPushTokenAsync();
         const response = await fetch(PUSH_ENDPOINT, {
@@ -294,6 +295,11 @@ export async function test(t) {
           ]),
         });
         t.expect(response.status).toBe(200);
+
+        // Wait for the push notification to arrive.
+        await waitFor(5000);
+
+        return receivedPushNotification;
       }
 
       async function testNotificationResponse(notification, sentMessage, type) {
@@ -314,20 +320,18 @@ export async function test(t) {
 
       t.it(
         'Simple push notification',
-        async done => {
-          await sendPushNotificationAsync('simple', done);
-          await waitFor(5000);
+        async () => {
+          t.expect(await sendPushNotificationAsync('simple')).toBe(true);
         },
-        20000
+        10000
       );
 
       t.it(
         'Image push notification',
-        async done => {
-          await sendPushNotificationAsync('image', done);
-          await waitFor(5000);
+        async () => {
+          t.expect(await sendPushNotificationAsync('image')).toBe(true);
         },
-        20000
+        10000
       );
     });
   });
