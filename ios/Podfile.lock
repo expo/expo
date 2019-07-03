@@ -527,9 +527,9 @@ PODS:
     - Bolts/Tasks
   - Bolts/Tasks (1.9.0)
   - boost-for-react-native (1.63.0)
-  - Branch (0.24.2):
-    - Branch/Core (= 0.24.2)
-  - Branch/Core (0.24.2)
+  - Branch (0.27.1):
+    - Branch/Core (= 0.27.1)
+  - Branch/Core (0.27.1)
   - CocoaLumberjack (3.2.1):
     - CocoaLumberjack/Default (= 3.2.1)
     - CocoaLumberjack/Extensions (= 3.2.1)
@@ -1183,7 +1183,7 @@ DEPENDENCIES:
   - Analytics (~> 3.5)
   - AppAuth (~> 0.4)
   - Bolts (= 1.9.0)
-  - Branch (~> 0.24.2)
+  - Branch (~> 0.27.1)
   - CocoaLumberjack (~> 3.2.1)
   - Crashlytics (~> 3.8)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -1933,7 +1933,7 @@ SPEC CHECKSUMS:
   AppAuth: cd34aac431e5c77c46ec7f03935377faa8c5808b
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Branch: 0d98d22745a9b68bcb4fa6dc1c6a92b64d4fdd7b
+  Branch: 1ace77c04b6e3efbf982bf4364f0662bfac156a0
   CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
   Crashlytics: 5aa8e90dcbf2f34898b4f5a0037787531246cca0
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
@@ -2032,6 +2032,6 @@ SPEC CHECKSUMS:
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: 060de318bff6f57fae5c34ad4faa263be8606e84
+PODFILE CHECKSUM: 6cf0588bb0578ba3f658f7f09949582052f29155
 
 COCOAPODS: 1.7.1
