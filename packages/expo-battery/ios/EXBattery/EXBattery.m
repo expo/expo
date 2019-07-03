@@ -83,9 +83,7 @@ UM_EXPORT_MODULE(ExpoBattery);
 // Called at most once every minute
 - (void)batteryLevelDidChange:(NSNotification *)notification
 {
-  NSLog(@"batteryLevelDidChange was called");
   if (!_hasListeners) {
-    NSLog(@"and hasListeners was false");
     return;
   }
   
@@ -95,9 +93,7 @@ UM_EXPORT_MODULE(ExpoBattery);
 
 - (void)batteryStateDidChange:(NSNotification *)notification
 {
-  NSLog(@"batteryStateDidChange was called");
   if (!_hasListeners) {
-    NSLog(@"and hasListeners was false");
     return;
   }
   
@@ -163,20 +159,6 @@ UM_EXPORT_METHOD_AS(getBatteryStateAsync,
                     getBatteryStateAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve([self getPowerState][@"batteryState"]);
-}
-
-
-
-UM_EXPORT_METHOD_AS(someGreatMethodAsync,
-                    options:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
-{
-}
-
-- (NSDictionary *)constantsToExport
-{
-  return @{};
 }
 
 
