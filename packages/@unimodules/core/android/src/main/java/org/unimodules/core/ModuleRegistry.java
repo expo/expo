@@ -1,15 +1,15 @@
 package org.unimodules.core;
 
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import org.unimodules.core.interfaces.SingletonModule;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.SingletonModule;
 
 public class ModuleRegistry {
   private volatile boolean mIsInitialized = false;
@@ -21,10 +21,10 @@ public class ModuleRegistry {
   private final List<WeakReference<RegistryLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
 
   public ModuleRegistry(
-          Collection<InternalModule> internalModules,
-          Collection<ExportedModule> exportedModules,
-          Collection<ViewManager> viewManagers,
-          Collection<SingletonModule> singletonModules) {
+      Collection<InternalModule> internalModules,
+      Collection<ExportedModule> exportedModules,
+      Collection<ViewManager> viewManagers,
+      Collection<SingletonModule> singletonModules) {
     for (InternalModule internalModule : internalModules) {
       registerInternalModule(internalModule);
     }
@@ -138,7 +138,6 @@ public class ModuleRegistry {
     lifecycleListeners.addAll(mExportedModulesMap.values());
     lifecycleListeners.addAll(mInternalModulesMap.values());
     lifecycleListeners.addAll(mViewManagersMap.values());
-    lifecycleListeners.addAll(mSingletonModulesMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
       if (ref.get() != null) {

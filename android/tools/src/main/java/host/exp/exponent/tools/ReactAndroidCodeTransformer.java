@@ -272,11 +272,12 @@ public class ReactAndroidCodeTransformer {
     String executionPath = ReactAndroidCodeTransformer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
     String projectRoot = new File(executionPath + "../../../../../../").getCanonicalPath() + '/';
 
-    // Get current SDK version
-    File expoPackageJsonFile = new File(projectRoot + "package.json");
-    String expoPackageJsonString = FileUtils.readFileToString(expoPackageJsonFile, "UTF-8");
-    JSONObject expoPackageJson = new JSONObject(expoPackageJsonString);
-    String sdkVersion = expoPackageJson.getJSONObject("exp").getString("sdkVersion");
+    String sdkVersion;
+    try {
+      sdkVersion = args[0];
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid args passed in, expected one argument -- SDK version.");
+    }
 
     // Don't want to mess up our original copy of ReactCommon and ReactAndroid if something goes wrong.
     File reactCommonDestRoot = new File(projectRoot + REACT_COMMON_DEST_ROOT);

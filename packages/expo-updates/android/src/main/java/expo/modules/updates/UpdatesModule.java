@@ -2,6 +2,8 @@ package expo.modules.updates;
 
 import android.content.Context;
 
+import java.util.Map;
+
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
