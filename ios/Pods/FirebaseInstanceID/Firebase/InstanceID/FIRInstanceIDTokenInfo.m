@@ -144,8 +144,12 @@ const NSTimeInterval kDefaultFetchTokenInterval = 7 * 24 * 60 * 60;  // 7 days.
 
   FIRInstanceIDAPNSInfo *APNSInfo = nil;
   if (rawAPNSInfo) {
+    // TODO(chliangGoogle: Use the new API and secureCoding protocol.
     @try {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       APNSInfo = [NSKeyedUnarchiver unarchiveObjectWithData:rawAPNSInfo];
+#pragma clang diagnostic pop
     } @catch (NSException *exception) {
       FIRInstanceIDLoggerInfo(kFIRInstanceIDMessageCodeTokenInfoBadAPNSInfo,
                               @"Could not parse raw APNS Info while parsing archived token info.");
@@ -178,8 +182,14 @@ const NSTimeInterval kDefaultFetchTokenInterval = 7 * 24 * 60 * 60;  // 7 days.
   [aCoder encodeObject:self.token forKey:kFIRInstanceIDTokenKey];
   [aCoder encodeObject:self.appVersion forKey:kFIRInstanceIDAppVersionKey];
   [aCoder encodeObject:self.firebaseAppID forKey:kFIRInstanceIDFirebaseAppIDKey];
+  NSData *rawAPNSInfo;
   if (self.APNSInfo) {
-    NSData *rawAPNSInfo = [NSKeyedArchiver archivedDataWithRootObject:self.APNSInfo];
+    // TODO(chliangGoogle: Use the new API and secureCoding protocol.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    rawAPNSInfo = [NSKeyedArchiver archivedDataWithRootObject:self.APNSInfo];
+#pragma clang diagnostic pop
+
     [aCoder encodeObject:rawAPNSInfo forKey:kFIRInstanceIDAPNSInfoKey];
   }
   [aCoder encodeObject:self.cacheTime forKey:kFIRInstanceIDCacheTimeKey];

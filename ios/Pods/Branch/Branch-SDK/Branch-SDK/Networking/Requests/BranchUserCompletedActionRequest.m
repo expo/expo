@@ -54,7 +54,7 @@
     params[BRANCH_REQUEST_KEY_BRANCH_IDENTITY] = preferenceHelper.identityID;
     params[BRANCH_REQUEST_KEY_SESSION_ID] = preferenceHelper.sessionID;
     if (preferenceHelper.limitFacebookTracking)
-        params[@"limit_facebook_tracking"] = CFBridgingRelease(kCFBooleanTrue);
+        params[@"limit_facebook_tracking"] = (__bridge NSNumber*) kCFBooleanTrue;
 
     if (self.state) {
         params[BRANCH_REQUEST_KEY_STATE] = self.state;
@@ -79,8 +79,8 @@
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if ((self = [super initWithCoder:decoder])) {
-        _action = [decoder decodeObjectForKey:@"action"];
-        _state = [decoder decodeObjectForKey:@"state"];
+        _action = [decoder decodeObjectOfClass:NSString.class forKey:@"action"];
+        _state = [decoder decodeObjectOfClass:NSDictionary.class forKey:@"state"];
     }
     
     return self;
@@ -88,7 +88,6 @@
 
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
-    
     [coder encodeObject:self.action forKey:@"action"];
     [coder encodeObject:self.state forKey:@"state"];
 }

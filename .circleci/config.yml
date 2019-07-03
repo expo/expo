@@ -54,7 +54,7 @@ commands:
         default: .
     steps:
       - restore_cache:
-          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
+          key: yarn-v1-{{ arch }}-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
   save_yarn_cache:
     parameters:
       working_directory:
@@ -62,7 +62,7 @@ commands:
         default: .
     steps:
       - save_cache:
-          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
+          key: yarn-v1-{{ arch }}-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
             - ~/.cache/yarn # `yarn cache dir`
   restore_gradle_cache:
@@ -323,8 +323,7 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - yarn_install:
-          working_directory: ~/project/tools-public
+      - run: expotools ios-generate-dynamic-macros
       - run: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
@@ -337,8 +336,7 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - yarn_install:
-          working_directory: ~/project/tools-public
+      - run: expotools ios-generate-dynamic-macros
       - run:
           name: Build Expo Client and upload tarball
           command: |
@@ -364,7 +362,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: ~/project/tools-public/generate-files-ios.js
+      - run: expotools ios-generate-dynamic-macros
       - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
           name: Build iOS shell app for real devices

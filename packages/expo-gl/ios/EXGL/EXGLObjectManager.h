@@ -8,8 +8,8 @@
 
 @interface EXGLObjectManager : UMExportedModule <UMModuleRegistryConsumer>
 
-@property (nonatomic, weak) id<UMUIManager> uiManager;
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak, nullable) id<UMUIManager> uiManager;
+@property (nonatomic, weak, nullable) id<UMFileSystemInterface> fileSystem;
 
 - (void)saveContext:(nonnull id)glContext;
 - (void)deleteContextWithId:(nonnull NSNumber *)contextId;

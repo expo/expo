@@ -9,11 +9,14 @@
 @implementation RCTConvert (ARPlaneDetection)
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110300
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
 RCT_ENUM_CONVERTER(ARPlaneDetection, (@{
                                         @"none": @(ARPlaneDetectionNone),
                                         @"horizontal": @(ARPlaneDetectionHorizontal),
                                         @"vertical": @(ARPlaneDetectionVertical),
                                         }), ARPlaneDetectionNone, integerValue);
+#pragma clang diagnostic pop
 #else
 RCT_ENUM_CONVERTER(ARPlaneDetection, (@{
                                         @"none": @(ARPlaneDetectionNone),
@@ -26,6 +29,8 @@ RCT_ENUM_CONVERTER(ARPlaneDetection, (@{
 @implementation RCTConvert (ARHitTestResultType)
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110300
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
 RCT_ENUM_CONVERTER(ARHitTestResultType, (@{
                                            @"featurePoint": @(ARHitTestResultTypeFeaturePoint),
                                            @"horizontalPlane": @(ARHitTestResultTypeEstimatedHorizontalPlane),
@@ -34,6 +39,7 @@ RCT_ENUM_CONVERTER(ARHitTestResultType, (@{
                                            @"verticalPlane": @(ARHitTestResultTypeEstimatedVerticalPlane),
                                            @"existingPlaneUsingGeometry": @(ARHitTestResultTypeExistingPlaneUsingGeometry),
                                            }), ARHitTestResultTypeFeaturePoint, integerValue);
+#pragma clang diagnostic pop
 #else
 RCT_ENUM_CONVERTER(ARHitTestResultType, (@{
                                            @"featurePoint": @(ARHitTestResultTypeFeaturePoint),

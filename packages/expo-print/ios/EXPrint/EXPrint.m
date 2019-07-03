@@ -259,7 +259,11 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
   printInfo.orientation = [self _getPrintOrientationFromOption:options[@"orientation"]];
   
   printInteractionController.printInfo = printInfo;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  // deprecated in iOS 10
   printInteractionController.showsPageRange = YES;
+#pragma clang diagnostic pop
   printInteractionController.showsNumberOfCopies = YES;
   printInteractionController.showsPaperSelectionForLoadedPapers = YES;
   

@@ -45,6 +45,7 @@
 @property (nonatomic, assign) BOOL incognito;
 @property (nonatomic, assign) BOOL useSharedProcessPool;
 @property (nonatomic, copy) NSString *userAgent;
+@property (nonatomic, copy) NSString *applicationNameForUserAgent;
 @property (nonatomic, assign) BOOL cacheEnabled;
 @property (nonatomic, assign) BOOL allowsLinkPreview;
 @property (nonatomic, assign) BOOL showsHorizontalScrollIndicator;

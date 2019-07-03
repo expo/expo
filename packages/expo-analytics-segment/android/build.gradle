@@ -69,6 +69,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-constants-interface"
-  implementation 'com.segment.analytics.android:analytics:4.3.0'
-  implementation 'com.segment.analytics.android.integrations:firebase:1.2.0'
+  api 'com.segment.analytics.android:analytics:4.3.0'
+  api 'com.segment.analytics.android.integrations:firebase:1.2.0'
 }

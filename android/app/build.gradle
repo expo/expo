@@ -40,11 +40,11 @@ android {
     ndk {
       // We use different `abiFilters` for distributing
       // to be able to bundle old, incompatible SDKs.
-    
+
       // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
       abiFilters 'armeabi-v7a', 'x86'
       // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-     
+
       /* UNCOMMENT WHEN DISTRIBUTING
       abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
       END UNCOMMENT WHEN DISTRIBUTING */
@@ -103,7 +103,7 @@ devicefarm {
 
 configurations.all {
   resolutionStrategy {
-    force 'org.webkit:android-jsc:r241213'
+    force 'org.webkit:android-jsc:r245459'
   }
 }
 
@@ -223,7 +223,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r241213' // needs to be before react-native
+  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
   api 'com.facebook.react:react-native:33.0.0'
   END UNCOMMENT WHEN DISTRIBUTING */
 

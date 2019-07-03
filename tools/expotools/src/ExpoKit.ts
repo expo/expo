@@ -64,13 +64,14 @@ export async function updateExpoKitAndroidAsync(
   expoDir: string,
   appVersion: string,
   sdkVersion: string,
-  expokitVersion: string
+  expokitVersion: string,
+  expokitTag: string = "latest"
 ) {
   const key = `android-v${appVersion.trim().replace(/^v/, '')}-sdk${sdkVersion}-${uuid()}.tar.gz`;
   const androidDir = path.join(expoDir, 'android');
 
   // Populate android template files now since we take out the prebuild step later on
-  await spawnAsync(`../../tools-public/generate-dynamic-macros-android.sh`, [], {
+  await spawnAsync('et android-generate-dynamic-macros', [], {
     stdio: 'inherit',
     cwd: path.join(androidDir, 'app'),
   });
@@ -145,14 +146,14 @@ export async function updateExpoKitAndroidAsync(
   });
 
   let expokitPackageJson = new JsonFile(path.join(expokitNpmPackageDir, 'package.json'));
-  let expokitNpmVersion = await expokitPackageJson.getAsync('version');
+  let expokitNpmVersion = await expokitPackageJson.getAsync('version', null);
 
   versions.sdkVersions[sdkVersion].androidExpoViewUrl = `https://s3.amazonaws.com/${BUCKET}/${key}`;
   versions.sdkVersions[sdkVersion].expokitNpmPackage = `expokit@${expokitNpmVersion}`;
   await Versions.setVersionsAsync(versions);
 
   try {
-    await spawnAsync('npm', ['publish'], {
+    await spawnAsync('npm', ['publish', '--tag', expokitTag], {
       stdio: 'inherit',
       cwd: expokitNpmPackageDir,
     });

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-background-fetch" revision="5.0.1" status="integration" publication="20190617151132"/>
+  <info organisation="host.exp.exponent" module="expo-background-fetch" revision="5.0.1" status="integration" publication="20190702111420"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -108,7 +108,7 @@
   </publications>
   <dependencies>
     <dependency org="com.android.tools.build" name="aapt2" rev="3.3.2-5309881" conf="_internal_aapt2_binary-&gt;default">
-      <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
+      <artifact name="aapt2" type="jar" ext="jar" m:classifier="linux" conf="_internal_aapt2_binary"/>
     </dependency>
     <dependency org="org.unimodules" name="unimodules-core" rev="2.0.1" conf="implementation-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-task-manager-interface" rev="2.0.1" conf="implementation-&gt;default"/>

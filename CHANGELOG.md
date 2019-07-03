@@ -4,6 +4,15 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ## master
 
+### 📚 3rd party library updates
+
+- `react-native-gesture-handler` updated from `1.2.1` to `1.3.0`
+- `react-native-branch` updated from `2.2.5` to `3.0.1`
+- `react-native-reanimated` updated from `1.0.1` to `1.1.0`
+- `react-native-svg` updated from `9.4.0` to `9.5.1`
+- `react-native-webview` updated from `5.8.0` to `5.12.0`
+- `@react-native-community/netinfo` updated from `2.0.10` to `3.2.1`
+
 ### 🛠 Breaking changes
 
 - Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
@@ -14,6 +23,9 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added `native` mode for Android SplashScreen on standalone apps by [@bbarthec](https://github.com/bbarthec) ([#4567](https://github.com/expo/expo/pull/4567))
 
 ### 🐛 Bug fixes
+
+- fixed `BarCodeScanner` blocking UI when defining custom `barCodeTypes` on iOS by [@sjchmiela](https://github.com/sjchmiela)
+- fixed picking images over 2000px on Android by [@bbarthec](https://github.com/bbarthec) ([#4731](https://github.com/expo/expo/pull/4731))
 
 ## 33.0.0
 

@@ -21,11 +21,11 @@
   if (!input) return nil;
 
   return @{
-           @"accessToken": EXnullIfEmpty([input accessToken]),
+           @"accessToken": UMNullIfNil([input accessToken]),
            @"accessTokenExpirationDate": UMNullIfNil([[self class] dateNativeToJSON:[input accessTokenExpirationDate]]),
            @"additionalParameters": UMNullIfNil([input additionalParameters]),
-           @"idToken": EXnullIfEmpty([input idToken]),
-           @"tokenType": EXnullIfEmpty([input tokenType]),
+           @"idToken": UMNullIfNil([input idToken]),
+           @"tokenType": UMNullIfNil([input tokenType]),
            };
 }
 

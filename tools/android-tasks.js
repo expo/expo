@@ -293,8 +293,8 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, 'ReactAndroid', 'build')]);
   await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, 'expoview', 'build')]);
   for (const module of detachableUniversalModules) {
-    const { libName } = module;
-    await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, '..', 'packages', libName, 'android', 'build')]);
+    const { name } = module;
+    await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, '..', 'packages', name, 'android', 'build')]);
   }
 
   // Build RN and exponent view

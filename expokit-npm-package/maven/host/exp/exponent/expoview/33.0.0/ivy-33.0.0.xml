@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="33.0.0" status="integration" publication="20190617151652"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="33.0.0" status="integration" publication="20190702111705"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -175,12 +175,12 @@
   </publications>
   <dependencies>
     <dependency org="com.android.tools.build" name="aapt2" rev="3.3.2-5309881" conf="_internal_aapt2_binary-&gt;default">
-      <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
+      <artifact name="aapt2" type="jar" ext="jar" m:classifier="linux" conf="_internal_aapt2_binary"/>
     </dependency>
     <dependency org="com.raizlabs.android" name="DBFlow-Compiler" rev="2.2.1" conf="annotationProcessor-&gt;default"/>
     <dependency org="com.jakewharton" name="butterknife-compiler" rev="9.0.0" conf="annotationProcessor-&gt;default"/>
     <dependency org="com.android.support" name="multidex" rev="1.0.3" conf="api-&gt;default"/>
-    <dependency org="org.webkit" name="android-jsc" rev="r241213" conf="api-&gt;default"/>
+    <dependency org="org.webkit" name="android-jsc" rev="r245459" conf="api-&gt;default"/>
     <dependency org="com.facebook.react" name="react-native" rev="33.0.0" conf="api-&gt;default"/>
     <dependency org="com.facebook.fresco" name="fresco" rev="1.10.0" conf="api-&gt;default"/>
     <dependency org="com.facebook.fresco" name="animated-gif" rev="1.10.0" conf="api-&gt;default"/>
@@ -303,7 +303,7 @@
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.3.2" conf="lintClassPath-&gt;default"/>
     <dependency org="com.squareup.leakcanary" name="leakcanary-android-no-op" rev="1.4-beta1" conf="releaseApi-&gt;default"/>
     <dependency org="com.android.support" name="multidex" rev="1.0.3" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="org.webkit" name="android-jsc" rev="r241213" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="org.webkit" name="android-jsc" rev="r245459" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.react" name="react-native" rev="33.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.facebook.infer.annotation" name="infer-annotation" rev="0.11.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.code.findbugs" name="jsr305" rev="3.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>

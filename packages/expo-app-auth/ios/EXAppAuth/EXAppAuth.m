@@ -153,7 +153,7 @@ UM_EXPORT_METHOD_AS(executeAsync,
     refreshToken = input.refreshToken;
   }
 
-  [output setValue:EXnullIfEmpty(refreshToken) forKey:@"refreshToken"];
+  [output setValue:UMNullIfNil(refreshToken) forKey:@"refreshToken"];
 
   return output;
 }
@@ -212,7 +212,7 @@ void EXrejectWithError(UMPromiseRejectBlock reject, NSError *error) {
   if (error.localizedFailureReason != nil && ![error.localizedFailureReason isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Reason: %@", errorMessage, error.localizedFailureReason];
   if (error.localizedRecoverySuggestion != nil && ![error.localizedRecoverySuggestion isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Try: %@", errorMessage, error.localizedRecoverySuggestion];
 
-  NSString *errorCode = [NSString stringWithFormat:@"%ld", error.code];
+  NSString *errorCode = [NSString stringWithFormat:@"%ld", (long) error.code];
   reject(errorCode, errorMessage, error);
 }
 

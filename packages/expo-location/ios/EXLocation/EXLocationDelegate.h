@@ -5,6 +5,8 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface EXLocationDelegate : NSObject <CLLocationManagerDelegate>
 
 @property (nonatomic, strong) NSNumber *watchId;
@@ -26,3 +28,5 @@
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(nonnull NSError *)error;
 
 @end
+
+NS_ASSUME_NONNULL_END
