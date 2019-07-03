@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI31_0_0/EXFontInterface/ABI31_0_0EXFontInterface/ABI31_0_0EXFontManagerInterface.h
