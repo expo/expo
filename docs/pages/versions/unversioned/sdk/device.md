@@ -2,7 +2,7 @@
 title: Device
 ---
 
-Provide information of devices on the application.
+Provide an API to play with the device's system physical information that uniquely associated with the device's hardware and software properties.
 
 ## Installation
 
@@ -259,7 +259,7 @@ await Device.hasSystemFeatureAsync('amazon.hardware.fire_tv'); // true or false
 
 ### `Device.hasLocalAuthenticationAsync()`
 
-Tells if the device is secured by a PIN, pattern or password or a SIM card is currently locked.
+Tells if the device is secured by a PIN, pattern or password or a SIM card is currently locked. Can be used to check locked screen or payments.
 
 #### Returns
 
