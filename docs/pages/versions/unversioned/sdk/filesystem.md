@@ -308,7 +308,7 @@ FileSystem.getContentUriAsync(uri).then(cUri => {
   console.log(cUri);
   IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
     data: cUri.uri,
-    flags: 1
+    flags: 1,
   });
 });
 ```
@@ -322,6 +322,40 @@ FileSystem.getContentUriAsync(uri).then(cUri => {
 Returns a Promise that resolves to an object with the following fields:
 
 - **uri (_string_)** -- A `content://` URI pointing to the file. This is the same as the `fileUri` input parameter but in different format.
+
+### `FileSystem.getFreeDiskStorageAsync()`
+
+Gets available internal disk storage size, in bytes. This will get you the free space on the data partition. The data partition hosts all the internal storage for all apps on the device.
+
+#### Example
+
+```javascript
+FileSystem.getFreeDiskStorageAsync().then(freeDiskStorage => {
+  // Android: 17179869184
+  // iOS: 17179869184
+});
+```
+
+#### Returns
+
+Returns a Promise that resolves to a number that represents the available internal disk storage size in bytes.
+
+### `FileSystem.getTotalDiskCapacityAsync()`
+
+Gets total internal disk storage size, in bytes. This will get you the total capacity on the data partition where hosts all the internal storage for all apps on the device.
+
+#### Example
+
+```javascript
+FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
+  // Android: 17179869184
+  // iOS: 17179869184
+});
+```
+
+#### Returns
+
+Returns a Promise that resolves to a number that represents the total internal disk storage capacity in bytes.
 
 #### Example
 
