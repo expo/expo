@@ -128,38 +128,6 @@ Device.getUserAgentAsync().then(userAgent => {
 });
 ```
 
-### `Device.getFreeDiskStorageAsync()`
-
-Gets available storage size, in bytes.
-
-#### Returns
-
-A Promise that resolves to the number of bytes that are free on the device's file system and available to applications.
-
-**Examples**
-
-```js
-Device.getFreeDiskStorageAsync().then(storage => {
-  //5608296448
-});
-```
-
-### `Device.getTotalDiskCapacityAsync()`
-
-Gets full disk storage size, in bytes.
-
-#### Returns
-
-A Promise of number that represents the full disk storage size.
-
-**Examples**
-
-```js
-Device.getTotalDiskCapacityAsync().then(storage => {
-  //17179869184
-});
-```
-
 ### `Device.getIpAddressAsync()`
 
 Gets the device's current IP address.
