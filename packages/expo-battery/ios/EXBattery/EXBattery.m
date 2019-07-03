@@ -14,7 +14,7 @@
 @implementation EXBattery
 
 UM_EXPORT_MODULE(ExpoBattery);
-
+  
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -130,15 +130,12 @@ UM_EXPORT_MODULE(ExpoBattery);
 #endif
   
   NSArray *batteryStates = @[@"unknown", @"unplugged", @"charging", @"full"];
-  __block NSDictionary *powerState;
-  
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    powerState = @{
-                   @"batteryLevel": @([UIDevice currentDevice].batteryLevel),
-                   @"batteryState": batteryStates[[UIDevice currentDevice].batteryState],
-                   @"lowPowerMode": NSProcessInfo.processInfo.isLowPowerModeEnabled ? @"on" : @"off"
-                   };
-  }];
+  NSDictionary *powerState =
+  @{
+    @"batteryLevel": @([UIDevice currentDevice].batteryLevel),
+    @"batteryState": batteryStates[[UIDevice currentDevice].batteryState],
+    @"lowPowerMode": NSProcessInfo.processInfo.isLowPowerModeEnabled ? @"on" : @"off"
+   };
   return powerState;
 }
 
