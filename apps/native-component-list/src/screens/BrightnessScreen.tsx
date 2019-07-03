@@ -40,6 +40,35 @@ export default class BrightnessScreen extends React.Component<{}, State> {
     });
   }
 
+  askSystemBrightnessPermissionAsync() {
+    Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS).then(result => {
+      if (result.status === 'granted') {
+        this.setState({ systemBrightnessPermissionGranted: true });
+      }
+      alert(JSON.stringify(result, null, 2));
+    });
+  }
+
+  alertBrightnessAsync(type: string) {
+    (type === 'Brightness'
+      ? Brightness.getBrightnessAsync()
+      : Brightness.getSystemBrightnessAsync()
+    ).then(value => {
+      alert(value);
+    });
+  }
+
+  updateBrightnessAsync(value: number, type: string) {
+    this.setState({
+      sliderBrightness: { ...this.state.sliderBrightness, [type]: value },
+    });
+    if (type === 'Brightness') {
+      Brightness.setBrightnessAsync(value);
+    } else {
+      Brightness.setSystemBrightnessAsync(value);
+    }
+  }
+
   render() {
     let views = brightnessTypes.map(type => {
       return (
@@ -48,27 +77,13 @@ export default class BrightnessScreen extends React.Component<{}, State> {
           {type === 'SystemBrightness' && (
             <Button
               title="Permissions.SYSTEM_BRIGHTNESS"
-              onPress={() => {
-                Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS).then(result => {
-                  if (result.status === 'granted') {
-                    this.setState({ systemBrightnessPermissionGranted: true });
-                  }
-                  alert(JSON.stringify(result, null, 2));
-                });
-              }}
+              onPress={() => this.askSystemBrightnessPermissionAsync()}
               style={{ marginTop: 15 }}
             />
           )}
           <Button
             title={'get' + type + 'Async'}
-            onPress={() => {
-              (type === 'Brightness'
-                ? Brightness.getBrightnessAsync()
-                : Brightness.getSystemBrightnessAsync()
-              ).then(value => {
-                alert(value);
-              });
-            }}
+            onPress={() => this.alertBrightnessAsync(type)}
             style={{ marginTop: 15, marginBottom: 20 }}
           />
           <Text style={{ marginBottom: -2 }}>
@@ -79,16 +94,7 @@ export default class BrightnessScreen extends React.Component<{}, State> {
             {...this.props}
             value={this.state.initBrightness[type] || 0}
             disabled={type === 'SystemBrightness' && !this.state.systemBrightnessPermissionGranted}
-            onValueChange={value => {
-              this.setState({
-                sliderBrightness: { ...this.state.sliderBrightness, [type]: value },
-              });
-              if (type === 'Brightness') {
-                Brightness.setBrightnessAsync(value);
-              } else {
-                Brightness.setSystemBrightnessAsync(value);
-              }
-            }}
+            onValueChange={value => this.updateBrightnessAsync(value, type)}
           />
         </View>
       );
