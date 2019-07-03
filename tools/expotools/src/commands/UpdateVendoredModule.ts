@@ -224,7 +224,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Components/DateTimePicker',
-        sourceAndroidPath: 'android/src/main/java/com/reactcommunity/rndatepicker',
+        sourceAndroidPath: 'android/src/main/java/com/reactcommunity/rndatetimepicker',
         targetAndroidPath: 'modules/api/components/datetimepicker',
         sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
@@ -238,7 +238,7 @@ async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }
 }
 
 async function updateBundledNativeModulesAsync(updater) {
-  console.log(`Updating ${chalk.magenta('bundledNativeModules.json')} ...`);
+  console.log(`\nUpdating ${chalk.magenta('bundledNativeModules.json')} ...`);
 
   const jsonFile = new JsonFile(BUNDLED_NATIVE_MODULES_PATH);
   const data = await jsonFile.readAsync();
@@ -388,18 +388,16 @@ async function action(options: ActionOptions) {
 
   const tmpDir = path.join(os.tmpdir(), options.module);
 
-  console.log(`Updating ${chalk.green(options.module)} from GitHub...`);
-
   // Cleanup tmp dir.
   await fs.remove(tmpDir);
+
+  console.log(`Cloning ${chalk.green(options.module)}${chalk.red('#')}${chalk.cyan(options.commit)} from GitHub ...`);
 
   // Clone the repository.
   await spawnAsync('git', ['clone', moduleConfig.repoUrl, tmpDir]);
 
   // Checkout at given commit (defaults to master).
   await spawnAsync('git', ['checkout', options.commit], { cwd: tmpDir });
-
-  console.log(`Using git version at ${chalk.cyan(options.commit)}`);
 
   if (moduleConfig.warnings) {
     moduleConfig.warnings.forEach(warning => console.warn(warning));
@@ -416,12 +414,12 @@ async function action(options: ActionOptions) {
       const sourceDir = path.join(tmpDir, step.sourceIosPath);
       const targetDir = path.join(IOS_DIR, 'Exponent', 'Versioned', 'Core', step.targetIosPath);
 
-      console.log(`Removing old iOS files at ${chalk.magenta(targetDir)} ...`);
+      console.log(`\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`);
 
       await fs.remove(targetDir);
       await fs.mkdirs(targetDir);
 
-      console.log('Copying iOS files ...');
+      console.log('\nCopying iOS files ...');
 
       const objcFiles = await findObjcFilesAsync(sourceDir, step.recursive);
       const pbxprojPath = path.join(IOS_DIR, 'Exponent.xcodeproj', 'project.pbxproj');
@@ -444,7 +442,7 @@ async function action(options: ActionOptions) {
       }
 
       if (step.iosPrefix) {
-        console.log(`Updating classes prefix from ${chalk.yellow(step.iosPrefix)} to ${chalk.yellow('EX')} ...`);
+        console.log(`\nUpdating classes prefix from ${chalk.yellow(step.iosPrefix)} to ${chalk.yellow('EX')} ...`);
 
         const files = await findObjcFilesAsync(targetDir, step.recursive);
 
@@ -454,7 +452,7 @@ async function action(options: ActionOptions) {
       }
 
       console.log(chalk.yellow(
-        `Successfully updated iOS files, but please make sure Xcode project files are setup correctly in ${chalk.magenta(`Exponent/Versioned/Modules/${step.targetIosPath}`)}`
+        `\nSuccessfully updated iOS files, but please make sure Xcode project files are setup correctly in ${chalk.magenta(`Exponent/Versioned/Modules/${step.targetIosPath}`)}`
       ));
     }
 
@@ -463,19 +461,19 @@ async function action(options: ActionOptions) {
       const sourceDir = path.join(tmpDir, step.sourceAndroidPath);
       const targetDir = path.join(ANDROID_DIR, 'expoview', 'src', 'main', 'java', 'versioned', 'host', 'exp', 'exponent', step.targetAndroidPath);
 
-      console.log(`Removing old Android files at ${chalk.magenta(targetDir)} ...`);
+      console.log(`\nCleaning up Android files at ${chalk.magenta(path.relative(ANDROID_DIR, targetDir))} ...`);
 
       await fs.remove(targetDir);
       await fs.mkdirs(targetDir);
 
-      console.log('Copying Android files ...');
+      console.log('\nCopying Android files ...');
 
       const javaFiles = await findAndroidFilesAsync(sourceDir);
 
       await copyFilesAsync(javaFiles, sourceDir, targetDir, () => {});
 
       const files = await findAndroidFilesAsync(targetDir);
-      
+
       for (const file of files) {
         await renamePackageAndroidAsync(file, step.sourceAndroidPackage, step.targetAndroidPackage);
       }
@@ -496,7 +494,7 @@ async function action(options: ActionOptions) {
   });
 
   console.log(
-    `Finished updating ${chalk.green(options.module)}, make sure to update files in the Xcode project (if you updated iOS, see logs above) and test that it still works. 🙂`,
+    `\nFinished updating ${chalk.green(options.module)}, make sure to update files in the Xcode project (if you updated iOS, see logs above) and test that it still works. 🙂`,
   );
 }
 
