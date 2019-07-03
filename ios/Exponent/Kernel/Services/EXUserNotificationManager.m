@@ -71,11 +71,7 @@ static NSString * const scopedIdentifierSeparator = @":";
   NSDictionary *userInfo = notification.request.content.userInfo;
   if (userInfo && userInfo[@"body"] && userInfo[@"body"][@"_displayInForeground"]) {
     // If user specifically set `_displayInForeground` in the notification, it always override `notification.iosDisplayInForeground` in `app.json`.
-    if ([userInfo[@"body"][@"_displayInForeground"] boolValue]) {
-      shouldDisplayInForeground = YES;
-    } else {
-      shouldDisplayInForeground = NO;
-    }
+    shouldDisplayInForeground = [userInfo[@"body"][@"_displayInForeground"] boolValue];
   }
 
   // Notifications were only shown while the app wasn't active or if the user specifies to do so.
