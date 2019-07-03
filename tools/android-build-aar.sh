@@ -22,6 +22,7 @@ set -e
 ./gradlew assembleRelease
 popd
 
+mkdir -p expoview/libs
 # Grab the aar and unzip it
 cp versioned-react-native/ReactAndroid/build/outputs/aar/ReactAndroid-release.aar expoview/libs/ReactAndroid-temp.aar
 rm -rf expoview/libs/ReactAndroid-temp
@@ -85,9 +86,11 @@ rm ../ReactAndroid-release-$ABI_VERSION.aar
 set -e
 zip -r ../ReactAndroid-release-$ABI_VERSION.aar .
 popd
+rm -rf expoview/libs/ReactAndroid-temp
 
 # Put aar into local maven repo
 mvn install:install-file -e -Dfile=expoview/libs/ReactAndroid-release-$ABI_VERSION.aar -DgroupId=host.exp -DartifactId=reactandroid-$ABI_VERSION -Dversion=1.0.0 -Dpackaging=aar
+rm expoview/libs/ReactAndroid-temp.aar
 mkdir -p versioned-abis/expoview-$ABI_VERSION/maven/host/exp/reactandroid-$ABI_VERSION
 cp -r ~/.m2/repository/host/exp/reactandroid-$ABI_VERSION/ versioned-abis/expoview-$ABI_VERSION/maven/host/exp/reactandroid-$ABI_VERSION
 rm expoview/libs/ReactAndroid-release-$ABI_VERSION.aar

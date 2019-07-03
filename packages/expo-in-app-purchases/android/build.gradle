@@ -71,5 +71,5 @@ allprojects {
 
 dependencies {
   unimodule 'unimodules-core'
-  implementation 'com.android.billingclient:billing:2.0.0'
+  api 'com.android.billingclient:billing:2.0.0'
 }
