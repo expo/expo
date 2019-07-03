@@ -122,14 +122,14 @@ Subscribe to the low power mode ( power saver ) updates.
 **Examples**
 
 ```js
-import Expo from "expo";
-import React from "react";
-import * as Battery from "expo-battery";
-import { StyleSheet, Text, View } from "react-native";
+import Expo from 'expo';
+import React from 'react';
+import * as Battery from 'expo-battery';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default class App extends React.Component {
   state = {
-    batteryLevel: null
+    batteryLevel: null,
   };
 
   componentDidMount() {
@@ -143,16 +143,10 @@ export default class App extends React.Component {
   _subscribe = () => {
     this._subscription = Battery.watchBatteryLevelChange(result => {
       this.setState({
-        batteryLevel: result.batteryLevel
+        batteryLevel: result.batteryLevel,
       });
     });
-    Battery.getBatteryLevelAsync()
-    .then(level => {
-      this.setState({
-        batteryLevel: level
-      })
-    })
-  }
+  };
 
   _unsubscribe = () => {
     this._subscription && this._subscription.remove();
@@ -162,9 +156,7 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>
-          Current Battery Level: {this.state.batteryLevel}
-        </Text>
+        <Text>Current Battery Level: {this.state.batteryLevel}</Text>
       </View>
     );
   }
@@ -174,8 +166,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 15,
-    alignItems: "center",
-    justifyContent: "center"
-  }
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 ```
