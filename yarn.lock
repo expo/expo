@@ -2238,11 +2238,6 @@
     xcode "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/netinfo@3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-3.2.1.tgz#cd073b81a4b978f7f55f1a960a0b56c462813e02"
-  integrity sha512-A2qANOnlRDVe+8kMbKMwy3/0bOlOA2+y8DyWg2Rv2KHICIfin+oxixbG0ewAOLQdLkSEyyumZXRmIVl7VI/KJg==
-
 "@react-navigation/core@~3.4.1":
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.4.2.tgz#bec563e94fde40fbab3730cdc97f22afbb2a1498"

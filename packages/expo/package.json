@@ -147,7 +147,8 @@
     "expo-module-scripts": "^1.0.0",
     "react": "16.8.3",
     "react-dom": "^16.8.6",
-    "react-native": "0.59.8"
+    "react-native": "0.59.8",
+    "react-native-gesture-handler": "~1.3.0"
   },
   "gitHead": "78ebcdbae1d255a175eccb7183515110521607c1"
 }
