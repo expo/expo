@@ -146,8 +146,8 @@ public class ExpoBarCodeScanner {
     parameters.setRotation(mRotation);
 
     // set preview size
-    // defaults to highest resolution available
-    Camera.Size optimalPreviewSize = getBestSize(parameters.getSupportedPreviewSizes(), Integer.MAX_VALUE, Integer.MAX_VALUE);
+    // Limit preview size to 1920x1920 in order to allow scanning codes on low dpi computer screens
+    Camera.Size optimalPreviewSize = getBestSize(parameters.getSupportedPreviewSizes(), 1920, 1920);
     int width = optimalPreviewSize.width;
     int height = optimalPreviewSize.height;
 
