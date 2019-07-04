@@ -17,7 +17,7 @@ namespace facebook {
 namespace react {
 
 struct JTurboModule : jni::JavaClass<JTurboModule> {
-  static auto constexpr kJavaDescriptor = "Labi33_0_0/com/facebook/react/turbomodule/core/interfaces/TurboModule;";
+  static auto constexpr kJavaDescriptor = "Labi34_0_0/com/facebook/react/turbomodule/core/interfaces/TurboModule;";
 };
 
 class JSI_EXPORT JavaTurboModule : public TurboModule {
