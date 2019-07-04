@@ -3,6 +3,9 @@ import { AsyncStorage } from 'react-native';
 
 import ExponentKernel from '../universal/ExponentKernel';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
+
+type Settings = object;
+
 const Keys = mapValues(
   {
     AuthTokens: 'authTokens',
@@ -15,12 +18,11 @@ const Keys = mapValues(
   value => `Exponent.${value}`
 );
 
-async function _getLegacyIsNuxFinishedAsync() {
-  let result = await AsyncStorage.getItem(Keys.NuxIsFinished);
-  return result;
+async function _getLegacyIsNuxFinishedAsync(): Promise<string | null> {
+  return await AsyncStorage.getItem(Keys.NuxIsFinished);
 }
 
-async function migrateNuxStateToNativeAsync() {
+async function migrateNuxStateToNativeAsync(): Promise<void> {
   const result = await _getLegacyIsNuxFinishedAsync();
   if (result === 'true' && ExponentKernel && ExponentKernel.setIsNuxFinishedAsync) {
     await ExponentKernel.setIsNuxFinishedAsync(true);
@@ -28,25 +30,27 @@ async function migrateNuxStateToNativeAsync() {
   }
 }
 
-async function getSettingsAsync() {
-  let results = await AsyncStorage.getItem(Keys.Settings);
-  let settings;
+async function getSettingsAsync(): Promise<Settings> {
+  let json = await AsyncStorage.getItem(Keys.Settings);
+  if (!json) {
+    return {};
+  }
 
   try {
-    settings = JSON.parse(results);
-  } catch (e) {}
-
-  return settings || {};
+    return JSON.parse(json);
+  } catch (e) {
+    return {};
+  }
 }
 
-async function updateSettingsAsync(updatedSettings) {
+async function updateSettingsAsync(updatedSettings: Partial<Settings>): Promise<void> {
   let currentSettings = await getSettingsAsync();
   let newSettings = {
     ...currentSettings,
     ...updatedSettings,
   };
 
-  return AsyncStorage.setItem(Keys.Settings, JSON.stringify(newSettings));
+  await AsyncStorage.setItem(Keys.Settings, JSON.stringify(newSettings));
 }
 
 async function getSessionAsync() {
@@ -71,8 +75,8 @@ async function getSessionAsync() {
   return results;
 }
 
-async function saveSessionAsync(session) {
-  return ExponentKernel.setSessionAsync(session);
+async function saveSessionAsync(session): Promise<void> {
+  await ExponentKernel.setSessionAsync(session);
 }
 
 async function getHistoryAsync() {
@@ -87,36 +91,32 @@ async function getHistoryAsync() {
   return [];
 }
 
-async function saveProfileBannerImageAsync(uri) {
-  return AsyncStorage.setItem(Keys.ProfileBannerImage, uri);
+async function saveProfileBannerImageAsync(uri: string): Promise<void> {
+  await AsyncStorage.setItem(Keys.ProfileBannerImage, uri);
 }
 
-async function getProfileBannerImageAsync() {
-  return AsyncStorage.getItem(Keys.ProfileBannerImage);
+async function getProfileBannerImageAsync(): Promise<string | null> {
+  return await AsyncStorage.getItem(Keys.ProfileBannerImage);
 }
 
-async function clearProfileBannerImageAsync() {
-  return AsyncStorage.removeItem(Keys.ProfileBannerImage);
+async function clearProfileBannerImageAsync(): Promise<void> {
+  await AsyncStorage.removeItem(Keys.ProfileBannerImage);
 }
 
-async function saveHistoryAsync(history) {
-  return AsyncStorage.setItem(Keys.History, JSON.stringify(history));
+async function saveHistoryAsync(history): Promise<void> {
+  await AsyncStorage.setItem(Keys.History, JSON.stringify(history));
 }
 
-async function clearHistoryAsync() {
-  return AsyncStorage.removeItem(Keys.History);
+async function clearHistoryAsync(): Promise<void> {
+  await AsyncStorage.removeItem(Keys.History);
 }
 
-async function removeAuthTokensAsync() {
-  return AsyncStorage.removeItem(Keys.AuthTokens);
+async function removeAuthTokensAsync(): Promise<void> {
+  await AsyncStorage.removeItem(Keys.AuthTokens);
 }
 
-async function removeSessionAsync() {
-  return ExponentKernel.removeSessionAsync();
-}
-
-async function clearAllAsync() {
-  await Promise.all(Object.values(Keys).map(k => AsyncStorage.removeItem(k)));
+async function removeSessionAsync(): Promise<void> {
+  await ExponentKernel.removeSessionAsync();
 }
 
 // adds a hook for native code to query Home's history.
@@ -141,7 +141,6 @@ addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', asy
 
 export default {
   clearHistoryAsync,
-  clearAllAsync,
   getSessionAsync,
   saveProfileBannerImageAsync,
   getProfileBannerImageAsync,
