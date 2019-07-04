@@ -28,6 +28,7 @@
     "expo-analytics-amplitude": "^5.0.0-rc.0",
     "expo-asset": "^5.0.0-rc.0",
     "expo-barcode-scanner": "^5.0.0-rc.0",
+    "expo-blur": "^5.0.0-rc.0",
     "expo-camera": "^5.0.0-rc.0",
     "expo-constants": "^5.0.0-rc.0",
     "expo-font": "^5.0.0-rc.0",
