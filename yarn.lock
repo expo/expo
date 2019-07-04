@@ -8107,24 +8107,12 @@ expo-constants@~4.0.0:
   dependencies:
     ua-parser-js "^0.7.19"
 
-expo-face-detector@^5.0.0, expo-face-detector@~5.0.0:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/expo-face-detector/-/expo-face-detector-5.0.1.tgz#51012d54f8d28d470fc18ed6aea333b1fe1271ce"
-  integrity sha512-UUsbLtmENF8S86AJIeeLkj89Q1gvk69wYe1lQflNN7Wy8YLhrRq3V833Gt0Mna5tKThTnj0MkfOcmR2w2skgtg==
-
 expo-file-system@~4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-4.0.0.tgz#b9d2b7d70bfa0690213f7c291829825e916702ce"
   integrity sha512-t/DFoZ43AIjMUq06/ntK2+3gQwnfaJW1nmnAocCwccHh2Eo+Cer3qVMjJ5vcqmonkrcQ7Ycuv4hw/btqtVhCYQ==
   dependencies:
     uuid-js "^0.7.5"
-
-expo-local-authentication@^5.0.0, expo-local-authentication@~5.0.0:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-5.0.1.tgz#e5c239e46cdaa64c342d0fea2411b9294348d252"
-  integrity sha512-Fy4T/5N/WUIFsbuRCDWOZzKejbe90nuCbyD4I5rOmHTZRbIxDfGePUUF/fJv5JhjxEl87QdrIlNMpLLyTLiRqw==
-  dependencies:
-    invariant "^2.2.4"
 
 expo-permissions@~4.0.0:
   version "4.0.0"
