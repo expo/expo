@@ -3,14 +3,20 @@ import { Platform } from 'react-native';
 
 import ExponentKernel from '../universal/ExponentKernel';
 
-const isProduction = !!(
-  Constants.manifest.id === '@exponent/home' && Constants.manifest.publishedTime
-);
+let isProduction = false;
+let IOSClientReleaseType = 'SIMULATOR';
+let IsIOSRestrictedBuild = false;
 
-const IOSClientReleaseType = ExponentKernel.IOSClientReleaseType;
+if (ExponentKernel) {
+  isProduction = !!(
+    Constants.manifest.id === '@exponent/home' && Constants.manifest.publishedTime
+  );
 
-const IsIOSRestrictedBuild =
-  Platform.OS === 'ios' && ExponentKernel.IOSClientReleaseType === 'APPLE_APP_STORE';
+  IOSClientReleaseType = ExponentKernel.IOSClientReleaseType;
+
+  IsIOSRestrictedBuild =
+    Platform.OS === 'ios' && ExponentKernel.IOSClientReleaseType === 'APPLE_APP_STORE';
+}
 
 export default {
   isProduction,
