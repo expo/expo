@@ -113,7 +113,7 @@ NSString * const kEXSessionKeychainService = @"app";
 {
   OSStatus status = SecItemDelete((__bridge CFDictionaryRef)[self _searchQuery]);
 
-  if (status == errSecSuccess) {
+  if (status == errSecSuccess || status == errSecItemNotFound) {
     _session = nil;
     return YES;
   } else {
