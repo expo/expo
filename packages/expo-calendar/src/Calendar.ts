@@ -3,7 +3,7 @@ import { Platform, processColor } from 'react-native';
 
 import ExpoCalendar from './ExpoCalendar';
 
-type RecurringEventOptions = {
+export type RecurringEventOptions = {
   futureEvents?: boolean;
   instanceStartDate?: string | Date;
 }; // iOS
@@ -29,7 +29,7 @@ export interface Calendar {
   accessLevel?: string; // Android
 };
 
-type Source = {
+export type Source = {
   id?: string; // iOS only ??
   type: string;
   name: string;
@@ -84,7 +84,7 @@ export interface Reminder {
   completionDate?: string | Date;
 }
 
-type Attendee = {
+export type Attendee = {
   id?: string; // Android
   isCurrentUser?: boolean; // iOS
   name: string;
@@ -95,7 +95,7 @@ type Attendee = {
   email?: string; // Android
 };
 
-type Alarm = {
+export type Alarm = {
   absoluteDate?: string; // iOS
   relativeOffset?: string;
   structuredLocation?: {
@@ -111,7 +111,7 @@ type Alarm = {
   method?: string; // Method, Android
 };
 
-type RecurrenceRule = {
+export type RecurrenceRule = {
   frequency: string; // Frequency
   interval?: number;
   endDate?: string;
