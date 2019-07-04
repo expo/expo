@@ -13,7 +13,7 @@ export interface ResultSet {
         [column: string]: any;
     }>;
 }
-export declare type SQLiteCallback = (error?: Error | null, resultSet?: ResultSetError | ResultSet) => void;
+export declare type SQLiteCallback = (error?: Error | null, resultSet?: Array<ResultSetError | ResultSet>) => void;
 export declare function openDatabase(name: string, version?: string, description?: string, size?: number, callback?: (db: WebSQLDatabase) => void): WebSQLDatabase;
 export interface WebSQLDatabase {
     exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;

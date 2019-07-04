@@ -18,7 +18,7 @@ export interface ResultSet {
   rows: Array<{ [column: string]: any }>;
 };
 
-export type SQLiteCallback = (error?: Error | null, resultSet?: ResultSetError|ResultSet) => void;
+export type SQLiteCallback = (error?: Error | null, resultSet?: Array<ResultSetError | ResultSet>) => void;
 
 class SQLiteDatabase {
   _name: string;
@@ -54,7 +54,7 @@ function _serializeQuery(query: Query): [string, unknown[]] {
   return [query.sql, Platform.OS === 'android' ? query.args.map(_escapeBlob) : query.args];
 }
 
-function _deserializeResultSet(nativeResult): ResultSet|ResultSetError {
+function _deserializeResultSet(nativeResult): ResultSet | ResultSetError {
   let [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
   // TODO: send more structured error information from the native module so we can better construct
   // a SQLException object
