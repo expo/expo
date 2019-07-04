@@ -61,7 +61,6 @@ export default class App extends React.Component {
       Store.dispatch(SettingsActions.loadSettings());
       Store.dispatch(HistoryActions.loadHistory());
       Store.dispatch(ProfileActions.load());
-      await LocalStorage.migrateNuxStateToNativeAsync();
       const storedSession = await LocalStorage.getSessionAsync();
 
       if (storedSession) {

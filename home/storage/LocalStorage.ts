@@ -8,27 +8,13 @@ type Settings = object;
 
 const Keys = mapValues(
   {
-    AuthTokens: 'authTokens',
     Session: 'session',
     History: 'history',
     ProfileBannerImage: 'profileBannerImage',
     Settings: 'settings',
-    NuxIsFinished: 'nuxIsFinishedApr-17-2017',
   },
   value => `Exponent.${value}`
 );
-
-async function _getLegacyIsNuxFinishedAsync(): Promise<string | null> {
-  return await AsyncStorage.getItem(Keys.NuxIsFinished);
-}
-
-async function migrateNuxStateToNativeAsync(): Promise<void> {
-  const result = await _getLegacyIsNuxFinishedAsync();
-  if (result === 'true' && ExponentKernel && ExponentKernel.setIsNuxFinishedAsync) {
-    await ExponentKernel.setIsNuxFinishedAsync(true);
-    await AsyncStorage.removeItem(Keys.NuxIsFinished);
-  }
-}
 
 async function getSettingsAsync(): Promise<Settings> {
   let json = await AsyncStorage.getItem(Keys.Settings);
@@ -111,10 +97,6 @@ async function clearHistoryAsync(): Promise<void> {
   await AsyncStorage.removeItem(Keys.History);
 }
 
-async function removeAuthTokensAsync(): Promise<void> {
-  await AsyncStorage.removeItem(Keys.AuthTokens);
-}
-
 async function removeSessionAsync(): Promise<void> {
   await ExponentKernel.removeSessionAsync();
 }
@@ -149,8 +131,6 @@ export default {
   getSettingsAsync,
   saveHistoryAsync,
   saveSessionAsync,
-  migrateNuxStateToNativeAsync,
-  removeAuthTokensAsync,
   removeSessionAsync,
   updateSettingsAsync,
 };
