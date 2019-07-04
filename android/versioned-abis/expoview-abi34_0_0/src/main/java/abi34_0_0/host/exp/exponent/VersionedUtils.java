@@ -19,8 +19,8 @@ public class VersionedUtils {
                 instanceManagerBuilderProperties.experienceProperties,
                 instanceManagerBuilderProperties.manifest,
                 // When distributing change the following two arguments to nulls
-                instanceManagerBuilderProperties.expoPackages,
-                instanceManagerBuilderProperties.exponentPackageDelegate,
+                null,
+                null,
                 instanceManagerBuilderProperties.singletonModules))
         .setInitialLifecycleState(LifecycleState.RESUMED);
 

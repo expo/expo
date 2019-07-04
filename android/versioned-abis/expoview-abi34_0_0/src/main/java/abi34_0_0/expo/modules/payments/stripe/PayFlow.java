@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import abi34_0_0.host.exp.expoview.BuildConfig;
 import abi34_0_0.org.unimodules.core.Promise;
 import abi34_0_0.expo.modules.payments.stripe.util.ArgCheck;
 import abi34_0_0.expo.modules.payments.stripe.util.Fun0;

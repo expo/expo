@@ -20,8 +20,8 @@ import com.devmarvel.creditcardentry.fields.SecurityCodeText;
 import com.devmarvel.creditcardentry.library.CreditCard;
 import com.devmarvel.creditcardentry.library.CreditCardForm;
 
+import abi34_0_0.host.exp.expoview.R;
 import abi34_0_0.org.unimodules.core.Promise;
-import abi34_0_0.expo.modules.payments.stripe.R;
 import abi34_0_0.expo.modules.payments.stripe.StripeModule;
 import abi34_0_0.expo.modules.payments.stripe.util.CardFlipAnimator;
 import abi34_0_0.expo.modules.payments.stripe.util.Converters;
