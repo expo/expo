@@ -1,4 +1,4 @@
-declare type RecurringEventOptions = {
+export declare type RecurringEventOptions = {
     futureEvents?: boolean;
     instanceStartDate?: string | Date;
 };
@@ -22,7 +22,7 @@ export interface Calendar {
     isSynced?: boolean;
     accessLevel?: string;
 }
-declare type Source = {
+export declare type Source = {
     id?: string;
     type: string;
     name: string;
@@ -74,7 +74,7 @@ export interface Reminder {
     completed?: boolean;
     completionDate?: string | Date;
 }
-declare type Attendee = {
+export declare type Attendee = {
     id?: string;
     isCurrentUser?: boolean;
     name: string;
@@ -84,7 +84,7 @@ declare type Attendee = {
     url?: string;
     email?: string;
 };
-declare type Alarm = {
+export declare type Alarm = {
     absoluteDate?: string;
     relativeOffset?: string;
     structuredLocation?: {
@@ -98,7 +98,7 @@ declare type Alarm = {
     };
     method?: string;
 };
-declare type RecurrenceRule = {
+export declare type RecurrenceRule = {
     frequency: string;
     interval?: number;
     endDate?: string;
