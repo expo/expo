@@ -833,10 +833,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@expo/samples@~3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/samples/-/samples-3.0.0.tgz#65060f732d5e08ef877eb5bfce25596e4d06f0e1"
-  integrity sha512-VOa+loGUnMtcg70ScHrpaUhhmZWCA3lXgPP4o/Qn+jR0vR7tE3WDVXkNqJbzHyPbKzSQuZf1iVUsFjgcR9kkHA==
+"@expo/samples@~3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@expo/samples/-/samples-3.0.3.tgz#83ade8e4d5cae95c257d5a99767eda66ca04f73e"
+  integrity sha512-gaZI9DEV5m69TUYUW5gzzzJMubqClK1I4rdQhumzLqkzOrKozMyDZa1PHc9OlrH/SoTXoUewVrE5YO6e+fBrJg==
   dependencies:
     react-native-platform-touchable "^1.1.1"
 
@@ -844,6 +844,13 @@
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-10.0.1.tgz#dbb0a9ab68b53aa6cbbc04b48421e4db862535d9"
   integrity sha512-24m39O2aO2G67VlQOlUHxGr/qYhfuYNJewpSSSUSxZ+3nznfp5fzN0aHPaFXuxCCyJiF49QkbBiXKHAGZWhVJA==
+  dependencies:
+    lodash "^4.17.4"
+
+"@expo/vector-icons@^10.0.2":
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-10.0.2.tgz#63223bd4a97bb1943dc8ea947fc10b29cbf84e4e"
+  integrity sha512-ea3cNMTfSsXo1QU/drBFTw93cMbqC6MxYOisxGyzZ9UiDIqvz3PJ9CQDtbqjZX9UASxLmg0mHWLVdsygAQJYwQ==
   dependencies:
     lodash "^4.17.4"
 
@@ -2912,7 +2919,7 @@ extend-shallow@^2.0.1:
   dependencies:
     is-extendable "^0.1.0"
 
-extend-shallow@^3.0.2:
+extend-shallow@^3.0.0, extend-shallow@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/extend-shallow/-/extend-shallow-3.0.2.tgz#26a71aaf073b39fb2127172746131c2704028db8"
   integrity sha1-Jqcarwc7OfshJxcnRhMcJwQCjbg=
@@ -3666,7 +3673,7 @@ is-equal-shallow@^0.1.3:
   dependencies:
     is-primitive "^2.0.0"
 
-is-extendable@^0.1.1:
+is-extendable@^0.1.0, is-extendable@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/is-extendable/-/is-extendable-0.1.1.tgz#62b110e289a471418e3ec36a617d472e301dfc89"
   integrity sha1-YrEQ4omkcUGOPsNqYX1HLjAd/Ik=

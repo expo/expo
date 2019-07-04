@@ -289,24 +289,33 @@ public class BillingManager implements PurchasesUpdatedListener {
     Runnable queryToExecute = new Runnable() {
       @Override
       public void run() {
+        final ArrayList<Bundle> bundles = new ArrayList<>();
+
         // Query in app product history
         mBillingClient.queryPurchaseHistoryAsync(SkuType.INAPP,
           new PurchaseHistoryResponseListener() {
             @Override
-            public void onPurchaseHistoryResponse(BillingResult billingResult,
+            public void onPurchaseHistoryResponse(final BillingResult inAppBillingResult,
                                                   final List<PurchaseHistoryRecord> inAppList) {
+
+              if (inAppBillingResult.getResponseCode() == BillingResponseCode.OK && inAppList != null) {
+                for (PurchaseHistoryRecord purchaseHistory : inAppList) {
+                  bundles.add(purchaseHistoryToBundle(purchaseHistory));
+                }
+              }
 
               // Query subscription history
               mBillingClient.queryPurchaseHistoryAsync(SkuType.SUBS, new PurchaseHistoryResponseListener() {
                 @Override
-                public void onPurchaseHistoryResponse(BillingResult billingResult, List<PurchaseHistoryRecord> purchaseList) {
-                  purchaseList.addAll(inAppList);
-                  ArrayList<Bundle> bundles = new ArrayList<>();
-                  for (PurchaseHistoryRecord record : purchaseList) {
-                    bundles.add(purchaseHistoryToBundle(record));
+                public void onPurchaseHistoryResponse(BillingResult subsBillingResult, List<PurchaseHistoryRecord> subsList) {
+
+                  if (subsBillingResult.getResponseCode() == BillingResponseCode.OK && subsList != null) {
+                    for (PurchaseHistoryRecord purchaseHistory : subsList) {
+                      bundles.add(purchaseHistoryToBundle(purchaseHistory));
+                    }
                   }
 
-                  Bundle response = formatResponse(billingResult, bundles);
+                  Bundle response = formatResponse(inAppBillingResult, bundles);
                   promise.resolve(response);
                 }
               });
@@ -473,7 +482,9 @@ public class BillingManager implements PurchasesUpdatedListener {
               mBillingClient.querySkuDetailsAsync(subs.build(), new SkuDetailsResponseListener() {
                 @Override
                 public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> subscriptionDetails) {
-                  skuDetails.addAll(subscriptionDetails);
+                  if (skuDetails != null) {
+                    skuDetails.addAll(subscriptionDetails);
+                  }
                   listener.onSkuDetailsResponse(billingResult, skuDetails);
                 }
               });

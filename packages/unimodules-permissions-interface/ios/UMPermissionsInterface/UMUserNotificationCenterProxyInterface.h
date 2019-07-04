@@ -5,8 +5,8 @@
 
 @protocol UMUserNotificationCenterProxyInterface <NSObject>
 
-- (void)getNotificationSettingsWithCompletionHandler:(void(^)(UNNotificationSettings *settings))completionHandler;
-- (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options completionHandler:(void (^)(BOOL granted, NSError *__nullable error))completionHandler;
+- (void)getNotificationSettingsWithCompletionHandler:(nonnull void(^)(UNNotificationSettings *__nonnull settings))completionHandler;
+- (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options completionHandler:(nonnull void (^)(BOOL granted, NSError *__nullable error))completionHandler;
 
 @end
 

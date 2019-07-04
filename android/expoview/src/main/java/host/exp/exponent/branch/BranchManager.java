@@ -52,7 +52,7 @@ public class BranchManager {
     }
 
     try {
-      Class branchModule = Class.forName("com.dispatcher.rnbranch.RNBranchModule");
+      Class branchModule = Class.forName("io.branch.rnbranch.RNBranchModule");
       Method m = branchModule.getMethod("initSession", Uri.class, ReactActivity.class);
       m.invoke(null, Uri.parse(uri), activity);
     } catch (ClassNotFoundException e) {

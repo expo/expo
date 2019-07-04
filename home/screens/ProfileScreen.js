@@ -61,15 +61,19 @@ export default class ProfileScreen extends React.Component {
       return;
     }
 
-    getViewerUsernameAsync().then(
-      username => {
-        this.setState({ isOwnProfile: username === this.props.username });
-      },
-      error => {
-        this.setState({ isOwnProfile: false });
-        console.warn(`There was an error fetching the viewer's username`, error);
-      }
-    );
+    if (!this.props.isAuthenticated) {
+      this.setState({ isOwnProfile: false });
+    } else {
+      getViewerUsernameAsync().then(
+        username => {
+          this.setState({ isOwnProfile: username === this.props.username });
+        },
+        error => {
+          this.setState({ isOwnProfile: false });
+          console.warn(`There was an error fetching the viewer's username`, error);
+        }
+      );
+    }
   }
 
   render() {

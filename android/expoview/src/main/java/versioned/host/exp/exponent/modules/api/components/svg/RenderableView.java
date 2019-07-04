@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings({"WeakerAccess", "RedundantSuppression"})
 abstract public class RenderableView extends VirtualView {
 
     RenderableView(ReactContext reactContext) {
@@ -57,17 +58,16 @@ abstract public class RenderableView extends VirtualView {
     static final int FILL_RULE_NONZERO = 1;
 
     // vectorEffect
-    static final int VECTOR_EFFECT_DEFAULT = 0;
-    static final int VECTOR_EFFECT_NON_SCALING_STROKE = 1;
-    static final int VECTOR_EFFECT_INHERIT = 2;
-    static final int VECTOR_EFFECT_URI = 3;
-
-    public int vectorEffect = VECTOR_EFFECT_DEFAULT;
+    private static final int VECTOR_EFFECT_DEFAULT = 0;
+    private static final int VECTOR_EFFECT_NON_SCALING_STROKE = 1;
+    //static final int VECTOR_EFFECT_INHERIT = 2;
+    //static final int VECTOR_EFFECT_URI = 3;
 
     /*
     Used in mergeProperties, keep public
     */
 
+    public int vectorEffect = VECTOR_EFFECT_DEFAULT;
     public @Nullable ReadableArray stroke;
     public @Nullable SVGLength[] strokeDasharray;
 
@@ -86,15 +86,14 @@ abstract public class RenderableView extends VirtualView {
     /*
     End merged properties
     */
-
-    @Nullable ArrayList<String> mLastMergedList;
-    @Nullable ArrayList<Object> mOriginProperties;
-    @Nullable ArrayList<String> mPropList;
-    @Nullable ArrayList<String> mAttributeList;
+    private @Nullable ArrayList<String> mLastMergedList;
+    private @Nullable ArrayList<Object> mOriginProperties;
+    private @Nullable ArrayList<String> mPropList;
+    private @Nullable ArrayList<String> mAttributeList;
 
     private static final Pattern regex = Pattern.compile("[0-9.-]+");
 
-    @ReactProp(name = "vectorEffect", defaultInt = VECTOR_EFFECT_DEFAULT)
+    @ReactProp(name = "vectorEffect")
     public void setVectorEffect(int vectorEffect) {
         this.vectorEffect = vectorEffect;
         invalidate();
@@ -116,7 +115,7 @@ abstract public class RenderableView extends VirtualView {
             Matcher m = regex.matcher(fill.asString());
             int i = 0;
             while (m.find()) {
-                Double parsed = Double.parseDouble(m.group());
+                double parsed = Double.parseDouble(m.group());
                 arr.pushDouble(i++ < 3 ? parsed / 255 : parsed);
             }
             this.fill = arr;
@@ -161,7 +160,7 @@ abstract public class RenderableView extends VirtualView {
             arr.pushInt(0);
             Matcher m = regex.matcher(strokeColors.asString());
             while (m.find()) {
-                Double parsed = Double.parseDouble(m.group());
+                double parsed = Double.parseDouble(m.group());
                 arr.pushDouble(parsed);
             }
             stroke = arr;
@@ -340,6 +339,7 @@ abstract public class RenderableView extends VirtualView {
             Path path = mPath;
             if (nonScalingStroke) {
                 Path scaled = new Path();
+                //noinspection deprecation
                 mPath.transform(canvas.getMatrix(), scaled);
                 canvas.setMatrix(null);
                 path = scaled;

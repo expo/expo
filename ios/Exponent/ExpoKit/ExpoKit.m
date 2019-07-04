@@ -105,7 +105,7 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
     }
   }
 
-  [UNUserNotificationCenter currentNotificationCenter].delegate = [EXKernel sharedInstance].serviceRegistry.notificationsManager;
+  [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager;
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
@@ -150,10 +150,13 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
 }
 
 // TODO: Remove once SDK31 is phased out
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettingsNotification object:nil];
 }
+#pragma clang diagnostic pop
 
 #pragma mark - deep linking hooks
 
@@ -202,7 +205,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
         [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
         return YES;
       } else {
-        [application openURL:webpageURL];
+        [application openURL:webpageURL options:@{} completionHandler:nil];
         return YES;
       }
     }

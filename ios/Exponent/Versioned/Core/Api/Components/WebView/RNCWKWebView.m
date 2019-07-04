@@ -34,6 +34,7 @@ static NSURLCredential* clientAuthenticationCredential;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingProgress;
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
 @property (nonatomic, copy) WKWebView *webView;
 @end
 
@@ -140,6 +141,10 @@ static NSURLCredential* clientAuthenticationCredential;
 #else
     wkWebViewConfig.mediaPlaybackRequiresUserAction = _mediaPlaybackRequiresUserAction;
 #endif
+
+    if (_applicationNameForUserAgent) {
+        wkWebViewConfig.applicationNameForUserAgent = [NSString stringWithFormat:@"%@ %@", wkWebViewConfig.applicationNameForUserAgent, _applicationNameForUserAgent];
+    }
 
     if(_sharedCookiesEnabled) {
       // More info to sending cookies with WKWebView
@@ -509,6 +514,30 @@ static NSURLCredential* clientAuthenticationCredential;
   if (!_scrollEnabled) {
     scrollView.bounds = _webView.bounds;
   }
+  else if (_onScroll != nil) {
+    NSDictionary *event = @{
+      @"contentOffset": @{
+          @"x": @(scrollView.contentOffset.x),
+          @"y": @(scrollView.contentOffset.y)
+          },
+      @"contentInset": @{
+          @"top": @(scrollView.contentInset.top),
+          @"left": @(scrollView.contentInset.left),
+          @"bottom": @(scrollView.contentInset.bottom),
+          @"right": @(scrollView.contentInset.right)
+          },
+      @"contentSize": @{
+          @"width": @(scrollView.contentSize.width),
+          @"height": @(scrollView.contentSize.height)
+          },
+      @"layoutMeasurement": @{
+          @"width": @(scrollView.frame.size.width),
+          @"height": @(scrollView.frame.size.height)
+          },
+      @"zoomScale": @(scrollView.zoomScale ?: 1),
+      };
+    _onScroll(event);
+  }
 }
 
 - (void)setDirectionalLockEnabled:(BOOL)directionalLockEnabled
@@ -545,6 +574,7 @@ static NSURLCredential* clientAuthenticationCredential;
 
   // Ensure webview takes the position and dimensions of RNCWKWebView
   _webView.frame = self.bounds;
+  _webView.scrollView.contentInset = _contentInset;
 }
 
 - (NSMutableDictionary<NSString *, id> *)baseEvent
@@ -691,6 +721,7 @@ static NSURLCredential* clientAuthenticationCredential;
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
       @"url": (request.URL).absoluteString,
+      @"mainDocumentURL": (request.mainDocumentURL).absoluteString,
       @"navigationType": navigationTypes[@(navigationType)]
     }];
     if (![self.delegate webView:self

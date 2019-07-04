@@ -33,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -56,6 +57,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             mName = name;
         }
 
+        @Nonnull
         public String toString() {
             return mName;
         }
@@ -149,8 +151,8 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     private boolean mRendered = false;
     int mTintColor = 0;
 
-    boolean isRendered() {
-        return mRendered;
+    boolean notRendered() {
+        return !mRendered;
     }
 
     private void clearChildCache() {

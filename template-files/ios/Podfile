@@ -12,6 +12,7 @@ ${EXPONENT_CLIENT_DEPS}
       'expo-module-template',
       'expo-in-app-purchases',
       'expo-payments-stripe',
+      'expo-updates',
     ]
   })
 

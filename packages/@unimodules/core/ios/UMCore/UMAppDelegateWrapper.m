@@ -58,7 +58,6 @@ static dispatch_once_t onceToken;
   NSArray<id<UIApplicationDelegate>> *subcontractorsArray = [self getSubcontractorsImplementingSelector:selector];
   
   for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
-    BOOL subcontractorAnswer = [subcontractor application:app openURL:url options:options];
     if ([subcontractor application:app openURL:url options:options]) {
       return YES;
     }
@@ -188,8 +187,7 @@ static dispatch_once_t onceToken;
     
     for (UMSingletonModule *singletonModule in singletonModules) {
       if ([singletonModule conformsToProtocol:@protocol(UIApplicationDelegate)]) {
-        id<UIApplicationDelegate> subcontractor = singletonModule;
-        [subcontractors addObject:singletonModule];
+        [subcontractors addObject:(id<UIApplicationDelegate>)singletonModule];
       }
     }
   });

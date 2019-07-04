@@ -169,9 +169,9 @@ very grateful!  We'd like to empower as many developers as we can to be able to 
 participate in the Firebase community.
 
 ### macOS and tvOS
-Thanks to contributions from the community, FirebaseAuth, FirebaseCore, FirebaseDatabase,
+Thanks to contributions from the community, FirebaseAuth, FirebaseCore, FirebaseDatabase, FirebaseMessaging,
 FirebaseFirestore, FirebaseFunctions and FirebaseStorage now compile, run unit tests, and work on
-macOS and tvOS. FirebaseMessaging is available for tvOS.
+macOS and tvOS.
 
 For tvOS, checkout the [Sample](Example/tvOSSample).
 

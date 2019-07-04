@@ -1,7 +1,9 @@
 /* @flow */
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import dedent from 'dedent';
-import { Asset, BlurView, Constants } from 'expo';
+import { Asset } from 'expo-asset';
+import { BlurView } from 'expo-blur';
+import Constants from 'expo-constants';
 import { take, takeRight } from 'lodash';
 import React from 'react';
 import { ActivityIndicator, Animated, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -77,6 +79,7 @@ const BannerButton = ({ onPress }) => (
     </View>
   </TouchableOpacity>
 );
+
 @connectActionSheet
 export default class Profile extends React.Component {
   state = {

@@ -214,6 +214,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
       @"url": (request.URL).absoluteString,
+      @"mainDocumentURL": (request.mainDocumentURL).absoluteString,
       @"navigationType": navigationTypes[@(navigationType)]
     }];
     if (![self.delegate webView:self

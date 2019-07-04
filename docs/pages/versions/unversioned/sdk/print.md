@@ -11,7 +11,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ## API
 
 ```js
-import { Print } from 'expo-print';
+import * as Print from 'expo-print';
 ```
 
 ### `Print.printAsync(options)`

@@ -9,15 +9,15 @@ type RecurringEventOptions = {
 }; // iOS
 
 export interface Calendar {
-  id?: string;
-  title?: string;
+  id: string;
+  title: string;
   sourceId?: string; // iOS
-  source?: Source;
+  source: Source;
   type?: string; // iOS
-  color?: string;
+  color: string;
   entityType?: string; // iOS
-  allowsModifications?: boolean;
-  allowedAvailabilities?: string[];
+  allowsModifications: boolean;
+  allowedAvailabilities: string[];
   isPrimary?: boolean; // Android
   name?: string; // Android
   ownerAccount?: string; // Android
@@ -31,31 +31,31 @@ export interface Calendar {
 
 type Source = {
   id?: string; // iOS only ??
-  type?: string;
-  name?: string;
+  type: string;
+  name: string;
   isLocalAccount?: boolean; // Android
 };
 
 export type Event = {
-  id?: string;
-  calendarId?: string;
-  title?: string;
-  location?: string;
+  id: string;
+  calendarId: string;
+  title: string;
+  location: string;
   creationDate?: string | Date; // iOS
   lastModifiedDate?: string | Date; // iOS
-  timeZone?: string;
+  timeZone: string;
   endTimeZone?: string; // Android
   url?: string; // iOS
-  notes?: string;
-  alarms?: Alarm[];
-  recurrenceRule?: RecurrenceRule;
-  startDate?: string | Date;
-  endDate?: string | Date;
+  notes: string;
+  alarms: Alarm[];
+  recurrenceRule: RecurrenceRule;
+  startDate: string | Date;
+  endDate: string | Date;
   originalStartDate?: string | Date; // iOS
   isDetached?: boolean; // iOS
-  allDay?: boolean;
-  availability?: string; // Availability
-  status?: string; // Status
+  allDay: boolean;
+  availability: string; // Availability
+  status: string; // Status
   organizer?: string; // Organizer - iOS
   organizerEmail?: string; // Android
   accessLevel?: string; // Android,
@@ -87,10 +87,10 @@ export interface Reminder {
 type Attendee = {
   id?: string; // Android
   isCurrentUser?: boolean; // iOS
-  name?: string;
-  role?: string;
-  status?: string;
-  type?: string;
+  name: string;
+  role: string;
+  status: string;
+  type: string;
   url?: string; // iOS
   email?: string; // Android
 };
@@ -118,7 +118,12 @@ type RecurrenceRule = {
   occurrence?: number;
 };
 
-export async function getCalendarsAsync(entityType?: string): Promise<void> {
+type OptionalKeys<T> = {
+  [P in keyof T]?: T[P];
+};
+
+
+export async function getCalendarsAsync(entityType?: string): Promise<Calendar[]> {
   if (!ExpoCalendar.getCalendarsAsync) {
     throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
   }
@@ -128,7 +133,7 @@ export async function getCalendarsAsync(entityType?: string): Promise<void> {
   return ExpoCalendar.getCalendarsAsync(entityType);
 }
 
-export async function createCalendarAsync(details: Calendar = {}): Promise<string> {
+export async function createCalendarAsync(details: OptionalKeys<Calendar> = {}): Promise<string> {
   if (!ExpoCalendar.saveCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'createCalendarAsync');
   }
@@ -137,7 +142,7 @@ export async function createCalendarAsync(details: Calendar = {}): Promise<strin
   return ExpoCalendar.saveCalendarAsync(newDetails);
 }
 
-export async function updateCalendarAsync(id: string, details: Calendar = {}): Promise<string> {
+export async function updateCalendarAsync(id: string, details: OptionalKeys<Calendar> = {}): Promise<string> {
   if (!ExpoCalendar.saveCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'updateCalendarAsync');
   }
@@ -238,7 +243,7 @@ export async function getEventAsync(
   }
 }
 
-export async function createEventAsync(calendarId: string, details: Event = {}): Promise<string> {
+export async function createEventAsync(calendarId: string, details: OptionalKeys<Event> = {}): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {
     throw new UnavailabilityError('Calendar', 'createEventAsync');
   }
@@ -265,7 +270,7 @@ export async function createEventAsync(calendarId: string, details: Event = {}):
 
 export async function updateEventAsync(
   id: string,
-  details: Event = {},
+  details: OptionalKeys<Event> = {},
   { futureEvents = false, instanceStartDate }: RecurringEventOptions = {}
 ): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {
@@ -326,7 +331,7 @@ export async function getAttendeesForEventAsync(
 
 export async function createAttendeeAsync(
   eventId: string,
-  details: Attendee = {}
+  details: OptionalKeys<Attendee> = {}
 ): Promise<string> {
   if (!ExpoCalendar.saveAttendeeForEventAsync) {
     throw new UnavailabilityError('Calendar', 'createAttendeeAsync');
@@ -350,7 +355,7 @@ export async function createAttendeeAsync(
   return ExpoCalendar.saveAttendeeForEventAsync(newDetails, eventId);
 } // Android
 
-export async function updateAttendeeAsync(id: string, details: Attendee = {}): Promise<string> {
+export async function updateAttendeeAsync(id: string, details: OptionalKeys<Attendee> = {}): Promise<string> {
   if (!ExpoCalendar.saveAttendeeForEventAsync) {
     throw new UnavailabilityError('Calendar', 'updateAttendeeAsync');
   }

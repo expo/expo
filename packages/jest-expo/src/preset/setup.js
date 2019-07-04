@@ -204,6 +204,11 @@ jest.mock('react-native-gesture-handler', () => {
     BaseButton: View,
     RectButton: View,
     BorderlessButton: View,
+    /* Touchables */
+    TouchableHighlight: View,
+    TouchableOpacity: View,
+    TouchableWithoutFeedback: View,
+    TouchableNativeFeedback: View,
     /* Other */
     FlatList: View,
     gestureHandlerRootHOC: jest.fn(),
