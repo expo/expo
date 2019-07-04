@@ -18,7 +18,7 @@ export async function signOutAsync(sessionSecret: string | null): Promise<void> 
   }
 
   let api = new ApiV2HttpClient();
-  return await api.postAsync('auth/logout');
+  await api.postAsync('auth/logout');
 }
 
 type SignUpData = {
