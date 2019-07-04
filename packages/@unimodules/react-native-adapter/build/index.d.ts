@@ -5,6 +5,6 @@ import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 export declare const Platform: {
-    OS: "ios" | "android" | "windows" | "macos" | "web";
+    OS: import("react-native").PlatformOSType;
 };
 export { EventEmitter, NativeModulesProxy, Subscription, SyntheticPlatformEmitter, requireNativeViewManager, CodedError, UnavailabilityError, };
