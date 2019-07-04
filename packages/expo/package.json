@@ -125,6 +125,7 @@
     "qs": "^6.5.0",
     "react-google-maps": "^9.4.5",
     "react-native-branch": "~3.0.1",
+    "react-native-gesture-handler": "~1.3.0",
     "react-native-maps": "0.24.2",
     "react-native-view-shot": "2.6.0",
     "serialize-error": "^2.1.0",
@@ -147,8 +148,7 @@
     "expo-module-scripts": "^1.0.0",
     "react": "16.8.3",
     "react-dom": "^16.8.6",
-    "react-native": "0.59.8",
-    "react-native-gesture-handler": "~1.3.0"
+    "react-native": "0.59.8"
   },
   "gitHead": "78ebcdbae1d255a175eccb7183515110521607c1"
 }
