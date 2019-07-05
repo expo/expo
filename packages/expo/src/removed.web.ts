@@ -33,6 +33,7 @@ export const Font = null;
 export const GL = null;
 export const GLView = null;
 export const GoogleSignIn = null;
+export const Google = null;
 export const Haptic = null;
 export const Haptics = null;
 export const ImageManipulator = null;
