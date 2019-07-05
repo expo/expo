@@ -66,7 +66,7 @@
 #endif
 
 #if __has_include(<EXPermissions/EXPermissions.h>)
-  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId];
+  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
 #endif
