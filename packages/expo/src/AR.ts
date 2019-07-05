@@ -672,3 +672,15 @@ export function isFrontCameraAvailable(): boolean {
 export function isRearCameraAvailable(): boolean {
   return isConfigurationAvailable(TrackingConfiguration.World);
 }
+
+/* Legacy constants */
+
+export const PlaneDetectionTypes = PlaneDetection;
+export const WorldAlignmentTypes = WorldAlignment;
+export const EventTypes = EventType;
+export const AnchorTypes = AnchorType;
+export const AnchorEventTypes = AnchorEventType;
+export const FrameAttributes = FrameAttribute;
+export const TrackingStates = TrackingState;
+export const TrackingStateReasons = TrackingStateReason;
+export const TrackingConfigurations = TrackingConfiguration;
