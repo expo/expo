@@ -1,5 +1,5 @@
 // Importing these modules from the 'expo' package was deprecated in SDK 33.
-// Please import them from the each individual unimodule package instead.
+// Please import them from the individual unimodule package instead.
 
 export const AdMobBanner = null;
 export const AdMobInterstitial = null;
