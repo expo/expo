@@ -141,6 +141,12 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void clearUpdateCacheAsync(final String abiVersion, final Promise promise) {
+      Exponent.getInstance().clearAllJSBundleCache(abiVersion);
+      promise.resolve(null);
+  }
+
   private void fetchJSBundleAsync(final JSONObject manifest, final Promise promise) {
     try {
       String bundleUrl = manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);

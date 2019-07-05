@@ -49,6 +49,13 @@ export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<Obj
   return returnObj;
 }
 
+export async function clearUpdateCacheAsync(abiVersion: string) : Promise<void> {
+  if (!ExponentUpdates.clearUpdateCacheAsync) {
+    throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
+  }
+  await ExponentUpdates.clearUpdateCacheAsync(abiVersion);
+}
+
 let _emitter: EventEmitter | null;
 
 function _getEmitter(): EventEmitter {
