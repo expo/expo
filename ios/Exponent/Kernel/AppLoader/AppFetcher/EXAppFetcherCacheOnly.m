@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_fetchJSBundle
 {
-  EXCachedResourceBehavior *cacheBehavior = EXCachedResourceOnlyCache;
+  EXCachedResourceBehavior cacheBehavior = EXCachedResourceOnlyCache;
   // This is a bit messy, but essentially as long as remote updates are enabled
   // we never want to 100% fall back to cache, since the OS can reap files from
   // the cache and we might not have a JS bundle even if we have its corresponding
