@@ -22,8 +22,29 @@ UM_EXPORT_MODULE(ExpoBattery);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
+  if (_moduleRegistry) {
+    [self invalidate];
+  }
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  
+  if (moduleRegistry) {
+    [UIDevice.currentDevice setBatteryMonitoringEnabled:YES];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(batteryLevelDidChange:)
+                                                 name:UIDeviceBatteryLevelDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(batteryStateDidChange:)
+                                                 name:UIDeviceBatteryStateDidChangeNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(powerModeDidChange:)
+                                                 name:NSProcessInfoPowerStateDidChangeNotification
+                                               object:nil];
+  }
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -42,28 +63,28 @@ UM_EXPORT_MODULE(ExpoBattery);
 - (id)init
 {
   if ((self = [super init])) {
-    [UIDevice.currentDevice setBatteryMonitoringEnabled:YES];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(batteryLevelDidChange:)
-                                                 name:UIDeviceBatteryLevelDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(batteryStateDidChange:)
-                                                 name:UIDeviceBatteryStateDidChangeNotification
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(powerModeDidChange:)
-                                                 name:NSProcessInfoPowerStateDidChangeNotification
-                                               object:nil];
+//    [UIDevice.currentDevice setBatteryMonitoringEnabled:YES];
+//
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(batteryLevelDidChange:)
+//                                                 name:UIDeviceBatteryLevelDidChangeNotification
+//                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(batteryStateDidChange:)
+//                                                 name:UIDeviceBatteryStateDidChangeNotification
+//                                               object:nil];
+//
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(powerModeDidChange:)
+//                                                 name:NSProcessInfoPowerStateDidChangeNotification
+//                                               object:nil];
   }
   
   return self;
 }
 
 - (void)dealloc {
-  [self invalidate];
+//  [self invalidate];
 }
 
 - (void)invalidate {
