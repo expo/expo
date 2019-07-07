@@ -54,6 +54,9 @@ import Constants from 'expo-constants';
 // Contacts
 import * as Contacts from 'expo-contacts';
 
+// Crypto
+import * as Crypto from 'expo-crypto';
+
 // Device Motion
 import { DeviceMotion } from 'expo-sensors';
 
@@ -129,6 +132,12 @@ import * as Permissions from 'expo-permissions';
 // Print
 import { Print } from 'expo-print';
 
+// Random
+import * as Random from 'expo-random';
+
+// Sharing
+import * as Sharing from 'expo-sharing';
+
 // Secure Store
 import * as SecureStore from 'expo-secure-store';
 
@@ -156,6 +165,9 @@ import { SQLite } from 'expo-sqlite';
 
 // Video
 import { Video } from 'expo-av';
+
+// VideoThumbnails
+import * as VideoThumbnails from 'expo-video-thumbnails';
 
 // Web Browser
 import * as WebBrowser from 'expo-web-browser';
