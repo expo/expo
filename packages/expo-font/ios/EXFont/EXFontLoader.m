@@ -36,7 +36,7 @@ UM_EXPORT_MODULE(ExpoFontLoader);
   if (self = [super init]) {
     _scaler = [[EXFontScaler alloc] init];
     _manager = [[EXFontManager alloc] init];
-    _processor = [[EXFontLoaderProcessor alloc] initWithFontFamilyPrefix:prefix andManager:_manager];
+    _processor = [[EXFontLoaderProcessor alloc] initWithFontFamilyPrefix:prefix manager:_manager];
   }
   return self;
 }

@@ -7,7 +7,7 @@
 @interface EXFontLoaderProcessor : NSObject <UMFontProcessorInterface>
 
 - (instancetype)initWithFontFamilyPrefix:(NSString *)prefix
-                              andManager:(EXFontManager *)manager;
+                                 manager:(EXFontManager *)manager;
 
 - (instancetype)initWithManager:(EXFontManager *)manager;
 

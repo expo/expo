@@ -16,7 +16,7 @@
 @implementation EXFontLoaderProcessor
 
 - (instancetype)initWithFontFamilyPrefix:(NSString *)prefix
-                              andManager:(EXFontManager *)manager
+                                 manager:(EXFontManager *)manager
 {
   if (self = [super init]) {
     _fontFamilyPrefix = prefix;
@@ -27,10 +27,7 @@
 
 - (instancetype)initWithManager:(EXFontManager *)manager
 {
-  if (self = [super init]) {
-    _manager = manager;
-  }
-  return self;
+  return [self initWithFontFamilyPrefix:nil manager:manager];
 }
 
 - (UIFont *)updateFont:(UIFont *)uiFont
