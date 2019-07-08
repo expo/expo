@@ -17,15 +17,10 @@ type UpdateCheckResult =
       manifest: Manifest;
     };
 
-type UpdateFetchResult =
-  | {
-      isNew: false;
-      manifest: undefined;
-    }
-  | {
-      isNew: true;
-      manifest: Manifest;
-    };
+type UpdateFetchResult = {
+  isNew: boolean;
+  manifest: Manifest;
+};
 
 type UpdateEvent =
   | {
@@ -52,10 +47,15 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   }
   const result = await ExponentUpdates.checkForUpdateAsync();
 
-  return {
-    isAvailable: !!result,
-    manifest: typeof result === 'string' ? JSON.parse(result) : undefined,
-  };
+  return !!result && typeof result === 'string'
+    ? {
+        isAvailable: true,
+        manifest: JSON.parse(result),
+      }
+    : {
+        isAvailable: false,
+        manifest: undefined,
+      };
 }
 
 export async function fetchUpdateAsync({
