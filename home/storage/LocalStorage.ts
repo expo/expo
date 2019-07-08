@@ -10,7 +10,6 @@ const Keys = mapValues(
   {
     Session: 'session',
     History: 'history',
-    ProfileBannerImage: 'profileBannerImage',
     Settings: 'settings',
   },
   value => `Exponent.${value}`
@@ -77,18 +76,6 @@ async function getHistoryAsync() {
   return [];
 }
 
-async function saveProfileBannerImageAsync(uri: string): Promise<void> {
-  await AsyncStorage.setItem(Keys.ProfileBannerImage, uri);
-}
-
-async function getProfileBannerImageAsync(): Promise<string | null> {
-  return await AsyncStorage.getItem(Keys.ProfileBannerImage);
-}
-
-async function clearProfileBannerImageAsync(): Promise<void> {
-  await AsyncStorage.removeItem(Keys.ProfileBannerImage);
-}
-
 async function saveHistoryAsync(history): Promise<void> {
   await AsyncStorage.setItem(Keys.History, JSON.stringify(history));
 }
@@ -124,9 +111,6 @@ addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', asy
 export default {
   clearHistoryAsync,
   getSessionAsync,
-  saveProfileBannerImageAsync,
-  getProfileBannerImageAsync,
-  clearProfileBannerImageAsync,
   getHistoryAsync,
   getSettingsAsync,
   saveHistoryAsync,
