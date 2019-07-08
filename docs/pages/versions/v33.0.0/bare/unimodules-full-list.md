@@ -135,9 +135,6 @@ import { Print } from 'expo-print';
 // Random
 import * as Random from 'expo-random';
 
-// Sharing
-import * as Sharing from 'expo-sharing';
-
 // Secure Store
 import * as SecureStore from 'expo-secure-store';
 
@@ -153,6 +150,9 @@ import {
   MagnetometerUncalibrated,
   Pedometer,
 } from 'expo-sensors';
+
+// Sharing
+import * as Sharing from 'expo-sharing';
 
 // SMS
 import * as SMS from 'expo-sms';
