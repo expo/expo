@@ -6,9 +6,29 @@
 #import <EXFont/EXFontManager.h>
 #import <objc/runtime.h>
 
-static NSString *exponentPrefix = @"ExpoFont-";
+@interface EXFontLoaderProcessor ()
+
+@property (nonatomic, copy) NSString *fontFamilyPrefix;
+@property (nonatomic, strong) EXFontManager *manager;
+
+@end
 
 @implementation EXFontLoaderProcessor
+
+- (instancetype)initWithFontFamilyPrefix:(NSString *)prefix
+                                 manager:(EXFontManager *)manager
+{
+  if (self = [super init]) {
+    _fontFamilyPrefix = prefix;
+    _manager = manager;
+  }
+  return self;
+}
+
+- (instancetype)initWithManager:(EXFontManager *)manager
+{
+  return [self initWithFontFamilyPrefix:nil manager:manager];
+}
 
 - (UIFont *)updateFont:(UIFont *)uiFont
               withFamily:(NSString *)family
@@ -20,18 +40,20 @@ static NSString *exponentPrefix = @"ExpoFont-";
 {
   const CGFloat defaultFontSize = 14;
   EXFont *exFont = nil;
-  
+
   // Did we get a new family, and if so, is it associated with an EXFont?
-  if ([family hasPrefix:exponentPrefix]) {
-    NSString *suffix = [family substringFromIndex:exponentPrefix.length];
-    exFont = [EXFontManager getFontForName:suffix];
+  if (_fontFamilyPrefix && [family hasPrefix:_fontFamilyPrefix]) {
+    NSString *suffix = [family substringFromIndex:_fontFamilyPrefix.length];
+    exFont = [_manager fontForName:suffix];
+  } else if (!_fontFamilyPrefix) {
+    exFont = [_manager fontForName:family];
   }
-  
+
   // Did the passed-in UIFont come from an EXFont?
   if (!exFont && uiFont) {
     exFont = objc_getAssociatedObject(uiFont, EXFontAssocKey);
   }
-  
+
   // If it's an EXFont, generate the corresponding UIFont, else fallback to React Native's built-in method
   if (exFont) {
     CGFloat computedSize = [size doubleValue] ?: uiFont.pointSize ?: defaultFontSize;
@@ -40,7 +62,7 @@ static NSString *exponentPrefix = @"ExpoFont-";
     }
     return [exFont UIFontWithSize:computedSize];
   }
-  
+
   return nil;
 }
 
