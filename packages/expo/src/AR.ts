@@ -675,12 +675,48 @@ export function isRearCameraAvailable(): boolean {
 
 /* Legacy constants */
 
+/**
+ * A deprecated alias for `PlaneDetection`
+ * July 8, 2019
+ */
 export const PlaneDetectionTypes = PlaneDetection;
+/**
+ * A deprecated alias for `WorldAlignment`
+ * July 8, 2019
+ */
 export const WorldAlignmentTypes = WorldAlignment;
+/**
+ * A deprecated alias for `EventType`
+ * July 8, 2019
+ */
 export const EventTypes = EventType;
+/**
+ * A deprecated alias for `AnchorType`
+ * July 8, 2019
+ */
 export const AnchorTypes = AnchorType;
+/**
+ * A deprecated alias for `AnchorEventType`
+ * July 8, 2019
+ */
 export const AnchorEventTypes = AnchorEventType;
+/**
+ * A deprecated alias for `FrameAttribute`
+ * July 8, 2019
+ */
 export const FrameAttributes = FrameAttribute;
+/**
+ * A deprecated alias for `TrackingState`
+ * July 8, 2019
+ */
 export const TrackingStates = TrackingState;
+/**
+ * A deprecated alias for `TrackingStateReason`
+ * July 8, 2019
+ */
 export const TrackingStateReasons = TrackingStateReason;
+/**
+ * A deprecated alias for `TrackingConfiguration`
+ * July 8, 2019
+ */
 export const TrackingConfigurations = TrackingConfiguration;
