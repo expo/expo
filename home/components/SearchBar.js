@@ -1,10 +1,12 @@
 /* @flow */
+
 import React from 'react';
-import { StyleSheet, Platform, TextInput, View } from 'react-native';
+import { NativeModules, StyleSheet, TextInput, View } from 'react-native';
 import { HeaderBackButton, withNavigation, withNavigationFocus } from 'react-navigation';
 
 import Colors from '../constants/Colors';
-import ExponentKernel from '../universal/ExponentKernel';
+
+const { ExponentKernel } = NativeModules;
 
 @withNavigation
 @withNavigationFocus
@@ -73,12 +75,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     paddingLeft: 5,
     marginRight: 5,
-    ...Platform.select({
-      default: {},
-      web: {
-        outlineWidth: 0,
-      },
-    }),
+    outlineWidth: 0,
   },
   searchInputPlaceholderText: {},
 });
