@@ -7,15 +7,25 @@ import ExponentUpdates from './ExponentUpdates';
 
 type Manifest = typeof Constants.manifest;
 
-type UpdateCheckResult = {
-  isAvailable: boolean;
-  manifest?: Manifest;
-};
+type UpdateCheckResult =
+  | {
+      isAvailable: false;
+      manifest: undefined;
+    }
+  | {
+      isAvailable: true;
+      manifest: Manifest;
+    };
 
-type UpdateFetchResult = {
-  isNew: boolean;
-  manifest?: Manifest;
-};
+type UpdateFetchResult =
+  | {
+      isAvailable: false;
+      manifest: undefined;
+    }
+  | {
+      isAvailable: true;
+      manifest: Manifest;
+    };
 
 type UpdateEvent =
   | {
