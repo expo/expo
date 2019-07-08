@@ -4,13 +4,26 @@ import dedent from 'dedent';
 import { Asset } from 'expo-asset';
 import { BlurView } from 'expo-blur';
 import Constants from 'expo-constants';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
 import { take, takeRight } from 'lodash';
 import React from 'react';
-import { ActivityIndicator, Animated, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Animated,
+  Image,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import ProfileActions from '../redux/ProfileActions';
+import Store from '../redux/Store';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
 import PrimaryButton from './PrimaryButton';
@@ -284,16 +297,34 @@ export default class Profile extends React.Component {
       },
       async buttonIndex => {
         const option = options[buttonIndex];
+
+        if (option === 'Cancel') return;
+
+        const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
+        if (status !== Permissions.PermissionStatus.GRANTED) {
+          alert(
+            'Cannot select a banner photo without media access! Please enable the "Camera" & "Camera Roll" permission in your system settings.'
+          );
+          return;
+        }
+
+        const mediaOptions = {
+          allowsEditing: true,
+          quality: 1.0,
+          allowsMultipleSelection: false,
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          exif: false,
+          base64: false,
+        };
+
+        let media;
         if (option === 'Take Photo') {
-          this.props.navigation.navigate('Camera', {
-            username: this.props.username,
-            belongsToCurrentUser: this.props.isOwnProfile,
-          });
+          media = await ImagePicker.launchCameraAsync(mediaOptions);
         } else if (option === 'Choose Photo') {
-          this.props.navigation.navigate('MediaLibrary', {
-            username: this.props.username,
-            belongsToCurrentUser: this.props.isOwnProfile,
-          });
+          media = await ImagePicker.launchImageLibraryAsync(mediaOptions);
+        }
+        if (!media.cancelled) {
+          Store.dispatch(ProfileActions.setImage(media.uri));
         }
       }
     );

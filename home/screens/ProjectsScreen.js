@@ -320,6 +320,7 @@ export default class ProjectsScreen extends React.Component {
   };
 
   _renderConstants = () => {
+    const { supportedExpoSdks = [] } = Constants;
     return (
       <View style={styles.constantsContainer}>
         <Text style={styles.deviceIdText} onPress={this._copySnackIdToClipboard}>
@@ -329,8 +330,8 @@ export default class ProjectsScreen extends React.Component {
           Client version: {Constants.expoVersion}
         </Text>
         <Text style={styles.supportSdksText}>
-          Supports SDK{Constants.supportedExpoSdks.length === 1 ? '' : 's'}{' '}
-          {Constants.supportedExpoSdks
+          Supports SDK{supportedExpoSdks.length === 1 ? '' : 's'}{' '}
+          {supportedExpoSdks
             .map(semver.major)
             .sort((a, b) => a - b)
             .join(', ')}
