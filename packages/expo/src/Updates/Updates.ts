@@ -19,11 +19,11 @@ type UpdateCheckResult =
 
 type UpdateFetchResult =
   | {
-      isAvailable: false;
+      isNew: false;
       manifest: undefined;
     }
   | {
-      isAvailable: true;
+      isNew: true;
       manifest: Manifest;
     };
 
@@ -46,24 +46,21 @@ export async function reloadFromCache(): Promise<void> {
   await ExponentUpdates.reloadFromCache();
 }
 
-export async function checkForUpdateAsync() {
+export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   if (!ExponentUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
   const result = await ExponentUpdates.checkForUpdateAsync();
 
-  const returnObj: UpdateCheckResult = {
+  return {
     isAvailable: !!result,
+    manifest: typeof result === 'string' ? JSON.parse(result) : undefined,
   };
-  if (result) {
-    returnObj.manifest = typeof result === 'string' ? JSON.parse(result) : result;
-  }
-  return returnObj;
 }
 
 export async function fetchUpdateAsync({
   eventListener,
-}: { eventListener?: UpdateEventListener } = {}) {
+}: { eventListener?: UpdateEventListener } = {}): Promise<UpdateFetchResult> {
   if (!ExponentUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
@@ -78,13 +75,10 @@ export async function fetchUpdateAsync({
     subscription && subscription.remove();
   }
 
-  const returnObj: UpdateFetchResult = {
+  return {
     isNew: !!result,
+    manifest: typeof result === 'string' ? JSON.parse(result) : undefined,
   };
-  if (result) {
-    returnObj.manifest = typeof result === 'string' ? JSON.parse(result) : result;
-  }
-  return returnObj;
 }
 
 let _emitter: EventEmitter | null;
