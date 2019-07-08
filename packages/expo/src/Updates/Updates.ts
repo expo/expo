@@ -47,7 +47,7 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   }
   const result = await ExponentUpdates.checkForUpdateAsync();
 
-  return !!result && typeof result === 'string'
+  return typeof result === 'string'
     ? {
         isAvailable: true,
         manifest: JSON.parse(result),
