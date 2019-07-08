@@ -32,13 +32,18 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 - Customize your [primaryColor](../../workflow/configuration/#primarycolor).
 - Make sure your app has a valid iOS [Bundle Identifier](../../workflow/configuration/#bundleidentifier) and [Android Package](../../workflow/configuration/#package). Take care in choosing these, as you will not be able to change them later.
 
-## Versioning your App 
+## Versioning your App
 
 You'll use the `app.json` file to specify the version of your app, but there are a few different fields each with specific functionality.
 
 - [`version`](../../workflow/configuration/#version) will apply both to iOS and Android. For iOS, this corresponds to `CFBundleShortVersionString`, and for Android this corresponds to `versionName`. This is your user-facing version string for both platforms.
 - [`android.versionCode`](../../workflow/configuration/#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app.
-- [`ios.buildNumber`](../../workflow/configuration/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app. 
+- [`ios.buildNumber`](../../workflow/configuration/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app.
+
+To access these values at runtime, you can use the [Expo Constants API](../../sdk/constants/):
+
+- Use [`Constants.nativeAppVersion`](../../sdk/constants/#constantsnativeappversion) to access the `version` value listed above.
+- Use [`Constants.nativeBuildVersion`](../../sdk/constants/#constantsnativebuildversion) to access either `android.versionCode` or `ios.buildNumber` values (depending on the current platform)
 
 ## Privacy Policy
 
