@@ -1,22 +1,32 @@
 import { UnavailabilityError } from '@unimodules/core';
+import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
-import Constants from 'expo-constants'
 
 import ExponentUpdates from './ExponentUpdates';
 
-type Manifest = typeof Constants.manifest
+type Manifest = typeof Constants.manifest;
 
-interface UpdateEvent {
-  /* Type of the event */
-  type: 'downloadStart' | 'downloadProgress' | 'downloadFinished' | 'noUpdateAvailable' | 'error',
-  /* If `type === Expo.Updates.EventType.DOWNLOAD_FINISHED`, the manifest of the newly downlaoded update. Undefined otherwise. */
-  manifest?: Manifest,
-  /* If `type === Expo.Updates.EventType.ERROR`, the error message. Undefined otherwise. */
-  message?: string,
-}
+type UpdateCheckResult = {
+  isAvailable: boolean;
+  manifest?: Manifest;
+};
 
-type UpdateEventListener = (event:UpdateEvent) => any
+type UpdateFetchResult = {
+  isNew: boolean;
+  manifest?: Manifest;
+};
+
+type UpdateEvent =
+  | {
+      type: 'downloadStart' | 'downloadProgress' | 'noUpdateAvailable';
+      manifest: undefined;
+      message: undefined;
+    }
+  | { type: 'downloadFinished'; manifest: Manifest; message: undefined }
+  | { type: 'error'; manifest: undefined; message: string };
+
+type UpdateEventListener = (event: UpdateEvent) => any;
 
 export async function reload(): Promise<void> {
   await ExponentUpdates.reload();
@@ -32,10 +42,7 @@ export async function checkForUpdateAsync() {
   }
   const result = await ExponentUpdates.checkForUpdateAsync();
 
-  const returnObj:{
-    isAvailable: boolean,
-    manifest?: Manifest,
-  } = {
+  const returnObj: UpdateCheckResult = {
     isAvailable: !!result,
   };
   if (result) {
@@ -44,7 +51,9 @@ export async function checkForUpdateAsync() {
   return returnObj;
 }
 
-export async function fetchUpdateAsync({ eventListener }: {eventListener?:UpdateEventListener} = {}) {
+export async function fetchUpdateAsync({
+  eventListener,
+}: { eventListener?: UpdateEventListener } = {}) {
   if (!ExponentUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
@@ -59,10 +68,7 @@ export async function fetchUpdateAsync({ eventListener }: {eventListener?:Update
     subscription && subscription.remove();
   }
 
-  const returnObj: {
-    isNew: boolean,
-    manifest?: Manifest,
-  } = {
+  const returnObj: UpdateFetchResult = {
     isNew: !!result,
   };
   if (result) {
