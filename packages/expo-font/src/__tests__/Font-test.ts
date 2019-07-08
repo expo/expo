@@ -2,10 +2,11 @@ let Font;
 let NativeModulesProxy;
 
 type MockAsset = { downloaded: boolean; downloadAsync: () => Promise<void>; localUri?: string };
-type MockAssetOptions = { localUri?: string };
+type MockAssetOptions = { localUri?: string; downloaded?: boolean; downloadAsync?: any };
 
 function _createMockAsset({
   localUri = 'file:/test/test-font.ttf',
+  ...otherOptions
 }: MockAssetOptions = {}): MockAsset {
   const mockAsset: MockAsset = {
     downloaded: false,
@@ -13,6 +14,7 @@ function _createMockAsset({
       mockAsset.downloaded = true;
       mockAsset.localUri = localUri;
     }),
+    ...otherOptions,
   };
   return mockAsset;
 }
@@ -39,7 +41,7 @@ describe('within expo client', () => {
 
   afterAll(() => {
     jest.unmock('expo-constants');
-  })
+  });
 
   describe('loadAsync', () => {
     it(`completes after loading a font`, async () => {
@@ -115,10 +117,10 @@ describe('within expo client', () => {
     it(`downloads a font that failed to load`, async () => {
       const NativeFontLoader = NativeModulesProxy.ExpoFontLoader;
 
-      const mockAsset1 = {
-        downloaded: false,
+      const mockAsset1 = _createMockAsset({
+        localUri: 'file:/test/test-font.ttf',
         downloadAsync: jest.fn(async () => {}),
-      };
+      });
       await expect(Font.loadAsync('test-font', mockAsset1)).rejects.toBeDefined();
       expect(NativeFontLoader.loadAsync).not.toHaveBeenCalled();
       expect(Font.isLoaded('test-font')).toBe(false);
@@ -336,13 +338,13 @@ describe('in standalone app', () => {
 });
 
 describe('in bare workflow', () => {
-  // beforeAll(() => {
-  //   jest.doMock('expo-constants', () => ({
-  //     manifest: {},
-  //     sessionId: 'testsession',
-  //     systemFonts: ['Helvetica', 'Helvetica Neue'],
-  //   }));
-  // });
+  beforeAll(() => {
+    jest.doMock('expo-constants', () => ({
+      manifest: {},
+      sessionId: 'testsession',
+      systemFonts: ['Helvetica', 'Helvetica Neue'],
+    }));
+  });
 
   it(`does not scope font names`, async () => {
     const fontName = 'test-font';
