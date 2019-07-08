@@ -55,7 +55,7 @@ import Constants from 'expo-constants';
 import * as Contacts from 'expo-contacts';
 
 // Crypto
-// import * as Crypto from 'expo-crypto';
+import * as Crypto from 'expo-crypto';
 
 // Device Motion
 import { DeviceMotion } from 'expo-sensors';
