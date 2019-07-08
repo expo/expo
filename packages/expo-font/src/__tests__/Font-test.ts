@@ -29,7 +29,7 @@ afterEach(() => {
   jest.resetModules();
 });
 
-describe('within expo client', () => {
+describe('within Expo client', () => {
   beforeAll(() => {
     jest.doMock('expo-constants', () => ({
       manifest: {},
