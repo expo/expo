@@ -9,7 +9,7 @@ import request from 'request-promise-native';
 import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
 
 import { getExpoRepositoryRootDir } from '../Directories';
-import { nativeSdkVersionAsync, getNewestSDKVersionAsync } from '../ProjectVersions';
+import { getNewestSDKVersionAsync } from '../ProjectVersions';
 
 interface Manifest {
   id: string;
