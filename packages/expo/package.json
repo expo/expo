@@ -64,7 +64,7 @@
     "@types/uuid-js": "^0.7.1",
     "babel-preset-expo": "^5.0.0",
     "cross-spawn": "^6.0.5",
-    "expo-font": "~5.0.0",
+    "expo-font": "~6.0.0-alpha.0",
     "expo-keep-awake": "~5.0.0",
     "expo-linear-gradient": "~5.0.0",
     "expo-location": "~5.0.0",
