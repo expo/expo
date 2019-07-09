@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface CSBufferOrientationCalculator : NSObject
+@interface EXCSBufferOrientationCalculator : NSObject
 
 + (CGAffineTransform)pointTransformForInterfaceOrientation:(UIInterfaceOrientation)orientation forBufferWidth:(CGFloat)bufferWidth andBufferHeight:(CGFloat)bufferHeight andVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight andMirrored:(BOOL)mirrored;
 

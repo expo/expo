@@ -8,7 +8,7 @@
 
 #import <EXFaceDetector/EXFaceEncoder.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 #define cDefaultFloatComparisonEpsilon 0.0001
 #define cModEqualFloatsWithEpsilon(dividend, divisor, modulo, epsilon) \
