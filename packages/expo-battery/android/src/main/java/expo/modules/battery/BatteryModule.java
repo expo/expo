@@ -126,10 +126,9 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   @ExpoMethod
   public void getLowPowerModeStatusAsync(Promise promise) {
     try {
-      Bundle result = new Bundle();
       PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-      boolean lowPowerMode = powerManager.isPowerSaveMode();
-      result.putString("lowPowerMode", lowPowerMode ? "on" : "off");
+      String lowPowerMode = powerManager.isPowerSaveMode() ? "on" : "off";
+      promise.resolve(lowPowerMode);
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
       promise.reject("ERR_BATTERY", "Null Exception in trying to get battery status");
