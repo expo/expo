@@ -30,6 +30,16 @@ export async function iosAppVersionAsync(): Promise<string> {
   return bundleVersion;
 }
 
+export async function getHomeSDKVersionAsync(): Promise<string> {
+  const homeAppJsonPath = path.join(EXPO_DIR, 'home', 'app.json');
+  const appJson = await JsonFile.readAsync(homeAppJsonPath, { json5: true }) as any;
+
+  if (appJson && appJson.expo && appJson.expo.sdkVersion) {
+    return appJson.expo.sdkVersion as string;
+  }
+  throw new Error(`Home's SDK version not found!`);
+}
+
 export async function getSDKVersionsAsync(platform: Platform): Promise<string[]> {
   const sdkVersionsPath = path.join(EXPO_DIR, platform === 'ios' ? 'ios/Exponent/Supporting' : 'android', 'sdkVersions.json');
 
