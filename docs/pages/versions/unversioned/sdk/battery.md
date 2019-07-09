@@ -16,23 +16,23 @@ import * as Battery from 'expo-battery';
 
 ## Methods
 
-### `Device.getBatteryLevelAsync()`
+### `Battery.getBatteryLevelAsync()`
 
 Get the battery level of the device as a float between 0 and 1.
 
 #### Returns
 
-A Promise that resolves to a float representing the battery level.
+A `Promise` that resolves to a `float` representing the battery level.
 
 **Examples**
 
 ```js
-Device.getBatteryLevelAsync().then(batteryLevel => {
+Battery.getBatteryLevelAsync().then(batteryLevel => {
   // 0.759999
 });
 ```
 
-### `Device.getPowerStateAsync()`
+### `Battery.getPowerStateAsync()`
 
 Gets the power state of the device including the battery level, whether it is plugged in, and if the system is currently operating in low power mode (power saver in Android). Displays a warning on iOS if battery monitoring not enabled, or if attempted on an emulator (where monitoring is not possible)
 
@@ -44,42 +44,59 @@ Returns a promise with an object with the following fields:
 
 - **batteryState (_string_)** -- `unplugged` if unplugged, `charging` if charging, `full` if battery level is full, `unknown` if battery in an unknown state.
 
-- **lowPowerMode (_string_)** -- `true` if lowPowerMode is on, `false` if lowPowerMode is off.
+- **lowPowerMode (_string_)** -- `on` if lowPowerMode is on, `off` if lowPowerMode is off.
 
 **Examples**
 
 ```js
-Device.getPowerStateAsync().then(state => {
+Battery.getPowerStateAsync().then(state => {
   // {
   //   batteryLevel: 0.759999,
   //   batteryState: 'unplugged',
-  //   lowPowerMode: false,
+  //   lowPowerMode: 'on',
   // }
 });
 ```
 
-### `Device.getBatteryStateAsync()`
+### `Battery.getBatteryStateAsync()`
 
 Tells the battery's current state.
 
 - `unplugged` if battery is not charging
 - `charging` if battery is charging
 - `full` if battery level is full
-- `unkown` if the battery state is unknown or unable to access
+- `unknown` if the battery state is unknown or unable to access
 
 #### Returns
 
-Returns a promise that resolves the `string` value for whether the device is any of the four state above.
+Returns a `Promise` that resolves the `string` value for whether the device is any of the four state above.
 
 **Examples**
 
 ```js
-Device.isBatteryChargingAsync().then(isCharging => {
+Battery.getBatteryStateAsync().then(batteryState => {
   // 'charging'
 });
 ```
 
-### `Device.watchBatteryLevelChange(callback)`
+### `Battery.getLowPowerModeStatusAsync()`
+
+Gets the current status of Low Power mode on iOS and Battery Saver mode on Android. 
+
+#### Returns 
+
+Returns a `Promise` that resolves to a `string` value of either `on` or `off`, indicating whether low power mode is enabled or disabled, respectively. 
+
+**Examples** 
+
+Low Power Mode (iOS) or Battery Saver Mode (Android) are enabled.
+```js
+Battery.getLowPowerModeStatusAsync().then(lowPowerMode => {
+  // 'on'
+})
+```
+
+### `Battery.watchBatteryLevelChange(callback)`
 
 Subscribe to the battery level change updates.
 
@@ -95,9 +112,9 @@ On Android devices, the event would be fired only when significant changes happe
 
 - An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
 
-### `Device.watchBatteryStateChange(callback)`
+### `Battery.watchBatteryStateChange(callback)`
 
-Subscribe to the battery state change updates. One of the four, `unplugged`, `full`, `unkown`, `charging` battery state will be returned.
+Subscribe to the battery state change updates. One of the four, `unplugged`, `full`, `unknown`, `charging` battery state will be returned.
 
 #### Arguments
 
@@ -107,17 +124,17 @@ Subscribe to the battery state change updates. One of the four, `unplugged`, `fu
 
 - An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
 
-### `Device.watchPowerModeChange(callback)`
+### `Battery.watchPowerModeChange(callback)`
 
-Subscribe to the low power mode ( power saver ) updates.
+Subscribe to Low Power Mode (iOS) or Battery Saver Mode (Android) updates.
 
 #### Arguments
 
-- **callback (_function_)** A callback that is invoked when battery state changes. The callback is provided a single argument that is an object with a `isLowPowerMode` key.
+- **callback (_function_)** A callback that is invoked when Low Power Mode (iOS) or Battery Saver Mode (Android) changes. The callback is provided a single argument that is an object with a `lowPowerMode` key.
 
 #### Returns
 
-- An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
+- An `EventSubscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
 
 **Examples**
 
