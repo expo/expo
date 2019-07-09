@@ -18,175 +18,118 @@ import * as Device from 'expo-device';
 
 - `Device.brand: string`
 
-  Gets the device brand.
+  Gets the device brand. The consumer-visible brand with which the product/hardware will be associated, if any.
 
   - iOS: `"Apple"`
   - Android: e.g., `"Xiaomi"`
 
-- `Device.carrier: string`
-
-  Gets the carrier's name (network operator).
-
 - `Device.manufacturer: string`
 
-  Gets the device manufacturer.
+  Gets the actual device manufacturer of the product/hardware.
 
   - iOS: `"Apple"`
-  - Android: e.g., `"Google"`
+  - Android: e.g., `"HTC"`
 
-- `Device.model: string`
+  Click [Here](https://developer.android.com/reference/android/os/Build) to view Android official documentation about the difference between `brand` and `manufacturer`.
 
-  **iOS warning**: The list with device names is maintained by the community and could lag new devices. It is recommended to use `deviceId` since it's more reliable and always up-to-date with new iOS devices. We do accept pull requests that add new iOS devices to the list with device names.
+- `Device.modelName: string`
+
+  **iOS warning**: The list of the model name is maintained by the community and could miss latest devices, so it is better to use `modelId` since it unique identifies new iOS devices and are always up-to-date. We accept new pull request that helps to update the device modelName list.
 
   Gets the device model.
 
   - iOS: e.g., `"iPhone XS Max"`
   - Android: e.g., `"Pixel 2"`
 
-- `Device.systemName: string`
+- `Device.osName: string`
 
   Gets the device OS name.
 
   - iOS: e.g., `"iOS"`
   - Android: e.g., `"Android"`
 
-- `Device.deviceId: string` (iOS only)
+- `Device.modelId: string` (iOS only)
 
   Gets the device's mobile device codes types (machine id).
 
   - iOS: e.g., `"iPhone7,2"`
 
-* `Device.totalMemory: number`
+- `Device.totalMemory: number`
 
-  Gets the device's total memory, in bytes.
+  Gets the device's total memory, in bytes. It means the total memory accessible by the kernel. This is basically the RAM size of the device, not including below-kernel fixed allocations like DMA buffers, RAM for the baseband CPU, etc.
 
-* `Device.uniqueId: string`
+- `Device.isDevice: boolean`
 
-  Gets the device unique ID.
+  `true` if the app is running on a device, `false` if running in a simulator or emulator.
 
-  **iOS**: This is IDFV or a random string if IDFV is unavaliable. UIS is stored in the iOS Keychain and NSUserDefaults. It can be carefully considered as constant cross-install unique identifier. But it could be manually changed if people override the value or Apple changed their implementationin iOS Keychain and NSUserDefaults.
+- `Device.deviceType: string`
 
-  **Android**: Prior to Oreo, this 64-bit number should remain constant for the lifetime of a device. It's a randomly generated value on the device's first boot.
+  Returns the device's type as a `Device.deviceType` enum.
 
-  - iOS: e.g., `"FCDBD8EF-62FC-4ECB-B2F5-92C9E79AC7F9"`
-  - Android: e.g., `"dd96dec43fb81c97"`
-
-* `Device.isTablet: boolean`
-
-  Tells if the device is a tablet.
-
-* `Device.deviceType: string`
-
-  Returns the device's type as a string, which will be one of:
-
-  - `Handset`
-  - `Tablet`
-  - `Tv`
-  - `Unknown`
-
-* `Device.supportedABIs: string[]`
+- `Device.supportedCPUArchitectures: string[]`
 
   Returns a list of supported processor architecture versions.
 
   **Examples**
 
   ```js
-  Device.supportedABIs; // [ "arm64 v8", "Intel x86-64h Haswell", "arm64-v8a", "armeabi-v7a", "armeabi" ]
+  Device.supportedCPUArchitectures; // [ "arm64 v8", "Intel x86-64h Haswell", "arm64-v8a", "armeabi-v7a", "armeabi" ]
   ```
+
+- `Device.designName: string` (Android only)
+
+  Gets the specific configuration or revision of the industrial design.
+
+  - Android: e.g., `""`
+
+- `Device.systemBuildId: string` (Android only)
+
+  Gets the build ID string meant for displaying to the user
+
+  - Android: e.g., `""`
+
+- `Device.productName: string` (Android only)
+
+  Gets the device's overall product name. Chosen by the device implementer containing the development name or code name of the device.
+
+  - Android: e.g., `""`
+
+- `Device.platformAPILevel: number` (Android only)
+
+  Gets the SDK version of the software currently running on this hardware device. This value never changes while a device is booted, but it may increase when the hardware manufacturer provides an OTA update. Click [here](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html) to see all possible version codes and corresponding versions.
+
+  - Android: e.g., `19`
+
+- `Device.osVersion: number`
+
+  Gets the user-visible os version number.
+
+  - iOS: e.g., `12.3.1`
+  - Android: e.g., `4.0.3`
+
+- `Device.deviceName: string`
+
+  A human-readable name for the device type.
+
+  - eg., `"Vivian's iPhone XS"`
+
+- `Device.osBuildFingerprint: string` (Android only)
+
+  A string that uniquely identifies this build. It must follow the template:
+
+  $(BRAND)/$(PRODUCT)/$(DEVICE)/$(BOARD):$(VERSION.RELEASE)/$(ID)/$(VERSION.INCREMENTAL):$(TYPE)/\$(TAGS)
+
+  - `""`
+
+- `Device.osBuildId: string`
+
+  A string that identifies the build number of the operating system.
+
+  - `""`
 
 ## Methods
 
-### `Device.hasNotch()`
-
-Tells if the device has a notch.
-
-#### Returns
-
-A boolean value that specifies whether the device's main display has a notch.
-
-**Examples**
-
-```js
-import { hasNotch } from 'expo-device';
-
-hasNotch(); // true or false
-```
-
-### `Device.getUserAgentAsync()`
-
-Gets the device User Agent.
-
-#### Returns
-
-A Promise of string that represents the device user agent.
-
-**Examples**
-
-```js
-Device.getUserAgentAsync().then(userAgent => {
-  //Dalvik/2.1.0 (Linux; U; Android 9; Pixel 2 Build/PQ3A.190505.001)
-});
-```
-
-### `Device.getIpAddressAsync()`
-
-Gets the device's current IP address.
-
-#### Returns
-
-A Promise that resolves the current IP address of the device's main network interface, as a string. Can only be IPv4 address.
-
-**Examples**
-
-```js
-Device.getIpAddressAsync().then(ip => {
-  // "92.168.32.44"
-});
-```
-
-### `Device.getMACAddressAsync(interfaceName?: string)`
-
-Gets the specified network interface's MAC address.
-
-#### Arguments (Android Only)
-
-- **interfaceName (_string_)** -- A string representing interface name (`eth0`, `wlan0`) or `null`, meaning the method should fetch the MAC address of the first available interface. (On iOS this argument is ignored.) If undefined interface name passed in, the method would reject the promise with corresponding message.
-
-#### Returns
-
-A Promise that resolves to a string of the network adapter MAC address or return `null` if there's no such address matching the interface.
-
-**Examples**
-
-```js
-//iOS
-Device.getMACAddressAsync().then(mac => {
-  // "E5:12:D8:E5:69:97"
-});
-
-//Android
-Device.getMACAddressAsync('wlan0').then(mac => {
-  // "E5:12:D8:E5:69:97"
-});
-```
-
-### `Device.isAirplaneModeEnabledAsync()` (Android Only)
-
-Tells if the device is in airplane mode.
-
-#### Returns
-
-Returns a Promise that resolves to the `boolean` value for whether the device is in airplane mode or not.
-
-**Examples**
-
-```js
-Device.isAirplaneModeEnabledAsync().then(airplaneModeOn => {
-  // false
-});
-```
-
-### `Device.getSystemAvailableFeaturesAsync()` (Android Only)
+### `Device.getPlatformFeaturesAsync()` (Android Only)
 
 Get a list of features that are available on the system.
 
@@ -197,7 +140,7 @@ A Promise that resolves to an array of strings, each containing the name of the 
 **Examples**
 
 ```js
-await Device.getSystemAvailableFeaturesAsync().then(allFeatures => {
+await Device.getPlatformFeaturesAsync().then(allFeatures => {
   // Array [
   // "android.software.adoptable_storage",
   // "android.hardware.sensor.accelerometer",
@@ -207,7 +150,7 @@ await Device.getSystemAvailableFeaturesAsync().then(allFeatures => {
 });
 ```
 
-### `Device.hasSystemFeatureAsync(feature)` (Android Only)
+### `Device.hasPlatformFeaturesAsync(feature)` (Android Only)
 
 Tells if the device has a specific system feature. Can get all available system features in `Device.getSystemAvailableFeaturesAsync()`.
 
@@ -222,22 +165,64 @@ Returns a `Promise<boolean>` that resolves the `boolean` value for whether the d
 **Examples**
 
 ```js
-await Device.hasSystemFeatureAsync('amazon.hardware.fire_tv'); // true or false
+await Device.hasPlatformFeaturesAsync('amazon.hardware.fire_tv'); // true or false
 ```
 
-### `Device.hasLocalAuthenticationAsync()`
+### `Device.getMaxMemoryAsync()` (Android Only)
 
-Tells if the device is secured by a PIN, pattern or password or a SIM card is currently locked. Can be used to check locked screen or payments.
+Returns the maximum amount of memory that the Java virtual machine will attempt to use. If there is no inherent limit then the value [Long.MAX_VALUE](https://developer.android.com/reference/java/lang/Long.html#MAX_VALUE) will be returned.
 
 #### Returns
 
-Returns a Promise that resolves the `boolean` value for whether the device has set a PIN, pattern or password or a SIM card is currently locked.
+Returns a Promise that resolves the maximum available memory that the Java vm will use, in bytes.
 
 **Examples**
 
 ```js
-Device.hasLocalAuthenticationAsync()(hasLocalAuthentication => {
-    // true or false
-  }
-});
+Device.getMaxMemoryAsync().then(maxMemory => {
+  //
+})
 ```
+
+### `Device.isSideLoadingEnabled()` (Android Only)
+
+Whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism.
+
+#### Returns
+
+Returns a Promise that resolves to a boolean that represents whether the calling package is allowed to request package installation.
+
+**Examples**
+
+```js
+Device.isSideLoadingEnabled().then({
+  // true or false
+})
+```
+
+### `Device.getUptimeAsync()`
+
+Gets the uptime since the last reboot of the device, in milliseconds.
+
+#### Returns
+
+Returns a promise that resolves to a number that represents the milliseconds since last reboot, not counting time spent in deep sleep.
+
+**Examples**
+
+```js
+Device.getUptimeAsync().then(uptime => {
+  // 
+})
+```
+
+## Enums
+
+### `Device.deviceType`
+
+`deviceType` is a device's type enum. Cross platform values for `deviceType`:
+
+- `Handset` - wired or mobile telephones
+- `Tablet` - tablet computers
+- `Tv` - televisions
+- `Unknown` - unrecognized device type
