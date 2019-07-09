@@ -19,6 +19,10 @@ export async function getBatteryStateAsync(): Promise<string> {
   return await ExpoBattery.getBatteryStateAsync();
 }
 
+export async function getLowPowerModeStatusAsync(): Promise<string> {
+  return await ExpoBattery.getLowPowerModeStatusAsync();
+}
+
 export async function getPowerStateAsync(): Promise<PowerState> {
   return await ExpoBattery.getPowerStateAsync();
 }

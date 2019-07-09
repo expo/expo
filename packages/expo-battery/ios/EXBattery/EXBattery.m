@@ -135,6 +135,13 @@ UM_EXPORT_MODULE(ExpoBattery);
   [_eventEmitter sendEventWithName:@"Expo.powerModeDidChange" body:[EXBattery.class valueForIsLowPowerModeEnabled: NSProcessInfo.processInfo.isLowPowerModeEnabled]];
 }
 
+UM_EXPORT_METHOD_AS(getLowPowerModeStatusAsync,
+                    getLowPowerModeStatusAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve([EXBattery.class valueForIsLowPowerModeEnabled: NSProcessInfo.processInfo.isLowPowerModeEnabled]);
+}
+
 
 - (NSDictionary *)getPowerState
 {

@@ -7,6 +7,9 @@ export async function getBatteryLevelAsync() {
 export async function getBatteryStateAsync() {
     return await ExpoBattery.getBatteryStateAsync();
 }
+export async function getLowPowerModeStatusAsync() {
+    return await ExpoBattery.getLowPowerModeStatusAsync();
+}
 export async function getPowerStateAsync() {
     return await ExpoBattery.getPowerStateAsync();
 }

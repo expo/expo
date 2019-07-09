@@ -75,7 +75,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   static protected void onLowPowerModeChange(boolean lowPowerMode) {
     Bundle result = new Bundle();
-    result.putBoolean("lowPowerMode", lowPowerMode);
+    result.putString("lowPowerMode", lowPowerMode ? "on" : "off");
     mEventEmitter.emit(POWERMODE_EVENT_NAME, result);
   }
 
@@ -124,6 +124,19 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   @ExpoMethod
+  public void getLowPowerModeStatusAsync(Promise promise) {
+    try {
+      Bundle result = new Bundle();
+      PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+      boolean lowPowerMode = powerManager.isPowerSaveMode();
+      result.putString("lowPowerMode", lowPowerMode ? "on" : "off");
+    } catch (NullPointerException e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_BATTERY", "Null Exception in trying to get battery status");
+    }
+  }
+
+  @ExpoMethod
   public void getPowerStateAsync(Promise promise) {
     try {
       Bundle result = new Bundle();
@@ -150,7 +163,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
       PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
       boolean lowPowerMode = powerManager.isPowerSaveMode();
-      result.putBoolean("lowPowerMode", lowPowerMode);
+      result.putString("lowPowerMode", lowPowerMode ? "on" : "off");
 
       promise.resolve(result);
     } catch (NullPointerException e) {
