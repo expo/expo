@@ -19,6 +19,7 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.interfaces.permissions.Permissions;
@@ -160,7 +161,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
         try {
           Integer eventID = saveEvent(details);
           promise.resolve(eventID.toString());
-        } catch (ParseException | EventNotSavedException e) {
+        } catch (ParseException | EventNotSavedException | InvalidArgumentException e) {
           promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e);
         }
       }
@@ -342,7 +343,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
     if (calendars.size() > 0) {
       String calendarQuery = "AND (";
       for (int i = 0; i < calendars.size(); i++) {
-        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = " + calendars.get(i);
+        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = '" + calendars.get(i) + "'";
         if (i != calendars.size() - 1) {
           calendarQuery += " OR ";
         }
@@ -591,7 +592,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
     return rows > 0;
   }
 
-  private int saveEvent(ReadableArguments details) throws EventNotSavedException, ParseException, SecurityException {
+  private int saveEvent(ReadableArguments details) throws EventNotSavedException, ParseException, SecurityException, InvalidArgumentException {
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
     sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -733,11 +734,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
         if (calendar != null) {
           eventValues.put(CalendarContract.Events.CALENDAR_ID, Integer.parseInt(calendar.getString("id")));
         } else {
-          eventValues.put(CalendarContract.Events.CALENDAR_ID, 1);
+          throw new InvalidArgumentException("Couldn't find calendar with given id: " + details.getString("calendarId"));
         }
 
       } else {
-        eventValues.put(CalendarContract.Events.CALENDAR_ID, 1);
+        throw new InvalidArgumentException("CalendarId is required.");
       }
 
       Uri eventsUri = CalendarContract.Events.CONTENT_URI;
