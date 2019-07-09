@@ -15,6 +15,8 @@ export type RecordingOptions = {
   maxDuration?: number;
   maxFileSize?: number;
   quality?: number | string;
+  // Android
+  videoBitrate?: number;
 };
 
 export type CapturedPicture = {

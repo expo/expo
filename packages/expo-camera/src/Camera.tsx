@@ -50,6 +50,10 @@ function ensureRecordingOptions(options?: RecordingOptions): RecordingOptions {
     recordingOptions.quality = Camera.Constants.VideoQuality[recordingOptions.quality];
   }
 
+  if (recordingOptions.videoBitrate && typeof recordingOptions.videoBitrate !== 'number') {
+    console.warn('Video Bitrate should be a positive integer');
+  }
+
   return recordingOptions;
 }
 
