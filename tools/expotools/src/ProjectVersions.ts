@@ -8,6 +8,10 @@ import * as Directories from './Directories';
 
 export type Platform = 'ios' | 'android';
 
+export type SDKVersionsObject = {
+  sdkVersions: string[];
+}
+
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
 export async function sdkVersionAsync(): Promise<string> {
@@ -27,16 +31,13 @@ export async function iosAppVersionAsync(): Promise<string> {
 }
 
 export async function getSDKVersionsAsync(platform: Platform): Promise<string[]> {
-  if (platform === 'ios') {
-    const sdkVersionsPath = path.join(EXPO_DIR, 'exponent-view-template', 'ios', 'exponent-view-template', 'Supporting', 'sdkVersions.json');
+  const sdkVersionsPath = path.join(EXPO_DIR, platform === 'ios' ? 'ios/Exponent/Supporting' : 'android', 'sdkVersions.json');
 
-    if (await fs.exists(sdkVersionsPath)) {
-      const { sdkVersions } = await JsonFile.readAsync(sdkVersionsPath) as { sdkVersions: string[] };
-      return sdkVersions;
-    }
+  if (!await fs.exists(sdkVersionsPath)) {
+    throw new Error(`File at path "${sdkVersionsPath}" not found.`);
   }
-  // TODO: implementation for Android
-  throw new Error(`This task isn't supported on ${platform} yet.`);
+  const { sdkVersions } = await JsonFile.readAsync(sdkVersionsPath) as SDKVersionsObject;
+  return sdkVersions;
 }
 
 export async function getOldestSDKVersionAsync(platform: Platform): Promise<string | undefined> {
