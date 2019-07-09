@@ -233,7 +233,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       }
 
       if (options.get(VIDEO_BITRATE_KEY) != null) {
-        profile.videoBitRate = options.get(VIDEO_BITRATE_KEY).intValue();
+        profile.videoBitRate = (int) options.get(VIDEO_BITRATE_KEY);
       }
 
       Boolean muteValue = (Boolean) options.get(MUTE_KEY);
