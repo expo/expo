@@ -160,8 +160,8 @@ static const NSNumber *trueValue;
       [invocation setArgument:&value atIndex:(2 + idx)];
     }
 #else // BOOL is represented by `signed char`
-    if([methodSignature getArgumentTypeAtIndex:(2 + idx)][0] == _C_CHR){
-      char value = [obj charValue];
+    if ([methodSignature getArgumentTypeAtIndex:(2 + idx)][0] == _C_CHR){
+      BOOL value = [obj charValue];
       [invocation setArgument:&value atIndex:(2 + idx)];
     }
 #endif
