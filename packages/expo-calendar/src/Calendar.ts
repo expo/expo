@@ -243,7 +243,7 @@ export async function getEventAsync(
   }
 }
 
-export async function createEventAsync(calendarId: string, details: OptionalKeys<Event> = {}): Promise<string> {
+export async function createEventAsync(calendarId: string, { id, ...details }: OptionalKeys<Event> = {}): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {
     throw new UnavailabilityError('Calendar', 'createEventAsync');
   }
@@ -262,9 +262,9 @@ export async function createEventAsync(calendarId: string, details: OptionalKeys
 
   const newDetails = {
     ...details,
-    id: undefined,
-    calendarId: calendarId === DEFAULT ? undefined : calendarId,
+    calendarId
   };
+  
   return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
 
@@ -377,7 +377,7 @@ export async function deleteAttendeeAsync(id: string): Promise<void> {
 } // Android
 
 export async function getRemindersAsync(
-  calendarIds: string[],
+  calendarIds: Array<string | null>[],
   status: string | null,
   startDate: Date,
   endDate: Date
@@ -419,21 +419,16 @@ export async function getReminderAsync(id: string): Promise<Reminder> {
 } // iOS
 
 export async function createReminderAsync(
-  calendarId: string,
-  details: Reminder = {}
+  calendarId: string | null,
+  { id, ...details }: Reminder = {}
 ): Promise<string> {
   if (!ExpoCalendar.saveReminderAsync) {
     throw new UnavailabilityError('Calendar', 'createReminderAsync');
   }
-  if (!calendarId) {
-    throw new Error(
-      'createReminderAsync must be called with an id (string) of the target calendar'
-    );
-  }
+
   const newDetails = {
     ...details,
-    id: undefined,
-    calendarId: calendarId === DEFAULT ? undefined : calendarId,
+    calendarId: calendarId === null ? undefined : calendarId
   };
   return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
@@ -625,7 +620,6 @@ export const ReminderStatus = {
   INCOMPLETE: 'incomplete',
 };
 
-export const DEFAULT = 'default';
 
 function stringifyIfDate(date: any): any {
   return date instanceof Date ? date.toISOString() : date;
