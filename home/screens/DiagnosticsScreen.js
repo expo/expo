@@ -1,7 +1,7 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import { ScrollView } from 'react-navigation';
 import { BaseButton } from 'react-native-gesture-handler';
+import ScrollView from '../components/NavigationScrollView';
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
 
@@ -56,6 +56,7 @@ export default class DiagnosticsScreen extends React.Component {
     return (
       <View style={{ flex: 1, backgroundColor: Colors.greyBackground }}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
+          <AudioDiagnostic navigation={this.props.navigation} />
           {Environment.IsIOSRestrictedBuild ? (
             <ForegroundLocationDiagnostic navigation={this.props.navigation} />
           ) : (
@@ -66,6 +67,20 @@ export default class DiagnosticsScreen extends React.Component {
       </View>
     );
   }
+}
+
+function AudioDiagnostic(props) {
+  return (
+    <ShadowButton onPress={() => props.navigation.navigate('Audio')}>
+      <Text style={styles.titleText}>Audio</Text>
+      <Text style={styles.bodyText}>
+        On iOS you can play audio
+        {!Environment.IsIOSRestrictedBuild ? ` in the foreground and background` : ``}, choose
+        whether it plays when the device is on silent, and set how the audio interacts with audio
+        from other apps. This diagnostic allows you to see the available options.
+      </Text>
+    </ShadowButton>
+  );
 }
 
 function BackgroundLocationDiagnostic(props) {

@@ -7,7 +7,8 @@
     "android/",
     "ios/",
     "src/",
-    "index.js"
+    "index.js",
+    "unimodule.json"
   ],
   "keywords": [
     "react-native",

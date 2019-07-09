@@ -23,10 +23,9 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class MailComposerModule extends ExportedModule implements LifecycleEventListener, ModuleRegistryConsumer {
+public class MailComposerModule extends ExportedModule implements LifecycleEventListener {
   private boolean mComposerOpened = false;
   private ModuleRegistry mModuleRegistry;
   private Promise mPromise;
@@ -41,7 +40,7 @@ public class MailComposerModule extends ExportedModule implements LifecycleEvent
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
     }

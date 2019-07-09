@@ -15,6 +15,7 @@ extern NSString * _Nonnull const RNBranchConfigTestKeyOption;
 extern NSString * _Nonnull const RNBranchConfigUseTestInstanceOption;
 extern NSString * _Nonnull const RNBranchConfigDelayInitToCheckForSearchAdsOption;
 extern NSString * _Nonnull const RNBranchConfigAppleSearchAdsDebugModeOption;
+extern NSString * _Nonnull const RNBranchConfigDeferInitializationForJSLoadOption;
 
 @interface RNBranchConfig : NSObject
 
@@ -27,6 +28,7 @@ extern NSString * _Nonnull const RNBranchConfigAppleSearchAdsDebugModeOption;
 @property (nonatomic, readonly) BOOL useTestInstance;
 @property (nonatomic, readonly) BOOL delayInitToCheckForSearchAds;
 @property (nonatomic, readonly) BOOL appleSearchAdsDebugMode;
+@property (nonatomic, readonly) BOOL deferInitializationForJSLoad;
 
 - (nullable id)objectForKey:(NSString * _Nonnull)key;
 - (nullable id)objectForKeyedSubscript:(NSString * _Nonnull)key;

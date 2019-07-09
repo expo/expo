@@ -4,11 +4,31 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ## master
 
+### 📚 3rd party library updates
+
+- `react-native-gesture-handler` updated from `1.2.1` to `1.3.0`
+- `react-native-branch` updated from `2.2.5` to `3.0.1`
+- `react-native-reanimated` updated from `1.0.1` to `1.1.0`
+- `react-native-svg` updated from `9.4.0` to `9.5.1`
+- `react-native-webview` updated from `5.8.0` to `5.12.0`
+- `@react-native-community/netinfo` updated from `2.0.10` to `3.2.1`
+
 ### 🛠 Breaking changes
+
+- Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
+- Removed `Calendar.DEFAULT` and replaced it with `null`. ([#4836](https://github.com/expo/expo/pull/4836) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
+- Added `fallbackLabel` option to `LocalAuthentication.authenticateAsync` on iOS which allows to customize a title of the fallback button when the system doesn't recognize the user and asks to authenticate via device passcode. ([#4612](https://github.com/expo/expo/pull/4612) by [@changLiuUNSW](https://github.com/changLiuUNSW))
+- added `native` mode for Android SplashScreen on standalone apps by [@bbarthec](https://github.com/bbarthec) ([#4567](https://github.com/expo/expo/pull/4567))
+
 ### 🐛 Bug fixes
+
+- fixed `BarCodeScanner` blocking UI when defining custom `barCodeTypes` on iOS by [@sjchmiela](https://github.com/sjchmiela)
+- fixed picking images over 2000px on Android by [@bbarthec](https://github.com/bbarthec) ([#4731](https://github.com/expo/expo/pull/4731))
+- fixed `Calendar.getEventsAsync` crashing if `calendarId` is SQL keyword by [@lukmccall](https://github.com/lukmccall) ([#4836](https://github.com/expo/expo/pull/4836))
+- fixed `BOOL` interpretation on 32-bit iOS devices by [@lukmccall](https://github.com/lukmccall) ([#4862](https://github.com/expo/expo/pull/4862))
 
 ## 33.0.0
 
@@ -90,6 +110,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed `EXC_BAD_ACCESS` crashes on startup on iOS below 12.0 by [@tsapeta](https://github.com/tsapeta) ([#4227](https://github.com/expo/expo/pull/4227))
 - fix `jest-expo` Jest executable not starting Node on Windows by [@Artorp](https://github.com/Artorp) ([#3477](https://github.com/expo/expo/pull/3477))
 - fixed crashes in `TaskManager` due to jobs queue being full by [@tsapeta](https://github.com/tsapeta) ([#4247](https://github.com/expo/expo/pull/4247))
+- allow console.log() function to log truncated large files instead of reporting a PayloadTooLargeError. [@vivianzzhu91](https://github.com/vivianzzhu91) ([#4419](https://github.com/expo/expo/pull/4419))
+- fixed sorting in `MediaLibrary.getAssetsAsync` by [@ninjaachibi](https://github.com/ninjaachibi) ([#4420](https://github.com/expo/expo/pull/4420))
 
 ## 32.0.0
 

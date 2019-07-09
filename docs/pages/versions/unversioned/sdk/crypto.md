@@ -2,7 +2,7 @@
 title: Crypto
 ---
 
-**`expo-crypto`** enables you to encrypt data in an equivalent manner to the `Node.js` core `crypto` API.
+**`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.
 
 | 🍎 iOS | 💚 Android | 💻 Web |
 | ------ | ---------- | ------ |
@@ -10,7 +10,7 @@ title: Crypto
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-crypto`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-crypto).
 
 # Docs
 

@@ -114,23 +114,17 @@ As a side note, some Node standard library APIs do not depend on C++ extensions 
 
 ## Can I use Expo with Relay?
 
-You can! Update your `.babelrc` you get on a new Expo project to the following:
+You can! Update your `babel.config.js` you get on a new Expo project to the following:
 
 ```javascript
-{
-  "presets": [
-    "babel-preset-expo",
-    {"plugins": ["./pathToYourBabelRelayPlugin/babelRelayPlugin"]}
-  ],
-  "env": {
-    "development": {
-      "plugins": ["transform-react-jsx-source"]
-    }
-  }
+module.exports = function(api) {
+  api.cache(true)
+  return {
+    presets: ["babel-preset-expo"],
+    plugins: ["relay"]
+   }
 };
 ```
-
-Substitute `./pathToYourBabelRelayPlugin` with the path to your Relay plugin.
 
 ## How do I handle expired push notification credentials?
 

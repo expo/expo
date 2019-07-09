@@ -1,6 +1,6 @@
 # expo-face-detector
 
-Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
+Lets you use the power of MLKit (https://firebase.google.com/docs/ml-kit/detect-faces) framework to detect faces on images.
 
 # API documentation
 
@@ -29,4 +29,4 @@ No additional set up necessary.
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

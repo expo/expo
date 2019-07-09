@@ -54,7 +54,7 @@ commands:
         default: .
     steps:
       - restore_cache:
-          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
+          key: yarn-v1-{{ arch }}-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
   save_yarn_cache:
     parameters:
       working_directory:
@@ -62,7 +62,7 @@ commands:
         default: .
     steps:
       - save_cache:
-          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
+          key: yarn-v1-{{ arch }}-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
             - ~/.cache/yarn # `yarn cache dir`
   restore_gradle_cache:
@@ -242,84 +242,7 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/@unimodules/core
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/@unimodules/react-native-adapter
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-barcode-scanner
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-ads-admob
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-analytics-segment
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-app-auth
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-asset
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-camera
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-constants
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-contacts
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-crypto
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-analytics-amplitude
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-face-detector
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-facebook
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-font
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-file-system
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-gl
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-google-sign-in
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-local-authentication
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-localization
-      - yarn:
-          command: build
-          working_directory: ~/expo/packages/expo-permissions
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-random
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-secure-store
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-sensors
-      - yarn:
-          command: test --maxWorkers 1
-          working_directory: ~/expo/packages/expo-sms
+      - run: expotools check-packages
 
   web_test_suite:
     executor: web
@@ -400,8 +323,7 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - yarn_install:
-          working_directory: ~/project/tools-public
+      - run: expotools ios-generate-dynamic-macros
       - run: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
@@ -414,8 +336,7 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - yarn_install:
-          working_directory: ~/project/tools-public
+      - run: expotools ios-generate-dynamic-macros
       - run:
           name: Build Expo Client and upload tarball
           command: |
@@ -441,7 +362,7 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: ~/project/tools-public/generate-files-ios.js
+      - run: expotools ios-generate-dynamic-macros
       - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
           name: Build iOS shell app for real devices

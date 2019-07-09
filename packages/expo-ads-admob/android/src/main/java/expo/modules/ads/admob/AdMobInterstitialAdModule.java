@@ -14,10 +14,9 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
-public class AdMobInterstitialAdModule extends ExportedModule implements ModuleRegistryConsumer {
+public class AdMobInterstitialAdModule extends ExportedModule {
   private InterstitialAd mInterstitialAd;
   private String mTestDeviceID;
   private String mAdUnitID;
@@ -55,7 +54,7 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
   }

@@ -8,7 +8,13 @@
 
 @interface EXGoogleAuthManager ()
 
+// EXGoogleAuthManager can be removed once SDK31 is phased out,
+// let's not spend time migrating to new classes
+// if we'll remove the class altogether soon.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 @property (nonatomic, nullable, strong) id<OIDAuthorizationFlowSession> currentAuthorizationFlow;
+#pragma clang diagnostic pop
 
 @end
 

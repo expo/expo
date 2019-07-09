@@ -5,7 +5,7 @@ import ApiV2Error from './ApiV2Error';
 import Config from './Config';
 import Store from '../redux/Store';
 
-const { ExponentKernel } = NativeModules;
+import ExponentKernel from '../universal/ExponentKernel';
 
 type RequestOptions = {
   httpMethod: 'get' | 'post';
@@ -42,7 +42,7 @@ export default class ApiV2HttpClient {
       headers: {
         'Expo-SDK-Version': ExponentKernel.sdkVersions,
         'Expo-Platform': Platform.OS,
-        ...(session.sessionSecret ? { 'Expo-Session': session.sessionSecret } : null),
+        ...(session.sessionSecret ? { 'expo-session': session.sessionSecret } : null),
       },
     };
     if (options.body) {

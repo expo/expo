@@ -2,9 +2,12 @@
   "name": "expo-asset",
   "version": "5.0.0",
   "description": "An Expo universal module to download assets and pass them into other APIs",
-  "main": "build/Asset.js",
-  "types": "build/Asset.d.ts",
-  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": [
+    "*.fx.js",
+    "*.fx.web.js"
+  ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

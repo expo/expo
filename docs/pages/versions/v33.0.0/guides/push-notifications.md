@@ -15,7 +15,8 @@ In order to send a push notification to somebody, we need to know about their de
 ![Diagram explaining saving tokens](/static/images/saving-token.png)
 
 ```javascript
-import { Permissions, Notifications } from 'expo';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 

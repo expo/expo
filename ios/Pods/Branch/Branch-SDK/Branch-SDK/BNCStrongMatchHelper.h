@@ -16,8 +16,8 @@
 
 + (BNCStrongMatchHelper *)strongMatchHelper;
 - (void)createStrongMatchWithBranchKey:(NSString *)branchKey;
-- (BOOL)shouldDelayInstallRequest;
 + (NSURL *)getUrlForCookieBasedMatchingWithBranchKey:(NSString *)branchKey
                                          redirectUrl:(NSString *)redirectUrl;
 
+@property (atomic, assign, readonly) BOOL shouldDelayInstallRequest;
 @end

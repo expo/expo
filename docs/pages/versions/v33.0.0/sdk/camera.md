@@ -14,7 +14,7 @@ A React component that renders a preview for the device's either front or back c
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-camera).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-camera`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-camera).
 
 ## Configuration
 
@@ -89,10 +89,6 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 ## API
 
 ```js
-// in managed apps:
-import { Camera } from 'expo';
-
-// in bare apps:
 import { Camera } from 'expo-camera';
 ```
 

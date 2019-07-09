@@ -6,7 +6,7 @@ An API to get and set screen brightness.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-brightness).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-brightness`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-brightness).
 
 ## API
 
@@ -14,7 +14,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import * as Brightness from 'expo-brightness';
 ```
 
-### `Brightness.setBrightness(brightnessValue)`
+### `Brightness.setBrightnessAsync(brightnessValue)`
 
 Sets screen brightness.
 
@@ -30,7 +30,7 @@ Gets screen brightness.
 
 A `Promise` that is resolved with a number between 0 and 1, representing the current screen brightness.
 
-### `Brightness.setSystemBrightness(brightnessValue)`
+### `Brightness.setSystemBrightnessAsync(brightnessValue)`
 
 > **WARNING:** this method is experimental.
 
@@ -47,7 +47,7 @@ await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
 
 const { status } = await Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS);
 if (status === 'granted') {
-  Brightness.setSystemBrightness(100);
+  Brightness.setSystemBrightnessAsync(0.5);
 }
 ...
 ```

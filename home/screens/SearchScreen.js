@@ -99,16 +99,9 @@ export default class SearchScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        {Platform.OS === 'ios' ? (
-          <View style={styles.iosSearchBarContainer}>
-            <SearchBar emitter={this.state.emitter} />
-          </View>
-        ) : (
-          <View style={styles.androidSearchBarContainer}>
-            <SearchBar emitter={this.state.emitter} />
-          </View>
-        )}
-
+        <View style={styles.searchBarContainer}>
+          <SearchBar emitter={this.state.emitter} />
+        </View>
         <SearchResults query={this.props.data.variables.query} data={this.props.data} />
       </View>
     );
@@ -122,15 +115,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  iosSearchBarContainer: {
-    height: 70 + NOTCH_HEIGHT,
-    paddingTop: 20 + NOTCH_HEIGHT,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(46, 59, 76, 0.10)',
-  },
-  androidSearchBarContainer: {
-    height: 56 + Constants.statusBarHeight,
-    paddingTop: Constants.statusBarHeight,
+  searchBarContainer: {
+    ...Platform.select({
+      ios: {
+        height: 70 + NOTCH_HEIGHT,
+        paddingTop: 20 + NOTCH_HEIGHT,
+      },
+      default: {
+        height: 56 + Constants.statusBarHeight,
+        paddingTop: Constants.statusBarHeight,
+      },
+    }),
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(46, 59, 76, 0.10)',
   },

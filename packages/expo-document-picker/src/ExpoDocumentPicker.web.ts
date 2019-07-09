@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
 
-import { DocumentResult, GetDocumentOptions } from './types';
+import { DocumentResult, DocumentPickerOptions } from './types';
 
 export default {
   get name(): string {
@@ -10,7 +10,7 @@ export default {
   async getDocumentAsync({
     type = '*/*',
     multiple = false,
-  }: GetDocumentOptions): Promise<DocumentResult> {
+  }: DocumentPickerOptions): Promise<DocumentResult> {
     const input = document.createElement('input');
     input.style.display = 'none';
     input.setAttribute('type', 'file');

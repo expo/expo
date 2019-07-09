@@ -20,8 +20,11 @@ import org.json.JSONObject;
 import org.unimodules.core.errors.InvalidArgumentException;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
@@ -577,6 +580,10 @@ public class NotificationHelper {
         Object suppliedTime = options.get("time");
         if (suppliedTime instanceof Number) {
           time = ((Number) suppliedTime).longValue() - System.currentTimeMillis();
+        } else if (suppliedTime instanceof String) { // TODO: DELETE WHEN SDK 32 IS DEPRECATED
+          DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+          format.setTimeZone(TimeZone.getTimeZone("UTC"));
+          time = format.parse((String) suppliedTime).getTime() - System.currentTimeMillis();
         } else {
           throw new InvalidArgumentException("Invalid time provided: " + suppliedTime);
         }

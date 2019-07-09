@@ -368,7 +368,14 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   // Hiding StatusBar during picking process solves the displacement issue.
   // See https://forums.developer.apple.com/thread/98274
   if (editingEnabled && ![[UIApplication sharedApplication] isStatusBarHidden]) {
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:NO];
+    // Calling -[UIApplication setStatusBarHidden:withAnimation:] triggers a warning
+    // that should be suppressable with -Wdeprecated-declarations, but is not.
+    // The warning suggests to use -[UIViewController prefersStatusBarHidden].
+    // Unfortunately until we stop presenting view controllers on detached VCs
+    // the setting doesn't have any effect and we need to set status bar like that.
+    SEL setStatusBarSelector = NSSelectorFromString(@"setStatusBarHidden:withAnimation:");
+    UIApplication *sharedApplication = [UIApplication sharedApplication];
+    ((void (*)(id, SEL, BOOL, BOOL))[sharedApplication methodForSelector:setStatusBarSelector])(sharedApplication, setStatusBarSelector, YES, NO);
     _shouldRestoreStatusBarVisibility = YES;
   }
 }
@@ -377,7 +384,14 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 {
   if (_shouldRestoreStatusBarVisibility) {
     _shouldRestoreStatusBarVisibility = NO;
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:NO];
+    // Calling -[UIApplication setStatusBarHidden:withAnimation:] triggers a warning
+    // that should be suppressable with -Wdeprecated-declarations, but is not.
+    // The warning suggests to use -[UIViewController prefersStatusBarHidden].
+    // Unfortunately until we stop presenting view controllers on detached VCs
+    // the setting doesn't have any effect and we need to set status bar like that.
+    SEL setStatusBarSelector = NSSelectorFromString(@"setStatusBarHidden:withAnimation:");
+    UIApplication *sharedApplication = [UIApplication sharedApplication];
+    ((void (*)(id, SEL, BOOL, BOOL))[sharedApplication methodForSelector:setStatusBarSelector])(sharedApplication, setStatusBarSelector, NO, NO);
   }
 }
 

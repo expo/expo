@@ -177,17 +177,6 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
   });
 }
 
-- (void)getExpoPushTokenForScopedModule:(id)scopedModule success:(void (^)(NSDictionary *))success failure:(void (^)(NSString *))failure
-{
-  [self getExpoPushTokenForScopedModule:scopedModule completionHandler:^(NSString * _Nullable pushToken, NSError * _Nullable error) {
-    if (error) {
-      failure(error.localizedDescription);
-    } else {
-      success(@{ @"exponentPushToken": pushToken });
-    }
-  }];
-}
-
 #pragma mark - Internal
 
 - (void)_synchronizeCurrentAPNSToken:(NSData *)currentToken

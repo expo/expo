@@ -28,6 +28,16 @@
     "version": "4.40.0"
   },
   {
+    "name": "Bolts",
+    "version": "1.9.0",
+    "comments": [
+      "We want to inhibit warnings in this pod and",
+      "CocoaPods doesn't inhibit warnings for transient dependencies",
+      "(it's a dependency of FBSDKCoreKit). Update when updating FBSDKCoreKit,",
+      "remove once it stops depending on it."
+    ]
+  },
+  {
     "name": "FBSDKLoginKit",
     "version": "4.40.0"
   },
@@ -57,7 +67,7 @@
   },
   {
     "name": "Branch",
-    "version": "~> 0.24.2"
+    "version": "~> 0.27.1"
   },
   {
     "name": "Google-Mobile-Ads-SDK",

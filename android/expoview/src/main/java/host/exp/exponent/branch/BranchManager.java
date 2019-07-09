@@ -11,8 +11,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
-import com.facebook.react.ReactActivity;
-
 import host.exp.exponent.analytics.EXL;
 import io.branch.referral.Branch;
 
@@ -52,8 +50,8 @@ public class BranchManager {
     }
 
     try {
-      Class branchModule = Class.forName("com.dispatcher.rnbranch.RNBranchModule");
-      Method m = branchModule.getMethod("initSession", Uri.class, ReactActivity.class);
+      Class branchModule = Class.forName("io.branch.rnbranch.RNBranchModule");
+      Method m = branchModule.getMethod("initSession", Uri.class, Activity.class);
       m.invoke(null, Uri.parse(uri), activity);
     } catch (ClassNotFoundException e) {
       // expected if Branch is not installed, fail silently

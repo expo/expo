@@ -16,8 +16,6 @@
 @property (nonatomic, strong) NSArray * _Nonnull sdkVersions;
 @property (nonatomic, weak) id<EXHomeModuleDelegate> delegate;
 
-+ (EXClientReleaseType)clientReleaseType;
-
 @end
 
 @implementation EXHomeModule

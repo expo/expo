@@ -2,6 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 import { EventEmitter } from '@unimodules/core';
 import UUID from 'uuid-js';
 import ExponentFileSystem from './ExponentFileSystem';
+import { Platform } from 'react-native';
 import { EncodingType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
@@ -29,6 +30,19 @@ export async function readAsStringAsync(fileUri, options) {
         throw new UnavailabilityError('expo-file-system', 'readAsStringAsync');
     }
     return await ExponentFileSystem.readAsStringAsync(fileUri, options || {});
+}
+export async function getContentUriAsync(fileUri) {
+    if (Platform.OS === 'android') {
+        if (!ExponentFileSystem.getContentUriAsync) {
+            throw new UnavailabilityError('expo-file-system', 'getContentUriAsync');
+        }
+        return await ExponentFileSystem.getContentUriAsync(fileUri);
+    }
+    else {
+        return new Promise(function (resolve, reject) {
+            resolve(fileUri);
+        });
+    }
 }
 export async function writeAsStringAsync(fileUri, contents, options = {}) {
     if (!ExponentFileSystem.writeAsStringAsync) {

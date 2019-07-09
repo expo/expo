@@ -140,7 +140,7 @@ static SEL whenInUseAuthorizationSelector;
 
 + (BOOL)isConfiguredForWhenInUseAuthorization
 {
-  return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"];
+  return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] != nil;
 }
 
 + (BOOL)isConfiguredForAlwaysAuthorization

@@ -29,7 +29,8 @@ Hides the native splash screen.
 ```javascript
 import React from 'react';
 import { Image, Text, View } from 'react-native';
-import { Asset, AppLoading, SplashScreen } from 'expo';
+import { AppLoading, SplashScreen } from 'expo';
+import { Asset } from 'expo-asset';
 
 export default class App extends React.Component {
   state = {
@@ -65,13 +66,13 @@ export default class App extends React.Component {
         <Image source={require('./assets/images/expo-icon.png')} />
         <Image source={require('./assets/images/slack-icon.png')} />
       </View>
-    );    
+    );
   }
 
   _cacheSplashResourcesAsync = async () => {
     const gif = require('./assets/images/splash.gif');
-    return Asset.fromModule(gif).downloadAsync()
-  }
+    return Asset.fromModule(gif).downloadAsync();
+  };
 
   _cacheResourcesAsync = async () => {
     SplashScreen.hide();
@@ -80,13 +81,13 @@ export default class App extends React.Component {
       require('./assets/images/slack-icon.png'),
     ];
 
-    const cacheImages = images.map((image) => {
+    const cacheImages = images.map(image => {
       return Asset.fromModule(image).downloadAsync();
     });
 
     await Promise.all(cacheImages);
     this.setState({ isAppReady: true });
-  }
+  };
 }
 ```
 
@@ -95,7 +96,8 @@ export default class App extends React.Component {
 ```javascript
 import React from 'react';
 import { Image, Text, View } from 'react-native';
-import { Asset, SplashScreen } from 'expo';
+import { SplashScreen } from 'expo';
+import { Asset } from 'expo-asset';
 
 export default class App extends React.Component {
   state = {
@@ -123,13 +125,13 @@ export default class App extends React.Component {
         <Image source={require('./assets/images/expo-icon.png')} />
         <Image source={require('./assets/images/slack-icon.png')} />
       </View>
-    );    
+    );
   }
 
   _cacheSplashResourcesAsync = async () => {
     const gif = require('./assets/images/splash.gif');
-    return Asset.fromModule(gif).downloadAsync()
-  }
+    return Asset.fromModule(gif).downloadAsync();
+  };
 
   _cacheResourcesAsync = async () => {
     SplashScreen.hide();
@@ -138,13 +140,13 @@ export default class App extends React.Component {
       require('./assets/images/slack-icon.png'),
     ];
 
-    const cacheImages = images.map((image) => {
+    const cacheImages = images.map(image => {
       return Asset.fromModule(image).downloadAsync();
     });
 
     await Promise.all(cacheImages);
     this.setState({ isReady: true });
-  }
+  };
 }
 ```
 
@@ -153,10 +155,11 @@ export default class App extends React.Component {
 ```javascript
 import React from 'react';
 import { Image, Text, View } from 'react-native';
-import { Asset, AppLoading, SplashScreen } from 'expo';
+import { AppLoading, SplashScreen } from 'expo';
+import { Asset } from 'expo-asset';
 
 export default class App extends React.Component {
-  state = { areReasourcesReady: false };
+  state = { areResourcesReady: false };
 
   constructor(props) {
     super(props);
@@ -165,37 +168,35 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.cacheResourcesAsync() // ask for resources
-      .then(() => this.setState({ areReasourcesReady: true })) // mark reasources as loaded
+      .then(() => this.setState({ areResourcesReady: true })) // mark resources as loaded
       .catch(error => console.error(`Unexpected error thrown when loading:\n${error.stack}`));
   }
 
   render() {
-    if (!this.state.areReasourcesReady) {
+    if (!this.state.areResourcesReady) {
       return null;
     }
-    
+
     return (
       <View style={{ flex: 1 }}>
         <Image
           style={{ flex: 1, resizeMode: 'contain', width: undefined, height: undefined }}
           source={require('./assets/splash.png')}
-          onLoadEnd={() => { // wait for image's content to fully load [`Image#onLoadEnd`] (https://facebook.github.io/react-native/docs/image#onloadend)
+          onLoadEnd={() => {
+            // wait for image's content to fully load [`Image#onLoadEnd`] (https://facebook.github.io/react-native/docs/image#onloadend)
             console.log('Image#onLoadEnd: hiding SplashScreen');
             SplashScreen.hide(); // Image is fully presented, instruct SplashScreen to hide
           }}
-          fadeDuration={0} // we need to adjust Android devices (https://facebook.github.io/react-native/docs/image#fadeduration) fadeDuration prop to `0` as it's default value is `300` 
+          fadeDuration={0} // we need to adjust Android devices (https://facebook.github.io/react-native/docs/image#fadeduration) fadeDuration prop to `0` as it's default value is `300`
         />
       </View>
     );
   }
 
   async cacheResourcesAsync() {
-    const images = [
-      require('./assets/splash.png'),
-    ];
+    const images = [require('./assets/splash.png')];
     const cacheImages = images.map(image => Asset.fromModule(image).downloadAsync());
-    return Promise.all(cacheImages)
+    return Promise.all(cacheImages);
   }
 }
 ```
-

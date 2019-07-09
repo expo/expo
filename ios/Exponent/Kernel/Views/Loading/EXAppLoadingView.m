@@ -80,7 +80,8 @@
     // Display the launch screen behind the React view so that the React view appears to seamlessly load
     NSArray *views;
     @try {
-      views = [[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil];
+      NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
+      views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
     } @catch (NSException *_) {
       DDLogWarn(@"Expo LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
     }

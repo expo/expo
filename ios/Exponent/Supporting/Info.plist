@@ -90,7 +90,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Allow Expo experiences to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Expo uses your camera to scan project QR codes. Expo experiences you open may use the camera with the Expo camera API.</string>
+	<string>Allow Expo to access your camera to take photos</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow Expo experiences to access your contacts</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -119,8 +119,6 @@
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array/>
-	<key>UIRequiresFullScreen</key>
-	<true/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 	<key>UISupportedInterfaceOrientations</key>

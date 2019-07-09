@@ -5,6 +5,7 @@ import spawnAsync from '@expo/spawn-async';
 import * as Directories from './Directories';
 import * as Log from './Log';
 import * as XDL from './XDL';
+import AppConfig from './typings/AppConfig'
 
 const CI_USERNAME = 'exponent_ci_bot';
 
@@ -24,9 +25,9 @@ async function _publishTestSuiteNoCacheAsync(id: string, useUnversioned: boolean
 
   Log.collapsed('Modifying slug...');
   let appJsonFile = new JsonFile(path.join(TEST_SUITE_DIR, 'app.json'));
-  let appJson = await appJsonFile.readAsync();
+  let appJson = await appJsonFile.readAsync() as unknown as AppConfig;
   appJson.expo.slug = id;
-  await appJsonFile.writeAsync(appJson);
+  await appJsonFile.writeAsync(appJson as any);
 
   await XDL.publishProjectWithExpoCliAsync(TEST_SUITE_DIR, {
     useUnversioned,
@@ -35,9 +36,9 @@ async function _publishTestSuiteNoCacheAsync(id: string, useUnversioned: boolean
 
 export async function publishVersionedTestSuiteAsync(sdkVersion: string): Promise<void> {
   let appJsonFile = new JsonFile(path.join(TEST_SUITE_DIR, 'app.json'));
-  let appJson = await appJsonFile.readAsync();
+  const appJson = await appJsonFile.readAsync() as unknown as AppConfig;
   appJson.expo.sdkVersion = sdkVersion;
-  await appJsonFile.writeAsync(appJson);
+  await appJsonFile.writeAsync(appJson as any);
 
   const id = `test-suite-sdk-${sdkVersion}`.replace(/\./g, '-');
   const url = `exp://exp.host/@${CI_USERNAME}/${id}`;

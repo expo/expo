@@ -10,7 +10,7 @@ Try the [playlist example app](http://expo.io/@community/playlist) (source code 
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-av`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-av).
 
 ## API
 
@@ -277,7 +277,7 @@ Most of the preceding API calls revolve around passing or returning the _status_
 
   - `progressUpdateIntervalMillis` : the new minimum interval in milliseconds between calls of `onPlaybackStatusUpdate`. See `setOnPlaybackStatusUpdate()` for details.
   - `positionMillis` : the desired position of playback in milliseconds.
-  - `seekMillisToleranceBefore` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)_
+  - `seekMillisToleranceBefore` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)]_
   - `seekMillisToleranceAfter` : the tolerance in milliseconds with which seek will be applied to the player. _[iOS only, [details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)]_
   - `shouldPlay` : a boolean describing if the media is supposed to play. Playback may not start immediately after setting this value for reasons such as buffering. Make sure to update your UI based on the `isPlaying` and `isBuffering` properties of the `PlaybackStatus`.
   - `rate` : the desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.

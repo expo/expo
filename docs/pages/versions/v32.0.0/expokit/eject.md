@@ -27,7 +27,7 @@ We call this "ejecting" because you still depend on the Expo SDK, but your proje
 - All you need is to distribute your app in the iTunes Store or Google Play. Expo can [build binaries for you](../../distribution/building-standalone-apps/) in that case. If you eject, we can't automatically build for you any more.
 - You are uncomfortable writing native code. Ejected apps will require you to manage Xcode and Android Studio projects.
 - You enjoy the painless React Native upgrades that come with Expo. After your app is ejected, breaking changes in React Native will affect your project differently, and you may need to figure them out for your particular situation.
-- You require Expo's push notification services. After ejecting, since Expo no longer manages your push certificates, you'll need to manage your own push notification pipeline.
+- You require Expo's push notification services. After ejecting, since Expo no longer manages your push credentials, you'll need to manage your own push notification pipeline.
 - You rely on asking for help in the Expo community. In your native Xcode and Android Studio projects, you may encounter questions which are no longer within the realm of Expo.
 
 ## Instructions

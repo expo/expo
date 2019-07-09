@@ -4,6 +4,7 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 
 import { Directories, HashDirectory, Log, XDL } from '../expotools';
+import AppConfig from '../typings/AppConfig';
 
 async function action(options) {
   let expoHomePath = Directories.getExpoHomeJSDir();
@@ -18,14 +19,16 @@ async function action(options) {
   let appJsonFile = new JsonFile(appJsonFilePath, {
     json5: true,
   });
-  let appJson = await appJsonFile.readAsync();
+
+  const appJson = await appJsonFile.readAsync() as unknown as AppConfig;
+
   appJson.expo.slug = slug;
   delete appJson.expo.kernel;
   delete appJson.expo.isKernel;
   delete appJson.expo.ios.publishBundlePath;
   delete appJson.expo.android.publishBundlePath;
 
-  await appJsonFile.writeAsync(appJson);
+  await appJsonFile.writeAsync(appJson as any);
 
   let username = process.env.EXPO_HOME_DEV_ACCOUNT_USERNAME;
   if (!username) {

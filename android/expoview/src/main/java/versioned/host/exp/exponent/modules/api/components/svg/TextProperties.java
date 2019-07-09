@@ -3,6 +3,8 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 class TextProperties {
 
     /*
@@ -67,6 +69,7 @@ class TextProperties {
             }
         }
 
+        @Nonnull
         @Override
         public String toString() {
             return alignment;
@@ -125,6 +128,7 @@ class TextProperties {
             }
         }
 
+        @Nonnull
         @Override
         public String toString() {
             return weight;
@@ -165,6 +169,7 @@ class TextProperties {
             }
         }
 
+        @Nonnull
         @Override
         public String toString() {
             return decoration;

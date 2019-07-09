@@ -55,7 +55,8 @@ Sentry.config('your Public DSN goes here').install();
           "config": {
             "organization": "your organization's short name here",
             "project": "your project name here",
-            "authToken": "your auth token here"
+            "authToken": "your auth token here",
+            "url": "your sentry url here" // OPTIONAL- only necessary when self-hosting Sentry
           }
         }
       ]
@@ -64,6 +65,13 @@ Sentry.config('your Public DSN goes here').install();
 ```
 
 The correct `authToken` value can be generated from the [Sentry API page ](https://sentry.io/settings/account/api/).
+
+> You can also use environment variables for your config, if you prefer:
+>
+> - organization = SENTRY_ORG
+> - project = SENTRY_PROJECT
+> - authToken = SENTRY_AUTH_TOKEN
+> - (optional) url = SENTRY_URL
 
 ### Publish your app with sourcemaps
 

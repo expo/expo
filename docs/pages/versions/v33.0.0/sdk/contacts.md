@@ -6,7 +6,7 @@ Provides access to the phone's system contacts.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-contacts).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-contacts`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-contacts).
 
 ## API
 
@@ -828,7 +828,7 @@ This table illustrates what fields will be added on demand to every contact.
 
 ### SDK 29
 
-- The `thumnail` field has been deprecated, use `image` on both platforms instead.
+- The `thumbnail` field has been deprecated, use `image` on both platforms instead.
 - On iOS `image` is now `rawImage`. There is no Android version of `rawImage`.
 - Images now return a localUri instead of Base64 string.
 - Base64 string is now returned in a encodable format.

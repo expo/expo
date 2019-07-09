@@ -8,11 +8,11 @@ Use Core Motion (iOS) or Google Fit (Android) to get the user's step count.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
 ## Usage
 
-<SnackEmbed snackId="S1gdfOb4Z" />
+<SnackEmbed snackId="@charliecruzan/letsgoforawalk" />
 
 ## API
 

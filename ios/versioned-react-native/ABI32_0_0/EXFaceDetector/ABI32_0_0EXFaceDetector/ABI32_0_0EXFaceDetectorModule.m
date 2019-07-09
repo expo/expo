@@ -7,14 +7,13 @@
 //
 
 #import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceDetectorModule.h>
-#import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceEncoder.h>
+#import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceDetector.h>
 #import <ABI32_0_0EXFileSystemInterface/ABI32_0_0EXFileSystemInterface.h>
 #import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceDetectorUtils.h>
 #import <ABI32_0_0EXCore/ABI32_0_0EXModuleRegistry.h>
-
-static const NSString *kModeOptionName = @"mode";
-static const NSString *kDetectLandmarksOptionName = @"detectLandmarks";
-static const NSString *kRunClassificationsOptionName = @"runClassifications";
+#import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceEncoder.h>
+#import <ABI32_0_0EXFaceDetector/ABI32_0_0CSBufferOrientationCalculator.h>
+#import <Firebase/Firebase.h>
 
 @interface ABI32_0_0EXFaceDetectorModule ()
 
@@ -49,7 +48,8 @@ ABI32_0_0EX_EXPORT_MODULE(ExpoFaceDetector);
   _moduleRegistry = moduleRegistry;
 }
 
-ABI32_0_0EX_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(ABI32_0_0EXPromiseResolveBlock)resolve rejecter:(ABI32_0_0EXPromiseRejectBlock)reject) {
+ABI32_0_0EX_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(ABI32_0_0EXPromiseResolveBlock)resolve rejecter:(ABI32_0_0EXPromiseRejectBlock)reject)
+{
   NSString *uri = options[@"uri"];
   if (uri == nil) {
     reject(@"E_FACE_DETECTION_FAILED", @"You must define a URI.", nil);
@@ -72,86 +72,48 @@ ABI32_0_0EX_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)op
   }
   
   @try {
-    GMVDetector *detector = [[self class] detectorForOptions:options];
-
-    // This check was failing, probably because of some race condition
-    // see note at https://developer.apple.com/documentation/foundation/nsfilemanager/1415645-fileexistsatpath?language=objc
-//    if (![fileManager fileExistsAtPath:path]) {
-//      reject(@"E_FACE_DETECTION_FAILED", [NSString stringWithFormat:@"The file does not exist. Given path: `%@`.", path], nil);
-//      return;
-//    }
-
     UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
-
-    NSDictionary *detectionOptions = [[self class] detectionOptionsForImage:image];
-    NSArray<GMVFaceFeature *> *faces = [detector featuresInImage:image options:detectionOptions];
-    ABI32_0_0EXFaceEncoder *faceEncoder = [[ABI32_0_0EXFaceEncoder alloc] init];
-    NSMutableArray<NSDictionary *> *encodedFaces = [NSMutableArray arrayWithCapacity:[faces count]];
-    [faces enumerateObjectsUsingBlock:^(GMVFaceFeature * _Nonnull face, NSUInteger _idx, BOOL * _Nonnull _stop) {
-      [encodedFaces addObject:[faceEncoder encode:face]];
-    }];
+    CIImage *ciImage = image.CIImage;
+    if(!ciImage) {
+      ciImage = [CIImage imageWithCGImage:image.CGImage];
+    }
+    ciImage = [ciImage imageByApplyingOrientation:[ABI32_0_0EXFaceDetectorUtils toCGImageOrientation:image.imageOrientation]];
+    CIContext *context = [CIContext contextWithOptions:@{}];
+    UIImage *temporaryImage = [UIImage imageWithCIImage:ciImage];
+    CGRect tempImageRect = CGRectMake(0, 0, temporaryImage.size.width, temporaryImage.size.height);
+    CGImageRef cgImage = [context createCGImage:ciImage fromRect:tempImageRect];
     
-    resolve(@{
-              @"faces" : encodedFaces,
-              @"image" : @{
-                  @"uri" : options[@"uri"],
-                  @"width" : @(image.size.width),
-                  @"height" : @(image.size.height),
-                  @"orientation" : @([ABI32_0_0EXFaceDetectorModule exifOrientationFor:image.imageOrientation])
-                  }
-              });
+    UIImage *finalImage = [UIImage imageWithCGImage:cgImage];
+    ABI32_0_0EXFaceDetector* detector = [[ABI32_0_0EXFaceDetector alloc] initWithOptions: [ABI32_0_0EXFaceDetectorUtils mapOptions:options]];
+    [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nullable faces, NSError * _Nullable error) {
+      NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
+      
+      if(faces.count > 0) {
+        ABI32_0_0EXFaceEncoder *encoder = [[ABI32_0_0EXFaceEncoder alloc] init];
+        for(FIRVisionFace* face in faces)
+      {
+          [reportableFaces addObject:[encoder encode:face]];
+        }
+      }
+      if (error != nil) {
+        reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
+      } else {
+        resolve(@{
+                  @"faces" : reportableFaces,
+                  @"image" : @{
+                      @"uri" : options[@"uri"],
+                      @"width" : @(image.size.width),
+                      @"height" : @(image.size.height),
+                      @"orientation" : @([ABI32_0_0EXFaceDetectorModule exifOrientationFor:image.imageOrientation])
+                      }
+                  });
+      }}];
   } @catch (NSException *exception) {
     reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
   }
 }
 
-+ (GMVDetector *)detectorForOptions:(NSDictionary *)options
-{
-  NSMutableDictionary *parsedOptions = [[NSMutableDictionary alloc] initWithDictionary:[self getDefaultDetectorOptions]];
-  
-  if (options[kDetectLandmarksOptionName]) {
-    [parsedOptions setObject:options[kDetectLandmarksOptionName] forKey:GMVDetectorFaceLandmarkType];
-  }
-  
-  if (options[kModeOptionName]) {
-    [parsedOptions setObject:options[kModeOptionName] forKey:GMVDetectorFaceMode];
-  }
-  
-  if (options[kRunClassificationsOptionName]) {
-    [parsedOptions setObject:options[kRunClassificationsOptionName] forKey:GMVDetectorFaceClassificationType];
-  }
-
-  return [GMVDetector detectorOfType:GMVDetectorTypeFace options:parsedOptions];
-}
-
-# pragma mark: - Detector default options getter and initializer
-
-+ (NSDictionary *)getDefaultDetectorOptions
-{
-  if (defaultDetectorOptions == nil) {
-    [self initDefaultDetectorOptions];
-  }
-  
-  return defaultDetectorOptions;
-}
-
-+ (void)initDefaultDetectorOptions
-{
-  defaultDetectorOptions = @{
-                             GMVDetectorFaceMode : @(GMVDetectorFaceAccurateMode),
-                             GMVDetectorFaceLandmarkType : @(GMVDetectorFaceLandmarkAll),
-                             GMVDetectorFaceClassificationType : @(GMVDetectorFaceClassificationAll)
-                             };
-}
-
 # pragma mark: - Utility methods
-
-+ (NSDictionary *)detectionOptionsForImage:(UIImage *)image
-{
-  return @{
-           GMVDetectorImageOrientation : @([[self class] gmvImageOrientationFor:image.imageOrientation]),
-           };
-}
 
 // As the documentation (http://cocoadocs.org/docsets/GoogleMobileVision/1.0.2/Constants/GMVImageOrientation.html) suggests
 // the value of GMVImageOrientation is the same as the value defined by ABI32_0_0EXIF specifications, so we can adapt

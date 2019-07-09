@@ -11,8 +11,10 @@
 - (void)setOnFacesDetected:(void (^)(NSArray<NSDictionary *> *))onFacesDetected;
 
 - (void)updateSettings:(NSDictionary *)settings;
+- (void)updateMirrored:(BOOL) mirrored;
 
 - (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
+- (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer mirrored:(BOOL) mirrored;
 - (void)stopFaceDetection;
 
 @end

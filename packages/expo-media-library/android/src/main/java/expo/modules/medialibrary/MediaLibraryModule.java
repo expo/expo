@@ -21,7 +21,6 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.interfaces.permissions.Permissions;
 
@@ -46,7 +45,7 @@ import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MODIFICATI
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_WIDTH;
 
 
-public class MediaLibraryModule extends ExportedModule implements ModuleRegistryConsumer {
+public class MediaLibraryModule extends ExportedModule {
 
   private MediaStoreContentObserver mImagesObserver = null;
   private MediaStoreContentObserver mVideosObserver = null;
@@ -93,7 +92,7 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

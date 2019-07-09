@@ -27,9 +27,9 @@ This guide will explain how to create a universal module and integrate it into E
 
 #### Integrate with the native projects
 
-1. You'll need to create a pull request adding your new module to [`xdl/src/modules/config.js`](https://github.com/expo/expo-cli/blob/master/packages/xdl/src/modules/config.js). Link your local changed XDL installation to `tools-public` or publish a canary release and update `xdl` version in `tools-public`. Thanks to this change your module will end up in `ios/Podfile` when you run `tools-public/generate-files-ios.js` and it will be versioned and put into `expokit-npm-package` when we version modules.
+1. You'll need to create a pull request adding your new module to [`xdl/src/modules/config.js`](https://github.com/expo/expo-cli/blob/master/packages/xdl/src/modules/config.js). Link your local changed XDL installation to `tools/expotools` or publish a canary release and update `xdl` version in `tools/expotools`. Thanks to this change your module will be versioned and put into `expokit-npm-package` when we version modules.
 2. If you're extracting an existing Expo module from Expo monolith and would like it to be installed by default with `expo`, add `expo-your-module@^1.0.0` dependency to `packages/expo/package.json`. Then, run `yarn` in repository root.
-3. Go to `tools-public` and run `./generate-files-ios.js`. It should update `Podfile`s with references to your new module. Run `pod install` in `ios`.
+3. Run `et ios-generate-dynamic-macros`. It should update `Podfile`s with references to your new module. Then, run `pod install` in `ios`.
 4. Go to `android` and add your new module entry to the array of other universal modules in `settings.gradle`.
 5. If you want your module to be available in Expo Client:
   - edit `android/expoview/build.gradle` so that:

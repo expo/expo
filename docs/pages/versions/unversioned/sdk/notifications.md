@@ -16,13 +16,15 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { Notifications } from 'expo';
 ```
 
+Checkout [this Snack](https://snack.expo.io/@documentation/pushnotifications) to see Notifications in action- but be sure to use a device! Push notifications don't work on simulators/emulators.
+
 ## Subscribing to Notifications
 
 ### `Notifications.addListener(listener)`
 
 #### Arguments
 
--   **listener (_function_)** -- A callback that is invoked when a remote or local notification is received or selected, with a Notification object.
+- **listener (_function_)** -- A callback that is invoked when a remote or local notification is received or selected, with a Notification object.
 
 #### Returns
 
@@ -34,15 +36,15 @@ An [EventSubscription](#eventsubscription) object that you can call remove() on 
 
 Returned from `addListener`.
 
--   **remove() (_function_)** -- Unsubscribe the listener from future notifications.
+- **remove() (_function_)** -- Unsubscribe the listener from future notifications.
 
 ### `Notification`
 
 An object that is passed into each event listener when a notification is received:
 
--   **origin (_string_)** -- Either `selected` or `received`. `selected` if the notification was tapped on by the user, `received` if the notification was received while the user was in the app.
--   **data (_object_)** -- Any data that has been attached with the notification.
--   **remote (_boolean_)** -- `true` if the notification is a push notification, `false` if it is a local notification.
+- **origin (_string_)** -- Either `selected` or `received`. `selected` if the notification was tapped on by the user, `received` if the notification was received while the user was in the app.
+- **data (_object_)** -- Any data that has been attached with the notification.
+- **remote (_boolean_)** -- `true` if the notification is a push notification, `false` if it is a local notification.
 
 ## Notifications
 
@@ -60,7 +62,7 @@ Trigger a local notification immediately.
 
 #### Arguments
 
--   **localNotification (_object_)** -- An object with the properties described in [LocalNotification](#localnotification).
+- **localNotification (_object_)** -- An object with the properties described in [LocalNotification](#localnotification).
 
 #### Returns
 
@@ -72,17 +74,17 @@ Schedule a local notification to fire at some specific time in the future or at 
 
 #### Arguments
 
--   **localNotification (_object_)** --
+- **localNotification (_object_)** --
 
-      An object with the properties described in [LocalNotification](#localnotification).
+  An object with the properties described in [LocalNotification](#localnotification).
 
--   **schedulingOptions (_object_)** --
+- **schedulingOptions (_object_)** --
 
-      An object that describes when the notification should fire.
+  An object that describes when the notification should fire.
 
-    -   **time** (_date_ or _number_) -- A Date object representing when to fire the notification or a number in Unix epoch time. Example: `(new Date()).getTime() + 1000` is one second from now.
-    -   **repeat** (_optional_) (_string_) -- `'minute'`, `'hour'`, `'day'`, `'week'`, `'month'`, or `'year'`.
-    - (_Android only_) **intervalMs** (_optional_) (_number_) -- Repeat interval in number of milliseconds
+  - **time** (_date_ or _number_) -- A Date object representing when to fire the notification or a number in Unix epoch time. Example: `(new Date()).getTime() + 1000` is one second from now.
+  - **repeat** (_optional_) (_string_) -- `'minute'`, `'hour'`, `'day'`, `'week'`, `'month'`, or `'year'`.
+  - (_Android only_) **intervalMs** (_optional_) (_number_) -- Repeat interval in number of milliseconds
 
 #### Returns
 
@@ -94,7 +96,7 @@ _Android only_. Dismisses the notification with the given id.
 
 #### Arguments
 
--   **localNotificationId (_number_)** -- A unique id assigned to the notification, returned from `scheduleLocalNotificationAsync` or `presentLocalNotificationAsync`.
+- **localNotificationId (_number_)** -- A unique id assigned to the notification, returned from `scheduleLocalNotificationAsync` or `presentLocalNotificationAsync`.
 
 ### `Notifications.dismissAllNotificationsAsync()`
 
@@ -106,7 +108,7 @@ Cancels the scheduled notification corresponding to the given id.
 
 #### Arguments
 
--   **localNotificationId (_number_)** -- A unique id assigned to the notification, returned from `scheduleLocalNotificationAsync` or `presentLocalNotificationAsync`.
+- **localNotificationId (_number_)** -- A unique id assigned to the notification, returned from `scheduleLocalNotificationAsync` or `presentLocalNotificationAsync`.
 
 ### `Notifications.cancelAllScheduledNotificationsAsync()`
 
@@ -124,13 +126,13 @@ Registers a new set of actions under given `name`.
 
 #### Arguments
 
--   **name (_string_)** -- A string to assign as the ID of the category. When you present notifications later, you will pass this ID in order to associate them with your category.
--   **actions (_array_)** -- An array of objects describing actions to associate to the category, of shape:
-      - **actionId (_string_)** -- A unique identifier of the ID of the action. When a user executes your action, your app  will receive this `actionId`.
-      - **buttonTitle (_string_)** -- A title of the button triggering this action.
-      - **textInput (_object_)** -- An optional object of shape: `{ submitButtonTitle: string, placeholder: string }`, which when provided, will prompt the user to enter a text value.
-      - **isDestructive (_boolean_)** -- (iOS only) If this property is truthy, on iOS the button title will be highlighted (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648199-destructive) was set)
-      - **isAuthenticationRequired (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will require authentication from the user (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648196-authenticationrequired) was set)
+- **name (_string_)** -- A string to assign as the ID of the category. When you present notifications later, you will pass this ID in order to associate them with your category.
+- **actions (_array_)** -- An array of objects describing actions to associate to the category, of shape:
+  - **actionId (_string_)** -- A unique identifier of the ID of the action. When a user executes your action, your app will receive this `actionId`.
+  - **buttonTitle (_string_)** -- A title of the button triggering this action.
+  - **textInput (_object_)** -- An optional object of shape: `{ submitButtonTitle: string, placeholder: string }`, which when provided, will prompt the user to enter a text value.
+  - **isDestructive (_boolean_)** -- (iOS only) If this property is truthy, on iOS the button title will be highlighted (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648199-destructive) was set)
+  - **isAuthenticationRequired (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will require authentication from the user (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648196-authenticationrequired) was set)
 
 ### `Notifications.deleteCategoryAsync(name: string)`
 
@@ -144,14 +146,14 @@ _Android only_. On Android 8.0+, creates a new notification channel to which loc
 
 According to the [Android docs](https://developer.android.com/training/notify-user/channels),
 
->You should create a channel for each distinct type of notification you need to send. You can also create notification channels to reflect choices made by users of your app. For example, you can set up separate notification channels for each conversation group created by a user in a messaging app.
+> You should create a channel for each distinct type of notification you need to send. You can also create notification channels to reflect choices made by users of your app. For example, you can set up separate notification channels for each conversation group created by a user in a messaging app.
 
 On devices with Android 7.1 and below, Expo will "polyfill" channels for you by saving your channel's settings and automatically applying them to any notifications you designate with the `channelId`.
 
 #### Arguments
 
--   **id (_string_)** -- A unique string to assign as the ID of this channel. When you present notifications later, you will pass this ID in order to associate them with your channel.
--   **channel (_object_)** -- An object with the properties described in [ChannelAndroid](#channelandroid).
+- **id (_string_)** -- A unique string to assign as the ID of this channel. When you present notifications later, you will pass this ID in order to associate them with your channel.
+- **channel (_object_)** -- An object with the properties described in [ChannelAndroid](#channelandroid).
 
 ### `Notifications.deleteChannelAndroidAsync(id)`
 
@@ -159,35 +161,37 @@ _Android only_. On Android 8.0+, deletes the notification channel with the given
 
 #### Arguments
 
--   **id (_string_)** -- ID string of the channel to delete.
+- **id (_string_)** -- ID string of the channel to delete.
 
 ### Related types
 
 #### LocalNotification
+
 An object used to describe the local notification that you would like to present or schedule.
 
--   **title (_string_)** -- title text of the notification
--   **body (_string_)** -- body text of the notification.
--   **data (_optional_) (_object_)** -- any data that has been attached with the notification.
--   **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
--   **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
-    -   **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
--   **android (_optional_) (_object_)** -- notification configuration specific to Android.
-    -   **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
-    -   **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
-    -   **color** (_optional_) (_string_) -- color of the notification icon in notification drawer.
-    -   **sticky** (_optional_) (_boolean_) -- if `true`, the notification will be sticky and not dismissable by user. The notification must be programmatically dismissed. Default: `false`.
-    -   **link** (_optional_) (_string_) -- external link to open when notification is selected.
+- **title (_string_)** -- title text of the notification
+- **body (_string_)** -- body text of the notification.
+- **data (_optional_) (_object_)** -- any data that has been attached with the notification.
+- **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
+- **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
+  - **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
+- **android (_optional_) (_object_)** -- notification configuration specific to Android.
+  - **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
+  - **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
+  - **color** (_optional_) (_string_) -- color of the notification icon in notification drawer.
+  - **sticky** (_optional_) (_boolean_) -- if `true`, the notification will be sticky and not dismissable by user. The notification must be programmatically dismissed. Default: `false`.
+  - **link** (_optional_) (_string_) -- external link to open when notification is selected.
 
 #### ChannelAndroid
+
 An object used to describe an Android notification channel that you would like to create.
 
--   **name (_string_)** -- user-facing name of the channel (or "category" in the Settings UI). Required.
--   **description (_optional_) (_string_)** -- user-facing description of the channel, which will be displayed in the Settings UI.
--   **sound (_optional_) (_boolean_)** -- if `true`, notifications posted to this channel will play a sound. Default: `false`.
--   **priority (_optional_) (_min | low | default | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification. Note that the Android OS gives no guarantees about the user-facing behavior these abstractions produce -- for example, on many devices, there is no noticeable difference between `high` and `max`.
--   **vibrate (_optional_) (_boolean_ or _array_)** -- if `true`, vibrate the device whenever a notification is posted to this channel. An array can be supplied instead to customize the vibration pattern, e.g. - `[ 0, 500 ]` or `[ 0, 250, 250, 250 ]`. Default: `false`.
--   **badge (_optional_) (_boolean_)** -- if `true`, unread notifications posted to this channel will cause the app launcher icon to be displayed with a badge on Android 8.0+. If `false`, notifications in this channel will never cause a badge. Default: `true`.
+- **name (_string_)** -- user-facing name of the channel (or "category" in the Settings UI). Required.
+- **description (_optional_) (_string_)** -- user-facing description of the channel, which will be displayed in the Settings UI.
+- **sound (_optional_) (_boolean_)** -- if `true`, notifications posted to this channel will play a sound. Default: `false`.
+- **priority (_optional_) (_min | low | default | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification. Note that the Android OS gives no guarantees about the user-facing behavior these abstractions produce -- for example, on many devices, there is no noticeable difference between `high` and `max`.
+- **vibrate (_optional_) (_boolean_ or _array_)** -- if `true`, vibrate the device whenever a notification is posted to this channel. An array can be supplied instead to customize the vibration pattern, e.g. - `[ 0, 500 ]` or `[ 0, 250, 250, 250 ]`. Default: `false`.
+- **badge (_optional_) (_boolean_)** -- if `true`, unread notifications posted to this channel will cause the app launcher icon to be displayed with a badge on Android 8.0+. If `false`, notifications in this channel will never cause a badge. Default: `true`.
 
 ## App Icon Badge Number (iOS)
 
@@ -211,12 +215,12 @@ Returns a native APNS, FCM or GCM token that can be used with another push notif
 
 #### Arguments
 
--   **config (_object_)** -- An object with the following fields:
-    -   **gcmSenderId (_string_)** -- GCM sender ID.
+- **config (_object_)** -- An object with the following fields:
+  - **gcmSenderId (_string_)** -- GCM sender ID.
 
 #### Returns
 
 A Promise that resolves to an object with the following fields:
--   **type (_string_)** -- Either "apns", "fcm", or "gcm".
--   **data (_string_)** -- The push token as a string.
 
+- **type (_string_)** -- Either "apns", "fcm", or "gcm".
+- **data (_string_)** -- The push token as a string.

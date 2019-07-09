@@ -6,7 +6,7 @@ Access the device barometer sensor to respond to changes in air pressure. `press
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
 ## API
 
@@ -22,6 +22,8 @@ import { Barometer } from 'expo-sensors';
 |         |
 
 ### `Barometer.isAvailableAsync()`
+
+> You should always check the sensor availability before attempting to use it.
 
 Returns a promise which resolves into a boolean denoting the availability of the device barometer.
 
@@ -63,11 +65,11 @@ Remove all listeners.
 
 The altitude data returned from the native sensors.
 
-```js
+```typescript
 type BarometerMeasurement = {
-  pressure: number,
+  pressure: number;
   /* iOS Only */
-  relativeAltitude?: number,
+  relativeAltitude?: number;
 };
 ```
 
@@ -80,8 +82,8 @@ type BarometerMeasurement = {
 
 ```javascript
 import React from 'react';
-import { Barometer } from 'expo-sensors';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Barometer } from 'expo-sensors';
 
 export default class BarometerSensor extends React.Component {
   state = {
@@ -134,9 +136,6 @@ export default class BarometerSensor extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'stretch',
@@ -150,7 +149,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   sensor: {
-    marginTop: 15,
+    marginTop: 45,
     paddingHorizontal: 10,
   },
 });

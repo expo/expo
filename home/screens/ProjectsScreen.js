@@ -17,9 +17,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ScrollView, withNavigationFocus, withNavigation } from 'react-navigation';
+import { withNavigationFocus, withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
-
+import semver from 'semver';
+import ScrollView from '../components/NavigationScrollView';
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
@@ -41,6 +42,8 @@ import extractReleaseChannel from '../utils/extractReleaseChannel';
 
 const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
 const PROJECT_UPDATE_INTERVAL = 10000;
+
+const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 
 @withNavigationFocus
 @withNavigation
@@ -206,7 +209,7 @@ export default class ProjectsScreen extends React.Component {
   _fetchProjectsAsync = async () => {
     try {
       let api = new ApiV2HttpClient();
-      let projects = await api.getAsync('development-sessions/', {
+      let projects = await api.getAsync('development-sessions', {
         deviceId: getSnackId(),
       });
       this.setState({ projects });
@@ -327,6 +330,14 @@ export default class ProjectsScreen extends React.Component {
         <Text style={styles.expoVersionText} onPress={this._copyClientVersionToClipboard}>
           Client version: {Constants.expoVersion}
         </Text>
+        <Text style={styles.supportSdksText}>
+          Supports SDK
+          {SupportedExpoSdks.length === 1 ? '' : 's'}
+          {SupportedExpoSdks
+            .map(semver.major)
+            .sort((a, b) => a - b)
+            .join(', ')}
+        </Text>
       </View>
     );
   };
@@ -421,6 +432,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   expoVersionText: {
+    color: 'rgba(0,0,0,0.3)',
+    fontSize: 11,
+    marginBottom: 5,
+  },
+  supportSdksText: {
     color: 'rgba(0,0,0,0.3)',
     fontSize: 11,
   },

@@ -17,7 +17,7 @@ export declare type CustomTabsBrowsersResults = {
     servicePackages: string[];
 };
 export declare type BrowserResult = {
-    type: 'cancel' | 'dismiss';
+    type: 'cancel' | 'dismiss' | 'opened';
 };
 export declare type RedirectResult = {
     type: 'success';

@@ -18,7 +18,7 @@ import { withNavigation } from 'react-navigation';
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
-import FadeIn from '@expo/react-native-fade-in-image';
+import FadeIn from 'react-native-fade-in-image';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 @withNavigation

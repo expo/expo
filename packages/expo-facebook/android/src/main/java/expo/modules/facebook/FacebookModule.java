@@ -25,10 +25,9 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class FacebookModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class FacebookModule extends ExportedModule implements ActivityEventListener {
   private CallbackManager mCallbackManager;
   private ModuleRegistry mModuleRegistry;
 
@@ -110,7 +109,7 @@ public class FacebookModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);

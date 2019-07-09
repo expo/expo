@@ -8,7 +8,7 @@ Provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-segment).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-analytics-segment`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-analytics-segment).
 
 ## API
 
@@ -118,7 +118,7 @@ Manually flush the event queue. You shouldn't need to call this in most cases.
 > ([Source – Segment docs](https://segment.com/docs/sources/mobile/ios/#opt-out))
 
 ```js
-import { Segment } from 'expo';
+import * as Segment from 'expo-analytics-segment';
 
 Segment.setEnabledAsync(false);
 

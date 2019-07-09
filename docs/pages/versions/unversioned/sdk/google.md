@@ -2,7 +2,7 @@
 title: Google
 ---
 
-**`Expo.Google`** Provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device.
+Provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device.
 
 ### How it works
 
@@ -14,25 +14,26 @@ In the [managed workflow][managed-workflow], native Google Sign-In functionality
 
 ## Installation
 
-The web browser-based authentication flow is provided by the [**`expo-app-auth`**][expo-app-auth] package, which is pre-installed installed in [managed][managed-workflow] apps. To use it in a [bare][bare-workflow] React Native app, follow the [expo-app-auth installation instructions](https://github.com/expo/expo/tree/master/packages/expo-app-auth) and API reference.
-
-## Usage
-
-```javascript
-// Example of using the Google REST API
-async function getUserInfo(accessToken) {
-  let userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-
-  return userInfoResponse;
-}
-```
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you will need to run `pod install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
 
 ## API
 
 ```js
-import { Google } from 'expo';
+import * as Google from 'expo-google-app-auth';
+```
+
+## Usage
+
+```javascript
+// First- obtain access token from Expo's Google API
+const { type, accessToken, user } = await Google.logInAsync(config);
+
+if (type === 'success') {
+  // Then you can use the Google REST API
+  let userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
 ```
 
 ## Methods

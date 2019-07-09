@@ -7,18 +7,20 @@
 //
 
 #import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceEncoder.h>
+#import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceDetectorUtils.h>
+#import <Firebase/Firebase.h>
 
 #define cDefaultFloatComparisonEpsilon 0.0001
 #define cModEqualFloatsWithEpsilon(dividend, divisor, modulo, epsilon) \
-        fabs( fmod(dividend, divisor) - modulo ) < epsilon
+fabs( fmod(dividend, divisor) - modulo ) < epsilon
 #define cModEqualFloats(dividend, divisor, modulo) \
-        cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEpsilon)
+cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEpsilon)
 
 @interface ABI32_0_0EXFaceEncoder()
 
 @property (assign, nonatomic) BOOL swapWidthAndHeight;
-@property (assign, nonatomic) CGAffineTransform transform;
-@property (assign, nonatomic) CGFloat rollAngleDegreesFromTransform;
+@property CGAffineTransform transform;
+@property ABI32_0_0EXFaceDetectionAngleTransformBlock angleTransformer;
 
 @end
 
@@ -29,26 +31,36 @@
   return [self initWithTransform:CGAffineTransformIdentity];
 }
 
-- (instancetype)initWithTransform:(CGAffineTransform)transform
+- (instancetype)initWithTransform:(CGAffineTransform)pointTransformer
+{
+  ABI32_0_0EXFaceDetectionAngleTransformBlock transformer = ^(float angle) {return angle;};
+  return [self initWithTransform:pointTransformer withRotationTransform:transformer];
+}
+
+- (instancetype)initWithRotationTransform:(ABI32_0_0EXFaceDetectionAngleTransformBlock)rotationTransform
+{
+  return [self initWithTransform:CGAffineTransformIdentity withRotationTransform:rotationTransform];
+}
+
+- (instancetype)initWithTransform:(CGAffineTransform)transform withRotationTransform:(ABI32_0_0EXFaceDetectionAngleTransformBlock)rotationTransform
 {
   self = [super init];
   if (self) {
     _transform = transform;
-    _rollAngleDegreesFromTransform = [self radianAngleToDegrees:[self rollAngleFromTransform:_transform]];
-    _swapWidthAndHeight = cModEqualFloats(_rollAngleDegreesFromTransform + 360, 180, 90);
+    _angleTransformer = rotationTransform;
   }
   return self;
 }
 
 
-- (NSDictionary *)encode:(GMVFaceFeature *)face
+- (NSDictionary *)encode:(FIRVisionFace *)face
 {
-  CGRect bounds = CGRectApplyAffineTransform(face.bounds, _transform);
+  CGRect bounds = CGRectApplyAffineTransform(face.frame, _transform);
   NSDictionary *initialDictionary = @{
                                       @"bounds" : @{
                                           @"size" : @{
-                                              @"width" : @(_swapWidthAndHeight ? bounds.size.height : bounds.size.width),
-                                              @"height" : @(_swapWidthAndHeight ? bounds.size.width : bounds.size.height)
+                                              @"width" : @(bounds.size.width),
+                                              @"height" : @(bounds.size.height)
                                               },
                                           @"origin" : @{
                                               @"x" : @(bounds.origin.x),
@@ -60,37 +72,65 @@
   [self putAFloat:face.smilingProbability forKey:@"smilingProbability" toDictionary:encodedFace ifValueIsValid:face.hasSmilingProbability];
   [self putAnInteger:face.trackingID forKey:@"faceID" toDictionary:encodedFace ifValueIsValid:face.hasTrackingID];
   
-  [self putAPoint:face.leftEarPosition forKey:@"leftEarPosition" toDictionary:encodedFace ifValueIsValid:face.hasLeftEarPosition];
-  [self putAPoint:face.rightEarPosition forKey:@"rightEarPosition" toDictionary:encodedFace ifValueIsValid:face.hasRightEarPosition];
+  FIRVisionFaceLandmark *leftEar = [face landmarkOfType:FIRFaceLandmarkTypeLeftEar];
+  if(leftEar != nil) {
+    [self putAPoint:leftEar.position forKey:@"leftEarPosition" toDictionary:encodedFace];
+  }
+  FIRVisionFaceLandmark *rightEar = [face landmarkOfType:FIRFaceLandmarkTypeRightEar];
+  if(rightEar != nil) {
+    [self putAPoint:rightEar.position forKey:@"rightEarPosition" toDictionary:encodedFace];
+  }
   
-  [self putAPoint:face.leftEyePosition forKey:@"leftEyePosition" toDictionary:encodedFace ifValueIsValid:face.hasLeftEyePosition];
+  FIRVisionFaceLandmark *leftEye = [face landmarkOfType:FIRFaceLandmarkTypeLeftEye];
+  if (leftEye != nil) {
+    [self putAPoint:leftEye.position forKey:@"leftEyePosition" toDictionary:encodedFace];
+  }
+  FIRVisionFaceLandmark *rightEye = [face landmarkOfType:FIRFaceLandmarkTypeRightEye];
+  if(rightEye) {
+    [self putAPoint:rightEye.position forKey:@"rightEyePosition" toDictionary:encodedFace];
+  }
+  
   [self putAFloat:face.leftEyeOpenProbability forKey:@"leftEyeOpenProbability" toDictionary:encodedFace ifValueIsValid:face.hasLeftEyeOpenProbability];
-  
-  [self putAPoint:face.rightEyePosition forKey:@"rightEyePosition" toDictionary:encodedFace ifValueIsValid:face.hasRightEyePosition];
   [self putAFloat:face.rightEyeOpenProbability forKey:@"rightEyeOpenProbability" toDictionary:encodedFace ifValueIsValid:face.hasRightEyeOpenProbability];
   
-  [self putAPoint:face.leftCheekPosition forKey:@"leftCheekPosition" toDictionary:encodedFace ifValueIsValid:face.hasLeftCheekPosition];
-  [self putAPoint:face.rightCheekPosition forKey:@"rightCheekPosition" toDictionary:encodedFace ifValueIsValid:face.hasRightCheekPosition];
+  FIRVisionFaceLandmark *leftCheek = [face landmarkOfType:FIRFaceLandmarkTypeLeftCheek];
+  if(leftCheek) {
+    [self putAPoint:leftCheek.position forKey:@"leftCheekPosition" toDictionary:encodedFace];
+  }
+  FIRVisionFaceLandmark *rightCheek = [face landmarkOfType:FIRFaceLandmarkTypeRightCheek];
+  if(rightCheek) {
+    [self putAPoint:rightCheek.position forKey:@"rightCheekPosition" toDictionary:encodedFace];
+  }
   
-  [self putAPoint:face.leftMouthPosition forKey:@"leftMouthPosition" toDictionary:encodedFace ifValueIsValid:face.hasLeftMouthPosition];
-  [self putAPoint:face.mouthPosition forKey:@"mouthPosition" toDictionary:encodedFace ifValueIsValid:face.hasMouthPosition];
-  [self putAPoint:face.rightMouthPosition forKey:@"rightMouthPosition" toDictionary:encodedFace ifValueIsValid:face.hasRightMouthPosition];
-  [self putAPoint:face.bottomMouthPosition forKey:@"bottomMouthPosition" toDictionary:encodedFace ifValueIsValid:face.hasBottomMouthPosition];
+  FIRVisionFaceLandmark *leftMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthLeft];
+  if(leftMouth) {
+    [self putAPoint:leftMouth.position forKey:@"leftMouthPosition" toDictionary:encodedFace];
+  }
+  FIRVisionFaceLandmark *rightMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthRight];
+  if(rightMouth) {
+    [self putAPoint:rightMouth.position forKey:@"rightMouthPosition" toDictionary:encodedFace];
+  }
+  FIRVisionFaceLandmark *bottomMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthBottom];
+  if(bottomMouth) {
+    [self putAPoint:bottomMouth.position forKey:@"bottomMouthPosition" toDictionary:encodedFace];
+  }
   
-  [self putAPoint:face.noseBasePosition forKey:@"noseBasePosition" toDictionary:encodedFace ifValueIsValid:face.hasNoseBasePosition];
+  FIRVisionFaceLandmark *noseBase = [face landmarkOfType:FIRFaceLandmarkTypeNoseBase];
+  if(noseBase) {
+    [self putAPoint:noseBase.position forKey:@"noseBasePosition" toDictionary:encodedFace];
+  }
   
   [self putAFloat:face.headEulerAngleY forKey:@"yawAngle" toDictionary:encodedFace ifValueIsValid:face.hasHeadEulerAngleY];
-  [self putAFloat:-(face.headEulerAngleZ - _rollAngleDegreesFromTransform) forKey:@"rollAngle" toDictionary:encodedFace ifValueIsValid:face.hasHeadEulerAngleZ];
+  
+  [self putAFloat:self.angleTransformer(face.headEulerAngleZ) forKey:@"rollAngle" toDictionary:encodedFace ifValueIsValid:face.hasHeadEulerAngleZ];
   
   return encodedFace;
 }
 
-- (void)putAPoint:(CGPoint)point forKey:(NSString *)key toDictionary:(NSMutableDictionary *)dictionary ifValueIsValid:(BOOL)pointIsValid
+- (void)putAPoint:(FIRVisionPoint *)point forKey:(NSString *)key toDictionary:(NSMutableDictionary *)dictionary
 {
-  if (pointIsValid) {
-    CGPoint transformedPoint = CGPointApplyAffineTransform(point, _transform);
-    [dictionary setObject:@{ @"x" : @(transformedPoint.x), @"y" : @(transformedPoint.y) } forKey:key];
-  }
+  CGPoint transformedPoint = CGPointApplyAffineTransform([self toPoint:point], _transform);
+  [dictionary setObject:@{ @"x" : @(transformedPoint.x), @"y" : @(transformedPoint.y) } forKey:key];
 }
 
 - (void)putAFloat:(CGFloat)value forKey:(NSString *)key toDictionary:(NSMutableDictionary *)dictionary ifValueIsValid:(BOOL)floatIsValid
@@ -115,6 +155,11 @@
 - (CGFloat)radianAngleToDegrees:(CGFloat)angle
 {
   return angle * (180 / M_PI);
+}
+
+- (CGPoint)toPoint:(FIRVisionPoint *)visionPoint
+{
+  return CGPointMake([[visionPoint x] floatValue], [[visionPoint y] floatValue]);
 }
 
 @end

@@ -16,7 +16,7 @@
 - (void)registerTaskWithName:(nonnull NSString *)taskName
                        appId:(nonnull NSString *)appId
                       appUrl:(nonnull NSString *)appUrl
-               consumerClass:(Class)consumerClass
+               consumerClass:(nonnull Class)consumerClass
                      options:(nullable NSDictionary *)options;
 
 /**
@@ -25,7 +25,7 @@
  */
 - (void)unregisterTaskWithName:(nonnull NSString *)taskName
                       forAppId:(nonnull NSString *)appId
-                 consumerClass:(Class)consumerClass;
+                 consumerClass:(nullable Class)consumerClass;
 
 /**
  *  Unregisters all tasks registered for the app with given appId.
@@ -37,7 +37,7 @@
  */
 - (BOOL)taskWithName:(nonnull NSString *)taskName
             forAppId:(nonnull NSString *)appId
-  hasConsumerOfClass:(Class)consumerClass;
+  hasConsumerOfClass:(nonnull Class)consumerClass;
 
 /**
  *  Returns options associated with the task with given name and appId or nil if task not found.
@@ -48,7 +48,7 @@
 /**
  *  Returns an array of registered tasks for given appId.
  */
-- (nonnull NSArray *)getRegisteredTasksForAppId:(NSString *)appId;
+- (nonnull NSArray *)getRegisteredTasksForAppId:(nullable NSString *)appId;
 
 /**
  *  Notifies the service that a task has just finished.
