@@ -9,7 +9,7 @@ import request from 'request-promise-native';
 import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
 
 import { getExpoRepositoryRootDir } from '../Directories';
-import { nativeSdkVersionAsync } from '../ProjectVersions';
+import { nativeSdkVersionAsync, getNewestSDKVersionAsync } from '../ProjectVersions';
 
 interface Manifest {
   id: string;
@@ -122,7 +122,7 @@ export default {
     let manifest, savedDevHomeUrl;
     try {
       savedDevHomeUrl = await getSavedDevHomeUrlAsync();
-      const sdkVersion = await this.TEMPORARY_SDK_VERSION();
+      const sdkVersion = await this.TEMPORARY_SDK_VERSION(platform);
 
       manifest = await getManifestAsync(savedDevHomeUrl, platform, sdkVersion);
 
@@ -163,8 +163,8 @@ export default {
     }
   },
 
-  async TEMPORARY_SDK_VERSION() {
-    return await nativeSdkVersionAsync();
+  async TEMPORARY_SDK_VERSION(platform): Promise<string> {
+    return await getNewestSDKVersionAsync(platform) || '';
   },
 
   INITIAL_URL() {
