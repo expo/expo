@@ -22,7 +22,7 @@ Run `pod install` in the ios directory after installing the npm package.
 
 No additional set up necessary.
 
-# Docoumentation
+# Documentation
 
 ```js
 // in managed apps:
