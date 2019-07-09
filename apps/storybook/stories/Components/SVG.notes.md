@@ -9,7 +9,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 ## API
 
 ```js
-import { Svg } from 'expo';
+import Svg from 'react-native-svg';
 ```
 
 ### `Svg`

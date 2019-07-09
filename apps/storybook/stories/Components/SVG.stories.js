@@ -1,5 +1,5 @@
 import { color, number } from '@storybook/addon-knobs/react';
-import Svg from 'expo/build/Svg';
+import Svg from 'react-native-svg';
 import React from 'react';
 
 import { Section } from '../ui-explorer';

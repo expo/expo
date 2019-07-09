@@ -52,6 +52,7 @@
     "lodash": "^4.17.4",
     "react": "16.8.3",
     "react-native": "0.59.8",
+    "react-native-gesture-handler": "~1.3.0",
     "react-native-web": "^0.11.0",
     "sinon": "^7.1.1"
   },
