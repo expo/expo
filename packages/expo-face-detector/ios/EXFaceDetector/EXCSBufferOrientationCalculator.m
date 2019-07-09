@@ -6,7 +6,7 @@
 //  Copyright © 2017 650 Industries. All rights reserved.
 //
 
-#import <EXFaceDetector/CSBufferOrientationCalculator.h>
+#import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
 
 #define TRANSFORM_PI_2 CGAffineTransformMake(0, 1, -1, 0, 0, 0)
 #define TRANSFORM_PI CGAffineTransformMake(-1, 0, 0, -1, 0, 0)
@@ -74,7 +74,7 @@
  * Last think we need to remember is performing x or y symetry for when preview is mirrored (for front camera) in portrait or landscape orientation respectively.
  */
 
-@implementation CSBufferOrientationCalculator
+@implementation EXCSBufferOrientationCalculator
 
 + (CGAffineTransform)pointTransformForInterfaceOrientation:(UIInterfaceOrientation)orientation
                                             forBufferWidth:(CGFloat)bufferWidth
@@ -84,13 +84,13 @@
                                                andMirrored:(BOOL)mirrored
 {
   CGAffineTransform rotationTransform = CGAffineTransformConcat(
-                                                                [CSBufferOrientationCalculator rotationTransformForOrientation:orientation],
-                                                                [CSBufferOrientationCalculator transformForMirror:orientation forMirrored:mirrored]);
-  CGAffineTransform rotationWithTranslation = [CSBufferOrientationCalculator rotationWithTranslation:rotationTransform forVideoWidth:videoWidth forVideoHeight:videoHeight];
+                                                                [EXCSBufferOrientationCalculator rotationTransformForOrientation:orientation],
+                                                                [EXCSBufferOrientationCalculator transformForMirror:orientation forMirrored:mirrored]);
+  CGAffineTransform rotationWithTranslation = [EXCSBufferOrientationCalculator rotationWithTranslation:rotationTransform forVideoWidth:videoWidth forVideoHeight:videoHeight];
   
-  CGFloat scaleFactor = [CSBufferOrientationCalculator scaleForCropWithPreservingAspectRatioforBufferWidth:bufferWidth andBufferHeight:bufferHeight andVideoWidth:videoWidth andVideoHeight:videoHeight];
+  CGFloat scaleFactor = [EXCSBufferOrientationCalculator scaleForCropWithPreservingAspectRatioforBufferWidth:bufferWidth andBufferHeight:bufferHeight andVideoWidth:videoWidth andVideoHeight:videoHeight];
   
-  CGAffineTransform cropTranslation = [CSBufferOrientationCalculator cropTranslationsTransformationForRotation:rotationWithTranslation andScale:scaleFactor andBufferWidth:bufferWidth andBufferHeight:bufferHeight andVideoWidth:videoWidth andVideoHeight:videoHeight];
+  CGAffineTransform cropTranslation = [EXCSBufferOrientationCalculator cropTranslationsTransformationForRotation:rotationWithTranslation andScale:scaleFactor andBufferWidth:bufferWidth andBufferHeight:bufferHeight andVideoWidth:videoWidth andVideoHeight:videoHeight];
   CGAffineTransform rotationWithAllTranslations = CGAffineTransformConcat(rotationWithTranslation, cropTranslation);
   return CGAffineTransformScale(rotationWithAllTranslations, scaleFactor, scaleFactor);
 }

@@ -10,9 +10,9 @@
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceDetectorManager.h>
 #import <EXFaceDetector/EXFaceDetector.h>
-#import <EXFaceDetector/CSBufferOrientationCalculator.h>
+#import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
 #import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 static const NSString *kMinDetectionInterval = @"minDetectionInterval";
 
@@ -249,9 +249,10 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
     
     EXFaceDetectionAngleTransformBlock angleTransform = ^(float angle) { return -angle; };
     
-    CGAffineTransform transformation = [CSBufferOrientationCalculator pointTransformForInterfaceOrientation:_interfaceOrientation
-                                                                                             forBufferWidth:outputWidth andBufferHeight:outputHeight
-                                                                                              andVideoWidth:previewWidth andVideoHeight:previewHeight andMirrored:_mirroredImageSession];
+    CGAffineTransform transformation = [EXCSBufferOrientationCalculator pointTransformForInterfaceOrientation:_interfaceOrientation
+                                                                                               forBufferWidth:outputWidth andBufferHeight:outputHeight
+                                                                                                andVideoWidth:previewWidth andVideoHeight:previewHeight
+                                                                                                  andMirrored:_mirroredImageSession];
     
     FIRVisionImageMetadata* metadata = [EXFaceDetectorManager metadataForInterfaceOrientation:_interfaceOrientation andMirrored:_mirroredImageSession];
     
