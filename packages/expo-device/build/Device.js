@@ -1,10 +1,9 @@
 import ExpoDevice from './ExpoDevice';
 import { deviceNamesByCode } from './DeviceNameByCode';
-import { devicesWithNotch } from './DeviceWithNotchConst';
 import { Platform, UnavailabilityError } from '@unimodules/core';
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
-let modelName;
+let model;
 if (Platform.OS === 'ios') {
     let deviceName;
     let deviceId = ExpoDevice.deviceId;
@@ -26,60 +25,54 @@ if (Platform.OS === 'ios') {
             }
         }
     }
-    modelName = deviceName;
+    model = deviceName;
 }
 else {
-    modelName = ExpoDevice ? ExpoDevice.model : null;
+    model = ExpoDevice ? ExpoDevice.modelName : null;
 }
-export const model = modelName;
-export const systemName = ExpoDevice ? ExpoDevice.systemName : null;
+export const modelName = model;
+export const osName = ExpoDevice ? ExpoDevice.osName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
-export const uniqueId = ExpoDevice ? ExpoDevice.uniqueId : null;
-export const isTablet = ExpoDevice ? ExpoDevice.isTablet : null;
+export const isDevice = ExpoDevice ? ExpoDevice.isDevice : null;
 export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
-export const deviceId = ExpoDevice ? ExpoDevice.deviceId : null;
-export const supportedABIs = ExpoDevice ? ExpoDevice.supportedABIs : null;
-export function hasNotch() {
-    return devicesWithNotch.some(item => item.brand.toLowerCase() === ExpoDevice.brand.toLowerCase() &&
-        item.model.toLowerCase() ===
-            (Platform.OS === 'ios' ? modelName.toLowerCase() : ExpoDevice.model.toLowerCase()));
-}
-export async function getIpAddressAsync() {
-    return await ExpoDevice.getIpAddressAsync();
-}
-export async function getMACAddressAsync(interfaceName) {
-    if (Platform.OS === 'android') {
-        return await ExpoDevice.getMACAddressAsync(interfaceName);
+export const modelId = ExpoDevice ? ExpoDevice.modelId : null;
+export const supportedCPUArchitectures = ExpoDevice ? ExpoDevice.supportedCPUArchitectures : null;
+export const designName = ExpoDevice ? ExpoDevice.designName : null;
+export const systemBuildId = ExpoDevice ? ExpoDevice.systemBuildId : null;
+export const productName = ExpoDevice ? ExpoDevice.productName : null;
+export const platformAPILevel = ExpoDevice ? ExpoDevice.platformAPILevel : null;
+export const osVersion = ExpoDevice ? ExpoDevice.osVersion : null;
+export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
+export const osBuildFingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
+export const osBuildId = ExpoDevice ? ExpoDevice.deviceName : null;
+export async function hasPlatformFeatureAsync(feature) {
+    if (!ExpoDevice.hasPlatformFeatureAsync) {
+        throw new UnavailabilityError('expo-device', 'hasPlatformFeatureAsync');
     }
-    else {
-        return await ExpoDevice.getMACAddressAsync();
+    return await ExpoDevice.hasPlatformFeatureAsync(feature);
+}
+export async function getPlatformFeaturesAsync() {
+    if (!ExpoDevice.getPlatformFeaturesAsync) {
+        throw new UnavailabilityError('expo-device', 'getPlatformFeaturesAsync');
     }
+    return await ExpoDevice.getPlatformFeaturesAsync();
 }
-export async function isAirplaneModeEnabledAsync() {
-    if (!ExpoDevice.isAirplaneModeEnabledAsync) {
-        throw new UnavailabilityError('expo-device', 'isAirplaneModeEnabledAsync');
+export async function getMaxMemoryAsync() {
+    if (!ExpoDevice.getMaxMemoryAsync) {
+        throw new UnavailabilityError('expo-device', 'getMaxMemoryAsync');
     }
-    return await ExpoDevice.isAirplaneModeEnabledAsync();
+    return await ExpoDevice.getMaxMemoryAsync();
 }
-export async function hasSystemFeatureAsync(feature) {
-    if (!ExpoDevice.hasSystemFeatureAsync) {
-        throw new UnavailabilityError('expo-device', 'hasSystemFeatureAsync');
+export async function isSideLoadingEnabled() {
+    if (!ExpoDevice.isSideLoadingEnabled) {
+        throw new UnavailabilityError('expo-device', 'isSideLoadingEnabled');
     }
-    return await ExpoDevice.hasSystemFeatureAsync(feature);
+    return await ExpoDevice.isSideLoadingEnabled();
 }
-export async function hasLocalAuthenticationAsync() {
-    return await ExpoDevice.hasLocalAuthenticationAsync();
-}
-export async function getUserAgentAsync() {
-    return await ExpoDevice.getUserAgentAsync();
-}
-export async function getCarrierAsync() {
-    return await ExpoDevice.getCarrierAsync();
-}
-export async function getSystemAvailableFeaturesAsync() {
-    if (!ExpoDevice.getSystemAvailableFeaturesAsync) {
-        throw new UnavailabilityError('expo-device', 'getSystemAvailableFeaturesAsync');
+export async function getUptimeAsync() {
+    if (!ExpoDevice.getUptimeAsync) {
+        throw new UnavailabilityError('expo-device', 'getUptimeAsync');
     }
-    return await ExpoDevice.getSystemAvailableFeaturesAsync();
+    return await ExpoDevice.getUptimeAsync();
 }
 //# sourceMappingURL=Device.js.map

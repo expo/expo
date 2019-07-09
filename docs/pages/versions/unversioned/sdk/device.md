@@ -150,9 +150,9 @@ await Device.getPlatformFeaturesAsync().then(allFeatures => {
 });
 ```
 
-### `Device.hasPlatformFeaturesAsync(feature)` (Android Only)
+### `Device.hasPlatformFeatureAsync(feature)` (Android Only)
 
-Tells if the device has a specific system feature. Can get all available system features in `Device.getSystemAvailableFeaturesAsync()`.
+Tells if the device has a specific system feature. Can get all available system features in `Device.getSystemFeatureAsync()`.
 
 #### Arguments
 
@@ -165,7 +165,7 @@ Returns a `Promise<boolean>` that resolves the `boolean` value for whether the d
 **Examples**
 
 ```js
-await Device.hasPlatformFeaturesAsync('amazon.hardware.fire_tv'); // true or false
+await Device.hasPlatformFeatureAsync('amazon.hardware.fire_tv'); // true or false
 ```
 
 ### `Device.getMaxMemoryAsync()` (Android Only)
@@ -181,7 +181,7 @@ Returns a Promise that resolves the maximum available memory that the Java vm wi
 ```js
 Device.getMaxMemoryAsync().then(maxMemory => {
   //
-})
+});
 ```
 
 ### `Device.isSideLoadingEnabled()` (Android Only)
@@ -197,7 +197,7 @@ Returns a Promise that resolves to a boolean that represents whether the calling
 ```js
 Device.isSideLoadingEnabled().then({
   // true or false
-})
+});
 ```
 
 ### `Device.getUptimeAsync()`
@@ -212,8 +212,8 @@ Returns a promise that resolves to a number that represents the milliseconds sin
 
 ```js
 Device.getUptimeAsync().then(uptime => {
-  // 
-})
+  //
+});
 ```
 
 ## Enums
