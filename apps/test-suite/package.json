@@ -7,8 +7,9 @@
     "postinstall": "expo-yarn-workspaces postinstall",
     "test": "cd runner && yarn && cd .. && node runner/index.js .",
     "test:web": "node puppeteer-test/index.js",
+    "web": "expo start --web-only --web --https",
+    "openbrowser": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:19006",
     "test:web:ci": "cd puppeteer-test && yarn && cd .. && node puppeteer-test/index.js .",
-    "web": "webpack-dev-server -d --open --config webpack.ci.js --env.development=true",
     "web:serve": "serve ./web-build"
   },
   "author": "",
@@ -17,6 +18,7 @@
     "group": "client"
   },
   "dependencies": {
+    "@react-navigation/web": "^1.0.0-alpha.9",
     "async-retry": "^1.1.4",
     "expo": "^34.0.0-experiment.8",
     "expo-ads-admob": "^5.0.0-rc.0",
@@ -57,11 +59,10 @@
     "sinon": "^7.1.1"
   },
   "devDependencies": {
-    "@expo/webpack-config": "^0.1.4",
+    "@expo/xdl": "^56.0.0",
     "babel-loader": "^8.0.5",
     "expo-yarn-workspaces": "^1.0.0",
-    "serve": "^10.1.2",
-    "webpack-cli": "^3.3.0"
+    "serve": "^10.1.2"
   },
   "browserslist": [
     ">0.2%",
