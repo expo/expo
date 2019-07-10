@@ -24,7 +24,7 @@
   "expo-face-detector": "~6.0.0-rc.0",
   "expo-facebook": "~5.0.0",
   "expo-file-system": "~5.0.0",
-  "expo-font": "~5.0.0",
+  "expo-font": "~6.0.0-alpha.0",
   "expo-gl": "~5.0.0",
   "expo-gl-cpp": "~5.0.0",
   "expo-google-sign-in": "~5.0.0",

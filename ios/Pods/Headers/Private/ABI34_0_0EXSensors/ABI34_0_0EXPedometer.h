@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI34_0_0/EXSensors/ABI34_0_0EXSensors/Modules/ABI34_0_0EXPedometer.h
