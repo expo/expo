@@ -122,7 +122,7 @@ export default {
     let manifest, savedDevHomeUrl;
     try {
       savedDevHomeUrl = await getSavedDevHomeUrlAsync();
-      const sdkVersion = await this.TEMPORARY_SDK_VERSION(platform);
+      const sdkVersion = await this.TEMPORARY_SDK_VERSION();
 
       manifest = await getManifestAsync(savedDevHomeUrl, platform, sdkVersion);
 

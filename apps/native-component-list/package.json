@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.0.1",
+    "@react-native-community/netinfo": "^4.0.0",
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
     "expo": "^34.0.0-experiment.8",

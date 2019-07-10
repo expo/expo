@@ -1,0 +1,37 @@
+{
+  "name": "expo-payments-stripe",
+  "version": "5.0.0",
+  "description": "Provides support for payments through Stripe and Apple Pay on iOS (in ExpoKit and bare apps), and Stripe on Android (plus Android Pay with ExpoKit and bare apps).",
+  "main": "index.js",
+  "files": [
+    "android/",
+    "ios/",
+    "src/",
+    "index.js",
+    "unimodule.json"
+  ],
+  "keywords": [
+    "react-native",
+    "expo",
+    "payments-stripe",
+    "payments",
+    "stripe"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/payments/",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  },
+  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
+}
