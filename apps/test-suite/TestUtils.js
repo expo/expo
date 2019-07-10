@@ -21,7 +21,7 @@ function browserSupportsWebGL() {
 // the packager to pick them all up.
 export function getTestModules() {
   if (Platform.OS === 'web') {
-    const modules = [require('./tests/Crypto'), require('./tests/Random')];
+    const modules = [require('./tests/Crypto'), require('./tests/Font'), require('./tests/Random')];
 
     if (browserSupportsWebGL()) {
       modules.push(require('./tests/GLView'));
@@ -34,6 +34,7 @@ export function getTestModules() {
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/Crypto'),
+    require('./tests/Font'),
     require('./tests/FileSystem'),
     require('./tests/GLView'),
     require('./tests/Haptics'),
