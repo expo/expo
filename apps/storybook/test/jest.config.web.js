@@ -18,9 +18,7 @@ module.exports = {
   },
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>test/enzyme.config.js'],
-  transformIgnorePatterns: [
-    'node_modules/react-native-svg',
-  ],
+  transformIgnorePatterns: [],
   // snapshotSerializers: ['react-native-web/jest/serializer'],
   rootDir: '..',
 };
