@@ -16,12 +16,15 @@ export class component extends React.Component {
     accelerometerData: {},
     isAvailable: null,
   };
+  _isMounted = false;
 
   componentDidMount() {
+    this._isMounted = true;
     this._toggle();
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
     this._unsubscribe();
   }
 
@@ -43,7 +46,9 @@ export class component extends React.Component {
 
   _subscribe = () => {
     this._subscription = Accelerometer.addListener(accelerometerData => {
-      this.setState({ accelerometerData });
+      if (this._isMounted) {
+        this.setState({ accelerometerData });
+      }
     });
   };
 

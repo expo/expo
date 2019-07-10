@@ -13,9 +13,23 @@ export class component extends React.Component {
     type: Camera.Constants.Type.back,
   };
 
+  _isMounted = false;
+
   async componentDidMount() {
+    this._isMounted = true;
+    this._getPermissionAsync();
+  }
+
+  _getPermissionAsync = async () => {
     const { status } = await askAsync(CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
+
+    if (this._isMounted) {
+      this.setState({ hasCameraPermission: status === 'granted' });
+    }
+  };
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {

@@ -53,33 +53,41 @@ class ListButton extends React.Component {
 
 export class component extends React.Component {
   state = {};
+  _isMounted = false;
   async componentDidMount() {
+    this._isMounted = true;
     this.listener = ScreenOrientation.addOrientationChangeListener(
       ({ orientationInfo, orientationLock }) => {
-        this.setState({
-          orientation: orientationInfo.orientation,
-          orientationLock,
-        });
+        if (this._isMounted) {
+          this.setState({
+            orientation: orientationInfo.orientation,
+            orientationLock,
+          });
+        }
       }
     );
     const [orientation, orientationLock] = await Promise.all([
       ScreenOrientation.getOrientationAsync().then(({ orientation }) => orientation),
       ScreenOrientation.getOrientationLockAsync(),
     ]);
-    // update state
-    this.setState({
-      orientation,
-      orientationLock,
-    });
+    if (this._isMounted) {
+      // update state
+      this.setState({
+        orientation,
+        orientationLock,
+      });
+    }
   }
 
   updateOrientationAsync = async () => {
+    if (!this._isMounted) return;
     this.setState({
       orientation: (await ScreenOrientation.getOrientationAsync()).orientation,
     });
   };
 
   componentWillUnmount() {
+    this._isMounted = false;
     if (this.listener) {
       this.listener.remove();
     }
