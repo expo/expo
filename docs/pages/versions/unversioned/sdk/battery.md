@@ -2,7 +2,7 @@
 title: Battery
 ---
 
-Provide battery information for the physical device.
+This unimodule provides battery information for the physical device, as well as corresponding event listeners.
 
 ## Installation
 
@@ -34,7 +34,7 @@ Battery.getBatteryLevelAsync().then(batteryLevel => {
 
 ### `Battery.getPowerStateAsync()`
 
-Gets the power state of the device including the battery level, whether it is plugged in, and if the system is currently operating in low power mode (power saver in Android). Displays a warning on iOS if battery monitoring not enabled, or if attempted on an emulator (where monitoring is not possible)
+Gets the power state of the device including the battery level, whether it is plugged in, and if the system is currently operating in Low Power Mode (iOS) or Power Saver Mode (Android). Displays a warning on iOS if battery monitoring is not enabled, or if attempted on iOS simulator (where monitoring is not possible)
 
 #### Returns
 
@@ -49,7 +49,7 @@ Returns a promise with an object with the following fields:
 **Examples**
 
 ```js
-Battery.getPowerStateAsync().then(state => {
+Battery.getPowerStateAsync().then(powerState => {
   // {
   //   batteryLevel: 0.759999,
   //   batteryState: 'unplugged',
@@ -69,7 +69,7 @@ Tells the battery's current state.
 
 #### Returns
 
-Returns a `Promise` that resolves the `string` value for whether the device is any of the four state above.
+Returns a `Promise` that resolves to a `string` value for whether the device is any of the four state above.
 
 **Examples**
 
@@ -100,7 +100,7 @@ Battery.getLowPowerModeStatusAsync().then(lowPowerMode => {
 
 Subscribe to the battery level change updates.
 
-On iOS devices, the event would be fired when the battery level drop up to 1 percent, but once per minute at maximum.
+On iOS devices, the event would be fired when the battery level drops up to 1 percent, but is only fired once per minute at maximum.
 
 On Android devices, the event would be fired only when significant changes happens. When battery level dropped below `"android.intent.action.BATTERY_LOW"` or up to `"android.intent.action.BATTERY_OKAY"` from low battery level. Click [ here ](https://developer.android.com/training/monitoring-device-state/battery-monitoring) to view more explanation on the official docs.
 
@@ -110,11 +110,11 @@ On Android devices, the event would be fired only when significant changes happe
 
 #### Returns
 
-- An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
+- An `EventSubscription` object that you can call `remove()` on when you would like to unsubscribe from the listener.
 
 ### `Battery.watchBatteryStateChange(callback)`
 
-Subscribe to the battery state change updates. One of the four, `unplugged`, `full`, `unknown`, `charging` battery state will be returned.
+Subscribe to the battery state change updates. One of the four possible battery state values, `unplugged`, `full`, `unknown`, or `charging`, will be returned.
 
 #### Arguments
 
@@ -122,11 +122,11 @@ Subscribe to the battery state change updates. One of the four, `unplugged`, `fu
 
 #### Returns
 
-- An EventSubscription object that you can call remove() on when you would like to unsubscribe the listener.
+- An `EventSubscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
 
 ### `Battery.watchPowerModeChange(callback)`
 
-Subscribe to Low Power Mode (iOS) or Battery Saver Mode (Android) updates.
+Subscribe to Low Power Mode (iOS) or Battery Saver Mode (Android) updates. The event fired whenever the power mode is toggled.
 
 #### Arguments
 
@@ -150,6 +150,12 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
+    try {
+      let batteryLevel = await Battery.getBatteryLevelAsync();
+      this.setState({ batteryLevel });
+    } catch (e) {
+      console.log('Trouble getting battery info', e);
+    }
     this._subscribe();
   }
 
@@ -158,10 +164,9 @@ export default class App extends React.Component {
   }
 
   _subscribe = () => {
-    this._subscription = Battery.watchBatteryLevelChange(result => {
-      this.setState({
-        batteryLevel: result.batteryLevel,
-      });
+    this._subscription = Battery.watchBatteryLevelChange({ batteryLevel }) => {
+      this.setState({ batteryLevel });
+      console.log('batteryLevel changed!', batteryLevel);
     });
   };
 
