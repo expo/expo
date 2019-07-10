@@ -18,11 +18,11 @@ The primary account owner will always have Admin access.
 
 ### Publish
 Users with Publish access to an account will be able to create new
-releases with `exp publish` as well as create new platform builds with
-`exp build:android` or `exp build:ios`
+releases with `expo publish` as well as create new platform builds with
+`expo build:android` or `expo build:ios`
 
 You will need to add an [`owner` key](../../workflow/configuration/#owner)
-to your app.json to take advantage of publish permission.
+to your app.json to take advantage of the Publish permission.
 
 ### View
 Users with View permission will be able to load projects through the Expo
