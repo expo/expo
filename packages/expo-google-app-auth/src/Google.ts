@@ -146,11 +146,9 @@ export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult
   const guid = getPlatformGUID(config);
 
   const clientId = `${guid}.apps.googleusercontent.com`;
-  const reverseClientId = `com.googleusercontent.apps.${guid}`;
-  let redirectUrl;
-  if (!isInExpo) {
-    redirectUrl = config.redirectUrl || `${reverseClientId}:/oauth2redirect/google`;
-  }
+  let redirectUrl = config.redirectUrl
+    ? config.redirectUrl
+    : `${AppAuth.OAuthRedirect}:/oauth2redirect/google`;
   try {
     const logInResult = await AppAuth.authAsync({
       issuer: 'https://accounts.google.com',
