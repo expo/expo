@@ -134,6 +134,11 @@ UM_EXPORT_METHOD_AS(hasLocalAuthenticationAsync, hasLocalAuthenticationAsyncWith
   resolve(@(hasLocalAuthentication));
 }
 
+UM_EXPORT_METHOD_AS(getUptimeAsync, getUptimeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@"put the uptime here");
+}
+
 - (NSString *)deviceId
 {
   struct utsname systemInfo;
@@ -168,11 +173,6 @@ UM_EXPORT_METHOD_AS(hasLocalAuthenticationAsync, hasLocalAuthenticationAsyncWith
   }
 }
 
-- (bool) isTablet
-{
-  return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
-}
-
 - (NSString *)getCPUType {
   /* https://stackoverflow.com/questions/19859388/how-can-i-get-the-ios-device-cpu-architecture-in-runtime */
   const NXArchInfo *info = NXGetLocalArchInfo();
@@ -185,6 +185,22 @@ UM_EXPORT_METHOD_AS(hasLocalAuthenticationAsync, hasLocalAuthenticationAsyncWith
   return [NSNumber numberWithUnsignedLongLong:[NSProcessInfo processInfo].physicalMemory];
 }
 
+- (BOOL)isDevice
+{
+#if TARGET_IPHONE_SIMULATOR
+  return NO;
+#endif
+  return YES;
+}
+
+- (NSString *)osVersion {
+  return @"os version here";
+}
+
+- (NSString *)osBuildId {
+  return @"build id belongs here";
+}
+
 
 - (NSDictionary *)constantsToExport
 {
@@ -195,13 +211,15 @@ UM_EXPORT_METHOD_AS(hasLocalAuthenticationAsync, hasLocalAuthenticationAsyncWith
            @"brand": @"Apple",
            @"deviceType": UMNullIfNil([self deviceType]),
            @"deviceName": currentDevice.name,
-           @"deviceId": UMNullIfNil([self deviceId]),
-           @"isTablet": @([self isTablet]),
+           @"modelId": UMNullIfNil([self deviceId]),
+           @"isDevice": @([self isDevice]),
            @"manufacturer": @"Apple",
-           @"supportedABIs": @[[self getCPUType]],
-           @"systemName": currentDevice.systemName,
+           @"supportedCPUArchitectures": @[[self getCPUType]],
+           @"osName": currentDevice.systemName,
            @"totalMemory": [self totalMemory] ?: @(0),
            @"uniqueId": uniqueId,
+           @"osVersion": [self osVersion],
+           @"osBuildId": [self osBuildId]
            };
 }
 
