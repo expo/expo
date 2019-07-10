@@ -27,7 +27,7 @@
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
     _eventSuccessBlocks = [NSMutableDictionary dictionary];
     _eventFailureBlocks = [NSMutableDictionary dictionary];
-    _sdkVersions = params[@"supportedSdkVersions"];
+    _sdkVersions = params[@"constants"][@"supportedExpoSdks"];
     _delegate = kernelServiceInstance;
   }
   return self;

@@ -8,7 +8,7 @@ An API for handling complex gestures. From the project's README:
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://kmagiera.github.io/react-native-gesture-handler/docs/getting-started.html).
+To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-gesture-handler`. In bare apps, also follow the [react-native-gesture-handler linking and configuration instructions](https://kmagiera.github.io/react-native-gesture-handler/docs/getting-started.html).
 
 ## API
 

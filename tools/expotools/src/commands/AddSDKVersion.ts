@@ -5,17 +5,17 @@ import { Command } from '@expo/commander/typings';
 
 import * as IosVersioning from '../versioning/ios';
 import { getExpoRepositoryRootDir } from '../Directories';
-import { getNextSDKVersionAsync } from '../ProjectVersions';
+import { Platform, getNextSDKVersionAsync } from '../ProjectVersions';
 
-interface ActionOptions {
-  platform: string;
+type ActionOptions = {
+  platform: Platform;
   sdkVersion?: string;
   filenames?: string;
 }
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 
-async function getNextOrAskForSDKVersionAsync(platform: string): Promise<string | undefined> {
+async function getNextOrAskForSDKVersionAsync(platform: Platform): Promise<string | undefined> {
   const defaultSdkVersion = await getNextSDKVersionAsync(platform);
 
   if (defaultSdkVersion && process.env.CI) {

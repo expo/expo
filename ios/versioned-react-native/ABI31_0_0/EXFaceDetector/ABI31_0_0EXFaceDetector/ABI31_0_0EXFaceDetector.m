@@ -6,7 +6,7 @@
 //
 
 #import "ABI31_0_0EXFaceDetector.h"
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 @implementation ABI31_0_0EXFaceDetector
 {

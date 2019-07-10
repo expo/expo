@@ -50,7 +50,7 @@ async function action(options: ActionOptions) {
 
   if (!semver.valid(sdkVersion)) {
     console.error(chalk.red(`Provided SDK version ${chalk.cyan(sdkVersion)} is invalid.`));
-    return process.exit(1);
+    return;
   }
   if (!containsSdk) {
     const { addNewSdk } = await inquirer.prompt<{ addNewSdk: boolean }>([

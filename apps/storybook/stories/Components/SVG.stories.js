@@ -1,5 +1,5 @@
 import { color, number } from '@storybook/addon-knobs/react';
-import Svg from 'expo/build/Svg';
+import * as Svg from 'react-native-svg';
 import React from 'react';
 
 import { Section } from '../ui-explorer';
@@ -10,7 +10,7 @@ export const packageJson = require('expo/package.json');
 
 export const component = () => (
   <Section>
-    <Svg height={100} width={100}>
+    <Svg.Svg height={100} width={100}>
       <Svg.Circle
         cx={number('circle cx', 50)}
         cy={number('circle cy', 50)}
@@ -28,6 +28,6 @@ export const component = () => (
         stroke={color('rect stroke', 'red')}
         fill={color('rect fill', 'blue')}
       />
-    </Svg>
+    </Svg.Svg>
   </Section>
 );

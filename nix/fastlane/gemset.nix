@@ -117,20 +117,20 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0abdlwb64ns7ssmiqhdwgl27ly40x2l27l8hs8hn0z4kb3zd2x3v";
+      sha256 = "0lcqjsmixjp52bnlgzh4lg9ppsk52x9hpwdjd53k8jnbah2602h0";
       type = "gem";
     };
-    version = "0.5.20180417";
+    version = "0.5.20190701";
   };
   dotenv = {
     groups = ["default"];
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "13cis6bf06hmz744xrsl163p6gb78xcm8g8q4pcabsy5ywyv6kag";
+      sha256 = "1375dyawvcp81d94jkjwjjkj3j23gsp06cfwh15g695l4g3ssswc";
       type = "gem";
     };
-    version = "2.7.2";
+    version = "2.7.4";
   };
   emoji_regex = {
     groups = ["default"];
@@ -244,10 +244,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "09g0dwzhz4f74x5dq6dp1fm7sc7d0g0ry4533yih360isjrl4mcy";
+      sha256 = "0j25sy2qhybqfwsyh8j4m10z2x7dn2jmf1gwr1w2b90cmya4yrbd";
       type = "gem";
     };
-    version = "1.1.0";
+    version = "1.2.0";
   };
   google-cloud-storage = {
     dependencies = ["digest-crc" "google-api-client" "google-cloud-core" "googleauth"];
