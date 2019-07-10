@@ -47,7 +47,7 @@ export const productName = ExpoDevice ? ExpoDevice.productName : null;
 export const platformApiLevel = ExpoDevice ? ExpoDevice.platformApiLevel : null;
 export const osVersion = ExpoDevice ? ExpoDevice.osVersion : null;
 export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
-export const osBuildId = ExpoDevice ? ExpoDevice.deviceName : null;
+export const osBuildId = ExpoDevice ? ExpoDevice.osBuildId : null;
 export async function hasPlatformFeatureAsync(feature) {
     if (!ExpoDevice.hasPlatformFeatureAsync) {
         throw new UnavailabilityError('expo-device', 'hasPlatformFeatureAsync');
@@ -77,5 +77,11 @@ export async function getUptimeAsync() {
         throw new UnavailabilityError('expo-device', 'getUptimeAsync');
     }
     return await ExpoDevice.getUptimeAsync();
+}
+export async function isRootedAsync() {
+    if (!ExpoDevice.isRootedAsync) {
+        throw new UnavailabilityError('expo-device', 'isRootedAsync');
+    }
+    return await ExpoDevice.isRootedAsync();
 }
 //# sourceMappingURL=Device.js.map

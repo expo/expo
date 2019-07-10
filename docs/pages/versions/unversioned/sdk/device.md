@@ -80,7 +80,7 @@ import * as Device from 'expo-device';
 
   Gets the specific configuration or revision of the industrial design.
 
-  - Android: e.g., `""`
+  - Android: e.g., `"kminilte"`
 
 - `Device.systemBuildId: string` (Android only)
 
@@ -92,7 +92,7 @@ import * as Device from 'expo-device';
 
   Gets the device's overall product name. Chosen by the device implementer containing the development name or code name of the device.
 
-  - Android: e.g., `""`
+  - Android: e.g., `"kminiltexx"`
 
 - `Device.platformApiLevel: number` (Android only)
 
@@ -100,7 +100,7 @@ import * as Device from 'expo-device';
 
   - Android: e.g., `19`
 
-- `Device.osVersion: number`
+- `Device.osVersion: string`
 
   Gets the user-visible os version number.
 
@@ -125,7 +125,7 @@ import * as Device from 'expo-device';
 
   A string that identifies the build number of the operating system.
 
-  - `""`
+  - `"MMB29K"`
 
 ## Methods
 
