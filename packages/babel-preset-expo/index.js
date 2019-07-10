@@ -136,6 +136,8 @@ function getWebConfig(options = {}) {
 
   // Use internals from `module:metro-react-native-babel-preset` to create closer parity with react-native.
   const metroPlugins = [
+    // Not a part of metro but needed to emulate React Native
+    [require('@babel/plugin-proposal-decorators').default, { legacy: true }],
     // export v from 'mod';
     [require('@babel/plugin-proposal-export-default-from').default],
     //

@@ -14,3 +14,33 @@ exports[`composes with babel-plugin-module-resolver 1`] = `
 require(\\"react-native\\");
 require(\\"@expo/vector-icons\\");"
 `;
+
+exports[`metro aliases @expo/vector-icons 1`] = `
+"
+require(\\"@expo/vector-icons\\");
+require(\\"@expo/vector-icons\\");
+
+imposter.require('react-native-vector-icons');
+imposter.import('react-native-vector-icons');"
+`;
+
+exports[`metro composes with babel-plugin-module-resolver 1`] = `
+"
+require(\\"react-native\\");
+require(\\"@expo/vector-icons\\");"
+`;
+
+exports[`webpack aliases @expo/vector-icons 1`] = `
+"\\"use strict\\";
+require(\\"@expo/vector-icons\\");
+require(\\"@expo/vector-icons\\");
+
+imposter.require('react-native-vector-icons');
+imposter.import('react-native-vector-icons');"
+`;
+
+exports[`webpack composes with babel-plugin-module-resolver 1`] = `
+"\\"use strict\\";
+require(\\"react-native\\");
+require(\\"@expo/vector-icons\\");"
+`;
