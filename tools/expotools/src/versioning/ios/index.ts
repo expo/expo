@@ -460,7 +460,7 @@ async function generatePodfileDepsAsync(
     yogaPodDependency = `pod '${versionedPodNames.yoga}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/ReactCommon/${versionName}yoga'`;
   }
   const versionableUniversalModulesPods = (await getListOfPackagesAsync())
-    .filter(pkg => pkg.isVersionableOnPlatform('ios'))
+    .filter(pkg => pkg.isVersionableOnPlatform('ios') && pkg.isIncludedInExpoClientOnPlatform('ios'))
     .map(pkg => `pod '${versionedPodNames[pkg.podspecName!]}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/${pkg.podspecName}'`)
     .join('\n    ');
 
