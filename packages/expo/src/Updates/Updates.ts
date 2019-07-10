@@ -53,7 +53,7 @@ export async function clearUpdateCacheAsync(abiVersion: string) : Promise<void> 
   if (!ExponentUpdates.clearUpdateCacheAsync) {
     throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
   }
-  await ExponentUpdates.clearUpdateCacheAsync(abiVersion);
+  return ExponentUpdates.clearUpdateCacheAsync(abiVersion);
 }
 
 let _emitter: EventEmitter | null;

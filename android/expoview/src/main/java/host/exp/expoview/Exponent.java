@@ -485,21 +485,20 @@ public class Exponent {
 
   // As OTAs piles up, the JS bundles will consume quite an amount of storage space
   // App developers, if find needed, can purge all the existing cache
-  public void clearAllJSBundleCache(final String abiVersion) {
+  public boolean clearAllJSBundleCache(final String abiVersion) throws IOException {
     final File filesDir = mContext.getFilesDir();
     final File directory = new File(filesDir, abiVersion);
     if (!ABIVERSION_PATTERN.matcher(abiVersion).matches()) {
-      return;
+      return false;
     }
-    try {
-      if (!directory.getCanonicalPath().startsWith(filesDir.getCanonicalPath())) {
-        return;
-      }
-    } catch (IOException e) {
-      return;
+    if (!directory.getCanonicalPath().startsWith(filesDir.getCanonicalPath())) {
+      return false;
     }
     if (directory.exists()) {
       directory.delete();
+      return true;
+    } else {
+      return false;
     }
   }
 
