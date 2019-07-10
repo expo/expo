@@ -70,8 +70,8 @@ let storiesCache = {};
 
 export function loadStory(filename, req, mdreq) {
   const _mdreq = mdreq || requireContext('../stories', true, /\.notes\.md$/);
-  const module = req(filename);
-  if (!module.component) {
+  const moduleScreen = req(filename);
+  if (!moduleScreen.component) {
     return;
   }
   let {
@@ -83,11 +83,11 @@ export function loadStory(filename, req, mdreq) {
     title,
     kind,
     onStoryCreated,
-  } = module;
+  } = moduleScreen;
 
   let markdown = notes;
   if (!notes) {
-    const mdPath = filename.substr(0, filename.lastIndexOf('.stories')) + '.notes.md';
+    const mdPath = filename.substring(0, filename.lastIndexOf('.stories')) + '.notes.md';
     markdown = _mdreq(mdPath);
   }
 
@@ -108,7 +108,7 @@ export function loadStory(filename, req, mdreq) {
   const storiesKind = kind || 'SDK|' + filename.split('/')[1];
   let stories = storiesCache[storiesKind];
   if (!stories) {
-    stories = storiesOf(storiesKind, global.module);
+    stories = storiesOf(storiesKind, module);
     storiesCache[storiesKind] = stories;
   }
   stories.add(title, screen, {

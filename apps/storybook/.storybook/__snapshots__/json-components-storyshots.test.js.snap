@@ -199,7 +199,6 @@ exports[`JSON-Components Expo|Getting Started Contributing 1`] = `
                   className="css-1k4n0zb"
                 >
                   <pre
-                    padded={false}
                     style={
                       Object {
                         "background": "rgba(0,0,0,0)",
@@ -407,7 +406,6 @@ exports[`JSON-Components Expo|Getting Started Contributing 1`] = `
                   className="css-1k4n0zb"
                 >
                   <pre
-                    padded={false}
                     style={
                       Object {
                         "background": "rgba(0,0,0,0)",
@@ -616,7 +614,6 @@ exports[`JSON-Components Expo|Getting Started Contributing 1`] = `
                   className="css-1k4n0zb"
                 >
                   <pre
-                    padded={false}
                     style={
                       Object {
                         "background": "rgba(0,0,0,0)",
@@ -814,7 +811,6 @@ exports[`JSON-Components Expo|Getting Started Contributing 1`] = `
                   className="css-1k4n0zb"
                 >
                   <pre
-                    padded={false}
                     style={
                       Object {
                         "background": "rgba(0,0,0,0)",
@@ -1016,7 +1012,6 @@ exports[`JSON-Components Expo|Getting Started Contributing 1`] = `
                   className="css-1k4n0zb"
                 >
                   <pre
-                    padded={false}
                     style={
                       Object {
                         "background": "rgba(0,0,0,0)",
@@ -1214,7 +1209,6 @@ exports[`JSON-Components Expo|Getting Started Contributing 1`] = `
                   className="css-1k4n0zb"
                 >
                   <pre
-                    padded={false}
                     style={
                       Object {
                         "background": "rgba(0,0,0,0)",
@@ -1412,7 +1406,6 @@ exports[`JSON-Components Expo|Getting Started Contributing 1`] = `
                   className="css-1k4n0zb"
                 >
                   <pre
-                    padded={false}
                     style={
                       Object {
                         "background": "rgba(0,0,0,0)",

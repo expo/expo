@@ -160,7 +160,6 @@ export default class CopyableCode extends Component {
     children: PropTypes.node.isRequired,
     copyable: PropTypes.bool,
     bordered: PropTypes.bool,
-    padded: PropTypes.bool,
     format: PropTypes.bool,
     className: PropTypes.string,
   };
@@ -169,7 +168,6 @@ export default class CopyableCode extends Component {
     language: 'jsx',
     copyable: false,
     bordered: false,
-    padded: false,
     format: true,
     className: null,
   };
@@ -215,18 +213,14 @@ export default class CopyableCode extends Component {
   };
 
   render() {
-    const { children, language, copyable, bordered, padded, format, className } = this.props;
+    const { children, language, copyable, bordered, format, className } = this.props;
 
     const { copied } = this.state;
 
     return children ? (
-      <Wrapper bordered={bordered} padded={padded} className={className}>
+      <Wrapper bordered={bordered} className={className}>
         <Scroller>
-          <SyntaxHighlighter
-            style={atomOneLight}
-            language={language}
-            padded={false}
-            lineNumberContainerStyle={{}}>
+          <SyntaxHighlighter style={atomOneLight} language={language} lineNumberContainerStyle={{}}>
             {format ? this.formatCode(language, children.trim()) : children.trim()}
           </SyntaxHighlighter>
         </Scroller>
