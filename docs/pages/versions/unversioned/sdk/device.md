@@ -125,7 +125,7 @@ import * as Device from 'expo-device';
 
   A string that identifies the build number of the operating system.
 
-  - `"MMB29K"`
+  - Android: Either a changelist number, or a label like `"M4-rc20"` or `"MMB29K"`. Referenced from Android docs (https://developer.android.com/reference/android/os/Build.html#ID)
 
 ## Methods
 
