@@ -1,11 +1,11 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import { addDecorator, addParameters, configure } from '@storybook/react';
-import { create, themes } from '@storybook/theming';
+import { create } from '@storybook/theming';
 import * as React from 'react';
 import requireContext from 'require-context.macro';
-import Markdown from '../stories/ui-explorer/Markdown';
-import UIExplorer, { storiesOf } from '../stories/ui-explorer';
+
 import centered from './decorator-centered';
+import loadStory from './loadStory';
 
 addDecorator(centered);
 
@@ -66,58 +66,6 @@ addParameters({
   },
 });
 
-let storiesCache = {};
-
-export function loadStory(filename, req, mdreq) {
-  const _mdreq = mdreq || requireContext('../stories', true, /\.notes\.md$/);
-  const moduleScreen = req(filename);
-  if (!moduleScreen.component) {
-    return;
-  }
-  let {
-    component: Component,
-    packageJson = {},
-    notes,
-    label,
-    description,
-    title,
-    kind,
-    onStoryCreated,
-  } = moduleScreen;
-
-  let markdown = notes;
-  if (!notes) {
-    const mdPath = filename.substring(0, filename.lastIndexOf('.stories')) + '.notes.md';
-    markdown = _mdreq(mdPath);
-  }
-
-  if (Component === true && markdown) {
-    Component = () => <Markdown>{markdown}</Markdown>;
-  }
-  const screen = (props = {}) => (
-    <UIExplorer
-      title={title}
-      url={filename}
-      label={label}
-      description={description || packageJson.description}
-      packageName={packageJson.name}>
-      <Component {...props} />
-    </UIExplorer>
-  );
-
-  const storiesKind = kind || 'SDK|' + filename.split('/')[1];
-  let stories = storiesCache[storiesKind];
-  if (!stories) {
-    stories = storiesOf(storiesKind, module);
-    storiesCache[storiesKind] = stories;
-  }
-  stories.add(title, screen, {
-    notes: { markdown },
-  });
-  if (onStoryCreated) {
-    onStoryCreated({ stories });
-  }
-}
 
 function loadStories() {
   // automatically import all story js files that end with *.stories.js

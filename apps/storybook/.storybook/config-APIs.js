@@ -1,4 +1,4 @@
-import { loadStory } from './config';
+import loadStory from './loadStory';
 import requireContext from 'require-context.macro';
 import { addDecorator, addParameters, configure } from '@storybook/react';
 
