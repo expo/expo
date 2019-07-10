@@ -19,6 +19,7 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -174,7 +175,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public void isSideLoadingEnabled(Promise promise) {
     boolean enabled;
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      if(Settings.Global.getInt(null, Settings.Global.INSTALL_NON_MARKET_APPS, 0) == 1){
+      if(Settings.Global.getInt(mContext.getApplicationContext().getContentResolver(), Settings.Global.INSTALL_NON_MARKET_APPS, 0) == 1){
        enabled =  true;
       }
       else{
@@ -190,6 +191,25 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public void getUptimeAsync(Promise promise) {
     Long uptime = SystemClock.uptimeMillis();
     promise.resolve(uptime.doubleValue());
+  }
+
+  @ExpoMethod
+  public void isRootedAsync(Promise promise) {
+      boolean isRooted = false;
+      boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
+      String buildTags = Build.TAGS;
+      if(isDevice && buildTags != null && buildTags.contains("test-keys")) {
+        isRooted = true;
+      } else {
+        File file = new File("/system/app/Superuser.apk");
+        if(file.exists()) {
+          isRooted = true;
+        } else {
+          file = new File("/system/xbin/su");
+          isRooted =  isDevice && file.exists();
+        }
+      }
+      promise.resolve(isRooted);
   }
 
   @ExpoMethod
