@@ -45,10 +45,6 @@ export default {
   get isHeadless(): false {
     return false;
   },
-  get isDevice(): true {
-    // TODO: Bacon: Possibly want to add information regarding simulators
-    return true;
-  },
   get isDetached(): false {
     return false;
   },
@@ -61,11 +57,6 @@ export default {
   },
   get expoRuntimeVersion(): string {
     return ExpoPackageJson.version;
-  },
-  get deviceName(): string | undefined {
-    const { browser, engine, os: OS } = parser.getResult();
-
-    return browser.name || engine.name || OS.name || undefined;
   },
   get nativeAppVersion(): null {
     return null;
