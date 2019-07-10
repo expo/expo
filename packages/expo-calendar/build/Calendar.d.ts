@@ -86,7 +86,7 @@ export declare type Attendee = {
 };
 export declare type Alarm = {
     absoluteDate?: string;
-    relativeOffset?: string;
+    relativeOffset?: number;
     structuredLocation?: {
         title?: string;
         proximity?: string;
