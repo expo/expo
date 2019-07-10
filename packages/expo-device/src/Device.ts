@@ -1,12 +1,12 @@
 import ExpoDevice from './ExpoDevice';
 
 import { deviceNamesByCode } from './DeviceNameByCode';
-
 import { Platform, UnavailabilityError } from '@unimodules/core';
 
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 let model;
+let fingerprint;
 if (Platform.OS === 'ios') {
   let deviceName;
   let deviceId = ExpoDevice.deviceId;
@@ -26,9 +26,12 @@ if (Platform.OS === 'ios') {
     }
   }
   model = deviceName;
+  fingerprint = null;
 } else {
   model = ExpoDevice ? ExpoDevice.modelName : null;
+  fingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
 }
+export const osBuildFingerprint = fingerprint;
 export const modelName = model;
 export const osName = ExpoDevice ? ExpoDevice.osName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
@@ -39,12 +42,10 @@ export const supportedCPUArchitectures = ExpoDevice ? ExpoDevice.supportedCPUArc
 export const designName = ExpoDevice ? ExpoDevice.designName : null;
 export const systemBuildId = ExpoDevice ? ExpoDevice.systemBuildId : null;
 export const productName = ExpoDevice ? ExpoDevice.productName : null;
-export const platformAPILevel = ExpoDevice ? ExpoDevice.platformAPILevel : null;
+export const platformApiLevel = ExpoDevice ? ExpoDevice.platformApiLevel : null;
 export const osVersion = ExpoDevice ? ExpoDevice.osVersion : null;
 export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
-export const osBuildFingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
 export const osBuildId = ExpoDevice ? ExpoDevice.deviceName : null;
-
 
 export async function hasPlatformFeatureAsync(feature: string): Promise<boolean> {
   if (!ExpoDevice.hasPlatformFeatureAsync) {
@@ -52,7 +53,6 @@ export async function hasPlatformFeatureAsync(feature: string): Promise<boolean>
   }
   return await ExpoDevice.hasPlatformFeatureAsync(feature);
 }
-
 
 export async function getPlatformFeaturesAsync(): Promise<string[]> {
   if (!ExpoDevice.getPlatformFeaturesAsync) {

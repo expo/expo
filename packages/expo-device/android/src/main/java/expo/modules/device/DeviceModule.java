@@ -3,22 +3,14 @@ package expo.modules.device;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.FeatureInfo;
-import android.content.pm.PackageManager;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.Bundle;
-import android.util.Log;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.Settings;
-import android.app.KeyguardManager;
-import android.os.StatFs;
-import android.telephony.TelephonyManager;
 import android.app.ActivityManager;
 import android.app.UiModeManager;
 import android.view.WindowManager;
 import android.util.DisplayMetrics;
 import android.content.res.Configuration;
+import android.os.SystemClock;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -27,17 +19,13 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.Runtime;
 
-public class DeviceModule extends ExportedModule implements RegistryLifecycleListener{
+public class DeviceModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String NAME = "ExpoDevice";
   private static final String TAG = DeviceModule.class.getSimpleName();
 
@@ -69,16 +57,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
 
-  private WifiInfo getWifiInfo() {
-    try {
-      WifiManager manager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-      return manager.getConnectionInfo();
-    } catch (NullPointerException e) {
-      Log.e(TAG, e.getMessage());
-      throw e;
-    }
-  }
-
   @Override
   public String getName() {
     return NAME;
@@ -97,10 +75,17 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
     constants.put("brand", Build.BRAND);
     constants.put("manufacturer", Build.MANUFACTURER);
-    constants.put("model", Build.MODEL);
-    constants.put("systemName", this.getSystemName());
-    constants.put("uniqueId", Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
-    constants.put("supportedABIs", Build.SUPPORTED_ABIS);
+    constants.put("modelName", Build.MODEL);
+    constants.put("osName", this.getSystemName());
+    constants.put("supportedCPUArchitectures", Build.SUPPORTED_ABIS);
+    constants.put("designName", Build.DEVICE);
+    constants.put("systemBuildId", Build.DISPLAY);
+    constants.put("productName", Build.PRODUCT);
+    constants.put("platformApiLevel", Build.VERSION.SDK_INT);
+    constants.put("osVersion", Build.VERSION.RELEASE);
+    constants.put("deviceName", Settings.Secure.getString(mContext.getContentResolver(), "bluetooth_name"));
+    constants.put("osBuildFingerprint", Build.FINGERPRINT);
+    constants.put("osBuildId", Build.ID);
 
     ActivityManager actMgr = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
@@ -109,11 +94,18 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
     DeviceType mDeviceType = getDeviceType(mContext);
     constants.put("deviceType", mDeviceType.getValue());
-    constants.put("isTablet", mDeviceType.getValue().equals("Tablet"));
+    constants.put("isDevice", !isRunningOnGenymotion() && !isRunningOnStockEmulator());
 
     return constants;
   }
 
+  private static boolean isRunningOnGenymotion() {
+    return Build.FINGERPRINT.contains("vbox");
+  }
+
+  private static boolean isRunningOnStockEmulator() {
+    return Build.FINGERPRINT.contains("generic");
+  }
 
   private String getSystemName() {
     String systemName = "";
@@ -168,97 +160,40 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void getIpAddressAsync(Promise promise) {
-    try {
-      Integer ipAddress = getWifiInfo().getIpAddress();
-      // Convert little-endian to big-endianif needed
-      if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
-        ipAddress = Integer.reverseBytes(ipAddress);
-      }
-      byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
-      String ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
-      promise.resolve(ipAddressString);
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject("ERR_DEVICE", "Unknown Host Exception");
-    }
-  }
-
-  @ExpoMethod
-  public void getMACAddressAsync(String interfaceName, Promise promise) {
-    String permission = "android.permission.INTERNET";
-    int res = mContext.checkCallingOrSelfPermission(permission);
-
-    String macAddress = "";
-    if (res == PackageManager.PERMISSION_GRANTED) {
-      try {
-        List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-        for (NetworkInterface intf : interfaces) {
-          if (interfaceName != null) {
-            if (!intf.getName().equalsIgnoreCase(interfaceName)) continue;
-          }
-          byte[] mac = intf.getHardwareAddress();
-          if (mac == null) {
-            macAddress = null;
-          }
-          StringBuilder buf = new StringBuilder();
-          for (byte aMac : mac) {
-            buf.append(String.format("%02X:", aMac));
-          }
-          if (buf.length() > 0) {
-            buf.deleteCharAt(buf.length() - 1);
-          }
-          macAddress = buf.toString();
-          promise.resolve(macAddress);
-          break;
-        }
-        //catch undefined network interface name
-        promise.reject("ERR_DEVICE", "Undefined interface name");
-      } catch (Exception e) {
-        Log.e(TAG, e.getMessage());
-        promise.reject("ERR_DEVICE", "Socket exception");
-      }
-    } else {
-      promise.reject("ERR_DEVICE", "No permission granted to access the Internet");
-    }
-  }
-
-  @ExpoMethod
-  public void isAirplaneModeEnabledAsync(Promise promise) {
-    boolean isAirPlaneMode = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
-    promise.resolve(isAirPlaneMode);
-  }
-
-  @ExpoMethod
-  public void hasSystemFeatureAsync(String feature, Promise promise) {
+  public void hasPlatformFeatureAsync(String feature, Promise promise) {
     promise.resolve(mContext.getApplicationContext().getPackageManager().hasSystemFeature(feature));
   }
 
   @ExpoMethod
-  public void hasLocalAuthenticationAsync(Promise promise) {
-    KeyguardManager keyguardManager = (KeyguardManager) mContext.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE); //api 16+
-    promise.resolve(keyguardManager.isKeyguardSecure());
+  public void getMaxMemoryAsync(Promise promise) {
+    Long maxMemory = Runtime.getRuntime().maxMemory();
+    promise.resolve(maxMemory.doubleValue());
   }
 
   @ExpoMethod
-  public void getUserAgentAsync(Promise promise) {
-    String userAgent = System.getProperty("http.agent");
-    promise.resolve(userAgent);
-  }
-
-  @ExpoMethod
-  public void getCarrierAsync(Promise promise) {
-    try {
-      TelephonyManager telMgr = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-      promise.resolve(telMgr.getNetworkOperatorName());
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject("ERR_DEVICE", "Null pointer exception");
+  public void isSideLoadingEnabled(Promise promise) {
+    boolean enabled;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      if(Settings.Global.getInt(null, Settings.Global.INSTALL_NON_MARKET_APPS, 0) == 1){
+       enabled =  true;
+      }
+      else{
+        enabled = false;
+      }
+    } else {
+      enabled = mContext.getApplicationContext().getPackageManager().canRequestPackageInstalls();
     }
+    promise.resolve(enabled);
   }
 
   @ExpoMethod
-  public void getSystemAvailableFeaturesAsync(Promise promise) {
+  public void getUptimeAsync(Promise promise) {
+    Long uptime = SystemClock.uptimeMillis();
+    promise.resolve(uptime.doubleValue());
+  }
+
+  @ExpoMethod
+  public void getPlatformFeaturesAsync(Promise promise) {
     FeatureInfo[] allFeatures = mContext.getApplicationContext().getPackageManager().getSystemAvailableFeatures();
     List<String> featureString = new ArrayList<>();
     for (int i = 0; i < allFeatures.length; i++) {
