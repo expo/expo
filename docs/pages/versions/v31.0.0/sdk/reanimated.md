@@ -6,10 +6,6 @@ This API simplifies the process of creating smooth, powerful, and maintainable a
 
 > It provides a more comprehensive, low level abstraction for the Animated library API to be built on top of and hence allow for much greater flexibility especially when it comes to gesture based interactions.
 
-## Installation
-
-To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-reanimated`. In bare apps, you should also follow the [react-native-reanimated linking and configuration instructions](https://github.com/kmagiera/react-native-reanimated#getting-started).
-
 ## API Usage
 
 You should refer to the [react-native-reanimated docs](https://github.com/kmagiera/react-native-reanimated#reanimated-overview) for more information on the API and its usage. But the following example (courtesy of that repo) is a quick way to get started.
