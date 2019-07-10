@@ -10,7 +10,7 @@ import ExpoFontLoader from './ExpoFontLoader';
 type FontSource = string | number | Asset;
 
 const isWeb = Platform.OS === 'web';
-const isInClient = Constants.appOwnership === 'expo';
+const isInClient = !isWeb && Constants.appOwnership === 'expo';
 
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};

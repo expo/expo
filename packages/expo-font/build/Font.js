@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { Platform } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
 const isWeb = Platform.OS === 'web';
-const isInClient = Constants.appOwnership === 'expo';
+const isInClient = !isWeb && Constants.appOwnership === 'expo';
 const loaded = {};
 const loadPromises = {};
 function fontFamilyNeedsScoping(name) {
