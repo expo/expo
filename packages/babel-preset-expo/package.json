@@ -10,7 +10,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/expo/expo.git"
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/babel-preset-expo"
   },
   "keywords": [
     "babel",
@@ -35,12 +36,24 @@
     ]
   },
   "dependencies": {
-    "@babel/core": "^7.1.0",
-    "@babel/plugin-proposal-decorators": "^7.1.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.4.4",
+    "@babel/core": "7.4.3",
+    "@babel/plugin-proposal-class-properties": "7.4.0",
+    "@babel/plugin-proposal-decorators": "7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.4.3",
+    "@babel/plugin-syntax-dynamic-import": "7.2.0",
+    "@babel/plugin-transform-classes": "7.4.3",
+    "@babel/plugin-transform-destructuring": "7.4.3",
+    "@babel/plugin-transform-flow-strip-types": "7.4.0",
+    "@babel/plugin-transform-react-constant-elements": "7.2.0",
+    "@babel/plugin-transform-runtime": "7.4.3",
     "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "7.3.3",
+    "@babel/runtime": "7.4.3",
+    "babel-plugin-dynamic-import-node": "2.2.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-react-native-web": "^0.11.2",
+    "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "metro-react-native-babel-preset": "^0.51.1"
   },
   "devDependencies": {
