@@ -1,4 +1,27 @@
+import Constants from 'expo-constants';
+
 export default {
+  async getExpoPushTokenAsync(): Promise<string> {
+    const data = await this.subscribeUserToPush();
+    const tokenArguments: { [key: string]: string } = {
+      deviceId: Constants.installationId,
+      // TODO: Anything preventing us from using `Constants.manifest.slug` here?
+      experienceId: Constants.manifest.slug!,
+      appId: Constants.manifest.slug!,
+      deviceToken: JSON.stringify(data),
+      type: 'web',
+    };
+
+    // TODO: Use production URL
+    const response = await fetch('http://expo.test/--/api/v2/push/getExpoPushToken', {
+      method: 'POST',
+      body: JSON.stringify(tokenArguments),
+    }).then(response => response.json());
+
+    // TODO: Error handling
+    return response.data.expoPushToken;
+  },
+
   async getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
     const data = await this.subscribeUserToPush();
     return { type: 'web', data: data };
@@ -13,8 +36,17 @@ export default {
       ),
     };
     const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
-    console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-    return pushSubscription;
+    const pushSubscriptionJson = pushSubscription.toJSON();
+
+    const subscriptionObject = {
+      endpoint: pushSubscriptionJson.endpoint,
+      keys: {
+        p256dh: pushSubscriptionJson.keys!.p256dh,
+        auth: pushSubscriptionJson.keys!.auth,
+      },
+    };
+    console.log('subscriptionObject: ', JSON.stringify(subscriptionObject));
+    return subscriptionObject;
   },
 
   // https://github.com/web-push-libs/web-push#using-vapid-key-for-applicationserverkey
