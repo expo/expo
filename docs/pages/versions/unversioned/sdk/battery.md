@@ -81,7 +81,7 @@ Battery.getBatteryStateAsync().then(batteryState => {
 
 ### `Battery.getLowPowerModeStatusAsync()`
 
-Gets the current status of Low Power mode on iOS and Battery Saver mode on Android. 
+Gets the current status of Low Power mode on iOS and Power Saver mode on Android. 
 
 #### Returns 
 
@@ -89,7 +89,7 @@ Returns a `Promise` that resolves to a `string` value of either `on` or `off`, i
 
 **Examples** 
 
-Low Power Mode (iOS) or Battery Saver Mode (Android) are enabled.
+Low Power Mode (iOS) or Power Saver Mode (Android) are enabled.
 ```js
 Battery.getLowPowerModeStatusAsync().then(lowPowerMode => {
   // 'on'
@@ -126,11 +126,11 @@ Subscribe to the battery state change updates. One of the four possible battery 
 
 ### `Battery.watchPowerModeChange(callback)`
 
-Subscribe to Low Power Mode (iOS) or Battery Saver Mode (Android) updates. The event fired whenever the power mode is toggled.
+Subscribe to Low Power Mode (iOS) or Power Saver Mode (Android) updates. The event fired whenever the power mode is toggled.
 
 #### Arguments
 
-- **callback (_function_)** A callback that is invoked when Low Power Mode (iOS) or Battery Saver Mode (Android) changes. The callback is provided a single argument that is an object with a `lowPowerMode` key.
+- **callback (_function_)** A callback that is invoked when Low Power Mode (iOS) or Power Saver Mode (Android) changes. The callback is provided a single argument that is an object with a `lowPowerMode` key.
 
 #### Returns
 
