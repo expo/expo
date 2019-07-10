@@ -86,7 +86,7 @@ import * as Device from 'expo-device';
 
   Gets the build ID string meant for displaying to the user
 
-  - Android: e.g., `""`
+  - Android: e.g., `"PSR1.180720.075"`
 
 - `Device.productName: string` (Android only)
 
@@ -94,7 +94,7 @@ import * as Device from 'expo-device';
 
   - Android: e.g., `""`
 
-- `Device.platformAPILevel: number` (Android only)
+- `Device.platformApiLevel: number` (Android only)
 
   Gets the SDK version of the software currently running on this hardware device. This value never changes while a device is booted, but it may increase when the hardware manufacturer provides an OTA update. Click [here](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html) to see all possible version codes and corresponding versions.
 
@@ -119,7 +119,7 @@ import * as Device from 'expo-device';
 
   $(BRAND)/$(PRODUCT)/$(DEVICE)/$(BOARD):$(VERSION.RELEASE)/$(ID)/$(VERSION.INCREMENTAL):$(TYPE)/\$(TAGS)
 
-  - `""`
+  - `"google/sdk_gphone_x86/generic_x86:9/PSR1.180720.075/5124027:user/release-keys"`
 
 - `Device.osBuildId: string`
 
@@ -180,7 +180,7 @@ Returns a Promise that resolves the maximum available memory that the Java vm wi
 
 ```js
 Device.getMaxMemoryAsync().then(maxMemory => {
-  //
+  // 402653184
 });
 ```
 
@@ -212,7 +212,7 @@ Returns a promise that resolves to a number that represents the milliseconds sin
 
 ```js
 Device.getUptimeAsync().then(uptime => {
-  //
+  // 4371054
 });
 ```
 
