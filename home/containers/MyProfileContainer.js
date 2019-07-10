@@ -24,7 +24,6 @@ const MyProfileQuery = gql`
         fullName
         iconUrl
         lastPublishedTime
-        likeCount
         name
         packageName
         privacy
@@ -34,9 +33,6 @@ const MyProfileQuery = gql`
         description
         fullName
         slug
-      }
-      likes(limit: 15, offset: 0) {
-        id
       }
     }
   }
