@@ -5,8 +5,10 @@ export type PowerState = {
 };
 
 export type batteryLevel = { batteryLevel: number };
-export type BatteryLevelUpdateCallback = (level: batteryLevel) => void;
-export type BatteryStateUpdateCallback = (batteryState: string) => void;
-export type isLowPowerMode = { isLowPowerMode: boolean };
-export type PowerModeUpdateCallback = (isLowPowerMode: boolean) => void;
+export type batteryState = { batteryState: string };
+export type lowPowerMode = { lowPowerMode: string };
+
+export type BatteryLevelUpdateCallback = (batteryLevel: batteryLevel) => void;
+export type BatteryStateUpdateCallback = (batteryState: batteryState) => void;
+export type PowerModeUpdateCallback = (lowPowerMode: lowPowerMode) => void;
 export type BatteryListener = { remove: () => void };

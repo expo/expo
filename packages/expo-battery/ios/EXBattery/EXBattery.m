@@ -109,7 +109,8 @@ UM_EXPORT_MODULE(ExpoBattery);
   }
   
   float batteryLevel = [[self getPowerState][@"batteryLevel"] floatValue];
-  [_eventEmitter sendEventWithName:@"Expo.batteryLevelDidChange" body:@(batteryLevel)];
+  NSDictionary *result = @{@"batteryLevel": @(batteryLevel)};
+  [_eventEmitter sendEventWithName:@"Expo.batteryLevelDidChange" body:result];
 }
 
 - (void)batteryStateDidChange:(NSNotification *)notification
@@ -117,8 +118,8 @@ UM_EXPORT_MODULE(ExpoBattery);
   if (!_hasListeners) {
     return;
   }
-  
-  [_eventEmitter sendEventWithName:@"Expo.batteryStateDidChange" body:[self getPowerState][@"batteryState"]];
+  NSDictionary *result = @{@"batteryState": [self getPowerState][@"batteryState"]};
+  [_eventEmitter sendEventWithName:@"Expo.batteryStateDidChange" body:result];
 }
 
 + (NSString *)valueForIsLowPowerModeEnabled:(BOOL)isLowPowerModeEnabled
@@ -131,8 +132,8 @@ UM_EXPORT_MODULE(ExpoBattery);
   if(!_hasListeners) {
     return;
   }
-  
-  [_eventEmitter sendEventWithName:@"Expo.powerModeDidChange" body:[EXBattery.class valueForIsLowPowerModeEnabled: NSProcessInfo.processInfo.isLowPowerModeEnabled]];
+  NSDictionary *result = @{@"lowPowerMode": [EXBattery.class valueForIsLowPowerModeEnabled: NSProcessInfo.processInfo.isLowPowerModeEnabled]};
+  [_eventEmitter sendEventWithName:@"Expo.powerModeDidChange" body:result];
 }
 
 UM_EXPORT_METHOD_AS(getLowPowerModeStatusAsync,
