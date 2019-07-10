@@ -126,6 +126,13 @@ function postTransforms({ versionPrefix }: TransformConfig): TransformPattern[] 
       replace: /MessageHandlerName = @"ReactABI\d+_\d+_\d+NativeWebView";/,
       with: `MessageHandlerName = @"ReactNativeWebView";`,
     },
+
+    // react-native-reanimated
+    {
+      paths: 'REATransitionAnimation.m',
+      replace: /(SimAnimationDragCoefficient)\(/g,
+      with: `${versionPrefix}$1(`
+    },
   ];
 }
 
