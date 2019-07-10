@@ -25,9 +25,9 @@ if (process.env.BABEL_ENV === 'test:web' && !process.env.IS_EXPO_CI) {
   });
 
   const getGotoOptions = () => ({
-    waitUntil: 'networkidle0', 
+    waitUntil: 'networkidle0',
     timeout: 5000,
-  })
+  });
 
   const devices = require('puppeteer/DeviceDescriptors');
 
