@@ -407,7 +407,6 @@ export default class Profile extends React.Component {
         key={i}
         hideUsername
         iconUrl={app.iconUrl}
-        likeCount={app.likeCount}
         projectName={app.name}
         slug={app.packageName}
         projectUrl={app.fullName}
