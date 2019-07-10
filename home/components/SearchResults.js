@@ -190,8 +190,6 @@ export default class SearchResults extends React.Component {
       return (
         <ProjectCard
           style={{ marginBottom: this._isLastAppSearchResult(rowId) ? 0 : 15 }}
-          isLikedByMe={app.isLikedByMe}
-          likeCount={app.likeCount}
           id={app.id}
           iconUrl={app.iconUrl}
           projectName={app.name}
