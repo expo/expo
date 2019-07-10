@@ -33,10 +33,10 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   public enum BatteryState {
-    CHARGING("Charging"),
-    FULL("Full"),
-    UNPLUGGED("Unplugged"),
-    UNKNOWN("Unknown");
+    CHARGING("charging"),
+    FULL("full"),
+    UNPLUGGED("unplugged"),
+    UNKNOWN("unknown");
 
     private final String value;
 
