@@ -34,7 +34,6 @@ export function getTestModules() {
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/Crypto'),
-    require('./tests/Font'),
     require('./tests/FileSystem'),
     require('./tests/GLView'),
     require('./tests/Haptics'),
