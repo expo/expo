@@ -21,11 +21,11 @@ Create a file in the root of your project called `tsconfig.json` and put this in
 ```json
 {
   "compilerOptions": {
-    "noEmit": true,
-    "lib": ["dom", "esnext"],
-    "jsx": "react-native",
-    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "jsx": "react-native",
+    "lib": ["dom", "esnext"],
+    "moduleResolution": "node",
+    "noEmit": true,
     "skipLibCheck": true
   }
 }
