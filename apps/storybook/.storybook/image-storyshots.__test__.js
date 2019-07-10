@@ -1,13 +1,12 @@
 import initStoryshots from '@storybook/addon-storyshots';
 import { imageSnapshot } from '@storybook/addon-storyshots-puppeteer';
 import path from 'path';
-import requireContext from 'require-context.macro';
-
 // In the build command we export a variable which helps us detect a web env.
 // visual regression testing only works in the browser
 if (process.env.BABEL_ENV === 'test:web' && !process.env.IS_EXPO_CI) {
   // Locally it's better to start the server and then run the tests.
   // In CI we want to build a static bundle and test against that.
+  // const storybookUrl = 'file://' + path.resolve(__dirname, '..', 'web-build')
   const storybookUrl = process.env.IS_EXPO_CI
     ? 'file://' + path.resolve(__dirname, '..', 'storybook-static')
     : 'http://localhost:6006/';
@@ -21,9 +20,14 @@ if (process.env.BABEL_ENV === 'test:web' && !process.env.IS_EXPO_CI) {
   };
 
   const getScreenshotOptions = ({ context, url }) => ({
-    fullPage: true, // Do not take the full page screenshot. Default is 'true' in Storyshots.
+    fullPage: true,
     // omitBackground: true
   });
+
+  const getGotoOptions = () => ({
+    waitUntil: 'networkidle0', 
+    timeout: 5000,
+  })
 
   const devices = require('puppeteer/DeviceDescriptors');
 
@@ -37,11 +41,11 @@ if (process.env.BABEL_ENV === 'test:web' && !process.env.IS_EXPO_CI) {
   initStoryshots({
     suite: 'Image-APIs',
     configPath: path.resolve(__dirname, 'config-APIs.js'),
-
     test: imageSnapshot({
       storybookUrl,
       getMatchOptions,
       getScreenshotOptions,
+      getGotoOptions,
       customizePage,
     }),
   });
@@ -54,6 +58,7 @@ if (process.env.BABEL_ENV === 'test:web' && !process.env.IS_EXPO_CI) {
       storybookUrl,
       getMatchOptions,
       getScreenshotOptions,
+      getGotoOptions,
       customizePage,
     }),
   });
