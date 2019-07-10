@@ -82,9 +82,9 @@ export async function getUptimeAsync(): Promise<number> {
   return await ExpoDevice.getUptimeAsync();
 }
 
-export async function isRootedAsync(): Promise<boolean> {
-  if (!ExpoDevice.isRootedAsync) {
-    throw new UnavailabilityError('expo-device', 'isRootedAsync');
+export async function isRootedExperimentalAsync(): Promise<boolean> {
+  if (!ExpoDevice.isRootedExperimentalAsync) {
+    throw new UnavailabilityError('expo-device', 'isRootedExperimentalAsync');
   }
-  return await ExpoDevice.isRootedAsync();
+  return await ExpoDevice.isRootedExperimentalAsync();
 }

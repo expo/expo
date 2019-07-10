@@ -194,7 +194,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void isRootedAsync(Promise promise) {
+  public void isRootedExperimentalAsync(Promise promise) {
       boolean isRooted = false;
       boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
       String buildTags = Build.TAGS;

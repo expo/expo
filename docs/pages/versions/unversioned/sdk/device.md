@@ -216,6 +216,22 @@ Device.getUptimeAsync().then(uptime => {
 });
 ```
 
+### `Device.isRootedExperimentalAsync()` (Android only)
+
+Checks whether the device has been rooted. It is not surely reliable because it's hard to test all rooted devices thoroughly.
+
+#### Returns
+
+Returns a promise that resolves to a boolean that whether this device is rooted.
+
+**Examples**
+
+```js
+Device.isRootedExperimentalAsync().then(isRooted => {
+  // false/true
+});
+```
+
 ## Enums
 
 ### `Device.deviceType`

@@ -78,10 +78,10 @@ export async function getUptimeAsync() {
     }
     return await ExpoDevice.getUptimeAsync();
 }
-export async function isRootedAsync() {
-    if (!ExpoDevice.isRootedAsync) {
-        throw new UnavailabilityError('expo-device', 'isRootedAsync');
+export async function isRootedExperimentalAsync() {
+    if (!ExpoDevice.isRootedExperimentalAsync) {
+        throw new UnavailabilityError('expo-device', 'isRootedExperimentalAsync');
     }
-    return await ExpoDevice.isRootedAsync();
+    return await ExpoDevice.isRootedExperimentalAsync();
 }
 //# sourceMappingURL=Device.js.map
