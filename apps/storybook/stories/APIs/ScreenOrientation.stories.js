@@ -58,12 +58,10 @@ export class component extends React.Component {
     this._isMounted = true;
     this.listener = ScreenOrientation.addOrientationChangeListener(
       ({ orientationInfo, orientationLock }) => {
-        if (this._isMounted) {
-          this.setState({
-            orientation: orientationInfo.orientation,
-            orientationLock,
-          });
-        }
+        this.setState({
+          orientation: orientationInfo.orientation,
+          orientationLock,
+        });
       }
     );
     const [orientation, orientationLock] = await Promise.all([
@@ -80,7 +78,6 @@ export class component extends React.Component {
   }
 
   updateOrientationAsync = async () => {
-    if (!this._isMounted) return;
     this.setState({
       orientation: (await ScreenOrientation.getOrientationAsync()).orientation,
     });

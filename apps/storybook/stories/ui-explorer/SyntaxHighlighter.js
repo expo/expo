@@ -164,14 +164,8 @@ export default class CopyableCode extends Component {
     className: PropTypes.string,
   };
 
-  _isMounted = false;
-
-  componentDidMount() {
-    this._isMounted = true;
-  }
   componentWillUnmount() {
     window.clearTimeout(this.timeout);
-    this._isMounted = false;
   }
 
   static defaultProps = {
@@ -217,11 +211,9 @@ export default class CopyableCode extends Component {
     document.body.removeChild(tmp);
     focus.focus();
 
-    if (this._isMounted) {
-      this.setState({ copied: true }, () => {
-        this.timeout = window.setTimeout(() => this.setState({ copied: false }), 1500);
-      });
-    }
+    this.setState({ copied: true }, () => {
+      this.timeout = window.setTimeout(() => this.setState({ copied: false }), 1500);
+    });
   };
 
   render() {
