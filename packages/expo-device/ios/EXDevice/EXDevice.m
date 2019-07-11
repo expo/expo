@@ -137,7 +137,12 @@ UM_EXPORT_METHOD_AS(hasLocalAuthenticationAsync, hasLocalAuthenticationAsyncWith
 
 UM_EXPORT_METHOD_AS(getUptimeAsync, getUptimeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve(@"put the uptime here");
+  resolve([self systemUptime]);
+}
+
+- (NSNumber *)systemUptime
+{
+  return [NSNumber numberWithDouble:[NSProcessInfo processInfo].systemUptime];
 }
 
 - (NSString *)deviceId
