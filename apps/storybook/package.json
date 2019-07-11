@@ -9,12 +9,13 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "start": "start-storybook --port 6006",
-    "build": "build-storybook -c .storybook -o web-build/",
+    "build": "build-storybook -c .storybook -o web-build/ --quiet",
     "test:web": "BABEL_ENV=test:web jest --config=./test/jest.config.web.js",
     "pretest:web:ci": "npm run build",
-    "test:web:ci": "export IS_EXPO_CI=true; npm run test:web",
+    "test:web:ci": "export IS_EXPO_CI=true; npm run test:web --ci",
     "update:test:web:ci": "rm -rf .storybook/__image_snapshots__ && npm run test:web:ci -u",
-    "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js"
+    "test:native": "BABEL_ENV=test:native jest --config=./test/jest.config.native.js",
+    "deploy": "yarn build && netlify deploy --prod"
   },
   "author": "Expo",
   "license": "MIT",

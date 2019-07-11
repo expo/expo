@@ -12,6 +12,8 @@ import {
 
 export const title = 'Screen Orientation';
 export const packageJson = require('expo/package.json');
+export const label = 'ScreenOrientation';
+
 export const description = (
   <>
     Screen Orientation is defined as the orientation in which graphics are painted on the device.
@@ -51,7 +53,9 @@ class ListButton extends React.Component {
 
 export class component extends React.Component {
   state = {};
+  _isMounted = false;
   async componentDidMount() {
+    this._isMounted = true;
     this.listener = ScreenOrientation.addOrientationChangeListener(
       ({ orientationInfo, orientationLock }) => {
         this.setState({
@@ -64,11 +68,13 @@ export class component extends React.Component {
       ScreenOrientation.getOrientationAsync().then(({ orientation }) => orientation),
       ScreenOrientation.getOrientationLockAsync(),
     ]);
-    // update state
-    this.setState({
-      orientation,
-      orientationLock,
-    });
+    if (this._isMounted) {
+      // update state
+      this.setState({
+        orientation,
+        orientationLock,
+      });
+    }
   }
 
   updateOrientationAsync = async () => {
@@ -78,6 +84,7 @@ export class component extends React.Component {
   };
 
   componentWillUnmount() {
+    this._isMounted = false;
     if (this.listener) {
       this.listener.remove();
     }

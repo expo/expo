@@ -3,11 +3,11 @@ import React from 'react';
 import { DocItem, Section } from '../ui-explorer';
 import JSXBlock from '../ui-explorer/JSXBlock';
 import Markdown from '../ui-explorer/Markdown';
-import notes from './Contributing.notes.md';
+import notes from './1-Contributing.notes.md';
 
 export const title = 'Contributing';
 
-export const kind = 'Getting Started';
+export const kind = 'Expo|Getting Started';
 
 export const component = () => (
   <Section>
