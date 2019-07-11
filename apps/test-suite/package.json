@@ -8,7 +8,8 @@
     "test": "cd runner && yarn && cd .. && node runner/index.js .",
     "test:web": "node puppeteer-test/index.js",
     "test:web:ci": "cd puppeteer-test && yarn && cd .. && node puppeteer-test/index.js .",
-    "web": "webpack-dev-server -d --open --config webpack.ci.js --env.development=true",
+    "openbrowser": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:19006",
+    "web": "expo start --web-only --web --https",
     "web:serve": "serve ./web-build"
   },
   "author": "",
