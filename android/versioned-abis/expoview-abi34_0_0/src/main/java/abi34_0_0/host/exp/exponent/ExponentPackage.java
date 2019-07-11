@@ -5,9 +5,16 @@ package abi34_0_0.host.exp.exponent;
 import android.content.Context;
 import android.os.Looper;
 
+import abi34_0_0.com.facebook.react.ReactPackage;
+import abi34_0_0.com.facebook.react.bridge.NativeModule;
+import abi34_0_0.com.facebook.react.bridge.ReactApplicationContext;
+import abi34_0_0.com.facebook.react.uimanager.ViewManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.core.interfaces.SingletonModule;
+import abi34_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import abi34_0_0.org.unimodules.core.interfaces.Package;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -18,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import abi34_0_0.com.facebook.react.ReactPackage;
-import abi34_0_0.com.facebook.react.bridge.NativeModule;
-import abi34_0_0.com.facebook.react.bridge.ReactApplicationContext;
-import abi34_0_0.com.facebook.react.uimanager.ViewManager;
+import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.utils.ScopedContext;
 import abi34_0_0.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import abi34_0_0.host.exp.exponent.modules.api.KeyboardModule;
 import abi34_0_0.host.exp.exponent.modules.api.PedometerModule;
@@ -47,17 +54,8 @@ import abi34_0_0.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import abi34_0_0.host.exp.exponent.modules.internal.ExponentIntentModule;
 import abi34_0_0.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
 import abi34_0_0.host.exp.exponent.modules.test.ExponentTestNativeModule;
-
-import abi34_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import abi34_0_0.org.unimodules.core.interfaces.Package;
-
 import abi34_0_0.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import abi34_0_0.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
-
-import host.exp.exponent.ExponentManifest;
-import host.exp.exponent.analytics.EXL;
-import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.utils.ScopedContext;
 
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;

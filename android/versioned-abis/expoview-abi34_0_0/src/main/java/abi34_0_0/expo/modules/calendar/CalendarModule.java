@@ -16,10 +16,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import abi34_0_0.org.unimodules.core.ExportedModule;
-import abi34_0_0.org.unimodules.core.InvalidArgumentException;
 import abi34_0_0.org.unimodules.core.ModuleRegistry;
 import abi34_0_0.org.unimodules.core.Promise;
 import abi34_0_0.org.unimodules.core.arguments.ReadableArguments;
+import abi34_0_0.org.unimodules.core.errors.InvalidArgumentException;
 import abi34_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import abi34_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
 import abi34_0_0.org.unimodules.interfaces.permissions.Permissions;
