@@ -7,21 +7,21 @@ let model;
 let fingerprint;
 if (Platform.OS === 'ios') {
     let deviceName;
-    let deviceId = ExpoDevice.deviceId;
-    if (deviceId) {
-        deviceName = deviceNamesByCode[deviceId];
+    let modelId = ExpoDevice.modelId;
+    if (modelId) {
+        deviceName = deviceNamesByCode[modelId];
         if (!deviceName) {
             // Not found on database. At least guess main device type from string contents:
-            if (deviceId.startsWith('iPod')) {
+            if (modelId.startsWith('iPod')) {
                 deviceName = 'iPod Touch';
             }
-            else if (deviceId.startsWith('iPad')) {
+            else if (modelId.startsWith('iPad')) {
                 deviceName = 'iPad';
             }
-            else if (deviceId.startsWith('iPhone')) {
+            else if (modelId.startsWith('iPhone')) {
                 deviceName = 'iPhone';
             }
-            else if (deviceId.startsWith('AppleTV')) {
+            else if (modelId.startsWith('AppleTV')) {
                 deviceName = 'Apple TV';
             }
         }
