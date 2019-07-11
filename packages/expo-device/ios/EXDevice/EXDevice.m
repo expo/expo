@@ -142,6 +142,11 @@ UM_EXPORT_METHOD_AS(getUptimeAsync, getUptimeAsyncWithResolver:(UMPromiseResolve
 
 UM_EXPORT_METHOD_AS(isRootedExperimentalAsync, isRootedExperimentalAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
+  resolve(@([self isRooted]));
+}
+
+- (BOOL)isRooted
+{
 #if !(TARGET_IPHONE_SIMULATOR)
   NSFileManager *fileManager = [NSFileManager defaultManager];
   if ([fileManager fileExistsAtPath:@"/Applications/Cydia.app"]) {
@@ -209,8 +214,8 @@ UM_EXPORT_METHOD_AS(isRootedExperimentalAsync, isRootedExperimentalAsyncWithReso
 }
 
 - (NSNumber *)systemUptime
-{
-  return [NSNumber numberWithDouble:[NSProcessInfo processInfo].systemUptime];
+{ // returns the systemUptime in milliseconds
+  return [NSNumber numberWithDouble:[NSProcessInfo processInfo].systemUptime * 1000];
 }
 
 - (NSString *)deviceId
