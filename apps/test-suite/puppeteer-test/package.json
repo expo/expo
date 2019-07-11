@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "puppeteer": "^1.11.0",
-    "xdl": "^53.7.4"
+    "@expo/xdl": "^56.0.0",
+    "puppeteer": "^1.11.0"
   }
 }
