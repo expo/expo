@@ -1,7 +1,7 @@
 import path from 'path';
 import chalk from 'chalk';
 import spawnAsync from '@expo/spawn-async';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import { Package, getListOfPackagesAsync } from '../Packages';
 import * as Directories from '../Directories';

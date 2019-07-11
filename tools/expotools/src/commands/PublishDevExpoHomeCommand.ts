@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import process from 'process';
 import JsonFile from '@expo/json-file';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import AppConfig from '../typings/AppConfig';
 import { getNewestSDKVersionAsync, getHomeSDKVersionAsync } from '../ProjectVersions';
