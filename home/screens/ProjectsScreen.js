@@ -331,8 +331,8 @@ export default class ProjectsScreen extends React.Component {
           Client version: {Constants.expoVersion}
         </Text>
         <Text style={styles.supportSdksText}>
-          Supports SDK
-          {SupportedExpoSdks.length === 1 ? '' : 's'}
+          Supported SDK
+          {SupportedExpoSdks.length === 1 ? ': ' : 's: '}
           {SupportedExpoSdks
             .map(semver.major)
             .sort((a, b) => a - b)

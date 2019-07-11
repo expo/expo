@@ -6,7 +6,7 @@ import JsonFile from '@expo/json-file';
 import semver from 'semver';
 import inquirer from 'inquirer';
 import spawnAsync from '@expo/spawn-async';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
 import { Package, getListOfPackagesAsync } from '../Packages';
