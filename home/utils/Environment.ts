@@ -1,22 +1,17 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-import ExponentKernel from '../universal/ExponentKernel';
+import * as Kernel from '../kernel/Kernel';
 
-let isProduction = false;
-let IOSClientReleaseType = 'SIMULATOR';
-let IsIOSRestrictedBuild = false;
+const isProduction = !!(
+  Constants.manifest.id === '@exponent/home' && Constants.manifest.publishedTime
+);
 
-if (ExponentKernel) {
-  isProduction = !!(
-    Constants.manifest.id === '@exponent/home' && Constants.manifest.publishedTime
-  );
+const IOSClientReleaseType = Kernel.iosClientReleaseType;
 
-  IOSClientReleaseType = ExponentKernel.IOSClientReleaseType;
-
-  IsIOSRestrictedBuild =
-    Platform.OS === 'ios' && ExponentKernel.IOSClientReleaseType === 'APPLE_APP_STORE';
-}
+const IsIOSRestrictedBuild =
+  Platform.OS === 'ios' &&
+  Kernel.iosClientReleaseType === Kernel.ExpoClientReleaseType.APPLE_APP_STORE;
 
 export default {
   isProduction,
