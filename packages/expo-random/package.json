@@ -1,6 +1,6 @@
 {
   "name": "expo-random",
-  "version": "5.0.0",
+  "version": "6.0.0-rc.0",
   "description": "Expo universal module for random bytes",
   "main": "build/Random.js",
   "types": "build/Random.d.ts",
@@ -45,5 +45,5 @@
   "dependencies": {
     "base64-js": "^1.3.0"
   },
-  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
+  "gitHead": "6334f82adccb529e9347e348c874bd8f6a92cacc"
 }
