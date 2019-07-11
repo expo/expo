@@ -5,6 +5,10 @@ export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 let model;
 let fingerprint;
+let platformModelId;
+let platformDesignName;
+let platformProductName;
+let platformApi;
 if (Platform.OS === 'ios') {
     let deviceName;
     let modelId = ExpoDevice.modelId;
@@ -28,22 +32,31 @@ if (Platform.OS === 'ios') {
     }
     model = deviceName;
     fingerprint = null;
+    platformModelId = ExpoDevice ? ExpoDevice.modelId : null;
+    platformDesignName = null;
+    platformProductName = null;
+    platformApi = null;
 }
 else {
     model = ExpoDevice ? ExpoDevice.modelName : null;
     fingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
+    platformModelId = null;
+    platformDesignName = ExpoDevice ? ExpoDevice.designName : null;
+    ;
+    platformProductName = ExpoDevice ? ExpoDevice.productName : null;
+    platformApi = ExpoDevice ? ExpoDevice.platformApiLevel : null;
 }
 export const osBuildFingerprint = fingerprint;
 export const modelName = model;
+export const modelId = platformModelId;
+export const designName = platformDesignName;
+export const productName = platformProductName;
+export const platformApiLevel = platformApi;
 export const osName = ExpoDevice ? ExpoDevice.osName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
 export const isDevice = ExpoDevice ? ExpoDevice.isDevice : null;
-export const modelId = ExpoDevice ? ExpoDevice.modelId : null;
 export const supportedCpuArchitectures = ExpoDevice ? ExpoDevice.supportedCpuArchitectures : null;
-export const designName = ExpoDevice ? ExpoDevice.designName : null;
 export const osBuildId = ExpoDevice ? ExpoDevice.osBuildId : null;
-export const productName = ExpoDevice ? ExpoDevice.productName : null;
-export const platformApiLevel = ExpoDevice ? ExpoDevice.platformApiLevel : null;
 export const osVersion = ExpoDevice ? ExpoDevice.osVersion : null;
 export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
 export const osInternalBuildId = ExpoDevice ? ExpoDevice.osInternalBuildId : null;
