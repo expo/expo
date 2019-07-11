@@ -7,6 +7,7 @@ export type OpenBrowserOptions = {
   browserPackage?: string;
   enableBarCollapsing?: boolean;
   showTitle?: boolean;
+  controlsColor?: string;
 
   // Web
   windowName?: string;
