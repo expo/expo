@@ -495,8 +495,7 @@ public class Exponent {
       return false;
     }
     if (directory.exists()) {
-      directory.delete();
-      return true;
+      return directory.delete();
     } else {
       return false;
     }
