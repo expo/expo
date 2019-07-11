@@ -41,10 +41,11 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   public enum DeviceType {
-    HANDSET("Handset"),
-    TABLET("Tablet"),
-    TV("Tv"),
-    UNKNOWN("Unknown");
+    PHONE("PHONE"),
+    TABLET("TABLET"),
+    DESKTOP("DESKTOP"),
+    TV("TV"),
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -78,23 +79,21 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     constants.put("manufacturer", Build.MANUFACTURER);
     constants.put("modelName", Build.MODEL);
     constants.put("osName", this.getSystemName());
-    constants.put("supportedCPUArchitectures", Build.SUPPORTED_ABIS);
+    constants.put("supportedCpuArchitectures", Build.SUPPORTED_ABIS);
     constants.put("designName", Build.DEVICE);
-    constants.put("systemBuildId", Build.DISPLAY);
+    constants.put("osBuildId", Build.DISPLAY);
     constants.put("productName", Build.PRODUCT);
     constants.put("platformApiLevel", Build.VERSION.SDK_INT);
     constants.put("osVersion", Build.VERSION.RELEASE);
     constants.put("deviceName", Settings.Secure.getString(mContext.getContentResolver(), "bluetooth_name"));
     constants.put("osBuildFingerprint", Build.FINGERPRINT);
-    constants.put("osBuildId", Build.ID);
+    constants.put("osInternalBuildId", Build.ID);
 
     ActivityManager actMgr = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
     actMgr.getMemoryInfo(memInfo);
     constants.put("totalMemory", memInfo.totalMem);
 
-    DeviceType mDeviceType = getDeviceType(mContext);
-    constants.put("deviceType", mDeviceType.getValue());
     constants.put("isDevice", !isRunningOnGenymotion() && !isRunningOnStockEmulator());
 
     return constants;
@@ -150,7 +149,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
     if (diagonalSizeInches >= 3.0 && diagonalSizeInches <= 6.9) {
       // Devices in a sane range for phones are considered to be Handsets.
-      return DeviceType.HANDSET;
+      return DeviceType.PHONE;
     } else if (diagonalSizeInches > 6.9 && diagonalSizeInches <= 18.0) {
       // Devices larger than handset and in a sane range for tablets are tablets.
       return DeviceType.TABLET;
@@ -191,6 +190,12 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public void getUptimeAsync(Promise promise) {
     Long uptime = SystemClock.uptimeMillis();
     promise.resolve(uptime.doubleValue());
+  }
+
+  @ExpoMethod
+  public void getDeviceTypeAsync(Promise promise) {
+    DeviceType mDeviceType = getDeviceType(mContext);
+    promise.resolve(mDeviceType.getValue());
   }
 
   @ExpoMethod

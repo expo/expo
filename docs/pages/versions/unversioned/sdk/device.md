@@ -74,7 +74,7 @@ import * as Device from 'expo-device';
 
 * `Device.designName: string | null` (Android only)
 
-  Gets the specific configuration or revision of the industrial design.
+  Gets the specific configuration or name of the industrial design. It represents the device's name when it was designed during manufacturing into mass production. On Android, it corresponds to `Build.DESIGN`.
 
   - Android: e.g., `"kminilte"`
 
@@ -117,7 +117,7 @@ import * as Device from 'expo-device';
 
   - e.g., `"Vivian's iPhone XS"`
 
-* `Device.osBuildFingerprint: string` (Android only)
+* `Device.osBuildFingerprint: string | null` (Android only)
 
   A string that uniquely identifies the build of the currently running system OS. On Android, it follows this template:
 
@@ -204,7 +204,7 @@ Gets the uptime since the last reboot of the device, in milliseconds.
 
 #### Returns
 
-Returns a promise that resolves to a number that represents the milliseconds since last reboot, not counting time spent in deep sleep.
+Returns a promise that resolves to a number that represents the milliseconds since last reboot. Android devices does not count time spent in deep sleep.
 
 **Examples**
 
