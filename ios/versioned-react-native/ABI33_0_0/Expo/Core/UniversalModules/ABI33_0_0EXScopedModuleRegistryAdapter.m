@@ -49,7 +49,7 @@
   ABI33_0_0EXScopedAmplitude *amplitudeModule = [[ABI33_0_0EXScopedAmplitude alloc] initWithExperienceId:experienceId];
   [moduleRegistry registerExportedModule:amplitudeModule];
 
-  ABI33_0_0EXScopedPermissions *permissionsModule = [[ABI33_0_0EXScopedPermissions alloc] initWithExperienceId:experienceId];
+  ABI33_0_0EXScopedPermissions *permissionsModule = [[ABI33_0_0EXScopedPermissions alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
 
