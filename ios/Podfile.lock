@@ -585,7 +585,7 @@ PODS:
     - UMPermissionsInterface
   - EXCrypto (5.0.0):
     - UMCore
-  - EXDevice (1.0.0):
+  - EXDevice (0.0.1):
     - UMCore
   - EXDocumentPicker (5.0.0):
     - UMCore
@@ -1952,7 +1952,7 @@ SPEC CHECKSUMS:
   EXConstants: f1d63f5bcf9a790fea747ceba6411b7814005191
   EXContacts: cba6db9b4d8ef590c2185711a648fa32d90041b9
   EXCrypto: fdec92b3f9740e1c27858688d3cff33002f1ff44
-  EXDevice: 370fbd6c67a7be3b2976dedc29128ad71ec8331f
+  EXDevice: 154bdeaac06868aaaa41da88ed821196e8fabe5f
   EXDocumentPicker: 03566e97f55139cf76e0a85b2afdb29abb3f46c8
   EXFacebook: 40860eb8eceb9c4e3e91471363d375c7ca11d86f
   EXFaceDetector: 531fdafaa07a582cd898bacf05a68fa03b795d0d
@@ -2032,6 +2032,6 @@ SPEC CHECKSUMS:
   yogaABI32_0_0: c1f9c3bc06b5adcc1285e151589f88fc13cf9ef9
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
 
-PODFILE CHECKSUM: 7c12b42c78d5b625adf7df56934443c462dbdf55
+PODFILE CHECKSUM: 82ae11a28de46d1f66c094a46dfe534a8c8726e4
 
 COCOAPODS: 1.7.1
