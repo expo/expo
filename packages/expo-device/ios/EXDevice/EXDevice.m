@@ -23,6 +23,7 @@
 
 #if !(TARGET_OS_TV)
 #import <LocalAuthentication/LocalAuthentication.h>
+@import Darwin.sys.sysctl;
 #endif
 
 @interface EXDevice() {
@@ -193,14 +194,19 @@ UM_EXPORT_METHOD_AS(getUptimeAsync, getUptimeAsyncWithResolver:(UMPromiseResolve
   return YES;
 }
 
-- (NSString *)osVersion {
-  return @"os version here";
-}
-
 - (NSString *)osBuildId {
-  return @"build id belongs here";
+#if TARGET_OS_TV
+  return @"not available";
+#else
+  size_t bufferSize = 64;
+  NSMutableData *buffer = [[NSMutableData alloc] initWithLength:bufferSize];
+  int status = sysctlbyname("kern.osversion", buffer.mutableBytes, &bufferSize, NULL, 0);
+  if (status != 0) {
+    return @"not available";
+  }
+  return [[NSString alloc] initWithCString:buffer.mutableBytes encoding:NSUTF8StringEncoding];
+#endif
 }
-
 
 - (NSDictionary *)constantsToExport
 {
@@ -217,8 +223,8 @@ UM_EXPORT_METHOD_AS(getUptimeAsync, getUptimeAsyncWithResolver:(UMPromiseResolve
            @"supportedCPUArchitectures": @[[self getCPUType]],
            @"osName": currentDevice.systemName,
            @"totalMemory": [self totalMemory] ?: @(0),
-           @"uniqueId": uniqueId,
-           @"osVersion": [self osVersion],
+//           @"uniqueId": uniqueId,
+           @"osVersion": currentDevice.systemVersion,
            @"osBuildId": [self osBuildId]
            };
 }
