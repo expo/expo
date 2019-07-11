@@ -1,22 +1,8 @@
 const process = require('process');
 const puppeteer = require('puppeteer');
-
-const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
-const getConfig = require('../webpack.ci');
-
-const config = getConfig({ development: true });
-
-const { devServer = {} } = config;
-
-const options = {
-  ...devServer,
-  hot: true,
-  inline: true,
-  stats: { colors: true },
-};
-
-const port = 19003;
+const path = require('path');
+const fs = require('fs');
+const { Webpack, ProjectSettings } = require('@expo/xdl');
 
 const manuallyRunWebpack = true;
 
@@ -25,7 +11,8 @@ let server;
 async function runPuppeteerAsync() {
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    ignoreHTTPSErrors: true,
+    args: ['--ignore-certificate-errors', '--no-sandbox', '--disable-setuid-sandbox'],
   });
   const page = await browser.newPage();
 
@@ -86,31 +73,28 @@ async function runPuppeteerAsync() {
     }
   });
 
-  await page.goto(`http://localhost:${port}/all`, {
+  await page.goto(`${url}/all`, {
     timeout: 3000000,
   });
   console.log('Start observing test-suite');
 }
 
-function listenToServerAsync(server) {
-  return new Promise((resolve, reject) => {
-    server.listen(port, 'localhost', async function(error) {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
-    });
-  });
-}
+let url;
 
 async function main(args) {
   if (manuallyRunWebpack) {
     try {
-      server = new WebpackDevServer(webpack(config), options);
-      await listenToServerAsync(server);
-      console.log('WebpackDevServer listening at localhost:', port);
+      const projectRoot = fs.realpathSync(path.resolve(__dirname, '..'));
+      await ProjectSettings.setAsync(projectRoot, { https: true });
+
+      const info = await Webpack.startAsync(projectRoot, { nonInteractive: true }, true);
+
+      server = info.server;
+      url = info.url;
+      // await listenToServerAsync(server);
+      console.log('WebpackDevServer listening at localhost:', url.split(':').pop());
     } catch (error) {
+      console.log('Runner Error: ', error.message);
       process.exit(1);
       return;
     }
@@ -121,7 +105,7 @@ async function main(args) {
   } catch (error) {
     // Exit when puppeteer fails to startup - this will make CI tests evaluate faster
     // Example: Failed to launch chrome!
-    console.log(error);
+    console.log('Runner Error: ', error.message);
 
     if (server) {
       server.close();
