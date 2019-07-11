@@ -129,11 +129,11 @@ import * as Device from 'expo-device';
 
 ### `Device.getPlatformFeaturesAsync()` (Android only)
 
-Get a list of features that are available on the system.
+Get a list of features that are available on the system. The feature names are platform-specific.
 
 #### Returns
 
-A Promise that resolves to an array of strings, each containing the name of the available feature on the current device system.
+A Promise that resolves to an array of strings, each of which is a platform-specific name of an available feature on the current device.
 
 **Examples**
 

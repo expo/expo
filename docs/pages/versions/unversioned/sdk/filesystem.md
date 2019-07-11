@@ -338,7 +338,7 @@ FileSystem.getFreeDiskStorageAsync().then(freeDiskStorage => {
 
 #### Returns
 
-Returns a Promise that resolves to a number that represents the available internal disk storage size in bytes.
+Returns a Promise that resolves to the number of bytes available on the internal disk.
 
 ### `FileSystem.getTotalDiskCapacityAsync()`
 
@@ -355,7 +355,7 @@ FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
 
 #### Returns
 
-Returns a Promise that resolves to a number that represents the total internal disk storage capacity in bytes.
+Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
 
 #### Example
 
