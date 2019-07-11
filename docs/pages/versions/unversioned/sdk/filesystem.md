@@ -325,7 +325,7 @@ Returns a Promise that resolves to an object with the following fields:
 
 ### `FileSystem.getFreeDiskStorageAsync()`
 
-Gets available internal disk storage size, in bytes. This will get you the free space on the data partition. The data partition hosts all the internal storage for all apps on the device.
+Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
 
 #### Example
 

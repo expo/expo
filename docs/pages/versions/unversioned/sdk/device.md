@@ -2,7 +2,7 @@
 title: Device
 ---
 
-Provide an API to play with the device's system physical information that uniquely associated with the device's hardware and software properties.
+Provides access to system information about the physical device, such as its manufacturer and model.
 
 ## Installation
 
@@ -18,7 +18,7 @@ import * as Device from 'expo-device';
 
 - `Device.brand: string`
 
-  Gets the device brand. The consumer-visible brand with which the product/hardware will be associated, if any.
+  Gets the device brand. The consumer-visible brand of the product/hardware.
 
   - iOS: `"Apple"`
   - Android: e.g., `"Xiaomi"`
@@ -30,106 +30,104 @@ import * as Device from 'expo-device';
   - iOS: `"Apple"`
   - Android: e.g., `"HTC"`
 
-  Click [Here](https://developer.android.com/reference/android/os/Build) to view Android official documentation about the difference between `brand` and `manufacturer`.
+  Click [here](https://developer.android.com/reference/android/os/Build) to view Android official documentation about the difference between `brand` and `manufacturer`.
 
 - `Device.modelName: string`
 
-  **iOS warning**: The list of the model name is maintained by the community and could miss latest devices, so it is better to use `modelId` since it unique identifies new iOS devices and are always up-to-date. We accept new pull request that helps to update the device modelName list.
-
-  Gets the device model.
+  The human-friendly name of the device model. This is the name that people would typically use to refer to the device rather than a programmatic model identifier.
 
   - iOS: e.g., `"iPhone XS Max"`
   - Android: e.g., `"Pixel 2"`
 
-- `Device.osName: string`
+  **Note for iOS**: The list of model names is manually maintained because iOS does not programmatically expose model names. This manual list may not always have all of the latest devices. Depending on your use case, it may be better to use `Device.modelId`, which is always defined, even for the latest devices.
 
-  Gets the device OS name.
+* `Device.osName: string`
 
-  - iOS: e.g., `"iOS"`
+  The name of the OS running on the device.
+
+  - iOS: e.g., `"iOS"` or `"iPadOS"`
   - Android: e.g., `"Android"`
 
-- `Device.modelId: string` (iOS only)
+* `Device.modelId: string | null` (iOS only)
 
-  Gets the device's mobile device codes types (machine id).
+  The internal model ID of the device. This is useful for programmatically identifying the type of device and is not a human-friendly string.
 
   - iOS: e.g., `"iPhone7,2"`
 
-- `Device.totalMemory: number`
+* `Device.totalMemory: number`
 
-  Gets the device's total memory, in bytes. It means the total memory accessible by the kernel. This is basically the RAM size of the device, not including below-kernel fixed allocations like DMA buffers, RAM for the baseband CPU, etc.
+  Gets the device's total memory, in bytes. This is the total memory accessible to the kernel, but not necessarily to a single app. This is basically the amount of RAM the device has, not including below-kernel fixed allocations like DMA buffers, RAM for the baseband CPU, etc...
 
-- `Device.isDevice: boolean`
+* `Device.isDevice: boolean`
 
-  `true` if the app is running on a device, `false` if running in a simulator or emulator.
+  `true` if the app is running on a real device, `false` if running in a simulator or emulator.
 
-- `Device.deviceType: string`
+* `Device.supportedCpuArchitectures: string[]`
 
-  Returns the device's type as a `Device.deviceType` enum.
-
-- `Device.supportedCPUArchitectures: string[]`
-
-  Returns a list of supported processor architecture versions.
+  Returns a list of supported processor architecture versions. The device expects the binaries it runs to be compiled for one of these architectures. The returned list will be empty if the supported architectures could not be determined.
 
   **Examples**
 
   ```js
-  Device.supportedCPUArchitectures; // [ "arm64 v8", "Intel x86-64h Haswell", "arm64-v8a", "armeabi-v7a", "armeabi" ]
+  Device.supportedCpuArchitectures; // [ "arm64 v8", "Intel x86-64h Haswell", "arm64-v8a", "armeabi-v7a", "armeabi" ]
   ```
 
-- `Device.designName: string` (Android only)
+* `Device.designName: string | null` (Android only)
 
   Gets the specific configuration or revision of the industrial design.
 
   - Android: e.g., `"kminilte"`
 
-- `Device.systemBuildId: string` (Android only)
+* `Device.productName: string` (Android only)
 
-  Gets the build ID string meant for displaying to the user
-
-  - Android: e.g., `"PSR1.180720.075"`
-
-- `Device.productName: string` (Android only)
-
-  Gets the device's overall product name. Chosen by the device implementer containing the development name or code name of the device.
+  The device's overall product name chosen by the device implementer containing the development name or code name of the device.
 
   - Android: e.g., `"kminiltexx"`
 
-- `Device.platformApiLevel: number` (Android only)
+* `Device.osBuildId: string`
 
-  Gets the SDK version of the software currently running on this hardware device. This value never changes while a device is booted, but it may increase when the hardware manufacturer provides an OTA update. Click [here](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html) to see all possible version codes and corresponding versions.
+  The build ID of the OS that more precisely identifies the version of the OS. On Android, this corresponds to `Build.DISPLAY` (not `Build.ID`) and currently is a string as described [here](https://source.android.com/setup/start/build-numbers). On iOS, this corresponds to `kern.osversion` and is the detailed OS version sometimes displayed next to the more human-readable version.
+
+  - Android: e.g., `"PSR1.180720.075"`
+  - iOS: e.g., `"16F203"`
+
+* `Device.osInternalBuildId: string`
+
+  The internal build ID of the OS running on the device. On Android, this corresponds to `Build.ID`. On iOS, this is the same value as [`Device.osBuildId`](#deviceosbuildid).
+
+  - Android: e.g., `"MMB29K"`
+  - iOS: e.g., `"16F203"`
+
+* `Device.platformApiLevel: number | null` (Android only)
+
+  The SDK version of the software currently running on this hardware device. This value never changes while a device is booted, but it may increase when the hardware manufacturer provides an OS update. See [here](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html) to see all possible version codes and corresponding versions.
 
   - Android: e.g., `19`
 
-- `Device.osVersion: string`
+* `Device.osVersion: string`
 
-  Gets the user-visible os version number.
+  The human-readable OS version string. Note that the version string may not always contain three numbers separated by dots.
 
   - iOS: e.g., `12.3.1`
   - Android: e.g., `4.0.3`
 
-- `Device.deviceName: string`
+* `Device.deviceName: string`
 
-  A human-readable name for the device type.
+  The human-readable name of the device, which may be set by the device's user.
 
-  - eg., `"Vivian's iPhone XS"`
+  - e.g., `"Vivian's iPhone XS"`
 
-- `Device.osBuildFingerprint: string` (Android only)
+* `Device.osBuildFingerprint: string` (Android only)
 
-  A string that uniquely identifies this build. It must follow the template:
+  A string that uniquely identifies the build of the currently running system OS. On Android, it follows this template:
 
   $(BRAND)/$(PRODUCT)/$(DEVICE)/$(BOARD):$(VERSION.RELEASE)/$(ID)/$(VERSION.INCREMENTAL):$(TYPE)/\$(TAGS)
 
-  - `"google/sdk_gphone_x86/generic_x86:9/PSR1.180720.075/5124027:user/release-keys"`
-
-- `Device.osBuildId: string`
-
-  A string that identifies the build number of the operating system.
-
-  - Android: Either a changelist number, or a label like `"M4-rc20"` or `"MMB29K"`. Referenced from Android docs (https://developer.android.com/reference/android/os/Build.html#ID)
+  - e.g., `"google/sdk_gphone_x86/generic_x86:9/PSR1.180720.075/5124027:user/release-keys"`
 
 ## Methods
 
-### `Device.getPlatformFeaturesAsync()` (Android Only)
+### `Device.getPlatformFeaturesAsync()` (Android only)
 
 Get a list of features that are available on the system.
 
@@ -150,7 +148,7 @@ await Device.getPlatformFeaturesAsync().then(allFeatures => {
 });
 ```
 
-### `Device.hasPlatformFeatureAsync(feature)` (Android Only)
+### `Device.hasPlatformFeatureAsync(feature)` (Android only)
 
 Tells if the device has a specific system feature. Can get all available system features in `Device.getSystemFeatureAsync()`.
 
@@ -160,7 +158,7 @@ Tells if the device has a specific system feature. Can get all available system 
 
 #### Returns
 
-Returns a `Promise<boolean>` that resolves the `boolean` value for whether the device has the system feature passed to the function.
+Returns a `Promise<boolean>` that resolves a `boolean` value for whether the device has the specified system feature.
 
 **Examples**
 
@@ -168,9 +166,9 @@ Returns a `Promise<boolean>` that resolves the `boolean` value for whether the d
 await Device.hasPlatformFeatureAsync('amazon.hardware.fire_tv'); // true or false
 ```
 
-### `Device.getMaxMemoryAsync()` (Android Only)
+### `Device.getMaxMemoryAsync()` (Android only)
 
-Returns the maximum amount of memory that the Java virtual machine will attempt to use. If there is no inherent limit then the value [Long.MAX_VALUE](https://developer.android.com/reference/java/lang/Long.html#MAX_VALUE) will be returned.
+Returns the maximum amount of memory that the Java virtual machine will attempt to use. If there is no inherent limit then `Number.MAX_SAFE_INTEGER` is returned.
 
 #### Returns
 
@@ -184,9 +182,9 @@ Device.getMaxMemoryAsync().then(maxMemory => {
 });
 ```
 
-### `Device.isSideLoadingEnabled()` (Android Only)
+### `Device.isSideLoadingEnabled()` (Android only)
 
-Whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism.
+Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism rather than through the OS's default app store, like Google Play.
 
 #### Returns
 
@@ -216,13 +214,15 @@ Device.getUptimeAsync().then(uptime => {
 });
 ```
 
-### `Device.isRootedExperimentalAsync()` (Android only)
+### `Device.isRootedExperimentalAsync()`
 
-Checks whether the device has been rooted. It is not surely reliable because it's hard to test all rooted devices thoroughly.
+Checks whether the device has been rooted. It is not completely reliable because a rooted device may be modified in any way, and thus can completely hide whatever it wants from you.
+
+In Android, it's implemented in a way to find all possible files paths that contain the `"su"` executable but some devices not rooted would also have such executable. So there's no guarantee that this method would always be correct.
 
 #### Returns
 
-Returns a promise that resolves to a boolean that whether this device is rooted.
+Returns a promise that resolves to a boolean that specifies whether this device is rooted. On web, the boolean is always `false`.
 
 **Examples**
 
@@ -232,13 +232,30 @@ Device.isRootedExperimentalAsync().then(isRooted => {
 });
 ```
 
+### `Device.getDeviceTypeAsync()`
+
+Checks the type of the device as a [`Device.DeviceType`](#devicedevicetype) enum value.
+
+#### Returns
+
+Returns the type of the device as a [`Device.DeviceType`](#devicedevicetype) enum value.
+
+**Examples**
+
+```js
+Device.getDeviceTypeAsync().then(deviceType => {
+  // DeviceType.PHONE
+});
+```
+
 ## Enums
 
-### `Device.deviceType`
+### `Device.DeviceType`
 
-`deviceType` is a device's type enum. Cross platform values for `deviceType`:
+An enum of the different types of devices supported by Expo, with these values:
 
-- `Handset` - wired or mobile telephones
-- `Tablet` - tablet computers
-- `Tv` - televisions
-- `Unknown` - unrecognized device type
+- **`PHONE`** -- Mobile phone handsets, typically with a touch screen and held in one hand
+- **`TABLET`** -- Tablet computers, typically with a touch screen that is larger than a phone's
+- **`DESKTOP`** -- Desktop or laptop computers, typically with a keyboard and mouse
+- **`TV`** -- TV-based interfaces
+- **`UNKNOWN`** -- An unrecognized device type
