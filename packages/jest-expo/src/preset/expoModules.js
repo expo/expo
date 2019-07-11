@@ -159,6 +159,14 @@ module.exports = {
     isSupported: { type: 'boolean', mock: true },
     requestReview: { type: 'function', functionType: 'async' },
   },
+  ExponentTest: {
+    getConstants: { type: 'function' },
+    isInCI: { type: 'number', mock: 0 },
+    action: { type: 'function', functionType: 'promise' },
+    completed: { type: 'function', functionType: 'async' },
+    log: { type: 'function', functionType: 'async' },
+    shouldSkipTestsRequiringPermissionsAsync: { type: 'function', functionType: 'promise' },
+  },
   ExponentUpdates: {
     getConstants: { type: 'function' },
     checkForUpdateAsync: { type: 'function', functionType: 'promise' },
@@ -195,7 +203,6 @@ module.exports = {
           { key: 2, argumentsCount: 4, name: 'registerViewsForInteraction' },
           { key: 3, argumentsCount: 2, name: 'init' },
         ],
-        ExpoLinearGradientManager: [],
         ExpoAdsAdMobBannerView: [],
         ExpoAdsAdMobInterstitialManager: [
           { key: 0, argumentsCount: 1, name: 'setTestDeviceID' },
@@ -307,11 +314,12 @@ module.exports = {
           { key: 0, argumentsCount: 1, name: 'activate' },
           { key: 1, argumentsCount: 1, name: 'deactivate' },
         ],
+        ExpoLinearGradientManager: [],
         ExpoLocalAuthentication: [
           { key: 0, argumentsCount: 0, name: 'supportedAuthenticationTypesAsync' },
-          { key: 1, argumentsCount: 1, name: 'authenticateAsync' },
+          { key: 1, argumentsCount: 0, name: 'isEnrolledAsync' },
           { key: 2, argumentsCount: 0, name: 'hasHardwareAsync' },
-          { key: 3, argumentsCount: 0, name: 'isEnrolledAsync' },
+          { key: 3, argumentsCount: 1, name: 'authenticateAsync' },
         ],
         ExpoLocalization: [{ key: 0, argumentsCount: 0, name: 'getLocalizationAsync' }],
         ExpoLocation: [
@@ -470,9 +478,9 @@ module.exports = {
           { key: 1, argumentsCount: 3, name: 'exec' },
         ],
         ExponentSegment: [
-          { key: 0, argumentsCount: 0, name: 'flush' },
+          { key: 0, argumentsCount: 1, name: 'setEnabledAsync' },
           { key: 1, argumentsCount: 2, name: 'screenWithProperties' },
-          { key: 2, argumentsCount: 1, name: 'setEnabledAsync' },
+          { key: 2, argumentsCount: 0, name: 'flush' },
           { key: 3, argumentsCount: 1, name: 'screen' },
           { key: 4, argumentsCount: 1, name: 'identify' },
           { key: 5, argumentsCount: 2, name: 'identifyWithTraits' },
@@ -656,6 +664,7 @@ module.exports = {
           removeListeners: { type: 'function' },
           sessionId: { type: 'string' },
           statusBarHeight: { type: 'number', mock: 20 },
+          supportedExpoSdks: { type: 'array' },
           systemFonts: { type: 'array' },
         },
         ExponentDeviceMotion: {
@@ -667,8 +676,14 @@ module.exports = {
         },
         ExponentFileSystem: {
           addListener: { type: 'function' },
-          bundleDirectory: { type: 'object', mock: null },
-          bundledAssets: { type: 'object', mock: null },
+          bundleDirectory: {
+            type: 'object',
+            mock: null,
+          },
+          bundledAssets: {
+            type: 'object',
+            mock: null,
+          },
           cacheDirectory: { type: 'string' },
           copyAsync: { type: 'function' },
           deleteAsync: { type: 'function' },
@@ -765,11 +780,14 @@ module.exports = {
     STANDARD_EVENT_VIEW_ITEMS: { type: 'string' },
     getConstants: { type: 'function' },
     createUniversalObject: { type: 'function', functionType: 'promise' },
+    disableTracking: { type: 'function', functionType: 'async' },
     generateShortUrl: { type: 'function', functionType: 'promise' },
     getCreditHistory: { type: 'function', functionType: 'promise' },
     getFirstReferringParams: { type: 'function', functionType: 'promise' },
     getLatestReferringParams: { type: 'function', functionType: 'promise' },
     getShortUrl: { type: 'function', functionType: 'promise' },
+    initializeBranch: { type: 'function', functionType: 'promise' },
+    isTrackingDisabled: { type: 'function', functionType: 'promise' },
     listOnSpotlight: { type: 'function', functionType: 'promise' },
     loadRewards: { type: 'function', functionType: 'promise' },
     logEvent: { type: 'function', functionType: 'promise' },
@@ -793,7 +811,7 @@ module.exports = {
   RNCNetInfo: {
     getConstants: { type: 'function' },
     addListener: { type: 'function', functionType: 'async' },
-    getCurrentConnectivity: { type: 'function', functionType: 'promise' },
+    getCurrentState: { type: 'function', functionType: 'promise' },
     removeListeners: { type: 'function', functionType: 'async' },
   },
   RNCUIWebViewManager: {
