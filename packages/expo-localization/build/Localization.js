@@ -6,7 +6,7 @@ export const locale = parseLocale(ExpoLocalization.locale);
 export const locales = ExpoLocalization.locales.map(parseLocale);
 export const timezone = ExpoLocalization.timezone;
 export const isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
-export const country = ExpoLocalization.country;
+export const region = ExpoLocalization.region; // iOS
 export const isRTL = ExpoLocalization.isRTL;
 export async function getLocalizationAsync() {
     const { locale, locales, ...localization } = await ExpoLocalization.getLocalizationAsync();
