@@ -145,6 +145,11 @@ UM_EXPORT_METHOD_AS(isRootedExperimentalAsync, isRootedExperimentalAsyncWithReso
   resolve(@([self isRooted]));
 }
 
+UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(UMNullIfNil([self deviceType]));
+}
+
 - (BOOL)isRooted
 {
 #if !(TARGET_IPHONE_SIMULATOR)
@@ -293,17 +298,17 @@ UM_EXPORT_METHOD_AS(isRootedExperimentalAsync, isRootedExperimentalAsyncWithReso
   
   return @{
            @"brand": @"Apple",
-           @"deviceType": UMNullIfNil([self deviceType]),
            @"deviceName": currentDevice.name,
            @"modelId": UMNullIfNil([self deviceId]),
            @"isDevice": @([self isDevice]),
            @"manufacturer": @"Apple",
-           @"supportedCPUArchitectures": @[[self getCPUType]],
+           @"supportedCpuArchitectures": @[[self getCPUType]],
            @"osName": currentDevice.systemName,
            @"totalMemory": [self totalMemory] ?: @(0),
 //           @"uniqueId": uniqueId,
            @"osVersion": currentDevice.systemVersion,
-           @"osBuildId": [self osBuildId]
+           @"osBuildId": [self osBuildId],
+           @"osInternalBuildId": [self osBuildId]
            };
 }
 
