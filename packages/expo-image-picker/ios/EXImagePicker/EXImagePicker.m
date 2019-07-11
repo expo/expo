@@ -294,7 +294,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 - (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info saveAt:(NSString *)directory updateResponse:(NSMutableDictionary *)response
 {
   NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-  if (info[UIImagePickerControllerReferenceURL]){ // video from gallery
+  if (info[UIImagePickerControllerReferenceURL]) { // video from gallery
     PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[[info valueForKey:UIImagePickerControllerReferenceURL]] options:nil];
     if (assets.count > 0) {
       PHAsset *videoAsset = assets.firstObject;
@@ -331,7 +331,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   NSString *filePath = [fileURL absoluteString];
   
   // adding data to response if video came from camera
-  if (!info[UIImagePickerControllerReferenceURL]){
+  if (!info[UIImagePickerControllerReferenceURL]) {
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:fileURL options:nil];
     CGSize size = [[[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] naturalSize];
     response[@"width"] = @(size.width);
