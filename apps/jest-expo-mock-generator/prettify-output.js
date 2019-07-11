@@ -4,7 +4,7 @@ const path = require('path');
 // Ensure input file is passed
 if (process.argv.length !== 3 || !fs.existsSync(path.resolve(process.argv[2]))) {
   console.error(`
-Pass existing input file with logs to preetify! e.g. 'yarn prettify-output output.txt'
+Pass existing input file with logs to prettify! e.g. 'yarn prettify-output output.txt'
   `);
   process.exit(1);
 }
