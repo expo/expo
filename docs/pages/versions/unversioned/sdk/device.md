@@ -216,9 +216,11 @@ Device.getUptimeAsync().then(uptime => {
 
 ### `Device.isRootedExperimentalAsync()`
 
-Checks whether the device has been rooted. It is not completely reliable because a rooted device may be modified in any way, and thus can completely hide whatever it wants from you.
+Checks whether the device has been rooted (Android) or jailbroken (iOS). This is not completely reliable because there exist solutions to bypass root-detection on both [iOS](https://www.theiphonewiki.com/wiki/XCon) and [Android](https://tweakerlinks.com/how-to-bypass-apps-root-detection-in-android-device/). Further, many root-detection checks can be bypassed via reverse engineering.
 
-In Android, it's implemented in a way to find all possible files paths that contain the `"su"` executable but some devices not rooted would also have such executable. So there's no guarantee that this method would always be correct.
+In Android, it's implemented in a way to find all possible files paths that contain the `"su"` executable but some devices that are not rooted may also have this executable. Therefore, there's no guarantee that this method will always return correctly.
+
+On iOS, the jailbreak checks outlined on (https://www.theiphonewiki.com/wiki/Bypassing_Jailbreak_Detection) are used to detect if a device is rooted/jailbroken. However, since there are closed-sourced solutions such as [xCon](https://www.theiphonewiki.com/wiki/XCon) that aim to hook every known method and function responsible for informing an application of a jailbroken device, this method may not reliable to detect devices that have xCon or similar packages installed.  
 
 #### Returns
 
