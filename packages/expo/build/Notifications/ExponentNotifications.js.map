@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentNotifications.js","sourceRoot":"","sources":["../../src/Notifications/ExponentNotifications.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAC7C,eAAe,aAAa,CAAC,qBAAqB,CAAA","sourcesContent":["import { NativeModules } from 'react-native';\nexport default NativeModules.ExponentNotifications"]}
