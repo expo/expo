@@ -31,25 +31,24 @@ Details: https://developers.google.com/web/updates/2016/07/web-push-interop-wins
 ## Uploading Server Credentials
 
 ```bash
-expo push:web:upload --vapid-subject=<vapid subject> --vapid-pubkey=<public key url base64> --vapid-pvtkey=<private key url base64>
+expo push:web:upload --vapid-pubkey <vapid-public-key> --vapid-pvtkey <vapid-private-key> --vapid-subject <vapid-subject>
 ```
 
 ```bash
-expo push:web:generate --vapid-subject=<vapid subject>
+expo push:web:generate --vapid-subject <vapid-subject>
 ```
 Output public key and private key. Also prompt user to enter public key to app.json
 
 ```bash
-expo push:web:update [--vapid-subject=<vapid subject>] [--vapid-pubkey=<public key url base64>] [--vapid-pvtkey=<private key url base64>]
+expo push:web:show
 ```
-Update info. Also prompt user to update public key in app.json if necessary
-
+Print the VAPID public key, the VAPID private key, and the VAPID subject currently in use for web notifications for this project.
 
 ```bash
-expo push:web:info
+expo push:web:clear
 ```
-Output public key, private key, and vapid subject
+Clear public key, private key, and vapid subject stored on Expo server.
 
 
 
-TODO: vapid-subject can be override in individual push message
+TODO: vapid-subject can be overridden in individual push message
