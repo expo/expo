@@ -3,6 +3,7 @@
 #if __has_include(<ABI34_0_0EXPermissions/ABI34_0_0EXPermissions.h>)
 #import <UIKit/UIKit.h>
 #import <ABI34_0_0EXPermissions/ABI34_0_0EXPermissions.h>
+#import <ABI34_0_0ExpoKit/ABI34_0_0EXConstantsBinding.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI34_0_0EXScopedPermissions : ABI34_0_0EXPermissions
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(ABI34_0_0EXConstantsBinding *)constantsBinding;
 
 @end
 
