@@ -1,1 +1,1 @@
-{"version":3,"file":"Device.types.js","sourceRoot":"","sources":["../src/Device.types.ts"],"names":[],"mappings":"","sourcesContent":["export declare enum deviceType {\n  Handset = 'Handset',\n  Tablet = 'Tablet',\n  Tv = 'Tv',\n  Unknown = 'Unknown',\n}\n"]}
+{"version":3,"file":"Device.types.js","sourceRoot":"","sources":["../src/Device.types.ts"],"names":[],"mappings":"","sourcesContent":["export declare enum DeviceType {\n  PHONE = 'PHONE',\n  TABLET = 'TABLET',\n  DESKTOP = 'DESKTOP',\n  TV = 'TV',\n  UNKNOWN = 'UNKNOWN',\n}\n"]}

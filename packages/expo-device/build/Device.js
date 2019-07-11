@@ -38,16 +38,15 @@ export const modelName = model;
 export const osName = ExpoDevice ? ExpoDevice.osName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
 export const isDevice = ExpoDevice ? ExpoDevice.isDevice : null;
-export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
 export const modelId = ExpoDevice ? ExpoDevice.modelId : null;
-export const supportedCPUArchitectures = ExpoDevice ? ExpoDevice.supportedCPUArchitectures : null;
+export const supportedCpuArchitectures = ExpoDevice ? ExpoDevice.supportedCpuArchitectures : null;
 export const designName = ExpoDevice ? ExpoDevice.designName : null;
-export const systemBuildId = ExpoDevice ? ExpoDevice.systemBuildId : null;
+export const osBuildId = ExpoDevice ? ExpoDevice.osBuildId : null;
 export const productName = ExpoDevice ? ExpoDevice.productName : null;
 export const platformApiLevel = ExpoDevice ? ExpoDevice.platformApiLevel : null;
 export const osVersion = ExpoDevice ? ExpoDevice.osVersion : null;
 export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
-export const osBuildId = ExpoDevice ? ExpoDevice.osBuildId : null;
+export const osInternalBuildId = ExpoDevice ? ExpoDevice.osInternalBuildId : null;
 export async function hasPlatformFeatureAsync(feature) {
     if (!ExpoDevice.hasPlatformFeatureAsync) {
         throw new UnavailabilityError('expo-device', 'hasPlatformFeatureAsync');
@@ -83,5 +82,11 @@ export async function isRootedExperimentalAsync() {
         throw new UnavailabilityError('expo-device', 'isRootedExperimentalAsync');
     }
     return await ExpoDevice.isRootedExperimentalAsync();
+}
+export async function getDeviceTypeAsync() {
+    if (!ExpoDevice.getDeviceTypeAsync) {
+        throw new UnavailabilityError('expo-device', 'getDeviceTypeAsync');
+    }
+    return await ExpoDevice.getDeviceTypeAsync();
 }
 //# sourceMappingURL=Device.js.map

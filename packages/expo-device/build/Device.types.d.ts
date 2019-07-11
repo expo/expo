@@ -1,6 +1,7 @@
-export declare enum deviceType {
-    Handset = "Handset",
-    Tablet = "Tablet",
-    Tv = "Tv",
-    Unknown = "Unknown"
+export declare enum DeviceType {
+    PHONE = "PHONE",
+    TABLET = "TABLET",
+    DESKTOP = "DESKTOP",
+    TV = "TV",
+    UNKNOWN = "UNKNOWN"
 }
