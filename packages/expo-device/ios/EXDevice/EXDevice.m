@@ -250,10 +250,10 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
 - (NSString *)deviceType
 {
   switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
-    case UIUserInterfaceIdiomPhone: return @"Handset";
-    case UIUserInterfaceIdiomPad: return @"Tablet";
-    case UIUserInterfaceIdiomTV: return @"Tv";
-    default: return @"Unknown";
+    case UIUserInterfaceIdiomPhone: return @"PHONE";
+    case UIUserInterfaceIdiomPad: return @"TABLET";
+    case UIUserInterfaceIdiomTV: return @"TV";
+    default: return @"UNKNOWN";
   }
 }
 
