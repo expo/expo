@@ -144,7 +144,9 @@ UM_EXPORT_METHOD_AS(askAsync,
     UM_ENSURE_STRONGIFY(self);
     
     // save results for permission
+    BOOL isGranted = [EXPermissions statusForPermissions:permission] == EXPermissionStatusGranted;
     permissions[permissionType] = [NSMutableDictionary dictionaryWithDictionary:permission];
+    permissions[permissionType][@"granted"] = @(isGranted);
     
     askForNextPermission();
   };
