@@ -530,7 +530,12 @@ public class FileSystemModule extends ExportedModule {
       long blockCount = root.getBlockCountLong();
       long blockSize = root.getBlockSizeLong();
       BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
-      promise.resolve(capacity.doubleValue());
+      Double capacityDouble = capacity.doubleValue();
+      //cast down to avoid overflow
+      if(capacity.longValue() > Math.pow(2,53) - 1){
+        capacityDouble =  Math.pow(2,53) - 1;
+      }
+      promise.resolve(capacityDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity");
@@ -545,7 +550,12 @@ public class FileSystemModule extends ExportedModule {
       long blockSize = external.getBlockSizeLong();
 
       BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
-      promise.resolve(storage.doubleValue());
+      Double storageDouble = storage.doubleValue();
+      //cast down to avoid overflow
+      if(storage.longValue() > Math.pow(2,53) - 1){
+        storageDouble =  Math.pow(2,53) - 1;
+      }
+      promise.resolve(storageDouble);
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
       promise.reject("ERR_FILESYSTEM", "No available free disk storage.");
