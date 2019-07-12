@@ -333,7 +333,8 @@ export default class ProjectsScreen extends React.Component {
         <Text style={styles.supportSdksText}>
           Supported SDK
           {SupportedExpoSdks.length === 1 ? ': ' : 's: '}
-          {SupportedExpoSdks.map(semver.major)
+          {SupportedExpoSdks
+            .map(semver.major)
             .sort((a, b) => a - b)
             .join(', ')}
         </Text>
