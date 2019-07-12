@@ -299,15 +299,19 @@ export default class Profile extends React.Component {
 
         if (option === 'Cancel') return;
 
-        let imageUrl;
-        if (option === 'Take Photo') {
-          imageUrl = await ImageSelectionUtils.takePhotoAsync();
-        } else if (option === 'Choose Photo') {
-          imageUrl = await ImageSelectionUtils.choosePhotoAsync();
-        }
+        try {
+          let imageUrl;
+          if (option === 'Take Photo') {
+            imageUrl = await ImageSelectionUtils.takePhotoAsync();
+          } else if (option === 'Choose Photo') {
+            imageUrl = await ImageSelectionUtils.choosePhotoAsync();
+          }
 
-        if (imageUrl) {
-          Store.dispatch(ProfileActions.setImage(imageUrl));
+          if (imageUrl) {
+            Store.dispatch(ProfileActions.setImage(imageUrl));
+          }
+        } catch ({ message }) {
+          alert(`Failed to change the banner image: ${message}`);
         }
       }
     );

@@ -51,7 +51,7 @@ async function moveToPhotoCacheAsync(uri: string): Promise<string> {
   const extension = getExtension(uri);
   const cachedFileName = `${Date.now()}.${extension}`;
   const cachedFileLocation = `${directory}/${cachedFileName}`;
-  await FileSystem.moveAsync({
+  await FileSystem.copyAsync({
     from: uri,
     to: cachedFileLocation,
   });
