@@ -322,7 +322,6 @@ export default class ProjectsScreen extends React.Component {
   };
 
   _renderConstants = () => {
-    const { supportedExpoSdks = [] } = Constants;
     return (
       <View style={styles.constantsContainer}>
         <Text style={styles.deviceIdText} onPress={this._copySnackIdToClipboard}>
