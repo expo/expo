@@ -28,6 +28,8 @@ Details: https://developers.google.com/web/updates/2016/07/web-push-interop-wins
 }
 ```
 
+Also you must include "owner" (your Expo username) in `app.json`.
+
 ## Uploading Server Credentials
 
 ```bash

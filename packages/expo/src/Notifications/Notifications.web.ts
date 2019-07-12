@@ -5,9 +5,9 @@ export default {
     const data = await this.subscribeUserToPush();
     const tokenArguments: { [key: string]: string } = {
       deviceId: Constants.installationId,
-      // TODO: Anything preventing us from using `Constants.manifest.slug` here?
-      experienceId: Constants.manifest.slug!,
       appId: Constants.manifest.slug!,
+      // TODO: Error handling. User must provide `.owner`
+      experienceId: '@' + Constants.manifest.owner! + '/' + Constants.manifest.slug!,
       deviceToken: JSON.stringify(data),
       type: 'web',
     };
