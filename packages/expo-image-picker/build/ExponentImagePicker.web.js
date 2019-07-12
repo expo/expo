@@ -47,11 +47,25 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                 };
                 reader.onload = ({ target }) => {
                     const uri = target.result;
+                    
+                    let type;
+                    if (targetFile.type && targetFile.type.startsWith('image/')) type = 'image';
+                    if (targetFile.type && targetFile.type.startsWith('video/')) type = 'video';
+                    
+                    // todo: get image width/height with https://stackoverflow.com/a/13572209/3273806
+                    // todo: get video width/height with https://stackoverflow.com/a/45355068/3273806
+                    
                     resolve({
                         cancelled: false,
+                        type,
                         uri,
                         width: 0,
                         height: 0,
+                        
+                        // possibly provide a reference to the raw file
+                        // so that File.{lastModified, lastModifiedDate, name, webkitRelativePath, size, type}
+                        // are available
+                        // file: targetFile,
                     });
                 };
                 // Read in the image file as a binary string.
