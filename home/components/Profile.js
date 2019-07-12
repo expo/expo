@@ -4,9 +4,6 @@ import dedent from 'dedent';
 import { Asset } from 'expo-asset';
 import { BlurView } from 'expo-blur';
 import Constants from 'expo-constants';
-import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import { take, takeRight } from 'lodash';
 import React from 'react';
 import {
@@ -25,6 +22,7 @@ import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import ProfileActions from '../redux/ProfileActions';
 import Store from '../redux/Store';
+import * as ImageSelectionUtils from '../utils/ImageSelectionUtils';
 import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
 import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
 import PrimaryButton from './PrimaryButton';
@@ -301,32 +299,15 @@ export default class Profile extends React.Component {
 
         if (option === 'Cancel') return;
 
-        const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
-        if (status !== Permissions.PermissionStatus.GRANTED) {
-          alert(
-            'Cannot select a banner photo without media access! Please enable the "Camera" & "Camera Roll" permission in your system settings.'
-          );
-          return;
-        }
-
-        const mediaOptions = {
-          allowsEditing: true,
-          quality: 1.0,
-          allowsMultipleSelection: false,
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          exif: false,
-          base64: false,
-        };
-
-        let media;
+        let imageUrl;
         if (option === 'Take Photo') {
-          media = await ImagePicker.launchCameraAsync(mediaOptions);
+          imageUrl = await ImageSelectionUtils.takePhotoAsync();
         } else if (option === 'Choose Photo') {
-          media = await ImagePicker.launchImageLibraryAsync(mediaOptions);
+          imageUrl = await ImageSelectionUtils.choosePhotoAsync();
         }
-        if (!media.cancelled) {
-          const asset = await MediaLibrary.createAssetAsync(media.uri);
-          Store.dispatch(ProfileActions.setImage(asset.uri));
+
+        if (imageUrl) {
+          Store.dispatch(ProfileActions.setImage(imageUrl));
         }
       }
     );
