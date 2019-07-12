@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
+import { DeviceType } from 'expo-device/build/Device.types';
 
 interface DeviceConstantName {
   name?: string;
@@ -14,7 +15,8 @@ interface mState {
   maxMemory?: number;
   isSideLoadingEnabled?: string;
   uptime?: number;
-  isRooted?:string
+  isRooted?: string;
+  deviceType?: DeviceType;
 }
 
 interface props {}
@@ -49,10 +51,10 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
     super(props);
     this.state = {
       allFeatures: '',
-      maxMemory:0,
-      uptime:0,
-      isSideLoadingEnabled:'',
-      isRooted: ''
+      maxMemory: 0,
+      uptime: 0,
+      isSideLoadingEnabled: '',
+      isRooted: '',
     };
   }
 
@@ -86,6 +88,11 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
       this.setState({ isSideLoadingEnabled: isSideLoadingEnabled.toString() });
     });
   };
+  _getDeviceType = () => {
+    Device.getDeviceTypeAsync().then(deviceType => {
+      this.setState({deviceType: deviceType});
+    })
+  };
 
   render() {
     return (
@@ -99,41 +106,41 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
           name="Device osBuildFingerprint"
           value={Device.osBuildFingerprint}></DeviceConstants>
         <DeviceConstants name="Device isDevice" value={Device.isDevice}></DeviceConstants>
-        <DeviceConstants name="Device deviceType" value={Device.deviceType}></DeviceConstants>
         <DeviceConstants name="Device modelId" value={Device.modelId}></DeviceConstants>
         <DeviceConstants
-          name="Device supportedCPUArchitectures"
-          value={Device.supportedCPUArchitectures}></DeviceConstants>
+          name="Device supportedCpuArchitectures"
+          value={Device.supportedCpuArchitectures}></DeviceConstants>
         <DeviceConstants name="Device designName" value={Device.designName}></DeviceConstants>
-        <DeviceConstants name="Device systemBuildId" value={Device.systemBuildId}></DeviceConstants>
+        <DeviceConstants name="Device osBuildId" value={Device.osBuildId}></DeviceConstants>
         <DeviceConstants name="Device productName" value={Device.productName}></DeviceConstants>
         <DeviceConstants
           name="Device platformApiLevel"
           value={Device.platformApiLevel}></DeviceConstants>
         <DeviceConstants name="Device osVersion" value={Device.osVersion}></DeviceConstants>
         <DeviceConstants name="Device deviceName" value={Device.deviceName}></DeviceConstants>
-        <DeviceConstants name="Device osBuildId" value={Device.osBuildId}></DeviceConstants>
+        <DeviceConstants
+          name="Device osInternalBuildId"
+          value={Device.osInternalBuildId}></DeviceConstants>
+        {/* <View style={{ padding: 10 }}>
+          <View style={{ marginBottom: 10 }}>
+            <HeadingText>getDeviceType</HeadingText>
+            <MonoText> {this.state.deviceType}</MonoText>
+          </View>
+          <Button onPress={this._getDeviceType} title="getDeviceType" color="#DCA42D" />
+        </View>
         <View style={{ padding: 10 }}>
           <View style={{ marginBottom: 10 }}>
             <HeadingText>getPlatformFeatures</HeadingText>
             <MonoText> {this.state.allFeatures}</MonoText>
           </View>
-          <Button
-            onPress={this._getAllFeatures}
-            title="getPlatformFeatures"
-            color="#DCA42D"
-          />
+          <Button onPress={this._getAllFeatures} title="getPlatformFeatures" color="#DCA42D" />
         </View>
         <View style={{ padding: 10 }}>
           <View style={{ marginBottom: 10 }}>
             <HeadingText>get max memory</HeadingText>
             <MonoText> {this.state.maxMemory}</MonoText>
           </View>
-          <Button
-            onPress={this._getMaxMemory}
-            title="getMaxMemory"
-            color="#DCA42D"
-          />
+          <Button onPress={this._getMaxMemory} title="getMaxMemory" color="#DCA42D" />
         </View>
         <View style={{ padding: 10 }}>
           <View style={{ marginBottom: 10 }}>
@@ -151,23 +158,15 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
             <HeadingText>getUptime</HeadingText>
             <MonoText> {this.state.uptime}</MonoText>
           </View>
-          <Button
-            onPress={this._getUptime}
-            title="getUptime"
-            color="#DCA42D"
-          />
+          <Button onPress={this._getUptime} title="getUptime" color="#DCA42D" />
         </View>
         <View style={{ padding: 10 }}>
           <View style={{ marginBottom: 10 }}>
             <HeadingText>isRootedExperimental</HeadingText>
             <MonoText> {this.state.isRooted}</MonoText>
           </View>
-          <Button
-            onPress={this._isRooted}
-            title="isRootedExperimental"
-            color="#DCA42D"
-          />
-        </View>
+          <Button onPress={this._isRooted} title="isRootedExperimental" color="#DCA42D" />
+        </View> */}
       </ScrollView>
     );
   }
