@@ -10,7 +10,7 @@
 #import <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 typedef float (^EXFaceDetectionAngleTransformBlock)(float);
 

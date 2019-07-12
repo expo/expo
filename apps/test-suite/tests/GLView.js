@@ -1,9 +1,9 @@
 'use strict';
-import { GLView } from 'expo-gl';
+import { Platform } from '@unimodules/core';
 import { Asset } from 'expo-asset';
+import { GLView } from 'expo-gl';
 import React from 'react';
 
-import { Platform } from '@unimodules/core';
 import { mountAndWaitFor } from './helpers';
 
 export const name = 'GLView';
@@ -47,11 +47,7 @@ export async function test(
   describe('GLView', () => {
     it('gets a valid context', async () => {
       const context = await getContextAsync();
-      if (Platform.OS === 'web') {
-        expect(context instanceof WebGL2RenderingContext).toBe(true);
-      } else {
-        expect(context instanceof WebGLRenderingContext).toBe(true);
-      }
+      expect(context instanceof WebGLRenderingContext).toBe(true);
     });
 
     it('takes a snapshot', async () => {
@@ -191,11 +187,7 @@ export async function test(
     describe('static', () => {
       it('creates a static context', async () => {
         const context = await GLView.createContextAsync();
-        if (Platform.OS === 'web') {
-          expect(context instanceof WebGL2RenderingContext).toBe(true);
-        } else {
-          expect(context instanceof WebGLRenderingContext).toBe(true);
-        }
+        expect(context instanceof WebGLRenderingContext).toBe(true);
       });
 
       it('takes a snapshot', async () => {

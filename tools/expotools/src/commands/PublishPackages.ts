@@ -6,7 +6,7 @@ import JsonFile from '@expo/json-file';
 import semver from 'semver';
 import inquirer from 'inquirer';
 import spawnAsync from '@expo/spawn-async';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
 import { Package, getListOfPackagesAsync } from '../Packages';
@@ -686,13 +686,9 @@ async function _gitCommitAsync(allConfigs: Map<string, PipelineConfig>): Promise
   }
 }
 
-function _isIncludedInExpoClient(podspecName: string): Promise<boolean> {
-  return fs.existsSync(path.join(EXPO_DIR, `ios/Pods/Headers/Public/${podspecName}`));
-}
-
 async function _updatePodsAsync(allConfigs: Map<string, PipelineConfig>): Promise<void> {
   const podspecNames = [...allConfigs.values()]
-    .filter(config => config.pkg.podspecName && config.shouldPublish && _isIncludedInExpoClient(config.pkg.podspecName))
+    .filter(config => config.pkg.podspecName && config.shouldPublish && config.pkg.isIncludedInExpoClientOnPlatform('ios'))
     .map(config => config.pkg.podspecName) as string[];
 
   if (podspecNames.length === 0) {

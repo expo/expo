@@ -6,6 +6,8 @@ import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-nativ
 import { ListButton } from '../ui-explorer';
 
 export const title = 'Print';
+export const label = 'Print';
+
 export const packageJson = require('expo-print/package.json');
 export const description = 'An API for iOS (AirPrint) and Android printing functionality.';
 const PDF_DATA_URI =

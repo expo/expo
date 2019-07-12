@@ -17,7 +17,6 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 | code39          | Yes   | Yes     |
 | code93          | Yes   | Yes     |
 | code128         | Yes   | Yes     |
-| code138         | Yes   | No      |
 | code39mod43     | Yes   | No      |
 | datamatrix      | Yes   | Yes     |
 | ean13           | Yes   | Yes     |

@@ -227,6 +227,8 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     allowsEditing = options.containsKey(OPTION_ALLOWS_EDITING) && ((Boolean) options.get(OPTION_ALLOWS_EDITING));
     if (options.containsKey(OPTION_MEDIA_TYPES)) {
       mediaTypes = (String) options.get(OPTION_MEDIA_TYPES);
+    } else {
+      mediaTypes = "Images";
     }
     if (options.containsKey(OPTION_ASPECT)) {
       forceAspect = (ArrayList<Object>) options.get(OPTION_ASPECT);
@@ -255,7 +257,9 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
       return;
     }
 
-    final Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    final Intent cameraIntent = new Intent(mediaTypes.equals("Videos") ?
+                                            MediaStore.ACTION_VIDEO_CAPTURE :
+                                            MediaStore.ACTION_IMAGE_CAPTURE);
 
     if (cameraIntent.resolveActivity(getApplication(null).getPackageManager()) == null) {
       promise.reject(new IllegalStateException("Error resolving activity"));
@@ -282,7 +286,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     File imageFile;
     try {
       imageFile = new File(ExpFileUtils.generateOutputPath(mContext.getCacheDir(),
-          "ImagePicker", ".jpg"));
+          "ImagePicker", mediaTypes.equals("Videos") ? ".mp4" : ".jpg"));
     } catch (IOException e) {
       e.printStackTrace();
       return;
@@ -326,19 +330,17 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     }
 
     Intent libraryIntent = new Intent();
-    if (mediaTypes != null) {
-      if (mediaTypes.equals("Images")) {
-        libraryIntent.setType("image/*");
-      } else if (mediaTypes.equals("Videos")) {
-        libraryIntent.setType("video/*");
-      } else if (mediaTypes.equals("All")) {
-        libraryIntent.setType("*/*");
-        String[] mimetypes = {"image/*", "video/*"};
-        libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-      }
-    } else {
+
+    if (mediaTypes.equals("Images")) {
       libraryIntent.setType("image/*");
+    } else if (mediaTypes.equals("Videos")) {
+      libraryIntent.setType("video/*");
+    } else if (mediaTypes.equals("All")) {
+      libraryIntent.setType("*/*");
+      String[] mimetypes = {"image/*", "video/*"};
+      libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
     }
+
 
     mPromise = promise;
 

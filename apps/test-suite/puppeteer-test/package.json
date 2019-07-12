@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-test",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Test Expo APIs in web with puppeteer",
   "main": "index.js",
   "scripts": {
@@ -13,8 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "puppeteer": "^1.11.0",
-    "webpack": "4.24.0",
-    "webpack-dev-server": "^3.2.0"
+    "@expo/xdl": "^56.0.0",
+    "puppeteer": "^1.11.0"
   }
 }

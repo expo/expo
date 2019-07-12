@@ -1,8 +1,11 @@
 import path from 'path';
 import glob from 'glob';
 import fs from 'fs-extra';
+
+import IosUnversionablePackages from './versioning/ios/unversionablePackages.json';
 import * as Directories from './Directories';
 
+const IOS_DIR = Directories.getIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
 
 /**
@@ -60,6 +63,22 @@ class Package {
 
   isUnimodule() {
     return !!this.unimoduleJson;
+  }
+
+  isIncludedInExpoClientOnPlatform(platform: 'ios'): boolean {
+    if (platform === 'ios') {
+      // On iOS we can easily check whether the package is included in Expo client by checking if it is installed by Cocoapods.
+      const { podspecName } = this;
+      return podspecName != null && fs.existsSync(path.join(IOS_DIR, 'Pods', 'Headers', 'Public', podspecName));
+    }
+    throw new Error(`'isIncludedInExpoClientOnPlatform' is not supported on '${platform}' platform yet.`);
+  }
+
+  isVersionableOnPlatform(platform: 'ios'): boolean {
+    if (platform === 'ios') {
+      return this.podspecName != null && !IosUnversionablePackages.includes(this.packageName);
+    }
+    throw new Error(`'isVersionableOnPlatform' is not supported on '${platform}' platform yet.`);
   }
 }
 

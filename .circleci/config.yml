@@ -54,7 +54,7 @@ commands:
         default: .
     steps:
       - restore_cache:
-          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
+          key: yarn-v1-{{ arch }}-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
   save_yarn_cache:
     parameters:
       working_directory:
@@ -62,7 +62,7 @@ commands:
         default: .
     steps:
       - save_cache:
-          key: yarn-v1-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
+          key: yarn-v1-{{ arch }}-{{ checksum "<< parameters.working_directory >>/yarn.lock" }}
           paths:
             - ~/.cache/yarn # `yarn cache dir`
   restore_gradle_cache:

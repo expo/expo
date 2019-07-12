@@ -3,6 +3,7 @@
 #if __has_include(<EXPermissions/EXPermissions.h>)
 #import <UIKit/UIKit.h>
 #import <EXPermissions/EXPermissions.h>
+#import "EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedPermissions : EXPermissions
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding;
 
 @end
 

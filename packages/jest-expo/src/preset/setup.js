@@ -4,15 +4,6 @@
  */
 'use strict';
 
-// whatwg-fetch@3 expects "self" to be globally defined
-global.self = global;
-
-const { Response, Request, Headers, fetch } = require('whatwg-fetch');
-global.Response = Response;
-global.Request = Request;
-global.Headers = Headers;
-global.fetch = fetch;
-
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
 const createMockConstants = require('./createMockConstants');
 
@@ -121,16 +112,6 @@ mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach(viewManagerName
   });
 });
 
-// Needed for `react-native-gesture-handler` as of 10/29/2018
-// Otherwise the following line fails with "cannot read property directEventTypes of undefined"
-// https://github.com/kmagiera/react-native-gesture-handler/blob/master/GestureHandler.js#L46
-Object.defineProperty(mockNativeModules.UIManager, 'RCTView', {
-  get: () => ({
-    NativeProps: {},
-    directEventTypes: [],
-  }),
-});
-
 Object.defineProperty(mockNativeModules.UIManager, 'takeSnapshot', {
   configurable: true,
   enumerable: true,
@@ -176,40 +157,6 @@ jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
     height: 1,
   })),
 }));
-
-jest.mock('react-native-gesture-handler', () => {
-  const View = require('react-native/Libraries/Components/View/View');
-  return {
-    Swipeable: View,
-    DrawerLayout: View,
-    State: {},
-    ScrollView: View,
-    Slider: View,
-    Switch: View,
-    TextInput: View,
-    ToolbarAndroid: View,
-    ViewPagerAndroid: View,
-    DrawerLayoutAndroid: View,
-    WebView: View,
-    NativeViewGestureHandler: View,
-    TapGestureHandler: View,
-    FlingGestureHandler: View,
-    ForceTouchGestureHandler: View,
-    LongPressGestureHandler: View,
-    PanGestureHandler: View,
-    PinchGestureHandler: View,
-    RotationGestureHandler: View,
-    /* Buttons */
-    RawButton: View,
-    BaseButton: View,
-    RectButton: View,
-    BorderlessButton: View,
-    /* Other */
-    FlatList: View,
-    gestureHandlerRootHOC: jest.fn(),
-    Directions: {},
-  };
-});
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 

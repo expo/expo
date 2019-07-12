@@ -97,8 +97,8 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
     // This could also be done purely in C++, but iterative over map methods
     // but those may end up calling reflection methods anyway
     // TODO (axe) Investigate the best way to convert Java Map to Value
-    static jclass jArguments = env->FindClass("abi33_0_0/com/facebook/react/bridge/Arguments");
-    static jmethodID jMakeNativeMap = env->GetStaticMethodID(jArguments, "makeNativeMap", "(Ljava/util/Map;)Labi33_0_0/com/facebook/react/bridge/WritableNativeMap;");
+    static jclass jArguments = env->FindClass("abi34_0_0/com/facebook/react/bridge/Arguments");
+    static jmethodID jMakeNativeMap = env->GetStaticMethodID(jArguments, "makeNativeMap", "(Ljava/util/Map;)Labi34_0_0/com/facebook/react/bridge/WritableNativeMap;");
     auto constants = (jobject) env->CallStaticObjectMethod(jArguments, jMakeNativeMap, arg);
     auto jResult = jni::adopt_local(constants);
     auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);

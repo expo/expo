@@ -21,24 +21,13 @@ Create a file in the root of your project called `tsconfig.json` and put this in
 ```json
 {
   "compilerOptions": {
-    "allowJs": false,
     "allowSyntheticDefaultImports": true,
-    "noFallthroughCasesInSwitch": true,
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
     "jsx": "react-native",
-    "lib": [
-      "es6"
-    ],
+    "lib": ["dom", "esnext"],
     "moduleResolution": "node",
     "noEmit": true,
-    "strict": true,
-    "target": "esnext"
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "skipLibCheck": true
+  }
 }
 ```
 

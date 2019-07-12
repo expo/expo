@@ -18,6 +18,7 @@ module.exports = {
   },
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>test/enzyme.config.js'],
+  transformIgnorePatterns: [],
   // snapshotSerializers: ['react-native-web/jest/serializer'],
   rootDir: '..',
 };

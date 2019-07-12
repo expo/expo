@@ -12,8 +12,8 @@
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <UMCore/UMModuleRegistry.h>
 #import <EXFaceDetector/EXFaceEncoder.h>
-#import <EXFaceDetector/CSBufferOrientationCalculator.h>
-#import "Firebase.h"
+#import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
+#import <Firebase/Firebase.h>
 
 @interface EXFaceDetectorModule ()
 
