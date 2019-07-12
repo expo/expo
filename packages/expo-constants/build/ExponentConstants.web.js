@@ -62,10 +62,6 @@ export default {
     get statusBarHeight() {
         return 0;
     },
-    get deviceYearClass() {
-        // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
-        return null;
-    },
     get manifest() {
         return process.env.APP_MANIFEST || {};
     },

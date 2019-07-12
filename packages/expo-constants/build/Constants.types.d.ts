@@ -81,7 +81,6 @@ export interface NativeConstants {
     name: 'ExponentConstants';
     appOwnership: AppOwnership;
     debugMode: boolean;
-    deviceYearClass: number | null;
     experienceUrl: string;
     expoRuntimeVersion: string;
     expoVersion: string;

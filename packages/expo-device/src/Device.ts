@@ -2,7 +2,19 @@ import { Platform, UnavailabilityError } from '@unimodules/core';
 import ExpoDevice from './ExpoDevice';
 
 import { deviceNamesByCode } from './DeviceNameByCode';
-import { DeviceType } from './Device.types';
+import { DeviceType as _DeviceType } from './Device.types';
+
+export{
+  _DeviceType as DeviceType
+}
+
+// enum DeviceType {
+//   PHONE = "PHONE",
+//   TABLET = "TABLET",
+//   DESKTOP = "DESKTOP",
+//   TV = "TV",
+//   UNKNOWN = "UNKNOWN"
+// }
 
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
@@ -58,6 +70,7 @@ export const osBuildId = ExpoDevice ? ExpoDevice.osBuildId : null;
 export const osVersion = ExpoDevice ? ExpoDevice.osVersion : null;
 export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
 export const osInternalBuildId = ExpoDevice ? ExpoDevice.osInternalBuildId : null;
+export const deviceYearClass = ExpoDevice ? ExpoDevice.osInternalBuildId: null;
 
 export async function hasPlatformFeatureAsync(feature: string): Promise<boolean> {
   if (!ExpoDevice.hasPlatformFeatureAsync) {
@@ -105,21 +118,21 @@ export async function isRootedExperimentalAsync(): Promise<boolean> {
   return await ExpoDevice.isRootedExperimentalAsync();
 }
 
-export async function getDeviceTypeAsync(): Promise<DeviceType> {
+export async function getDeviceTypeAsync(): Promise<_DeviceType> {
   if (!ExpoDevice.getDeviceTypeAsync) {
     throw new UnavailabilityError('expo-device', 'getDeviceTypeAsync');
   }
   const deviceType = await ExpoDevice.getDeviceTypeAsync();
   switch (deviceType) {
-    case deviceType === DeviceType.PHONE:
-      return Promise.resolve(DeviceType.PHONE);
-    case deviceType === DeviceType.TABLET:
-      return Promise.resolve(DeviceType.TABLET);
-    case deviceType === DeviceType.TV:
-      return Promise.resolve(DeviceType.TV);
-    case deviceType === DeviceType.DESKTOP:
-      return Promise.resolve(DeviceType.DESKTOP);
+    case _DeviceType.PHONE:
+      return Promise.resolve(_DeviceType.PHONE);
+    case _DeviceType.TABLET:
+      return Promise.resolve(_DeviceType.TABLET);
+    case _DeviceType.TV:
+      return Promise.resolve(_DeviceType.TV);
+    case _DeviceType.DESKTOP:
+      return Promise.resolve(_DeviceType.DESKTOP);
     default:
-      return Promise.resolve(DeviceType.UNKNOWN);
+      return Promise.resolve(_DeviceType.UNKNOWN);
   }
 }

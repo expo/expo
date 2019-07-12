@@ -1,4 +1,4 @@
-export declare enum DeviceType {
+export enum DeviceType {
   PHONE = 'PHONE',
   TABLET = 'TABLET',
   DESKTOP = 'DESKTOP',
