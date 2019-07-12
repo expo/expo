@@ -5,6 +5,7 @@ import { Asset } from 'expo-asset';
 import { BlurView } from 'expo-blur';
 import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
 import { take, takeRight } from 'lodash';
 import React from 'react';
@@ -324,7 +325,8 @@ export default class Profile extends React.Component {
           media = await ImagePicker.launchImageLibraryAsync(mediaOptions);
         }
         if (!media.cancelled) {
-          Store.dispatch(ProfileActions.setImage(media.uri));
+          const asset = await MediaLibrary.createAssetAsync(media.uri);
+          Store.dispatch(ProfileActions.setImage(asset.uri));
         }
       }
     );
