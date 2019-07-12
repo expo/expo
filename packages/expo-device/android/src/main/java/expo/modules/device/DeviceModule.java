@@ -79,7 +79,11 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     constants.put("manufacturer", Build.MANUFACTURER);
     constants.put("modelName", Build.MODEL);
     constants.put("osName", this.getSystemName());
-    constants.put("supportedCpuArchitectures", Build.SUPPORTED_ABIS);
+    String[] supported_abis = Build.SUPPORTED_ABIS;
+    if(supported_abis != null && supported_abis.length == 0){
+      supported_abis = null;
+    }
+    constants.put("supportedCpuArchitectures", supported_abis);
     constants.put("designName", Build.DEVICE);
     constants.put("osBuildId", Build.DISPLAY);
     constants.put("productName", Build.PRODUCT);
@@ -109,7 +113,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
   private String getSystemName() {
     String systemName = "";
-    if (android.os.Build.VERSION.SDK_INT < 23) {
+    if (Build.VERSION.SDK_INT < 23) {
       systemName = "Android";
     } else {
       systemName = Build.VERSION.BASE_OS;
@@ -167,17 +171,21 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   @ExpoMethod
   public void getMaxMemoryAsync(Promise promise) {
     Long maxMemory = Runtime.getRuntime().maxMemory();
-    promise.resolve(maxMemory.doubleValue());
+    if (maxMemory == Long.MAX_VALUE) {
+      //convert into maximum integer that JS could fit
+      promise.resolve(-1);
+    } else {
+      promise.resolve(maxMemory.doubleValue());
+    }
   }
 
   @ExpoMethod
   public void isSideLoadingEnabled(Promise promise) {
     boolean enabled;
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      if(Settings.Global.getInt(mContext.getApplicationContext().getContentResolver(), Settings.Global.INSTALL_NON_MARKET_APPS, 0) == 1){
-       enabled =  true;
-      }
-      else{
+      if (Settings.Global.getInt(mContext.getApplicationContext().getContentResolver(), Settings.Global.INSTALL_NON_MARKET_APPS, 0) == 1) {
+        enabled = true;
+      } else {
         enabled = false;
       }
     } else {
@@ -200,21 +208,21 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
   @ExpoMethod
   public void isRootedExperimentalAsync(Promise promise) {
-      boolean isRooted = false;
-      boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
-      String buildTags = Build.TAGS;
-      if(isDevice && buildTags != null && buildTags.contains("test-keys")) {
+    boolean isRooted = false;
+    boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
+    String buildTags = Build.TAGS;
+    if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
+      isRooted = true;
+    } else {
+      File file = new File("/system/app/Superuser.apk");
+      if (file.exists()) {
         isRooted = true;
       } else {
-        File file = new File("/system/app/Superuser.apk");
-        if(file.exists()) {
-          isRooted = true;
-        } else {
-          file = new File("/system/xbin/su");
-          isRooted =  isDevice && file.exists();
-        }
+        file = new File("/system/xbin/su");
+        isRooted = isDevice && file.exists();
       }
-      promise.resolve(isRooted);
+    }
+    promise.resolve(isRooted);
   }
 
   @ExpoMethod
