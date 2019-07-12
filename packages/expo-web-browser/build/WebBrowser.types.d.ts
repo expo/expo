@@ -6,6 +6,7 @@ export declare type OpenBrowserOptions = {
     browserPackage?: string;
     enableBarCollapsing?: boolean;
     showTitle?: boolean;
+    /** iOS only */
     controlsColor?: string;
     windowName?: string;
     windowFeatures?: string;
