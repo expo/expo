@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.lang.Runtime;
 
+import com.facebook.device.yearclass.YearClass;
+
 public class DeviceModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String NAME = "ExpoDevice";
   private static final String TAG = DeviceModule.class.getSimpleName();
@@ -92,6 +94,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     constants.put("deviceName", Settings.Secure.getString(mContext.getContentResolver(), "bluetooth_name"));
     constants.put("osBuildFingerprint", Build.FINGERPRINT);
     constants.put("osInternalBuildId", Build.ID);
+    constants.put("deviceYearClass", getDeviceYearClass());
 
     ActivityManager actMgr = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
     ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
@@ -109,6 +112,10 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
   private static boolean isRunningOnStockEmulator() {
     return Build.FINGERPRINT.contains("generic");
+  }
+
+  private int getDeviceYearClass() {
+    return YearClass.get(mContext);
   }
 
   private String getSystemName() {

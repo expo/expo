@@ -54,7 +54,6 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
 
     constants.put("sessionId", mSessionId);
     constants.put("statusBarHeight", getStatusBarHeight());
-    constants.put("deviceYearClass", getDeviceYearClass());
     constants.put("systemFonts", getSystemFonts());
     constants.put("systemVersion", getSystemVersion());
 
@@ -73,10 +72,6 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
 
   public String getAppOwnership() {
     return "guest";
-  }
-
-  public int getDeviceYearClass() {
-    return YearClass.get(mContext);
   }
 
   public int getStatusBarHeight() {

@@ -70,7 +70,7 @@ export const osBuildId = ExpoDevice ? ExpoDevice.osBuildId : null;
 export const osVersion = ExpoDevice ? ExpoDevice.osVersion : null;
 export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
 export const osInternalBuildId = ExpoDevice ? ExpoDevice.osInternalBuildId : null;
-export const deviceYearClass = ExpoDevice ? ExpoDevice.osInternalBuildId: null;
+export const deviceYearClass = ExpoDevice ? ExpoDevice.deviceYearClass: null;
 
 export async function hasPlatformFeatureAsync(feature: string): Promise<boolean> {
   if (!ExpoDevice.hasPlatformFeatureAsync) {

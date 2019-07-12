@@ -7,7 +7,6 @@ public interface ConstantsInterface {
   Map<String, Object> getConstants();
   String getAppId();
   String getAppOwnership();
-  int getDeviceYearClass();
   int getStatusBarHeight();
   String getSystemVersion();
   List<String> getSystemFonts();
