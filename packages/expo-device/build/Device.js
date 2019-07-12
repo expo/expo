@@ -1,6 +1,7 @@
 import ExpoDevice from './ExpoDevice';
 import { deviceNamesByCode } from './DeviceNameByCode';
 import { Platform, UnavailabilityError } from '@unimodules/core';
+import { DeviceType } from './Device.types';
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 let model;
@@ -100,6 +101,13 @@ export async function getDeviceTypeAsync() {
     if (!ExpoDevice.getDeviceTypeAsync) {
         throw new UnavailabilityError('expo-device', 'getDeviceTypeAsync');
     }
-    return await ExpoDevice.getDeviceTypeAsync();
+    const deviceType = await ExpoDevice.getDeviceTypeAsync();
+    switch (deviceType) {
+        case deviceType === DeviceType.PHONE: return DeviceType.PHONE;
+        case deviceType === DeviceType.TABLET: return DeviceType.TABLET;
+        case deviceType === DeviceType.TV: return DeviceType.TV;
+        case deviceType === DeviceType.DESKTOP: return DeviceType.DESKTOP;
+        default: return DeviceType.UNKNOWN;
+    }
 }
 //# sourceMappingURL=Device.js.map

@@ -104,6 +104,13 @@ export async function getDeviceTypeAsync(): Promise<DeviceType> {
   if (!ExpoDevice.getDeviceTypeAsync) {
     throw new UnavailabilityError('expo-device', 'getDeviceTypeAsync');
   }
-  return await ExpoDevice.getDeviceTypeAsync();
+  const deviceType = await ExpoDevice.getDeviceTypeAsync();
+  switch(deviceType) {
+    case deviceType === DeviceType.PHONE: return DeviceType.PHONE;
+    case deviceType === DeviceType.TABLET: return DeviceType.TABLET;
+    case deviceType === DeviceType.TV: return DeviceType.TV;
+    case deviceType === DeviceType.DESKTOP: return DeviceType.DESKTOP;
+    default: return DeviceType.UNKNOWN;
+  }
 }
 
