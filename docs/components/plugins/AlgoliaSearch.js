@@ -51,7 +51,6 @@ const STYLES_INPUT = css`
 
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
 class AlgoliaSearch extends React.Component {
-
   processUrl(url) {
     // Update URLs for new doc URLs
     var routes = url.split('/');
@@ -68,7 +67,11 @@ class AlgoliaSearch extends React.Component {
       indexName: 'expo',
       inputSelector: '#algolia-search-box',
       enhancedSearchInput: false,
-      algoliaOptions: { 'facetFilters': [`version:${this.props.version === 'latest' ? 'v32.0.0' : this.props.version}`] },
+      algoliaOptions: {
+        facetFilters: [
+          `version:${this.props.version === 'latest' ? LATEST_VERSION : this.props.version}`,
+        ],
+      },
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
         const url = suggestion.url;
