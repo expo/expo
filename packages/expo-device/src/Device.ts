@@ -1,8 +1,9 @@
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import ExpoDevice from './ExpoDevice';
 
 import { deviceNamesByCode } from './DeviceNameByCode';
-import { Platform, UnavailabilityError } from '@unimodules/core';
 import { DeviceType } from './Device.types';
+
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 let model;
@@ -39,7 +40,7 @@ if (Platform.OS === 'ios') {
   model = ExpoDevice ? ExpoDevice.modelName : null;
   fingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
   platformModelId = null;
-  platformDesignName = ExpoDevice ? ExpoDevice.designName : null;;
+  platformDesignName = ExpoDevice ? ExpoDevice.designName : null;
   platformProductName = ExpoDevice ? ExpoDevice.productName : null;
   platformApi = ExpoDevice ? ExpoDevice.platformApiLevel : null;
 }
@@ -76,7 +77,11 @@ export async function getMaxMemoryAsync(): Promise<number> {
   if (!ExpoDevice.getMaxMemoryAsync) {
     throw new UnavailabilityError('expo-device', 'getMaxMemoryAsync');
   }
-  return await ExpoDevice.getMaxMemoryAsync();
+  let maxMemory = await ExpoDevice.getMaxMemoryAsync();
+  if (maxMemory === -1) {
+    maxMemory = Number.MAX_SAFE_INTEGER;
+  }
+  return Promise.resolve(maxMemory);
 }
 
 export async function isSideLoadingEnabled(): Promise<boolean> {
@@ -105,12 +110,16 @@ export async function getDeviceTypeAsync(): Promise<DeviceType> {
     throw new UnavailabilityError('expo-device', 'getDeviceTypeAsync');
   }
   const deviceType = await ExpoDevice.getDeviceTypeAsync();
-  switch(deviceType) {
-    case deviceType === DeviceType.PHONE: return DeviceType.PHONE;
-    case deviceType === DeviceType.TABLET: return DeviceType.TABLET;
-    case deviceType === DeviceType.TV: return DeviceType.TV;
-    case deviceType === DeviceType.DESKTOP: return DeviceType.DESKTOP;
-    default: return DeviceType.UNKNOWN;
+  switch (deviceType) {
+    case deviceType === DeviceType.PHONE:
+      return Promise.resolve(DeviceType.PHONE);
+    case deviceType === DeviceType.TABLET:
+      return Promise.resolve(DeviceType.TABLET);
+    case deviceType === DeviceType.TV:
+      return Promise.resolve(DeviceType.TV);
+    case deviceType === DeviceType.DESKTOP:
+      return Promise.resolve(DeviceType.DESKTOP);
+    default:
+      return Promise.resolve(DeviceType.UNKNOWN);
   }
 }
-

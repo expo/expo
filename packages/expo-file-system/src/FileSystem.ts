@@ -141,6 +141,7 @@ export async function getFreeDiskStorageAsync(): Promise<number> {
   }
   return await ExponentFileSystem.getFreeDiskStorageAsync();
 }
+
 export async function getTotalDiskCapacityAsync(): Promise<number> {
   if (!ExponentFileSystem.getTotalDiskCapacityAsync) {
     throw new UnavailabilityError('expo-file-system', 'getTotalDiskCapacityAsync');

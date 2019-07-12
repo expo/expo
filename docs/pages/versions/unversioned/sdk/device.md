@@ -56,7 +56,7 @@ import * as Device from 'expo-device';
 
 * `Device.totalMemory: number`
 
-  Gets the device's total memory, in bytes. This is the total memory accessible to the kernel, but not necessarily to a single app. This is basically the amount of RAM the device has, not including below-kernel fixed allocations like DMA buffers, RAM for the baseband CPU, etc...
+  Gets the device's total memory, in bytes. This is the total memory accessible to the kernel, but not necessarily to a single app. This is basically the amount of RAM the device has, not including below-kernel fixed allocations like DMA buffers, RAM for the baseband CPU, etc…
 
 * `Device.isDevice: boolean`
 
@@ -64,7 +64,7 @@ import * as Device from 'expo-device';
 
 * `Device.supportedCpuArchitectures: string[]`
 
-  Returns a list of supported processor architecture versions. The device expects the binaries it runs to be compiled for one of these architectures. The returned list will be empty if the supported architectures could not be determined.
+  Returns a list of supported processor architecture versions. The device expects the binaries it runs to be compiled for one of these architectures. The returned list will be `null` if the supported architectures could not be determined.
 
   **Examples**
 
@@ -80,7 +80,8 @@ import * as Device from 'expo-device';
 
 * `Device.productName: string` (Android only)
 
-  The device's overall product name chosen by the device implementer containing the development name or code name of the device.
+  The device's overall product name chosen by the device implementer containing the development name or code name of the device. Corresponds to [`Build.PRODUCT`](https://developer.android.com/reference/android/os/Build#PRODUCT).
+
 
   - Android: e.g., `"kminiltexx"`
 
@@ -121,7 +122,7 @@ import * as Device from 'expo-device';
 
   A string that uniquely identifies the build of the currently running system OS. On Android, it follows this template:
 
-  $(BRAND)/$(PRODUCT)/$(DEVICE)/$(BOARD):$(VERSION.RELEASE)/$(ID)/$(VERSION.INCREMENTAL):$(TYPE)/\$(TAGS)
+  `$(BRAND)/$(PRODUCT)/$(DEVICE)/$(BOARD):$(VERSION.RELEASE)/$(ID)/$(VERSION.INCREMENTAL):$(TYPE)/\$(TAGS)`
 
   - e.g., `"google/sdk_gphone_x86/generic_x86:9/PSR1.180720.075/5124027:user/release-keys"`
 
@@ -133,22 +134,21 @@ Get a list of features that are available on the system. The feature names are p
 
 #### Returns
 
-A Promise that resolves to an array of strings, each of which is a platform-specific name of an available feature on the current device.
+A Promise that resolves to an array of strings, each of which is a platform-specific name of a feature available on the current device.
 
 **Examples**
 
 ```js
-await Device.getPlatformFeaturesAsync().then(allFeatures => {
+await Device.getPlatformFeaturesAsync();
   // Array [
   // "android.software.adoptable_storage",
   // "android.hardware.sensor.accelerometer",
   // "android.software.backup",
   // "android.hardware.touchscreen"
   // ]
-});
 ```
 
-### `Device.hasPlatformFeatureAsync(feature)` (Android only)
+### `Device.hasPlatformFeatureAsync(feature: string)` (Android only)
 
 Tells if the device has a specific system feature. Can get all available system features in `Device.getSystemFeatureAsync()`.
 
@@ -158,7 +158,7 @@ Tells if the device has a specific system feature. Can get all available system 
 
 #### Returns
 
-Returns a `Promise<boolean>` that resolves a `boolean` value for whether the device has the specified system feature.
+Returns a `Promise<boolean>` that resolves to a `boolean` value indicating whether the device has the specified system feature.
 
 **Examples**
 
@@ -177,9 +177,8 @@ Returns a Promise that resolves the maximum available memory that the Java vm wi
 **Examples**
 
 ```js
-Device.getMaxMemoryAsync().then(maxMemory => {
+await Device.getMaxMemoryAsync();
   // 402653184
-});
 ```
 
 ### `Device.isSideLoadingEnabled()` (Android only)
@@ -193,9 +192,8 @@ Returns a Promise that resolves to a boolean that represents whether the calling
 **Examples**
 
 ```js
-Device.isSideLoadingEnabled().then({
+await Device.isSideLoadingEnabled();
   // true or false
-});
 ```
 
 ### `Device.getUptimeAsync()`
@@ -209,9 +207,8 @@ Returns a promise that resolves to a number that represents the milliseconds sin
 **Examples**
 
 ```js
-Device.getUptimeAsync().then(uptime => {
+await Device.getUptimeAsync();
   // 4371054
-});
 ```
 
 ### `Device.isRootedExperimentalAsync()`
@@ -229,9 +226,8 @@ Returns a promise that resolves to a boolean that specifies whether this device 
 **Examples**
 
 ```js
-Device.isRootedExperimentalAsync().then(isRooted => {
+await Device.isRootedExperimentalAsync();
   // false/true
-});
 ```
 
 ### `Device.getDeviceTypeAsync()`
@@ -245,9 +241,8 @@ Returns the type of the device as a [`Device.DeviceType`](#devicedevicetype) enu
 **Examples**
 
 ```js
-Device.getDeviceTypeAsync().then(deviceType => {
+await Device.getDeviceTypeAsync();
   // DeviceType.PHONE
-});
 ```
 
 ## Enums
