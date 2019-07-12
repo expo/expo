@@ -23,7 +23,6 @@ const MySnacksQuery = gql`
         fullName
         iconUrl
         lastPublishedTime
-        likeCount
         name
         packageName
         privacy
@@ -33,9 +32,6 @@ const MySnacksQuery = gql`
         fullName
         slug
         description
-      }
-      likes(limit: 15, offset: 0) {
-        id
       }
     }
   }

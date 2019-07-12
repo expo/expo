@@ -1,20 +1,20 @@
 import chalk from 'chalk';
 import semver from 'semver';
 import inquirer from 'inquirer';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import * as IosVersioning from '../versioning/ios';
 import { getExpoRepositoryRootDir } from '../Directories';
-import { getOldestSDKVersionAsync } from '../ProjectVersions';
+import { Platform, getOldestSDKVersionAsync } from '../ProjectVersions';
 
-interface ActionOptions {
-  platform: string;
+type ActionOptions = {
+  platform: Platform;
   sdkVersion?: string;
 }
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 
-async function getOldestOrAskForSDKVersionAsync(platform: string): Promise<string | undefined> {
+async function getOldestOrAskForSDKVersionAsync(platform: Platform): Promise<string | undefined> {
   const defaultSdkVersion = await getOldestSDKVersionAsync(platform);
 
   if (defaultSdkVersion && process.env.CI) {

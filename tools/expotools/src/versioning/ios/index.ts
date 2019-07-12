@@ -113,7 +113,7 @@ async function namespaceReactNativeFilesAsync(
         if (libraryName === 'jsiexecutor') {
           fileString = fileString.replace(
             new RegExp('("|<)jsiReact(ABI\\d+_\\d+_\\d+)\/([^.]+)\\.h.', 'g'),
-            `<jsireact\/${versionPrefix}$3.h>`
+            `<${versionedPodNames.jsireact}\/${versionPrefix}$3.h>`
           );
         } else {
           fileString = fileString.replace(
@@ -222,7 +222,7 @@ async function generatePodspecsAsync(
   versionName,
   versionNumber
 ) {
-  const { React, yoga, ExpoKit, ...universalModules } = versionedPodNames;
+  const { React, yoga, ExpoKit, jsireact, ...universalModules } = versionedPodNames;
   await generateReactPodspecAsync(
     newVersionPath,
     versionedPodNames,
@@ -345,6 +345,7 @@ async function generateReactPodspecAsync(
 ) {
   const versionedReactPodName = versionedPodNames.React;
   const versionedYogaPodName = versionedPodNames.yoga;
+  const versionedJSIPodName = versionedPodNames.jsireact;
   const specFilename = `${specfilePath}/React.podspec`;
 
   // rename spec to newPodName
@@ -352,7 +353,8 @@ async function generateReactPodspecAsync(
   await spawnAsync('sed', ['-i', '--', sedPattern, specFilename]);
 
   // rename header_dir
-  await spawnAsync('sed', ['-i', '--', 's/^\\(.*header_dir.*\\)React\\(.*\\)$/\\1${versionedReactPodName}\\2/', specFilename]);
+  await spawnAsync('sed', ['-i', '--', `s/^\\(.*header_dir.*\\)React\\(.*\\)$/\\1${versionedReactPodName}\\2/`, specFilename]);
+  await spawnAsync('sed', ['-i', '--', `s/^\\(.*header_dir.*\\)jsireact\\(.*\\)$/\\1${versionedJSIPodName}\\2/`, specFilename]);
 
   // point source at .
   const newPodSource = `{ :path => "." }`;
@@ -458,7 +460,7 @@ async function generatePodfileDepsAsync(
     yogaPodDependency = `pod '${versionedPodNames.yoga}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/ReactCommon/${versionName}yoga'`;
   }
   const versionableUniversalModulesPods = (await getListOfPackagesAsync())
-    .filter(pkg => pkg.isVersionableOnPlatform('ios'))
+    .filter(pkg => pkg.isVersionableOnPlatform('ios') && pkg.isIncludedInExpoClientOnPlatform('ios'))
     .map(pkg => `pod '${versionedPodNames[pkg.podspecName!]}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/${pkg.podspecName}'`)
     .join('\n    ');
 
@@ -685,6 +687,7 @@ async function getConfigsFromArguments(versionNumber, rootPath) {
     React: `React${versionName}`,
     yoga: `yoga${versionName}`,
     ExpoKit: `${versionName}ExpoKit`,
+    jsireact: `jsiReact${versionName}`,
   };
 
   const packages = await getListOfPackagesAsync();

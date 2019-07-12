@@ -13,7 +13,7 @@
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

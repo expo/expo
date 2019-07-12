@@ -6,6 +6,7 @@ import { AppText, DocItem, Section } from '../ui-explorer';
 
 export const title = 'Accelerometer';
 export const label = 'Accelerometer';
+export const kind = 'SDK|Sensors';
 export const packageJson = require('expo-sensors/package.json');
 export const description = `Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d
 space.`;
@@ -42,7 +43,7 @@ export class component extends React.Component {
 
   _subscribe = () => {
     this._subscription = Accelerometer.addListener(accelerometerData => {
-      this.setState({ accelerometerData });
+        this.setState({ accelerometerData });
     });
   };
 

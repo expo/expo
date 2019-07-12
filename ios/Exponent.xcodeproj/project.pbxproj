@@ -306,6 +306,42 @@
 		BB5BD32A20AEFCB4007E02FC /* REABlockNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31520AEFCB4007E02FC /* REABlockNode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BB5BD32B20AEFCB4007E02FC /* REANodesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31B20AEFCB4007E02FC /* REANodesManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BB36BC632135C98E00AFFD58 /* RNSScreenContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */; };
+		BB36BC642135C98E00AFFD58 /* RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = BB36BC612135C98D00AFFD58 /* RNSScreen.m */; };
+		BB50E88820B9C0D3003C752D /* RNGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E86920B9C0D3003C752D /* RNGestureHandler.m */; };
+		BB50E88920B9C0D3003C752D /* RNGestureHandlerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E86C20B9C0D3003C752D /* RNGestureHandlerManager.m */; };
+		BB50E88A20B9C0D3003C752D /* RNGestureHandlerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E86F20B9C0D3003C752D /* RNGestureHandlerRegistry.m */; };
+		BB50E88B20B9C0D3003C752D /* RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E87020B9C0D3003C752D /* RNGestureHandlerEvents.m */; };
+		BB50E88C20B9C0D3003C752D /* RNGestureHandlerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E87220B9C0D3003C752D /* RNGestureHandlerButton.m */; };
+		BB50E88D20B9C0D3003C752D /* RNRootViewGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E87520B9C0D3003C752D /* RNRootViewGestureRecognizer.m */; };
+		BB50E88E20B9C0D3003C752D /* RNRotationHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E87C20B9C0D3003C752D /* RNRotationHandler.m */; };
+		BB50E88F20B9C0D3003C752D /* RNPanHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E87E20B9C0D3003C752D /* RNPanHandler.m */; };
+		BB50E89020B9C0D3003C752D /* RNLongPressHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E87F20B9C0D3003C752D /* RNLongPressHandler.m */; };
+		BB50E89120B9C0D3003C752D /* RNFlingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E88020B9C0D3003C752D /* RNFlingHandler.m */; };
+		BB50E89220B9C0D3003C752D /* RNTapHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E88120B9C0D3003C752D /* RNTapHandler.m */; };
+		BB50E89320B9C0D3003C752D /* RNNativeViewHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E88220B9C0D3003C752D /* RNNativeViewHandler.m */; };
+		BB50E89420B9C0D3003C752D /* RNPinchHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E88420B9C0D3003C752D /* RNPinchHandler.m */; };
+		BB50E89520B9C0D3003C752D /* RNGestureHandlerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = BB50E88720B9C0D3003C752D /* RNGestureHandlerModule.m */; };
+		BB557F0F2138C81200053523 /* REAAlwaysNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB557F0D2138C81100053523 /* REAAlwaysNode.m */; };
+		BB557F122138C81B00053523 /* REAConcatNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB557F102138C81A00053523 /* REAConcatNode.m */; };
+		BB5BD31C20AEFCB4007E02FC /* REAModule.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD2FB20AEFCB4007E02FC /* REAModule.m */; };
+		BB5BD31D20AEFCB4007E02FC /* REAPropsNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD2FD20AEFCB4007E02FC /* REAPropsNode.m */; };
+		BB5BD31E20AEFCB4007E02FC /* REAStyleNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30320AEFCB4007E02FC /* REAStyleNode.m */; };
+		BB5BD31F20AEFCB4007E02FC /* READebugNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30420AEFCB4007E02FC /* READebugNode.m */; };
+		BB5BD32020AEFCB4007E02FC /* REAClockNodes.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30820AEFCB4007E02FC /* REAClockNodes.m */; };
+		BB5BD32120AEFCB4007E02FC /* REAValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30920AEFCB4007E02FC /* REAValueNode.m */; };
+		BB5BD32220AEFCB4007E02FC /* REACondNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30A20AEFCB4007E02FC /* REACondNode.m */; };
+		BB5BD32320AEFCB4007E02FC /* REAJSCallNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30B20AEFCB4007E02FC /* REAJSCallNode.m */; };
+		BB5BD32420AEFCB4007E02FC /* REABezierNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30C20AEFCB4007E02FC /* REABezierNode.m */; };
+		BB5BD32520AEFCB4007E02FC /* REANode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD30F20AEFCB4007E02FC /* REANode.m */; };
+		BB5BD32620AEFCB4007E02FC /* REATransformNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31020AEFCB4007E02FC /* REATransformNode.m */; };
+		BB5BD32720AEFCB4007E02FC /* REAEventNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31120AEFCB4007E02FC /* REAEventNode.m */; };
+		BB5BD32820AEFCB4007E02FC /* REASetNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31320AEFCB4007E02FC /* REASetNode.m */; };
+		BB5BD32920AEFCB4007E02FC /* REAOperatorNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31420AEFCB4007E02FC /* REAOperatorNode.m */; };
+		BB5BD32A20AEFCB4007E02FC /* REABlockNode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31520AEFCB4007E02FC /* REABlockNode.m */; };
+		BB5BD32B20AEFCB4007E02FC /* REANodesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB5BD31B20AEFCB4007E02FC /* REANodesManager.m */; };
+		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
+		BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */; };
 		C7AB1A74D650FCF755E54086 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */; };
 		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
@@ -944,6 +980,8 @@
 		BB5BD31B20AEFCB4007E02FC /* REANodesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = REANodesManager.m; sourceTree = "<group>"; };
 		BBD0318B200011C9009F0434 /* RNAWSCognito.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAWSCognito.h; sourceTree = "<group>"; };
 		BBD03192200011C9009F0434 /* RNAWSCognito.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAWSCognito.m; sourceTree = "<group>"; };
+		BBE8539222B98828001FF9C2 /* EXScopedFontLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedFontLoader.h; sourceTree = "<group>"; };
+		BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedFontLoader.m; sourceTree = "<group>"; };
 		BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD4BAD322092A30A009A1287 /* EXAR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAR.h; sourceTree = "<group>"; };
 		CD4BAD332092A30A009A1287 /* EXAR.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAR.m; sourceTree = "<group>"; };
@@ -1085,6 +1123,8 @@
 				31361A592260B2F600662769 /* EXScopedSecureStore.m */,
 				31361A5B2260B9A400662769 /* EXScopedAmplitude.h */,
 				31361A5C2260B9A400662769 /* EXScopedAmplitude.m */,
+				BBE8539222B98828001FF9C2 /* EXScopedFontLoader.h */,
+				BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */,
 				31571B282265DC9700358D65 /* EXScopedSegment.h */,
 				31571B292265DC9700358D65 /* EXScopedSegment.m */,
 				31571B2B2265DD5800358D65 /* EXScopedLocalAuthentication.h */,
@@ -2480,6 +2520,7 @@
 				B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */,
 				B5FB745C1FF6DADB001C764B /* EXContainerView.m in Sources */,
 				B5AC39AD1E95A90B00540AA7 /* EXProvisioningProfile.m in Sources */,
+				BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */,
 				7043DF8F2283303800272D74 /* RNSVGRect.m in Sources */,
 				314410DB223BF73B00310599 /* RNCWKWebViewManager.m in Sources */,
 				BB5BD32420AEFCB4007E02FC /* REABezierNode.m in Sources */,

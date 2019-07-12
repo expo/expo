@@ -1,6 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
 
 export const title = 'Pedometer';
+export const label = 'Pedometer';
+
 export const packageJson = require('expo-sensors/package.json');
-export const component = () => <View />;
+export const component = true;
+export const kind = 'SDK|Sensors';

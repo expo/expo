@@ -43,6 +43,8 @@ import extractReleaseChannel from '../utils/extractReleaseChannel';
 const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
 const PROJECT_UPDATE_INTERVAL = 10000;
 
+const SupportedExpoSdks = Constants.supportedExpoSdks || [];
+
 @withNavigationFocus
 @withNavigation
 @connect(data => ProjectsScreen.getDataProps(data))
@@ -330,9 +332,9 @@ export default class ProjectsScreen extends React.Component {
           Client version: {Constants.expoVersion}
         </Text>
         <Text style={styles.supportSdksText}>
-          Supports SDK{supportedExpoSdks.length === 1 ? '' : 's'}{' '}
-          {supportedExpoSdks
-            .map(semver.major)
+          Supported SDK
+          {SupportedExpoSdks.length === 1 ? ': ' : 's: '}
+          {SupportedExpoSdks.map(semver.major)
             .sort((a, b) => a - b)
             .join(', ')}
         </Text>

@@ -20,7 +20,7 @@ LOCAL_CFLAGS := \
 LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 
 LOCAL_STATIC_LIBRARIES := boost
-LOCAL_SHARED_LIBRARIES := jsinspector_abi33_0_0 libfolly_json_abi33_0_0 glog_abi33_0_0
+LOCAL_SHARED_LIBRARIES := jsinspector_abi34_0_0 libfolly_json_abi34_0_0 glog_abi34_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 
