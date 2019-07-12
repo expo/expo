@@ -2490,7 +2490,7 @@ SPEC CHECKSUMS:
   EXConstants: f1d63f5bcf9a790fea747ceba6411b7814005191
   EXContacts: cba6db9b4d8ef590c2185711a648fa32d90041b9
   EXCrypto: fdec92b3f9740e1c27858688d3cff33002f1ff44
-  EXDevice: 154bdeaac06868aaaa41da88ed821196e8fabe5f
+  EXDevice: d08fdca5e11432c4389f04a3ecec51d31f1c160d
   EXDocumentPicker: 03566e97f55139cf76e0a85b2afdb29abb3f46c8
   EXFacebook: 40860eb8eceb9c4e3e91471363d375c7ca11d86f
   EXFaceDetector: 531fdafaa07a582cd898bacf05a68fa03b795d0d
