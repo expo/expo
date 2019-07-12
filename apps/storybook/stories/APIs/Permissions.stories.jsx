@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import * as Permissions from 'expo-permissions';
 
 export const title = 'Permissions';
+export const label = 'Permissions';
+
 export const packageJson = require('expo-permissions/package.json');
 export const description = `When it comes to adding functionality that can access potentially sensitive information on
 a user's device, such as their location, or possibly send them possibly unwanted push

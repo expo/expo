@@ -8,7 +8,8 @@
     "test": "cd runner && yarn && cd .. && node runner/index.js .",
     "test:web": "node puppeteer-test/index.js",
     "test:web:ci": "cd puppeteer-test && yarn && cd .. && node puppeteer-test/index.js .",
-    "web": "webpack-dev-server -d --open --config webpack.ci.js --env.development=true",
+    "openbrowser": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:19006",
+    "web": "expo start --web-only --web --https",
     "web:serve": "serve ./web-build"
   },
   "author": "",
@@ -18,7 +19,7 @@
   },
   "dependencies": {
     "async-retry": "^1.1.4",
-    "expo": "^33.0.0-alpha.web.3",
+    "expo": "^34.0.0-experiment.8",
     "expo-ads-admob": "^5.0.0-rc.0",
     "expo-ads-facebook": "^5.0.0-rc.0",
     "expo-analytics-segment": "^5.0.0-rc.0",
@@ -52,6 +53,7 @@
     "lodash": "^4.17.4",
     "react": "16.8.3",
     "react-native": "0.59.8",
+    "react-native-gesture-handler": "~1.3.0",
     "react-native-web": "^0.11.0",
     "sinon": "^7.1.1"
   },

@@ -3,6 +3,10 @@
   "version": "5.2.0",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
+  "files": [
+    ".babelrc",
+    "index.js"
+  ],
   "scripts": {
     "jest": "jest",
     "lint": "eslint .",

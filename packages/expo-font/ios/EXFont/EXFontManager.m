@@ -2,23 +2,30 @@
 
 #import <EXFont/EXFontManager.h>
 
-static NSMutableDictionary *EXFonts = nil;
+@interface EXFontManager ()
+
+@property (nonatomic, strong, readonly) NSMutableDictionary *registry;
+
+@end
 
 @implementation EXFontManager
 
-+ (void)load
+- (instancetype)init
 {
-  EXFonts = [NSMutableDictionary dictionary];
+  if (self = [super init]) {
+    _registry = [NSMutableDictionary dictionary];
+  }
+  return self;
 }
 
-+ (EXFont *)getFontForName:(NSString *)name
+- (EXFont *)fontForName:(NSString *)name
 {
-  return EXFonts[name];
+  return _registry[name];
 }
 
-+ (void)setFont:(EXFont *)font forName:(NSString *)name
+- (void)setFont:(EXFont *)font forName:(NSString *)name
 {
-  EXFonts[name] = font;
+  _registry[name] = font;
 }
 
 @end

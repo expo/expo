@@ -182,8 +182,8 @@ async function renderExpoKitPodspecAsync(expoKitPath: string, templateFilesPath:
     podspecTemplatePath,
     podspecPath,
     {
-      IOS_EXPONENT_CLIENT_VERSION: await ProjectVersions.nativeSdkVersionAsync(),
-    }
+      IOS_EXPONENT_CLIENT_VERSION: await ProjectVersions.getNewestSDKVersionAsync('ios'),
+    },
   );
 }
 

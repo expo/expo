@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI31_0_0/EXBarCodeScannerInterface/ABI31_0_0EXBarCodeScannerInterface/ABI31_0_0EXBarCodeScannerInterface.h

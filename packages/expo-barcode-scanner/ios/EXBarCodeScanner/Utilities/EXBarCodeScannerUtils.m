@@ -14,7 +14,7 @@
            @"ean13" : AVMetadataObjectTypeEAN13Code,
            @"ean8" : AVMetadataObjectTypeEAN8Code,
            @"code93" : AVMetadataObjectTypeCode93Code,
-           @"code138" : AVMetadataObjectTypeCode128Code,
+           @"code128" : AVMetadataObjectTypeCode128Code,
            @"pdf417" : AVMetadataObjectTypePDF417Code,
            @"qr" : AVMetadataObjectTypeQRCode,
            @"aztec" : AVMetadataObjectTypeAztecCode,
