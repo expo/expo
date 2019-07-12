@@ -121,7 +121,7 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
         <DeviceConstants
           name="Device osInternalBuildId"
           value={Device.osInternalBuildId}></DeviceConstants>
-        {/* <View style={{ padding: 10 }}>
+        <View style={{ padding: 10 }}>
           <View style={{ marginBottom: 10 }}>
             <HeadingText>getDeviceType</HeadingText>
             <MonoText> {this.state.deviceType}</MonoText>
@@ -166,7 +166,7 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
             <MonoText> {this.state.isRooted}</MonoText>
           </View>
           <Button onPress={this._isRooted} title="isRootedExperimental" color="#DCA42D" />
-        </View> */}
+        </View>
       </ScrollView>
     );
   }
