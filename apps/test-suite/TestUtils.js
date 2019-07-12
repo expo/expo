@@ -24,12 +24,10 @@ export function getTestModules() {
     const modules = [
       require('./tests/SVG'),
       require('./tests/Basic'),
-      require('./tests/Localization'),
       require('./tests/Contacts'),
       require('./tests/Constants'),
       require('./tests/Crypto'),
       require('./tests/Font'),
-      require('./tests/Speech'),
       require('./tests/Random'),
     ];
 
