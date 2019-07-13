@@ -15,8 +15,8 @@ interface mState {
   maxMemory?: number;
   isSideLoadingEnabled?: string;
   uptime?: number;
-  isRooted?: string;
-  deviceType?: DeviceType;
+  isRooted?:string,
+  deviceType?:Device.DeviceType
 }
 
 interface props {}
@@ -81,6 +81,11 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
   _isRooted = () => {
     Device.isRootedExperimentalAsync().then(isRooted => {
       this.setState({ isRooted: isRooted.toString() });
+    });
+  };
+  _getDeviceType = () => {
+    Device.getDeviceTypeAsync().then(type => {
+      this.setState({ deviceType: type });
     });
   };
   _isSideLoadingEnabled = () => {
@@ -166,6 +171,17 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
             <MonoText> {this.state.isRooted}</MonoText>
           </View>
           <Button onPress={this._isRooted} title="isRootedExperimental" color="#DCA42D" />
+        </View>
+        <View style={{ padding: 10 }}>
+          <View style={{ marginBottom: 10 }}>
+            <HeadingText>get DeviceType</HeadingText>
+            <MonoText> {this.state.deviceType}</MonoText>
+          </View>
+          <Button
+            onPress={this._getDeviceType}
+            title="getDviceType"
+            color="#DCA42D"
+          />
         </View>
       </ScrollView>
     );
