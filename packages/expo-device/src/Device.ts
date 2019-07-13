@@ -8,14 +8,6 @@ export{
   _DeviceType as DeviceType
 }
 
-// enum DeviceType {
-//   PHONE = "PHONE",
-//   TABLET = "TABLET",
-//   DESKTOP = "DESKTOP",
-//   TV = "TV",
-//   UNKNOWN = "UNKNOWN"
-// }
-
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 let model;
