@@ -14,6 +14,8 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import * as Battery from 'expo-battery';
 ```
 
+Note: Displays a warning on iOS if battery monitoring is not enabled, or if attempted on iOS simulator (where monitoring is not possible)
+
 ## Methods
 
 ### `Battery.getBatteryLevelAsync()`
