@@ -3,11 +3,13 @@ import Constants from 'expo-constants';
 export default {
   async getExpoPushTokenAsync(): Promise<string> {
     const data = await this.subscribeUserToPush();
+    const experienceId = '@' + Constants.manifest.owner! + '/' + Constants.manifest.slug!;
     const tokenArguments: { [key: string]: string } = {
       deviceId: Constants.installationId,
-      appId: Constants.manifest.slug!,
       // TODO: Error handling. User must provide `.owner`
-      experienceId: '@' + Constants.manifest.owner! + '/' + Constants.manifest.slug!,
+      experienceId: experienceId,
+      // Also uses `experienceId` for `appId` because there's no `appId` for web.
+      appId: experienceId,
       deviceToken: JSON.stringify(data),
       type: 'web',
     };
