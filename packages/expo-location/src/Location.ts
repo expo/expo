@@ -22,6 +22,12 @@ export interface LocationOptions {
   mayShowUserSettingsDialog?: boolean;
 }
 
+export interface LocationMethod {
+  type: LocationMethodType;
+  tries?: number;
+  minAccuracyRadius?: number;
+}
+
 export interface LocationData {
   coords: {
     latitude: number;
@@ -74,7 +80,7 @@ interface LocationTaskOptions {
     notificationBody: string;
     notificationColor?: string;
   };
-};
+}
 
 interface Region {
   identifier?: string;
@@ -108,9 +114,15 @@ enum LocationActivityType {
   Airborne = 5,
 }
 
+enum LocationMethodType {
+  Slow = 1,
+  Fast = 2,
+}
+
 export {
   LocationAccuracy as Accuracy,
   LocationActivityType as ActivityType,
+  LocationMethodType as MethodType,
 };
 
 export enum GeofencingEventType {
@@ -159,8 +171,39 @@ export async function enableNetworkProviderAsync(): Promise<void> {
 }
 
 export async function getCurrentPositionAsync(
-  options: LocationOptions = {}
+  options: LocationOptions = {},
+  methodOptions: LocationMethod = { type: LocationMethodType.Fast }
 ): Promise<LocationData> {
+  console.log(methodOptions);
+  if (methodOptions.type === LocationMethodType.Fast) {
+    console.log("fast");
+    return new Promise<LocationData>(async (resolve, reject) => {
+      try {
+        let bestPosition: LocationData | null = null;
+        let current = 0;
+        let { tries, minAccuracyRadius } = {
+          tries: 1,
+          minAccuracyRadius: 20000,
+          ...methodOptions,
+        };
+        let { remove } = await watchPositionAsync(options, position => {
+          current++;
+          if (bestPosition === null) {
+            bestPosition = position;
+          } else if (bestPosition.coords.accuracy > position.coords.accuracy) {
+            bestPosition = position;
+          }
+          if (current >= tries || bestPosition.coords.accuracy <= minAccuracyRadius) {
+            remove();
+            resolve(bestPosition);
+          }
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+  console.log("slow");
   return ExpoLocation.getCurrentPositionAsync(options);
 }
 

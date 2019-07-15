@@ -15,6 +15,11 @@ export interface LocationOptions {
     timeout?: number;
     mayShowUserSettingsDialog?: boolean;
 }
+export interface LocationMethod {
+    type: LocationMethodType;
+    tries?: number;
+    minAccuracyRadius?: number;
+}
 export interface LocationData {
     coords: {
         latitude: number;
@@ -86,7 +91,11 @@ declare enum LocationActivityType {
     OtherNavigation = 4,
     Airborne = 5
 }
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, };
+declare enum LocationMethodType {
+    Slow = 1,
+    Fast = 2
+}
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationMethodType as MethodType, };
 export declare enum GeofencingEventType {
     Enter = 1,
     Exit = 2
@@ -99,7 +108,7 @@ export declare enum GeofencingRegionState {
 declare function _getCurrentWatchId(): number;
 export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
 export declare function enableNetworkProviderAsync(): Promise<void>;
-export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
+export declare function getCurrentPositionAsync(options?: LocationOptions, methodOptions?: LocationMethod): Promise<LocationData>;
 export declare function getHeadingAsync(): Promise<HeadingData>;
 export declare function watchHeadingAsync(callback: HeadingCallback): Promise<{
     remove: () => void;

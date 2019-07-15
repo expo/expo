@@ -2,7 +2,6 @@ import { EventEmitter, Platform } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoLocation from './ExpoLocation';
 const LocationEventEmitter = new EventEmitter(ExpoLocation);
-;
 var LocationAccuracy;
 (function (LocationAccuracy) {
     LocationAccuracy[LocationAccuracy["Lowest"] = 1] = "Lowest";
@@ -20,7 +19,12 @@ var LocationActivityType;
     LocationActivityType[LocationActivityType["OtherNavigation"] = 4] = "OtherNavigation";
     LocationActivityType[LocationActivityType["Airborne"] = 5] = "Airborne";
 })(LocationActivityType || (LocationActivityType = {}));
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, };
+var LocationMethodType;
+(function (LocationMethodType) {
+    LocationMethodType[LocationMethodType["Slow"] = 1] = "Slow";
+    LocationMethodType[LocationMethodType["Fast"] = 2] = "Fast";
+})(LocationMethodType || (LocationMethodType = {}));
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationMethodType as MethodType, };
 export var GeofencingEventType;
 (function (GeofencingEventType) {
     GeofencingEventType[GeofencingEventType["Enter"] = 1] = "Enter";
@@ -58,7 +62,39 @@ export async function enableNetworkProviderAsync() {
         return ExpoLocation.enableNetworkProviderAsync();
     }
 }
-export async function getCurrentPositionAsync(options = {}) {
+export async function getCurrentPositionAsync(options = {}, methodOptions = { type: LocationMethodType.Fast }) {
+    console.log(methodOptions);
+    if (methodOptions.type === LocationMethodType.Fast) {
+        console.log("fast");
+        return new Promise(async (resolve, reject) => {
+            try {
+                let bestPosition = null;
+                let current = 0;
+                let { tries, minAccuracyRadius } = {
+                    tries: 1,
+                    minAccuracyRadius: 20000,
+                    ...methodOptions,
+                };
+                let { remove } = await watchPositionAsync(options, position => {
+                    current++;
+                    if (bestPosition === null) {
+                        bestPosition = position;
+                    }
+                    else if (bestPosition.coords.accuracy > position.coords.accuracy) {
+                        bestPosition = position;
+                    }
+                    if (current >= tries || bestPosition.coords.accuracy <= minAccuracyRadius) {
+                        remove();
+                        resolve(bestPosition);
+                    }
+                });
+            }
+            catch (e) {
+                reject(e);
+            }
+        });
+    }
+    console.log("slow");
     return ExpoLocation.getCurrentPositionAsync(options);
 }
 // Start Compass Module
