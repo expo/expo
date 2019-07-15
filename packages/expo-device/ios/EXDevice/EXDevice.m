@@ -26,11 +26,9 @@
 @import Darwin.sys.sysctl;
 #endif
 
-@interface EXDevice() {
-}
+@interface EXDevice()
 
 @property (nonatomic, strong) NSString *webViewUserAgent;
-@property (nonatomic) bool isEmulator;
 
 @end
 
@@ -81,10 +79,10 @@ UM_EXPORT_METHOD_AS(getCarrierAsync,
                     getCarrierAsyncWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve(self.carrier ?: [NSNull null]);
+  resolve(UMNullIfNil([self carrier]));
 }
 
-UM_EXPORT_METHOD_AS(getMACAddressAsync,
+UM_EXPORT_METHOD_AS(getMacAddressAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   //some iOS privacy issues
@@ -279,7 +277,7 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
 
 - (NSString *)osBuildId {
 #if TARGET_OS_TV
-  return @"not available";
+  return nil;
 #else
   size_t bufferSize = 64;
   NSMutableData *buffer = [[NSMutableData alloc] initWithLength:bufferSize];
