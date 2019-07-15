@@ -49,7 +49,7 @@ export async function choosePhotoAsync(): Promise<string | null> {
 async function moveToPhotoCacheAsync(uri: string): Promise<string> {
   await ensureDirectory(directory);
   const extension = getExtension(uri);
-  const cachedFileName = `${Date.now()}.${extension}`;
+  const cachedFileName = `banner-photo.${extension}`;
   const cachedFileLocation = `${directory}/${cachedFileName}`;
   await FileSystem.copyAsync({
     from: uri,
