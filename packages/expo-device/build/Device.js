@@ -3,13 +3,6 @@ import ExpoDevice from './ExpoDevice';
 import { deviceNamesByCode } from './DeviceNameByCode';
 import { DeviceType as _DeviceType } from './Device.types';
 export { _DeviceType as DeviceType };
-// enum DeviceType {
-//   PHONE = "PHONE",
-//   TABLET = "TABLET",
-//   DESKTOP = "DESKTOP",
-//   TV = "TV",
-//   UNKNOWN = "UNKNOWN"
-// }
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 let model;
@@ -20,21 +13,21 @@ let platformProductName;
 let platformApi;
 if (Platform.OS === 'ios') {
     let deviceName;
-    let modelId = ExpoDevice.modelId;
-    if (modelId) {
-        deviceName = deviceNamesByCode[modelId];
+    let iOSmodelId = ExpoDevice.modelId;
+    if (iOSmodelId) {
+        deviceName = deviceNamesByCode[iOSmodelId];
         if (!deviceName) {
             // Not found on database. At least guess main device type from string contents:
-            if (modelId.startsWith('iPod')) {
+            if (iOSmodelId.startsWith('iPod')) {
                 deviceName = 'iPod Touch';
             }
-            else if (modelId.startsWith('iPad')) {
+            else if (iOSmodelId.startsWith('iPad')) {
                 deviceName = 'iPad';
             }
-            else if (modelId.startsWith('iPhone')) {
+            else if (iOSmodelId.startsWith('iPhone')) {
                 deviceName = 'iPhone';
             }
-            else if (modelId.startsWith('AppleTV')) {
+            else if (iOSmodelId.startsWith('AppleTV')) {
                 deviceName = 'Apple TV';
             }
         }

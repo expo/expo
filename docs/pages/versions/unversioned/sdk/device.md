@@ -126,7 +126,7 @@ import * as Device from 'expo-device';
 
   - e.g., `"google/sdk_gphone_x86/generic_x86:9/PSR1.180720.075/5124027:user/release-keys"`
 
-- `Device.deviceYearClass`
+- `Device.deviceYearClass: numer`
 
   The [device year class](https://github.com/facebook/device-year-class) of this device.
 
