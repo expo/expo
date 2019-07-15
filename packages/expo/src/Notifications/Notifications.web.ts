@@ -5,7 +5,7 @@ import { Notification } from './NotificationsTypes';
 
 export default {
   async getExpoPushTokenAsync(): Promise<string> {
-    const data = await this.subscribeUserToPush();
+    const data = await this.subscribeUserToPushAsync();
     const experienceId = '@' + Constants.manifest.owner! + '/' + Constants.manifest.slug!;
     const tokenArguments: { [key: string]: string } = {
       deviceId: Constants.installationId,
@@ -28,16 +28,16 @@ export default {
   },
 
   async getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
-    const data = await this.subscribeUserToPush();
+    const data = await this.subscribeUserToPushAsync();
     return { type: 'web', data: data };
   },
 
-  async subscribeUserToPush(): Promise<Object> {
+  async subscribeUserToPushAsync(): Promise<Object> {
     const registration = await navigator.serviceWorker.register('/service-worker.js');
     const subscribeOptions = {
       userVisibleOnly: true,
-      applicationServerKey: this.urlBase64ToUint8Array(
         'TODO: GET KEY FROM APP.JSON OR LIKE THIS https://docs.expo.io/versions/latest/guides/using-fcm/'
+      applicationServerKey: _urlBase64ToUint8Array(
       ),
     };
     const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
@@ -57,18 +57,18 @@ export default {
   addListener(listener: (notification: Notification) => unknown): EmitterSubscription {
     return _notificationEmitter.addListener(_notificationEmitterEventName, listener);
   },
-
-  // https://github.com/web-push-libs/web-push#using-vapid-key-for-applicationserverkey
-  urlBase64ToUint8Array(base64String: string): Uint8Array {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  },
 };
+
+// https://github.com/web-push-libs/web-push#using-vapid-key-for-applicationserverkey
+function _urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
