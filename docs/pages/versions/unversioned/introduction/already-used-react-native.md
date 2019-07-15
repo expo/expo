@@ -4,9 +4,11 @@ title: Already used React Native?
 
 This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
 
-## What is Expo?
+You can use just about every part of the [Expo SDK](../../sdk/overview/) in any vanilla React Native app - we call using the Expo tools in this context the "bare" workflow. See more about that [here](../../bare/hello-world/). It's basically no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
 
-Expo provides a _shared native runtime_ so you don't write native code, you focus on writing your React app in JavaScript. You don't have to worry about iOS or Android specific settings, or even opening up Xcode. Managed Expo projects have their own workflow including Expo CLI (a command line interface) and Expo Dev Tools (a web UI) to make developing and deploying easy.
+## Expo managed workflow
+
+The Expo managed workflow provides a _shared native runtime_ so you don't write native code, you focus on writing your React app in JavaScript. You don't have to worry about iOS or Android specific settings, or even opening up Xcode. Managed Expo projects have their own workflow including Expo CLI (a command line interface) and Expo Dev Tools (a web UI) to make developing and deploying easy.
 
 - If you've ever upgraded React Native or a native module you'll appreciate Expo's ability to seamlessly do this for you by only changing the version number.
 
