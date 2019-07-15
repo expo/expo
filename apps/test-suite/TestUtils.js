@@ -82,7 +82,10 @@ export function getTestModules() {
     modules.push(require('./tests/Permissions'));
     modules.push(require('./tests/MediaLibrary'));
     modules.push(require('./tests/Notifications'));
-    if (Constants.isDevice) modules.push(require('./tests/Brightness'));
+    if (Constants.isDevice) {
+      modules.push(require('./tests/Brightness'));
+      modules.push(require('./tests/Battery'));
+    }
     // Crashes app when mounting component
     modules.push(require('./tests/Video'));
     // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
