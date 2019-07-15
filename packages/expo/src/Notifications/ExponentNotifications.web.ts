@@ -1,6 +1,6 @@
 import UUID from 'uuid-js';
 
-import { LocalNotification, LocalNotificationId } from './Notifications.types';
+import { LocalNotification, LocalNotificationId } from './NotificationsTypes';
 
 function guardPermission() {
   if (!('Notification' in window)) {

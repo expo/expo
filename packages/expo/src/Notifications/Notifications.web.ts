@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { EmitterSubscription } from 'react-native';
 import { _notificationEmitter, _notificationEmitterEventName } from './Notifications.fx.web';
+import { Notification } from './NotificationsTypes';
 
 export default {
   async getExpoPushTokenAsync(): Promise<string> {
