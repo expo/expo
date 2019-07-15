@@ -46,16 +46,17 @@ UM_EXPORT_METHOD_AS(getUserAgentAsync,
                     getWebViewUserAgentWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  __weak EXDevice *weakSelf = self;
-  EXDevice *strongSelf = weakSelf;
-  
-  __block WKWebView *webView;
-  
-  if (!strongSelf.webViewUserAgent) {
+  if (!_webViewUserAgent) {
+    __weak EXDevice *weakSelf = self;
+    __block WKWebView *webView;
+    
     // We need to retain the webview because it runs an async task.
     webView = [[WKWebView alloc] init];
     
     [webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+      
+      EXDevice *strongSelf = weakSelf;
+      
       if (error) {
         reject(@"ERR_CONSTANTS", error.localizedDescription, error);
         
@@ -71,7 +72,7 @@ UM_EXPORT_METHOD_AS(getUserAgentAsync,
       webView = nil;
     }];
   } else {
-    resolve(UMNullIfNil(strongSelf.webViewUserAgent));
+    resolve(UMNullIfNil(_webViewUserAgent));
   }
 }
 
