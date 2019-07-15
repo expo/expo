@@ -1,4 +1,6 @@
 import Constants from 'expo-constants';
+import { EmitterSubscription } from 'react-native';
+import { _notificationEmitter, _notificationEmitterEventName } from './Notifications.fx.web';
 
 export default {
   async getExpoPushTokenAsync(): Promise<string> {
@@ -49,6 +51,10 @@ export default {
     };
     console.log('subscriptionObject: ', JSON.stringify(subscriptionObject));
     return subscriptionObject;
+  },
+
+  addListener(listener: (notification: Notification) => unknown): EmitterSubscription {
+    return _notificationEmitter.addListener(_notificationEmitterEventName, listener);
   },
 
   // https://github.com/web-push-libs/web-push#using-vapid-key-for-applicationserverkey
