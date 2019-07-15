@@ -270,7 +270,8 @@ type PushMessage = {
    * Time to Live: the number of seconds for which the message may be kept
    * around for redelivery if it hasn't been delivered yet. Defaults to
    * `undefined` in order to use the respective defaults of each provider.
-   * These are 0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM.
+   * These are 0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM and web
+   * push notifications.
    *
    * On Android, we make a best effort to deliver messages with zero TTL
    * immediately and do not throttle them.
@@ -355,7 +356,15 @@ type PushMessage = {
    * the "Default" channel is user-facing and you may not be able to fully
    * delete it.
    */
-  channelId?: string
+  channelId?: string,
+
+  // Web-specific fields
+  /**
+   * The web path that will be opened/focused after the user clicks the
+   * notification.
+   * Defaults: "/" (root)
+   */
+  webPath?: string,
 }
 ```
 
