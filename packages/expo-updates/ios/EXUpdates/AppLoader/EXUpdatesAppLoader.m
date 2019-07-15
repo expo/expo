@@ -1,11 +1,10 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <CommonCrypto/CommonDigest.h>
-
 #import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesAppLoader+Private.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSMutableArray<EXUpdatesAsset *>* assetQueue;
 @property (nonatomic, strong) NSMutableArray<EXUpdatesAsset *>* erroredAssets;
+@property (nonatomic, strong) NSMutableArray<EXUpdatesAsset *>* finishedAssets;
 
 @end
 
@@ -35,6 +35,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   if (self = [super init]) {
     _assetQueue = [NSMutableArray new];
     _erroredAssets = [NSMutableArray new];
+    _finishedAssets = [NSMutableArray new];
   }
   return self;
 }
@@ -84,35 +85,11 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 - (void)handleAssetDownloadWithData:(NSData *)data response:(NSURLResponse * _Nullable)response asset:(EXUpdatesAsset *)asset
 {
   [self->_assetQueue removeObject:asset];
-  NSString *contentHash = [self _sha1WithData:data];
 
-  NSError *err;
-  NSDictionary *metadata = asset.metadata;
-  if (!metadata) {
-    metadata = @{};
-  }
-  NSData *metadataJson = [NSJSONSerialization dataWithJSONObject:metadata options:kNilOptions error:&err];
-  NSAssert (!err, @"asset metadata should be a valid object");
-  NSString *atomicHashString = [NSString stringWithFormat:@"%@-%@-%@",
-                                asset.type, [[NSString alloc] initWithData:metadataJson encoding:NSUTF8StringEncoding], contentHash];
-  NSString *atomicHash = [self _sha1WithData:[atomicHashString dataUsingEncoding:NSUTF8StringEncoding]];
-
-  NSDictionary *headers;
-  if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
-    headers = [(NSHTTPURLResponse *)response allHeaderFields];
-  }
-
-  [[EXUpdatesAppController sharedInstance].database addAssetWithUrl:[asset.url absoluteString]
-                                                            headers:headers
-                                                               type:asset.type
-                                                           metadata:asset.metadata
-                                                       downloadTime:[NSDate date]
-                                                       relativePath:asset.filename
-                                                         hashAtomic:atomicHash
-                                                        hashContent:contentHash
-                                                           hashType:EXUpdatesDatabaseHashTypeSha1
-                                                           updateId:[self _updateId]
-                                                      isLaunchAsset:asset.isLaunchAsset];
+  asset.data = data;
+  asset.response = response;
+  asset.downloadTime = [NSDate date];
+  [_finishedAssets addObject:asset];
 
   if (![self->_assetQueue count]) {
     [self _finish];
@@ -123,6 +100,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 - (void)_finish
 {
+  [[EXUpdatesAppController sharedInstance].database addAssets:_finishedAssets toUpdateWithId:[self _updateId]];
   [self _unlockDatabase];
   if (_delegate) {
     if ([_erroredAssets count]) {
@@ -159,14 +137,14 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 {
   id bundleUrlString = _manifest[@"bundleUrl"];
   NSAssert(bundleUrlString && [bundleUrlString isKindOfClass:[NSString class]], @"bundleUrl should be a nonnull string");
+  NSURL *url = [NSURL URLWithString:bundleUrlString];
+  NSAssert(url, @"bundleUrl must be a valid URL");
   // TODO: check database to make sure we don't already have this downloaded
 
-  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] init];
-  asset.url = [NSURL URLWithString:bundleUrlString];
-  asset.type = @"js";
+  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithUrl:url type:@"js"];
   asset.isLaunchAsset = YES;
 
-  NSString *filename = [self _sha1WithData:[bundleUrlString dataUsingEncoding:NSUTF8StringEncoding]];
+  NSString *filename = [EXUpdatesUtils sha1WithData:[bundleUrlString dataUsingEncoding:NSUTF8StringEncoding]];
   asset.filename = filename;
 
   [_assetQueue addObject:asset];
@@ -179,16 +157,16 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
   for (NSDictionary *asset in (NSArray *)assets) {
     NSAssert([asset isKindOfClass:[NSDictionary class]], @"assets must be objects");
-    id url = asset[@"url"];
+    id urlString = asset[@"url"];
     id type = asset[@"type"];
     id metadata = asset[@"metadata"];
     id nsBundleFilename = asset[@"nsBundleFilename"];
-    NSAssert(url && [url isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
+    NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
     NSAssert(type && [type isKindOfClass:[NSString class]], @"asset type should be a nonnull string");
+    NSURL *url = [NSURL URLWithString:(NSString *)urlString];
+    NSAssert(url, @"asset url should be a valid URL");
 
-    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] init];
-    asset.url = [NSURL URLWithString:(NSString *)url];
-    asset.type = (NSString *)type;
+    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithUrl:url type:(NSString *)type];
 
     if (metadata) {
       NSAssert([metadata isKindOfClass:[NSDictionary class]], @"asset metadata should be an object");
@@ -200,7 +178,7 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       asset.nsBundleFilename = (NSString *)nsBundleFilename;
     }
 
-    NSString *filename = [self _sha1WithData:[(NSString *)url dataUsingEncoding:NSUTF8StringEncoding]];
+    NSString *filename = [EXUpdatesUtils sha1WithData:[(NSString *)urlString dataUsingEncoding:NSUTF8StringEncoding]];
     asset.filename = filename;
 
     [_assetQueue addObject:asset];
@@ -218,20 +196,6 @@ static NSString * const kEXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   NSAssert(uuid, @"update ID should be a valid UUID");
 
   return uuid;
-}
-
-- (NSString *)_sha1WithData:(NSData *)data
-{
-  uint8_t digest[CC_SHA1_DIGEST_LENGTH];
-  CC_SHA1(data.bytes, (CC_LONG)data.length, digest);
-
-  NSMutableString *output = [NSMutableString stringWithCapacity:CC_SHA1_DIGEST_LENGTH * 2];
-  for (int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++)
-  {
-    [output appendFormat:@"%02x", digest[i]];
-  }
-
-  return output;
 }
 
 - (void)_lockDatabase
