@@ -149,17 +149,8 @@ static NSString * const kEXUpdatesDatabaseFilename = @"updates.db";
                       ]];
 }
 
-- (void)addAssetWithUrl:(NSString *)url
-                headers:(NSDictionary * _Nullable)headers
-                   type:(NSString *)type
-               metadata:(NSDictionary * _Nullable)metadata
-           downloadTime:(NSDate *)downloadTime
-           relativePath:(NSString *)relativePath
-             hashAtomic:(NSString *)hashAtomic
-            hashContent:(NSString *)hashContent
-               hashType:(EXUpdatesDatabaseHashType)hashType
-               updateId:(NSUUID *)updateId
-          isLaunchAsset:(BOOL)isLaunchAsset
+- (void)addAssets:(NSArray<EXUpdatesAsset *>*)assets
+   toUpdateWithId:(NSUUID *)updateId
 {
   if (!_db) {
     [[EXUpdatesAppController sharedInstance] handleErrorWithDomain:kEXUpdatesDatabaseErrorDomain description:@"Missing database handle" info:nil isFatal:YES];
@@ -168,35 +159,43 @@ static NSString * const kEXUpdatesDatabaseFilename = @"updates.db";
 
   sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
 
-  NSString * const assetInsertSql = @"INSERT INTO \"assets\" (\"url\", \"headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash_atomic\", \"hash_content\" , \"hash_type\", \"marked_for_deletion\")\
-  VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 0);";
-  [self _executeSql:assetInsertSql
-           withArgs:@[
-                      url,
-                      headers ?: [NSNull null],
-                      type,
-                      metadata ?: [NSNull null],
-                      [NSNumber numberWithDouble:[downloadTime timeIntervalSince1970]],
-                      relativePath,
-                      hashAtomic,
-                      hashContent,
-                      @(hashType)
-                      ]];
+  for (EXUpdatesAsset *asset in assets) {
+    NSAssert(asset.downloadTime, @"asset downloadTime should be nonnull");
+    NSAssert(asset.filename, @"asset filename should be nonnull");
+    NSAssert(asset.atomicHash, @"asset atomicHash should be nonnull");
+    NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-  if (isLaunchAsset) {
-    NSString * const updateSql = @"UPDATE updates SET launch_asset_id = last_insert_rowid(), status = ?1 WHERE id = ?2;";
-    [self _executeSql:updateSql
+    NSString * const assetInsertSql = @"INSERT INTO \"assets\" (\"url\", \"headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash_atomic\", \"hash_content\" , \"hash_type\", \"marked_for_deletion\")\
+    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 0);";
+    [self _executeSql:assetInsertSql
              withArgs:@[
-                        @(EXUpdatesDatabaseStatusReady),
+                        [asset.url absoluteString],
+                        asset.headers ?: [NSNull null],
+                        asset.type,
+                        asset.metadata ?: [NSNull null],
+                        [NSNumber numberWithDouble:[asset.downloadTime timeIntervalSince1970]],
+                        asset.filename,
+                        asset.atomicHash,
+                        asset.contentHash,
+                        @(EXUpdatesDatabaseHashTypeSha1)
+                        ]];
+
+    // statements must stay in precisely this order for last_insert_rowid() to work correctly
+    if (asset.isLaunchAsset) {
+      NSString * const updateSql = @"UPDATE updates SET launch_asset_id = last_insert_rowid(), status = ?1 WHERE id = ?2;";
+      [self _executeSql:updateSql
+               withArgs:@[
+                          @(EXUpdatesDatabaseStatusReady),
+                          updateId
+                          ]];
+    }
+
+    NSString * const updateInsertSql = @"INSERT INTO updates_assets (\"update_id\", \"asset_id\") VALUES (?1, last_insert_rowid());";
+    [self _executeSql:updateInsertSql
+             withArgs:@[
                         updateId
                         ]];
   }
-
-  NSString * const updateInsertSql = @"INSERT INTO updates_assets (\"update_id\", \"asset_id\") VALUES (?1, last_insert_rowid());";
-  [self _executeSql:updateInsertSql
-           withArgs:@[
-                      updateId
-                      ]];
 
   sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
 }

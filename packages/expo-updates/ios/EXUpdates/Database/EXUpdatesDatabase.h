@@ -1,5 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+#import <EXUpdates/EXUpdatesAsset.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, EXUpdatesDatabaseStatus) {
@@ -25,17 +27,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
          binaryVersions:(NSString *)binaryVersions
                metadata:(NSDictionary * _Nullable)metadata;
 
-- (void)addAssetWithUrl:(NSString *)url
-                headers:(NSDictionary * _Nullable)headers
-                   type:(NSString *)type
-               metadata:(NSDictionary * _Nullable)metadata
-           downloadTime:(NSDate *)downloadTime
-           relativePath:(NSString *)relativePath
-             hashAtomic:(NSString *)hashAtomic
-            hashContent:(NSString *)hashContent
-               hashType:(EXUpdatesDatabaseHashType)hashType
-               updateId:(NSUUID *)updateId
-          isLaunchAsset:(BOOL)isLaunchAsset;
+- (void)addAssets:(NSArray<EXUpdatesAsset *>*)assets
+   toUpdateWithId:(NSUUID *)updateId;
 
 - (void)markUpdatesForDeletion;
 - (NSArray<NSDictionary *>*)markAssetsForDeletion;
