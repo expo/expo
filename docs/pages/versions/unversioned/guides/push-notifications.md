@@ -365,6 +365,14 @@ type PushMessage = {
    * Defaults: "/" (root)
    */
   webPath?: string,
+
+  /**
+   * URL or `mailto:` URL which provides a point of contact in case the
+   * push service needs to contact the message sender.
+   * Defaults to the value stored on the Expo server.
+   * Learn more here: https://docs.expo.io/versions/latest/guides/using-vapid/
+   */
+  vapidSubject?: string
 }
 ```
 
