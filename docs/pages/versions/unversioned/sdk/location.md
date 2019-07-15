@@ -49,6 +49,10 @@ Get the current position of the device.
 - **options (_object_)** -- A map of options:
   - **accuracy : [Location.Accuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [Location.Accuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
   - **maximumAge (_number_)** -- (Android only). If specified, allow returning a previously cached position that is at most this old in milliseconds. If not specified, always gets a new location. On iOS this option is ignored and a new location is always returned.
+- **methodOptions (_object_)** -- A map of method options:
+  - **type : [Location.MethodType](#locationmethodtype)*** -- Which method should be used to calculate current position. When type is set to `Location.MethodType.Slow` calculating current position may take several seconds. When type is set to `Location.MethodType.Fast` you can provide two more options (see below) which indicate when method should return current position. Default to `Location.MethodType.Fast`. 
+  -- **tries (_number_)** -- Only available when `type` is `Location.MethodType.Fast`. The number of times device need to calculate current position before returning it. Default to `1`.
+  -- **minAccuracyRadius (__number__)** -- Only available when `type` is `Location.MethodType.Fast`. If `minAccuracyRadius` is grether or equal then `coord.accuracy`, return current position. Default to `20000`.
 
 #### Returns
 
@@ -369,6 +373,8 @@ Object of type `Region` includes following fields:
 - **radius (_number_)** -- The radius measured in meters that defines the region's outer boundary.
 - **state : [Location.GeofencingRegionState](#locationgeofencingregionstate)** -- One of [Location.GeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
 
+### Type `LocationMethod`
+
 ## Enums
 
 ### `Location.Accuracy`
@@ -405,6 +411,13 @@ Object of type `Region` includes following fields:
 | ------------------------------- | ----- | ----------------------------------------------- |
 | `GeofencingRegionState.Inside`  | 1     | Indicates that the device is inside the region. |
 | `GeofencingRegionState.Outside` | 2     | Inverse of inside state.                        |
+
+### `Location.MethodType`
+
+| Method type                           | Value | Description                                      |
+| --------------------------------------| ----- | ------------------------------------------------ |
+| `Location.MethodType.MethodType.Slow` | 1     | Use slower method to calculate current position. |
+| `Location.MethodType.MethodType.Fast` | 2     | Use faster method to calculate current position. |
 
 ## Enabling Emulator Location
 
