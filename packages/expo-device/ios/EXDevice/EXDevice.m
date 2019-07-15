@@ -97,11 +97,11 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
   NSString *address = @"0.0.0.0";
   struct ifaddrs *interfaces = NULL;
   struct ifaddrs *temp_addr = NULL;
-  int success = 0;
+  int error = 0;
   // retrieve the current interfaces - On success, returns 0; on error, -1 is returned, and errno is set appropriately.
-  success = getifaddrs(&interfaces);
+  error = getifaddrs(&interfaces);
   
-  if (success == 0) {
+  if (error == 0) {
     // Loop through linked list of interfaces
     temp_addr = interfaces;
     while(temp_addr != NULL) {
