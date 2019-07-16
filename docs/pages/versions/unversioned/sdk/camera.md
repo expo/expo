@@ -232,6 +232,7 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
   - **maxDuration (_number_)** -- Maximum video duration in seconds.
   - **maxFileSize (_number_)** -- Maximum video file size in bytes.
   - **mute (_boolean_)** -- If present, video will be recorded with no sound.
+  - **videoBitrate (_number_)** -- Android Only. (int greater than 0) This option specifies a desired video bitrate.  For example, 5\*1000\*1000 would be 5Mbps.
 
 #### Returns
 
