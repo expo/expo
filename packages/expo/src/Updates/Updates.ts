@@ -68,6 +68,13 @@ export async function fetchUpdateAsync({
   };
 }
 
+export async function clearUpdateCacheExperimentalAsync(abiVersion: string) : Promise<void> {
+  if (!ExponentUpdates.clearUpdateCacheAsync) {
+    throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
+  }
+  return ExponentUpdates.clearUpdateCacheAsync(abiVersion);
+}
+
 let _emitter: EventEmitter | null;
 
 function _getEmitter(): EventEmitter {
