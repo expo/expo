@@ -162,7 +162,7 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
     );
   }
 
-  const registration = await navigator.serviceWorker.register('/service-worker.js');
+  const registration = await navigator.serviceWorker.register('/custom-service-worker.js');
   const subscribeOptions = {
     userVisibleOnly: true,
     applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
