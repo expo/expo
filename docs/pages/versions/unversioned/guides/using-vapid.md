@@ -2,7 +2,7 @@
 title: Using VAPID for Web Push Notifications
 ---
 
-VAPID (Voluntary Application Server Identification for Web Push) keys, or application server keys, are required for enabling push notifications in Expo for Web projects. To set up your Expo for Web project to get push notifications, follow this guide closely.
+Voluntary Application Server Identification (VAPID) for Web Push keys (also called application server keys) are required for enabling push notifications in Expo for Web projects. To set up your Expo for Web project to get push notifications, follow this guide closely.
 
 Learn more about VAPID keys and web push notifications [here](https://developers.google.com/web/updates/2016/07/web-push-interop-wins) and [here](https://developers.google.com/web/fundamentals/push-notifications/).
 
