@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import semver from 'semver';
 import inquirer from 'inquirer';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import * as IosVersioning from '../versioning/ios';
 import { getExpoRepositoryRootDir } from '../Directories';

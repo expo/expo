@@ -97,7 +97,7 @@ export type Attendee = {
 
 export type Alarm = {
   absoluteDate?: string; // iOS
-  relativeOffset?: string;
+  relativeOffset?: number;
   structuredLocation?: {
     // iOS
     title?: string;

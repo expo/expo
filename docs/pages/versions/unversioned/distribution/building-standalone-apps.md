@@ -61,6 +61,10 @@ project, `expo` will start one for you.
 
 ### If you choose to build for Android
 
+When building for android you can choose to build APK (`expo build:android -t apk`) or Android App Bundle (`expo build:android -t app-bundle`).
+App bundles are recommended, but you have to make sure the [Google Play App Signing](../app-signing) is enabled for your project,
+you can read more about it [here](https://developer.android.com/guide/app-bundle)
+
 The first time you build the project you will be asked whether you'd like to upload a keystore or
 have us handle it for you. If you don't know what a keystore is, you can have us generate one for you. Otherwise,
 feel free to upload your own.

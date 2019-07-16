@@ -5,6 +5,8 @@ import { View } from 'react-native';
 import { Description, Section, DocItem } from '../ui-explorer';
 
 export const title = 'Error Recovery';
+export const label = 'ErrorRecovery';
+
 export const description =
   'Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.';
 export const packageJson = require('expo/package.json');

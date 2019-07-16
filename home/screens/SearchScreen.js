@@ -28,8 +28,6 @@ const SearchQuery = gql`
           description
           packageUsername
           iconUrl
-          likeCount
-          isLikedByMe
         }
       }
       ... on UserSearchResult {

@@ -1,0 +1,21 @@
+declare const _default: {
+    subscribe(): void;
+    skipCachedEvents(): void;
+    setDebug(): void;
+    setIdentity(): void;
+    userCompletedAction(): void;
+    sendCommerceEvent(): void;
+    openURL(): void;
+    redeemRewards(): void;
+    loadRewards(): void;
+    readonly BranchEvent: {};
+    AddToCartEvent: string;
+    AddToWishlistEvent: string;
+    PurchasedEvent: string;
+    PurchaseInitiatedEvent: string;
+    RegisterViewEvent: string;
+    ShareCompletedEvent: string;
+    ShareInitiatedEvent: string;
+    VERSION: string;
+};
+export default _default;

@@ -1,11 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 'use strict';
 
-const fs = require('fs');
 const gulp = require('gulp');
-const shell = require('gulp-shell');
 const minimist = require('minimist');
-const { ImageUtils, IosShellApp, IosIPABuilder: createIPABuilder } = require('@expo/xdl');
+const { ImageUtils, IosShellApp } = require('@expo/xdl');
 
 const argv = minimist(process.argv.slice(2));
 
@@ -21,14 +19,6 @@ function createIOSShellAppWithArguments() {
   } else {
     throw new Error(`Unsupported action '${argv.action}'.`);
   }
-}
-
-function validateArgv(errors) {
-  Object.keys(errors).forEach(fieldName => {
-    if (!(fieldName in argv)) {
-      throw new Error(errors[fieldName]);
-    }
-  });
 }
 
 function setImageFunctions() {
