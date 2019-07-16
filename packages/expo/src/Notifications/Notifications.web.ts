@@ -40,19 +40,17 @@ export default {
   },
 
   async subscribeUserToPushAsync(): Promise<Object> {
-    if (!Constants.manifest.web || !Constants.manifest.web.vapidPublicKey) {
+    if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
       throw new CodedError(
         'ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG',
-        'You must provide `web.vapidPublicKey` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.'
+        'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.'
       );
     }
 
     const registration = await navigator.serviceWorker.register('/service-worker.js');
     const subscribeOptions = {
       userVisibleOnly: true,
-        'TODO: GET KEY FROM APP.JSON OR LIKE THIS https://docs.expo.io/versions/latest/guides/using-fcm/'
-      applicationServerKey: _urlBase64ToUint8Array(
-      ),
+      applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
     };
     const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
     const pushSubscriptionJson = pushSubscription.toJSON();
