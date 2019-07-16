@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { EmitterSubscription } from 'react-native';
 import { _notificationEmitter, _notificationEmitterEventName } from './Notifications.fx.web';
@@ -5,11 +6,17 @@ import { Notification } from './NotificationsTypes';
 
 export default {
   async getExpoPushTokenAsync(): Promise<string> {
+    if (!Constants.manifest.owner || !Constants.manifest.slug) {
+      throw new CodedError(
+        'ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG',
+        'You must provide `owner` and `slug` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.'
+      );
+    }
+
     const data = await this.subscribeUserToPushAsync();
-    const experienceId = '@' + Constants.manifest.owner! + '/' + Constants.manifest.slug!;
+    const experienceId = `@${Constants.manifest.owner}/${Constants.manifest.slug}`;
     const tokenArguments: { [key: string]: string } = {
       deviceId: Constants.installationId,
-      // TODO: Error handling. User must provide `.owner`
       experienceId: experienceId,
       // Also uses `experienceId` for `appId` because there's no `appId` for web.
       appId: experienceId,
@@ -33,6 +40,13 @@ export default {
   },
 
   async subscribeUserToPushAsync(): Promise<Object> {
+    if (!Constants.manifest.web || !Constants.manifest.web.vapidPublicKey) {
+      throw new CodedError(
+        'ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG',
+        'You must provide `web.vapidPublicKey` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.'
+      );
+    }
+
     const registration = await navigator.serviceWorker.register('/service-worker.js');
     const subscribeOptions = {
       userVisibleOnly: true,
