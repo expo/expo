@@ -174,37 +174,45 @@ export async function getCurrentPositionAsync(
   options: LocationOptions = {},
   methodOptions: LocationMethod = { type: LocationMethodType.Fast }
 ): Promise<LocationData> {
-  console.log(methodOptions);
   if (methodOptions.type === LocationMethodType.Fast) {
-    console.log("fast");
-    return new Promise<LocationData>(async (resolve, reject) => {
-      try {
-        let bestPosition: LocationData | null = null;
-        let current = 0;
-        let { tries, minAccuracyRadius } = {
-          tries: 1,
-          minAccuracyRadius: 20000,
-          ...methodOptions,
-        };
-        let { remove } = await watchPositionAsync(options, position => {
-          current++;
-          if (bestPosition === null) {
-            bestPosition = position;
-          } else if (bestPosition.coords.accuracy > position.coords.accuracy) {
-            bestPosition = position;
-          }
-          if (current >= tries || bestPosition.coords.accuracy <= minAccuracyRadius) {
-            remove();
-            resolve(bestPosition);
-          }
-        });
-      } catch (e) {
-        reject(e);
-      }
-    });
+    return getCurrentPositionUsingWatchEvent(options, methodOptions);
   }
-  console.log("slow");
   return ExpoLocation.getCurrentPositionAsync(options);
+}
+
+/**
+ * Getting current position by subscribing to position events.
+ * If all conditions are satisfied, method would return the result.
+ */
+async function getCurrentPositionUsingWatchEvent(
+  options: LocationOptions = {},
+  methodOptions: LocationMethod
+) {
+  return new Promise<LocationData>(async (resolve, reject) => {
+    try {
+      let bestPosition: LocationData | undefined;
+      let currentTry = 0;
+      const { tries, minAccuracyRadius } = {
+        tries: 1,
+        minAccuracyRadius: 20000,
+        ...methodOptions,
+      };
+      const { remove } = await watchPositionAsync(options, position => {
+        currentTry++;
+        if (!bestPosition) {
+          bestPosition = position;
+        } else if (bestPosition.coords.accuracy > position.coords.accuracy) {
+          bestPosition = position;
+        }
+        if (currentTry >= tries || bestPosition.coords.accuracy <= minAccuracyRadius) {
+          remove();
+          resolve(bestPosition);
+        }
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
 }
 
 // Start Compass Module

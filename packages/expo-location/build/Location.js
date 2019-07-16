@@ -63,39 +63,43 @@ export async function enableNetworkProviderAsync() {
     }
 }
 export async function getCurrentPositionAsync(options = {}, methodOptions = { type: LocationMethodType.Fast }) {
-    console.log(methodOptions);
     if (methodOptions.type === LocationMethodType.Fast) {
-        console.log("fast");
-        return new Promise(async (resolve, reject) => {
-            try {
-                let bestPosition = null;
-                let current = 0;
-                let { tries, minAccuracyRadius } = {
-                    tries: 1,
-                    minAccuracyRadius: 20000,
-                    ...methodOptions,
-                };
-                let { remove } = await watchPositionAsync(options, position => {
-                    current++;
-                    if (bestPosition === null) {
-                        bestPosition = position;
-                    }
-                    else if (bestPosition.coords.accuracy > position.coords.accuracy) {
-                        bestPosition = position;
-                    }
-                    if (current >= tries || bestPosition.coords.accuracy <= minAccuracyRadius) {
-                        remove();
-                        resolve(bestPosition);
-                    }
-                });
-            }
-            catch (e) {
-                reject(e);
-            }
-        });
+        return getCurrentPositionUsingWatchEvent(options, methodOptions);
     }
-    console.log("slow");
     return ExpoLocation.getCurrentPositionAsync(options);
+}
+/**
+ * Getting current position by subscribing to position events.
+ * If all conditions are satisfied, method would return the result.
+ */
+async function getCurrentPositionUsingWatchEvent(options = {}, methodOptions) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let bestPosition;
+            let currentTry = 0;
+            const { tries, minAccuracyRadius } = {
+                tries: 1,
+                minAccuracyRadius: 20000,
+                ...methodOptions,
+            };
+            const { remove } = await watchPositionAsync(options, position => {
+                currentTry++;
+                if (!bestPosition) {
+                    bestPosition = position;
+                }
+                else if (bestPosition.coords.accuracy > position.coords.accuracy) {
+                    bestPosition = position;
+                }
+                if (currentTry >= tries || bestPosition.coords.accuracy <= minAccuracyRadius) {
+                    remove();
+                    resolve(bestPosition);
+                }
+            });
+        }
+        catch (e) {
+            reject(e);
+        }
+    });
 }
 // Start Compass Module
 // To simplify, we will call watchHeadingAsync and wait for one update To ensure accuracy, we wait

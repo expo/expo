@@ -373,8 +373,6 @@ Object of type `Region` includes following fields:
 - **radius (_number_)** -- The radius measured in meters that defines the region's outer boundary.
 - **state : [Location.GeofencingRegionState](#locationgeofencingregionstate)** -- One of [Location.GeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
 
-### Type `LocationMethod`
-
 ## Enums
 
 ### `Location.Accuracy`
@@ -414,10 +412,10 @@ Object of type `Region` includes following fields:
 
 ### `Location.MethodType`
 
-| Method type                           | Value | Description                                      |
-| --------------------------------------| ----- | ------------------------------------------------ |
-| `Location.MethodType.MethodType.Slow` | 1     | Use slower method to calculate current position. |
-| `Location.MethodType.MethodType.Fast` | 2     | Use faster method to calculate current position. |
+| Method type                | Value | Description                                      |
+| ---------------------------| ----- | ------------------------------------------------ |
+| `Location.MethodType.Slow` | 1     | Use slower method to calculate current position. |
+| `Location.MethodType.Fast` | 2     | Use faster method to calculate current position. |
 
 ## Enabling Emulator Location
 
