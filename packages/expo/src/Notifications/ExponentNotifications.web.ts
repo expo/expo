@@ -2,7 +2,7 @@ import { CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import UUID from 'uuid-js';
 
-import { LocalNotification, LocalNotificationId } from './NotificationsTypes';
+import { LocalNotification, LocalNotificationId } from './Notifications.types';
 
 function guardPermission() {
   if (!('Notification' in window)) {

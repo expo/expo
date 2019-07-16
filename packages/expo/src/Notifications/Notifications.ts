@@ -11,7 +11,7 @@ import {
   Channel,
   ActionType,
   LocalNotificationId,
-} from './NotificationsTypes';
+} from './Notifications.types';
 let _emitter;
 let _initialNotification;
 
