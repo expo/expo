@@ -22,7 +22,7 @@ function _maybeInitEmitter() {
   }
 }
 
-function _emitNotification(notification) {
+export function _emitNotification(notification) {
   if (typeof notification === 'string') {
     notification = JSON.parse(notification);
   }

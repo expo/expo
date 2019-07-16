@@ -4,6 +4,9 @@ import UUID from 'uuid-js';
 
 import { LocalNotification, LocalNotificationId } from './Notifications.types';
 
+// Register `message`'s event listener (side-effect)
+import './ExponentNotifications.fx.web';
+
 function guardPermission() {
   if (!('Notification' in window)) {
     throw new Error('The Notification API is not available on this device.');
