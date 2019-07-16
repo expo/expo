@@ -8,6 +8,8 @@ A React component that renders a viewfinder for the device's either front or bac
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-barcode-scanner`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
 
+> **Note**: Not compatible with web.
+
 ## Supported formats
 
 | Bar code format | iOS   | Android |
