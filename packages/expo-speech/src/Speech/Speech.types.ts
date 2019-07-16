@@ -7,7 +7,7 @@ export type SpeechOptions = {
   onStart?: () => void | SpeechEventCallback;
   onStopped?: () => void | SpeechEventCallback;
   onDone?: () => void | SpeechEventCallback;
-  onError?: (error: Error) => void | SpeechEventCallback;
+  onError?: (error: SpeechSynthesisErrorEvent) => void | SpeechEventCallback;
 
   volume?: number;
   voice?: string;
@@ -29,3 +29,10 @@ export type Voice = {
   quality: VoiceQuality;
   language: string;
 };
+
+export type WebVoice = Voice & {
+  isDefault: boolean; 
+  localService: boolean; 
+  name: string; 
+  voiceURI: string;
+}

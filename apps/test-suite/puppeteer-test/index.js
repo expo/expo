@@ -8,6 +8,10 @@ const manuallyRunWebpack = true;
 
 let server;
 
+if (typeof process.env.CI === 'undefined') {
+  process.env.CI = process.stdout.isTTY;
+}
+
 async function runPuppeteerAsync() {
   const browser = await puppeteer.launch({
     headless: true,
