@@ -8,6 +8,8 @@ A React hook that prevents the screen from sleeping and a pair of functions to e
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-keep-awake`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-keep-awake).
 
+> **Note**: Not compatible with web.
+
 ## Usage
 
 ```js
