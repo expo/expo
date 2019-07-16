@@ -59,7 +59,7 @@ List of all the native languages provided by the user settings. These are return
 
 #### `Localization.region: ?string`
 
-**Available on iOS only.**  Region code for your device which came from `Region` setting in `Language & Region`. Ex: `US`, `NZ`.
+**Available on iOS and Web.**  Region code for your device which came from `Region` setting in `Language & Region`. Ex: `US`, `NZ`.
 
 #### `Localization.isoCurrencyCodes: ?Array<string>`
 
@@ -87,7 +87,7 @@ type NativeEvent = {
   locales: Array<string>,
   timezone: string,
   isoCurrencyCodes: ?Array<string>,
-  region: ?string, // iOS only
+  region: ?string, // iOS and Web
   isRTL: boolean,
 };
 ```
