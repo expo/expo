@@ -5,8 +5,8 @@ const GROUPS = {
   ExpoKit: 'Managed Workflow',
   'Expo SDK': 'API Reference',
   'React Native': 'API Reference',
-  'Introduction': 'Get Started',
-  'Essentials': 'Bare Workflow',
+  Introduction: 'Get Started',
+  Essentials: 'Bare Workflow',
 };
 
 const ROOT = [
@@ -38,6 +38,7 @@ const INTRODUCTION = [
 ];
 
 const GUIDES = [
+  'Account Permissions',
   'App Icons',
   'Assets',
   'Error Handling',
@@ -108,10 +109,7 @@ const EXPOKIT = [
   'Universal Modules and ExpoKit',
 ];
 
-const ESSENTIALS = [
-  'Hello World',
-  'Unimodules Full List'
-];
+const ESSENTIALS = ['Hello World', 'Unimodules Full List'];
 
 const REACT_NATIVE = [
   // 'REACT NATIVE BASICS',
