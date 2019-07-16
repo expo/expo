@@ -2,21 +2,47 @@
 title: Using VAPID for Web Push Notifications
 ---
 
-TODO
+VAPID (Voluntary Application Server Identification for Web Push) keys, or application server keys, are required for enabling push notifications in Expo for Web projects. To set up your Expo for Web project to get push notifications, follow this guide closely.
 
-## What is VAPID?
+Learn more about VAPID keys and web push notifications [here](https://developers.google.com/web/updates/2016/07/web-push-interop-wins) and [here](https://developers.google.com/web/fundamentals/push-notifications/).
 
-```javascript
-webpush.setVapidDetails(
-  'mailto:example@yourdomain.org',
-  vapidKeys.publicKey,
-  vapidKeys.privateKey
-);
+Note that you do not necessarily need to send web push notifications through Expo server. If you do not wish to store your VAPID keys on Expo server, you can instead use [`Notifications.getDevicePushTokenAsync()`](../../sdk/notifications/#notificationsgetdevicepushtokenasyncconfig) to obtain the client's token, and send the notifications yourself from your server with tools such as [web-push](https://github.com/web-push-libs/web-push). In that case, you can disregard the information about "Uploading Credentials" below and jump directly to "[Client Setup](#client-setup)".
+
+## Uploading Credentials
+
+To send push notifications to web projects through Expo server, three items are needed to be stored on Expo server.
+
+- A VAPID public key.
+- A VAPID private key.
+- A VAPID subject, which needs to be a URL or a `mailto:` URL. This provides a point of contact in case the push service needs to contact the message sender.
+
+Note that the VAPID subject can be overridden in the individual push notification by providing a `vapidSubject` value in the message. Learn more [here](../../guides/push-notifications/#message-format).
+
+### Option 1: Generating VAPID keys
+
+Expo server can help you generate the VAPID public/private key pair. Simply type the following command in your project directory. The generated key will be automatically stored on Expo server.
+
+```bash
+expo push:web:generate --vapid-subject <vapid-subject>
 ```
 
-Details: https://developers.google.com/web/updates/2016/07/web-push-interop-wins
+### Option 2: Uploading your own VAPID keys
+
+You can also choose to upload your own VAPID key pair to Expo server by using the following command:
+
+Note that both keys should be URL-safe and base64-encoded.
+
+```bash
+expo push:web:upload --vapid-pubkey <vapid-public-key> --vapid-pvtkey <vapid-private-key> --vapid-subject <vapid-subject>
+```
 
 ## Client Setup
+
+You will also need to add your VAPID public key to your client app's `app.json` file in the `web.vapidPublicKey` field.
+
+You should also include your username (the username of the person who uploaded the keys) in the `owner` field. You do not have to do this if you choose to not handle web push notifications through Expo server.
+
+Note that you can always find your uploaded VAPID keys by using the command `expo push:web:show`.
 
 ```javascript
 {
@@ -30,29 +56,4 @@ Details: https://developers.google.com/web/updates/2016/07/web-push-interop-wins
 }
 ```
 
-Also you must include "owner" (your Expo username) in `app.json`.
-
-## Uploading Server Credentials
-
-```bash
-expo push:web:upload --vapid-pubkey <vapid-public-key> --vapid-pvtkey <vapid-private-key> --vapid-subject <vapid-subject>
-```
-
-```bash
-expo push:web:generate --vapid-subject <vapid-subject>
-```
-Output public key and private key. Also prompt user to enter public key to app.json
-
-```bash
-expo push:web:show
-```
-Print the VAPID public key, the VAPID private key, and the VAPID subject currently in use for web notifications for this project.
-
-```bash
-expo push:web:clear
-```
-Clear public key, private key, and vapid subject stored on Expo server.
-
-
-
-TODO: vapid-subject can be overridden in individual push message
+That's it -- users who visit the site will now receive notifications using your project's credentials. You just send the push notifications as you normally would (see [guide](../../guides/push-notifications#2-call-expos-push-api-with-the)).
