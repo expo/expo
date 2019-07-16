@@ -11,6 +11,7 @@ import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
+import expo.modules.application.ApplicationPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
@@ -58,6 +59,7 @@ public class ExperiencePackagePicker {
       new AdMobPackage(),
       new AdsFacebookPackage(),
       new AppAuthPackage(),
+      new ApplicationPackage(),
       new AmplitudePackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
