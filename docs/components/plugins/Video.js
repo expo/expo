@@ -13,6 +13,7 @@ export default class Video extends React.Component {
             muted
             playing={isVisible}
             controls
+            playsinline
             loop
           />
         )}
