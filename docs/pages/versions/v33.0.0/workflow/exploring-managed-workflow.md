@@ -4,7 +4,7 @@ title: Exploring the Managed Workflow
 
 import Video from '../../../../components/plugins/Video'
 
-If you're a top-down learner and you would like to get a high level map of the territory and an understanding of what it looks like to build, deploy, and update an app with the managed workflow, this is the right place for you. **Feel free to skip this if you just want to write code a quickly as possible** &mdash; [Up and Running](../up-and-running/) is for you. We are going to go through initializing, starting, opening, coding, configuring, publishing, building, deploying, updating, and sending notifications.
+If you're a top-down learner and you would like to get a high level map of the territory and an understanding of what it looks like to build, deploy, and update an app with the managed workflow, this is the right place for you. **Feel free to skip this if you just want to write code a quickly as possible** &mdash; [Up and Running](../up-and-running/) is for you. We are going to go through initializing, starting, opening, coding, configuring, publishing, building, deploying, and updating and app. We'll also have a quick look at push notifications.
 
 ## Initialize a project
 
