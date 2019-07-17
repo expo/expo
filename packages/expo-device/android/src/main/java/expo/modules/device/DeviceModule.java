@@ -149,7 +149,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     }
 
     // Get display metrics to see if we can differentiate handsets and tablets.
-    // NOTE: for API level 16 the metrics will exclude window decor.
     DisplayMetrics metrics = new DisplayMetrics();
     windowManager.getDefaultDisplay().getMetrics(metrics);
 
@@ -187,7 +186,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void isSideLoadingEnabled(Promise promise) {
+  public void isSideLoadingEnabledAsync(Promise promise) {
     boolean enabled;
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       if (Settings.Global.getInt(mContext.getApplicationContext().getContentResolver(), Settings.Global.INSTALL_NON_MARKET_APPS, 0) == 1) {

@@ -20,7 +20,7 @@ export declare const deviceYearClass: any;
 export declare function hasPlatformFeatureAsync(feature: string): Promise<boolean>;
 export declare function getPlatformFeaturesAsync(): Promise<string[]>;
 export declare function getMaxMemoryAsync(): Promise<number>;
-export declare function isSideLoadingEnabled(): Promise<boolean>;
+export declare function isSideLoadingEnabledAsync(): Promise<boolean>;
 export declare function getUptimeAsync(): Promise<number>;
 export declare function isRootedExperimentalAsync(): Promise<boolean>;
 export declare function getDeviceTypeAsync(): Promise<_DeviceType>;

@@ -18,14 +18,14 @@ import * as Device from 'expo-device';
 
 - `Device.brand: string`
 
-  Gets the device brand. The consumer-visible brand of the product/hardware.
+  The device brand. The consumer-visible brand of the product/hardware.
 
   - iOS: `"Apple"`
   - Android: e.g., `"Xiaomi"`
 
 - `Device.manufacturer: string`
 
-  Gets the actual device manufacturer of the product/hardware.
+  The actual device manufacturer of the product/hardware.
 
   - iOS: `"Apple"`
   - Android: e.g., `"HTC"`
@@ -56,7 +56,7 @@ import * as Device from 'expo-device';
 
 - `Device.totalMemory: number`
 
-  Gets the device's total memory, in bytes. This is the total memory accessible to the kernel, but not necessarily to a single app. This is basically the amount of RAM the device has, not including below-kernel fixed allocations like DMA buffers, RAM for the baseband CPU, etc…
+  The device's total memory, in bytes. This is the total memory accessible to the kernel, but not necessarily to a single app. This is basically the amount of RAM the device has, not including below-kernel fixed allocations like DMA buffers, RAM for the baseband CPU, etc…
 
 - `Device.isDevice: boolean`
 
@@ -64,7 +64,7 @@ import * as Device from 'expo-device';
 
 - `Device.supportedCpuArchitectures: string[]`
 
-  Returns a list of supported processor architecture versions. The device expects the binaries it runs to be compiled for one of these architectures. The returned list will be `null` if the supported architectures could not be determined.
+  A list of supported processor architecture versions. The device expects the binaries it runs to be compiled for one of these architectures. The returned list will be `null` if the supported architectures could not be determined.
 
   **--**Examples**
 
@@ -74,11 +74,11 @@ import * as Device from 'expo-device';
 
 - `Device.designName: string | null` (Android only)
 
-  Gets the specific configuration or name of the industrial design. It represents the device's name when it was designed during manufacturing into mass production. On Android, it corresponds to `Build.DESIGN`.
+  The specific configuration or name of the industrial design. It represents the device's name when it was designed during manufacturing into mass production. On Android, it corresponds to [`Build.DEVICE`](https://developer.android.com/reference/android/os/Build#DEVICE).
 
   - Android: e.g., `"kminilte"`
 
-- `Device.productName: string` (Android only)
+- `Device.productName: string | null` (Android only)
 
   The device's overall product name chosen by the device implementer containing the development name or code name of the device. Corresponds to [`Build.PRODUCT`](https://developer.android.com/reference/android/os/Build#PRODUCT).
 
@@ -134,7 +134,7 @@ import * as Device from 'expo-device';
 
 ### `Device.getPlatformFeaturesAsync()` (Android only)
 
-Get a list of features that are available on the system. The feature names are platform-specific.
+Gets a list of features that are available on the system. The feature names are platform-specific. See [here](https://developer.android.com/reference/android/content/pm/PackageManager#getSystemAvailableFeatures()) to view Android official docs about this implementation.
 
 #### Returns
 
@@ -154,11 +154,11 @@ await Device.getPlatformFeaturesAsync();
 
 ### `Device.hasPlatformFeatureAsync(feature: string)` (Android only)
 
-Tells if the device has a specific system feature. Can get all available system features in `Device.getSystemFeatureAsync()`.
+Tells if the device has a specific system feature.
 
 #### Arguments
 
-- **feature (_string_)** -- A string of the feature we want to know that the device has.
+- **feature (_string_)** -- A string of the feature we want to know that the device has. Can get all available system features in `Device.getSystemFeatureAsync()`. See [here](https://developer.android.com/reference/android/content/pm/PackageManager#hasSystemFeature(java.lang.String)) to view acceptable feature strings.
 
 #### Returns
 
@@ -185,7 +185,7 @@ await Device.getMaxMemoryAsync();
   // 402653184
 ```
 
-### `Device.isSideLoadingEnabled()` (Android only)
+### `Device.isSideLoadingEnabledAsync()` (Android only)
 
 Returns whether applications can be installed for this user via the system's [Intent#ACTION_INSTALL_PACKAGE](https://developer.android.com/reference/android/content/Intent.html#ACTION_INSTALL_PACKAGE) mechanism rather than through the OS's default app store, like Google Play.
 
@@ -236,7 +236,9 @@ await Device.isRootedExperimentalAsync();
 
 ### `Device.getDeviceTypeAsync()`
 
-Checks the type of the device as a [`Device.DeviceType`](#devicedevicetype) enum value.
+Checks the type of the device as a [`Device.DeviceType`](#devicedevicetype) enum value. 
+
+On Android, the device type is determined by the screen resolution (screen diagonal size), so the result might not be so accurate. If it's between `3` to `6.9`, it's a `DeviceType.PHONE`. If it's above `7` and below `18`, it's a `DeviceType.TABLET`. Otherwise, it's in `DeviceType.UNKNOWN`.
 
 #### Returns
 

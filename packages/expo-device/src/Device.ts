@@ -89,11 +89,11 @@ export async function getMaxMemoryAsync(): Promise<number> {
   return Promise.resolve(maxMemory);
 }
 
-export async function isSideLoadingEnabled(): Promise<boolean> {
-  if (!ExpoDevice.isSideLoadingEnabled) {
-    throw new UnavailabilityError('expo-device', 'isSideLoadingEnabled');
+export async function isSideLoadingEnabledAsync(): Promise<boolean> {
+  if (!ExpoDevice.isSideLoadingEnabledAsync) {
+    throw new UnavailabilityError('expo-device', 'isSideLoadingEnabledAsync');
   }
-  return await ExpoDevice.isSideLoadingEnabled();
+  return await ExpoDevice.isSideLoadingEnabledAsync();
 }
 
 export async function getUptimeAsync(): Promise<number> {
@@ -117,14 +117,14 @@ export async function getDeviceTypeAsync(): Promise<_DeviceType> {
   const deviceType = await ExpoDevice.getDeviceTypeAsync();
   switch (deviceType) {
     case _DeviceType.PHONE:
-      return Promise.resolve(_DeviceType.PHONE);
+      return _DeviceType.PHONE;
     case _DeviceType.TABLET:
-      return Promise.resolve(_DeviceType.TABLET);
+      return _DeviceType.TABLET;
     case _DeviceType.TV:
-      return Promise.resolve(_DeviceType.TV);
+      return _DeviceType.TV;
     case _DeviceType.DESKTOP:
-      return Promise.resolve(_DeviceType.DESKTOP);
+      return _DeviceType.DESKTOP;
     default:
-      return Promise.resolve(_DeviceType.UNKNOWN);
+      return _DeviceType.UNKNOWN;
   }
 }

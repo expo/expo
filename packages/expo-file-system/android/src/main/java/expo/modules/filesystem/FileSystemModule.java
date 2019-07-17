@@ -81,6 +81,7 @@ public class FileSystemModule extends ExportedModule {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    }
 
   }
 
@@ -538,7 +539,7 @@ public class FileSystemModule extends ExportedModule {
       promise.resolve(capacityDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity");
+      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity", e);
     }
   }
 
@@ -556,9 +557,9 @@ public class FileSystemModule extends ExportedModule {
         storageDouble =  Math.pow(2,53) - 1;
       }
       promise.resolve(storageDouble);
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM", "No available free disk storage.");
+      promise.reject("ERR_FILESYSTEM", "Unable to determine free disk storage capacity", e);
     }
   }
 
