@@ -113,7 +113,7 @@ export async function test(t) {
         let error;
         let isSideLoading;
         try {
-          isSideLoading = await Device.isSideLoadingEnabled();
+          isSideLoading = await Device.isSideLoadingEnabledAsync();
         } catch (e) {
           error = e;
         }
