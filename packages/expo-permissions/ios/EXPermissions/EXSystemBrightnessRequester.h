@@ -2,7 +2,7 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-@interface EXSystemBrightnessRequester : NSObject <EXPermissionRequester>
+@interface EXSystemBrightnessRequester : EXPermissionBaseRequester
 
 + (NSDictionary *)permissions;
 

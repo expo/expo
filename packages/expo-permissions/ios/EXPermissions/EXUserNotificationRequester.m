@@ -7,7 +7,6 @@
 
 @interface EXUserNotificationRequester ()
 
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
@@ -62,25 +61,21 @@
            };
 }
 
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
-{
-  _delegate = delegate;
-}
-
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  __weak EXUserNotificationRequester *weakSelf = self;
-
+  UM_WEAKIFY(self)
+  
   UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge;
   id<UMUserNotificationCenterProxyInterface> notificationCenter = [EXUserNotificationRequester getCenterWithModuleRegistry:_moduleRegistry];
   [notificationCenter requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    id<EXPermissionsModule> permissionsModule = [weakSelf.moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsModule)];
+    UM_STRONGIFY(self)
+    id<EXPermissionsModule> permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsModule)];
     NSAssert(permissionsModule, @"Permissions module is required to properly consume result.");
     dispatch_async(permissionsModule.methodQueue, ^{
       if (error) {
         reject(@"E_PERM_REQ", error.description, error);
       } else {
-        [weakSelf _consumeResolverWithCurrentPermissions:resolve];
+        [self _consumeResolverWithCurrentPermissions:resolve];
       }
     });
   }];
@@ -91,8 +86,8 @@
   if (resolver) {
     resolver([[self class] permissionsWithModuleRegistry:_moduleRegistry]);
   }
-  if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
+  if (self.delegate) {
+    [self.delegate permissionRequesterDidFinish:self];
   }
 }
 

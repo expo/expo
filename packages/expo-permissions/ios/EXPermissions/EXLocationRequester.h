@@ -2,7 +2,7 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-@interface EXLocationRequester : NSObject <EXPermissionRequester>
+@interface EXLocationRequester : EXPermissionBaseRequester
 
 + (NSDictionary *)permissions;
 

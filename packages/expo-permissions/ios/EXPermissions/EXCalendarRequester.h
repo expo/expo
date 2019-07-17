@@ -2,7 +2,7 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-@interface EXCalendarRequester : NSObject<EXPermissionRequester>
+@interface EXCalendarRequester : EXPermissionBaseRequester
 
 + (NSDictionary *)permissions;
 

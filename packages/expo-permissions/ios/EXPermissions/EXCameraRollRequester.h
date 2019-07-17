@@ -2,7 +2,7 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-@interface EXCameraRollRequester : NSObject<EXPermissionRequester>
+@interface EXCameraRollRequester : EXPermissionBaseRequester
 
 + (NSDictionary *)permissions;
 

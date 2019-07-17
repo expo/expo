@@ -5,12 +5,6 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-@interface EXAudioRecordingPermissionRequester ()
-
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
-
-@end
-
 @implementation EXAudioRecordingPermissionRequester
 
 + (NSDictionary *)permissions
@@ -47,15 +41,9 @@
 {
   [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
     resolve([[self class] permissions]);
-    if (self->_delegate) {
-      [self->_delegate permissionRequesterDidFinish:self];
+    if (self.delegate) {
+      [self.delegate permissionRequesterDidFinish:self];
     }
   }];
 }
-
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
-{
-  _delegate = delegate;
-}
-
 @end
