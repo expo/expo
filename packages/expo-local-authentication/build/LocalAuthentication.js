@@ -1,8 +1,9 @@
 import { UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-import { AuthenticationType } from './LocalAuthentication.types';
+import { AuthenticationType, } from './LocalAuthentication.types';
 export { AuthenticationType };
 export async function hasHardwareAsync() {
     if (!ExpoLocalAuthentication.hasHardwareAsync) {
@@ -34,6 +35,11 @@ export async function authenticateAsync(options = { promptMessage: 'Authenticate
     if (Platform.OS === 'ios') {
         invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync must be called with a non-empty `options.promptMessage` string on iOS');
         const result = await ExpoLocalAuthentication.authenticateAsync(options);
+        const hasFaceID = (await supportedAuthenticationTypesAsync()).includes(2);
+        if (Constants.appOwnership === 'expo' && hasFaceID) {
+            result.warning =
+                'FaceID is not available in the Expo Client. You can use it in a standalone Expo app by providing `ios.infoPlist.NSFaceIDUsageDescription` in your app.json file.';
+        }
         if (result.warning) {
             console.warn(result.warning);
         }
