@@ -1,4 +1,4 @@
-import { RCTEventEmitter, RCTDeviceEventEmitter } from './nativeEmitters';
+import { RCTDeviceEventEmitter, RCTEventEmitter } from './nativeEmitters';
 
 /**
  * This emitter is used for sending synthetic native events to listeners
