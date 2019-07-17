@@ -1,11 +1,6 @@
 #import <EXPermissions/EXRemindersRequester.h>
 #import <EventKit/EventKit.h>
 
-@interface EXRemindersRequester ()
-
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
-
-@end
 
 @implementation EXRemindersRequester
 
@@ -50,15 +45,10 @@
       resolve([[self class] permissions]);
     }
     
-    if (self->_delegate) {
-      [self->_delegate permissionRequesterDidFinish:self];
+    if (self.delegate) {
+      [self.delegate permissionRequesterDidFinish:self];
     }
   }];
-}
-
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
-{
-  _delegate = delegate;
 }
 
 @end

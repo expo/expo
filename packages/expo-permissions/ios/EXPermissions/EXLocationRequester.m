@@ -15,7 +15,6 @@ static SEL whenInUseAuthorizationSelector;
 @property (nonatomic, strong) CLLocationManager *locMgr;
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
 
 @end
 
@@ -77,17 +76,18 @@ static SEL whenInUseAuthorizationSelector;
     // since permissions are already determined, the iOS request methods will be no-ops.
     // just resolve with whatever existing permissions.
     resolve(existingPermissions);
-    if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+    if (self.delegate) {
+      [self.delegate permissionRequesterDidFinish:self];
     }
   } else {
     _resolve = resolve;
     _reject = reject;
 
-    __weak typeof(self) weakSelf = self;
+    UM_WEAKIFY(self)
     [UMUtilities performSynchronouslyOnMainThread:^{
-      weakSelf.locMgr = [[CLLocationManager alloc] init];
-      weakSelf.locMgr.delegate = weakSelf;
+      UM_ENSURE_STRONGIFY(self)
+      self.locMgr = [[CLLocationManager alloc] init];
+      self.locMgr.delegate = self;
     }];
 
     // 1. Why do we call CLLocationManager methods by those dynamically created selectors?
@@ -124,16 +124,11 @@ static SEL whenInUseAuthorizationSelector;
       ((void (*)(id, SEL))objc_msgSend)(_locMgr, whenInUseAuthorizationSelector);
     } else {
       _reject(@"E_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
-      if (_delegate) {
-        [_delegate permissionRequesterDidFinish:self];
+      if (self.delegate) {
+        [self.delegate permissionRequesterDidFinish:self];
       }
     }
   }
-}
-
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
-{
-  _delegate = delegate;
 }
 
 # pragma mark - internal
@@ -162,8 +157,8 @@ static SEL whenInUseAuthorizationSelector;
     _resolve = nil;
     _reject = nil;
   }
-  if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
+  if (self.delegate) {
+    [self.delegate permissionRequesterDidFinish:self];
   }
 }
 
@@ -184,8 +179,8 @@ static SEL whenInUseAuthorizationSelector;
     _resolve = nil;
     _reject = nil;
   }
-  if (_delegate) {
-    [_delegate permissionRequesterDidFinish:self];
+  if (self.delegate) {
+    [self.delegate permissionRequesterDidFinish:self];
   }
 }
 

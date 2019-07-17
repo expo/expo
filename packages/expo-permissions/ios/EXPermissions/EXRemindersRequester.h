@@ -2,7 +2,7 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-@interface EXRemindersRequester : NSObject<EXPermissionRequester>
+@interface EXRemindersRequester : EXPermissionBaseRequester
 
 + (NSDictionary *)permissions;
 
