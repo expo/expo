@@ -18,7 +18,7 @@ Let’s start out with initializing a project. `expo init` gives you several opt
 
 Now we just run `yarn start` (or `npm start` if you prefer that package manager) in the project directory, which delegates to `expo start`. You can also run `expo start` if you prefer! It doesn't matter at all, pick one and go with it.
 
-<Video file="exploring-managed/start.mp4" spaceAfter={20} />
+<Video file="exploring-managed/start.mp4" spaceAfter />
 
 ## Open the project with the Expo client app on iOS or Android, or in your web browser
 
@@ -106,7 +106,7 @@ Now we need to create the app in the Google Play Console and upload it through t
 
 Run `expo build:web` then upload the `web-build` directory to a host of your choice!
 
-<Video file="exploring-managed/buildweb.mp4" />
+<Video file="exploring-managed/buildweb.mp4" spaceAfter />
 
 ## Update over the air
 
