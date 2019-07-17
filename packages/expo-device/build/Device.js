@@ -5,54 +5,48 @@ import { DeviceType as _DeviceType } from './Device.types';
 export { _DeviceType as DeviceType };
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
-let model;
-let fingerprint;
-let platformModelId;
-let platformDesignName;
-let platformProductName;
-let platformApi;
+export let modelName;
+export let osBuildFingerprint;
+export let modelId;
+export let designName;
+export let productName;
+export let platformApiLevel;
 if (Platform.OS === 'ios') {
-    let deviceName;
-    let iOSmodelId = ExpoDevice.modelId;
-    if (iOSmodelId) {
-        deviceName = deviceNamesByCode[iOSmodelId];
-        if (!deviceName) {
+    let IosDeviceName;
+    let IosModelId = ExpoDevice.modelId;
+    if (IosModelId) {
+        IosDeviceName = deviceNamesByCode[IosModelId];
+        if (!IosDeviceName) {
             // Not found on database. At least guess main device type from string contents:
-            if (iOSmodelId.startsWith('iPod')) {
-                deviceName = 'iPod Touch';
+            if (IosModelId.startsWith('iPod')) {
+                IosDeviceName = 'iPod Touch';
             }
-            else if (iOSmodelId.startsWith('iPad')) {
-                deviceName = 'iPad';
+            else if (IosModelId.startsWith('iPad')) {
+                IosDeviceName = 'iPad';
             }
-            else if (iOSmodelId.startsWith('iPhone')) {
-                deviceName = 'iPhone';
+            else if (IosModelId.startsWith('iPhone')) {
+                IosDeviceName = 'iPhone';
             }
-            else if (iOSmodelId.startsWith('AppleTV')) {
-                deviceName = 'Apple TV';
+            else if (IosModelId.startsWith('AppleTV')) {
+                IosDeviceName = 'Apple TV';
             }
         }
     }
-    model = deviceName;
-    fingerprint = null;
-    platformModelId = ExpoDevice ? ExpoDevice.modelId : null;
-    platformDesignName = null;
-    platformProductName = null;
-    platformApi = null;
+    modelName = IosDeviceName;
+    osBuildFingerprint = null;
+    modelId = ExpoDevice ? ExpoDevice.m : null;
+    designName = null;
+    productName = null;
+    platformApiLevel = null;
 }
 else {
-    model = ExpoDevice ? ExpoDevice.modelName : null;
-    fingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
-    platformModelId = null;
-    platformDesignName = ExpoDevice ? ExpoDevice.designName : null;
-    platformProductName = ExpoDevice ? ExpoDevice.productName : null;
-    platformApi = ExpoDevice ? ExpoDevice.platformApiLevel : null;
+    modelName = ExpoDevice ? ExpoDevice.modelName : null;
+    osBuildFingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
+    modelId = null;
+    designName = ExpoDevice ? ExpoDevice.designName : null;
+    productName = ExpoDevice ? ExpoDevice.productName : null;
+    platformApiLevel = ExpoDevice ? ExpoDevice.platformApiLevel : null;
 }
-export const osBuildFingerprint = fingerprint;
-export const modelName = model;
-export const modelId = platformModelId;
-export const designName = platformDesignName;
-export const productName = platformProductName;
-export const platformApiLevel = platformApi;
 export const osName = ExpoDevice ? ExpoDevice.osName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
 export const isDevice = ExpoDevice ? ExpoDevice.isDevice : null;

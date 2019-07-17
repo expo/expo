@@ -82,7 +82,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     constants.put("modelName", Build.MODEL);
     constants.put("osName", this.getSystemName());
     String[] supported_abis = Build.SUPPORTED_ABIS;
-    if(supported_abis != null && supported_abis.length == 0){
+    if (supported_abis != null && supported_abis.length == 0) {
       supported_abis = null;
     }
     constants.put("supportedCpuArchitectures", supported_abis);
