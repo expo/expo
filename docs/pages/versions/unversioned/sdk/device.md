@@ -54,15 +54,21 @@ import * as Device from 'expo-device';
 
 The device brand. The consumer-visible brand of the product/hardware.
 
-- iOS: `"Apple"`
-- Android: e.g., `"Xiaomi"`
+#### Examples
+
+```js
+Device.brand; // iOS: "Apple"; Android: "Xiaomi"
+```
 
 ### `Device.manufacturer`
 
 The actual device manufacturer of the product/hardware.
 
-- iOS: `"Apple"`
-- Android: e.g., `"HTC"`
+#### Examples
+
+```js
+Device.manufacturer; // iOS: "Apple"; Android: "HTC"
+```
 
 Click [here](https://developer.android.com/reference/android/os/Build) to view Android official documentation about the difference between `brand` and `manufacturer`.
 
@@ -70,14 +76,23 @@ Click [here](https://developer.android.com/reference/android/os/Build) to view A
 
 **iOS only.** The internal model ID of the device. This is useful for programmatically identifying the type of device and is not a human-friendly string.
 
+#### Examples
+
+```js
+Device.modelId; // iOS: "iPhone7,2"; Android: null
+```
+
 - iOS: e.g., `"iPhone7,2"`
 
 ### `Device.modelName`
 
 The human-friendly name of the device model. This is the name that people would typically use to refer to the device rather than a programmatic model identifier.
 
-- iOS: e.g., `"iPhone XS Max"`
-- Android: e.g., `"Pixel 2"`
+#### Examples
+
+```js
+Device.modelName; // iOS: "iPhone XS Max"; Android: "Pixel 2"
+```
 
 **Note for iOS**: The list of model names is manually maintained because iOS does not programmatically expose model names. This manual list may not always have all of the latest devices. Depending on your use case, it may be better to use `Device.modelId`, which is always defined, even for the latest devices.
 
@@ -93,7 +108,11 @@ The device's total memory, in bytes. This is the total memory accessible to the 
 
 The human-readable name of the device, which may be set by the device's user.
 
-- e.g., `"Vivian's iPhone XS"`
+#### Examples
+
+```js
+Device.deviceName; // "Vivian's iPhone XS"
+```
 
 ### `Device.deviceYearClass`
 
@@ -103,7 +122,7 @@ The [device year class](https://github.com/facebook/device-year-class) of this d
 
 A list of supported processor architecture versions. The device expects the binaries it runs to be compiled for one of these architectures. The returned list will be `null` if the supported architectures could not be determined.
 
-**--**Examples\*\*
+#### Examples
 
 ```js
 Device.supportedCpuArchitectures; // [ "arm64 v8", "Intel x86-64h Haswell", "arm64-v8a", "armeabi-v7a", "armeabi" ]
@@ -113,35 +132,51 @@ Device.supportedCpuArchitectures; // [ "arm64 v8", "Intel x86-64h Haswell", "arm
 
 The build ID of the OS that more precisely identifies the version of the OS. On Android, this corresponds to `Build.DISPLAY` (not `Build.ID`) and currently is a string as described [here](https://source.android.com/setup/start/build-numbers). On iOS, this corresponds to `kern.osversion` and is the detailed OS version sometimes displayed next to the more human-readable version.
 
-- Android: e.g., `"PSR1.180720.075"`
-- iOS: e.g., `"16F203"`
+#### Examples
+
+```js
+Device.osBuildId; // iOS: "16F203"; Android: "PSR1.180720.075"
+```
 
 ### `Device.osInternalBuildId`
 
 The internal build ID of the OS running on the device. On Android, this corresponds to `Build.ID`. On iOS, this is the same value as [`Device.osBuildId`](#deviceosbuildid).
 
-- Android: e.g., `"MMB29K"`
-- iOS: e.g., `"16F203"`
+#### Examples
+
+```js
+Device.osInternalBuildId; // iOS: "16F203"; Android: "MMB29K"
+```
 
 ### `Device.osName`
 
 The name of the OS running on the device.
 
-- iOS: e.g., `"iOS"` or `"iPadOS"`
-- Android: e.g., `"Android"`
+#### Examples
+
+```js
+Device.osName; // iOS: "iOS" or iPadOS; Android: "Android"
+```
 
 ### `Device.osVersion`
 
 The human-readable OS version string. Note that the version string may not always contain three numbers separated by dots.
 
-- iOS: e.g., `12.3.1`
-- Android: e.g., `4.0.3`
+#### Examples
+
+```js
+Device.osVersion; // iOS: 12.3.1; Android: 4.0.3
+```
 
 ### `Device.platformApiLevel`
 
 **Android only.** The SDK version of the software currently running on this hardware device. This value never changes while a device is booted, but it may increase when the hardware manufacturer provides an OS update. See [here](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html) to see all possible version codes and corresponding versions.
 
-- Android: e.g., `19`
+#### Examples
+
+```js
+Device.platformApiLevel; // iOS: null; Android: 19
+```
 
 ### `Device.osBuildFingerprint`
 
@@ -149,19 +184,31 @@ The human-readable OS version string. Note that the version string may not alway
 
 `$(BRAND)/$(PRODUCT)/$(DEVICE)/$(BOARD):$(VERSION.RELEASE)/$(ID)/$(VERSION.INCREMENTAL):$(TYPE)/\$(TAGS)`
 
-- e.g., `"google/sdk_gphone_x86/generic_x86:9/PSR1.180720.075/5124027:user/release-keys"`
+#### Examples
+
+```js
+Device.osBuildFingerprint; // iOS: null; Android: "google/sdk_gphone_x86/generic_x86:9/PSR1.180720.075/5124027:user/release-keys"
+```
 
 ### `Device.designName`
 
 **Android only.** The specific configuration or name of the industrial design. It represents the device's name when it was designed during manufacturing into mass production. On Android, it corresponds to [`Build.DEVICE`](https://developer.android.com/reference/android/os/Build#DEVICE).
 
-- Android: e.g., `"kminilte"`
+#### Examples
+
+```js
+Device.designName; // iOS: null; Android: "kminilte"
+```
 
 ### `Device.productName`
 
 **Android only.** The device's overall product name chosen by the device implementer containing the development name or code name of the device. Corresponds to [`Build.PRODUCT`](https://developer.android.com/reference/android/os/Build#PRODUCT).
 
-- Android: e.g., `"kminiltexx"`
+#### Examples
+
+```js
+Device.productName; // iOS: null; Android: "kminiltexx"
+```
 
 ## Methods
 
