@@ -6,6 +6,7 @@ import {
   NativeConstants,
   UserInterfaceIdiom,
   WebManifest,
+  AppManifest
 } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
 
@@ -17,6 +18,7 @@ export {
   IOSManifest,
   AndroidManifest,
   WebManifest,
+  AppManifest,
 };
 
 if (!ExponentConstants) {
