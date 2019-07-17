@@ -2,12 +2,6 @@
 
 #import <EXPermissions/EXSystemBrightnessRequester.h>
 
-@interface EXSystemBrightnessRequester ()
-
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
-
-@end
-
 @implementation EXSystemBrightnessRequester
 
 + (NSDictionary *)permissions
@@ -21,12 +15,7 @@
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   resolve([[self class] permissions]);
-  [_delegate permissionRequesterDidFinish:self];
+  [self.delegate permissionRequesterDidFinish:self];
 }
-
-- (void)setDelegate:(id)permissionRequesterDelegate {
-  _delegate = permissionRequesterDelegate;
-}
-
 
 @end
