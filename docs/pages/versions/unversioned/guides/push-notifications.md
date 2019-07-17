@@ -364,6 +364,11 @@ type PushMessage = {
 
   // Web-specific fields
   /**
+   * Remote url to an image to use as the icon for push notifications.
+   */
+  icon?: string,
+
+  /**
    * The web path that will be opened/focused after the user clicks the
    * notification.
    * Defaults: "/" (root)
@@ -376,7 +381,25 @@ type PushMessage = {
    * Defaults to the value stored on the Expo server.
    * Learn more here: https://docs.expo.io/versions/latest/guides/using-vapid/
    */
-  vapidSubject?: string
+  vapidSubject?: string,
+
+  /**
+   * When a new notification is shown with the same tag, any old notifications
+   * with that tag are removed before the new notification is shown.
+   * Defaults to none, which means the new notification will not replace any
+   * old notifications.
+   */
+  _tag?: string,
+
+  /**
+   * Only applicable when `_tag` is set.
+   * Whether a new notification of the same tag will play a sound, vibrate and
+   * wake up the users device.
+   * Defaults to `false`, which means that the new notification replacing an
+   * existing one (i.e., with the same `_tag`) will have no sound, vibration
+   * and the screen is kept asleep.
+   */
+  _renotify?: boolean
 }
 ```
 
