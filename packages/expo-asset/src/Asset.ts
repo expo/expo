@@ -178,7 +178,7 @@ export class Asset {
         }
       }
       this.localUri = await downloadAsync(this.uri, this.hash, this.type, this.name);
-      
+
       this.downloaded = true;
       this._downloadCallbacks.forEach(({ resolve }) => resolve());
     } catch (e) {

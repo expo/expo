@@ -27,7 +27,6 @@ export type AssetSource = {
 // Fast lookup check if asset map has any overrides in the manifest
 const assetMapOverride = getManifest().assetMapOverride;
 
-
 /**
  * Selects the best file for the given asset (ex: choosing the best scale for images) and returns
  * a { uri, hash } pair for the specific asset file.
