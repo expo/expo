@@ -4,4 +4,8 @@ export const globalExtras = `
   img.wide-image {
     max-width: 900px;
   }
+
+  .react-player > video {
+    outline: none;
+  }
 `;
