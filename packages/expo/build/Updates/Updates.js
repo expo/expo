@@ -44,6 +44,12 @@ export async function fetchUpdateAsync({ eventListener, } = {}) {
         manifest: typeof result === 'string' ? JSON.parse(result) : result,
     };
 }
+export async function clearUpdateCacheExperimentalAsync(abiVersion) {
+    if (!ExponentUpdates.clearUpdateCacheAsync) {
+        throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
+    }
+    return ExponentUpdates.clearUpdateCacheAsync(abiVersion);
+}
 let _emitter;
 function _getEmitter() {
     if (!_emitter) {
