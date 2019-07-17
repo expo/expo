@@ -1,14 +1,14 @@
 ---
-title: Exploring the Managed Workflow
+title: Walkthrough
 ---
 
 import Video from '../../../../components/plugins/Video'
 
-If you're a top-down learner and you would like to get a high level map of the territory and an understanding of what it looks like to build, deploy, and update an app with the managed workflow, this is the right place for you. **Feel free to skip this if you just want to write code a quickly as possible** &mdash; [Up and Running](../up-and-running/) is for you. We are going to go through initializing, starting, opening, coding, configuring, publishing, building, deploying, and updating and app. We'll also have a quick look at push notifications.
+If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build, deploy, and update an app with the managed workflow, this is the right place for you. **Feel free to skip this if you just want to write code a quickly as possible** &mdash; [Up and Running](../up-and-running/) is for you.
 
 ## Initialize a project
 
-Let’s start out with initializing a project. `expo init` gives you several options for templates, including a [TypeScript](https://www.typescriptlang.org/) template and one with [React Navigation](https://reactnavigation.org/) installed and configured with a tab-based navigation structure.
+Let’s get started by initializing a project. `expo init` gives you several options for templates, including a [TypeScript](https://www.typescriptlang.org/) template and one with [React Navigation](https://reactnavigation.org/) installed and configured with a tab-based navigation structure.
 
 <Video file="exploring-managed/init.mp4" spaceAfter={30} />
 
@@ -22,13 +22,13 @@ Now we just run `yarn start` (or `npm start` if you prefer that package manager)
 
 ## Open the project with the Expo client app on iOS or Android, or in your web browser
 
-To run the app we don’t need to build any native code because it runs in the Expo client, and the CLI will automatically install it for us in the iOS simulator or on any connected Android emulator or device. Once it’s running anybody in the world with the Expo client can open the app if you share a tunnel URL.
+To run the app we don’t need to build any native code because it runs in the [Expo client](https://expo.io/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../../workflow/ios-simulator/) or on any connected [Android emulator](../../workflow/android-studio-emulator/) or device.
 
 <Video file="exploring-managed/open.mp4" spaceAfter />
 
 ## Use the Expo SDK and community standard native libraries to build out native features
 
-We can scroll through the Expo documentation and try to find packages that provide the capabilities that we need. If we know right away that the Expo SDK doesn’t have the necessary native APIs built-in, then we should probably eject or re-initialize with the bare workflow template.
+Let's scroll through the [API Reference](../../sdk/overview/) to find packages that provide the capabilities that we need. If we know right away that the Expo SDK doesn’t have the necessary native APIs built-in, then we should probably eject or re-initialize with the bare workflow template.
 
 Let's say we had mockups for our app that look like the following:
 
@@ -42,7 +42,7 @@ We can tell from looking at the mockups that for this app we’ll need a camera,
 
 <Video file="exploring-managed/search.mp4" />
 
-We have to start somewhere so let’s start with the `ImagePicker`. There’s a runnable example of it on the documentation page so let’s just copy that to get something running. Before pasting it into our app I’ll install all of the examples’ dependencies using `expo install`. `expo install` is a wrapper around npm and yarn to ensure that the version of the Expo SDK and React Native community packages that you install are compatible with your app. When we paste the code in the app will reload and we can see that it works.
+We have to start somewhere so let’s start with the `ImagePicker`. There’s a runnable example of it on the documentation page so let’s just copy that to get something running. Before pasting it into our app we will install all of the examples’ dependencies using `expo install`. `expo install` is a wrapper around npm and yarn to ensure that the version of the Expo SDK and React Native community packages that you install are compatible with your app. When we paste the code in, the app will reload and we now have a working image picker.
 
 <Video file="exploring-managed/picker.mp4" />
 
@@ -64,27 +64,31 @@ In a managed app we don’t have the native iOS or Android projects to poke arou
 
 To share the app with teammates we can run `expo publish` and we’ll build the JavaScript bundle and upload all of the assets to a CDN.
 
-<Video file="exploring-managed/publish.mp4" />
+<Video file="exploring-managed/publish.mp4" spaceAfter={30} />
 
-You may have noticed that when we ran publish the CLI warned us about optimizing assets. We can run `expo optimize` to do this, and it’ll make our assets a bit more lean if possible. Republish after this to reap the rewards.
+> _Note: Running `expo publish` will upload your app artifacts to Expo's CDN (powered by CloudFront). If you would rather host everything on your own servers, read about how to do this in [Hosting An App on Your Servers](../../distribution/hosting-your-app/)._
+
+You may have noticed that when we ran `expo publish` the CLI warned us about optimizing assets. We can run `expo optimize` to do this, and it’ll make our assets a bit more lean if possible. Republish after this to reap the rewards.
 
 <Video file="exploring-managed/optimize.mp4" />
 
-Now you have a URL you can share for people to open your app in the Expo client. Check out the [published URL](https://expo.io/@notbrent/blearexp) for the app that you can share with colleagues.
+Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.io/@notbrent/blearexp](https://expo.io/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
 
-On iOS you can only open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), then your teammates can open your projects as well. Another option to be able to open any published managed app from within the Expo client is to do a custom build of the the Expo iOS client. [Read more about that here](../../guides/adhoc-builds/).
+On iOS, you can only open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), then your teammates can open your projects as well. Another option to be able to open any published managed app from within the Expo client is to do a custom build of the the Expo iOS client. [Read more about that here](../../guides/adhoc-builds/).
 
 ## Building and deploying
 
 ### iOS and the Apple App Store
 
-Before we run the build we need to set a `bundleIdentifier` in `app.json` (["What does bundle identifier mean?"](https://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project)).
+Before we run the build, we need to set a `bundleIdentifier` in `app.json` (["What does bundle identifier mean?"](https://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project)).
 
 <Video file="exploring-managed/bundleid.mp4" />
 
 Now when we run `expo build:ios` it will kick off a build with the Expo build service. We will be prompted to enter our Apple developer credentials, and then we’ll just hit enter a couple of times to let Expo handle the distribution certificate, push key, and provisioning profile. You can also provide all of this yourself, which you might want to do if you are moving an existing app to the managed workflow. ([Concerned about security?](../../distribution/security/))
 
-<Video file="exploring-managed/buildios.mp4" />
+<Video file="exploring-managed/buildios.mp4" spaceAfter={30} />
+
+> _Note: Running `expo build:[ios/android]` uses the Expo build service &mdash; if you would rather run builds on your own infrastructure, read about how to do this in [Building Standalone Apps on Your CI](../../distribution/turtle-cli/)_
 
 Now you can use [Application Loader](https://help.apple.com/itc/apploader/) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../../distribution/app-stores/).
 
@@ -102,15 +106,15 @@ We’ll build an [Android App Bundle (`.aab`)](https://developer.android.com/pla
 
 Now we need to create the app in the Google Play Console and upload it through the web interface manually. After the first time you have uploaded the app, subsequent uploads can be done with `expo upload:android`. [Read more about deploying to app stores](../../distribution/app-stores/).
 
-### Web and any web host of your choice
+### Building and deploying to the web
 
-Run `expo build:web` then upload the `web-build` directory to a host of your choice!
+Run `expo build:web` then upload the `web-build` dirctory to any host capable of serving static files.
 
 <Video file="exploring-managed/buildweb.mp4" spaceAfter />
 
 ## Update over the air
 
-Once your app is out for testing or on the stores you probably don’t want to have to repeat the process again to make some small changes. In this case, we noticed that we weren’t asking for camera roll permissions before saving the image, so if you tried to save an image before picking one from the camera roll then it wouldn’t work. To ship an update, we just need to run `expo publish` again. 
+Once your app is out for testing or on the stores you probably don’t want to have to repeat the process again to make some small changes. In this case, we noticed that we weren’t asking for camera roll permissions before saving the image, so if you tried to save an image before picking one from the camera roll then it wouldn’t work. To ship an update, we just need to run `expo publish` again.
 
 <Video file="exploring-managed/update.mp4" />
 
