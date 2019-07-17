@@ -32,7 +32,7 @@ You don't need to manually install the Expo client on your emulator/simulator, b
 
 Install [Xcode through the Apple App Store](https://itunes.apple.com/app/xcode/id497799835). It'll take a while, go have a nap. Next, open up Xcode, go to preferences and click the Components tab, install a simulator from the list.
 
-Once the simulator is open and you have a project open in Expo Dev Tools, you can press _Run on iOS simulator_ in Expo Dev Tools and it will install the Expo client to the simulator and open up your app inside of it.
+Once the simulator is open and you have a project open in Expo Dev Tools, you can press _Run on iOS simulator_ in Expo Dev Tools and it will install the Expo client to the simulator and open up your app inside of it. [Read more about the iOS simulator](../../workflow/ios-simulator/).
 
 > **Not working?** Occasionally Expo CLI will have trouble installing the Expo client automatically, usually due to annoying small differences in your environment or Xcode toolchain. If you need to install the Expo client on your simulator manually, you can follow these steps:
 >

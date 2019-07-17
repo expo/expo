@@ -1,1 +1,0 @@
-{"version":3,"file":"Pedometer.js","sourceRoot":"","sources":["../src/Pedometer.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,cAAc,CAAC;AACzC,iFAAiF;AAEjF,eAAe,SAAS,CAAC","sourcesContent":["import { Pedometer } from 'expo-sensors';\n// TODO: Unify the Pedometer module across platforms so we can export it normally\n\nexport default Pedometer;\n"]}
