@@ -4,7 +4,7 @@ title: Walkthrough
 
 import Video from '../../../../components/plugins/Video'
 
-If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build, deploy, and update an app with the managed workflow, this is the right place for you. **Feel free to skip this if you just want to write code a quickly as possible** &mdash; [Up and Running](../up-and-running/) is for you.
+If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build, deploy, and update an app with the managed workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](../up-and-running/) is for you.
 
 ## Initialize a project
 
