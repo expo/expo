@@ -29,6 +29,7 @@ export declare function checkForUpdateAsync(): Promise<UpdateCheckResult>;
 export declare function fetchUpdateAsync({ eventListener, }?: {
     eventListener?: UpdateEventListener;
 }): Promise<UpdateFetchResult>;
+export declare function clearUpdateCacheExperimentalAsync(abiVersion: string): Promise<void>;
 export declare function addListener(listener: Function): EventSubscription;
 export declare const EventType: {
     DOWNLOAD_STARTED: string;

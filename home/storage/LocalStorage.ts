@@ -1,7 +1,7 @@
 import mapValues from 'lodash/mapValues';
 import { AsyncStorage } from 'react-native';
 
-import ExponentKernel from '../universal/ExponentKernel';
+import * as Kernel from '../kernel/Kernel';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 
 type Settings = object;
@@ -39,16 +39,16 @@ async function updateSettingsAsync(updatedSettings: Partial<Settings>): Promise<
 }
 
 async function getSessionAsync() {
-  let results = await ExponentKernel.getSessionAsync();
+  let results = await Kernel.getSessionAsync();
   if (!results) {
     // NOTE(2018-11-8): we are migrating to storing all session keys
     // using the Kernel module instead of AsyncStorage, but we need to
     // continue to check the old location for a little while
     // until all clients in use have migrated over
-    results = await AsyncStorage.getItem(Keys.Session);
-    if (results) {
+    let json = await AsyncStorage.getItem(Keys.Session);
+    if (json) {
       try {
-        results = JSON.parse(results);
+        results = JSON.parse(json);
         await saveSessionAsync(results);
         await AsyncStorage.removeItem(Keys.Session);
       } catch (e) {
@@ -61,7 +61,7 @@ async function getSessionAsync() {
 }
 
 async function saveSessionAsync(session): Promise<void> {
-  await ExponentKernel.setSessionAsync(session);
+  await Kernel.setSessionAsync(session);
 }
 
 async function getHistoryAsync() {
@@ -85,7 +85,7 @@ async function clearHistoryAsync(): Promise<void> {
 }
 
 async function removeSessionAsync(): Promise<void> {
-  await ExponentKernel.removeSessionAsync();
+  await Kernel.removeSessionAsync();
 }
 
 // adds a hook for native code to query Home's history.

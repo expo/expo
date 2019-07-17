@@ -10,6 +10,8 @@ This module allows using Text-to-speech utility.
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-speech`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-speech).
 
+> **Note**: Not compatible with web.
+
 ## Usage
 
 <SnackEmbed snackId="@charliecruzan/speechexample" />
