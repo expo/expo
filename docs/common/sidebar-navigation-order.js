@@ -67,7 +67,7 @@ const GUIDES = [
 ];
 
 const FUNDAMENTALS = [
-  'Exploring the Managed Workflow',
+  'Walkthrough',
   'Up and Running',
   'Expo CLI',
   'Viewing Logs',
