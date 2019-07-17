@@ -4,12 +4,6 @@
 
 #import <Photos/Photos.h>
 
-@interface EXCameraRollRequester ()
-
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
-
-@end
-
 @implementation EXCameraRollRequester
 
 + (NSDictionary *)permissions
@@ -39,15 +33,10 @@
 {
   [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
     resolve([[self class] permissions]);
-    if (self->_delegate) {
-      [self->_delegate permissionRequesterDidFinish:self];
+    if (self.delegate) {
+      [self.delegate permissionRequesterDidFinish:self];
     }
   }];
-}
-
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
-{
-  _delegate = delegate;
 }
 
 @end

@@ -3,7 +3,7 @@
 #import <EXPermissions/EXPermissions.h>
 #import <UserNotifications/UserNotifications.h>
 
-@interface EXUserNotificationRequester : NSObject <EXPermissionRequester>
+@interface EXUserNotificationRequester : EXPermissionBaseRequester
 
 - (instancetype)initWithModuleRegistry: (UMModuleRegistry *)moduleRegistry;
 

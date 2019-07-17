@@ -5,11 +5,6 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-@interface EXCameraPermissionRequester ()
-
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
-
-@end
 
 @implementation EXCameraPermissionRequester
 
@@ -56,11 +51,6 @@
       }
     }
   }];
-}
-
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
-{
-  _delegate = delegate;
 }
 
 @end

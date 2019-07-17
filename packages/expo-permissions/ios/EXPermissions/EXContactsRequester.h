@@ -2,7 +2,7 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-@interface EXContactsRequester : NSObject<EXPermissionRequester>
+@interface EXContactsRequester : EXPermissionBaseRequester
 
 + (NSDictionary *)permissions;
 

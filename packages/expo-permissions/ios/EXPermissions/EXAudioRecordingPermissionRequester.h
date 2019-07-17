@@ -2,7 +2,7 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-@interface EXAudioRecordingPermissionRequester : NSObject <EXPermissionRequester>
+@interface EXAudioRecordingPermissionRequester : EXPermissionBaseRequester
 
 + (NSDictionary *)permissions;
 
