@@ -1,4 +1,4 @@
-import { AppOwnership, UserInterfaceIdiom } from './Constants.types';
+import { AppOwnership, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
 export { AppOwnership, UserInterfaceIdiom, };
 if (!ExponentConstants) {
