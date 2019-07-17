@@ -183,6 +183,14 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
     },
   };
   console.log('subscriptionObject: ', JSON.stringify(subscriptionObject));
+
+  if (registration.active) {
+    // Store notification icon string in service worker.
+    // https://stackoverflow.com/a/35729334/2603230
+    let notificationIcon = (Constants.manifest.notification || {}).icon;
+    registration.active.postMessage(JSON.stringify({ notificationIcon }));
+  }
+
   return subscriptionObject;
 }
 

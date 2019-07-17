@@ -365,6 +365,7 @@ type PushMessage = {
   // Web-specific fields
   /**
    * Remote url to an image to use as the icon for push notifications.
+   * This value overrides `notification.icon` in `app.json`.
    */
   icon?: string,
 
