@@ -5,6 +5,9 @@ import NativeModulesProxy from './NativeModulesProxy';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
 
+// RCTDeviceEventEmitter pending https://github.com/necolas/react-native-web/pull/1402
+import { RCTEventEmitter, RCTDeviceEventEmitter } from './nativeEmitters';
+
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
@@ -13,6 +16,8 @@ export const Platform = {
 };
 
 export {
+  RCTEventEmitter,
+  RCTDeviceEventEmitter,
   EventEmitter,
   NativeModulesProxy,
   Subscription,

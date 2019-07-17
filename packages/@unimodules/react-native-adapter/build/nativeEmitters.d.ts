@@ -1,3 +1,3 @@
-import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import RCTEventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import RCTDeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
-export { EventEmitter, RCTDeviceEventEmitter };
+export { RCTEventEmitter, RCTDeviceEventEmitter };
