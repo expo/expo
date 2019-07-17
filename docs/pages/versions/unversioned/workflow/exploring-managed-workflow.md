@@ -26,12 +26,6 @@ To run the app we don’t need to build any native code because it runs in the E
 
 <Video file="exploring-managed/open.mp4" spaceAfter />
 
-## Open the project with the Expo client app on iOS or Android, or in your web browser
-
-To run the app we don’t need to build any native code because it runs in the Expo client, and the CLI will automatically install it for us in the iOS simulator or on any connected Android emulator or device. Once it’s running anybody in the world with the Expo client can open the app if you share a tunnel URL.
-
-<Video file="exploring-managed/open.mp4" spaceAfter />
-
 ## Use the Expo SDK and community standard native libraries to build out native features
 
 We can scroll through the Expo documentation and try to find packages that provide the capabilities that we need. If we know right away that the Expo SDK doesn’t have the necessary native APIs built-in, then we should probably eject or re-initialize with the bare workflow template.
