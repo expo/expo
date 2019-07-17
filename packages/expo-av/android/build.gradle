@@ -71,6 +71,8 @@ dependencies {
   unimodule "unimodules-permissions-interface"
   // Newer version introduces dependency versions conflict
   // on 'com.android.support:support-annotations'
+  api 'com.android.support:support-annotations'
+  
   api 'com.google.android.exoplayer:exoplayer:2.9.2'
 
   api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
