@@ -89,14 +89,10 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
     });
   };
   _isSideLoadingEnabled = () => {
-    Device.isSideLoadingEnabled().then(isSideLoadingEnabled => {
+    Device.isSideLoadingEnabledAsync().then(isSideLoadingEnabled => {
       this.setState({ isSideLoadingEnabled: isSideLoadingEnabled.toString() });
     });
   };
-  _getDeviceType = () => {
-    Device.getDeviceTypeAsync().then(deviceType => {
-      this.setState({deviceType: deviceType});
-    })
   };
 
   render() {
