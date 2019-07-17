@@ -103,9 +103,9 @@ export class component extends React.Component {
         {Object.keys(Icons).map(key => {
           const { component: Icon, names } = Icons[key];
           return (
-            <View style={{ flexDirection: 'row' }}>
+            <View key={key} style={{ flexDirection: 'row' }}>
               {names.map(name => {
-                return <Icon name={name} size={16} color="blue" />;
+                return <Icon key={`${key}-${name}`} name={name} size={16} color="blue" />;
               })}
             </View>
           );

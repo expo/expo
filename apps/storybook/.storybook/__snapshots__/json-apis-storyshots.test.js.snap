@@ -1965,6 +1965,439 @@ exports[`JSON-APIs SDK|Constants.stories.jsx Constants 1`] = `
 </div>
 `;
 
+exports[`JSON-APIs SDK|Font.stories.jsx Font 1`] = `
+<div
+  className="css-view-1dbjc4n"
+  style={
+    Object {
+      "WebkitBoxFlex": 1,
+      "WebkitFlexBasis": "auto",
+      "WebkitFlexGrow": 1,
+      "WebkitFlexShrink": 1,
+      "flexBasis": "auto",
+      "flexGrow": 1,
+      "flexShrink": 1,
+      "msFlexNegative": 1,
+      "msFlexPositive": 1,
+      "msFlexPreferredSize": "auto",
+    }
+  }
+>
+  <h1
+    className="css-reset-4rbku5 css-text-901oao"
+    dir="auto"
+    role="heading"
+    style={
+      Object {
+        "fontSize": "2rem",
+      }
+    }
+  >
+    Font
+  </h1>
+  <div
+    className="css-view-1dbjc4n"
+    style={
+      Object {
+        "WebkitAlignItems": "flex-start",
+        "WebkitBoxAlign": "start",
+        "alignItems": "flex-start",
+        "marginTop": "8px",
+        "msFlexAlign": "start",
+      }
+    }
+  >
+    <a
+      className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+      data-focusable={true}
+      dir="auto"
+      href="https://npmjs.com/package/expo-font"
+      rel=" noopener noreferrer"
+      role="link"
+      style={
+        Object {
+          "backgroundColor": "rgba(221,221,221,1.00)",
+          "borderBottomLeftRadius": "1rem",
+          "borderBottomRightRadius": "1rem",
+          "borderTopLeftRadius": "1rem",
+          "borderTopRightRadius": "1rem",
+          "color": "rgba(85,85,85,1.00)",
+          "marginRight": "0.5rem",
+          "paddingBottom": "0.125rem",
+          "paddingLeft": "0.5rem",
+          "paddingRight": "0.5rem",
+          "paddingTop": "0.125rem",
+        }
+      }
+      target="_blank"
+    >
+      expo-font
+    </a>
+  </div>
+  <div
+    className="css-text-901oao"
+    dir="auto"
+    style={
+      Object {
+        "WebkitBoxDirection": "normal",
+        "WebkitBoxOrient": "vertical",
+        "WebkitFlexDirection": "column",
+        "color": "rgba(102,102,102,1.00)",
+        "display": "flex",
+        "flexDirection": "column",
+        "fontSize": "1.25rem",
+        "marginBottom": "1.96875rem",
+        "marginTop": "0.65625rem",
+        "msFlexDirection": "column",
+      }
+    }
+  >
+    Load fonts at runtime and use them in React Native components.
+  </div>
+  <div
+    className="css-view-1dbjc4n"
+  >
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "fontFamily": "comic-Auto",
+          "fontSize": "16px",
+        }
+      }
+    >
+      Example Text 
+      Auto
+    </div>
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "fontFamily": "comic-Block",
+          "fontSize": "16px",
+        }
+      }
+    >
+      Example Text 
+      Block
+    </div>
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "fontFamily": "comic-Swap",
+          "fontSize": "16px",
+        }
+      }
+    >
+      Example Text 
+      Swap
+    </div>
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "fontFamily": "comic-Fallback",
+          "fontSize": "16px",
+        }
+      }
+    >
+      Example Text 
+      Fallback
+    </div>
+    <div
+      className="css-text-901oao"
+      dir="auto"
+      style={
+        Object {
+          "fontFamily": "comic-Optional",
+          "fontSize": "16px",
+        }
+      }
+    >
+      Example Text 
+      Optional
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+    <div
+      className="css-view-1dbjc4n"
+      style={
+        Object {
+          "WebkitBoxDirection": "normal",
+          "WebkitBoxOrient": "horizontal",
+          "WebkitFlexDirection": "row",
+          "flexDirection": "row",
+          "msFlexDirection": "row",
+        }
+      }
+    >
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+      <div
+        className="css-text-901oao"
+        dir="auto"
+      />
+    </div>
+  </div>
+  <a
+    className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+    data-focusable={true}
+    dir="auto"
+    href="https://github.com/expo/expo/tree/master/apps/storybook/stories/./Font.stories.jsx"
+    rel=" noopener noreferrer"
+    role="link"
+    style={
+      Object {
+        "color": "rgba(27,149,224,1.00)",
+        "fontSize": "1rem",
+        "marginTop": "0.65625rem",
+        "textDecoration": "underline",
+      }
+    }
+    target="_blank"
+  >
+    Edit this page on GitHub
+  </a>
+  <a
+    className="css-reset-4rbku5 css-cursor-18t94o4 css-text-901oao"
+    data-focusable={true}
+    dir="auto"
+    href="https://github.com/expo/expo/labels/Font"
+    rel=" noopener noreferrer"
+    role="link"
+    style={
+      Object {
+        "color": "rgba(27,149,224,1.00)",
+        "fontSize": "1rem",
+        "marginTop": "0.65625rem",
+        "textDecoration": "underline",
+      }
+    }
+    target="_blank"
+  >
+    View open issues for 
+    Font
+  </a>
+</div>
+`;
+
 exports[`JSON-APIs SDK|Linking.stories.jsx Linking 1`] = `
 <div
   className="css-view-1dbjc4n"
