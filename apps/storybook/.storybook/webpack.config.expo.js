@@ -13,13 +13,13 @@ module.exports = function(env) {
 
   const clientEnv = createClientEnvironment(locations);
   const ttfLoaderConfiguration = {
-    test: /\.(ttf|otf|woff)$/,
+    test: /\.(ttf|otf|woff|woff2)$/,
     use: [
       {
         loader: 'url-loader',
         options: {
           limit: 50000,
-          name: './fonts/[name].[ext]',
+          name: 'static/media/[name].[hash:8].[ext]',
         },
       },
     ],
