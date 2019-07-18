@@ -56,7 +56,9 @@ export async function authenticateAsync(
     );
 
     const result = await ExpoLocalAuthentication.authenticateAsync(options);
-    const hasFaceID = (await supportedAuthenticationTypesAsync()).includes(AuthenticationType.FACIAL_RECOGNITION)`
+    const hasFaceID = (await supportedAuthenticationTypesAsync()).includes(
+      AuthenticationType.FACIAL_RECOGNITION
+    );
 
     if (Constants.appOwnership === 'expo' && hasFaceID) {
       result.warning =
