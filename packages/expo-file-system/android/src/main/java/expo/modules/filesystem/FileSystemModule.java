@@ -81,7 +81,6 @@ public class FileSystemModule extends ExportedModule {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    }
 
   }
 
@@ -533,8 +532,8 @@ public class FileSystemModule extends ExportedModule {
       BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
       Double capacityDouble = capacity.doubleValue();
       //cast down to avoid overflow
-      if(capacity.longValue() > Math.pow(2,53) - 1){
-        capacityDouble =  Math.pow(2,53) - 1;
+      if (capacity.longValue() > Math.pow(2, 53) - 1) {
+        capacityDouble = Math.pow(2, 53) - 1;
       }
       promise.resolve(capacityDouble);
     } catch (Exception e) {
@@ -553,8 +552,8 @@ public class FileSystemModule extends ExportedModule {
       BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
       Double storageDouble = storage.doubleValue();
       //cast down to avoid overflow
-      if(storage.longValue() > Math.pow(2,53) - 1){
-        storageDouble =  Math.pow(2,53) - 1;
+      if (storage.longValue() > Math.pow(2, 53) - 1) {
+        storageDouble = Math.pow(2, 53) - 1;
       }
       promise.resolve(storageDouble);
     } catch (Exception e) {
