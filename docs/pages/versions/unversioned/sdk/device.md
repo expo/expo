@@ -224,7 +224,7 @@ Gets the uptime since the last reboot of the device, in milliseconds.
 
 #### Returns
 
-Returns a promise that resolves to a number that represents the milliseconds since last reboot. Android devices does not count time spent in deep sleep.
+Returns a Promise that resolves to a `number` that represents the milliseconds since last reboot. Android devices does not count time spent in deep sleep.
 
 **Examples**
 
@@ -245,7 +245,7 @@ On iOS, the jailbreak checks outlined on (https://www.theiphonewiki.com/wiki/Byp
 
 #### Returns
 
-Returns a promise that resolves to a boolean that specifies whether this device is rooted. On web, the boolean is always `false`.
+Returns a Promise that resolves to a `boolean` that specifies whether this device is rooted. On web, the boolean is always `false`.
 
 **Examples**
 
@@ -258,7 +258,7 @@ await Device.isRootedExperimentalAsync();
 
 Checks the type of the device as a [`Device.DeviceType`](#devicedevicetype) enum value.
 
-On Android, the device type is determined by the screen resolution (screen diagonal size), so the result might not be so accurate. If it's between `3` to `6.9`, it's a `DeviceType.PHONE`. If it's above `7` and below `18`, it's a `DeviceType.TABLET`. Otherwise, it's in `DeviceType.UNKNOWN`.
+On Android, for devices other than TVs, the device type is determined by the screen resolution (screen diagonal size), so the result may not be completely accurate. If the screen diagonal length is between `3''` and `6.9''`, the method returns `DeviceType.PHONE`. For lengths between `7''` and `18''`, the method returns `DeviceType.TABLET`. Otherwise, the method returns `DeviceType.UNKNOWN`.
 
 #### Returns
 
@@ -301,7 +301,7 @@ await Device.getPlatformFeaturesAsync();
 
 #### Returns
 
-Returns a `Promise<boolean>` that resolves to a `boolean` value indicating whether the device has the specified system feature.
+Returns a Promise that resolves to a `boolean` value indicating whether the device has the specified system feature.
 
 **Examples**
 
@@ -315,7 +315,7 @@ await Device.hasPlatformFeatureAsync('amazon.hardware.fire_tv'); // true or fals
 
 #### Returns
 
-Returns a Promise that resolves the maximum available memory that the Java vm will use, in bytes.
+Returns a Promise that resolves to the maximum available memory that the Java vm will use, in bytes.
 
 **Examples**
 
@@ -330,7 +330,7 @@ await Device.getMaxMemoryAsync();
 
 #### Returns
 
-Returns a Promise that resolves to a boolean that represents whether the calling package is allowed to request package installation.
+Returns a Promise that resolves to a `boolean` that represents whether the calling package is allowed to request package installation.
 
 **Examples**
 
