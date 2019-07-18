@@ -11,9 +11,6 @@ export default {
     get modelName() {
         return result.device.model;
     },
-    get manufacturer() {
-        return result.device.vendor;
-    },
     get osName() {
         return result.os.name;
     },
@@ -22,6 +19,10 @@ export default {
     },
     get supportedCpuArchitectures() {
         return result.cpu.architecture;
-    }
+    },
+    get deviceName() {
+        const { browser, engine, os: OS } = parser.getResult();
+        return browser.name || engine.name || OS.name || undefined;
+    },
 };
 //# sourceMappingURL=ExpoDevice.web.js.map

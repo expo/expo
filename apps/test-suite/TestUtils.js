@@ -2,6 +2,7 @@
 
 import { Platform, NativeModules } from 'react-native';
 import Constants from 'expo-constants';
+
 const { ExponentTest } = NativeModules;
 
 function browserSupportsWebGL() {

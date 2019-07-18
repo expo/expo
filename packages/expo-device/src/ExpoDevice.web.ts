@@ -10,11 +10,8 @@ export default {
   get isDevice(): boolean {
     return true;
   },
-  get modelName(): string {
+  get modelName(): string | undefined {
     return result.device.model;
-  },
-  get manufacturer(): string {
-    return result.device.vendor;
   },
   get osName(): string {
     return result.os.name;
@@ -22,7 +19,11 @@ export default {
   get osVersion(): string {
     return result.os.version;
   },
-  get supportedCpuArchitectures(): string[] {
+  get supportedCpuArchitectures(): string[] | undefined {
     return result.cpu.architecture;
-  }
+  },
+  get deviceName(): string | undefined {
+    const { browser, engine, os: OS } = parser.getResult();
+    return browser.name || engine.name || OS.name || undefined;
+  },
 };
