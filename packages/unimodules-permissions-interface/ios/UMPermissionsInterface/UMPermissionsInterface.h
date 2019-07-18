@@ -11,8 +11,4 @@
               withResult:(void (^)(NSDictionary *))onResult
             withRejecter:(UMPromiseRejectBlock)reject;
 
-- (void)askForPermissions:(NSArray<NSString *> *)permissionsTypes
-              withResults:(void (^)(NSArray<NSDictionary *> *))onResults
-             withRejecter:(UMPromiseRejectBlock)reject;
-
 @end

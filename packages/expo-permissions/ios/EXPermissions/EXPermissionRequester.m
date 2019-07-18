@@ -5,7 +5,7 @@
 @implementation EXPermissionBaseRequester
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject {
-  // todo change it to something better
+  // todo: change it to something better
   reject(@"E_NOT_DEFINED", @"METHOD NOT DEFINED", nil);
 }
 
