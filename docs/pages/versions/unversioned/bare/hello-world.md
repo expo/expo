@@ -1,5 +1,6 @@
 ---
-title: Hello World
+title: Up and Running
+sidebar_label: Up and Running
 ---
 
 To get started with a bare React Native project, run `expo init` and choose one of the bare templates. We'll use the minimum template here. This guide assumes that you have Xcode and/or Android Studio installed and working.
@@ -23,7 +24,7 @@ Bare template projects come with `react-native-unimodules` installed and configu
 import { Asset, Constants, FileSystem, Permissions } from 'react-native-unimodules';
 ```
 
-## Install a Unimodule
+## Install an Expo SDK package
 
 We're going to install [`expo-web-browser`](https://github.com/expo/expo/tree/master/packages/expo-web-browser), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
 
@@ -66,4 +67,4 @@ You don't have to do anything, just run the project with `react-native run-andro
 
 ## What now?
 
-Most of the Expo APIs are available in bare React Native projects and can be installed using a process very similar to the above. Go ahead and browse the `API Reference` section and follow the installation instructions linked there, then read the API documentation and enjoy. Good luck building your app!
+Most of the Expo SDKs APIs are available in bare React Native projects and can be installed using a process very similar to the above. You can see which are supported and which aren't in the [Supported Expo SDK Packages](unimodules-full-list/) section, or just go ahead and browse the `API Reference` section and follow the installation instructions linked there, read the API documentation, and enjoy. Good luck building your app!

@@ -6,9 +6,7 @@ In addition to the questions below, see the [Expo Forum](http://forums.expo.io/)
 
 ## How much does Expo cost?
 
-Expo is free and open source.
-
-You can view the source for the Expo SDK and client at https://github.com/expo/expo
+Expo tools are free to use and open source. You can view the source for the Expo SDK and client at https://github.com/expo/expo
 
 ## How do you make money if Expo is free?
 

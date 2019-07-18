@@ -1,8 +1,13 @@
 ---
 title: Managed and Bare Workflows
+sidebar_title: Workflows
 ---
 
 The two ways to use Expo tools are called the "managed" and "bare" workflows.
+
+<img src="/static/images/project-lifecycle-workflows.png" className="wide-image" />
+
+We recommend doing the [managed workflow walkthrough](../../workflow/exploring-managed-workflow/) and the [bare workflow walkthrough](../../bare/exploring-bare-workflow/) to get a more complete picture of building an app end-to-end with each approach. They have a bunch of videos and they are relatively easy to skim through. The following is a very brief text-only summary of the two workflows.
 
 ## Managed workflow
 
