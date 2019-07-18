@@ -34,7 +34,7 @@ if (Platform.OS === 'ios') {
     }
     modelName = IosDeviceName;
     osBuildFingerprint = null;
-    modelId = ExpoDevice ? ExpoDevice.m : null;
+    modelId = ExpoDevice ? ExpoDevice.modelId : null;
     designName = null;
     productName = null;
     platformApiLevel = null;
