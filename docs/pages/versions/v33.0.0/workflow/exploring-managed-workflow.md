@@ -1,5 +1,6 @@
 ---
-title: Walkthrough
+title: Managed Workflow Walkthrough
+sidebar_title: Walkthrough
 ---
 
 import Video from '../../../../components/plugins/Video'
