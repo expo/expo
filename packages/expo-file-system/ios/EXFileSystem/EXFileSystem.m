@@ -649,12 +649,20 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve([self freeDiskStorage]);
+  @try {
+    resolve([self freeDiskStorage]);
+  } @catch (NSException *exception) {
+    reject(@"ERR_FILESYSTEM", @"Unable to determine free disk storage capacity", nil);
+  }
 }
 
 UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve([self totalDiskCapacity]);
+  @try {
+    resolve([self totalDiskCapacity]);
+  } @catch (NSException *exception) {
+    reject(@"ERR_FILESYSTEM", @"Unable to determine total disk capacity", nil);
+  }
 }
 
 #pragma mark - Internal methods
@@ -768,7 +776,6 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 }
 
 - (NSDictionary *)documentFileSystemAttributes {
-  //  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   return [[NSFileManager defaultManager] attributesOfFileSystemForPath:_documentDirectory error:nil];
 }
 
