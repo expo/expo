@@ -5,7 +5,7 @@ import VisibilitySensor from 'react-visibility-sensor';
 // lol: https://stackoverflow.com/a/11381730/659988
 function mobileAndTabletCheck() {
   if (typeof window === 'undefined') {
-    return false;
+    return true;
   }
 
   let check = false;
@@ -72,7 +72,11 @@ export default class Video extends React.Component {
                 marginBottom,
               }}>
               <FilePlayer
-                url={isVisible ? this.props.url || `/static/videos/${this.props.file}` : null}
+                url={
+                  isVisible || !isMobileOrTablet
+                    ? this.props.url || `/static/videos/${this.props.file}`
+                    : null
+                }
                 className="react-player"
                 width="100%"
                 height="400px"
