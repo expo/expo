@@ -21,7 +21,7 @@ import * as Device from 'expo-device';
 - [`Device.modelId`](#devicemodelid) (iOS only)
 - [`Device.modelName`](#devicemodelname)
 - [`Device.totalMemory`](#devicetotalmemory)
-- [`Device.isDevice`](#deciceisdevice)
+- [`Device.isDevice`](#deviceisdevice)
 - [`Device.deviceName`](#devicedevicename)
 - [`Device.deviceYearClass`](#devicedeviceyearclass)
 - [`Device.supportedCpuArchitectures`](#devicesupportedcpuarchitectures)
@@ -70,7 +70,7 @@ The actual device manufacturer of the product/hardware.
 Device.manufacturer; // iOS: "Apple"; Android: "HTC"
 ```
 
-Click [here](https://developer.android.com/reference/android/os/Build) to view Android official documentation about the difference between `brand` and `manufacturer`.
+Click [here](https://developer.android.com/reference/android/os/Build) to view the official Android documentation about the difference between `brand` and `manufacturer`.
 
 ### `Device.modelId`
 
@@ -100,6 +100,12 @@ Device.modelName; // iOS: "iPhone XS Max"; Android: "Pixel 2"
 
 The device's total memory, in bytes. This is the total memory accessible to the kernel, but not necessarily to a single app. This is basically the amount of RAM the device has, not including below-kernel fixed allocations like DMA buffers, RAM for the baseband CPU, etc…
 
+#### Examples
+
+```js
+Device.totalMemory; // 17179869184
+```
+
 ### `Device.isDevice`
 
 `true` if the app is running on a real device, `false` if running in a simulator or emulator.
@@ -120,7 +126,7 @@ The [device year class](https://github.com/facebook/device-year-class) of this d
 
 ### `Device.supportedCpuArchitectures`
 
-A list of supported processor architecture versions. The device expects the binaries it runs to be compiled for one of these architectures. The returned list will be `null` if the supported architectures could not be determined.
+A list of supported processor architecture versions. The device expects the binaries it runs to be compiled for one of these architectures. The returned value will be `null` if the supported architectures could not be determined.
 
 #### Examples
 
