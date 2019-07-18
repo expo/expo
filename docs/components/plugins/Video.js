@@ -5,7 +5,7 @@ import VisibilitySensor from 'react-visibility-sensor';
 // lol: https://stackoverflow.com/a/11381730/659988
 function mobileAndTabletCheck() {
   if (typeof window === 'undefined') {
-    return true;
+    return false;
   }
 
   let check = false;
@@ -62,13 +62,14 @@ export default class Video extends React.Component {
         style={this.state.hover ? { cursor: 'pointer' } : null}
         onMouseEnter={this._handleMouseEnter}
         onMouseLeave={this._handleMouseLeave}>
-        <VisibilitySensor partialVisibility>
+        <VisibilitySensor partialVisibility={isMobileOrTablet}>
           {({ isVisible }) => (
             <div
               style={{
                 position: 'relative',
                 width: '100%',
                 height: 400,
+                backgroundColor: 'black',
                 marginBottom,
               }}>
               <FilePlayer
@@ -95,20 +96,23 @@ export default class Video extends React.Component {
                 playsinline
                 loop
               />
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  right: 0,
-                  backgroundColor: 'black',
-                  width: '100%',
-                  height: 400,
-                  opacity: isVisible ? 0 : 0.7,
-                  transition: 'opacity 0.5s ease-out',
-                }}
-              />
+              {isMobileOrTablet ? null : (
+                <div
+                  style={{
+                    pointerEvents: 'none',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: 'black',
+                    width: '100%',
+                    height: 400,
+                    opacity: isVisible ? 0 : 0.7,
+                    transition: 'opacity 0.5s ease-out',
+                  }}
+                />
+              )}
             </div>
           )}
         </VisibilitySensor>
