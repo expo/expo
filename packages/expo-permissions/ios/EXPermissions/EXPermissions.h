@@ -23,4 +23,7 @@ typedef enum EXPermissionStatus {
 
 + (EXPermissionStatus)statusForPermissions:(NSDictionary *)permissions;
 
+- (void)askForGlobalPermission:(NSString *)permissionType
+                  withResolver:(void (^)(NSDictionary *))resolver
+                  withRejecter:(UMPromiseRejectBlock)reject;
 @end

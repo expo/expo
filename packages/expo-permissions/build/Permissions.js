@@ -13,20 +13,30 @@ export const CALENDAR = 'calendar';
 export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
 export async function getAsync(...types) {
-    return await _handlePermissionsRequestAsync(types, Permissions.getAsync);
+    return await _handleMultiPermissionsRequestAsync(types, Permissions.getAsync);
 }
 export async function askAsync(...types) {
-    return await _handlePermissionsRequestAsync(types, Permissions.askAsync);
+    return await _handleMultiPermissionsRequestAsync(types, Permissions.askAsync);
 }
-async function _handlePermissionsRequestAsync(types, handlePermissions) {
+async function _handleSinglePermissionRequestAsync(type, handlePermission) {
+    return handlePermission(type);
+}
+async function _handleMultiPermissionsRequestAsync(types, handlePermission) {
     if (!types.length) {
         throw new Error('At least one permission type must be specified');
     }
-    const permissions = await handlePermissions(types);
-    return {
-        status: coalesceStatuses(permissions),
-        expires: coalesceExpirations(permissions),
-        permissions,
-    };
+    return await Promise.all(types.map(async (type) => ({
+        [type]: await _handleSinglePermissionRequestAsync(type, handlePermission),
+    })))
+        .then(permissions => permissions.reduce((permission, acc) => {
+        return { ...acc, ...permission };
+    }, {}))
+        .then(permissions => {
+        return {
+            status: coalesceStatuses(permissions),
+            expires: coalesceExpirations(permissions),
+            permissions: { ...permissions },
+        };
+    });
 }
 //# sourceMappingURL=Permissions.js.map
