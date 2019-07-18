@@ -3,31 +3,19 @@
 #import <EXDevice/EXDevice.h>
 #import <UMCore/UMUtilities.h>
 
-#import <ifaddrs.h>
-#import <arpa/inet.h>
 #import <mach-o/arch.h>
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>
 
-#import <CoreTelephony/CTCallCenter.h>
-#import <CoreTelephony/CTCall.h>
-#import <CoreTelephony/CTCarrier.h>
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
-
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMCore/UMUtilities.h>
 
-#import <WebKit/WKWebView.h>
-
 #if !(TARGET_OS_TV)
-#import <LocalAuthentication/LocalAuthentication.h>
 @import Darwin.sys.sysctl;
 #endif
 
 @interface EXDevice()
-
-@property (nonatomic, strong) NSString *webViewUserAgent;
 
 @end
 
@@ -40,98 +28,6 @@ UM_EXPORT_MODULE(ExpoDevice);
   return dispatch_get_main_queue();
 }
 
-
-UM_EXPORT_METHOD_AS(getUserAgentAsync,
-                    getWebViewUserAgentWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  if (!_webViewUserAgent) {
-    __weak EXDevice *weakSelf = self;
-    __block WKWebView *webView;
-    
-    // We need to retain the webview because it runs an async task.
-    webView = [[WKWebView alloc] init];
-    
-    [webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
-      
-      EXDevice *strongSelf = weakSelf;
-      
-      if (error) {
-        reject(@"ERR_CONSTANTS", error.localizedDescription, error);
-        
-        // Destroy the webview now that its task is complete.
-        webView = nil;
-        return;
-      }
-      
-      strongSelf.webViewUserAgent = [NSString stringWithFormat:@"%@", result];
-      resolve(UMNullIfNil(strongSelf.webViewUserAgent));
-      
-      // Destroy the webview now that its task is complete.
-      webView = nil;
-    }];
-  } else {
-    resolve(UMNullIfNil(_webViewUserAgent));
-  }
-}
-
-UM_EXPORT_METHOD_AS(getCarrierAsync,
-                    getCarrierAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  resolve(UMNullIfNil([self carrier]));
-}
-
-UM_EXPORT_METHOD_AS(getMacAddressAsync,
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
-  //some iOS privacy issues
-  NSString *address = @"02:00:00:00:00:00";
-  resolve(address);
-}
-
-UM_EXPORT_METHOD_AS(getIpAddressAsync,
-                    getIpAddressAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
-{
-  NSString *address = @"0.0.0.0";
-  struct ifaddrs *interfaces = NULL;
-  struct ifaddrs *temp_addr = NULL;
-  int error = 0;
-  // retrieve the current interfaces - On success, returns 0; on error, -1 is returned, and errno is set appropriately.
-  error = getifaddrs(&interfaces);
-  
-  if (error == 0) {
-    // Loop through linked list of interfaces
-    temp_addr = interfaces;
-    while(temp_addr != NULL) {
-      if(temp_addr->ifa_addr->sa_family == AF_INET) {
-        // Check if interface is en0 which is the wifi connection on the iPhone
-        if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
-          // Get NSString from C String
-          address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-        }
-      }
-      temp_addr = temp_addr->ifa_next;
-    }
-    resolve(address);
-  } else {
-    reject(@"E_NO_IFADDRS", @"No network interfaces could be retrieved.", nil);
-  }
-  
-  // Free memory
-  freeifaddrs(interfaces);
-}
-
-UM_EXPORT_METHOD_AS(hasLocalAuthenticationAsync, hasLocalAuthenticationAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
-{
-#if TARGET_OS_TV
-  BOOL hasLocalAuthentication = NO;
-#else
-  LAContext *context = [[LAContext alloc] init];
-  BOOL hasLocalAuthentication = ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:nil]);
-#endif
-  resolve(@(hasLocalAuthentication));
-}
 
 UM_EXPORT_METHOD_AS(getUptimeAsync, getUptimeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -236,14 +132,6 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
   
   return deviceId;
 }
-
-- (NSString *)carrier
-{
-  CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
-  CTCarrier *carrier = [netinfo subscriberCellularProvider];
-  return carrier.carrierName;
-}
-
 
 - (NSString *)deviceType
 {
