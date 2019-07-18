@@ -1,5 +1,7 @@
 import { coalesceExpirations, coalesceStatuses } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
+import { Platform } from 'react-native';
+
 import {
   PermissionResponse,
   PermissionType,
@@ -30,25 +32,43 @@ export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
 
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
-  return await _handlePermissionsRequestAsync(types, Permissions.getAsync);
+  return await _handleMultiPermissionsRequestAsync(types, Permissions.getAsync);
 }
 
 export async function askAsync(...types: PermissionType[]): Promise<PermissionResponse> {
-  return await _handlePermissionsRequestAsync(types, Permissions.askAsync);
+  return await _handleMultiPermissionsRequestAsync(types, Permissions.askAsync);
 }
 
-async function _handlePermissionsRequestAsync(
+async function _handleSinglePermissionRequestAsync(
+  type: PermissionType,
+  handlePermission: (type: PermissionType) => Promise<PermissionInfo>
+): Promise<PermissionInfo> {
+  return handlePermission(type);
+}
+
+async function _handleMultiPermissionsRequestAsync(
   types: PermissionType[],
-  handlePermissions: (types: PermissionType[]) => Promise<PermissionMap>
-): Promise<PermissionResponse> {
+  handlePermission: (type: PermissionType) => Promise<PermissionInfo>
+): Promise<any> {
   if (!types.length) {
     throw new Error('At least one permission type must be specified');
   }
 
-  const permissions = await handlePermissions(types);
-  return {
-    status: coalesceStatuses(permissions),
-    expires: coalesceExpirations(permissions),
-    permissions,
-  };
+  return await Promise.all(
+    types.map(async type => ({
+      [type]: await _handleSinglePermissionRequestAsync(type, handlePermission),
+    }))
+  )
+    .then(permissions =>
+      permissions.reduce((permission, acc) => {
+        return { ...acc, ...permission };
+      }, {})
+    )
+    .then(permissions => {
+      return {
+        status: coalesceStatuses(permissions),
+        expires: coalesceExpirations(permissions),
+        permissions: { ...permissions },
+      };
+    });
 }
