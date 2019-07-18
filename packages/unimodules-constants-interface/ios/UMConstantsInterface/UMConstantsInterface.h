@@ -13,6 +13,7 @@
 
 + (NSString *)devicePlatform;
 + (NSString *)deviceModel;
++ (NSNumber *)deviceYear;
 + (NSString *)deviceName;
 
 @end
