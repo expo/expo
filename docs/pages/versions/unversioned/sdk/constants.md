@@ -26,9 +26,21 @@ The version string of the Expo client currently running.
 
 An identifier that is unique to this particular device and installation of the Expo client.
 
+### `Constants.deviceName`
+
+A human-readable name for the device type.
+
+### `Constants.deviceYearClass`
+
+The [device year class](https://github.com/facebook/device-year-class) of this device.
+
 ### `Constants.getWebViewUserAgentAsync()`
 
 Gets the user agent string which would be included in requests sent by a web view running on this device. This is probably not the same user agent you might be providing in your JS `fetch` requests.
+
+### `Constants.isDevice`
+
+`true` if the app is running on a device, `false` if running in a simulator or emulator.
 
 ### `Constants.nativeAppVersion`
 
