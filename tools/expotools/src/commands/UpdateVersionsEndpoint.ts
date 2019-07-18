@@ -5,7 +5,7 @@ import inquirer from 'inquirer';
 import unset from 'lodash/unset';
 import { Config, Versions } from '@expo/xdl';
 import * as jsondiffpatch from 'jsondiffpatch';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 type ActionOptions = {
   sdkVersion: string;

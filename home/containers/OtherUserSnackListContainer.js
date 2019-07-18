@@ -26,8 +26,6 @@ const UsersSnacksQuery = gql`
           packageUsername
           description
           lastPublishedTime
-          isLikedByMe
-          likeCount
         }
         snacks(limit: $limit, offset: $offset) {
           name

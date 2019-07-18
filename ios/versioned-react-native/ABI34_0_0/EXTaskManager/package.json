@@ -1,0 +1,42 @@
+{
+  "name": "expo-task-manager",
+  "version": "5.0.0",
+  "description": "Expo module that provides support for tasks that can run in the background.",
+  "main": "build/TaskManager.js",
+  "types": "build/TaskManager.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "task-manager",
+    "task",
+    "background"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/task-manager/",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "unimodules-task-manager-interface": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  },
+  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
+}

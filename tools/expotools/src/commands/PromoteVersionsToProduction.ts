@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Config, Versions } from '@expo/xdl';
 import * as jsondiffpatch from 'jsondiffpatch';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 const STAGING_HOST = 'staging.expo.io';
 const PRODUCTION_HOST = 'expo.io';

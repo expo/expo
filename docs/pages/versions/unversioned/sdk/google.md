@@ -62,8 +62,11 @@ The difference between this method and native authentication are very sparce. Go
 | [iosStandaloneAppClientId][g-creds]     | `string | undefined`              | The iOS client id registered with Google for use in a standalone app.                                                      |
 | [androidStandaloneAppClientId][g-creds] | `string | undefined`              | The Android client id registered with Google for use in a standalone app.                                                  |
 | scopes                                  | `string[] = ['profile', 'email']` | The scopes to ask for from Google for this login ([more information here][g-using-apis])                                   |
-| redirectUrl                             | `string | undefined`              | Optionally you can define your own redirect URL. If this isn't defined then it will be infered from the correct client ID. |
+| redirectUrl                             | `string | undefined`              | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below. |
 | behavior                                | `'system' | 'web'`                | **DEPRECATED** use `expo-google-sign-in` for system authentication.                                                        |
+
+**Note on `redirectUrl`**:
+If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../../sdk/app-auth/#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo Client or as a standalone app.
 
 **Returns**
 

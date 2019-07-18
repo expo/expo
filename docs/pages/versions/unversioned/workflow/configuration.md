@@ -41,7 +41,11 @@ A short description of what your app is and why it is great.
 
 ### `"slug"`
 
-**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@your-username/my-app-name` project.
+**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
+
+### `"owner"`
+
+The primary user to use for publishing and creating builds.  If not provided, defaults to the username of the current user.
 
 ### `"privacy"`
 

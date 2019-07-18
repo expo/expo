@@ -1,7 +1,7 @@
 import path from 'path';
 import chalk from 'chalk';
 import spawnAsync from '@expo/spawn-async';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import { Package, getListOfPackagesAsync } from '../Packages';
 import * as Directories from '../Directories';
@@ -11,9 +11,9 @@ const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 async function action(options) {
   const packages = await getListOfPackagesAsync();
   const only = options.only ? options.only.split(/\s*,\s*/g) : [];
+  const failedPackages: string[] = [];
 
   let passCount = 0;
-  let failureCount = 0;
 
   for (const pkg of packages) {
     if (!pkg.scripts.build && !pkg.scripts.test) {
@@ -46,10 +46,12 @@ async function action(options) {
       console.log(`✨ ${chalk.bold.green(pkg.packageName)} checks passed.`);
       passCount++;
     } catch (error) {
-      failureCount++;
+      failedPackages.push(pkg.packageName);
     }
     console.log();
   }
+
+  const failureCount = failedPackages.length;
 
   if (failureCount === 0) {
     console.log(chalk.bold.green(`🏁 All ${passCount} packages passed.`));
@@ -57,7 +59,8 @@ async function action(options) {
   } else {
     console.log(
       `${chalk.green(`🏁 ${passCount} packages passed`)},`,
-      `${chalk.magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed.`)}`
+      `${chalk.magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed:`)}`,
+      failedPackages.map(failedPackage => chalk.yellow(failedPackage)).join(', '),
     );
     process.exit(1);
   }

@@ -70,6 +70,7 @@ re-build the binaries for your app for the change to take effect:
 - Change your app `splash`
 - Change your app `icon`
 - Change your app `name`
+- Change your app `owner`
 - Change your app `scheme`
 - Change your `facebookScheme`
 - Change your bundled assets under `assetBundlePatterns`
