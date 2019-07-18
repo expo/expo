@@ -57,7 +57,7 @@ for App Store metadata.
 ## 3. Start the build
 
 Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this
-project, `exp` will start one for you.
+project, `expo` will start one for you.
 
 ### If you choose to build for Android
 
@@ -84,7 +84,7 @@ If you don't know what this means, let us handle it! :)
 
 ### If you choose to build for iOS
 
-You are given a choice of letting the `exp` client create the
+You are given a choice of letting the `expo` client create the
 necessary credentials for you, while still having a chance to provide
 your own overrides. Your Apple ID and password is used locally and
 never saved on Expo's servers.
