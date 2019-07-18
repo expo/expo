@@ -649,19 +649,19 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
 
 UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  @try {
-    resolve([self freeDiskStorage]);
-  } @catch (NSException *exception) {
+  if(![self freeDiskStorage]) {
     reject(@"ERR_FILESYSTEM", @"Unable to determine free disk storage capacity", nil);
+  } else {
+    resolve([self freeDiskStorage]);
   }
 }
 
 UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  @try {
-    resolve([self totalDiskCapacity]);
-  } @catch (NSException *exception) {
+  if(![self totalDiskCapacity]) {
     reject(@"ERR_FILESYSTEM", @"Unable to determine total disk capacity", nil);
+  } else {
+    resolve([self totalDiskCapacity]);
   }
 }
 
