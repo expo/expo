@@ -12,16 +12,12 @@
   "workspaces": {
     "packages": [
       "apps/*",
+      "apps/test-suite/puppeteer-test",
       "expokit-npm-package",
       "home",
       "packages/*",
       "packages/@unimodules/*",
       "react-native-lab/react-native"
-    ],
-    "nohoist": [
-      "**/@storybook/**",
-      "**/@emotion/**",
-      "apps/storybook/webpack-manifest-plugin"
     ]
   },
   "dependencies": {

@@ -53,11 +53,11 @@ export default class DocumentationSidebar extends React.Component {
 
     const titleElement = (
       <DocumentationSidebarTitle
-        key={info.name}
+        key={info.sidebarTitle ? info.sidebarTitle : info.name}
         info={info}
         url={this.props.url}
         asPath={this.props.asPath}>
-        {info.name}
+        {info.sidebarTitle ? info.sidebarTitle : info.name}
       </DocumentationSidebarTitle>
     );
 

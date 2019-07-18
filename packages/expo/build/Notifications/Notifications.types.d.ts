@@ -34,6 +34,7 @@ export declare type ActionType = {
     buttonTitle: string;
     isDestructive?: boolean;
     isAuthenticationRequired?: boolean;
+    doNotOpenInForeground?: boolean;
     textInput?: {
         submitButtonTitle: string;
         placeholder: string;
