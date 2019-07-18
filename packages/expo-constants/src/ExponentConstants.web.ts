@@ -92,7 +92,7 @@ export default {
     return null;
   },
   get manifest(): WebManifest {
-    // This is defined in the @expo/webpack-config. 
+    // This is defined by @expo/webpack-config. 
     // If your site is bundled with a different config then you may not have access to the app.json automatically.
     return process.env.APP_MANIFEST || {};
   },
