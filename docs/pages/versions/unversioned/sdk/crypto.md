@@ -26,7 +26,7 @@ digestStringAsync(
 
 The `digestStringAsync()` method of `Crypto` generates a digest of the supplied `data` string with the provided digest `algorithm`.
 A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_, meaning that it's very difficult to generate multiple inputs that have equal digest values.
-You can specify the returned string format as one of `CryptoEncoding`. By default the resolved value will be formatted as a `HEX` string.
+You can specify the returned string format as one of `CryptoEncoding`. By default the resolved value will be formatted as a `HEX` string. On web, this method can only be called from a secure origin (https) otherwise an error will be thrown.
 
 | 🍎 iOS | 💚 Android | 💻 Web |
 | ------ | ---------- | ------ |
