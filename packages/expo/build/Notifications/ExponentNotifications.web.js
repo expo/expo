@@ -1,4 +1,8 @@
+import { CodedError } from '@unimodules/core';
+import Constants from 'expo-constants';
 import UUID from 'uuid-js';
+// Register `message`'s event listener (side-effect)
+import './ExponentNotifications.fx.web';
 function guardPermission() {
     if (!('Notification' in window)) {
         throw new Error('The Notification API is not available on this device.');
@@ -81,5 +85,72 @@ export default {
     async cancelAllScheduledNotificationsAsync() {
         this.dismissNotification();
     },
+    async getExponentPushTokenAsync() {
+        if (!Constants.manifest.owner || !Constants.manifest.slug) {
+            throw new CodedError('ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG', 'You must provide `owner` and `slug` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.');
+        }
+        const data = await _subscribeUserToPushAsync();
+        const experienceId = `@${Constants.manifest.owner}/${Constants.manifest.slug}`;
+        const tokenArguments = {
+            deviceId: Constants.installationId,
+            experienceId: experienceId,
+            // Also uses `experienceId` for `appId` because there's no `appId` for web.
+            appId: experienceId,
+            deviceToken: JSON.stringify(data),
+            type: 'web',
+        };
+        // TODO: Use production URL
+        const response = await fetch('http://expo.test/--/api/v2/push/getExpoPushToken', {
+            method: 'POST',
+            body: JSON.stringify(tokenArguments),
+        }).then(response => response.json());
+        // TODO: Error handling
+        return response.data.expoPushToken;
+    },
+    async getDevicePushTokenAsync() {
+        const data = await _subscribeUserToPushAsync();
+        return { type: 'web', data: data };
+    },
 };
+async function _subscribeUserToPushAsync() {
+    if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
+        throw new CodedError('ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.');
+    }
+    if (!('serviceWorker' in navigator)) {
+        throw new Error(`Current browser does not support Service Worker and hence do not support web push notifications`);
+    }
+    const registration = await navigator.serviceWorker.register('/custom-service-worker.js');
+    const subscribeOptions = {
+        userVisibleOnly: true,
+        applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
+    };
+    const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
+    const pushSubscriptionJson = pushSubscription.toJSON();
+    const subscriptionObject = {
+        endpoint: pushSubscriptionJson.endpoint,
+        keys: {
+            p256dh: pushSubscriptionJson.keys.p256dh,
+            auth: pushSubscriptionJson.keys.auth,
+        },
+    };
+    console.log('subscriptionObject: ', JSON.stringify(subscriptionObject));
+    if (registration.active) {
+        // Store notification icon string in service worker.
+        // https://stackoverflow.com/a/35729334/2603230
+        let notificationIcon = (Constants.manifest.notification || {}).icon;
+        registration.active.postMessage(JSON.stringify({ notificationIcon }));
+    }
+    return subscriptionObject;
+}
+// https://github.com/web-push-libs/web-push#using-vapid-key-for-applicationserverkey
+function _urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
 //# sourceMappingURL=ExponentNotifications.web.js.map

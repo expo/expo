@@ -12,7 +12,7 @@ function _maybeInitEmitter() {
         RCTDeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
     }
 }
-function _emitNotification(notification) {
+export function _emitNotification(notification) {
     if (typeof notification === 'string') {
         notification = JSON.parse(notification);
     }
