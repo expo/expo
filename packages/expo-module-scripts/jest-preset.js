@@ -2,7 +2,7 @@
 
 const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 const fs = require('fs');
-const jestExpoPreset = require('jest-expo/jest-preset');
+const jestExpoPreset = require('jest-expo/universal/jest-preset');
 const path = require('path');
 const { jsWithBabel: tsJestPreset } = require('ts-jest/presets');
 
