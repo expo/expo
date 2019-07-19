@@ -26,7 +26,7 @@ digestStringAsync(
 
 The `digestStringAsync()` method of `Crypto` generates a digest of the supplied `data` string with the provided digest `algorithm`.
 A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_, meaning that it's very difficult to generate multiple inputs that have equal digest values.
-You can specify the returned string format as one of `CryptoEncoding`. By default the resolved value will be formatted as a `HEX` string.
+You can specify the returned string format as one of `CryptoEncoding`. By default the resolved value will be formatted as a `HEX` string. On web, this method can only be called from a secure origin (https) otherwise an error will be thrown.
 
 | 🍎 iOS | 💚 Android | 💻 Web |
 | ------ | ---------- | ------ |
@@ -45,6 +45,11 @@ You can specify the returned string format as one of `CryptoEncoding`. By defaul
 | Name   | Type              | Description                                          |
 | ------ | ----------------- | ---------------------------------------------------- |
 | digest | `Promise<string>` | Resolves into a value representing the hashed input. |
+
+#### Error Codes
+
+- `ERR_CRYPTO_UNAVAILABLE` - (Web only) Access to the WebCrypto API is restricted to secure origins (https). You can run your web project from a secure origin with `expo start --https`.
+- `ERR_CRYPTO_DIGEST` - An invalid encoding type provided.
 
 **Example**
 
@@ -114,6 +119,13 @@ export default class DemoView extends React.Component {
   }
 }
 ```
+
+## Error Codes
+
+| Code                   | Description                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| ERR_CRYPTO_UNAVAILABLE | (Web only) Access to the WebCrypto API is restricted to secure origins (https). |
+| ERR_CRYPTO_DIGEST      | An invalid encoding type provided.                                              |
 
 <!-- External Links -->
 
