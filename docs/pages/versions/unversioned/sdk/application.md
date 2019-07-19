@@ -2,7 +2,7 @@
 title: Application
 ---
 
-This module provides useful information about the native application, such the bundle ID, app name, and build version.
+This module provides useful information about the native application, such the its ID, app name, and build version.
 
 ## Installation
 
@@ -33,35 +33,35 @@ import * as Application from 'expo-application';
 
 ### `Application.applicationName`
 
-The human-readable name of the application.
+The human-readable name of the application that is displayed with the app's icon on the device's home screen or desktop. On Android and iOS, this value is a string unless the name could not be retrieved, in which case this value will be null. On web this value is null.
 
 - e.g., `Expo`, `Yelp`, `Instagram`
 
 ### `Application.bundleId`
 
-The bundle ID of the application.
+The ID of the application. On Android, this is the application ID. On iOS this is the bundle ID. On web, this is null.
 
 - e.g., `com.cocoacasts.scribbles`, `com.apple.Pages`
 
-### `Application.nativeAppVersion`
+### `Application.nativeApplicationVersion`
 
-The `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set by `version` in app.json on Android at the time the native app was built.
+The human-readable version of the native application that may be displayed in the app store. This is the `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set by `version` in app.json on Android at the time the native app was built. On web, this value is null.
+
 
 - e.g., `2.11.0`
 
 ### `Application.nativeBuildVersion`
 
-The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built.
+The internal build version of the native application that the app store may use to distinguish between different binaries. This is the `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built. On web, this value is null.
 
-- e.g., `2.11.0`
+
+- e.g., `2.11.0.16344`
 
 ### `Application.androidId`
 
-**Android only.** A hexademical `string` unique to each combination of app-signing key, user, and device. The value may change if a factory reset is performed on the device or if an APK signing key changes. For more information about how the platform handles ANDROID_ID in Android 8.0 (API level 26) and higher, see [Android 8.0 Behavior Changes.](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all)
+**Android only.** The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID). This is a hexademical `string` unique to each combination of app-signing key, user, and device. The value may change if a factory reset is performed on the device or if an APK signing key changes. For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26) and higher, see [Android 8.0 Behavior Changes.](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all) On iOS and Web, this value is `null`.
 
-Note: In versions of the platform lower than Android 8.0 (API level 26), this value remains constant for the lifetime of the user's device.
-
-See: https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID
+Note: In versions of the platform lower than Android 8.0 (API level 26), this value remains constant for the lifetime of the user's device. See [Android_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID) official docs for more information.
 
 - e.g., `"dd96dec43fb81c97"`
 
@@ -69,9 +69,9 @@ See: https://developer.android.com/reference/android/provider/Settings.Secure.ht
 
 ### `Application.getIosIdForVendorAsync()`
 
-**iOS only.** Gets the iOS identifier for vender [(IDFV)](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor) value, an alphanumeric string that uniquely identifies a device to the app’s vendor.
+**iOS only.** Gets the iOS identifier for vender [(IDFV)](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor) value, an alphanumeric string that uniquely identifies a device to the app’s vendor. If returned value is `nil`, wait and retrieve this value later. This might happen when the device has been restarted before the user has unlocked the device.
 
-Since this is the IDFV value, its value can change if all apps from the current apps vendor have been uninstalled.
+The OS will change the vendor identifier if all apps from the current apps vendor have been uninstalled.
 
 #### Returns
 
@@ -81,12 +81,12 @@ A `Promise` that resolves to a `string` of the IDFV for the app.
 
 ```js
 await Application.getIosIdForVendorAsync();
-//"FCDBD8EF-62FC-4ECB-B2F5-92C9E79AC7F9"
+// "FCDBD8EF-62FC-4ECB-B2F5-92C9E79AC7F9"
 ```
 
 ### `Application.getInstallReferrerAsync()`
 
-**Android only.** Gets the referrer URL of the installed app with [`Install Referrer API`](https://developer.android.com/google/play/installreferrer) from Google Play Store.
+**Android only.** Gets the referrer URL of the installed app with [`Install Referrer API`](https://developer.android.com/google/play/installreferrer) from the Google Play Store.
 
 #### Returns
 
@@ -96,12 +96,12 @@ A `Promise` that resolves to a `string` of the referrer URL of the installed app
 
 ```js
 await Application.getInstallReferrerAsync();
-//"utm_source=google-play&utm_medium=organic"
+// "utm_source=google-play&utm_medium=organic"
 ```
 
 ### `Application.getFirstInstallTimeAsync()`
 
-Gets the first time the app was installed onto the device.
+Gets the time the app was first ever installed onto the device.
 
 #### Returns
 
@@ -116,11 +116,11 @@ await Application.getFirstInstallTimeAsync();
 
 ### `Application.getLastUpdateTimeAsync()`
 
-**Android only.** Gets the last time the app was updated from the App store or Play Store.
+**Android only.** Gets the last time the app was updated from the Google Play Store.
 
 #### Returns
 
-Returns a `Promise` that resolves to a `Date` object that represents the last time the app was updated via the App Store (iOS) or Play Store (Android).
+Returns a `Promise` that resolves to a `Date` object that represents the last time the app was updated via the Google Play Store (Android).
 
 **Examples**
 
