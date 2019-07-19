@@ -22,6 +22,7 @@ function browserSupportsWebGL() {
 export function getTestModules() {
   if (Platform.OS === 'web') {
     const modules = [
+      require('./tests/Asset'),
       require('./tests/SVG'),
       require('./tests/Basic'),
       require('./tests/Contacts'),

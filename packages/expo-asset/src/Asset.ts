@@ -59,6 +59,14 @@ export class Asset {
         this.downloaded = true;
       }
     }
+    if (Platform.OS === 'web') {
+      if (!name) {
+        this.name = AssetUris.getFilename(uri);
+      }
+      if (!type) {
+        this.type = AssetUris.getFileExtension(uri);
+      }
+    }
   }
 
   static loadAsync(moduleId: number | number[]): Promise<void[]> {
