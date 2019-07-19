@@ -1,7 +1,5 @@
-import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 import { SyntheticPlatformEmitter } from '@unimodules/core';
-import { getAvailableVoicesAsync } from './Speech';
-
+import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
 export default {
   get name(): string {
@@ -35,19 +33,19 @@ export default {
     if (typeof options.onBoundary === 'function') {
       message.onboundary = options.onBoundary;
     }
-    
+
     message.onstart = (nativeEvent: SpeechSynthesisEvent) => {
-      SyntheticPlatformEmitter.emit('Exponent.speakingStarted', {id, nativeEvent});
-    } 
+      SyntheticPlatformEmitter.emit('Exponent.speakingStarted', { id, nativeEvent });
+    };
     message.onend = (nativeEvent: SpeechSynthesisEvent) => {
-      SyntheticPlatformEmitter.emit('Exponent.speakingDone', {id, nativeEvent});
-    } 
+      SyntheticPlatformEmitter.emit('Exponent.speakingDone', { id, nativeEvent });
+    };
     message.onpause = (nativeEvent: SpeechSynthesisEvent) => {
-      SyntheticPlatformEmitter.emit('Exponent.speakingStopped', {id, nativeEvent});
-    } 
+      SyntheticPlatformEmitter.emit('Exponent.speakingStopped', { id, nativeEvent });
+    };
     message.onerror = (nativeEvent: SpeechSynthesisErrorEvent) => {
-      SyntheticPlatformEmitter.emit('Exponent.speakingError', {id,nativeEvent});
-    } 
+      SyntheticPlatformEmitter.emit('Exponent.speakingError', { id, nativeEvent });
+    };
 
     message.text = text;
 
@@ -57,7 +55,7 @@ export default {
   },
   getVoices(): WebVoice[] {
     const voices = window.speechSynthesis.getVoices();
-    return voices.map((voice) => ({
+    return voices.map(voice => ({
       identifier: voice.voiceURI,
       quality: VoiceQuality.Default,
       isDefault: voice.default,
@@ -65,7 +63,7 @@ export default {
       localService: voice.localService,
       name: voice.name,
       voiceURI: voice.voiceURI,
-    }))
+    }));
   },
   async isSpeaking(): Promise<Boolean> {
     return window.speechSynthesis.speaking;

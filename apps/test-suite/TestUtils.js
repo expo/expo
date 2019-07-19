@@ -30,11 +30,14 @@ export function getTestModules() {
       require('./tests/Font'),
       require('./tests/Random'),
       require('./tests/Localization'),
-      require('./tests/Speech'),
     ];
 
     if (browserSupportsWebGL()) {
       modules.push(require('./tests/GLView'));
+    }
+
+    if (ExponentTest && !ExponentTest.isInCI) {
+      modules.push(require('./tests/Speech'));
     }
     return modules;
   }
