@@ -74,6 +74,6 @@ dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-constants-interface'
 
-  implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
-  implementation "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api 'com.facebook.device.yearclass:yearclass:2.1.0'
+  api "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "28.0.0")}"
 }

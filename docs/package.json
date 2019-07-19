@@ -29,7 +29,9 @@
     "prop-types": "15.6.2",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
-    "react-emotion": "^9.2.9"
+    "react-emotion": "^9.2.9",
+    "react-player": "^1.11.1",
+    "react-visibility-sensor": "^5.1.0"
   },
   "devDependencies": {
     "broken-link-checker": "^0.7.8",

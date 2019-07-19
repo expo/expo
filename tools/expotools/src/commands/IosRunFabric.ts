@@ -1,6 +1,6 @@
 import path from 'path';
 import spawnAsync from '@expo/spawn-async';
-import { Command } from 'commander/typings';
+import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
 import { getTemplateSubstitutions } from '../dynamic-macros/generateDynamicMacros';

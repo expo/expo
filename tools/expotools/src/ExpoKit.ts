@@ -64,7 +64,8 @@ export async function updateExpoKitAndroidAsync(
   expoDir: string,
   appVersion: string,
   sdkVersion: string,
-  expokitVersion: string
+  expokitVersion: string,
+  expokitTag: string = "latest"
 ) {
   const key = `android-v${appVersion.trim().replace(/^v/, '')}-sdk${sdkVersion}-${uuid()}.tar.gz`;
   const androidDir = path.join(expoDir, 'android');
@@ -152,7 +153,7 @@ export async function updateExpoKitAndroidAsync(
   await Versions.setVersionsAsync(versions);
 
   try {
-    await spawnAsync('npm', ['publish'], {
+    await spawnAsync('npm', ['publish', '--tag', expokitTag], {
       stdio: 'inherit',
       cwd: expokitNpmPackageDir,
     });

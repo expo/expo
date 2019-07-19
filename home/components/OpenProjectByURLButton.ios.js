@@ -4,7 +4,7 @@ import React from 'react';
 import { AlertIOS, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/Colors';
-import ExponentKernel from '../universal/ExponentKernel';
+import * as Kernel from '../kernel/Kernel';
 import UrlUtils from '../utils/UrlUtils';
 
 export default class OpenProjectByURLButton extends React.Component {
@@ -23,8 +23,8 @@ export default class OpenProjectByURLButton extends React.Component {
         text: 'Open',
         onPress: text => {
           if (text) {
-            if (ExponentKernel && text.toLowerCase() === '^dm') {
-              ExponentKernel.addDevMenu();
+            if (text.toLowerCase() === '^dm') {
+              Kernel.addDevMenu();
             } else {
               let url = UrlUtils.normalizeUrl(text);
               Linking.canOpenURL(url) && Linking.openURL(url);

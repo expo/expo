@@ -281,6 +281,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                @"manifest": _appRecord.appLoader.manifest,
                                @"appOwnership": [self _appOwnership],
                                @"isHeadless": @(_isHeadless),
+                               @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
                              },
                            @"exceptionsManagerDelegate": _exceptionHandler,
                            @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),

@@ -6,7 +6,7 @@ Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow the [lottie-react-native installation instructions](https://github.com/react-native-community/lottie-react-native).
+To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install lottie-react-native`. In bare apps, also follow the [lottie-react-native linking and configuration instructions](https://github.com/react-native-community/lottie-react-native).
 
 ## Usage
 
