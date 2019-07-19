@@ -8214,6 +8214,13 @@ expo-three@3.0.2-alpha.1:
     expo-asset-utils "^1.0.0"
     three "^0.102.1"
 
+expokit@^33.0.3:
+  version "33.0.6"
+  resolved "https://registry.yarnpkg.com/expokit/-/expokit-33.0.6.tgz#ffbfa21ec6e2d83a164ea2bc8be39f255c23b1d8"
+  integrity sha512-De/ZltHlETFKCUZ9+w2Nb7MpptOBIwR+hpbVWEm6eCPl0j8GJEguz46/BAyDCUkmmqK85DzblnzE1Pm9/nYECg==
+  dependencies:
+    jsc-android "^241213.2.0"
+
 express@4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
@@ -11217,6 +11224,11 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
+
+jsc-android@^241213.2.0:
+  version "241213.2.0"
+  resolved "https://registry.yarnpkg.com/jsc-android/-/jsc-android-241213.2.0.tgz#a43b78e4dace997be533e7cb812d9714878b069f"
+  integrity sha512-nfddejB9jxFSG+Uewf+zwATFi8F2CZEEgoHLoOj13egiBDoC7zMoxK1c5/Ycf3AGmGuwCgjpn3LWe0f4tKYbjw==
 
 jsc-android@^245459.0.0:
   version "245459.0.0"
