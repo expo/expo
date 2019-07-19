@@ -2,6 +2,7 @@ import React from 'react';
 
 import ActionSheet from '../screens/ActionSheetScreen';
 import AppAuth from '../screens/AppAuthScreen';
+import Application from '../screens/ApplicationScreen';
 import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
 import Branch from '../screens/BranchScreen';
@@ -67,6 +68,7 @@ const optionalScreens: {
   Accelerometer,
   ActionSheet,
   AppAuth,
+  Application,
   Audio,
   AuthSession,
   BackgroundFetch,
