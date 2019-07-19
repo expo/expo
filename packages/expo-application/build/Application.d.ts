@@ -1,4 +1,4 @@
-export declare const nativeAppVersion: any;
+export declare const nativeApplicationVersion: any;
 export declare const nativeBuildVersion: any;
 export declare const applicationName: any;
 export declare const bundleId: any;

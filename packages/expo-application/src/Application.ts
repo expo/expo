@@ -2,15 +2,14 @@ import { Platform, UnavailabilityError } from '@unimodules/core';
 
 import ExpoApplication from './ExpoApplication';
 
-export const nativeAppVersion = ExpoApplication ? ExpoApplication.nativeAppVersion : null;
+export const nativeApplicationVersion = ExpoApplication ? ExpoApplication.nativeApplicationVersion : null;
 export const nativeBuildVersion = ExpoApplication ? ExpoApplication.nativeBuildVersion : null;
 export const applicationName = ExpoApplication ? ExpoApplication.applicationName : null;
 export const bundleId = ExpoApplication ? ExpoApplication.bundleId : null;
 export let androidId;
-if(Platform.OS === 'ios'){
+if (Platform.OS === 'ios' || Platform.OS === 'web') {
   androidId = null;
-}
-else{
+} else {
   androidId = ExpoApplication ? ExpoApplication.androidId : null;
 }
 
