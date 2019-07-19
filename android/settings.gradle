@@ -1,12 +1,12 @@
 include ':app'
 
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 include ':expoview'
 project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
     "abi34_0_0",
