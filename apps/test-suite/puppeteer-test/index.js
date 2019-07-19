@@ -8,10 +8,6 @@ const manuallyRunWebpack = true;
 
 let server;
 
-if (typeof process.env.CI === 'undefined') {
-  process.env.CI = process.stdout.isTTY;
-}
-
 async function runPuppeteerAsync() {
   const browser = await puppeteer.launch({
     headless: true,
@@ -49,7 +45,7 @@ async function runPuppeteerAsync() {
   page.on('console', async msg => {
     // 2. Filter the results into a list of objects
     const args = await Promise.all(msg.args().map(arg => parseHandle(arg)));
-    console.log(args);
+    console.log(args.obj);
 
     // 4. Ignore anything that isn't an object - in test-suite we are sending the results as an object.
     const jsonObjects = args.filter(({ type }) => type === 'object');
