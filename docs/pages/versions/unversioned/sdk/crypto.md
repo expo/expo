@@ -46,6 +46,11 @@ You can specify the returned string format as one of `CryptoEncoding`. By defaul
 | ------ | ----------------- | ---------------------------------------------------- |
 | digest | `Promise<string>` | Resolves into a value representing the hashed input. |
 
+#### Error Codes
+
+- `ERR_CRYPTO_UNAVAILABLE` - Access to the WebCrypto API is restricted to secure origins (https).
+- `ERR_CRYPTO_DIGEST` - An invalid encoding type provided.
+
 **Example**
 
 ```ts
@@ -114,6 +119,13 @@ export default class DemoView extends React.Component {
   }
 }
 ```
+
+## Error Codes
+
+| Code                   | Description                                                          |
+| ---------------------- | -------------------------------------------------------------------- |
+| ERR_CRYPTO_UNAVAILABLE | Access to the WebCrypto API is restricted to secure origins (https). |
+| ERR_CRYPTO_DIGEST      | An invalid encoding type provided.                                   |
 
 <!-- External Links -->
 
