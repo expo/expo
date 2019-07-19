@@ -1,8 +1,9 @@
-module.exports = function(api, options) {
+module.exports = function(api, options = {}) {
+  const { web = {}, native = {} } = options;
   const isWeb = api.caller(isTargetWeb);
   const platformOptions = isWeb
-    ? { disableImportExportTransform: false, ...(options.web || {}) }
-    : { disableImportExportTransform: false, ...(options.native || {}) };
+    ? { disableImportExportTransform: false, ...web }
+    : { disableImportExportTransform: false, ...native };
 
   return {
     presets: [
