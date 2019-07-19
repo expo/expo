@@ -37,7 +37,7 @@ export function getTestModules() {
     }
 
     if (ExponentTest && !ExponentTest.isInCI) {
-      modules.push(require('./tests/Speech'));
+      // modules.push(require('./tests/Speech'));
     }
     return modules;
   }
