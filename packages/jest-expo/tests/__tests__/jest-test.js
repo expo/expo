@@ -1,14 +1,12 @@
 describe(`jest-expo/universal`, () => {
-  it(`[moduleFileExtensions]`, () => {
+  it(`[moduleFileExtensions] default`, () => {
     const { OS } = require('../foo');
     const { Platform } = require('@unimodules/core');
-    console.log('NN', OS, Platform.OS);
-    expect(OS).toBe(Platform.OS);
+    expect(OS).toContain(Platform.OS);
   });
-  it(`[moduleFileExtensions].native`, () => {
+  it(`[moduleFileExtensions] fallback`, () => {
     const { OS } = require('../bar');
     const { Platform } = require('@unimodules/core');
-    console.log('NN', OS, Platform.OS);
     expect(OS).toContain(Platform.OS);
   });
 });

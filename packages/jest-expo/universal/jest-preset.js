@@ -46,10 +46,13 @@ function getPlatformPreset(...platforms) {
 // Combine React Native for web with React Native
 // Use RNWeb for the testEnvironment
 function getWebPreset() {
-  const a = {
+  return {
     ...expoPreset,
     ...reactNativePreset,
-    setupFiles: [...(expoPreset.setupFiles || []), ...(reactNativePreset.setupFiles || [])],
+    setupFiles: [
+      // ...(expoPreset.setupFiles || []),
+      ...(reactNativePreset.setupFiles || []),
+    ],
     moduleNameMapper: {
       ...expoPreset.moduleNameMapper,
       // Add react-native-web alias
@@ -58,17 +61,14 @@ function getWebPreset() {
     },
     // Default to ios, native so the RN package can be transformed correctly.
     // TODO: Bacon: Don't use react-native package for web testing.
-    ...getPlatformPreset('web', 'ios', 'native'),
+    ...getPlatformPreset('web'),
   };
-
-  a.moduleFileExtensions = getModuleFileExtensions('web');
-  return a;
 }
 
 function getNodePreset() {
   return {
     ...getWebPreset(),
-    ...getPlatformPreset('node', 'web', 'ios', 'native'),
+    ...getPlatformPreset('node', 'web'),
     testEnvironment: 'node',
   };
 }
@@ -81,6 +81,6 @@ module.exports = {
       ...getPlatformPreset(platform, 'native'),
     })),
     getWebPreset(),
-    // getNodePreset(),
+    getNodePreset(),
   ],
 };

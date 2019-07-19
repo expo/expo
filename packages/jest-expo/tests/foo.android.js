@@ -1,1 +1,1 @@
-export const OS = 'android';
+export const OS = ['android'];
