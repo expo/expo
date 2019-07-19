@@ -9,4 +9,57 @@ If you're a top-down learner and you would like to get a high-level understandin
 
 ## Initialize a project
 
-...
+If you’re just starting a new bare project then you should initialize it with `expo-cli` so it will be preconfigured to include relevant Expo tools.
+
+<Video file="exploring-bare/init.mp4" spaceAfter={30} />
+
+> _Note: You may see several `peerDependencies` warnings when installing the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
+
+### Existing React Native apps
+
+If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `react-native-unimodules` package to enable you to use packages from the Expo SDK.
+
+<Video file="exploring-bare/setup.mp4" />
+
+> _Note: We moved superhumanly fast in this video. You're not meant to follow along, we just want to give you a rough sense of what's involved in this process. Full instructions to get set up are available in the [react-native-unimodules README](https://github.com/unimodules/react-native-unimodules)._
+
+
+### Existing Expo managed workflow apps
+
+If you already have an Expo managed workflow app and you need to customize the native code, you can eject to the bare workflow by running `expo eject`. This will give you a vanilla React Native app that includes all of the Expo SDK APIs that you were using already, and no more than that. The outcome is that you will be in just as good of a position as if you had started your app in the bare workflow from scratch, only you probably saved yourself some time!
+
+<Video file="exploring-bare/eject.mp4" spaceAfter />
+
+## Build and open the project
+
+Now we just run `yarn ios` or `yarn android` to start the JavaScript bundler server and build the project binary. This requires Xcode or Android Studio, depending on the platform.
+
+<Video file="exploring-bare/buildopen.mp4" spaceAfter />
+
+## Adding a library from the Expo SDK
+
+To add a library from the Expo SDK we install it with `expo install`, run `pod install` to link the iOS native dependency, and then recompile our projects for iOS and Android.
+
+<Video file="exploring-bare/expoinstall.mp4" spaceAfter />
+
+## Adding your own custom native code
+
+The process for doing this is the same as any other React Native app. Here we are adding `react-native-mapbox-gl` to the app we just ejected.
+
+<Video file="exploring-bare/custom.mp4" spaceAfter />
+
+## Open the project with the Expo client app on iOS or Android
+
+You can continue using the Expo client _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in the Expo client, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
+
+<Video file="exploring-bare/guard.mp4" />
+
+Now when we go to the screen where you would expect to see the `AttractionList`, we won't see anything because we substituted a plain `View` in its place.
+
+<Video file="exploring-bare/clientopen.mp4" spaceAfter />
+
+## Open the app in your web browser
+
+Expo for web also works on bare projects. Here we will just import one simple component into `App.web.js` to demonstrate it, and run `expo start --web`.
+
+<Video file="exploring-bare/web.mp4" spaceAfter />
