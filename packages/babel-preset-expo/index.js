@@ -2,7 +2,7 @@ module.exports = function(api, options) {
   const isWeb = api.caller(isTargetWeb);
   const platformOptions = isWeb
     ? { disableImportExportTransform: false, ...(options.web || {}) }
-    : { disableImportExportTransform: true, ...(options.native || {}) };
+    : { disableImportExportTransform: false, ...(options.native || {}) };
 
   return {
     presets: [
