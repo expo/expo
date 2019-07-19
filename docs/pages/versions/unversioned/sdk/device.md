@@ -262,7 +262,7 @@ On Android, for devices other than TVs, the device type is determined by the scr
 
 #### Returns
 
-Returns the type of the device as a [`Device.DeviceType`](#devicedevicetype) enum value.
+Returns a Promise that resolves to a [`Device.DeviceType`](#devicedevicetype) enum value.
 
 **Examples**
 
@@ -277,7 +277,7 @@ await Device.getDeviceTypeAsync();
 
 #### Returns
 
-A Promise that resolves to an array of strings, each of which is a platform-specific name of a feature available on the current device.
+Returns a Promise that resolves to an array of strings, each of which is a platform-specific name of a feature available on the current device.
 
 **Examples**
 
