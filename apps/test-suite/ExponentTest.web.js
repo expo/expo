@@ -1,6 +1,8 @@
+import getenv from 'getenv';
+
 export default {
   get isInCI() {
-    return process.env.CI;
+    return getenv.boolish('CI', false);
   },
   log: console.log,
   completed() {
