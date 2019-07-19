@@ -1,5 +1,5 @@
-import { VoiceQuality } from './Speech.types';
 import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { VoiceQuality } from './Speech.types';
 export default {
     get name() {
         return 'ExponentSpeech';
@@ -49,7 +49,7 @@ export default {
     },
     getVoices() {
         const voices = window.speechSynthesis.getVoices();
-        return voices.map((voice) => ({
+        return voices.map(voice => ({
             identifier: voice.voiceURI,
             quality: VoiceQuality.Default,
             isDefault: voice.default,
