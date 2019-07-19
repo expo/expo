@@ -67,5 +67,5 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 import * as IntentLauncher from 'expo-intent-launcher';
 
 // Open location settings
-IntentLauncher.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
+IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
 ```
