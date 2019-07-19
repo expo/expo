@@ -2,9 +2,14 @@ import { Platform, UnavailabilityError } from '@unimodules/core';
 
 import ExpoDevice from './ExpoDevice';
 import { deviceNamesByCode } from './DeviceNameByCode';
-import { DeviceType as _DeviceType } from './Device.types';
 
-export { _DeviceType as DeviceType };
+export enum DeviceType {
+  PHONE = 'PHONE',
+  TABLET = 'TABLET',
+  DESKTOP = 'DESKTOP',
+  TV = 'TV',
+  UNKNOWN = 'UNKNOWN',
+}
 
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
@@ -102,21 +107,21 @@ export async function isRootedExperimentalAsync(): Promise<boolean> {
   return await ExpoDevice.isRootedExperimentalAsync();
 }
 
-export async function getDeviceTypeAsync(): Promise<_DeviceType> {
+export async function getDeviceTypeAsync(): Promise<DeviceType> {
   if (!ExpoDevice.getDeviceTypeAsync) {
     throw new UnavailabilityError('expo-device', 'getDeviceTypeAsync');
   }
   const deviceType = await ExpoDevice.getDeviceTypeAsync();
   switch (deviceType) {
-    case _DeviceType.PHONE:
-      return _DeviceType.PHONE;
-    case _DeviceType.TABLET:
-      return _DeviceType.TABLET;
-    case _DeviceType.TV:
-      return _DeviceType.TV;
-    case _DeviceType.DESKTOP:
-      return _DeviceType.DESKTOP;
+    case DeviceType.PHONE:
+      return DeviceType.PHONE;
+    case DeviceType.TABLET:
+      return DeviceType.TABLET;
+    case DeviceType.TV:
+      return DeviceType.TV;
+    case DeviceType.DESKTOP:
+      return DeviceType.DESKTOP;
     default:
-      return _DeviceType.UNKNOWN;
+      return DeviceType.UNKNOWN;
   }
 }

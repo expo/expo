@@ -1,5 +1,10 @@
-import { DeviceType as _DeviceType } from './Device.types';
-export { _DeviceType as DeviceType };
+export declare enum DeviceType {
+    PHONE = "PHONE",
+    TABLET = "TABLET",
+    DESKTOP = "DESKTOP",
+    TV = "TV",
+    UNKNOWN = "UNKNOWN"
+}
 export declare const brand: any;
 export declare const manufacturer: any;
 export declare let modelName: any;
@@ -23,4 +28,4 @@ export declare function getMaxMemoryAsync(): Promise<number>;
 export declare function isSideLoadingEnabledAsync(): Promise<boolean>;
 export declare function getUptimeAsync(): Promise<number>;
 export declare function isRootedExperimentalAsync(): Promise<boolean>;
-export declare function getDeviceTypeAsync(): Promise<_DeviceType>;
+export declare function getDeviceTypeAsync(): Promise<DeviceType>;
