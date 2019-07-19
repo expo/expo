@@ -143,4 +143,4 @@ An [in-depth guide](../../guides/push-notifications/) to setting up push notific
 
 You are now, at a very high level, familiar with the steps you would go through to create an app with the Expo managed workflow. Continue on to [Up and Running](../up-and-running/) to get started coding!
 
-If it turns out that the managed workflow won't be a good fit for your app because you need to add custom native code, check out the [bare workflow walkthrough](../../bare/exploring-bare-workflow).
+If it turns out that the managed workflow won't be a good fit for your app because you need to add custom native code, check out the [bare workflow walkthrough](../../bare/exploring-bare-workflow/).
