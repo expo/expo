@@ -43,6 +43,7 @@ function _processNotification(notification) {
         }
         if (notification.ios) {
             notification = Object.assign(notification, notification.ios);
+            notification.data._displayInForeground = notification.ios._displayInForeground;
             delete notification.ios;
         }
     }
