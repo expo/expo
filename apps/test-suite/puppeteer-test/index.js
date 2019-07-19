@@ -45,7 +45,10 @@ async function runPuppeteerAsync() {
   page.on('console', async msg => {
     // 2. Filter the results into a list of objects
     const args = await Promise.all(msg.args().map(arg => parseHandle(arg)));
-    console.log(args.value);
+
+    for (const log of args) {
+      console.log(log.value);
+    }
 
     // 4. Ignore anything that isn't an object - in test-suite we are sending the results as an object.
     const jsonObjects = args.filter(({ type }) => type === 'object');
