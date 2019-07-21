@@ -13,6 +13,13 @@ npm i -g react-native-cli
 expo init --template bare-minimum
 ```
 
+Before running your app on iOS, make sure you have CocoaPods installed and initialize the project:
+
+```bash
+cd <your-project-name>/ios
+pod install
+```
+
 Next, let's get the project running. Go into your project directory and run `react-native run-ios` or `react-native run-android` &mdash; hurray! Your project is working.
 
 ## Using react-native-unimodules
