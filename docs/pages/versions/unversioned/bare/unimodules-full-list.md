@@ -1,179 +1,73 @@
 ---
-title: Unimodules Full List
+title: Supported Expo SDK APIs
+sidebar_title: Supported APIs
 ---
 
-Below is a quick reference list of all Bare Workflow unimodules.
+You can use any native code you like in the bare workflow; the following lists specifically address whether the Expo SDK APIs  (the APIs you will find in the "API Reference" section of this documentation) are supported by the bare workflow. Some are only available in the managed workflow currently, you can [jump to those](#only-available-in-managed-workflow-currently) if you like.
 
-Also be sure to take a look at the Bare Workflow [Hello World](../hello-world/) page, to help with [Installing a Unimodule](../hello-world/#install-a-unimodule) and [using react-native-unimodules](../hello-world/#using-unimodulescore).
+Refer to the bare workflow ["Up and Running"](../hello-world/) page to learn about [installing one of these packages](../hello-world/#install-an-expo-sdk-package) and [using react-native-unimodules](../hello-world/#using-react-native-unimodules).
 
-## Supported Expo APIs
 
-```js
-// Accelerometer
-import { Accelerometer } from 'expo-sensors';
+## Available in bare and managed workflows
 
-// AdMob
-import { AdMobBanner, AdMobInterstitial, AdMobRewarded, PublisherBanner } from 'expo-ads-admob';
+The bare workflow is our way of describing the workflow where you use some of the Expo tools in a vanilla React Native app, and any of the following APIs are available in the bare workflow and therefore also in any React Native app.
 
-// Amplitude
-import * as Amplitude from 'expo-analytics-amplitude';
+- [Accelerometer](../../sdk/accelerometer/)
+- [Admob](../../sdk/admob/)
+- [Amplitude](../../sdk/amplitude/)
+- [AppAuth](../../sdk/app-auth/)
+- [Asset](../../sdk/asset/)
+- [Audio](../../sdk/audio/)
+- [AV](../../sdk/av/)
+- [BarCodeScanner](../../sdk/bar-code-scanner/)
+- [Barometer](../../sdk/barometer/)
+- [Brightness](../../sdk/barometer/)
+- [BlurView](../../sdk/blur-view/)
+- [Calendar](../../sdk/calendar/)
+- [Camera](../../sdk/camera/)
+- [Constants](../../sdk/constants/)
+- [Contacts](../../sdk/contacts/)
+- [Crypto](../../sdk/crypto/)
+- [DeviceMotion](../../sdk/device-motion/)
+- [DocumentPicker](../../sdk/document-picker/)
+- [Facebook](../../sdk/facebook/)
+- [FaceDetector](../../sdk/face-detector/)
+- [FileSystem](../../sdk/file-system/)
+- [Font](../../sdk/font/)
+- [GLView](../../sdk/gl-view/)
+- [GoogleSignIn](../../sdk/google-sign-in/)
+- [Gyroscope](../../sdk/gyroscope/)
+- [Haptics](../../sdk/haptics/)
+- [ImageManipulator](../../sdk/image-manipulator/)
+- [ImagePicker](../../sdk/image-picker/)
+- [IntentLauncher](../../sdk/intent-launcher/)
+- [KeepAwake](../../sdk/keep-awake/)
+- [LinearGradient](../../sdk/linear-gradient/)
+- [LocalAuthentication](../../sdk/local-authentication/)
+- [Localization](../../sdk/localization/)
+- [Location](../../sdk/location/)
+- [Magnetometer](../../sdk/magnetometer/)
+- [MailComposer](../../sdk/mail-composer/)
+- [MediaLibrary](../../sdk/media-library/)
+- [Pedometer](../../sdk/pedometer/)
+- [Permissions](../../sdk/permissions/)
+- [Print](../../sdk/print/)
+- [Random](../../sdk/random/)
+- [SecureStore](../../sdk/secure-store/)
+- [Segment](../../sdk/segment/)
+- [Sharing](../../sdk/sharing/)
+- [SMS](../../sdk/sms/)
+- [SQLite](../../sdk/sqlite/)
+- [Video](../../sdk/video/)
+- [VideoThumbnails](../../sdk/video-thumbnails/)
+- [WebBrowser](../../sdk/webbrowser/)
 
-// AppAuth
-import { AppAuth } from 'expo-app-auth';
+## Only available in the bare workflow currently
 
-// Asset
-import { Asset } from 'expo-asset';
+- [Branch](../../sdk/branch/) (\* _this only applies to Android, Branch is supported in iOS standalone builds_)
+- [InAppPurchases](../../sdk/in-app-purchases/)
 
-// Audio
-import { Audio } from 'expo-av';
-
-// AV
-import { Audio, Video } from 'expo-av';
-
-// Barcode Scanner
-import { BarCodeScanner } from 'expo-barcode-scanner';
-
-// Barometer
-import { Barometer } from 'expo-sensors';
-
-// Blur View
-import { BlurView } from 'expo-blur';
-
-// Brightness
-import * as Brightness from 'expo-brightness';
-
-// Calendar
-import * as Calendar from 'expo-calendar';
-
-// Camera
-import { Camera } from 'expo-camera';
-
-// Constants
-import Constants from 'expo-constants';
-
-// Contacts
-import * as Contacts from 'expo-contacts';
-
-// Crypto
-import * as Crypto from 'expo-crypto';
-
-// Device Motion
-import { DeviceMotion } from 'expo-sensors';
-
-// Document Picker
-import * as DocumentPicker from 'expo-document-picker';
-
-// Facebook
-import * as Facebook from 'expo-facebook';
-
-// Face Detector
-import * as FaceDetector from 'expo-face-detector';
-
-// File System
-import * as FileSystem from 'expo-file-system';
-
-// Font
-import * as Font from 'expo-font';
-
-// GL View
-import { GLView } from 'expo-gl';
-
-// Google Sign In
-import * as GoogleSignIn from 'expo-google-sign-in';
-
-// Gyroscope
-import { Gyroscope } from 'expo-sensors';
-
-// Haptics
-import * as Haptics from 'expo-haptics';
-
-// Image Manipulator
-import * as ImageManipulator from 'expo-image-manipulator';
-
-// Image Picker
-import * as ImagePicker from 'expo-image-picker';
-
-// In-App Purchases
-import * as InAppPurchases from 'expo-in-app-purchases';
-
-// Intent Launcher
-import * as IntentLauncher from 'expo-intent-launcher';
-
-// Keep Awake
-import KeepAwake from 'expo-keep-awake';
-
-// Linear Gradient
-import { LinearGradient } from 'expo-linear-gradient';
-
-// Local Authentication
-import * as LocalAuthentication from 'expo-local-authentication';
-
-// Localization
-import * as Localization from 'expo-localization';
-
-// Location
-import * as Location from 'expo-location';
-
-// Magnetometer
-import { Magnetometer } from 'expo-sensors';
-
-// Mail Composer
-import * as MailComposer from 'expo-mail-composer';
-
-// Media Library
-import * as MediaLibrary from 'expo-media-library';
-
-// Pedometer
-import { Pedometer } from 'expo-sensors';
-
-// Permissions
-import * as Permissions from 'expo-permissions';
-
-// Print
-import { Print } from 'expo-print';
-
-// Random
-import * as Random from 'expo-random';
-
-// Secure Store
-import * as SecureStore from 'expo-secure-store';
-
-// Segment
-import * as Segment from 'expo-analytics-segment';
-
-// Sensors
-import {
-  Accelerometer,
-  Barometer,
-  Gyroscope,
-  Magnetometer,
-  MagnetometerUncalibrated,
-  Pedometer,
-} from 'expo-sensors';
-
-// Sharing
-import * as Sharing from 'expo-sharing';
-
-// SMS
-import * as SMS from 'expo-sms';
-
-// Speech
-import * as Speech from 'expo-speech';
-
-// SQLite
-import { SQLite } from 'expo-sqlite';
-
-// Video
-import { Video } from 'expo-av';
-
-// VideoThumbnails
-import * as VideoThumbnails from 'expo-video-thumbnails';
-
-// Web Browser
-import * as WebBrowser from 'expo-web-browser';
-```
-
-## Not Yet Supported Expo APIs
+## Only available in managed workflow currently
 
 - [AR](../../sdk/AR/)
 - [AppLoading](../../sdk/app-loading/)

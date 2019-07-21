@@ -9,11 +9,11 @@ If you're a top-down learner and you would like to get a high-level understandin
 
 ## Initialize a project
 
-Let’s get started by initializing a project. `expo init` gives you several options for templates, including a [TypeScript](https://www.typescriptlang.org/) template and one with [React Navigation](https://reactnavigation.org/) installed and configured with a tab-based navigation structure.
+Let’s get started by initializing a project, as described in [Up and Running](../up-and-running/). `expo init` gives you several options for templates, including a [TypeScript](https://www.typescriptlang.org/) template and one with [React Navigation](https://reactnavigation.org/) installed and configured with a tab-based navigation structure.
 
 <Video file="exploring-managed/init.mp4" spaceAfter={30} />
 
-> _Note: You may see several `peerDependencies` warnings when intalling the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
+> _Note: You may see several `peerDependencies` warnings when installing the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
 
 ## Start the project
 
@@ -23,9 +23,13 @@ Now we just run `yarn start` (or `npm start` if you prefer that package manager)
 
 ## Open the project with the Expo client app on iOS or Android, or in your web browser
 
-To run the app we don’t need to build any native code because it runs in the [Expo client](https://expo.io/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../../workflow/ios-simulator/) or on any connected [Android emulator](../../workflow/android-studio-emulator/) or device.
+To run the app we don’t need to build any native code because it runs in the [Expo client](https://expo.io/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../../workflow/ios-simulator/) or on any connected [Android emulator](../../workflow/android-studio-emulator/) or device. You can also download it from the App Store and Play Store.
 
-<Video file="exploring-managed/open.mp4" spaceAfter />
+<Video file="exploring-managed/open.mp4" />
+
+<!-- The Expo client asks the server you started with `expo start` for a copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), and inspecting elements. -->
+
+If you close the `expo-cli` or turn off your computer, you won't be able to access the app from your device anymore. We'll see how you can make it always available later on.
 
 ## Use the Expo SDK and community standard native libraries to build out native features
 
@@ -39,7 +43,7 @@ Let's say we had mockups for our app that look like the following:
 
 > _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear/), but let's pretend they are mockups for the sake of demonstration._
 
-We can tell from looking at the mockups that for this app we’ll need a camera, access to permissions, some way to apply effects to an image, and a way to access the device media library to select images and to save images to an album. We can find equivalents for this by scrolling through the API reference.
+We can tell from looking at the mockups that we’ll need a camera, access to permissions, some way to apply effects to an image, and a way to access the device media library to select images and to save images to an album. We can find equivalents for this by scrolling through the API reference.
 
 <Video file="exploring-managed/search.mp4" />
 
@@ -63,7 +67,7 @@ In a managed app we don’t have the native iOS or Android projects to poke arou
 
 ## Publish and share your app
 
-To share the app with teammates we can run `expo publish` and we’ll build the JavaScript bundle and upload all of the assets to a CDN.
+To share the app with teammates we can run `expo publish` and we’ll build the JavaScript bundle and upload all of the assets to a CDN. [Read more about publishing here](../../workflow/publishing/).
 
 <Video file="exploring-managed/publish.mp4" spaceAfter={30} />
 
@@ -113,7 +117,7 @@ Run `expo build:web` then upload the `web-build` dirctory to any host capable of
 
 <Video file="exploring-managed/buildweb.mp4" spaceAfter />
 
-## Update over the air
+## Updating the app over the air
 
 Once your app is out for testing or on the stores you probably don’t want to have to repeat the process again to make some small changes. In this case, we noticed that we weren’t asking for camera roll permissions before saving the image, so if you tried to save an image before picking one from the camera roll then it wouldn’t work. To ship an update, we just need to run `expo publish` again.
 
@@ -124,6 +128,8 @@ When we built our Android app bundle above, we told it to point to a specific An
 <Video file="exploring-managed/updatechannel.mp4" />
 
 To determine the rules for when apps will download and apply these updates, [read about configuring OTA updates](../../guides/configuring-ota-updates/).
+
+We frequently release updates to the [Expo SDK](../../sdk/overview/). If you decide to update your app to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 
 ## Sending notifications
 
@@ -136,3 +142,5 @@ An [in-depth guide](../../guides/push-notifications/) to setting up push notific
 ### That's it!
 
 You are now, at a very high level, familiar with the steps you would go through to create an app with the Expo managed workflow. Continue on to [Up and Running](../up-and-running/) to get started coding!
+
+If it turns out that the managed workflow won't be a good fit for your app because you need to add custom native code, check out the [bare workflow walkthrough](../../bare/exploring-bare-workflow/).

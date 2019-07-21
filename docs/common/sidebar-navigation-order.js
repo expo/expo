@@ -32,13 +32,13 @@ const INTRODUCTION = [
   'Project Lifecycle',
   'Community',
   'Additional Resources',
-  'Troubleshooting Proxies',
   'Frequently Asked Questions',
   'Already used React Native?',
+  'Why not Expo?',
+  'Troubleshooting Proxies',
 ];
 
 const GUIDES = [
-  'Account Permissions',
   'App Icons',
   'Assets',
   'Error Handling',
@@ -51,6 +51,7 @@ const GUIDES = [
   'Create a Splash Screen',
   'Offline Support',
   'Configuring OTA Updates',
+  'Account Permissions',
   'Push Notifications',
   'Using FCM for Push Notifications',
   'Notification Channels',
@@ -67,7 +68,7 @@ const GUIDES = [
 ];
 
 const FUNDAMENTALS = [
-  'Walkthrough',
+  'Managed Workflow Walkthrough',
   'Up and Running',
   'Expo CLI',
   'Viewing Logs',
@@ -110,7 +111,7 @@ const EXPOKIT = [
   'Universal Modules and ExpoKit',
 ];
 
-const ESSENTIALS = ['Hello World', 'Unimodules Full List'];
+const ESSENTIALS = ['Bare Workflow Walkthrough', 'Up and Running', 'Supported Expo SDK APIs'];
 
 const REACT_NATIVE = [
   // 'REACT NATIVE BASICS',
