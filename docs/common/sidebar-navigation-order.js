@@ -32,13 +32,13 @@ const INTRODUCTION = [
   'Project Lifecycle',
   'Community',
   'Additional Resources',
-  'Troubleshooting Proxies',
   'Frequently Asked Questions',
   'Already used React Native?',
+  'Why not Expo?',
+  'Troubleshooting Proxies',
 ];
 
 const GUIDES = [
-  'Account Permissions',
   'App Icons',
   'Assets',
   'Error Handling',
@@ -51,6 +51,7 @@ const GUIDES = [
   'Create a Splash Screen',
   'Offline Support',
   'Configuring OTA Updates',
+  'Account Permissions',
   'Push Notifications',
   'Using FCM for Push Notifications',
   'Notification Channels',

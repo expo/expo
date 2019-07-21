@@ -3,7 +3,7 @@ title: Supported Expo SDK APIs
 sidebar_title: Supported APIs
 ---
 
-You can use any native code you like in the bare workflow; the following lists specifically address whether the Expo SDK APIs  (the APIs you will find in the "API Reference" section of this documentation) are supported by the bare workflow. Some are only available in the managed workflow currently, you can [jump to those](#only-available-in-managed-workflow-currently) if you are prefer.
+You can use any native code you like in the bare workflow; the following lists specifically address whether the Expo SDK APIs  (the APIs you will find in the "API Reference" section of this documentation) are supported by the bare workflow. Some are only available in the managed workflow currently, you can [jump to those](#only-available-in-managed-workflow-currently) if you like.
 
 Refer to the bare workflow ["Up and Running"](../hello-world/) page to learn about [installing one of these packages](../hello-world/#install-an-expo-sdk-package) and [using react-native-unimodules](../hello-world/#using-react-native-unimodules).
 
