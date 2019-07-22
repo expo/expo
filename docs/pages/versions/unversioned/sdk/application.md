@@ -101,7 +101,9 @@ await Application.getInstallReferrerAsync();
 
 ### `Application.getFirstInstallTimeAsync()`
 
-Gets the time the app was first ever installed onto the device.
+Gets the time the app was first installed onto the device. The time would change to the reinstalled date if uninstall and reinstall the app.
+
+On iOS, it depends on the [`NSFileCreationDate`](https://developer.apple.com/documentation/foundation/nsfilecreationdate?language=occ) of the app's document root directory. On Android, it depends on the [`PackageInfo.firstInstallTime`](https://developer.android.com/reference/android/content/pm/PackageInfo.html#firstInstallTime).
 
 #### Returns
 
