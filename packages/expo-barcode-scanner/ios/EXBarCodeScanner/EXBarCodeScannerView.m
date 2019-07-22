@@ -234,6 +234,8 @@
 
 - (void)startSession
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
 #if TARGET_IPHONE_SIMULATOR
   return;
 #endif
@@ -268,6 +270,7 @@
     [self.session startRunning];
     [self onReady];
   });
+#pragma clang diagnostic pop
 }
 
 - (void)stopSession

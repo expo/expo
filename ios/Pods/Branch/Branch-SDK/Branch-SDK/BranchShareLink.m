@@ -260,16 +260,17 @@ typedef NS_ENUM(NSInteger, BranchShareActivityItemType) {
     // Because Facebook et al immediately scrape URLs, we add an additional parameter to the
     // existing list, telling the backend to ignore the first click.
 
-    NSDictionary *scrapers = @{
-        @"Facebook":    @1,
-        @"Twitter":     @1,
-        @"Slack":       @1,
-        @"Apple Notes": @1,
-        @"Skype":       @1,
-        @"SMS":         @1
-    };
+    NSSet*scrapers = [NSSet setWithArray:@[
+        @"Facebook",
+        @"Twitter",
+        @"Slack",
+        @"Apple Notes",
+        @"Skype",
+        @"SMS",
+        @"Apple Reminders"
+    ]];
     NSString *userAgentString = nil;
-    if (self.linkProperties.channel && scrapers[self.linkProperties.channel]) {
+    if (self.linkProperties.channel && [scrapers containsObject:self.linkProperties.channel]) {
         userAgentString = [BNCDeviceInfo userAgentString];
     }
     NSString *URLString =

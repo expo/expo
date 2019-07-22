@@ -22,8 +22,12 @@ function browserSupportsWebGL() {
 export function getTestModules() {
   if (Platform.OS === 'web') {
     const modules = [
-      require('./tests/Import1'),
+      require('./tests/SVG'),
+      require('./tests/Basic'),
+      require('./tests/Contacts'),
+      require('./tests/Constants'),
       require('./tests/Crypto'),
+      require('./tests/Font'),
       require('./tests/Random'),
     ];
 
@@ -35,9 +39,6 @@ export function getTestModules() {
 
   const modules = [
     require('./tests/Basic'),
-    require('./tests/Import1'),
-    require('./tests/Import2'),
-    require('./tests/Import3'),
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/Crypto'),

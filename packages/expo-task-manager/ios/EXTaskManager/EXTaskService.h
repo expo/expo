@@ -14,6 +14,6 @@
 - (void)applicationDidFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions;
 - (void)runTasksWithReason:(UMTaskLaunchReason)launchReason
                   userInfo:(nullable NSDictionary *)userInfo
-         completionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
+         completionHandler:(nullable void (^)(UIBackgroundFetchResult))completionHandler;
 
 @end

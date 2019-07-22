@@ -5,8 +5,8 @@
 //  Created by Michał Czernek on 12/04/2019.
 //
 
-#import "ABI33_0_0EXFaceDetector.h"
-#import "Firebase.h"
+#import <ABI33_0_0EXFaceDetector/ABI33_0_0EXFaceDetector.h>
+#import <Firebase/Firebase.h>
 
 @implementation ABI33_0_0EXFaceDetector
 {

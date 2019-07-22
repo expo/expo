@@ -480,7 +480,7 @@ UM_EXPORT_METHOD_AS(makeDirectoryAsync,
   if ([uri.scheme isEqualToString:@"file"]) {
     NSError *error;
     if ([[NSFileManager defaultManager] createDirectoryAtPath:uri.path
-                                  withIntermediateDirectories:options[@"intermediates"]
+                                  withIntermediateDirectories:[options[@"intermediates"] boolValue]
                                                    attributes:nil
                                                         error:&error]) {
       resolve([NSNull null]);

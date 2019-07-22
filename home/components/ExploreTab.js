@@ -122,8 +122,6 @@ export default class ExploreTab extends React.Component {
     return (
       <ProjectCard
         key={index.toString()}
-        isLikedByMe={app.isLikedByMe}
-        likeCount={app.likeCount}
         id={app.id}
         iconUrl={app.iconUrl}
         projectName={app.name}

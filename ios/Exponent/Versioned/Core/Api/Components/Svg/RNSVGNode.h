@@ -59,9 +59,9 @@ extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 - (void)renderTo:(CGContextRef)context rect:(CGRect)rect;
 
 /**
+ * @abstract
  * renderTo will take opacity into account and draw renderLayerTo off-screen if there is opacity
  * specified, then composite that onto the context. renderLayerTo always draws at opacity=1.
- * @abstract
  */
 - (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect;
 

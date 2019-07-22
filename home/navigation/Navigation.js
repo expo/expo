@@ -12,12 +12,11 @@ import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
+import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import CameraScreen from '../screens/CameraScreen';
-import MediaLibraryScreen from '../screens/MediaLibrary/MediaLibraryScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
@@ -106,16 +105,13 @@ const ExploreStack = createStackNavigator(
 const ProfileStack = createStackNavigator(
   {
     Profile: ProfileScreen,
-    Camera: CameraScreen,
     UserSettings: UserSettingsScreen,
     ProjectsForUser: ProjectsForUserScreen,
     SnacksForUser: SnacksForUserScreen,
-    MediaLibrary: MediaLibraryScreen,
   },
   {
     initialRouteName: 'Profile',
     defaultNavigationOptions,
-    headerMode: 'screen',
     navigationOptions: {
       tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, focused),
       tabBarLabel: 'Profile',
@@ -129,6 +125,7 @@ const ProfileStack = createStackNavigator(
 const DiagnosticsStack = createStackNavigator(
   {
     Diagnostics: DiagnosticsScreen,
+    Audio: AudioDiagnosticsScreen,
     Location: LocationDiagnosticsScreen,
     Geofencing: GeofencingScreen,
   },

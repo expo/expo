@@ -2,13 +2,36 @@
 
 #import "REATransitionAnimation.h"
 
+
 #define DEFAULT_DURATION 0.25
 
-@implementation REATransitionAnimation
+#if TARGET_IPHONE_SIMULATOR
+// Based on https://stackoverflow.com/a/13307674
+float UIAnimationDragCoefficient(void);
+#endif
+
+CGFloat SimAnimationDragCoefficient()
+{
+#if TARGET_IPHONE_SIMULATOR
+  if (NSClassFromString(@"XCTest") != nil) {
+    // UIAnimationDragCoefficient is 10.0 in tests for some reason, but
+    // we need it to be 1.0.
+    return 1.0;
+  } else {
+    return (CGFloat)UIAnimationDragCoefficient();
+  }
+#else
+  return 1.0;
+#endif
+}
+
+@implementation REATransitionAnimation {
+  NSTimeInterval _delay;
+}
 
 + (REATransitionAnimation *)transitionWithAnimation:(CAAnimation *)animation
-                                                 layer:(CALayer *)layer
-                                            andKeyPath:(NSString*)keyPath;
+                                              layer:(CALayer *)layer
+                                         andKeyPath:(NSString*)keyPath;
 {
   REATransitionAnimation *anim = [REATransitionAnimation new];
   anim.animation = animation;
@@ -19,6 +42,8 @@
 
 - (void)play
 {
+  _animation.duration = self.duration * SimAnimationDragCoefficient();
+  _animation.beginTime = CACurrentMediaTime() + _delay * SimAnimationDragCoefficient();
   [_layer addAnimation:_animation forKey:_keyPath];
 }
 
@@ -27,11 +52,7 @@
   if (delay <= 0) {
     return;
   }
-  if (_animation.beginTime == 0) {
-    _animation.beginTime = CACurrentMediaTime() + delay;
-  } else {
-    _animation.beginTime += delay;
-  }
+  _delay += delay;
 }
 
 - (CFTimeInterval)duration
@@ -45,9 +66,9 @@
 - (CFTimeInterval)finishTime
 {
   if (_animation.beginTime == 0) {
-    return CACurrentMediaTime() + self.duration;
+    return CACurrentMediaTime() + self.duration + _delay;
   }
-  return _animation.beginTime + self.duration;
+  return _animation.beginTime + self.duration + _delay;
 }
 
 @end

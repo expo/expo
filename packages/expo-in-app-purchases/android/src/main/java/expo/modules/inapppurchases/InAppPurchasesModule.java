@@ -11,9 +11,9 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class InAppPurchasesModule extends ExportedModule implements RegistryLifecycleListener {
+public class InAppPurchasesModule extends ExportedModule implements ModuleRegistryConsumer {
   private static final String TAG = InAppPurchasesModule.class.getSimpleName();
   private static final String NAME = "ExpoInAppPurchases";
 
@@ -31,7 +31,7 @@ public class InAppPurchasesModule extends ExportedModule implements RegistryLife
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

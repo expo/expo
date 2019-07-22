@@ -1,5 +1,5 @@
 package org.unimodules.core.interfaces;
 
-public interface SingletonModule extends RegistryLifecycleListener {
+public interface SingletonModule {
   String getName();
 }

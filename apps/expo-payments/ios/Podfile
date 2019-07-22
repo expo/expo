@@ -3,9 +3,8 @@ platform :ios, '10.0'
 
 target 'expo-payments' do
   pod 'ExpoKit',
-    :git => "http://github.com/expo/expo.git",
-    :tag => "ios/2.11.0",
-    :subspecs => [
+   :path => "../../../",
+   :subspecs => [
       "Core"
     ],
     :inhibit_warnings => true

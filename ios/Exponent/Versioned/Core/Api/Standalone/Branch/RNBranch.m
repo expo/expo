@@ -28,8 +28,13 @@ NSString * const RNBranchLinkOpenedNotificationUriKey = @"uri";
 NSString * const RNBranchLinkOpenedNotificationBranchUniversalObjectKey = @"branch_universal_object";
 NSString * const RNBranchLinkOpenedNotificationLinkPropertiesKey = @"link_properties";
 
+
 static NSDictionary *initSessionWithLaunchOptionsResult;
 static BOOL useTestInstance = NO;
+static NSDictionary *savedLaunchOptions;
+static BOOL savedIsReferrable;
+static NSString *branchKey;
+static BOOL deferInitializationForJSLoad = NO;
 
 static NSString * const IdentFieldName = @"ident";
 
@@ -37,6 +42,7 @@ static NSString * const IdentFieldName = @"ident";
 static NSString * const RNBranchErrorDomain = @"RNBranchErrorDomain";
 static NSInteger const RNBranchUniversalObjectNotFoundError = 1;
 
+static NSString * const REQUIRED_BRANCH_SDK = @"0.27.0";
 
 #pragma mark - Private RNBranch declarations
 
@@ -63,7 +69,7 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
 
             // YES if either [RNBranch useTestInstance] was called or useTestInstance: true is present in branch.json.
             BOOL usingTestInstance = useTestInstance || config.useTestInstance;
-            NSString *key = config.branchKey ?: usingTestInstance ? config.testKey : config.liveKey;
+            NSString *key = branchKey ?: config.branchKey ?: usingTestInstance ? config.testKey : config.liveKey;
 
             if (key) {
                 // Override the Info.plist if these are present.
@@ -87,6 +93,10 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
 + (void)setupBranchInstance:(Branch *)instance
 {
     RCTLogInfo(@"Initializing Branch SDK v. %@", BNC_SDK_VERSION);
+    if (![BNC_SDK_VERSION isEqualToString:REQUIRED_BRANCH_SDK]) {
+        RCTLogError(@"Please use v. %@ of Branch. In your Podfile: pod 'Branch', '%@'. Then pod install.", REQUIRED_BRANCH_SDK, REQUIRED_BRANCH_SDK);
+    }
+
     RNBranchConfig *config = RNBranchConfig.instance;
     if (config.debugMode) {
         [instance setDebug];
@@ -166,14 +176,29 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
     useTestInstance = YES;
 }
 
++ (void)deferInitializationForJSLoad
+{
+    deferInitializationForJSLoad = YES;
+}
+
 //Called by AppDelegate.m -- stores initSession result in static variables and posts RNBranchLinkOpened event that's captured by the RNBranch instance to emit it to React Native
 + (void)initSessionWithLaunchOptions:(NSDictionary *)launchOptions isReferrable:(BOOL)isReferrable {
-    [self.branch initSessionWithLaunchOptions:launchOptions isReferrable:isReferrable andRegisterDeepLinkHandler:^(NSDictionary *params, NSError *error) {
+    savedLaunchOptions = launchOptions;
+    savedIsReferrable = isReferrable;
+
+    // Can't currently support this on Android.
+    // if (!deferInitializationForJSLoad && !RNBranchConfig.instance.deferInitializationForJSLoad) [self initializeBranchSDK];
+    [self initializeBranchSDK];
+}
+
++ (void)initializeBranchSDK
+{
+    [self.branch initSessionWithLaunchOptions:savedLaunchOptions isReferrable:savedIsReferrable andRegisterDeepLinkHandler:^(NSDictionary *params, NSError *error) {
         NSMutableDictionary *result = [NSMutableDictionary dictionary];
         if (error) result[RNBranchLinkOpenedNotificationErrorKey] = error;
         if (params) {
             result[RNBranchLinkOpenedNotificationParamsKey] = params;
-            BOOL clickedBranchLink = params[@"+clicked_branch_link"];
+            BOOL clickedBranchLink = [params[@"+clicked_branch_link"] boolValue];
 
             if (clickedBranchLink) {
                 BranchUniversalObject *branchUniversalObject = [BranchUniversalObject objectWithDictionary:params];
@@ -295,6 +320,47 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
 }
 
 #pragma mark - Methods exported to React Native
+
+#pragma mark disableTracking
+RCT_EXPORT_METHOD(
+                  disableTracking:(BOOL)disable
+                  ) {
+    [Branch setTrackingDisabled: disable];
+}
+
+#pragma mark isTrackingDisabled
+RCT_EXPORT_METHOD(
+                  isTrackingDisabled:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject
+                  ) {
+    resolve([Branch trackingDisabled] ? @YES : @NO);
+}
+
+#pragma mark initializeBranch
+RCT_EXPORT_METHOD(initializeBranch:(NSString *)key
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject
+                  ) {
+    NSError *error = [NSError errorWithDomain:RNBranchErrorDomain
+                                         code:-1
+                                     userInfo:nil];
+
+    reject(@"RNBranch::Error::Unsupported", @"Initializing the Branch SDK from JS will be supported in a future release.", error);
+
+    /*
+    if (!deferInitializationForJSLoad && !RNBranchConfig.instance.deferInitializationForJSLoad) {
+        // This is a no-op from JS unless [RNBranch deferInitializationForJSLoad] is called.
+        resolve(0);
+        return;
+    }
+
+    RCTLogTrace(@"Initializing Branch SDK. Key from JS: %@", key);
+    branchKey = key;
+
+    [self.class initializeBranchSDK];
+    resolve(0);
+    // */
+}
 
 #pragma mark redeemInitSessionResult
 RCT_EXPORT_METHOD(

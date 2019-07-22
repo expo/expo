@@ -8,7 +8,7 @@
 
 #import <ABI31_0_0EXFaceDetector/ABI31_0_0EXFaceDetectorUtils.h>
 #import <ABI31_0_0EXFaceDetector/ABI31_0_0CSBufferOrientationCalculator.h>
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 NSString *const ABI31_0_0EXGMVDataOutputWidthKey = @"Width";
 NSString *const ABI31_0_0EXGMVDataOutputHeightKey = @"Height";

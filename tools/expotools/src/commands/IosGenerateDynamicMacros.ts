@@ -1,5 +1,5 @@
 import path from 'path';
-import { Command } from 'commander/typings';
+import { Command } from '@expo/commander';
 
 import { Directories } from '../expotools';
 import { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMacros'
