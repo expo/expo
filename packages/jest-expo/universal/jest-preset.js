@@ -3,13 +3,6 @@
 const reactNativePreset = require('react-native-web/jest-preset');
 const expoPreset = require('../jest-preset');
 
-const COLORS = {
-  android: 'blueBright',
-  ios: 'white',
-  web: 'magenta',
-  node: 'cyan',
-};
-
 function getModuleFileExtensions(...platforms) {
   let fileExtensions = [];
 
@@ -28,17 +21,14 @@ function getModuleFileExtensions(...platforms) {
   return fileExtensions;
 }
 
-function getPlatformPreset(...platforms) {
+function getPlatformPreset(displayOptions, extensions) {
   return {
-    displayName: {
-      name: platforms[0].toUpperCase(),
-      color: COLORS[platforms[0]],
-    },
-    moduleFileExtensions: getModuleFileExtensions(...platforms),
+    displayName: displayOptions,
+    moduleFileExtensions: getModuleFileExtensions(...extensions),
     haste: {
-      ...(expoPreset.haste || {}),
-      defaultPlatform: platforms[0],
-      platforms,
+      ...expoPreset.haste,
+      defaultPlatform: extensions[0],
+      platforms: extensions,
     },
   };
 }
@@ -49,10 +39,7 @@ function getWebPreset() {
   return {
     ...expoPreset,
     ...reactNativePreset,
-    setupFiles: [
-      // ...(expoPreset.setupFiles || []),
-      ...(reactNativePreset.setupFiles || []),
-    ],
+    setupFiles: reactNativePreset.setupFiles,
     moduleNameMapper: {
       ...expoPreset.moduleNameMapper,
       // Add react-native-web alias
@@ -61,14 +48,14 @@ function getWebPreset() {
     },
     // Default to ios, native so the RN package can be transformed correctly.
     // TODO: Bacon: Don't use react-native package for web testing.
-    ...getPlatformPreset('web'),
+    ...getPlatformPreset({ name: 'web', color: 'magenta' }, ['web']),
   };
 }
 
 function getNodePreset() {
   return {
     ...getWebPreset(),
-    ...getPlatformPreset('node', 'web'),
+    ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web']),
     testEnvironment: 'node',
   };
 }
@@ -76,10 +63,14 @@ function getNodePreset() {
 module.exports = {
   projects: [
     // Create a new project for each platform.
-    ...['ios', 'android'].map(platform => ({
+    {
       ...expoPreset,
-      ...getPlatformPreset(platform, 'native'),
-    })),
+      ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native']),
+    },
+    {
+      ...expoPreset,
+      ...getPlatformPreset({ name: 'Android', color: 'blueBright' }, ['android', 'native']),
+    },
     getWebPreset(),
     getNodePreset(),
   ],
