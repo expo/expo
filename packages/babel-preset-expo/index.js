@@ -2,7 +2,7 @@ module.exports = function(api, options = {}) {
   const { web = {}, native = {} } = options;
   const isWeb = api.caller(isTargetWeb);
   const platformOptions = isWeb
-    ? { disableImportExportTransform: false, ...web }
+    ? { disableImportExportTransform: true, ...web }
     : { disableImportExportTransform: false, ...native };
 
   return {
