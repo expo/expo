@@ -9,9 +9,7 @@ As the name implies, it is only available on iOS. Take a look at [`React Navigat
 
 To set up the navigator, provide the `initialRoute` prop with a route object. A route object is used to describe each scene that your app navigates to. `initialRoute` represents the first route in your navigator.
 
-
 ```javascript
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { NavigatorIOS, Text, TouchableHighlight, View } from 'react-native';
@@ -24,7 +22,7 @@ export default class NavigatorIOSApp extends Component {
           component: MyScene,
           title: 'My Initial Scene',
         }}
-        style={{flex: 1}}
+        style={{ flex: 1 }}
       />
     );
   }
@@ -34,33 +32,30 @@ class MyScene extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     navigator: PropTypes.object.isRequired,
-  }
+  };
 
   _onForward = () => {
     this.props.navigator.push({
       title: 'Scene',
     });
-  }
+  };
 
   render() {
     return (
       <View>
-        <Text>Current Scene: { this.props.title }</Text>
+        <Text>Current Scene: {this.props.title}</Text>
         <TouchableHighlight onPress={this._onForward}>
           <Text>Tap me to load the next scene</Text>
         </TouchableHighlight>
       </View>
-    )
+    );
   }
 }
-
 ```
-
 
 In this code, the navigator renders the component specified in initialRoute, which in this case is `MyScene`. This component will receive a `route` prop and a `navigator` prop representing the navigator. The navigator's navigation bar will render the title for the current scene, "My Initial Scene".
 
 You can optionally pass in a `passProps` property to your `initialRoute`. `NavigatorIOS` passes this in as props to the rendered component:
-
 
 ```javascript
 
@@ -72,16 +67,13 @@ initialRoute={{
 
 ```
 
-
 You can then access the props passed in via `{this.props.myProp}`.
 
 #### Handling Navigation
 
 To trigger navigation functionality such as pushing or popping a view, you have access to a `navigator` object. The object is passed in as a prop to any component that is rendered by `NavigatorIOS`. You can then call the relevant methods to perform the navigation action you need:
 
-
 ```javascript
-
 class MyView extends Component {
   _handleBackPress() {
     this.props.navigator.pop();
@@ -95,26 +87,22 @@ class MyView extends Component {
     const nextRoute = {
       component: MyView,
       title: 'Bar That',
-      passProps: { myProp: 'bar' }
+      passProps: { myProp: 'bar' },
     };
-    return(
+    return (
       <TouchableHighlight onPress={() => this._handleNextPress(nextRoute)}>
-        <Text style={{marginTop: 200, alignSelf: 'center'}}>
+        <Text style={{ marginTop: 200, alignSelf: 'center' }}>
           See you on the other nav {this.props.myProp}!
         </Text>
       </TouchableHighlight>
     );
   }
 }
-
 ```
-
 
 You can also trigger navigator functionality from the `NavigatorIOS` component:
 
-
 ```javascript
-
 class NavvyIOS extends Component {
   _handleNavigationRequest() {
     this.refs.nav.push({
@@ -127,7 +115,7 @@ class NavvyIOS extends Component {
   render() {
     return (
       <NavigatorIOS
-        ref='nav'
+        ref="nav"
         initialRoute={{
           component: MyView,
           title: 'Foo This',
@@ -135,21 +123,18 @@ class NavvyIOS extends Component {
           rightButtonTitle: 'Add',
           onRightButtonPress: () => this._handleNavigationRequest(),
         }}
-        style={{flex: 1}}
+        style={{ flex: 1 }}
       />
     );
   }
 }
-
 ```
-
 
 The code above adds a `_handleNavigationRequest` private method that is invoked from the `NavigatorIOS` component when the right navigation bar item is pressed. To get access to the navigator functionality, a reference to it is saved in the `ref` prop and later referenced to push a new scene into the navigation stack.
 
 #### Navigation Bar Configuration
 
 Props passed to `NavigatorIOS` will set the default configuration for the navigation bar. Props passed as properties to a route object will set the configuration for that route's navigation bar, overriding any props passed to the `NavigatorIOS` component.
-
 
 ```javascript
 
@@ -173,34 +158,33 @@ render() {
 
 ```
 
-
 In the example above the navigation bar color is changed when the new route is pushed.
 
 ### Props
 
-* [`initialRoute`](../navigatorios/#initialroute)
-* [`barStyle`](../navigatorios/#barstyle)
-* [`barTintColor`](../navigatorios/#bartintcolor)
-* [`interactivePopGestureEnabled`](../navigatorios/#interactivepopgestureenabled)
-* [`itemWrapperStyle`](../navigatorios/#itemwrapperstyle)
-* [`navigationBarHidden`](../navigatorios/#navigationbarhidden)
-* [`shadowHidden`](../navigatorios/#shadowhidden)
-* [`tintColor`](../navigatorios/#tintcolor)
-* [`titleTextColor`](../navigatorios/#titletextcolor)
-* [`translucent`](../navigatorios/#translucent)
+- [`initialRoute`](../navigatorios/#initialroute)
+- [`barStyle`](../navigatorios/#barstyle)
+- [`barTintColor`](../navigatorios/#bartintcolor)
+- [`interactivePopGestureEnabled`](../navigatorios/#interactivepopgestureenabled)
+- [`itemWrapperStyle`](../navigatorios/#itemwrapperstyle)
+- [`navigationBarHidden`](../navigatorios/#navigationbarhidden)
+- [`shadowHidden`](../navigatorios/#shadowhidden)
+- [`tintColor`](../navigatorios/#tintcolor)
+- [`titleTextColor`](../navigatorios/#titletextcolor)
+- [`translucent`](../navigatorios/#translucent)
 
 ### Methods
 
-* [`push`](../navigatorios/#push)
-* [`popN`](../navigatorios/#popn)
-* [`pop`](../navigatorios/#pop)
-* [`replaceAtIndex`](../navigatorios/#replaceatindex)
-* [`replace`](../navigatorios/#replace)
-* [`replacePrevious`](../navigatorios/#replaceprevious)
-* [`popToTop`](../navigatorios/#poptotop)
-* [`popToRoute`](../navigatorios/#poptoroute)
-* [`replacePreviousAndPop`](../navigatorios/#replacepreviousandpop)
-* [`resetTo`](../navigatorios/#resetto)
+- [`push`](../navigatorios/#push)
+- [`popN`](../navigatorios/#popn)
+- [`pop`](../navigatorios/#pop)
+- [`replaceAtIndex`](../navigatorios/#replaceatindex)
+- [`replace`](../navigatorios/#replace)
+- [`replacePrevious`](../navigatorios/#replaceprevious)
+- [`popToTop`](../navigatorios/#poptotop)
+- [`popToRoute`](../navigatorios/#poptoroute)
+- [`replacePreviousAndPop`](../navigatorios/#replacepreviousandpop)
+- [`resetTo`](../navigatorios/#resetto)
 
 ---
 
@@ -312,13 +296,9 @@ Boolean value that indicates whether the navigation bar is translucent by defaul
 
 ### `push()`
 
-
 ```javascript
-
 push((route: object));
-
 ```
-
 
 Navigate forward to a new route.
 
@@ -332,13 +312,9 @@ Navigate forward to a new route.
 
 ### `popN()`
 
-
 ```javascript
-
 popN((n: number));
-
 ```
-
 
 Go back N scenes at once. When N=1, behavior matches `pop()`.
 
@@ -352,13 +328,9 @@ Go back N scenes at once. When N=1, behavior matches `pop()`.
 
 ### `pop()`
 
-
 ```javascript
-
 pop();
-
 ```
-
 
 Pop back to the previous scene.
 
@@ -366,13 +338,9 @@ Pop back to the previous scene.
 
 ### `replaceAtIndex()`
 
-
 ```javascript
-
 replaceAtIndex((route: object), (index: number));
-
 ```
-
 
 Replace a route in the navigation stack.
 
@@ -387,13 +355,9 @@ Replace a route in the navigation stack.
 
 ### `replace()`
 
-
 ```javascript
-
 replace((route: object));
-
 ```
-
 
 Replace the route for the current scene and immediately load the view for the new route.
 
@@ -407,13 +371,9 @@ Replace the route for the current scene and immediately load the view for the ne
 
 ### `replacePrevious()`
 
-
 ```javascript
-
 replacePrevious((route: object));
-
 ```
-
 
 Replace the route/view for the previous scene.
 
@@ -427,13 +387,9 @@ Replace the route/view for the previous scene.
 
 ### `popToTop()`
 
-
 ```javascript
-
 popToTop();
-
 ```
-
 
 Go back to the topmost item in the navigation stack.
 
@@ -441,13 +397,9 @@ Go back to the topmost item in the navigation stack.
 
 ### `popToRoute()`
 
-
 ```javascript
-
 popToRoute((route: object));
-
 ```
-
 
 Go back to the item for a particular route object.
 
@@ -461,13 +413,9 @@ Go back to the item for a particular route object.
 
 ### `replacePreviousAndPop()`
 
-
 ```javascript
-
 replacePreviousAndPop((route: object));
-
 ```
-
 
 Replaces the previous route/view and transitions back to it.
 
@@ -481,13 +429,9 @@ Replaces the previous route/view and transitions back to it.
 
 ### `resetTo()`
 
-
 ```javascript
-
 resetTo((route: object));
-
 ```
-
 
 Replaces the top item and pop to it.
 
@@ -496,4 +440,3 @@ Replaces the top item and pop to it.
 | Name  | Type   | Required | Description                                       |
 | ----- | ------ | -------- | ------------------------------------------------- |
 | route | object | Yes      | The new route that will replace the topmost item. |
-

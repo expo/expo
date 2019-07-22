@@ -7,16 +7,9 @@ Displays a circular loading indicator.
 
 ### Example
 
-
 ```javascript
-
-import React, { Component } from 'react'
-import {
-  ActivityIndicator,
-    StyleSheet,
-  Text,
-  View,
-} from 'react-native'
+import React, { Component } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 export default class App extends Component {
   render() {
@@ -27,34 +20,31 @@ export default class App extends Component {
         <ActivityIndicator size="large" color="#0000ff" />
         <ActivityIndicator size="small" color="#00ff00" />
       </View>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   horizontal: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    padding: 10
-  }
-})
-
-
+    padding: 10,
+  },
+});
 ```
-
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`animating`](../activityindicator/#animating)
-- [`color`](../activityindicator/#color)
-- [`size`](../activityindicator/#size)
-- [`hidesWhenStopped`](../activityindicator/#hideswhenstopped)
+* [`animating`](../activityindicator/#animating)
+* [`color`](../activityindicator/#color)
+* [`size`](../activityindicator/#size)
+* [`hidesWhenStopped`](../activityindicator/#hideswhenstopped)
 
 ---
 
@@ -76,8 +66,8 @@ Whether to show the indicator (true, the default) or hide it (false).
 
 The foreground color of the spinner (default is gray).
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -99,4 +89,3 @@ Whether the indicator should hide when not animating (true by default).
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
-

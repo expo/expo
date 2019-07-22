@@ -9,7 +9,6 @@ To update the data in the datasource, use `cloneWithRows` (or `cloneWithRowsAndS
 
 In this example, a component receives data in chunks, handled by `_onDataArrived`, which concats the new data onto the old data and updates the data source. We use `concat` to create a new array - mutating `this._data`, e.g. with `this._data.push(newRowData)`, would be an error. `_rowHasChanged` understands the shape of the row data and knows how to efficiently compare it.
 
-
 ```javascript
 
 getInitialState: function() {
@@ -25,21 +24,20 @@ _onDataArrived(newData) {
 
 ```
 
-
 ### Methods
 
-* [`constructor`](../listviewdatasource/#constructor)
-* [`cloneWithRows`](../listviewdatasource/#clonewithrows)
-* [`cloneWithRowsAndSections`](../listviewdatasource/#clonewithrowsandsections)
-* [`getRowCount`](../listviewdatasource/#getrowcount)
-* [`getRowAndSectionCount`](../listviewdatasource/#getrowandsectioncount)
-* [`rowShouldUpdate`](../listviewdatasource/#rowshouldupdate)
-* [`getRowData`](../listviewdatasource/#getrowdata)
-* [`getRowIDForFlatIndex`](../listviewdatasource/#getrowidforflatindex)
-* [`getSectionIDForFlatIndex`](../listviewdatasource/#getsectionidforflatindex)
-* [`getSectionLengths`](../listviewdatasource/#getsectionlengths)
-* [`sectionHeaderShouldUpdate`](../listviewdatasource/#sectionheadershouldupdate)
-* [`getSectionHeaderData`](../listviewdatasource/#getsectionheaderdata)
+- [`constructor`](../listviewdatasource/#constructor)
+- [`cloneWithRows`](../listviewdatasource/#clonewithrows)
+- [`cloneWithRowsAndSections`](../listviewdatasource/#clonewithrowsandsections)
+- [`getRowCount`](../listviewdatasource/#getrowcount)
+- [`getRowAndSectionCount`](../listviewdatasource/#getrowandsectioncount)
+- [`rowShouldUpdate`](../listviewdatasource/#rowshouldupdate)
+- [`getRowData`](../listviewdatasource/#getrowdata)
+- [`getRowIDForFlatIndex`](../listviewdatasource/#getrowidforflatindex)
+- [`getSectionIDForFlatIndex`](../listviewdatasource/#getsectionidforflatindex)
+- [`getSectionLengths`](../listviewdatasource/#getsectionlengths)
+- [`sectionHeaderShouldUpdate`](../listviewdatasource/#sectionheadershouldupdate)
+- [`getSectionHeaderData`](../listviewdatasource/#getsectionheaderdata)
 
 ---
 
@@ -49,13 +47,9 @@ _onDataArrived(newData) {
 
 ### `constructor()`
 
-
 ```javascript
-
 constructor(params);
-
 ```
-
 
 You can provide custom extraction and `hasChanged` functions for section headers and rows. If absent, data will be extracted with the `defaultGetRowData` and `defaultGetSectionHeaderData` functions.
 
@@ -73,22 +67,18 @@ or
 
 The constructor takes in a params argument that can contain any of the following:
 
-* getRowData(dataBlob, sectionID, rowID);
-* getSectionHeaderData(dataBlob, sectionID);
-* rowHasChanged(prevRowData, nextRowData);
-* sectionHeaderHasChanged(prevSectionData, nextSectionData);
+- getRowData(dataBlob, sectionID, rowID);
+- getSectionHeaderData(dataBlob, sectionID);
+- rowHasChanged(prevRowData, nextRowData);
+- sectionHeaderHasChanged(prevSectionData, nextSectionData);
 
 ---
 
 ### `cloneWithRows()`
 
-
 ```javascript
-
 cloneWithRows(dataBlob, rowIdentities);
-
 ```
-
 
 Clones this `ListViewDataSource` with the specified `dataBlob` and `rowIdentities`. The `dataBlob` is just an arbitrary blob of data. At construction an extractor to get the interesting information was defined (or the default was used).
 
@@ -100,13 +90,9 @@ Note: This function does NOT clone the data in this data source. It simply passe
 
 ### `cloneWithRowsAndSections()`
 
-
 ```javascript
-
 cloneWithRowsAndSections(dataBlob, sectionIdentities, rowIdentities);
-
 ```
-
 
 This performs the same function as the `cloneWithRows` function but here you also specify what your `sectionIdentities` are. If you don't care about sections you should safely be able to use `cloneWithRows`.
 
@@ -114,28 +100,23 @@ This performs the same function as the `cloneWithRows` function but here you als
 
 Note: this returns a new object!
 
-
 ```javascript
-
-const dataSource = ds.cloneWithRowsAndSections({
-  addresses: ['row 1', 'row 2'],
-  phone_numbers: ['data 1', 'data 2'],
-}, ['phone_numbers']);
-
+const dataSource = ds.cloneWithRowsAndSections(
+  {
+    addresses: ['row 1', 'row 2'],
+    phone_numbers: ['data 1', 'data 2'],
+  },
+  ['phone_numbers']
+);
 ```
-
 
 ---
 
 ### `getRowCount()`
 
-
 ```javascript
-
 getRowCount();
-
 ```
-
 
 Returns the total number of rows in the data source.
 
@@ -145,13 +126,9 @@ If you are specifying the rowIdentities or sectionIdentities, then `getRowCount`
 
 ### `getRowAndSectionCount()`
 
-
 ```javascript
-
 getRowAndSectionCount();
-
 ```
-
 
 Returns the total number of rows in the data source (see `getRowCount` for how this is calculated) plus the number of sections in the data.
 
@@ -161,13 +138,9 @@ If you are specifying the rowIdentities or sectionIdentities, then `getRowAndSec
 
 ### `rowShouldUpdate()`
 
-
 ```javascript
-
 rowShouldUpdate(sectionIndex, rowIndex);
-
 ```
-
 
 Returns if the row is dirtied and needs to be rerendered
 
@@ -175,13 +148,9 @@ Returns if the row is dirtied and needs to be rerendered
 
 ### `getRowData()`
 
-
 ```javascript
-
 getRowData(sectionIndex, rowIndex);
-
 ```
-
 
 Gets the data required to render the row.
 
@@ -189,13 +158,9 @@ Gets the data required to render the row.
 
 ### `getRowIDForFlatIndex()`
 
-
 ```javascript
-
 getRowIDForFlatIndex(index);
-
 ```
-
 
 Gets the rowID at index provided if the dataSource arrays were flattened, or null of out of range indexes.
 
@@ -203,13 +168,9 @@ Gets the rowID at index provided if the dataSource arrays were flattened, or nul
 
 ### `getSectionIDForFlatIndex()`
 
-
 ```javascript
-
 getSectionIDForFlatIndex(index);
-
 ```
-
 
 Gets the sectionID at index provided if the dataSource arrays were flattened, or null for out of range indexes.
 
@@ -217,13 +178,9 @@ Gets the sectionID at index provided if the dataSource arrays were flattened, or
 
 ### `getSectionLengths()`
 
-
 ```javascript
-
 getSectionLengths();
-
 ```
-
 
 Returns an array containing the number of rows in each section
 
@@ -231,13 +188,9 @@ Returns an array containing the number of rows in each section
 
 ### `sectionHeaderShouldUpdate()`
 
-
 ```javascript
-
 sectionHeaderShouldUpdate(sectionIndex);
-
 ```
-
 
 Returns if the section header is dirtied and needs to be rerendered
 
@@ -245,13 +198,8 @@ Returns if the section header is dirtied and needs to be rerendered
 
 ### `getSectionHeaderData()`
 
-
 ```javascript
-
 getSectionHeaderData(sectionIndex);
-
 ```
 
-
 Gets the data required to render the section header
-

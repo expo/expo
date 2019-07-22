@@ -13,9 +13,7 @@ You will normally use a combination of `flexDirection`, `alignItems`, and `justi
 
 Adding `flexDirection` to a component's `style` determines the **primary axis** of its layout. Should the children be organized horizontally (`row`) or vertically (`column`)? The default is `column`.
 
-
 ```javascript
-
 import React, { Component } from 'react';
 import { View } from 'react-native';
 
@@ -23,24 +21,21 @@ export default class FlexDirectionBasics extends Component {
   render() {
     return (
       // Try setting `flexDirection` to `column`.
-      <View style={{flex: 1, flexDirection: 'row'}}>
-        <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        <View style={{ width: 50, height: 50, backgroundColor: 'powderblue' }} />
+        <View style={{ width: 50, height: 50, backgroundColor: 'skyblue' }} />
+        <View style={{ width: 50, height: 50, backgroundColor: 'steelblue' }} />
       </View>
     );
   }
-};
+}
 ```
-
 
 #### Justify Content
 
 Adding `justifyContent` to a component's style determines the **distribution** of children along the **primary axis**. Should children be distributed at the start, the center, the end, or spaced evenly? Available options are `flex-start`, `center`, `flex-end`, `space-around`, `space-between` and `space-evenly`.
 
-
 ```javascript
-
 import React, { Component } from 'react';
 import { View } from 'react-native';
 
@@ -49,20 +44,20 @@ export default class JustifyContentBasics extends Component {
     return (
       // Try setting `justifyContent` to `center`.
       // Try setting `flexDirection` to `row`.
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}>
-        <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-        <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+        <View style={{ width: 50, height: 50, backgroundColor: 'powderblue' }} />
+        <View style={{ width: 50, height: 50, backgroundColor: 'skyblue' }} />
+        <View style={{ width: 50, height: 50, backgroundColor: 'steelblue' }} />
       </View>
     );
   }
-};
+}
 ```
-
 
 #### Align Items
 
@@ -70,9 +65,7 @@ Adding `alignItems` to a component's style determines the **alignment** of child
 
 > For `stretch` to have an effect, children must not have a fixed dimension along the secondary axis. In the following example, setting `alignItems: stretch` does nothing until the `width: 50` is removed from the children.
 
-
 ```javascript
-
 import React, { Component } from 'react';
 import { View } from 'react-native';
 
@@ -82,25 +75,24 @@ export default class AlignItemsBasics extends Component {
       // Try setting `alignItems` to 'flex-start'
       // Try setting `justifyContent` to `flex-end`.
       // Try setting `flexDirection` to `row`.
-      <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'stretch',
-      }}>
-        <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-        <View style={{height: 50, backgroundColor: 'skyblue'}} />
-        <View style={{height: 100, backgroundColor: 'steelblue'}} />
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'stretch',
+        }}>
+        <View style={{ width: 50, height: 50, backgroundColor: 'powderblue' }} />
+        <View style={{ height: 50, backgroundColor: 'skyblue' }} />
+        <View style={{ height: 100, backgroundColor: 'steelblue' }} />
       </View>
     );
   }
-};
+}
 ```
-
 
 #### Going Deeper
 
 We've covered the basics, but there are many other styles you may need for layouts. The full list of props that control layout is documented [here](../layout-props/).
 
 We're getting close to being able to build a real application. One thing we are still missing is a way to take user input, so let's move on to [learn how to handle text input with the TextInput component](../handling-text-input/).
-

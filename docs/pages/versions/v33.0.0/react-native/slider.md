@@ -68,8 +68,8 @@ Initial maximum value of the slider. Default value is 1.
 
 The color used for the track to the left of the button. Overrides the default blue gradient image on iOS.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -118,8 +118,8 @@ Step value of the slider. The value should be between 0 and (maximumValue - mini
 
 The color used for the track to the right of the button. Overrides the default gray gradient image on iOS.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -150,8 +150,8 @@ _This is not a controlled component_, you don't need to update the value during 
 
 Color of the foreground switch grip.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | Android  |
 
 ---
@@ -193,4 +193,3 @@ Assigns a single image for the track. Only static images are supported. The cent
 | Type                   | Required | Platform |
 | ---------------------- | -------- | -------- |
 | Image.propTypes.source | No       | iOS      |
-

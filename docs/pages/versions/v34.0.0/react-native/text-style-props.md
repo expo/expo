@@ -41,8 +41,8 @@ title: Text Style Props
 
 ### `color`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -101,8 +101,8 @@ Specifies text alignment. The value 'justify' is only supported on iOS and fallb
 
 ### `textShadowColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -151,16 +151,16 @@ Set to `false` to remove extra font padding intended to make space for certain a
 
 ### `letterSpacing`
 
-| Type   | Required | Platform            |
-| ------ | -------- | ------------------- |
+| Type   | Required | Platform             |
+| ------ | -------- | -------------------- |
 | number | No       | iOS, Android \>= 5.0 |
 
 ---
 
 ### `textDecorationColor`
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | iOS      |
 
 ---
@@ -186,4 +186,3 @@ Set to `false` to remove extra font padding intended to make space for certain a
 | Type                       | Required | Platform |
 | -------------------------- | -------- | -------- |
 | enum('auto', 'ltr', 'rtl') | No       | iOS      |
-
