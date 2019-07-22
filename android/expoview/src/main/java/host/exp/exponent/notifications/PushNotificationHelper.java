@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
@@ -296,7 +297,7 @@ public class PushNotificationHelper {
                   }
                 }
               } catch (JSONException e) {
-                // Do nothing. Something is wrong with the user-provided data payload.
+                Log.d(TAG, "Something is wrong with the user-provided data payload: " + e.toString());
               }
             }
 
@@ -318,11 +319,9 @@ public class PushNotificationHelper {
     try {
       imageBitmap = Picasso.with(context).load(imageURL).get();
     } catch (IOException ie) {
-      // It means the image is not loaded correctly.
-      // Do nothing.
+      Log.d(TAG, "The image (" + imageURL + ") in the push notification is not loaded correctly: " + ie.toString());
     } catch (IllegalStateException ise) {
-      // It means the input URL is invalid.
-      // Do nothing.
+      Log.d(TAG, "The image URL (\" + imageURL + \") in the push notification is invalid: " + ise.toString());
     }
 
     return imageBitmap;
