@@ -296,6 +296,10 @@ type PushMessage = {
      * The image should not have an alpha channel.
      * Image restrictions on iOS: https://developer.apple.com/documentation/usernotifications/unnotificationattachment.
      * Image formats supported on Android: JPEG, PNG, and GIF (will not be animated).
+     *
+     * (Note that an animated GIF will not be animated on Android devices. If you
+     * wish to use an animated GIF for iOS and a static image for Android, put the
+     * GIF as a `video` (see below) and the static image as an `image`.)
      */
     image?: string | {
       url: string,
