@@ -1,5 +1,6 @@
 import { CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import UUID from 'uuid-js';
 // Register `message`'s event listener (side-effect)
 import './ExponentNotifications.fx.web';
@@ -109,7 +110,7 @@ export default {
     },
     async getDevicePushTokenAsync() {
         const data = await _subscribeUserToPushAsync();
-        return { type: 'web', data: data };
+        return { type: Platform.OS, data: data };
     },
 };
 async function _subscribeUserToPushAsync() {
@@ -131,7 +132,6 @@ async function _subscribeUserToPushAsync() {
             auth: pushSubscriptionJson.keys.auth,
         },
     };
-    console.log('subscriptionObject: ', JSON.stringify(subscriptionObject));
     if (registration.active) {
         // Store notification icon string in service worker.
         // https://stackoverflow.com/a/35729334/2603230

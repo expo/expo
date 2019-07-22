@@ -1,5 +1,6 @@
 import { CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import UUID from 'uuid-js';
 
 import { LocalNotification, LocalNotificationId } from './Notifications.types';
@@ -178,7 +179,6 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
       auth: pushSubscriptionJson.keys!.auth,
     },
   };
-  console.log('subscriptionObject: ', JSON.stringify(subscriptionObject));
 
   if (registration.active) {
     // Store notification icon string in service worker.
