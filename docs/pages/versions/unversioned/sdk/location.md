@@ -52,7 +52,7 @@ Get the current position of the device.
 - **methodOptions (_object_)** -- A map of method options:
   - **type : [Location.MethodType](#locationmethodtype)*** -- Which method should be used to calculate current position. When type is set to `Location.MethodType.Slow` calculating current position may take several seconds. When type is set to `Location.MethodType.Fast` you can provide two more options (see below) which indicate when method should return current position. Default to `Location.MethodType.Fast`. 
   -- **tries (_number_)** -- Only available when `type` is `Location.MethodType.Fast`. The number of times device need to calculate current position before returning it. Default to `1`.
-  -- **minAccuracyRadius (__number__)** -- Only available when `type` is `Location.MethodType.Fast`. If `minAccuracyRadius` is grether or equal then `coord.accuracy`, return current position. Default to `20000`.
+  -- **desiredAccuracyRadius (__number__)** -- Only available when `type` is `Location.MethodType.Fast`. The position will be returned only if its accuracy radius is smaller than `desiredAccuracyRadius` (in meters). Defaults to `20000`.
 
 #### Returns
 

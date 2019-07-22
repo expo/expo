@@ -175,7 +175,7 @@ export async function getCurrentPositionAsync(
   methodOptions: LocationMethod = { type: LocationMethodType.Fast }
 ): Promise<LocationData> {
   if (methodOptions.type === LocationMethodType.Fast) {
-    return getCurrentPositionUsingWatchEvent(options, methodOptions);
+    return getCurrentPositionUsingWatchEventAsync(options, methodOptions);
   }
   return ExpoLocation.getCurrentPositionAsync(options);
 }
@@ -184,7 +184,7 @@ export async function getCurrentPositionAsync(
  * Getting current position by subscribing to position events.
  * If all conditions are satisfied, method would return the result.
  */
-async function getCurrentPositionUsingWatchEvent(
+async function getCurrentPositionUsingWatchEventAsync(
   options: LocationOptions = {},
   methodOptions: LocationMethod
 ) {
