@@ -18,7 +18,7 @@ import * as Application from 'expo-application';
 
 - [`Application.applicationName`](#applicationapplicationname)
 - [`Application.bundleId`](#applicationbundleid)
-- [`Application.nativeAppVersion`](#applicationnativeappversion)
+- [`Application.nativeApplicationVersion`](#applicationnativeapplicationversion)
 - [`Application.nativeBuildVersion`](#applicationnativebuildversion)
 - [`Application.androidId`](#applicationandroidid) (Android only)
 
@@ -52,10 +52,9 @@ The human-readable version of the native application that may be displayed in th
 
 ### `Application.nativeBuildVersion`
 
-The internal build version of the native application that the app store may use to distinguish between different binaries. This is the `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built. On web, this value is `null`.
+The internal build version of the native application that the app store may use to distinguish between different binaries. This is the `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built. On web, this value is `null`. Note that the return type on Android will a `number` and the return type on iOS will be a `string`. 
 
-
-- e.g., `2.11.0.16344`
+- e.g., `iOS: "2.11.0", Android: 114`
 
 ### `Application.androidId`
 
