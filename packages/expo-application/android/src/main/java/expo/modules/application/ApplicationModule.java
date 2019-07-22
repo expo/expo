@@ -83,9 +83,9 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
     try {
       PackageInfo info = packageManager.getPackageInfo(packageName, 0);
       promise.resolve((double)info.firstInstallTime);
-    } catch (Exception e) {
+    } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
-      promise.reject("ERR_APPLICATION", "Unable to get first install time of this application.", e);
+      promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get first install time of this application. Could not get package info or package name.", e);
     }
   }
 
@@ -96,9 +96,9 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
     try {
       PackageInfo info = packageManager.getPackageInfo(packageName, 0);
       promise.resolve((double)info.lastUpdateTime);
-    } catch (Exception e) {
+    } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
-      promise.reject("ERR_APPLICATION", "Unable to get last update time of this application.", e);
+      promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get last update time of this application. Could not get package info or package name.", e);
     }
   }
 
