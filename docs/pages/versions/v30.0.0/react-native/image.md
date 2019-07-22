@@ -33,8 +33,6 @@ export default class DisplayAnImage extends Component {
     );
   }
 }
-
-// skip this line if using Expo
 ```
 
 You can also add `style` to an image:
@@ -63,12 +61,6 @@ export default class DisplayAnImageWithStyle extends Component {
     );
   }
 }
-
-// skip these lines if using Expo
-  'DisplayAnImageWithStyle',
-  () => DisplayAnImageWithStyle
-);
-
 ```
 
 ### GIF and WebP support on Android

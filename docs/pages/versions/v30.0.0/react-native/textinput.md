@@ -77,12 +77,6 @@ export default class UselessTextInputMultiline extends Component {
     );
   }
 }
-
-// skip these lines if using Expo
- 'AwesomeProject',
- () => UselessTextInputMultiline
-);
-
 ```
 
 `TextInput` has by default a border at the bottom of its view. This border has its padding set by the background image provided by the system, and it cannot be changed. Solutions to avoid this is to either not set height explicitly, case in which the system will take care of displaying the border in the correct position, or to not display the border by setting `underlineColorAndroid` to transparent.

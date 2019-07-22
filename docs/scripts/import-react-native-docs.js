@@ -75,6 +75,13 @@ let mainAsync = async () => {
       // TODO: Maybe do that?
       case 'imageeditor.md':
       case 'imagepickerios.md':
+      case 'navigation.md':
+      case 'performance.md':
+      case 'drawerlayoutandroid.md':
+      case 'native-modules-setup.md':
+      case 'out-of-tree-platforms.md':
+      case 'settings.md':
+      case 'systrace.md':
       case 'cameraroll.md':
       case 'linking.md':
       case 'permissionsandroid.md':

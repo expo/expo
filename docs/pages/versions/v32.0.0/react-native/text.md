@@ -45,8 +45,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-// skip this line if using Expo
 ```
 
 ## Nested text

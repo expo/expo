@@ -51,11 +51,6 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
     );
   }
 }
-
-// skip these lines if using Expo
-  'AwesomeProject',
-  () => IScrolledDownAndWhatHappenedNextShockedMe);
-
 ```
 
 ScrollViews can be configured to allow paging through views using swiping gestures by using the `pagingEnabled` props. Swiping horizontally between views can also be implemented on Android using the [ViewPagerAndroid](../viewpagerandroid/) component.
