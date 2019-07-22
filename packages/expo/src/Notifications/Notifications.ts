@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 import {
   Notification,
