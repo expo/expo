@@ -14,12 +14,12 @@ function guardPermission() {
   }
   if (!navigator.serviceWorker) {
     throw new Error(
-      'Notifications cannot be sent because the service worker API is not supported on this device.'
+      'Notifications cannot be used because the service worker API is not supported on this device.'
     );
   }
   if (!navigator.serviceWorker.controller) {
     throw new Error(
-      'Notifications cannot be sent because there is no service worker controller registered. Ensure you have SSL certificates enabled.'
+      'Notifications cannot be used because there is no service worker controller registered. Ensure you have SSL certificates enabled.'
     );
   }
   if (Notification.permission !== 'granted') {

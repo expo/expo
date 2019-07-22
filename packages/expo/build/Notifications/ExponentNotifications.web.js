@@ -9,10 +9,10 @@ function guardPermission() {
         throw new Error('The Notification API is not available on this device.');
     }
     if (!navigator.serviceWorker) {
-        throw new Error('Notifications cannot be sent because the service worker API is not supported on this device.');
+        throw new Error('Notifications cannot be used because the service worker API is not supported on this device.');
     }
     if (!navigator.serviceWorker.controller) {
-        throw new Error('Notifications cannot be sent because there is no service worker controller registered. Ensure you have SSL certificates enabled.');
+        throw new Error('Notifications cannot be used because there is no service worker controller registered. Ensure you have SSL certificates enabled.');
     }
     if (Notification.permission !== 'granted') {
         throw new Error('Cannot use Notifications without permissions. Please request permissions with `expo-permissions`');
