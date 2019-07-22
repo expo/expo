@@ -48,8 +48,8 @@ let mainAsync = async () => {
 
   let sidebarInfo = await fsExtra.readJson(sidebarsJson);
   let guides = sidebarInfo.docs.Guides;
-  let components = sidebarInfo.api.Components;
-  let apis = sidebarInfo.api.APIs;
+  let components = sidebarInfo.docs.Components;
+  let apis = sidebarInfo.docs.APIs;
   let basics = sidebarInfo.docs['The Basics'];
 
   await fsExtra.ensureDir(reactNative);
