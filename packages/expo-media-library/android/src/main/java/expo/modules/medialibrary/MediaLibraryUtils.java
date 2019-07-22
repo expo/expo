@@ -220,8 +220,8 @@ final class MediaLibraryUtils {
 
     int[] size;
     // If image doesn't have the required information, we can get them from Bitmap.Options
-    if (cursor.getType(widthIndex) == Cursor.FIELD_TYPE_NULL &&
-        cursor.getType(heightIndex) == Cursor.FIELD_TYPE_NULL &&
+    if ((cursor.getType(widthIndex) == Cursor.FIELD_TYPE_NULL ||
+        cursor.getType(heightIndex) == Cursor.FIELD_TYPE_NULL) &&
         mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
       BitmapFactory.Options options = new BitmapFactory.Options();
       options.inJustDecodeBounds = true;
