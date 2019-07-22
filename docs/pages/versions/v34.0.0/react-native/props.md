@@ -11,7 +11,7 @@ For example, one basic React Native component is the `Image`. When you create an
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, Image } from 'react-native';
+import { Image } from 'react-native';
 
 export default class Bananas extends Component {
   render() {
@@ -23,10 +23,6 @@ export default class Bananas extends Component {
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => Bananas);
-
 ```
 
 
@@ -38,7 +34,7 @@ Your own components can also use `props`. This lets you make a single component 
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 class Greeting extends Component {
   render() {
@@ -61,10 +57,6 @@ export default class LotsOfGreetings extends Component {
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => LotsOfGreetings);
-
 ```
 
 

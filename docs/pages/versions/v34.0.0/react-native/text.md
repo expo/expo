@@ -13,7 +13,7 @@ In the following example, the nested title and body text will inherit the `fontF
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 
 export default class TextInANest extends Component {
   constructor(props) {
@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
   },
 });
 
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('TextInANest', () => TextInANest);
+// skip this line if using Expo
+
 
 ```
 
@@ -62,7 +62,7 @@ Both iOS and Android allow you to display formatted text by annotating ranges of
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, Text } from 'react-native';
+import { Text } from 'react-native';
 
 export default class BoldAndBeautiful extends Component {
   render() {
@@ -76,10 +76,6 @@ export default class BoldAndBeautiful extends Component {
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => BoldAndBeautiful);
-
 ```
 
 

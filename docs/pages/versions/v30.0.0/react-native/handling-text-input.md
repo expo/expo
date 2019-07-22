@@ -11,7 +11,7 @@ For example, let's say that as the user types, you're translating their words in
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 
 export default class PizzaTranslator extends Component {
   constructor(props) {
@@ -34,10 +34,6 @@ export default class PizzaTranslator extends Component {
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => PizzaTranslator);
-
 ```
 
 

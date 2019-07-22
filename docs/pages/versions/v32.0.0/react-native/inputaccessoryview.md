@@ -11,7 +11,7 @@ To use this component wrap your custom toolbar with the InputAccessoryView compo
 ```javascript
 
 import React, { Component } from 'react';
-import { View, ScrollView, AppRegistry, TextInput, InputAccessoryView, Button } from 'react-native';
+import { View, ScrollView, TextInput, InputAccessoryView, Button } from 'react-native';
 
 export default class UselessTextInput extends Component {
   constructor(props) {
@@ -44,10 +44,6 @@ export default class UselessTextInput extends Component {
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
-
 ```
 
 

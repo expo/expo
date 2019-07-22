@@ -17,7 +17,7 @@ Adding `flexDirection` to a component's `style` determines the **primary axis** 
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View } from 'react-native';
+import { View } from 'react-native';
 
 export default class FlexDirectionBasics extends Component {
   render() {
@@ -31,10 +31,6 @@ export default class FlexDirectionBasics extends Component {
     );
   }
 };
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => FlexDirectionBasics);
-
 ```
 
 
@@ -46,7 +42,7 @@ Adding `justifyContent` to a component's style determines the **distribution** o
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View } from 'react-native';
+import { View } from 'react-native';
 
 export default class JustifyContentBasics extends Component {
   render() {
@@ -65,10 +61,6 @@ export default class JustifyContentBasics extends Component {
     );
   }
 };
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => JustifyContentBasics);
-
 ```
 
 
@@ -82,7 +74,7 @@ Adding `alignItems` to a component's style determines the **alignment** of child
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View } from 'react-native';
+import { View } from 'react-native';
 
 export default class AlignItemsBasics extends Component {
   render() {
@@ -103,10 +95,6 @@ export default class AlignItemsBasics extends Component {
     );
   }
 };
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => AlignItemsBasics);
-
 ```
 
 

@@ -32,7 +32,7 @@ Go ahead and play around with the `Button` component using the example below. Yo
 ```javascript
 
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View } from 'react-native';
+import { Alert, Button, StyleSheet, View } from 'react-native';
 
 export default class ButtonBasics extends Component {
   _onPressButton() {
@@ -85,10 +85,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   }
 });
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => ButtonBasics);
-
 ```
 
 
@@ -114,7 +110,7 @@ Let's see all of these in action:
 ```javascript
 
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableNativeFeedback, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableNativeFeedback, TouchableWithoutFeedback, View } from 'react-native';
 
 export default class Touchables extends Component {
   _onPressButton() {
@@ -179,10 +175,6 @@ const styles = StyleSheet.create({
     color: 'white'
   }
 });
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => Touchables);
-
 ```
 
 

@@ -13,7 +13,7 @@ This example shows fetching and displaying an image from local storage as well a
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View, Image } from 'react-native';
+import { View, Image } from 'react-native';
 
 export default class DisplayAnImage extends Component {
   render() {
@@ -35,8 +35,8 @@ export default class DisplayAnImage extends Component {
   }
 }
 
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
+// skip this line if using Expo
+
 
 ```
 
@@ -47,7 +47,7 @@ You can also add `style` to an image:
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   stretch: {
@@ -69,8 +69,7 @@ export default class DisplayAnImageWithStyle extends Component {
   }
 }
 
-// skip these lines if using Create React Native App
-AppRegistry.registerComponent(
+// skip these lines if using Expo
   'DisplayAnImageWithStyle',
   () => DisplayAnImageWithStyle
 );

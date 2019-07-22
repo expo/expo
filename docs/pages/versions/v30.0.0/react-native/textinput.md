@@ -11,7 +11,7 @@ The simplest use case is to plop down a `TextInput` and subscribe to the `onChan
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 
 export default class UselessTextInput extends Component {
   constructor(props) {
@@ -29,10 +29,6 @@ export default class UselessTextInput extends Component {
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
-
 ```
 
 
@@ -44,7 +40,7 @@ Note that some props are only available with `multiline={true/false}`. Additiona
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
 
 class UselessTextInput extends Component {
   render() {
@@ -86,8 +82,7 @@ export default class UselessTextInputMultiline extends Component {
   }
 }
 
-// skip these lines if using Create React Native App
-AppRegistry.registerComponent(
+// skip these lines if using Expo
  'AwesomeProject',
  () => UselessTextInputMultiline
 );

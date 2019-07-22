@@ -35,8 +35,7 @@ renderButton: function() {
 
 import React, { Component } from 'react'
 import {
-  AppRegistry,
-  StyleSheet,
+    StyleSheet,
   TouchableHighlight,
   Text,
   View,
@@ -93,7 +92,6 @@ const styles = StyleSheet.create({
   }
 })
 
-AppRegistry.registerComponent('App', () => App)
 
 ```
 

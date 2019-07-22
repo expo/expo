@@ -13,8 +13,7 @@ Displays a circular loading indicator.
 import React, { Component } from 'react'
 import {
   ActivityIndicator,
-  AppRegistry,
-  StyleSheet,
+    StyleSheet,
   Text,
   View,
 } from 'react-native'
@@ -44,7 +43,6 @@ const styles = StyleSheet.create({
   }
 })
 
-AppRegistry.registerComponent('App', () => App)
 
 ```
 

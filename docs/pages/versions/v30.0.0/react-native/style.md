@@ -13,7 +13,7 @@ As a component grows in complexity, it is often cleaner to use `StyleSheet.creat
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default class LotsOfStyles extends Component {
   render() {
@@ -38,10 +38,6 @@ const styles = StyleSheet.create({
     color: 'red',
   },
 });
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => LotsOfStyles);
-
 ```
 
 

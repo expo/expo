@@ -13,8 +13,7 @@ Example:
 import React, { Component } from "react";
 import {
   ProgressBarAndroid,
-  AppRegistry,
-  StyleSheet,
+    StyleSheet,
   View
 } from "react-native";
 
@@ -43,7 +42,7 @@ const styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent("App", () => App);
+
 
 ```
 

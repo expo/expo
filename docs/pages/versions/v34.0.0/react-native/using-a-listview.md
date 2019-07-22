@@ -15,7 +15,7 @@ This example creates a simple `FlatList` of hardcoded data. Each item in the `da
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 export default class FlatListBasics extends Component {
   render() {
@@ -50,10 +50,6 @@ const styles = StyleSheet.create({
     height: 44,
   },
 })
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => FlatListBasics);
-
 ```
 
 
@@ -63,7 +59,7 @@ If you want to render a set of data broken into logical sections, maybe with sec
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, SectionList, StyleSheet, Text, View } from 'react-native';
+import { SectionList, StyleSheet, Text, View } from 'react-native';
 
 export default class SectionListBasics extends Component {
   render() {
@@ -103,10 +99,6 @@ const styles = StyleSheet.create({
     height: 44,
   },
 })
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => SectionListBasics);
-
 ```
 
 
