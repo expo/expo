@@ -372,7 +372,7 @@ type PushMessage = {
   /**
    * The web path that will be opened/focused after the user clicks the
    * notification.
-   * Defaults: "/" (root)
+   * Defaults to "/" (root)
    */
   webPath?: string,
 
