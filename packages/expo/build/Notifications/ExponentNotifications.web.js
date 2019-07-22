@@ -116,9 +116,7 @@ async function _subscribeUserToPushAsync() {
     if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
         throw new CodedError('ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.');
     }
-    if (!('serviceWorker' in navigator)) {
-        throw new Error(`Current browser does not support Service Worker and hence do not support web push notifications`);
-    }
+    guardPermission();
     const registration = await navigator.serviceWorker.register('/custom-service-worker.js');
     const subscribeOptions = {
         userVisibleOnly: true,
