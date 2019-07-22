@@ -4,5 +4,6 @@ declare const _default: {
     readonly bundleId: null;
     readonly nativeApplicationVersion: null;
     readonly nativeBuildVersion: null;
+    readonly androidId: null;
 };
 export default _default;

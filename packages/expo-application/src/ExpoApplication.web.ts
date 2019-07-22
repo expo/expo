@@ -14,4 +14,7 @@ export default {
   get nativeBuildVersion(): null {
     return null;
   },
+  get androidId(): null {
+    return null;
+  },
 };

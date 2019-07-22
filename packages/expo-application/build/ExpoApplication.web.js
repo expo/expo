@@ -14,5 +14,8 @@ export default {
     get nativeBuildVersion() {
         return null;
     },
+    get androidId() {
+        return null;
+    },
 };
 //# sourceMappingURL=ExpoApplication.web.js.map
