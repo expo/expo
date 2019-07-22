@@ -6,11 +6,11 @@ Voluntary Application Server Identification (VAPID) for Web Push keys (also call
 
 Learn more about VAPID keys and web push notifications [here](https://developers.google.com/web/updates/2016/07/web-push-interop-wins) and [here](https://developers.google.com/web/fundamentals/push-notifications/).
 
-Note that you do not necessarily need to send web push notifications through Expo server. If you do not wish to store your VAPID keys on Expo server, you can instead use [`Notifications.getDevicePushTokenAsync()`](../../sdk/notifications/#notificationsgetdevicepushtokenasyncconfig) to obtain the client's token, and send the notifications yourself from your server with tools such as [web-push](https://github.com/web-push-libs/web-push). In that case, you can disregard the information about "Uploading Credentials" below and jump directly to "[Client Setup](#client-setup)".
+Note that you do not necessarily need to send web push notifications through Expo's server. If you do not wish to store your VAPID keys on Expo's server, you can instead use [`Notifications.getDevicePushTokenAsync()`](../../sdk/notifications/#notificationsgetdevicepushtokenasyncconfig) to obtain the client's token, and send the notifications yourself from your server with tools such as [web-push](https://github.com/web-push-libs/web-push). In that case, you can disregard the information about "Uploading Credentials" below and jump directly to "[Client Setup](#client-setup)".
 
 ## Uploading Credentials
 
-To send push notifications to web projects through Expo server, three items are needed to be stored on Expo server.
+To send push notifications to web projects through Expo's server, three items are needed to be stored on Expo's server.
 
 - A VAPID public key.
 - A VAPID private key.
@@ -20,7 +20,7 @@ Note that the VAPID subject can be overridden in the individual push notificatio
 
 ### Option 1: Generating VAPID keys
 
-Expo server can help you generate the VAPID public/private key pair. Simply type the following command in your project directory. The generated key will be automatically stored on Expo server.
+Expo's server can help you generate the VAPID public/private key pair. Simply type the following command in your project directory. The generated key will be automatically stored on Expo's server.
 
 ```bash
 expo push:web:generate --vapid-subject <vapid-subject>
@@ -28,7 +28,7 @@ expo push:web:generate --vapid-subject <vapid-subject>
 
 ### Option 2: Uploading your own VAPID keys
 
-You can also choose to upload your own VAPID key pair to Expo server by using the following command:
+You can also choose to upload your own VAPID key pair to Expo's server by using the following command:
 
 Note that both keys should be URL-safe and base64-encoded.
 
@@ -40,7 +40,7 @@ expo push:web:upload --vapid-pubkey <vapid-public-key> --vapid-pvtkey <vapid-pri
 
 You will also need to add your VAPID public key to your client app's `app.json` file in the `notification.vapidPublicKey` field.
 
-You should also include your username (the username of the Expo account which uploaded the keys) in the `owner` field. You do not have to do this if you choose to not handle web push notifications through Expo server.
+You should also include your username (the username of the Expo account which uploaded the keys) in the `owner` field. You do not have to do this if you choose to not handle web push notifications through Expo's server.
 
 Note that you can always find your uploaded VAPID keys by using the command `expo push:web:show`.
 
