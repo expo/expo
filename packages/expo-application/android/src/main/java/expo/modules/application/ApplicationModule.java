@@ -65,7 +65,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
     PackageManager packageManager = mContext.getPackageManager();
     try {
       PackageInfo pInfo = packageManager.getPackageInfo(packageName, 0);
-      constants.put("nativeAppVersion", pInfo.versionName);
+      constants.put("nativeApplicationVersion", pInfo.versionName);
       constants.put("nativeBuildVersion", pInfo.versionCode);
     } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
@@ -105,7 +105,6 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
 
   @ExpoMethod
   public void getInstallReferrerAsync(final Promise promise) {
-
     final StringBuilder installReferrer = new StringBuilder();
 
     final InstallReferrerClient referrerClient;
@@ -115,36 +114,34 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
       public void onInstallReferrerSetupFinished(int responseCode) {
         switch (responseCode) {
           case InstallReferrerClient.InstallReferrerResponse.OK:
-            // Connection established
-            Log.d("INSTALL_REFERRER", "connection established");
+            // Connection established and response received
+            Log.d("INSTALL_REFERRER", "connection established and response ok");
             try {
               ReferrerDetails response = referrerClient.getInstallReferrer();
               installReferrer.append(response.getInstallReferrer());
-              response.getReferrerClickTimestampSeconds();
-              response.getInstallBeginTimestampSeconds();
-              promise.resolve(installReferrer.toString());
-              referrerClient.endConnection();
+//              referrerClient.endConnection();
             } catch (RemoteException e) {
               e.printStackTrace();
-              promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "Binding to play store remote invocation error.", e);
-              referrerClient.endConnection();
+              promise.reject("ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION", "RemoteException getting install referrer information. This may happen if the process hosting the remote object is no longer available.", e);
+//              referrerClient.endConnection();
             }
+            promise.resolve(installReferrer.toString());
             break;
           case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
-            // API not available on the current Play Store app
+            // API not available in the current Play Store app
             Log.d("INSTALL_REFERRER", "feature not supported");
-            promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "This feature not supported");
-            referrerClient.endConnection();
+            promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.");
+//            referrerClient.endConnection();
             break;
           case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
             // Connection could not be established
             Log.d("INSTALL_REFERRER", "connection could not be established");
-            promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "Connection could not be established");
-            referrerClient.endConnection();
+            promise.reject("ERR_APPLICATION_INSTALL_REFERRER_CONNECTION", "Could not establish a connection to Google Play");
+//            referrerClient.endConnection();
             break;
           default:
-            promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "Connection could not be established");
-            referrerClient.endConnection();
+            promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error");
+//            referrerClient.endConnection();
         }
       }
 
