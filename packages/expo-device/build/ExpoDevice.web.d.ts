@@ -6,5 +6,16 @@ declare const _default: {
     readonly osVersion: string;
     readonly supportedCpuArchitectures: string[] | undefined;
     readonly deviceName: string | undefined;
+    readonly deviceYearClass: number | null;
+    readonly osBuildId: null;
+    readonly osInternalBuildId: null;
+    readonly totalMemory: null;
+    readonly modelId: null;
+    readonly manufacturer: null;
+    readonly brand: null;
+    readonly osBuildFingerprint: null;
+    readonly designName: null;
+    readonly productName: null;
+    readonly platformApiLevel: null;
 };
 export default _default;

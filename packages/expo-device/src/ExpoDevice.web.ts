@@ -26,4 +26,37 @@ export default {
     const { browser, engine, os: OS } = parser.getResult();
     return browser.name || engine.name || OS.name || undefined;
   },
+  get deviceYearClass(): null | number {
+    return null;
+  },
+  get osBuildId(): null {
+    return null;
+  },
+  get osInternalBuildId(): null {
+    return null;
+  },
+  get totalMemory(): null {
+    return null;
+  },
+  get modelId(): null {
+    return null;
+  },
+  get manufacturer(): null {
+    return null;
+  },
+  get brand(): null {
+    return null;
+  },
+  get osBuildFingerprint(): null {
+    return null;
+  },
+  get designName(): null {
+    return null;
+  },
+  get productName(): null {
+    return null;
+  },
+  get platformApiLevel(): null {
+    return null;
+  },
 };
