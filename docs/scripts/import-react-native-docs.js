@@ -4,6 +4,7 @@ let path = require('path');
 
 let minimist = require('minimist');
 let fsExtra = require('fs-extra');
+let spawnAsync = require('@expo/spawn-async');
 
 let args = minimist(process.argv.slice(2));
 
@@ -16,6 +17,30 @@ let docsFrom = path.join(from, 'docs/');
 let sidebarsJson = path.join(from, 'website', 'sidebars.json');
 
 let reactNative = path.join(toVersion, 'react-native');
+
+let formatWithPrettierAsync = async () => {
+  let prettier = spawnAsync('prettier', [
+    '--print-width',
+    '100',
+    '--tab-width',
+    '2',
+    '--single-quote',
+    '--jsx-bracket-same-line',
+    '--trailing-comma',
+    'es5',
+    '--write',
+    `pages/versions/${version}/react-native/**/*.md`,
+  ]);
+
+
+
+  let childProcess = prettier.child;
+  childProcess.stdout.on('data', (data) => {
+    console.log(`formatted with prettier: ${data}`);
+  });
+
+  return prettier;
+}
 
 let mainAsync = async () => {
   // Go through each file and fix them
@@ -75,8 +100,8 @@ let mainAsync = async () => {
       );
 
       l.replace(
-       /\[`Toolbar` widget\]\([^\)]+\)/,
-       '[`Toolbar` widget](https://developer.android.com/reference/android/support/v7/widget/Toolbar.html)'
+        /\[`Toolbar` widget\]\([^\)]+\)/,
+        '[`Toolbar` widget](https://developer.android.com/reference/android/support/v7/widget/Toolbar.html)'
       );
       l.replace(
         /\[navigator\.geolocation\]\([^\)]+\)/g,
@@ -90,19 +115,15 @@ let mainAsync = async () => {
 
       // A lot of table cells have things like "<string>" and "<any>" that mdx dislikes
       if (l[0] == '|') {
-        l = l.replace(/</g, '\\<')
-        l = l.replace(/>/g, '\\>')
-      };
+        l = l.replace(/</g, '\\<');
+        l = l.replace(/>/g, '\\>');
+      }
 
       // mdx prefers void image tags
-      l = l.replace('></img>', ' />')
-
+      l = l.replace('></img>', ' />');
 
       // `](./foo` -> `](foo`
-      l = l.replace(
-        /\]\(\.\/([^\):]+)/g,
-        (_match, path) => `](${path}`
-      );
+      l = l.replace(/\]\(\.\/([^\):]+)/g, (_match, path) => `](${path}`);
       // `](foo.md)` -> `](../foo/)`
       // `](foo.md#bar)` -> `](../foo/#bar]`
       l = l.replace(
@@ -236,6 +257,9 @@ let mainAsync = async () => {
   ]) {
     await copyFilesAsync(x, dest);
   }
+
+  console.log('running prettier...');
+  await formatWithPrettierAsync();
 
   console.log(
     '#guides',
