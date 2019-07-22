@@ -119,11 +119,9 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
             try {
               ReferrerDetails response = referrerClient.getInstallReferrer();
               installReferrer.append(response.getInstallReferrer());
-//              referrerClient.endConnection();
             } catch (RemoteException e) {
               e.printStackTrace();
               promise.reject("ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION", "RemoteException getting install referrer information. This may happen if the process hosting the remote object is no longer available.", e);
-//              referrerClient.endConnection();
             }
             promise.resolve(installReferrer.toString());
             break;
@@ -131,18 +129,17 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
             // API not available in the current Play Store app
             Log.d("INSTALL_REFERRER", "feature not supported");
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.");
-//            referrerClient.endConnection();
             break;
           case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
             // Connection could not be established
             Log.d("INSTALL_REFERRER", "connection could not be established");
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER_CONNECTION", "Could not establish a connection to Google Play");
-//            referrerClient.endConnection();
             break;
           default:
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error");
-//            referrerClient.endConnection();
         }
+
+        referrerClient.endConnection();
       }
 
       @Override

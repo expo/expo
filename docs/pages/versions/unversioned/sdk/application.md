@@ -135,7 +135,7 @@ await Application.getLastUpdateTimeAsync();
 
 | Code                                                | Description                                                                                      |
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| ERR_APPLICATION | Error code thrown for `firstInstallTimeAsync` and `lastUpdateTimeAsync` |
+| ERR_APPLICATION | Error code thrown for `firstInstallTimeAsync` and `lastUpdateTimeAsync`. This may be thrown if the package information or package name could not be retrieved. |
 | ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE | The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed. This error code may come up when testing on an AVD that doesn't come with the Play Store pre-installed, such as the Google Pixel 3 and Nexus 6. |
 | ERR_APPLICATION_INSTALL_REFERRER_CONNECTION | A connection could not be established to the Google Play Store |
 | ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION | A `RemoteException` was thrown after a connection was established to the Play Store. This may happen if the process hosting the remote object is no longer available, which usually means the process crashed. See https://stackoverflow.com/questions/3156389/android-remoteexceptions-and-services. |
