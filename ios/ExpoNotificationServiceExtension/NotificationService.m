@@ -3,14 +3,14 @@
 #include <CoreGraphics/CGGeometry.h>
 #import "NotificationService.h"
 
-@interface NotificationService ()
+@interface ExNotificationService ()
 
 @property (nonatomic, strong) void (^contentHandler)(UNNotificationContent *contentToDeliver);
 @property (nonatomic, strong) UNMutableNotificationContent *bestAttemptContent;
 
 @end
 
-@implementation NotificationService
+@implementation ExNotificationService
 
 - (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
   self.contentHandler = contentHandler;
