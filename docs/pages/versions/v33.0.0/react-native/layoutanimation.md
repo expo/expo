@@ -9,11 +9,9 @@ A common way to use this API is to call it before calling `setState`.
 
 Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
 
-
 ```java
     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 ```
-
 
 ### Methods
 
@@ -37,13 +35,11 @@ Note that in order to get this to work on **Android** you need to set the follow
 
 ### `configureNext()`
 
-
 ```javascript
 
 static configureNext(config, onAnimationDidEnd?)
 
 ```
-
 
 Schedules an animation to happen on the next layout.
 
@@ -64,13 +60,11 @@ Schedules an animation to happen on the next layout.
 
 ### `create()`
 
-
 ```javascript
 
 static create(duration, type, creationProp)
 
 ```
-
 
 Helper for creating a config for `configureNext`.
 
@@ -131,4 +125,3 @@ Shortcut to bind `configureNext()` methods with `Presets.linear`.
 ### spring
 
 Shortcut to bind `configureNext()` methods with `Presets.spring`.
-

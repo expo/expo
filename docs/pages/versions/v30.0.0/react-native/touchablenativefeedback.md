@@ -11,7 +11,6 @@ Background drawable of native feedback touchable can be customized with `backgro
 
 Example:
 
-
 ```javascript
 
 renderButton: function() {
@@ -28,20 +27,19 @@ renderButton: function() {
 
 ```
 
-
 ### Props
 
-* [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
+- [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
 
-- [`background`](../touchablenativefeedback/#background)
-- [`useForeground`](../touchablenativefeedback/#useforeground)
+* [`background`](../touchablenativefeedback/#background)
+* [`useForeground`](../touchablenativefeedback/#useforeground)
 
 ### Methods
 
-* [`SelectableBackground`](../touchablenativefeedback/#selectablebackground)
-* [`SelectableBackgroundBorderless`](../touchablenativefeedback/#selectablebackgroundborderless)
-* [`Ripple`](../touchablenativefeedback/#ripple)
-* [`canUseNativeForeground`](../touchablenativefeedback/#canusenativeforeground)
+- [`SelectableBackground`](../touchablenativefeedback/#selectablebackground)
+- [`SelectableBackgroundBorderless`](../touchablenativefeedback/#selectablebackgroundborderless)
+- [`Ripple`](../touchablenativefeedback/#ripple)
+- [`canUseNativeForeground`](../touchablenativefeedback/#canusenativeforeground)
 
 ---
 
@@ -73,13 +71,11 @@ Check TouchableNativeFeedback.canUseNativeForeground() first, as this is only av
 
 ### `SelectableBackground()`
 
-
 ```javascript
 
 static SelectableBackground()
 
 ```
-
 
 Creates an object that represents android theme's default background for selectable elements (?android:attr/selectableItemBackground).
 
@@ -87,13 +83,11 @@ Creates an object that represents android theme's default background for selecta
 
 ### `SelectableBackgroundBorderless()`
 
-
 ```javascript
 
 static SelectableBackgroundBorderless()
 
 ```
-
 
 Creates an object that represent android theme's default background for borderless selectable elements (?android:attr/selectableItemBackgroundBorderless). Available on android API level 21+.
 
@@ -101,13 +95,11 @@ Creates an object that represent android theme's default background for borderle
 
 ### `Ripple()`
 
-
 ```javascript
 
 static Ripple(color: string, borderless: boolean)
 
 ```
-
 
 Creates an object that represents ripple drawable with specified color (as a string). If property `borderless` evaluates to true the ripple will render outside of the view bounds (see native actionbar buttons as an example of that behavior). This background type is available on Android API level 21+.
 
@@ -122,11 +114,8 @@ Creates an object that represents ripple drawable with specified color (as a str
 
 ### `canUseNativeForeground()`
 
-
 ```javascript
 
 static canUseNativeForeground()
 
 ```
-
-

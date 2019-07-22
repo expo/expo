@@ -9,30 +9,30 @@ TouchableWithoutFeedback supports only one child. If you wish to have several ch
 
 ### Props
 
-* [`accessibilityComponentType`](../touchablewithoutfeedback/#accessibilitycomponenttype)
-* [`accessibilityHint`](../touchablewithoutfeedback/#accessibilityhint)
-* [`accessibilityLabel`](../touchablewithoutfeedback/#accessibilitylabel)
-* [`accessibilityRole`](../view/#accessibilityrole)
-* [`accessibilityStates`](../view/#accessibilitystates)
-* [`accessibilityTraits`](../touchablewithoutfeedback/#accessibilitytraits)
-* [`accessible`](../touchablewithoutfeedback/#accessible)
-* [`delayLongPress`](../touchablewithoutfeedback/#delaylongpress)
-* [`delayPressIn`](../touchablewithoutfeedback/#delaypressin)
-* [`delayPressOut`](../touchablewithoutfeedback/#delaypressout)
-* [`disabled`](../touchablewithoutfeedback/#disabled)
-* [`hitSlop`](../touchablewithoutfeedback/#hitslop)
-* [`onBlur`](../touchablewithoutfeedback/#onblur)
-* [`onFocus`](../touchablewithoutfeedback/#onfocus)
-* [`onLayout`](../touchablewithoutfeedback/#onlayout)
-* [`onLongPress`](../touchablewithoutfeedback/#onlongpress)
-* [`onPress`](../touchablewithoutfeedback/#onpress)
-* [`onPressIn`](../touchablewithoutfeedback/#onpressin)
-* [`onPressOut`](../touchablewithoutfeedback/#onpressout)
-* [`pressRetentionOffset`](../touchablewithoutfeedback/#pressretentionoffset)
+- [`accessibilityComponentType`](../touchablewithoutfeedback/#accessibilitycomponenttype)
+- [`accessibilityHint`](../touchablewithoutfeedback/#accessibilityhint)
+- [`accessibilityLabel`](../touchablewithoutfeedback/#accessibilitylabel)
+- [`accessibilityRole`](../view/#accessibilityrole)
+- [`accessibilityStates`](../view/#accessibilitystates)
+- [`accessibilityTraits`](../touchablewithoutfeedback/#accessibilitytraits)
+- [`accessible`](../touchablewithoutfeedback/#accessible)
+- [`delayLongPress`](../touchablewithoutfeedback/#delaylongpress)
+- [`delayPressIn`](../touchablewithoutfeedback/#delaypressin)
+- [`delayPressOut`](../touchablewithoutfeedback/#delaypressout)
+- [`disabled`](../touchablewithoutfeedback/#disabled)
+- [`hitSlop`](../touchablewithoutfeedback/#hitslop)
+- [`onBlur`](../touchablewithoutfeedback/#onblur)
+- [`onFocus`](../touchablewithoutfeedback/#onfocus)
+- [`onLayout`](../touchablewithoutfeedback/#onlayout)
+- [`onLongPress`](../touchablewithoutfeedback/#onlongpress)
+- [`onPress`](../touchablewithoutfeedback/#onpress)
+- [`onPressIn`](../touchablewithoutfeedback/#onpressin)
+- [`onPressOut`](../touchablewithoutfeedback/#onpressout)
+- [`pressRetentionOffset`](../touchablewithoutfeedback/#pressretentionoffset)
 
 ### Type Definitions
 
-* [`Event`](../touchablewithoutfeedback/#event)
+- [`Event`](../touchablewithoutfeedback/#event)
 
 ---
 
@@ -237,4 +237,3 @@ When the scroll view is disabled, this defines how far your touch may move off o
 | Type   |
 | ------ |
 | Object |
-

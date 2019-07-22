@@ -7,14 +7,14 @@ Use `ProgressViewIOS` to render a UIProgressView on iOS.
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`progress`](../progressviewios/#progress)
-- [`progressImage`](../progressviewios/#progressimage)
-- [`progressTintColor`](../progressviewios/#progresstintcolor)
-- [`progressViewStyle`](../progressviewios/#progressviewstyle)
-- [`trackImage`](../progressviewios/#trackimage)
-- [`trackTintColor`](../progressviewios/#tracktintcolor)
+* [`progress`](../progressviewios/#progress)
+* [`progressImage`](../progressviewios/#progressimage)
+* [`progressTintColor`](../progressviewios/#progresstintcolor)
+* [`progressViewStyle`](../progressviewios/#progressviewstyle)
+* [`trackImage`](../progressviewios/#trackimage)
+* [`trackTintColor`](../progressviewios/#tracktintcolor)
 
 ---
 
@@ -79,4 +79,3 @@ The tint color of the progress bar track.
 | Type   | Required |
 | ------ | -------- |
 | string | No       |
-
