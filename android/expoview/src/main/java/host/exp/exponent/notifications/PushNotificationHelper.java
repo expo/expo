@@ -321,7 +321,7 @@ public class PushNotificationHelper {
     } catch (IOException ie) {
       Log.d(TAG, "The image (" + imageURL + ") in the push notification is not loaded correctly: " + ie.toString());
     } catch (IllegalStateException ise) {
-      Log.d(TAG, "The image URL (\" + imageURL + \") in the push notification is invalid: " + ise.toString());
+      Log.d(TAG, "The image URL (" + imageURL + ") in the push notification is invalid: " + ise.toString());
     }
 
     return imageBitmap;
