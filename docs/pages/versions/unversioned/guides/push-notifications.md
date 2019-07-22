@@ -328,7 +328,7 @@ type PushMessage = {
 
     /**
      * (iOS-specific field)
-     * Remote https url of an audio that will be displayed with the notification.
+     * Remote https url of an audio file that will be played with the notification.
      * Audio restrictions: https://developer.apple.com/documentation/usernotifications/unnotificationattachment
      */
     audio?: string,
