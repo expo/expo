@@ -22,7 +22,9 @@ UM_EXPORT_METHOD_AS(getIosIdForVendorAsync, getIosIdForVendorAsyncWithResolver:(
   if(NSClassFromString(@"UIDevice") && [UIDevice instancesRespondToSelector:@selector(identifierForVendor)]) {
     resolve([[UIDevice currentDevice].identifierForVendor UUIDString]);
   }
-  resolve([NSNull null]);
+  else{
+    resolve([NSNull null]);
+  }
 }
 
 UM_EXPORT_METHOD_AS(getFirstInstallTimeAsync, getFirstInstallTimeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
