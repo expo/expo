@@ -150,7 +150,7 @@ export default {
 
   async getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
     const data = await _subscribeUserToPushAsync();
-    return { type: 'web', data: data };
+    return { type: Platform.OS, data: data };
   },
 };
 
