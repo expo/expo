@@ -16,7 +16,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { Notifications } from 'expo';
 ```
 
-Checkout [this Snack](https://snack.expo.io/@documentation/pushnotifications) to see Notifications in action- but be sure to use a device! Push notifications don't work on simulators/emulators.
+Checkout [this Snack](https://snack.expo.io/@documentation/pushnotifications) to see Notifications in action- but be sure to use a device! Push notifications don't work on simulators/emulators. For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for notifications to work.
 
 ## Subscribing to Notifications
 

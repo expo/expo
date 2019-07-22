@@ -4,7 +4,11 @@ title: Push Notifications
 
 Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Expo. Spoiler alert: it's almost too easy.
 
-> **Note:** iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
+> **Note:**
+>
+> iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
+>
+> For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for push notifications to work.
 
 There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to).
 
@@ -84,7 +88,6 @@ Check out the source if you would like to implement it in another language.
 > For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key, and upload the key to Expo.
 >
 > For Expo for Web, you'll also need to upload VAPID keys to Expo so that Expo can send notifications to your app. **This step is necessary** for push notifications on web to work. Follow the guide on [Using VAPID for Web Push Notifications](../../guides/using-vapid) to learn how to generate or upload your VAPID keys and store them on Expo's server.
-TODO: MENTION HERE ABOUT HTTPS REQUIREMENT
 
 The [Expo push notification tool](https://expo.io/dashboard/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
 
