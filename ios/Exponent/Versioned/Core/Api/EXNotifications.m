@@ -346,7 +346,10 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
   NSString *actionId = [self internalIdForIdentifier:params[@"actionId"]];
   NSString *buttonTitle = params[@"buttonTitle"];
 
-  UNNotificationActionOptions options = UNNotificationActionOptionForeground;
+  UNNotificationActionOptions options = UNNotificationActionOptionNone;
+  if (![params[@"doNotOpenInForeground"] boolValue]) {
+    options += UNNotificationActionOptionForeground;
+  }
   if ([params[@"isDestructive"] boolValue]) {
     options += UNNotificationActionOptionDestructive;
   }

@@ -13,7 +13,7 @@ Let’s get started by initializing a project. `expo init` gives you several opt
 
 <Video file="exploring-managed/init.mp4" spaceAfter={30} />
 
-> _Note: You may see several `peerDependencies` warnings when intalling the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
+> _Note: You may see several `peerDependencies` warnings when installing the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
 
 ## Start the project
 
