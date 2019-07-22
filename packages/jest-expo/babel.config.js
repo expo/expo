@@ -1,6 +1,11 @@
 module.exports = function(api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    // Only use this for the `tests/` folder.
+    env: {
+      test: {
+        presets: ['babel-preset-expo'],
+      },
+    },
   };
 };
