@@ -40,7 +40,7 @@ expo push:web:upload --vapid-pubkey <vapid-public-key> --vapid-pvtkey <vapid-pri
 
 You will also need to add your VAPID public key to your client app's `app.json` file in the `notification.vapidPublicKey` field.
 
-You should also include your username (the username of the person who uploaded the keys) in the `owner` field. You do not have to do this if you choose to not handle web push notifications through Expo server.
+You should also include your username (the username of the Expo account which uploaded the keys) in the `owner` field. You do not have to do this if you choose to not handle web push notifications through Expo server.
 
 Note that you can always find your uploaded VAPID keys by using the command `expo push:web:show`.
 
