@@ -16,7 +16,7 @@ Expo also provides UI components to handle a variety of use-cases that almost al
 
 ## Considering using Expo?
 
-- If you'd like an overview of what Expo offers, you might want to familiarize yourself with the [lifecycle of an Expo project](introduction/project-lifecycle/), which describes how you go from square one to a production iOS and Android app.
+- If you'd like an overview of what Expo offers, you might want to familiarize yourself with the [lifecycle of an Expo project](introduction/managed-vs-bare/), which describes how you go from square one to a production iOS and Android app.
 - For further explanation, it's also good to check out the [Frequently Asked Questions](introduction/faq/).
 
 ## Ready to get started?

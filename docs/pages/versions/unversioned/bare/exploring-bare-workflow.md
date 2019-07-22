@@ -74,6 +74,6 @@ This is also up to you! The Expo updates service does not yet support over the a
 
 ## That's it!
 
-You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](../up-and-running/) to get started coding!
+You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](../hello-world/) to get started coding!
 
 Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [managed workflow walkthrough](../../workflow/exploring-managed-workflow/) for more information.
