@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #include <CoreGraphics/CGGeometry.h>
-#import "NotificationService.h"
+#import "ExNotificationService.h"
 
 @interface ExNotificationService ()
 

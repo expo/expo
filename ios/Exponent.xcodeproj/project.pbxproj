@@ -310,7 +310,7 @@
 		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
 		CDBF79FA20868287009B25D6 /* EXStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBF79F920868287009B25D6 /* EXStoreReview.m */; };
 		E396BB759F55EA40EB120B5A /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */; };
-		EDCF2D4622C6A2EB00D1809C /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = EDCF2D4522C6A2EB00D1809C /* NotificationService.m */; };
+		EDCF2D4622C6A2EB00D1809C /* ExNotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = EDCF2D4522C6A2EB00D1809C /* ExNotificationService.m */; };
 		EDCF2D4A22C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = EDCF2D4222C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F11E531121601059007ACF56 /* EXHeadlessAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */; };
 		F11E531221601059007ACF56 /* EXHeadlessAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F11E531021601059007ACF56 /* EXHeadlessAppLoader.m */; };
@@ -974,8 +974,8 @@
 		CDBF79F920868287009B25D6 /* EXStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStoreReview.m; sourceTree = "<group>"; };
 		EB9676B1E402ED70AEB10A7A /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		EDCF2D4222C6A2EB00D1809C /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		EDCF2D4422C6A2EB00D1809C /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
-		EDCF2D4522C6A2EB00D1809C /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; wrapsLines = 1; };
+		EDCF2D4422C6A2EB00D1809C /* EXNotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXNotificationService.h; sourceTree = "<group>"; };
+		EDCF2D4522C6A2EB00D1809C /* ExNotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExNotificationService.m; sourceTree = "<group>"; wrapsLines = 1; };
 		EDCF2D4722C6A2EB00D1809C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F11E530D21601058007ACF56 /* EXHeadlessAppRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXHeadlessAppRecord.m; sourceTree = "<group>"; };
 		F11E530E21601058007ACF56 /* EXHeadlessAppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXHeadlessAppLoader.h; sourceTree = "<group>"; };
@@ -2186,8 +2186,8 @@
 		EDCF2D4322C6A2EB00D1809C /* ExpoNotificationServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
-				EDCF2D4422C6A2EB00D1809C /* NotificationService.h */,
-				EDCF2D4522C6A2EB00D1809C /* NotificationService.m */,
+				EDCF2D4422C6A2EB00D1809C /* EXNotificationService.h */,
+				EDCF2D4522C6A2EB00D1809C /* ExNotificationService.m */,
 				EDCF2D4722C6A2EB00D1809C /* Info.plist */,
 			);
 			path = ExpoNotificationServiceExtension;
@@ -2309,7 +2309,7 @@
 				TargetAttributes = {
 					78CEE2BF1ACD07D70095B124 = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = 77T9PEZRU7;
+						DevelopmentTeam = C8D8QTF339;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplePay = {
@@ -2344,7 +2344,7 @@
 					};
 					EDCF2D4122C6A2EB00D1809C = {
 						CreatedOnToolsVersion = 10.2.1;
-						DevelopmentTeam = 77T9PEZRU7;
+						DevelopmentTeam = C8D8QTF339;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -2867,7 +2867,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDCF2D4622C6A2EB00D1809C /* NotificationService.m in Sources */,
+				EDCF2D4622C6A2EB00D1809C /* ExNotificationService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3258,7 +3258,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.Exponent.ExpoNotificationServiceExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent.ExpoNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3283,7 +3283,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.Exponent.ExpoNotificationServiceExtension";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent.ExpoNotificationServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
