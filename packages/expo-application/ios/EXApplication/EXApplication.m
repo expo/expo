@@ -35,9 +35,11 @@ UM_EXPORT_METHOD_AS(getFirstInstallTimeAsync, getFirstInstallTimeAsyncWithResolv
   if(error){
     reject(@"ERR_APPLICATION", @"Unable to get first install time of this application.", error);
   }
-  NSTimeInterval timeInMiliseconds = [firstInstallDate timeIntervalSince1970] * 1000;
-  NSNumber* timeInterval = @(timeInMiliseconds);
-  resolve(timeInterval);
+  else{
+    NSTimeInterval timeInMiliseconds = [firstInstallDate timeIntervalSince1970] * 1000;
+    NSNumber* timeInterval = @(timeInMiliseconds);
+    resolve(timeInterval);
+  }
 }
 
 - (NSDictionary *)constantsToExport
