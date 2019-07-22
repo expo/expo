@@ -14,7 +14,7 @@ function guardPermission() {
   }
   if (!navigator.serviceWorker) {
     throw new Error(
-      'Notifications cannot be used because the service worker API is not supported on this device.'
+      'Notifications cannot be used because the service worker API is not supported on this device. This might also happen because your web page does not support SSL (https).'
     );
   }
   if (!navigator.serviceWorker.controller) {
