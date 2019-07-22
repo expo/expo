@@ -294,7 +294,6 @@ export async function test(t) {
             },
           ]),
         });
-        t.expect(response.status).toBe(200);
 
         // Wait for the push notification to arrive.
         await waitFor(5000);
