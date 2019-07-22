@@ -143,9 +143,21 @@ export default {
     const response = await fetch('http://expo.test/--/api/v2/push/getExpoPushToken', {
       method: 'POST',
       body: JSON.stringify(tokenArguments),
-    }).then(response => response.json());
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+        return response;
+      })
+      .then(response => response.json())
+      .catch(error => {
+        throw new CodedError(
+          'E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED',
+          'The device was unable to register for remote notifications with Expo. (' + error + ')'
+        );
+      });
 
-    // TODO: Error handling
     return response.data.expoPushToken;
   },
 
@@ -169,7 +181,16 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
     userVisibleOnly: true,
     applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
   };
-  const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
+  const pushSubscription = await registration.pushManager
+    .subscribe(subscribeOptions)
+    .catch(error => {
+      throw new CodedError(
+        'WEB_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED',
+        'The device was unable to register for remote notifications with the browser endpoint. (' +
+          error +
+          ')'
+      );
+    });
   const pushSubscriptionJson = pushSubscription.toJSON();
 
   const subscriptionObject = {

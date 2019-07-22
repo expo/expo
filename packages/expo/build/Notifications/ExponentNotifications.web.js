@@ -104,8 +104,17 @@ export default {
         const response = await fetch('http://expo.test/--/api/v2/push/getExpoPushToken', {
             method: 'POST',
             body: JSON.stringify(tokenArguments),
-        }).then(response => response.json());
-        // TODO: Error handling
+        })
+            .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response;
+        })
+            .then(response => response.json())
+            .catch(error => {
+            throw new CodedError('E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED', 'The device was unable to register for remote notifications with Expo. (' + error + ')');
+        });
         return response.data.expoPushToken;
     },
     async getDevicePushTokenAsync() {
@@ -118,12 +127,19 @@ async function _subscribeUserToPushAsync() {
         throw new CodedError('ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.');
     }
     guardPermission();
+    // TODO: USE THIS `https://developer.mozilla.org/en-US/docs/Web/API/PushManager/subscribe#Example` .ready.then
     const registration = await navigator.serviceWorker.register('/custom-service-worker.js');
     const subscribeOptions = {
         userVisibleOnly: true,
         applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
     };
-    const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
+    const pushSubscription = await registration.pushManager
+        .subscribe(subscribeOptions)
+        .catch(error => {
+        throw new CodedError('WEB_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED', 'The device was unable to register for remote notifications with the browser endpoint. (' +
+            error +
+            ')');
+    });
     const pushSubscriptionJson = pushSubscription.toJSON();
     const subscriptionObject = {
         endpoint: pushSubscriptionJson.endpoint,
@@ -132,6 +148,8 @@ async function _subscribeUserToPushAsync() {
             auth: pushSubscriptionJson.keys.auth,
         },
     };
+    console.log(pushSubscriptionJson);
+    //TODO: ERROR HANDLING
     if (registration.active) {
         // Store notification icon string in service worker.
         // https://stackoverflow.com/a/35729334/2603230
