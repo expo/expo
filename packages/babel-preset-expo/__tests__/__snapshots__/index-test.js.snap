@@ -1,16 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`aliases @expo/vector-icons 1`] = `
+exports[`metro aliases @expo/vector-icons 1`] = `
 "
 require(\\"@expo/vector-icons\\");
 require(\\"@expo/vector-icons\\");
-
 imposter.require('react-native-vector-icons');
 imposter.import('react-native-vector-icons');"
 `;
 
-exports[`composes with babel-plugin-module-resolver 1`] = `
+exports[`metro composes with babel-plugin-module-resolver 1`] = `
 "
 require(\\"react-native\\");
 require(\\"@expo/vector-icons\\");"
+`;
+
+exports[`webpack aliases @expo/vector-icons 1`] = `
+"
+import\\"@expo/vector-icons\\";
+require(\\"@expo/vector-icons\\");
+imposter.require('react-native-vector-icons');
+imposter.import('react-native-vector-icons');"
+`;
+
+exports[`webpack composes with babel-plugin-module-resolver 1`] = `
+"
+import\\"react-native\\";
+import\\"@expo/vector-icons\\";"
 `;
