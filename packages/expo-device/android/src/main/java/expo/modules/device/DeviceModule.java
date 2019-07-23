@@ -214,21 +214,26 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
   @ExpoMethod
   public void isRootedExperimentalAsync(Promise promise) {
-    boolean isRooted = false;
-    boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
-    String buildTags = Build.TAGS;
-    if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
-      isRooted = true;
-    } else {
-      File file = new File("/system/app/Superuser.apk");
-      if (file.exists()) {
+    try{
+      boolean isRooted = false;
+      boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
+      String buildTags = Build.TAGS;
+      if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
         isRooted = true;
       } else {
-        file = new File("/system/xbin/su");
-        isRooted = isDevice && file.exists();
+        File file = new File("/system/app/Superuser.apk");
+        if (file.exists()) {
+          isRooted = true;
+        } else {
+          file = new File("/system/xbin/su");
+          isRooted = isDevice && file.exists();
+        }
       }
+      promise.resolve(isRooted);
     }
-    promise.resolve(isRooted);
+    catch(SecurityException se){
+      promise.reject("ERR_DEVICE_INVALID_FILE_ACCESS", "No access to read file system", se );
+    }
   }
 
   @ExpoMethod

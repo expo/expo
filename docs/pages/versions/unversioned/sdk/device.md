@@ -48,6 +48,10 @@ import * as Device from 'expo-device';
 
 - [`Device.DeviceType`](#devicedevicetype)
 
+### Errors
+
+- [Error Codes](#error-codes)
+
 ## Constants
 
 ### `Device.brand`
@@ -350,3 +354,9 @@ An enum of the different types of devices supported by Expo, with these values:
 - **`DESKTOP`** -- Desktop or laptop computers, typically with a keyboard and mouse
 - **`TV`** -- TV-based interfaces
 - **`UNKNOWN`** -- An unrecognized device type
+
+## Error Codes
+
+| Code                           | Description                                                                                                               |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| ERR_DEVICE_INVALID_FILE_ACCESS | Error code thrown for `isRootedExperimentalAsync`. This may be thrown if there's no read access to the file or directory. |
