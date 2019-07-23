@@ -276,7 +276,10 @@ export async function geocodeAsync(address: string): Promise<Array<GeocodedLocat
 
     if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
-        throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
+        throw new CodedError(
+          error.code,
+          `${error.message} Please set a Google API Key to use geocoding.`
+        );
       }
       return _googleGeocodeAsync(address);
     }
@@ -298,7 +301,10 @@ export async function reverseGeocodeAsync(location: {
 
     if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
-        throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
+        throw new CodedError(
+          error.code,
+          `${error.message} Please set a Google API Key to use geocoding.`
+        );
       }
       return _googleReverseGeocodeAsync(location);
     }
@@ -379,7 +385,7 @@ function assertGeocodeResults(resultObject: any): void {
         'the request could not be processed due to a server error. The request may succeed if you try again.'
       );
     }
-    throw new Error(`An error occurred during geocoding. ${status}`);
+    throw new CodedError(status, `An error occurred during geocoding.`);
   }
 }
 
