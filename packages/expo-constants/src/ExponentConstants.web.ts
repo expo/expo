@@ -5,7 +5,7 @@ import { CodedError } from '@unimodules/core';
 
 function getExpoPackage() {
   try {
-    return require('expo/package.json');
+    return require('../../expo/package.json');
   } catch (error) {
     throw new CodedError('ERR_CONSTANTS', 'expoVersion & expoRuntimeVersion require the expo package to be installed.')
   }
