@@ -14,7 +14,7 @@ To send push notifications to web projects through Expo's server, three items ar
 
 - A VAPID public key.
 - A VAPID private key.
-- A VAPID subject, which needs to be a URL or a `mailto:` URL. This provides a point of contact in case the push service needs to contact the message sender (as defined [here](https://tools.ietf.org/html/draft-ietf-webpush-vapid-00#section-2.1)).
+- A VAPID subject, which needs to be a URL or a `mailto:` URL. This provides a point of contact in case in exceptional situations where the push service needs to contact the message sender (as defined [here](https://tools.ietf.org/html/draft-ietf-webpush-vapid-00#section-2.1)).
 
 Note that the VAPID subject can be overridden in the individual push notification by providing a `vapidSubject` value in the message. Learn more [here](../../guides/push-notifications/#message-format).
 
