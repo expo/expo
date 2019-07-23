@@ -9,11 +9,15 @@ export async function getIpAddressAsync(): Promise<string> {
   return await ExpoNetwork.getIpAddressAsync();
 }
 
-export async function getMacAddressAsync(): Promise<string> {
+export async function getMacAddressAsync(interfaceName?:string): Promise<string> {
   if (!ExpoNetwork.getMacAddressAsync) {
     throw new UnavailabilityError('expo-network', 'getMacAddressAsync');
   }
-  return await ExpoNetwork.getMacAddressAsync();
+  if (Platform.OS === 'ios') {
+    return await ExpoNetwork.getMacAddressAsync();
+  } else {
+    return await ExpoNetwork.getMacAddressAsync(interfaceName);
+  }
 }
 
 export async function isAirplaneModeEnableAsync(): Promise<boolean> {

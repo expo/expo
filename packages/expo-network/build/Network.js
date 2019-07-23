@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import ExpoNetwork from './ExpoNetwork';
 export async function getIpAddressAsync() {
     if (!ExpoNetwork.getIpAddressAsync) {
@@ -6,11 +6,16 @@ export async function getIpAddressAsync() {
     }
     return await ExpoNetwork.getIpAddressAsync();
 }
-export async function getMacAddressAsync() {
+export async function getMacAddressAsync(interfaceName) {
     if (!ExpoNetwork.getMacAddressAsync) {
         throw new UnavailabilityError('expo-network', 'getMacAddressAsync');
     }
-    return await ExpoNetwork.getMacAddressAsync();
+    if (Platform.OS === 'ios') {
+        return await ExpoNetwork.getMacAddressAsync();
+    }
+    else {
+        return await ExpoNetwork.getMacAddressAsync(interfaceName);
+    }
 }
 export async function isAirplaneModeEnableAsync() {
     if (!ExpoNetwork.isAirplaneModeEnableAsync) {
