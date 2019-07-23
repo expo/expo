@@ -128,7 +128,7 @@ async function _subscribeUserToPushAsync() {
     }
     guardPermission();
     // TODO: USE THIS `https://developer.mozilla.org/en-US/docs/Web/API/PushManager/subscribe#Example` .ready.then
-    const registration = await navigator.serviceWorker.register('/custom-service-worker.js');
+    const registration = await navigator.serviceWorker.register('/expo-service-worker.js');
     const subscribeOptions = {
         userVisibleOnly: true,
         applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
