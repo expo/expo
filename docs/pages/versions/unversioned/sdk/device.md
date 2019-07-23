@@ -222,7 +222,7 @@ Gets the uptime since the last reboot of the device, in milliseconds.
 
 #### Returns
 
-Returns a Promise that resolves to a `number` that represents the milliseconds since last reboot. Android devices does not count time spent in deep sleep. On web, this would throw an `UnavailabilityError`.
+Returns a Promise that resolves to a `number` that represents the milliseconds since last reboot. Android devices does not count time spent in deep sleep. On web, this throws an `UnavailabilityError`.
 
 **Examples**
 
@@ -245,7 +245,7 @@ On web, this would throw an `UnavailabilityError`.
 
 #### Returns
 
-Returns a Promise that resolves to a `boolean` that specifies whether this device is rooted. On web, the boolean is always `false`.
+Returns a Promise that resolves to a `boolean` that specifies whether this device is rooted.
 
 **Examples**
 
@@ -277,7 +277,7 @@ await Device.getDeviceTypeAsync();
 
 #### Returns
 
-Returns a Promise that resolves to an array of strings, each of which is a platform-specific name of a feature available on the current device. On iOS and web, this would throw an `UnavailabilityError`.
+Returns a Promise that resolves to an array of strings, each of which is a platform-specific name of a feature available on the current device. On iOS and web, this throws an `UnavailabilityError`.
 
 **Examples**
 
@@ -297,11 +297,11 @@ await Device.getPlatformFeaturesAsync();
 
 #### Arguments
 
-- **feature (_string_)** -- A string of the feature we want to know that the device has. Can get all available system features in `Device.getSystemFeatureAsync()`. See [here](<https://developer.android.com/reference/android/content/pm/PackageManager#hasSystemFeature(java.lang.String)>) to view acceptable feature strings.
+- **feature (_string_)** -- The platform-specific name of the feature to check for on the device. You can get all available system features with `Device.getSystemFeatureAsync()`. See [here](<https://developer.android.com/reference/android/content/pm/PackageManager#hasSystemFeature(java.lang.String)>) to view acceptable feature strings.
 
 #### Returns
 
-Returns a Promise that resolves to a `boolean` value indicating whether the device has the specified system feature. On iOS and web, this would throw an `UnavailabilityError`.
+Returns a Promise that resolves to a `boolean` value indicating whether the device has the specified system feature. On iOS and web, this throws an `UnavailabilityError`.
 
 **Examples**
 
@@ -315,7 +315,7 @@ await Device.hasPlatformFeatureAsync('amazon.hardware.fire_tv'); // true or fals
 
 #### Returns
 
-Returns a Promise that resolves to the maximum available memory that the Java vm will use, in bytes.  On iOS and web, this would throw an `UnavailabilityError`.
+Returns a Promise that resolves to the maximum available memory that the Java vm will use, in bytes. On iOS and web, this throws an `UnavailabilityError`.
 
 **Examples**
 
@@ -330,7 +330,7 @@ await Device.getMaxMemoryAsync();
 
 #### Returns
 
-Returns a Promise that resolves to a `boolean` that represents whether the calling package is allowed to request package installation.  On iOS and web, this would throw an `UnavailabilityError`.
+Returns a Promise that resolves to a `boolean` that represents whether the calling package is allowed to request package installation. On iOS and web, this throws an `UnavailabilityError`.
 
 **Examples**
 
