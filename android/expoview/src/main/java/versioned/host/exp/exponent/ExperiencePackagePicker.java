@@ -39,6 +39,7 @@ import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
 import expo.modules.mailcomposer.MailComposerPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
+import expo.modules.network.NetworkPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
