@@ -35,4 +35,4 @@ export type WebVoice = Voice & {
   localService: boolean; 
   name: string; 
   voiceURI: string;
-}
+};
