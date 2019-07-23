@@ -5,14 +5,14 @@ export declare enum DeviceType {
     TV = "TV",
     UNKNOWN = "UNKNOWN"
 }
+export declare let modelName: any;
+export declare const modelId: any;
+export declare const osBuildFingerprint: any;
+export declare const designName: any;
+export declare const productName: any;
+export declare const platformApiLevel: any;
 export declare const brand: any;
 export declare const manufacturer: any;
-export declare let modelName: any;
-export declare let osBuildFingerprint: any;
-export declare let modelId: any;
-export declare let designName: any;
-export declare let productName: any;
-export declare let platformApiLevel: any;
 export declare const osName: any;
 export declare const totalMemory: any;
 export declare const isDevice: any;

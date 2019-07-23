@@ -1,17 +1,14 @@
 import UAParser from 'ua-parser-js';
 
 const parser = new UAParser(window.navigator.userAgent);
-var result = parser.getResult();
+const result = parser.getResult();
 
 export default {
-  get name(): string {
-    return 'ExpoDevice';
-  },
   get isDevice(): boolean {
     return true;
   },
-  get modelName(): string | undefined {
-    return result.device.model;
+  get modelName(): string | null {
+    return result.device.model ? result.device.model : null;
   },
   get osName(): string {
     return result.os.name;
@@ -19,14 +16,14 @@ export default {
   get osVersion(): string {
     return result.os.version;
   },
-  get supportedCpuArchitectures(): string[] | undefined {
-    return result.cpu.architecture;
+  get supportedCpuArchitectures(): string[] | null {
+    return result.cpu.architecture ? result.cpu.architecture : null;
   },
-  get deviceName(): string | undefined {
+  get deviceName(): string | null {
     const { browser, engine, os: OS } = parser.getResult();
-    return browser.name || engine.name || OS.name || undefined;
+    return browser.name || engine.name || OS.name || null;
   },
-  get deviceYearClass(): null | number {
+  get deviceYearClass(): null {
     return null;
   },
   get osBuildId(): null {
@@ -38,25 +35,10 @@ export default {
   get totalMemory(): null {
     return null;
   },
-  get modelId(): null {
-    return null;
-  },
   get manufacturer(): null {
     return null;
   },
   get brand(): null {
-    return null;
-  },
-  get osBuildFingerprint(): null {
-    return null;
-  },
-  get designName(): null {
-    return null;
-  },
-  get productName(): null {
-    return null;
-  },
-  get platformApiLevel(): null {
     return null;
   },
 };

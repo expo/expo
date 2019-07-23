@@ -1,21 +1,15 @@
 declare const _default: {
-    readonly name: string;
     readonly isDevice: boolean;
-    readonly modelName: string | undefined;
+    readonly modelName: string | null;
     readonly osName: string;
     readonly osVersion: string;
-    readonly supportedCpuArchitectures: string[] | undefined;
-    readonly deviceName: string | undefined;
-    readonly deviceYearClass: number | null;
+    readonly supportedCpuArchitectures: string[] | null;
+    readonly deviceName: string | null;
+    readonly deviceYearClass: null;
     readonly osBuildId: null;
     readonly osInternalBuildId: null;
     readonly totalMemory: null;
-    readonly modelId: null;
     readonly manufacturer: null;
     readonly brand: null;
-    readonly osBuildFingerprint: null;
-    readonly designName: null;
-    readonly productName: null;
-    readonly platformApiLevel: null;
 };
 export default _default;
