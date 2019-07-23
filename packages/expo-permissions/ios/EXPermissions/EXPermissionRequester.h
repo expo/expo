@@ -27,5 +27,4 @@
 
 @property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
 
-
 @end
