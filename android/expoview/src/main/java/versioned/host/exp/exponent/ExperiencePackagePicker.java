@@ -85,6 +85,7 @@ public class ExperiencePackagePicker {
       new LocationPackage(),
       new MailComposerPackage(),
       new MediaLibraryPackage(),
+      new NetworkPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
       new RandomPackage(),
