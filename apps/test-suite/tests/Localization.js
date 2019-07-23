@@ -86,7 +86,7 @@ export function test(t) {
       }
     });
     if (Platform.OS !== 'web') {
-      t.it('Gets the current timzezone', async () => {
+      t.it('Gets the current timezone', async () => {
         const result = Localization.timezone;
         t.expect(result).toBeDefined();
         t.expect(typeof result).toBe('string');
