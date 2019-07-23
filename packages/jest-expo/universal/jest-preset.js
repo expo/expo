@@ -47,7 +47,6 @@ function getWebPreset() {
       ...reactNativePreset.moduleNameMapper,
     },
     // Default to ios, native so the RN package can be transformed correctly.
-    // TODO: Bacon: Don't use react-native package for web testing.
     ...getPlatformPreset({ name: 'web', color: 'magenta' }, ['web']),
   };
 }
