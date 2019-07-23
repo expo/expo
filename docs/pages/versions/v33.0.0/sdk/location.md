@@ -224,8 +224,6 @@ Registers for receiving location updates that can also come when the app is in t
 
 > Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
 
-> Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
-
 #### Returns
 
 A promise resolving once the task with location updates is registered.

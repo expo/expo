@@ -10,6 +10,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -139,6 +140,15 @@ public class UpdatesModule extends ReactContextBaseJavaModule {
         sendErrorAndReject("E_FETCH_MANIFEST_FAILED", "Unable to fetch updated manifest", new Exception(e), promise);
       }
     });
+  }
+
+  @ReactMethod
+  public void clearUpdateCacheAsync(final String abiVersion, final Promise promise) {
+    try {
+      promise.resolve(Exponent.getInstance().clearAllJSBundleCache(abiVersion));
+    } catch (IOException e) {
+      promise.reject(e);
+    }
   }
 
   private void fetchJSBundleAsync(final JSONObject manifest, final Promise promise) {

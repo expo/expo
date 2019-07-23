@@ -54,6 +54,9 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
 
     constants.put("sessionId", mSessionId);
     constants.put("statusBarHeight", getStatusBarHeight());
+    constants.put("deviceYearClass", getDeviceYearClass());
+    constants.put("deviceName", getDeviceName());
+    constants.put("isDevice", getIsDevice());
     constants.put("systemFonts", getSystemFonts());
     constants.put("systemVersion", getSystemVersion());
 
@@ -72,6 +75,18 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
 
   public String getAppOwnership() {
     return "guest";
+  }
+
+  public String getDeviceName() {
+    return Build.MODEL;
+  }
+
+  public int getDeviceYearClass() {
+    return YearClass.get(mContext);
+  }
+
+  public boolean getIsDevice() {
+    return !isRunningOnGenymotion() && !isRunningOnStockEmulator();
   }
 
   public int getStatusBarHeight() {
@@ -98,4 +113,11 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     return result;
   }
 
+  private static boolean isRunningOnGenymotion() {
+    return Build.FINGERPRINT.contains("vbox");
+  }
+
+  private static boolean isRunningOnStockEmulator() {
+    return Build.FINGERPRINT.contains("generic");
+  }
 }
