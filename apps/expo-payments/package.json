@@ -11,7 +11,7 @@
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "dependencies": {
-    "expo": "~34.0.0-rc.0",
+    "expo": "~34.0.0-rc.1",
     "expokit": "^33.0.3",
     "expo-in-app-purchases": "~6.0.0-rc.0",
     "react": "16.8.3",
