@@ -27,9 +27,7 @@ To register your platform with RNPM, your module's name must match one of these 
 
 You must also have an entry in your `package.json` like this:
 
-
 ```json
-
 {
   "rnpm": {
     "haste": {
@@ -38,9 +36,6 @@ You must also have an entry in your `package.json` like this:
     }
   }
 }
-
 ```
 
-
 `"providesModuleNodeModules"` is an array of modules that will get added to the Haste module search path, and `"platforms"` is an array of platform suffixes that will be added as valid platforms.
-

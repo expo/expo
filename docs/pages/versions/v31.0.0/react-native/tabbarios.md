@@ -5,16 +5,16 @@ title: TabBarIOS
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`barStyle`](../tabbarios/#barstyle)
-- [`barTintColor`](../tabbarios/#bartintcolor)
-- [`itemPositioning`](../tabbarios/#itempositioning)
-- [`style`](../tabbarios/#style)
-- [`tintColor`](../tabbarios/#tintcolor)
-- [`translucent`](../tabbarios/#translucent)
-- [`unselectedItemTintColor`](../tabbarios/#unselecteditemtintcolor)
-- [`unselectedTintColor`](../tabbarios/#unselectedtintcolor)
+* [`barStyle`](../tabbarios/#barstyle)
+* [`barTintColor`](../tabbarios/#bartintcolor)
+* [`itemPositioning`](../tabbarios/#itempositioning)
+* [`style`](../tabbarios/#style)
+* [`tintColor`](../tabbarios/#tintcolor)
+* [`translucent`](../tabbarios/#translucent)
+* [`unselectedItemTintColor`](../tabbarios/#unselecteditemtintcolor)
+* [`unselectedTintColor`](../tabbarios/#unselectedtintcolor)
 
 ---
 
@@ -36,8 +36,8 @@ The style of the tab bar. Supported values are 'default', 'black'. Use 'black' i
 
 Background color of the tab bar
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -46,9 +46,9 @@ Background color of the tab bar
 
 Specifies tab bar item positioning. Available values are:
 
-* fill - distributes items across the entire width of the tab bar
-* center - centers item in the available tab bar space
-* auto (default) - distributes items dynamically according to the user interface idiom. In a horizontally compact environment (e.g. iPhone 5) this value defaults to `fill`, in a horizontally regular one (e.g. iPad) it defaults to center.
+- fill - distributes items across the entire width of the tab bar
+- center - centers item in the available tab bar space
+- auto (default) - distributes items dynamically according to the user interface idiom. In a horizontally compact environment (e.g. iPhone 5) this value defaults to `fill`, in a horizontally regular one (e.g. iPad) it defaults to center.
 
 | Type                           | Required |
 | ------------------------------ | -------- |
@@ -68,8 +68,8 @@ Specifies tab bar item positioning. Available values are:
 
 Color of the currently selected tab icon
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -88,8 +88,8 @@ A Boolean value that indicates whether the tab bar is translucent
 
 Color of unselected tab icons. Available since iOS 10.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -98,7 +98,6 @@ Color of unselected tab icons. Available since iOS 10.
 
 Color of text on unselected tabs
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
-

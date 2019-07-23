@@ -68,12 +68,14 @@
     xcrun simctl install booted /path/to/your/Exponent.app
     xcrun simctl launch booted host.exp.Exponent
     ```
+  - Set the `AWS_BUCKET` env variable to `exp-ios-simulator-apps`
   - Upload the build by running:
     ```
     et ios-add-simulator-build --app [Path to .app] --appVersion [version]`
     ```
     - `[Path to .app]` refers to the `Exponent.app` archive you created in step 1.
     - `[version]` refers to the short iOS version string, such as `2.4.4`.
+    - You might need to [set your AWS credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html), if you haven't done so yet.
   - When you're ready to sync the versions change from step 2 to production, run `et promote-versions`.
 
 ## 9. Submitting to App Store

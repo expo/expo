@@ -33,7 +33,7 @@ export default class DocumentationSidebar extends React.Component {
         info={info}
         url={this.props.url}
         asPath={this.props.asPath}>
-        {info.name}
+        {info.sidebarTitle || info.name}
       </DocumentationSidebarLink>
     );
   };

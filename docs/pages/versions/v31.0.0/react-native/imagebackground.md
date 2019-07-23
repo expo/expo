@@ -11,7 +11,6 @@ Note that you must specify some width and height style attributes.
 
 ## Example
 
-
 ```javascript
 
 return (
@@ -22,13 +21,12 @@ return (
 
 ```
 
-
 ### Props
 
-* [`Image` props...](../image/#props)
-* [`style`](../imagebackground/#style)
-* [`imageStyle`](../imagebackground/#imageStyle)
-* [`imageRef`](../imagebackground/#imageRef)
+- [`Image` props...](../image/#props)
+- [`style`](../imagebackground/#style)
+- [`imageStyle`](../imagebackground/#imageStyle)
+- [`imageRef`](../imagebackground/#imageRef)
 
 ---
 
@@ -38,14 +36,14 @@ return (
 
 ### `style`
 
-| Type                               | Required |
-| ---------------------------------- | -------- |
+| Type                                | Required |
+| ----------------------------------- | -------- |
 | [view styles](../view-style-props/) | No       |
 
 ### `imageStyle`
 
-| Type                                 | Required |
-| ------------------------------------ | -------- |
+| Type                                  | Required |
+| ------------------------------------- | -------- |
 | [image styles](../image-style-props/) | No       |
 
 ### `imageRef`
@@ -55,4 +53,3 @@ Allows to set a reference to the inner `Image` component
 | Type                                                  | Required |
 | ----------------------------------------------------- | -------- |
 | [Ref](https://reactjs.org/docs/refs-and-the-dom.html) | No       |
-

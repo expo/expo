@@ -7,11 +7,9 @@ Android-only React component used to indicate that the app is loading or there i
 
 Example:
 
-
 ```javascript
-
-import React, {Component} from 'react';
-import {ProgressBarAndroid, AppRegistry, StyleSheet, View} from 'react-native';
+import React, { Component } from 'react';
+import { ProgressBarAndroid, StyleSheet, View } from 'react-native';
 
 export default class App extends Component {
   render() {
@@ -20,11 +18,7 @@ export default class App extends Component {
         <ProgressBarAndroid />
         <ProgressBarAndroid styleAttr="Horizontal" />
         <ProgressBarAndroid styleAttr="Horizontal" color="#2196F3" />
-        <ProgressBarAndroid
-          styleAttr="Horizontal"
-          indeterminate={false}
-          progress={0.5}
-        />
+        <ProgressBarAndroid styleAttr="Horizontal" indeterminate={false} progress={0.5} />
       </View>
     );
   }
@@ -37,11 +31,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
-
-AppRegistry.registerComponent('App', () => App);
-
 ```
-
 
 ### Props
 
@@ -74,8 +64,8 @@ Whether to show the ProgressBar (true, the default) or hide it (false).
 
 Color of the progress bar.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -125,4 +115,3 @@ Used to locate this view in end-to-end tests.
 | Type   | Required |
 | ------ | -------- |
 | string | No       |
-

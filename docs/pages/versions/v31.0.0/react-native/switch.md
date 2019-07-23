@@ -9,16 +9,16 @@ This is a controlled component that requires an `onValueChange` callback that up
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`disabled`](../switch/#disabled)
-- [`trackColor`](../switch/#trackcolor)
-- [`ios_backgroundColor`](../switch/#ios-backgroundcolor)
-- [`onValueChange`](../switch/#onvaluechange)
-- [`testID`](../switch/#testid)
-- [`thumbColor`](../switch/#thumbcolor)
-- [`tintColor`](../switch/#tintcolor)
-- [`value`](../switch/#value)
+* [`disabled`](../switch/#disabled)
+* [`trackColor`](../switch/#trackcolor)
+* [`ios_backgroundColor`](../switch/#ios-backgroundcolor)
+* [`onValueChange`](../switch/#onvaluechange)
+* [`testID`](../switch/#testid)
+* [`thumbColor`](../switch/#thumbcolor)
+* [`tintColor`](../switch/#tintcolor)
+* [`value`](../switch/#value)
 
 ---
 
@@ -42,8 +42,8 @@ Custom colors for the switch track.
 
 _iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](../switch/#ios_backgroundColor).
 
-| Type                                                          | Required |
-| ------------------------------------------------------------- | -------- |
+| Type                                                            | Required |
+| --------------------------------------------------------------- | -------- |
 | object: {false: [color](../colors/), true: [color](../colors/)} | No       |
 
 ---
@@ -52,8 +52,8 @@ _iOS_: When the switch value is false, the track shrinks into the border. If you
 
 On iOS, custom color for the background. This background color can be seen either when the switch value is false or when the switch is disabled (and the switch is translucent).
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -82,8 +82,8 @@ Used to locate this view in end-to-end tests.
 
 Color of the foreground switch grip. If this is set on iOS, the switch grip will lose its drop shadow.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -94,8 +94,8 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 
 Border color on iOS and background color on Android when the switch is turned off.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -107,4 +107,3 @@ The value of the switch. If true the switch will be turned on. Default value is 
 | Type | Required |
 | ---- | -------- |
 | bool | No       |
-

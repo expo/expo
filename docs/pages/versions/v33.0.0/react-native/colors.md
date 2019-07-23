@@ -180,4 +180,3 @@ You can also use color names as values. React Native follows the [CSS3 specifica
 - ![#f5f5f5](https://placehold.it/15/f5f5f5/000000?text=+) <color whitesmoke /> whitesmoke (#f5f5f5)
 - ![#ffff00](https://placehold.it/15/ffff00/000000?text=+) <color yellow /> yellow (#ffff00)
 - ![#9acd32](https://placehold.it/15/9acd32/000000?text=+) <color yellowgreen /> yellowgreen (#9acd32)
-

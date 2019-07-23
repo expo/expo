@@ -166,7 +166,6 @@ When true, the scroll view automatically centers the content when the content is
 
 These styles will be applied to the scroll view content container which wraps all of the child views. Example:
 
-
 ```javascript
 
 return (
@@ -182,7 +181,6 @@ const styles = StyleSheet.create({
 
 ```
 
-
 | Type                                 | Required |
 | ------------------------------------ | -------- |
 | StyleSheetPropType(View Style props) | No       |
@@ -193,9 +191,9 @@ const styles = StyleSheet.create({
 
 The amount by which the scroll view content is inset from the edges of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
 
-| Type | Required | Platform |
-| --- | --- | --- |
-| object: {top: number, left: number, bottom: number, right: number} | No | iOS |
+| Type                                                               | Required | Platform |
+| ------------------------------------------------------------------ | -------- | -------- |
+| object: {top: number, left: number, bottom: number, right: number} | No       | iOS      |
 
 ---
 
@@ -266,8 +264,8 @@ When true, the default JS pan responder on the ScrollView is disabled, and full 
 
 Sometimes a scrollview takes up more space than its content fills. When this is the case, this prop will fill the rest of the scrollview with a color to avoid setting a background and creating unnecessary overdraw. This is an advanced optimization that is not needed in the general case.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | Android  |
 
 ---
@@ -351,9 +349,9 @@ Caveat 1: Reordering elements in the scrollview with this enabled will probably 
 
 Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute visibility. Occlusion, transforms, and other complexity won't be taken into account as to whether content is "visible" or not.
 
-| Type | Required | Platform |
-| --- | --- | --- |
-| object: { minIndexForVisible: number, autoscrollToTopThreshold: number } | No | iOS |
+| Type                                                                     | Required | Platform |
+| ------------------------------------------------------------------------ | -------- | -------- |
+| object: { minIndexForVisible: number, autoscrollToTopThreshold: number } | No       | iOS      |
 
 ---
 
@@ -568,9 +566,9 @@ This controls how often the scroll event will be fired while scrolling (as a tim
 
 The amount by which the scroll view indicators are inset from the edges of the scroll view. This should normally be set to the same value as the `contentInset`. Defaults to `{0, 0, 0, 0}`.
 
-| Type | Required | Platform |
-| --- | --- | --- |
-| object: {top: number, left: number, bottom: number, right: number} | No | iOS |
+| Type                                                               | Required | Platform |
+| ------------------------------------------------------------------ | -------- | -------- |
+| object: {top: number, left: number, bottom: number, right: number} | No       | iOS      |
 
 ---
 
@@ -710,13 +708,9 @@ The current scale of the scroll view content. The default value is 1.0.
 
 ### `flashScrollIndicators()`
 
-
 ```javascript
-
 flashScrollIndicators();
-
 ```
-
 
 Displays the scroll indicators momentarily.
 
@@ -724,19 +718,9 @@ Displays the scroll indicators momentarily.
 
 ### `scrollTo()`
 
-
 ```javascript
-
-scrollTo(
-  ([y]: number),
-  object,
-  ([x]: number),
-  ([animated]: boolean),
-  ([duration]: number),
-);
-
+scrollTo(([y]: number), object, ([x]: number), ([animated]: boolean), ([duration]: number));
 ```
-
 
 Scrolls to a given x, y offset, either immediately, with a smooth animation, or, for Android only, a custom animation duration time.
 
@@ -754,13 +738,9 @@ Note: The weird function signature is due to the fact that, for historical reaso
 
 ### `scrollToEnd()`
 
-
 ```javascript
-
-scrollToEnd(([options]: {animated: boolean, duration: number}));
-
+scrollToEnd(([options]: { animated: boolean, duration: number }));
 ```
-
 
 If this is a vertical ScrollView scrolls to the bottom. If this is a horizontal ScrollView scrolls to the right.
 
@@ -770,13 +750,8 @@ Use `scrollToEnd({animated: true})` for smooth animated scrolling, `scrollToEnd(
 
 ### `scrollWithoutAnimationTo()`
 
-
 ```javascript
-
 scrollWithoutAnimationTo(y, x);
-
 ```
 
-
 Deprecated, use `scrollTo` instead.
-

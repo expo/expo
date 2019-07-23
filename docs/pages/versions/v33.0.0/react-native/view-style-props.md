@@ -43,8 +43,8 @@ title: View Style Props
 
 ### `borderRightColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -59,8 +59,8 @@ title: View Style Props
 
 ### `borderBottomColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -107,24 +107,24 @@ title: View Style Props
 
 ### `borderColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
 
 ### `borderEndColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
 
 ### `borderLeftColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -149,8 +149,8 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 ### `backgroundColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -165,8 +165,8 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 ### `borderStartColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -181,8 +181,8 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
 ### `borderTopColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -250,4 +250,3 @@ If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | number | No       | Android  |
-
