@@ -20,6 +20,10 @@ import * as Network from 'expo-network';
 - [`Network.getMacAddressAsync()`](#networkgetmacaddressasyncinterfacename)
 - [`Network.isAirplaneModeEnableAsync()`](#networkisairplanemodeenableasync) (Android only)
 
+### Errors
+
+- [Error Codes](#error-codes)
+
 ## Methods
 
 ### `Network.getIpAddressAsync()`
@@ -39,7 +43,7 @@ await Network.getIpAddressAsync();
 
 ### `Network.getMacAddressAsync(interfaceName)`
 
-Gets the specified network interface's Mac address
+Gets the specified network interface's Mac address. On Android, it requires [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) permission to access available network interfaces.
 
 #### Arguments (Android Only)
 
@@ -70,3 +74,12 @@ Returns a `Promise` that resolves to the `boolean` value for whether the device 
 await Application.isAirplaneModeEnableAsync();
 // false
 ```
+
+## Error Codes
+
+| Code                                    | Description                                                                                                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ERR_NETWORK_UNKNOWN_HOST                | Unknown Wifi host when trying to access `WifiManager` in `getIpAddressAsync`                                                                                              |
+| ERR_NETWORK_UNDEFINED_INTERFACE         | An undefined `interfaceName` was passed as an argument in `getMacAddressAsync`.                                                                                           |
+| ERR_NETWORK_SOCKET_EXCEPTION            | Encounter error in creating or accessing the socket in `getMacAddressAsync`.                                                                                              |
+| ERR_NETWORK_INVALID_PERMISSION_INTERNET | No permission of [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) in `getMacAddressAsync`. |
