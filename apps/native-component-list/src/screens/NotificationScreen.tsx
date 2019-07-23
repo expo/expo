@@ -62,6 +62,10 @@ export default class NotificationScreen extends React.Component {
           onPress={() => this._sendNotificationAsync('video')}
           title="Send me a push notification with a video"
         />
+        <ListButton
+          onPress={() => this._sendNotificationAsync('imageWithCustomIcon')}
+          title="Send me a push notification with a image and a custom icon"
+        />
 
         <HeadingText>Custom notification categories</HeadingText>
         <ListButton
@@ -249,8 +253,14 @@ export default class NotificationScreen extends React.Component {
 
   _sendNotificationAsync = async (type: string) => {
     if (type !== 'simple' && type !== 'image' && Platform.OS !== 'ios') {
-      alert('Notifications with rich content other than images are only supported on iOS.');
-      return;
+      alert(
+        'While you will still receive the notification, you will not see any rich content since rich content other than images are only supported on iOS.'
+      );
+    }
+    if (type === 'imageWithCustomIcon' && Platform.OS === 'ios') {
+      alert(
+        'While you will still receive the notification, you will not see any custom icon since custom icons are not supported on iOS.'
+      );
     }
     const permission = await this._obtainRemoteNotifPermissionsAsync();
     if (permission.status === 'granted') {

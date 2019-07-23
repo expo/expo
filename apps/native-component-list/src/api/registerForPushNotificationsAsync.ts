@@ -46,6 +46,19 @@ const demoBodies: { [type: string]: any } = {
       video: 'https://cdn.eso.org/videos/medium_podcast/OutThere_trailer_en.mp4',
     },
   },
+  imageWithCustomIcon: {
+    title: 'Jaguar head shot',
+    body:
+      'Potrait of a jaguar at the Milwaukee County Zoological Gardens in Milwaukee, Wisconsin.\n\nSource: https://commons.wikimedia.org/wiki/File:Jaguar_head_shot-edit2.jpg and https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Jaguar_head_icon.svg/600px-Jaguar_head_icon.svg.png',
+    richContent: {
+      image: 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Jaguar_head_shot-edit2.jpg',
+    },
+    icon:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Jaguar_head_icon.svg/600px-Jaguar_head_icon.svg.png',
+    data: {
+      binomialName: 'Panthera onca',
+    },
+  },
 };
 
 // In this test app we contact the Expo push service directly. You *never*
