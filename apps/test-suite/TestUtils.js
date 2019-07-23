@@ -39,6 +39,7 @@ export function getTestModules() {
 
   const modules = [
     require('./tests/Basic'),
+    require('./tests/Application'),
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/Crypto'),
