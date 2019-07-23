@@ -49,7 +49,7 @@ async function _handleSinglePermissionRequestAsync(
 async function _handleMultiPermissionsRequestAsync(
   types: PermissionType[],
   handlePermission: (type: PermissionType) => Promise<PermissionInfo>
-): Promise<any> {
+): Promise<PermissionResponse> {
   if (!types.length) {
     throw new Error('At least one permission type must be specified');
   }
@@ -59,16 +59,10 @@ async function _handleMultiPermissionsRequestAsync(
       [type]: await _handleSinglePermissionRequestAsync(type, handlePermission),
     }))
   )
-    .then(permissions =>
-      permissions.reduce((permission, acc) => {
-        return { ...acc, ...permission };
-      }, {})
-    )
-    .then(permissions => {
-      return {
-        status: coalesceStatuses(permissions),
-        expires: coalesceExpirations(permissions),
-        permissions: { ...permissions },
-      };
-    });
+    .then(permissions => permissions.reduce((permission, acc) => ({ ...acc, ...permission }), {}))
+    .then(permissions => ({
+      status: coalesceStatuses(permissions),
+      expires: coalesceExpirations(permissions),
+      permissions: { ...permissions },
+    }));
 }
