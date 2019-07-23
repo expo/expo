@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform, CodedError } from '@unimodules/core';
 import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';
@@ -74,7 +74,7 @@ interface LocationTaskOptions {
     notificationBody: string;
     notificationColor?: string;
   };
-};
+}
 
 interface Region {
   identifier?: string;
@@ -108,10 +108,7 @@ enum LocationActivityType {
   Airborne = 5,
 }
 
-export {
-  LocationAccuracy as Accuracy,
-  LocationActivityType as ActivityType,
-};
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
 
 export enum GeofencingEventType {
   Enter = 1,
@@ -321,6 +318,15 @@ async function _googleGeocodeAsync(address: string): Promise<GeocodedLocation[]>
   if (status === 'ZERO_RESULTS') {
     return [];
   } else if (status !== 'OK') {
+    // https://developers.google.com/maps/documentation/geocoding/intro
+    if (resultObject.error_message) {
+      throw new CodedError(status, resultObject.error_message);
+    } else if (status === 'UNKNOWN_ERROR') {
+      throw new CodedError(
+        status,
+        'the request could not be processed due to a server error. The request may succeed if you try again.'
+      );
+    }
     throw new Error(`An error occurred during geocoding. ${status}`);
   }
 

@@ -1,8 +1,7 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform, CodedError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoLocation from './ExpoLocation';
 const LocationEventEmitter = new EventEmitter(ExpoLocation);
-;
 var LocationAccuracy;
 (function (LocationAccuracy) {
     LocationAccuracy[LocationAccuracy["Lowest"] = 1] = "Lowest";
@@ -20,7 +19,7 @@ var LocationActivityType;
     LocationActivityType[LocationActivityType["OtherNavigation"] = 4] = "OtherNavigation";
     LocationActivityType[LocationActivityType["Airborne"] = 5] = "Airborne";
 })(LocationActivityType || (LocationActivityType = {}));
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, };
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
 export var GeofencingEventType;
 (function (GeofencingEventType) {
     GeofencingEventType[GeofencingEventType["Enter"] = 1] = "Enter";
@@ -196,6 +195,13 @@ async function _googleGeocodeAsync(address) {
         return [];
     }
     else if (status !== 'OK') {
+        // https://developers.google.com/maps/documentation/geocoding/intro
+        if (resultObject.error_message) {
+            throw new CodedError(status, resultObject.error_message);
+        }
+        else if (status === 'UNKNOWN_ERROR') {
+            throw new CodedError(status, 'the request could not be processed due to a server error. The request may succeed if you try again.');
+        }
         throw new Error(`An error occurred during geocoding. ${status}`);
     }
     return resultObject.results.map(result => {
