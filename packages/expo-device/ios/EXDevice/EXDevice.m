@@ -140,8 +140,11 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
 - (nullable NSArray<NSString *> *)cpuType {
   /* https://stackoverflow.com/questions/19859388/how-can-i-get-the-ios-device-cpu-architecture-in-runtime */
   const NXArchInfo *info = NXGetLocalArchInfo(); // NXGetLocalArchInfo() returns the NXArchInfo for the local host, or NULL if none is known
+  if(!info) {
+    return nil;
+  }
   NSString *typeOfCpu = [NSString stringWithUTF8String:info->description];
-  return typeOfCpu ? @[typeOfCpu] : nil;
+  return @[typeOfCpu];
 }
 
 
