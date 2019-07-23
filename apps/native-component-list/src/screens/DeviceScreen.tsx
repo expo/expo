@@ -3,7 +3,7 @@ import { ScrollView, View, Text, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
-import { DeviceType } from 'expo-device/build/Device.types';
+import { DeviceType } from 'expo-device';
 
 interface DeviceConstantName {
   name?: string;
@@ -93,9 +93,8 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
       this.setState({ isSideLoadingEnabled: isSideLoadingEnabled.toString() });
     });
   };
-  };
 
-  render() {
+  render () {
     return (
       <ScrollView style={{ padding: 20, flex: 1, margin: 10 }}>
         <DeviceConstants name="Device Brand" value={Device.brand}></DeviceConstants>
