@@ -2,17 +2,49 @@
 
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMCore/UMUtilities.h>
-#import <EXPermissions/EXAudioRecordingPermissionRequester.h>
-#import <EXPermissions/EXCalendarRequester.h>
-#import <EXPermissions/EXCameraPermissionRequester.h>
-#import <EXPermissions/EXContactsRequester.h>
-#import <EXPermissions/EXLocationRequester.h>
+
 #import <EXPermissions/EXPermissions.h>
-#import <EXPermissions/EXUserNotificationRequester.h>
-#import <EXPermissions/EXRemindersRequester.h>
-#import <EXPermissions/EXRemoteNotificationRequester.h>
-#import <EXPermissions/EXCameraRollRequester.h>
-#import <EXPermissions/EXSystemBrightnessRequester.h>
+
+#if __has_include(<EXPermissions/EXAudioRecordingPermissionRequester.h>)
+  #import <EXPermissions/EXAudioRecordingPermissionRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXCalendarRequester.h>)
+  #import <EXPermissions/EXCalendarRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXCameraPermissionRequester.h>)
+  #import <EXPermissions/EXCameraPermissionRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXContactsRequester.h>)
+  #import <EXPermissions/EXContactsRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXLocationRequester.h>)
+  #import <EXPermissions/EXLocationRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXUserNotificationRequester.h>)
+  #import <EXPermissions/EXUserNotificationRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXRemindersRequester.h>)
+  #import <EXPermissions/EXRemindersRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXRemoteNotificationRequester.h>)
+  #import <EXPermissions/EXRemoteNotificationRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXCameraRollRequester.h>)
+  #import <EXPermissions/EXCameraRollRequester.h>
+#endif
+
+#if __has_include(<EXPermissions/EXSystemBrightnessRequester.h>)
+  #import <EXPermissions/EXSystemBrightnessRequester.h>
+#endif
+
 
 NSString * const EXPermissionExpiresNever = @"never";
 
@@ -35,18 +67,40 @@ UM_EXPORT_MODULE(ExpoPermissions);
 
 + (NSDictionary<NSString *, Class> *)defaultRequesters
 {
-  return @{
+  NSDictionary *requesters =  @{
+        #if __has_include(<EXPermissions/EXAudioRecordingPermissionRequester.h>)
            @"audioRecording": [EXAudioRecordingPermissionRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXCalendarRequester.h>)
            @"calendar": [EXCalendarRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXCameraPermissionRequester.h>)
            @"camera": [EXCameraPermissionRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXCameraRollRequester.h>)
            @"cameraRoll": [EXCameraRollRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXContactsRequester.h>)
            @"contacts": [EXContactsRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXLocationRequester.h>)
            @"location": [EXLocationRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXRemoteNotificationRequester.h>)
            @"notifications": [EXRemoteNotificationRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXRemindersRequester.h>)
            @"reminders": [EXRemindersRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXUserNotificationRequester.h>)
            @"userFacingNotifications": [EXUserNotificationRequester class],
+        #endif
+        #if __has_include(<EXPermissions/EXSystemBrightnessRequester.h>)
            @"systemBrightness": [EXSystemBrightnessRequester class]
+        #endif
            };
+  
+  return requesters;
 }
 
 - (instancetype)init
@@ -100,10 +154,12 @@ UM_EXPORT_METHOD_AS(askAsync,
 {
   Class requesterClass = _requesters[type];
   if (requesterClass) {
-    if ([requesterClass respondsToSelector:@selector(permissionsWithModuleRegistry:)]) {
-      return [requesterClass permissionsWithModuleRegistry:_moduleRegistry];
-    }
-    
+    #if __has_include(<EXPermissions/EXRemoteNotificationRequester.h>) || \
+        __has_include(<EXPermissions/EXUserNotificationRequester.h>)
+        if ([requesterClass respondsToSelector:@selector(permissionsWithModuleRegistry:)]) {
+          return [requesterClass permissionsWithModuleRegistry:_moduleRegistry];
+        }
+    #endif
     return [requesterClass permissions];
   }
   
@@ -210,10 +266,12 @@ UM_EXPORT_METHOD_AS(askAsync,
 {
   Class requesterClass = _requesters[type];
   if (requesterClass) {
-    if ([requesterClass instancesRespondToSelector:@selector(initWithModuleRegistry:)]) {
-      return [[requesterClass alloc] initWithModuleRegistry:_moduleRegistry];
-    }
-    
+    #if __has_include(<EXPermissions/EXRemoteNotificationRequester.h>) || \
+    __has_include(<EXPermissions/EXUserNotificationRequester.h>)
+        if ([requesterClass instancesRespondToSelector:@selector(initWithModuleRegistry:)]) {
+          return [[requesterClass alloc] initWithModuleRegistry:_moduleRegistry];
+        }
+    #endif
     return [[requesterClass alloc] init];
   }
   

@@ -28,15 +28,11 @@ async function _handleMultiPermissionsRequestAsync(types, handlePermission) {
     return await Promise.all(types.map(async (type) => ({
         [type]: await _handleSinglePermissionRequestAsync(type, handlePermission),
     })))
-        .then(permissions => permissions.reduce((permission, acc) => {
-        return { ...acc, ...permission };
-    }, {}))
-        .then(permissions => {
-        return {
-            status: coalesceStatuses(permissions),
-            expires: coalesceExpirations(permissions),
-            permissions: { ...permissions },
-        };
-    });
+        .then(permissions => permissions.reduce((permission, acc) => ({ ...acc, ...permission }), {}))
+        .then(permissions => ({
+        status: coalesceStatuses(permissions),
+        expires: coalesceExpirations(permissions),
+        permissions: { ...permissions },
+    }));
 }
 //# sourceMappingURL=Permissions.js.map
