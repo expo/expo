@@ -85,7 +85,7 @@ export default {
     },
     async getExponentPushTokenAsync() {
         if (!Constants.manifest.owner || !Constants.manifest.slug) {
-            throw new CodedError('ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG', 'You must provide `owner` and `slug` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.');
+            throw new CodedError('E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `owner` and `slug` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.');
         }
         const data = await _subscribeUserToPushAsync();
         const experienceId = `@${Constants.manifest.owner}/${Constants.manifest.slug}`;
@@ -121,7 +121,7 @@ export default {
 };
 async function _subscribeUserToPushAsync() {
     if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
-        throw new CodedError('ERR_WEB_PUSH_NOTIFICATIONS_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Read more here: https://docs.expo.io/versions/latest/guides/using-vapid/.');
+        throw new CodedError('E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.');
     }
     guardPermission();
     // TODO: USE THIS `https://developer.mozilla.org/en-US/docs/Web/API/PushManager/subscribe#Example` .ready.then
@@ -133,7 +133,7 @@ async function _subscribeUserToPushAsync() {
     const pushSubscription = await registration.pushManager
         .subscribe(subscribeOptions)
         .catch(error => {
-        throw new CodedError('WEB_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED', 'The device was unable to register for remote notifications with the browser endpoint. (' +
+        throw new CodedError('E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED', 'The device was unable to register for remote notifications with the browser endpoint. (' +
             error +
             ')');
     });

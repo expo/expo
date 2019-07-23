@@ -56,6 +56,12 @@ Returns a Promise that resolves to a token string. This token can be provided to
 
 The Promise will be rejected if the app does not have permission to send notifications. Be sure to check the result of `Permissions.askAsync(Permissions.NOTIFICATIONS)` before attempting to get an Expo push token.
 
+#### Error Codes
+
+- `E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED` - the device was unable to register for remote notifications with Expo.
+- `E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG` - (web only) you did not provide `owner`, `slug`, and `notification.vapidPublicKey` in `app.json` to use push notifications in Expo for Web. ([Learn more here](../../guides/using-vapid/))
+- `E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED` - (web only) the device was unable to register for remote notifications with the browser endpoint.
+
 ### `Notifications.presentLocalNotificationAsync(localNotification)`
 
 Trigger a local notification immediately.
@@ -226,3 +232,11 @@ A Promise that resolves to an object with the following fields:
 
 - **type (_string_)** -- Either "apns", "fcm", or "gcm".
 - **data (_string_)** -- The push token as a string.
+
+## Error Codes
+
+| Code                                               | Description                                                                                      |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED          | The device was unable to register for remote notifications with Expo.                            |
+| E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG            | (Web only) You did not provide `owner`, `slug`, and `notification.vapidPublicKey` in `app.json` to use push notifications in Expo for Web. ([Learn more here](../../guides/using-vapid/)) |
+| E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED | (Web only) The device was unable to register for remote notifications with the browser endpoint. |
