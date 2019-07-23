@@ -48,19 +48,13 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
 {
 #if !(TARGET_IPHONE_SIMULATOR)
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:@"/Applications/Cydia.app"]) {
-    return YES;
-  } else if ([fileManager fileExistsAtPath:@"/Library/MobileSubstrate/MobileSubstrate.dylib"]) {
-    return YES;
-  } else if ([fileManager fileExistsAtPath:@"/bin/bash"]) {
-    return YES;
-  } else if ([fileManager fileExistsAtPath:@"/usr/sbin/sshd"]) {
-    return YES;
-  } else if ([fileManager fileExistsAtPath:@"/etc/apt"]) {
-    return YES;
-  } else if ([fileManager fileExistsAtPath:@"/usr/bin/ssh"]) {
-    return YES;
-  } else if ([fileManager fileExistsAtPath:@"/private/var/lib/apt/"]) {
+  if ([fileManager fileExistsAtPath:@"/Applications/Cydia.app"] ||
+      [fileManager fileExistsAtPath:@"/Library/MobileSubstrate/MobileSubstrate.dylib"] ||
+      [fileManager fileExistsAtPath:@"/bin/bash"] ||
+      [fileManager fileExistsAtPath:@"/usr/sbin/sshd"] ||
+      [fileManager fileExistsAtPath:@"/etc/apt"] ||
+      [fileManager fileExistsAtPath:@"/usr/bin/ssh"] ||
+      [fileManager fileExistsAtPath:@"/private/var/lib/apt/"]) {
     return YES;
   }
   
@@ -143,9 +137,9 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
   }
 }
 
-- (NSArray *)getCpuType {
+- (nullable NSArray<NSString *> *)cpuType {
   /* https://stackoverflow.com/questions/19859388/how-can-i-get-the-ios-device-cpu-architecture-in-runtime */
-  const NXArchInfo *info = NXGetLocalArchInfo(); // NXGetLocalArchInfo() returns the NXArchInfo for the local host, or NULL if not none is known
+  const NXArchInfo *info = NXGetLocalArchInfo(); // NXGetLocalArchInfo() returns the NXArchInfo for the local host, or NULL if none is known
   NSString *typeOfCpu = [NSString stringWithUTF8String:info->description];
   return typeOfCpu ? @[typeOfCpu] : nil;
 }
@@ -171,7 +165,7 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
   NSMutableData *buffer = [[NSMutableData alloc] initWithLength:bufferSize];
   int status = sysctlbyname("kern.osversion", buffer.mutableBytes, &bufferSize, NULL, 0);
   if (status != 0) {
-    return @"not available";
+    return nil;
   }
   return [[NSString alloc] initWithCString:buffer.mutableBytes encoding:NSUTF8StringEncoding];
 #endif
@@ -331,7 +325,7 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
            @"modelId": UMNullIfNil([self deviceId]),
            @"isDevice": @([self isDevice]),
            @"manufacturer": @"Apple",
-           @"supportedCpuArchitectures": UMNullIfNil([self getCpuType]),
+           @"supportedCpuArchitectures": UMNullIfNil([self cpuType]),
            @"osName": currentDevice.systemName,
            @"totalMemory": [self totalMemory] ?: @(0),
            @"osVersion": currentDevice.systemVersion,
