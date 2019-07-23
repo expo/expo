@@ -2,7 +2,7 @@
 title: Network
 ---
 
-This module provides useful information about the native application, such the its ID, app name, and build version.
+This module provides useful information about the device's network such as its ip address, mac address and check for airplane mode.
 
 ## Installation
 
