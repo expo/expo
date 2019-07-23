@@ -314,21 +314,11 @@ async function _googleGeocodeAsync(address: string): Promise<GeocodedLocation[]>
   const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
   const resultObject = await result.json();
 
-  const { status } = resultObject;
-  if (status === 'ZERO_RESULTS') {
+  if (resultObject.status === 'ZERO_RESULTS') {
     return [];
-  } else if (status !== 'OK') {
-    // https://developers.google.com/maps/documentation/geocoding/intro
-    if (resultObject.error_message) {
-      throw new CodedError(status, resultObject.error_message);
-    } else if (status === 'UNKNOWN_ERROR') {
-      throw new CodedError(
-        status,
-        'the request could not be processed due to a server error. The request may succeed if you try again.'
-      );
-    }
-    throw new Error(`An error occurred during geocoding. ${status}`);
   }
+
+  assertGeocodeResults(resultObject);
 
   return resultObject.results.map(result => {
     let location = result.geometry.location;
@@ -349,9 +339,11 @@ async function _googleReverseGeocodeAsync(options: {
   );
   const resultObject = await result.json();
 
-  if (resultObject.status !== 'OK') {
-    throw new Error('An error occurred during geocoding.');
+  if (resultObject.status === 'ZERO_RESULTS') {
+    return [];
   }
+
+  assertGeocodeResults(resultObject);
 
   return resultObject.results.map(result => {
     const address: any = {};
@@ -373,6 +365,22 @@ async function _googleReverseGeocodeAsync(options: {
     });
     return address as Address;
   });
+}
+
+// https://developers.google.com/maps/documentation/geocoding/intro
+function assertGeocodeResults(resultObject: any): void {
+  const { status, error_message } = resultObject;
+  if (status !== 'ZERO_RESULTS' && status !== 'OK') {
+    if (error_message) {
+      throw new CodedError(status, error_message);
+    } else if (status === 'UNKNOWN_ERROR') {
+      throw new CodedError(
+        status,
+        'the request could not be processed due to a server error. The request may succeed if you try again.'
+      );
+    }
+    throw new Error(`An error occurred during geocoding. ${status}`);
+  }
 }
 
 // Polyfill: navigator.geolocation.watchPosition
