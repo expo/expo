@@ -1,16 +1,17 @@
-module.exports = function(api, options) {
+module.exports = function(api, options = {}) {
+  const { web = {}, native = {} } = options;
   const isWeb = api.caller(isTargetWeb);
+  const platformOptions = isWeb
+    ? { disableImportExportTransform: true, ...web }
+    : { disableImportExportTransform: false, ...native };
 
-  if (isWeb) {
-    return getWebConfig(options.web);
-  }
-
-  return getNativeConfig();
-};
-
-function getNativeConfig() {
   return {
-    presets: ['module:metro-react-native-babel-preset'],
+    presets: [
+      [
+        'module:metro-react-native-babel-preset',
+        { disableImportExportTransform: platformOptions.disableImportExportTransform },
+      ],
+    ],
     plugins: [
       [
         'babel-plugin-module-resolver',
@@ -21,84 +22,11 @@ function getNativeConfig() {
         },
       ],
       ['@babel/plugin-proposal-decorators', { legacy: true }],
-    ],
+      isWeb && ['babel-plugin-react-native-web'],
+    ].filter(Boolean),
   };
-}
-
-function getWebConfig(options = {}) {
-  const defaultPlugins = [
-    ['@babel/plugin-transform-flow-strip-types'],
-    [
-      'babel-plugin-module-resolver',
-      {
-        alias: {
-          'react-native-vector-icons': '@expo/vector-icons',
-        },
-      },
-    ],
-    ['@babel/plugin-proposal-decorators', { legacy: true }],
-    [
-      '@babel/plugin-proposal-class-properties',
-      // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
-      { loose: true },
-    ],
-    ['@babel/plugin-syntax-dynamic-import'],
-    ['@babel/plugin-transform-react-jsx'],
-    ['babel-plugin-react-native-web'],
-  ];
-
-  const otherPlugins = [
-    ['@babel/plugin-proposal-export-default-from'],
-    ['@babel/plugin-transform-object-assign'],
-    ['@babel/plugin-proposal-nullish-coalescing-operator', { loose: true }],
-    ['@babel/plugin-proposal-optional-chaining', { loose: true }],
-    ['@babel/plugin-transform-react-display-name'],
-    ['@babel/plugin-transform-react-jsx-source'],
-    options.transformImportExport && ['@babel/plugin-transform-modules-commonjs'],
-  ].filter(Boolean);
-
-  return {
-    comments: false,
-    compact: true,
-
-    presets: [
-      [
-        '@babel/preset-env',
-        {
-          modules: false,
-          targets: {
-            esmodules: true,
-          },
-        },
-      ],
-    ],
-    overrides: [
-      {
-        plugins: defaultPlugins,
-      },
-      {
-        test: isTypeScriptSource,
-        plugins: [['@babel/plugin-transform-typescript', { isTSX: false }]],
-      },
-      {
-        test: isTSXSource,
-        plugins: [['@babel/plugin-transform-typescript', { isTSX: true }]],
-      },
-      {
-        plugins: otherPlugins,
-      },
-    ],
-  };
-}
+};
 
 function isTargetWeb(caller) {
   return caller && caller.name === 'babel-loader';
-}
-
-function isTypeScriptSource(fileName) {
-  return !!fileName && fileName.endsWith('.ts');
-}
-
-function isTSXSource(fileName) {
-  return !!fileName && fileName.endsWith('.tsx');
 }

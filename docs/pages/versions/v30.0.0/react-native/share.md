@@ -5,9 +5,9 @@ title: Share
 
 ### Methods
 
-* [`share`](../share/#share)
-* [`sharedAction`](../share/#sharedaction)
-* [`dismissedAction`](../share/#dismissedaction)
+- [`share`](../share/#share)
+- [`sharedAction`](../share/#sharedaction)
+- [`dismissedAction`](../share/#dismissedaction)
 
 ---
 
@@ -17,13 +17,11 @@ title: Share
 
 ### `share()`
 
-
 ```javascript
 
 static share(content, options)
 
 ```
-
 
 Open a dialog to share text content.
 
@@ -33,12 +31,12 @@ In Android, Returns a Promise which always be resolved with action being `Share.
 
 ### Content
 
-* `message` - a message to share
-* `title` - title of the message
+- `message` - a message to share
+- `title` - title of the message
 
 #### iOS
 
-* `url` - an URL to share
+- `url` - an URL to share
 
 At least one of URL and message is required.
 
@@ -46,18 +44,17 @@ At least one of URL and message is required.
 
 #### iOS
 
-* `subject` - a subject to share via email
-* `excludedActivityTypes`
-* `tintColor`
+- `subject` - a subject to share via email
+- `excludedActivityTypes`
+- `tintColor`
 
 #### Android
 
-* `dialogTitle`
+- `dialogTitle`
 
 ---
 
 ### `sharedAction()`
-
 
 ```javascript
 
@@ -65,13 +62,11 @@ static sharedAction()
 
 ```
 
-
 The content was successfully shared.
 
 ---
 
 ### `dismissedAction()`
-
 
 ```javascript
 
@@ -79,6 +74,4 @@ static dismissedAction()
 
 ```
 
-
 The dialog has been dismissed. @platform ios
-

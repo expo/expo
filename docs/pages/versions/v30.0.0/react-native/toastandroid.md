@@ -14,9 +14,7 @@ The 'showWithGravityAndOffset' function adds on the ability to specify offset Th
 
 Basic usage:
 
-
 ```javascript
-
 ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
 ToastAndroid.showWithGravity(
   'All Your Base Are Belong To Us',
@@ -30,23 +28,21 @@ ToastAndroid.showWithGravityAndOffset(
   25,
   50
 );
-
 ```
-
 
 ### Methods
 
-* [`show`](../toastandroid/#show)
-* [`showWithGravity`](../toastandroid/#showwithgravity)
-* [`showWithGravityAndOffset`](../toastandroid/#showwithgravityandoffset)
+- [`show`](../toastandroid/#show)
+- [`showWithGravity`](../toastandroid/#showwithgravity)
+- [`showWithGravityAndOffset`](../toastandroid/#showwithgravityandoffset)
 
 ### Properties
 
-* [`SHORT`](../toastandroid/#short)
-* [`LONG`](../toastandroid/#long)
-* [`TOP`](../toastandroid/#top)
-* [`BOTTOM`](../toastandroid/#bottom)
-* [`CENTER`](../toastandroid/#center)
+- [`SHORT`](../toastandroid/#short)
+- [`LONG`](../toastandroid/#long)
+- [`TOP`](../toastandroid/#top)
+- [`BOTTOM`](../toastandroid/#bottom)
+- [`CENTER`](../toastandroid/#center)
 
 ---
 
@@ -56,18 +52,15 @@ ToastAndroid.showWithGravityAndOffset(
 
 ### `show()`
 
-
 ```javascript
 
 static show(message, duration)
 
 ```
 
-
 ---
 
 ### `showWithGravity()`
-
 
 ```javascript
 
@@ -75,11 +68,9 @@ static showWithGravity(message, duration, gravity)
 
 ```
 
-
 ---
 
 ### `showWithGravityAndOffset()`
-
 
 ```javascript
 
@@ -87,64 +78,42 @@ static showWithGravityAndOffset(message, duration, gravity, xOffset, yOffset)
 
 ```
 
-
 ## Properties
 
 ### `SHORT`
 
-
 ```javascript
-
 ToastAndroid.SHORT;
-
 ```
-
 
 ---
 
 ### `LONG`
 
-
 ```javascript
-
 ToastAndroid.LONG;
-
 ```
-
 
 ---
 
 ### `TOP`
 
-
 ```javascript
-
 ToastAndroid.TOP;
-
 ```
-
 
 ---
 
 ### `BOTTOM`
 
-
 ```javascript
-
 ToastAndroid.BOTTOM;
-
 ```
-
 
 ---
 
 ### `CENTER`
 
-
 ```javascript
-
 ToastAndroid.CENTER;
-
 ```
-
-
