@@ -172,6 +172,12 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
   guardPermission();
 
   const registration = await navigator.serviceWorker.register('/expo-service-worker.js');
+  if (!registration.active) {
+    throw new Error(
+      'Notifications might not be working because the service worker API is not active.'
+    );
+  }
+
   const subscribeOptions = {
     userVisibleOnly: true,
     applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
@@ -196,12 +202,11 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
     },
   };
 
-  if (registration.active) {
-    // Store notification icon string in service worker.
-    // https://stackoverflow.com/a/35729334/2603230
-    let notificationIcon = (Constants.manifest.notification || {}).icon;
-    registration.active.postMessage(JSON.stringify({ notificationIcon }));
-  }
+  // Store notification icon string in service worker.
+  // This message is received by `/expo-service-worker.js`.
+  // https://stackoverflow.com/a/35729334/2603230
+  let notificationIcon = (Constants.manifest.notification || {}).icon;
+  registration.active.postMessage(JSON.stringify({ notificationIcon }));
 
   return subscriptionObject;
 }

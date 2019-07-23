@@ -124,8 +124,10 @@ async function _subscribeUserToPushAsync() {
         throw new CodedError('E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.');
     }
     guardPermission();
-    // TODO: USE THIS `https://developer.mozilla.org/en-US/docs/Web/API/PushManager/subscribe#Example` .ready.then
     const registration = await navigator.serviceWorker.register('/expo-service-worker.js');
+    if (!registration.active) {
+        throw new Error('Notifications might not be working because the service worker API is not active.');
+    }
     const subscribeOptions = {
         userVisibleOnly: true,
         applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
@@ -145,14 +147,11 @@ async function _subscribeUserToPushAsync() {
             auth: pushSubscriptionJson.keys.auth,
         },
     };
-    //console.log(pushSubscriptionJson);
-    //TODO: ERROR HANDLING
-    if (registration.active) {
-        // Store notification icon string in service worker.
-        // https://stackoverflow.com/a/35729334/2603230
-        let notificationIcon = (Constants.manifest.notification || {}).icon;
-        registration.active.postMessage(JSON.stringify({ notificationIcon }));
-    }
+    // Store notification icon string in service worker.
+    // This message is received by `/expo-service-worker.js`.
+    // https://stackoverflow.com/a/35729334/2603230
+    let notificationIcon = (Constants.manifest.notification || {}).icon;
+    registration.active.postMessage(JSON.stringify({ notificationIcon }));
     return subscriptionObject;
 }
 // https://github.com/web-push-libs/web-push#using-vapid-key-for-applicationserverkey
