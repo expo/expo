@@ -14,6 +14,11 @@ require(\\"react-native\\");
 require(\\"@expo/vector-icons\\");"
 `;
 
+exports[`metro uses the platform's react-native import 1`] = `
+"
+var _reactNative=require(\\"react-native\\");"
+`;
+
 exports[`webpack aliases @expo/vector-icons 1`] = `
 "
 import\\"@expo/vector-icons\\";
@@ -27,3 +32,5 @@ exports[`webpack composes with babel-plugin-module-resolver 1`] = `
 import\\"react-native\\";
 import\\"@expo/vector-icons\\";"
 `;
+
+exports[`webpack uses the platform's react-native import 1`] = `"import View from\\"react-native-web/dist/exports/View\\";"`;
