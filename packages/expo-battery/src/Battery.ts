@@ -26,7 +26,7 @@ export async function getBatteryStateAsync(): Promise<BatteryState> {
     case BatteryState.FULL:
       return BatteryState.FULL;
     case BatteryState.UNPLUGGED:
-      return BatteryState.CHARGING;
+      return BatteryState.UNPLUGGED;
     case BatteryState.UNKNOWN:
       return BatteryState.UNKNOWN;
     default:

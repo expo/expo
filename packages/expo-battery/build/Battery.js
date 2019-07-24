@@ -12,7 +12,7 @@ export async function getBatteryStateAsync() {
         case "FULL" /* FULL */:
             return "FULL" /* FULL */;
         case "UNPLUGGED" /* UNPLUGGED */:
-            return "CHARGING" /* CHARGING */;
+            return "UNPLUGGED" /* UNPLUGGED */;
         case "UNKNOWN" /* UNKNOWN */:
             return "UNKNOWN" /* UNKNOWN */;
         default:
