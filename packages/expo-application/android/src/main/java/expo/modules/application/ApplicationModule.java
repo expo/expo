@@ -60,7 +60,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
     String packageName = mContext.getPackageName();
 
     constants.put("applicationName", applicationName);
-    constants.put("bundleId", packageName);
+    constants.put("applicationId", packageName);
 
     PackageManager packageManager = mContext.getPackageManager();
     try {
@@ -77,7 +77,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
   }
 
   @ExpoMethod
-  public void getFirstInstallTimeAsync(Promise promise) {
+  public void getInstallationTimeAsync(Promise promise) {
     PackageManager packageManager = mContext.getPackageManager();
     String packageName = mContext.getPackageName();
     try {
@@ -85,7 +85,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
       promise.resolve((double)info.firstInstallTime);
     } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
-      promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get first install time of this application. Could not get package info or package name.", e);
+      promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get install time of this application. Could not get package info or package name.", e);
     }
   }
 
