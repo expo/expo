@@ -8,7 +8,7 @@ export default {
     return true;
   },
   get modelName(): string | null {
-    return result.device.model ? result.device.model : null;
+    return result.device.model || null;
   },
   get osName(): string {
     return result.os.name;
@@ -17,7 +17,7 @@ export default {
     return result.os.version;
   },
   get supportedCpuArchitectures(): string[] | null {
-    return result.cpu.architecture ? result.cpu.architecture : null;
+    return result.cpu.architecture ? [result.cpu.architecture] : null;
   },
   get deviceName(): string | null {
     const { browser, engine, os: OS } = parser.getResult();
