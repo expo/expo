@@ -1,17 +1,17 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXNetwork/EXNetworkModule.h>
+#import <EXNetwork/EXNetwork.h>
 
 #import <ifaddrs.h>
 #import <arpa/inet.h>
 
-@interface EXNetworkModule ()
+@interface EXNetwork ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
-@implementation EXNetworkModule
+@implementation EXNetwork
 
 UM_EXPORT_MODULE(ExpoNetwork);
 

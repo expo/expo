@@ -3,5 +3,5 @@
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXNetworkModule : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXNetwork : UMExportedModule <UMModuleRegistryConsumer>
 @end
