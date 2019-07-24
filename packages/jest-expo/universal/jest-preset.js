@@ -7,13 +7,10 @@ function getModuleFileExtensions(...platforms) {
   let fileExtensions = [];
 
   // Support both TypeScript and JavaScript
-  for (const language of ['t', 'j']) {
-    // Support JS and JSX
-    for (const extension of [`${language}s`, `${language}sx`]) {
-      // Ensure order is correct: [platformA.js, platformB.js, js]
-      for (const platform of platforms.concat([''])) {
-        fileExtensions.push([platform, extension].filter(Boolean).join('.'));
-      }
+  for (const extension of ['ts', 'tsx', 'js', 'jsx']) {
+    // Ensure order is correct: [platformA.js, platformB.js, js]
+    for (const platform of platforms.concat([''])) {
+      fileExtensions.push([platform, extension].filter(Boolean).join('.'));
     }
   }
   // Always add this last
@@ -47,7 +44,7 @@ function getWebPreset() {
       ...reactNativePreset.moduleNameMapper,
     },
     // Default to ios, native so the RN package can be transformed correctly.
-    ...getPlatformPreset({ name: 'web', color: 'magenta' }, ['web']),
+    ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web']),
   };
 }
 
