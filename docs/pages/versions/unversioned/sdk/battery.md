@@ -16,22 +16,76 @@ import * as Battery from 'expo-battery';
 
 Note: Displays a warning on iOS if battery monitoring is not enabled, or if attempted on iOS simulator (where monitoring is not possible)
 
+### Methods
+
+- [`Battery.getBatteryLevelAsync()`](#batterygetbatterylevelasync)
+- [`Battery.getBatteryStateAsync()`](#batterygetbatterystateasync)
+- [`Battery.isLowPowerModeEnableAsync()`](#batteryislowpowermodeenableasync)
+- [`Battery.getPowerStateAsync()`](#batterygetpowerstateasync)
+
+### Event Subscriptions
+
+- [`Battery.addBatteryLevelListener(callback)`](#batteryaddbatterylevellistenercallback)
+- [`Battery.addBatteryStateListener(callback)`](#batteryaddbatterystatelistenercallback)
+- [`Battery.addLowPowerModeListener(callback)`](#batteryaddlowpowermodelistenercallback)
+
+### Enum Types
+
+- [`Battery.BatteryState`](#batterybatterystate)
+
+### Errors
+
+- [Error Codes](#error-codes)
+
 ## Methods
 
 ### `Battery.getBatteryLevelAsync()`
 
-Get the battery level of the device as a float between 0 and 1.
+Gets the battery level of the device as a number between 0 and 1.
+
+On Android, the default value is `-1`. If cannot retrieve current battery level, this throws `NullPointerException` with error code [`ERR_BATTERY_INVALID_ACCESS_BATTERY_LEVEL`](#error-codes).
 
 #### Returns
 
-A `Promise` that resolves to a `float` representing the battery level.
+A `Promise` that resolves to a `number` representing the battery level.
 
 **Examples**
 
 ```js
-Battery.getBatteryLevelAsync().then(batteryLevel => {
-  // 0.759999
-});
+await Battery.getBatteryLevelAsync();
+// 0.759999
+```
+
+### `Battery.getBatteryStateAsync()`
+
+Tells the battery's current state.
+
+#### Returns
+
+Returns a `Promise` that resolves to a [`Battery.BatteryState`](#batterybatterystate) enum value for whether the device is any of the four states.
+
+**Examples**
+
+```js
+await Battery.getBatteryStateAsync();
+// BatteryState.CHARGING
+```
+
+### `Battery.isLowPowerModeEnableAsync()`
+
+Gets the current status of Low Power mode on iOS and Power Saver mode on Android.
+
+#### Returns
+
+Returns a `Promise` that resolves to a `boolean` value of either `true` or `false`, indicating whether low power mode is enabled or disabled, respectively.
+
+**Examples**
+
+Low Power Mode (iOS) or Power Saver Mode (Android) are enabled.
+
+```js
+await Battery.isLowPowerModeEnableAsync();
+// true
 ```
 
 ### `Battery.getPowerStateAsync()`
@@ -44,67 +98,30 @@ Returns a promise with an object with the following fields:
 
 - **batteryLevel (_float_)** -- a float between 0 and 1.
 
-- **batteryState (_string_)** -- `unplugged` if unplugged, `charging` if charging, `full` if battery level is full, `unknown` if battery in an unknown state.
+- **batteryState (_BatteryState_)** -- a [`Battery.BatteryState`](#batterybatterystate) enum value.
 
-- **lowPowerMode (_string_)** -- `on` if lowPowerMode is on, `off` if lowPowerMode is off.
-
-**Examples**
-
-```js
-Battery.getPowerStateAsync().then(powerState => {
-  // {
-  //   batteryLevel: 0.759999,
-  //   batteryState: 'unplugged',
-  //   lowPowerMode: 'on',
-  // }
-});
-```
-
-### `Battery.getBatteryStateAsync()`
-
-Tells the battery's current state.
-
-- `unplugged` if battery is not charging
-- `charging` if battery is charging
-- `full` if battery level is full
-- `unknown` if the battery state is unknown or unable to access
-
-#### Returns
-
-Returns a `Promise` that resolves to a `string` value for whether the device is any of the four state above.
+- **lowPowerMode (_boolean_)** -- `true` if lowPowerMode is on, `false` if lowPowerMode is off.
 
 **Examples**
 
 ```js
-Battery.getBatteryStateAsync().then(batteryState => {
-  // 'charging'
-});
+await Battery.getPowerStateAsync();
+// {
+//   batteryLevel: 0.759999,
+//   batteryState: BatteryState.UNPLUGGED,
+//   lowPowerMode: true,
+// }
 ```
 
-### `Battery.getLowPowerModeStatusAsync()`
+## Event Subscriptions
 
-Gets the current status of Low Power mode on iOS and Power Saver mode on Android. 
-
-#### Returns 
-
-Returns a `Promise` that resolves to a `string` value of either `on` or `off`, indicating whether low power mode is enabled or disabled, respectively. 
-
-**Examples** 
-
-Low Power Mode (iOS) or Power Saver Mode (Android) are enabled.
-```js
-Battery.getLowPowerModeStatusAsync().then(lowPowerMode => {
-  // 'on'
-})
-```
-
-### `Battery.watchBatteryLevelChange(callback)`
+### `Battery.addBatteryLevelListener(callback)`
 
 Subscribe to the battery level change updates.
 
 On iOS devices, the event would be fired when the battery level drops up to 1 percent, but is only fired once per minute at maximum.
 
-On Android devices, the event would be fired only when significant changes happens. When battery level dropped below `"android.intent.action.BATTERY_LOW"` or up to `"android.intent.action.BATTERY_OKAY"` from low battery level. Click [ here ](https://developer.android.com/training/monitoring-device-state/battery-monitoring) to view more explanation on the official docs.
+On Android devices, the event would be fired only when significant changes happens. When battery level dropped below [`"android.intent.action.BATTERY_LOW"`](https://developer.android.com/reference/android/content/Intent#ACTION_BATTERY_LOW) or up to [`"android.intent.action.BATTERY_OKAY"`](https://developer.android.com/reference/android/content/Intent#ACTION_BATTERY_OKAY) from low battery level. See [here](https://developer.android.com/training/monitoring-device-state/battery-monitoring) to view more explanation on the official docs.
 
 #### Arguments
 
@@ -114,9 +131,9 @@ On Android devices, the event would be fired only when significant changes happe
 
 - An `EventSubscription` object that you can call `remove()` on when you would like to unsubscribe from the listener.
 
-### `Battery.watchBatteryStateChange(callback)`
+### `Battery.addBatteryStateListener(callback)`
 
-Subscribe to the battery state change updates. One of the four possible battery state values, `unplugged`, `full`, `unknown`, or `charging`, will be returned.
+Subscribe to the battery state change updates. Returns a [`Battery.BatteryState`](#batterybatterystate) enum value for whether the device is any of the four states.
 
 #### Arguments
 
@@ -126,7 +143,7 @@ Subscribe to the battery state change updates. One of the four possible battery 
 
 - An `EventSubscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
 
-### `Battery.watchPowerModeChange(callback)`
+### `Battery.addLowPowerModeListener(callback)`
 
 Subscribe to Low Power Mode (iOS) or Power Saver Mode (Android) updates. The event fired whenever the power mode is toggled.
 
@@ -137,6 +154,24 @@ Subscribe to Low Power Mode (iOS) or Power Saver Mode (Android) updates. The eve
 #### Returns
 
 - An `EventSubscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
+
+## Enum types
+
+### `Battery.BatteryState`
+
+- **`BatteryState.UNPLUGGED`** - if battery is not charging or discharging.
+- **`BatteryState.CHARGING`** - if battery is charging.
+- **`BatteryState.FULL`** - if the battery level is full.
+- **`BatteryState.UNKNOWN`** - if the battery state is unknown or unable to access.
+
+## Error Codes
+
+| Code                                     | Description                                                                                                                       |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| ERR_BATTERY_INVALID_ACCESS_BATTERY_LEVEL | Unable to access battery level.                                                                                                   |
+| ERR_BATTERY_INVALID_ACCESS_BATTERY_STATE | Unable to access battery state.                                                                                                   |
+| ERR_BATTERY_INVALID_ACCESS_POWER_SAVER   | Unable to access Low Power Mode(iOS) or Power Saver(Android).                                                                     |
+| ERR_BATTERY_INVALID_ACCESS_POWER_STATE   | Unable to access power state. Any invalid access from the three states above in `getPowerStateAsync` would throw this error code. |
 
 **Examples**
 
@@ -166,7 +201,7 @@ export default class App extends React.Component {
   }
 
   _subscribe = () => {
-    this._subscription = Battery.watchBatteryLevelChange({ batteryLevel }) => {
+    this._subscription = Battery.addBatteryLevelListener({ batteryLevel }) => {
       this.setState({ batteryLevel });
       console.log('batteryLevel changed!', batteryLevel);
     });
