@@ -26,6 +26,24 @@ describe.each([['metro'], ['webpack', WEBPACK_CALLER]])('%s', (_name, caller) =>
     }
   });
 
+  it(`uses the platform's react-native import`, () => {
+    let options = {
+      babelrc: false,
+      presets: [preset],
+      filename: 'unknown',
+      // Make the snapshot easier to read
+      retainLines: true,
+      caller,
+    };
+
+    let sourceCode = `
+import { View } from 'react-native';
+`;
+    let { code } = babel.transform(sourceCode, options);
+
+    expect(code).toMatchSnapshot();
+  });
+
   it(`aliases @expo/vector-icons`, () => {
     let options = {
       babelrc: false,
