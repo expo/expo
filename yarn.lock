@@ -3387,6 +3387,19 @@ babel-polyfill@^6.23.0:
     core-js "^2.5.0"
     regenerator-runtime "^0.10.5"
 
+babel-preset-expo@^5.0.0, babel-preset-expo@^5.1.0, babel-preset-expo@^5.1.1:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/babel-preset-expo/-/babel-preset-expo-5.2.0.tgz#37f466e65c29ab518d91d04c299d84cef07590d2"
+  integrity sha512-yNHYwSFk7fvVCVJM3m3Vi/BVBNAeox1Iw1tHhCJGbLnpYkR94wst/I8IF9y+K01FhJ98epIK1S0Go3EmHJbbzA==
+  dependencies:
+    "@babel/core" "^7.1.0"
+    "@babel/plugin-proposal-decorators" "^7.1.0"
+    "@babel/plugin-transform-modules-commonjs" "^7.4.4"
+    "@babel/preset-env" "^7.3.1"
+    babel-plugin-module-resolver "^3.1.1"
+    babel-plugin-react-native-web "^0.11.2"
+    metro-react-native-babel-preset "^0.51.1"
+
 babel-preset-fbjs@^3.0.1, babel-preset-fbjs@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/babel-preset-fbjs/-/babel-preset-fbjs-3.2.0.tgz#c0e6347d3e0379ed84b3c2434d3467567aa05297"
