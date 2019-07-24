@@ -37,7 +37,9 @@
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   EKEventStore *eventStore = [[EKEventStore alloc] init];
+  UM_WEAKIFY(self)
   [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
+    UM_STRONGIFY(self)
     // Error code 100 is a when the user denies permission; in that case we don't want to reject.
     if (error && error.code != 100) {
       reject(@"E_CALENDAR_ERROR_UNKNOWN", error.localizedDescription, error);

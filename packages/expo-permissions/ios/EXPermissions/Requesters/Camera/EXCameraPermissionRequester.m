@@ -41,14 +41,12 @@
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  __weak EXCameraPermissionRequester *weakSelf = self;
+  UM_WEAKIFY(self)
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-    __strong EXCameraPermissionRequester *strongSelf = weakSelf;
-    if (strongSelf) {
-      resolve([[strongSelf class] permissions]);
-      if (strongSelf.delegate) {
-        [strongSelf.delegate permissionRequesterDidFinish:strongSelf];
-      }
+    UM_STRONGIFY(self)
+    resolve([[self class] permissions]);
+    if (self.delegate) {
+      [self.delegate permissionRequesterDidFinish:self];
     }
   }];
 }
