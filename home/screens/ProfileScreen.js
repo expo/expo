@@ -25,14 +25,11 @@ import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 @connect((data, props) => ProfileScreen.getDataProps(data, props))
 export default class ProfileScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    headerTransparent: true,
-    headerBackTitleVisible: false,
-    headerStyle: { borderBottomWidth: 0 },
-    headerTintColor: '#4E9BDE',
+    title: navigation.getParam('username', 'Profile'),
     headerRight: navigation.getParam('username') ? (
       <OptionsButton />
     ) : (
-      Platform.select({ ios: null, default: <SignOutButtonAndroid /> })
+      Platform.select({ ios: <UserSettingsButtonIOS />, default: <SignOutButtonAndroid /> })
     ),
   });
 
@@ -41,7 +38,6 @@ export default class ProfileScreen extends React.Component {
 
     return {
       isAuthenticated,
-      image: data.profile.image,
       username: props.navigation.getParam('username'),
     };
   }

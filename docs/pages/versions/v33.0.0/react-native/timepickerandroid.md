@@ -7,11 +7,9 @@ Opens the standard Android time picker dialog.
 
 ### Example
 
-
 ```javascript
-
 try {
-  const {action, hour, minute} = await TimePickerAndroid.open({
+  const { action, hour, minute } = await TimePickerAndroid.open({
     hour: 14,
     minute: 0,
     is24Hour: false, // Will display '2 PM'
@@ -19,12 +17,10 @@ try {
   if (action !== TimePickerAndroid.dismissedAction) {
     // Selected hour (0-23), minute (0-59)
   }
-} catch ({code, message}) {
+} catch ({ code, message }) {
   console.warn('Cannot open time picker', message);
 }
-
 ```
-
 
 ### Methods
 
@@ -40,13 +36,11 @@ try {
 
 ### `open()`
 
-
 ```javascript
 
 static open(options)
 
 ```
-
 
 Opens the standard Android time picker dialog.
 
@@ -66,13 +60,11 @@ Returns a Promise which will be invoked an object containing `action`, `hour` (0
 
 ### `timeSetAction()`
 
-
 ```javascript
 
 static timeSetAction()
 
 ```
-
 
 A time has been selected.
 
@@ -80,13 +72,10 @@ A time has been selected.
 
 ### `dismissedAction()`
 
-
 ```javascript
 
 static dismissedAction()
 
 ```
 
-
 The dialog has been dismissed.
-

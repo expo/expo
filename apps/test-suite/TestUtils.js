@@ -1,9 +1,9 @@
 'use strict';
 
-import { Platform, NativeModules } from 'react-native';
+import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
-const { ExponentTest } = NativeModules;
+import ExponentTest from './ExponentTest';
 
 function browserSupportsWebGL() {
   try {
@@ -21,10 +21,23 @@ function browserSupportsWebGL() {
 // the packager to pick them all up.
 export function getTestModules() {
   if (Platform.OS === 'web') {
-    const modules = [require('./tests/Crypto'), require('./tests/Font'), require('./tests/Random')];
+    const modules = [
+      require('./tests/Basic'),
+      require('./tests/Constants'),
+      require('./tests/SVG'),
+      require('./tests/Contacts'),
+      require('./tests/Crypto'),
+      require('./tests/Font'),
+      require('./tests/Random'),
+      require('./tests/Localization'),
+    ];
 
     if (browserSupportsWebGL()) {
       modules.push(require('./tests/GLView'));
+    }
+
+    if (ExponentTest && !ExponentTest.isInCI) {
+      // modules.push(require('./tests/Speech'));
     }
     return modules;
   }

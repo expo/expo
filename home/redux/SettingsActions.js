@@ -1,5 +1,5 @@
+import * as Kernel from '../kernel/Kernel';
 import LocalStorage from '../storage/LocalStorage';
-import ExponentKernel from '../universal/ExponentKernel';
 
 export default {
   loadSettings() {
@@ -8,7 +8,7 @@ export default {
 
       if (settings && settings.legacyMenuGesture) {
         try {
-          await ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(true);
+          await Kernel.setLegacyMenuBehaviorEnabledAsync(true);
         } catch (_) {}
       }
 
@@ -24,7 +24,7 @@ export default {
       let finalGestureSetting = useLegacyGesture;
       try {
         await Promise.all([
-          ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(useLegacyGesture),
+          Kernel.setLegacyMenuBehaviorEnabledAsync(useLegacyGesture),
           LocalStorage.updateSettingsAsync({
             legacyMenuGesture: useLegacyGesture,
           }),

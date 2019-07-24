@@ -2,15 +2,14 @@ import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
-import { UnavailabilityError } from '@unimodules/core';
+import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 let _emitter;
 let _initialNotification;
 function _maybeInitEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
-        DeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
+        RCTDeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
     }
 }
 function _emitNotification(notification) {
@@ -44,6 +43,7 @@ function _processNotification(notification) {
         }
         if (notification.ios) {
             notification = Object.assign(notification, notification.ios);
+            notification.data._displayInForeground = notification.ios._displayInForeground;
             delete notification.ios;
         }
     }
