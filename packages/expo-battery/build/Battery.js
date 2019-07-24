@@ -1,25 +1,37 @@
-import ExpoBattery from './ExpoBattery';
 import { EventEmitter } from '@unimodules/core';
+import ExpoBattery from './ExpoBattery';
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 export async function getBatteryLevelAsync() {
     return await ExpoBattery.getBatteryLevelAsync();
 }
 export async function getBatteryStateAsync() {
-    return await ExpoBattery.getBatteryStateAsync();
+    let batteryState = await ExpoBattery.getBatteryStateAsync();
+    switch (batteryState) {
+        case "CHARGING" /* CHARGING */:
+            return "CHARGING" /* CHARGING */;
+        case "FULL" /* FULL */:
+            return "FULL" /* FULL */;
+        case "UNPLUGGED" /* UNPLUGGED */:
+            return "CHARGING" /* CHARGING */;
+        case "UNKNOWN" /* UNKNOWN */:
+            return "UNKNOWN" /* UNKNOWN */;
+        default:
+            return "UNKNOWN" /* UNKNOWN */;
+    }
 }
-export async function getLowPowerModeStatusAsync() {
-    return await ExpoBattery.getLowPowerModeStatusAsync();
+export async function isLowPowerModeEnableAsync() {
+    return await ExpoBattery.isLowPowerModeEnableAsync();
 }
 export async function getPowerStateAsync() {
     return await ExpoBattery.getPowerStateAsync();
 }
-export function watchBatteryLevelChange(callback) {
+export function addBatteryLevelListener(callback) {
     return BatteryEventEmitter.addListener('Expo.batteryLevelDidChange', callback);
 }
-export function watchBatteryStateChange(callback) {
+export function addBatteryStateListener(callback) {
     return BatteryEventEmitter.addListener('Expo.batteryStateDidChange', callback);
 }
-export function watchPowerModeChange(callback) {
+export function addLowPowerModeListener(callback) {
     return BatteryEventEmitter.addListener('Expo.powerModeDidChange', callback);
 }
 //# sourceMappingURL=Battery.js.map
