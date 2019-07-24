@@ -91,9 +91,10 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
   [self _clearObserver];
   id<EXPermissionsModule> permissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsModule)];
   NSAssert(permissionsModule, @"Permissions module is required to properly consume result.");
-  __weak typeof(self) weakSelf = self;
+  UM_WEAKIFY(self)
   dispatch_async(permissionsModule.methodQueue, ^{
-    [weakSelf _maybeConsumeResolverWithCurrentPermissions];
+    UM_STRONGIFY(self)
+    [self _maybeConsumeResolverWithCurrentPermissions];
   });
 }
 

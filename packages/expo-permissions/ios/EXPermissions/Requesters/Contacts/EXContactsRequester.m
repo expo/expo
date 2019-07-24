@@ -31,8 +31,9 @@
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   CNContactStore *contactStore = [CNContactStore new];
-
+  UM_WEAKIFY(self)
   [contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
+    UM_STRONGIFY(self)
     // Error code 100 is a when the user denies permission, in that case we don't want to reject.
     if (error && error.code != 100) {
       reject(@"E_CONTACTS_ERROR_UNKNOWN", error.localizedDescription, error);

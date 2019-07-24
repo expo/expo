@@ -39,7 +39,9 @@
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
+  UM_WEAKIFY(self)
   [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+    UM_STRONGIFY(self)
     resolve([[self class] permissions]);
     if (self.delegate) {
       [self.delegate permissionRequesterDidFinish:self];
