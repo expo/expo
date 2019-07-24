@@ -2,7 +2,7 @@
 title: Network
 ---
 
-This module provides useful information about the device's network such as its ip address, mac address and check for airplane mode.
+This module provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
 
 ## Installation
 
