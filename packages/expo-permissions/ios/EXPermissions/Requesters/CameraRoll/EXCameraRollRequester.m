@@ -31,7 +31,9 @@
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
+  UM_WEAKIFY(self)
   [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+    UM_STRONGIFY(self)
     resolve([[self class] permissions]);
     if (self.delegate) {
       [self.delegate permissionRequesterDidFinish:self];
