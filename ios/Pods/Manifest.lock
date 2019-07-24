@@ -792,7 +792,7 @@ PODS:
   - EXBarCodeScanner (5.0.0):
     - UMCore
     - UMImageLoaderInterface
-  - EXBattery (1.0.0):
+  - EXBattery (0.0.1):
     - UMCore
   - EXBlur (5.0.0):
     - UMCore
@@ -2489,7 +2489,7 @@ SPEC CHECKSUMS:
   EXAV: c2c4f27b9be48c3093f0b3ac659cddde28f82cb7
   EXBackgroundFetch: 27a0f7edf94435ba0cae754c404d963018e98c39
   EXBarCodeScanner: 8f207ba31373d527408d7c8c4d197fdcdabe4444
-  EXBattery: f7243e77c504a5b929809adc030338de35f3462c
+  EXBattery: bcbc50cec59b94ac92bbc6068818173c359ef3f3
   EXBlur: 6671e100cf2d844e24d5afac72dc88a0124cf381
   EXBrightness: bf95e6eec3b9d5ba965e2dbf236d913884dd555a
   EXCalendar: e0539468aae24ec9b40aff116319b2162edf0197
