@@ -81,7 +81,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   static protected void onBatteryLevelChange(float BatteryLevel) {
     Bundle result = new Bundle();
-    result.putFloat("BatteryLevel", BatteryLevel);
+    result.putFloat("batteryLevel", BatteryLevel);
     mEventEmitter.emit(BATTERY_LEVEL_EVENT_NAME, result);
   }
 

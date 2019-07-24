@@ -201,7 +201,7 @@ export default class App extends React.Component {
   }
 
   _subscribe = () => {
-    this._subscription = Battery.addBatteryLevelListener(batteryLevel => {
+    this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
       this.setState({ batteryLevel });
       console.log('batteryLevel changed!', batteryLevel);
     });
