@@ -6,7 +6,7 @@ export declare type SpeechOptions = {
     onStart?: () => void | SpeechEventCallback;
     onStopped?: () => void | SpeechEventCallback;
     onDone?: () => void | SpeechEventCallback;
-    onError?: (error: SpeechSynthesisErrorEvent) => void | SpeechEventCallback;
+    onError?: (error: Error) => void | SpeechEventCallback;
     volume?: number;
     voice?: string;
     _voiceIndex?: number;
