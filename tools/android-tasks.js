@@ -300,12 +300,12 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
 
   await regexFileAsync(settingsGradle, [
     [
-      `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
-      '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
+      `// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT`,
+      '/* '
     ],
     [
-      `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
-      'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
+      `// FLAG_END_REMOVE__UPDATE_EXPOKIT`,
+      '*/ //'
     ]
   ]);
 
