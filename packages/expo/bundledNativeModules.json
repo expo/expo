@@ -71,5 +71,5 @@
   "unimodules-sensors-interface": "~3.0.0-rc.0",
   "unimodules-task-manager-interface": "~3.0.0-rc.0",
   "expo-video-thumbnails": "~2.0.0-rc.0",
-  "expo-in-app-purchases": "~6.0.0-rc.0"
+  "expo-in-app-purchases": "~6.0.0-rc.1"
 }
