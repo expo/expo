@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform, CodedError } from '@unimodules/core';
 import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';
@@ -74,7 +74,7 @@ interface LocationTaskOptions {
     notificationBody: string;
     notificationColor?: string;
   };
-};
+}
 
 interface Region {
   identifier?: string;
@@ -108,10 +108,7 @@ enum LocationActivityType {
   Airborne = 5,
 }
 
-export {
-  LocationAccuracy as Accuracy,
-  LocationActivityType as ActivityType,
-};
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
 
 export enum GeofencingEventType {
   Enter = 1,
@@ -279,7 +276,10 @@ export async function geocodeAsync(address: string): Promise<Array<GeocodedLocat
 
     if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
-        throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
+        throw new CodedError(
+          error.code,
+          `${error.message} Please set a Google API Key to use geocoding.`
+        );
       }
       return _googleGeocodeAsync(address);
     }
@@ -301,7 +301,10 @@ export async function reverseGeocodeAsync(location: {
 
     if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
       if (!googleApiKey) {
-        throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
+        throw new CodedError(
+          error.code,
+          `${error.message} Please set a Google API Key to use geocoding.`
+        );
       }
       return _googleReverseGeocodeAsync(location);
     }
@@ -317,12 +320,11 @@ async function _googleGeocodeAsync(address: string): Promise<GeocodedLocation[]>
   const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
   const resultObject = await result.json();
 
-  const { status } = resultObject;
-  if (status === 'ZERO_RESULTS') {
+  if (resultObject.status === 'ZERO_RESULTS') {
     return [];
-  } else if (status !== 'OK') {
-    throw new Error(`An error occurred during geocoding. ${status}`);
   }
+
+  assertGeocodeResults(resultObject);
 
   return resultObject.results.map(result => {
     let location = result.geometry.location;
@@ -343,9 +345,11 @@ async function _googleReverseGeocodeAsync(options: {
   );
   const resultObject = await result.json();
 
-  if (resultObject.status !== 'OK') {
-    throw new Error('An error occurred during geocoding.');
+  if (resultObject.status === 'ZERO_RESULTS') {
+    return [];
   }
+
+  assertGeocodeResults(resultObject);
 
   return resultObject.results.map(result => {
     const address: any = {};
@@ -367,6 +371,22 @@ async function _googleReverseGeocodeAsync(options: {
     });
     return address as Address;
   });
+}
+
+// https://developers.google.com/maps/documentation/geocoding/intro
+function assertGeocodeResults(resultObject: any): void {
+  const { status, error_message } = resultObject;
+  if (status !== 'ZERO_RESULTS' && status !== 'OK') {
+    if (error_message) {
+      throw new CodedError(status, error_message);
+    } else if (status === 'UNKNOWN_ERROR') {
+      throw new CodedError(
+        status,
+        'the request could not be processed due to a server error. The request may succeed if you try again.'
+      );
+    }
+    throw new CodedError(status, `An error occurred during geocoding.`);
+  }
 }
 
 // Polyfill: navigator.geolocation.watchPosition
