@@ -33,10 +33,10 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   public enum BatteryState {
-    CHARGING("charging"),
-    FULL("full"),
-    UNPLUGGED("unplugged"),
-    UNKNOWN("unknown");
+    CHARGING("CHARGING"),
+    FULL("FULL"),
+    UNPLUGGED("UNPLUGGED"),
+    UNKNOWN("UNKNOWN");
 
     private final String value;
 
@@ -75,7 +75,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   static protected void onLowPowerModeChange(boolean lowPowerMode) {
     Bundle result = new Bundle();
-    result.putString("lowPowerMode", lowPowerMode ? "on" : "off");
+    result.putBoolean("lowPowerMode", lowPowerMode);
     mEventEmitter.emit(POWERMODE_EVENT_NAME, result);
   }
 
@@ -85,6 +85,17 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
     mEventEmitter.emit(BATTERY_LEVEL_EVENT_NAME, result);
   }
 
+  static protected BatteryState batteryStatusNativeToJS(int status) {
+    if (status == BatteryManager.BATTERY_STATUS_FULL) {
+      return BatteryState.FULL;
+    } else if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
+      return BatteryState.CHARGING;
+    } else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING || status == BatteryManager.BATTERY_STATUS_DISCHARGING) {
+      return BatteryState.UNPLUGGED;
+    } else {
+      return BatteryState.UNKNOWN;
+    }
+  }
 
   @ExpoMethod
   public void getBatteryLevelAsync(Promise promise) {
@@ -96,9 +107,8 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
       promise.resolve(batteryLevel);
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_BATTERY", "Null Exception in trying to get battery level");
+      promise.reject("ERR_BATTERY_INVALID_ACCESS_BATTERY_LEVEL", "Could not get battery level", e);
     }
-
   }
 
   @ExpoMethod
@@ -107,31 +117,23 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
       IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
       Intent batteryStatus = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
       int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-      if (status == BatteryManager.BATTERY_STATUS_FULL) {
-        promise.resolve(BatteryState.FULL.getValue());
-      } else if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
-        promise.resolve(BatteryState.CHARGING.getValue());
-      } else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
-        promise.resolve(BatteryState.UNPLUGGED.getValue());
-      }
-      else{
-        promise.resolve(BatteryState.UNKNOWN.getValue());
-      }
+      String statusString = batteryStatusNativeToJS(status).getValue();
+      promise.resolve(statusString);
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_BATTERY", "Null Exception in trying to get battery status");
+      promise.reject("ERR_BATTERY_INVALID_ACCESS_BATTERY_STATE", "Could not get battery state", e);
     }
   }
 
   @ExpoMethod
-  public void getLowPowerModeStatusAsync(Promise promise) {
+  public void isLowPowerModeEnableAsync(Promise promise) {
     try {
       PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-      String lowPowerMode = powerManager.isPowerSaveMode() ? "on" : "off";
+      boolean lowPowerMode = powerManager.isPowerSaveMode();
       promise.resolve(lowPowerMode);
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_BATTERY", "Null Exception in trying to get battery status");
+      promise.reject("ERR_BATTERY_INVALID_ACCESS_POWER_SAVER", "Could not get power saver mode", e);
     }
   }
 
@@ -149,25 +151,17 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
       Intent batteryStatus = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
       int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-      if (status == BatteryManager.BATTERY_STATUS_FULL) {
-        result.putString("batteryState", BatteryState.FULL.getValue());
-      } else if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
-        result.putString("batteryState", BatteryState.CHARGING.getValue());
-      } else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
-        result.putString("batteryState", BatteryState.UNPLUGGED.getValue());
-      }
-      else{
-        result.putString("batteryState", BatteryState.UNKNOWN.getValue());
-      }
+      String statusString = batteryStatusNativeToJS(status).getValue();
+      result.putString("batteryState", statusString);
 
       PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
       boolean lowPowerMode = powerManager.isPowerSaveMode();
-      result.putString("lowPowerMode", lowPowerMode ? "on" : "off");
+      result.putBoolean("lowPowerMode", lowPowerMode);
 
       promise.resolve(result);
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_BATTERY", "Null Exception in trying to get battery status");
+      promise.reject("ERR_BATTERY_INVALID_ACCESS_POWER_STATE", "Could not get battery power state", e);
     }
   }
 }
