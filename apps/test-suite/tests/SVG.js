@@ -40,7 +40,11 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       t.it(component, async () => {
         const SVGComponent = Svg[component];
 
-        await mountAndWaitFor(<SVGComponent />);
+        await mountAndWaitFor(
+          <Svg.Svg key={`svg-${component}`}>
+            <SVGComponent />
+          </Svg.Svg>
+        );
       });
     }
   });
