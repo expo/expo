@@ -2,7 +2,7 @@
 title: Application
 ---
 
-This module provides useful information about the native application, such the its ID, app name, and build version.
+This module provides useful information about the native application, such as the its ID, app name, and build version.
 
 ## Installation
 
@@ -17,7 +17,7 @@ import * as Application from 'expo-application';
 ### Constants
 
 - [`Application.applicationName`](#applicationapplicationname)
-- [`Application.bundleId`](#applicationbundleid)
+- [`Application.applicationId`](#applicationapplicationid)
 - [`Application.nativeApplicationVersion`](#applicationnativeapplicationversion)
 - [`Application.nativeBuildVersion`](#applicationnativebuildversion)
 - [`Application.androidId`](#applicationandroidid) (Android only)
@@ -26,7 +26,7 @@ import * as Application from 'expo-application';
 
 - [`Application.getIosIdForVendorAsync()`](#applicationgetiosidforvendorasync) (iOS only)
 - [`Application.getInstallReferrerAsync()`](#applicationgetinstallreferrerasync) (Android only)
-- [`Application.getFirstInstallTimeAsync()`](#applicationgetfirstinstalltimeasync)
+- [`Application.getInstallationTimeAsync()`](#applicationgetinstallationtimeasync)
 - [`Application.getLastUpdateTimeAsync()`](#applicationgetlastupdatetimeasync) (Android only)
 
 ## Constants
@@ -37,7 +37,7 @@ The human-readable name of the application that is displayed with the app's icon
 
 - e.g., `Expo`, `Yelp`, `Instagram`
 
-### `Application.bundleId`
+### `Application.applicationId`
 
 The ID of the application. On Android, this is the application ID. On iOS, this is the bundle ID. On web, this is `null`.
 
@@ -98,7 +98,7 @@ await Application.getInstallReferrerAsync();
 // "utm_source=google-play&utm_medium=organic"
 ```
 
-### `Application.getFirstInstallTimeAsync()`
+### `Application.getInstallationTimeAsync()`
 
 Gets the time the app was first installed onto the device. The time would change to the reinstalled date if uninstall and reinstall the app.
 
