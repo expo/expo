@@ -68,7 +68,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
       constants.put("nativeApplicationVersion", pInfo.versionName);
       constants.put("nativeBuildVersion", pInfo.versionCode);
     } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
+      Log.e(TAG, "Exception: ", e);
     }
 
     constants.put("androidId", Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID));
@@ -84,7 +84,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
       PackageInfo info = packageManager.getPackageInfo(packageName, 0);
       promise.resolve((double)info.firstInstallTime);
     } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
+      Log.e(TAG, "Exception: ", e);
       promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get install time of this application. Could not get package info or package name.", e);
     }
   }
@@ -97,7 +97,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
       PackageInfo info = packageManager.getPackageInfo(packageName, 0);
       promise.resolve((double)info.lastUpdateTime);
     } catch (PackageManager.NameNotFoundException e) {
-      e.printStackTrace();
+      Log.e(TAG, "Exception: ", e);
       promise.reject("ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND", "Unable to get last update time of this application. Could not get package info or package name.", e);
     }
   }
@@ -120,7 +120,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
               ReferrerDetails response = referrerClient.getInstallReferrer();
               installReferrer.append(response.getInstallReferrer());
             } catch (RemoteException e) {
-              e.printStackTrace();
+              Log.e(TAG, "Exception: ", e);
               promise.reject("ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION", "RemoteException getting install referrer information. This may happen if the process hosting the remote object is no longer available.", e);
             }
             promise.resolve(installReferrer.toString());
@@ -136,7 +136,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER_CONNECTION", "Could not establish a connection to Google Play");
             break;
           default:
-            promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error");
+            promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error: response code " + responseCode);
         }
 
         referrerClient.endConnection();
