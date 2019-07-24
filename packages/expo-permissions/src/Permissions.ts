@@ -32,21 +32,27 @@ export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
 
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
-  return await _handleMultiPermissionsRequestAsync(types, Permissions.getAsync);
+  if (Platform.OS === "ios") {
+    return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.getAsync);
+  }
+  return await _handlePermissionsRequestAsync(types, Permissions.getAsync);
 }
 
 export async function askAsync(...types: PermissionType[]): Promise<PermissionResponse> {
-  return await _handleMultiPermissionsRequestAsync(types, Permissions.askAsync);
+  if (Platform.OS === "ios") {
+    return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.askAsync);
+  }
+  return await _handlePermissionsRequestAsync(types, Permissions.askAsync);
 }
 
-async function _handleSinglePermissionRequestAsync(
+async function _handleSinglePermissionRequestIOSAsync(
   type: PermissionType,
   handlePermission: (type: PermissionType) => Promise<PermissionInfo>
 ): Promise<PermissionInfo> {
   return handlePermission(type);
 }
 
-async function _handleMultiPermissionsRequestAsync(
+async function _handleMultiPermissionsRequestIOSAsync(
   types: PermissionType[],
   handlePermission: (type: PermissionType) => Promise<PermissionInfo>
 ): Promise<PermissionResponse> {
@@ -56,7 +62,7 @@ async function _handleMultiPermissionsRequestAsync(
 
   return await Promise.all(
     types.map(async type => ({
-      [type]: await _handleSinglePermissionRequestAsync(type, handlePermission),
+      [type]: await _handleSinglePermissionRequestIOSAsync(type, handlePermission),
     }))
   )
     .then(permissions => permissions.reduce((permission, acc) => ({ ...acc, ...permission }), {}))
@@ -65,4 +71,21 @@ async function _handleMultiPermissionsRequestAsync(
       expires: coalesceExpirations(permissions),
       permissions: { ...permissions },
     }));
+}
+
+
+async function _handlePermissionsRequestAsync(
+  types: PermissionType[],
+  handlePermissions: (types: PermissionType[]) => Promise<PermissionMap>
+): Promise<PermissionResponse> {
+  if (!types.length) {
+    throw new Error('At least one permission type must be specified');
+  }
+
+  const permissions = await handlePermissions(types);
+  return {
+    status: coalesceStatuses(permissions),
+    expires: coalesceExpirations(permissions),
+    permissions,
+  };
 }
