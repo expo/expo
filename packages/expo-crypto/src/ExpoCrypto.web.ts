@@ -10,6 +10,9 @@ export default {
     data: string,
     options: CryptoDigestOptions
   ): Promise<string> {
+    if (!crypto.subtle) {
+      throw new CodedError('ERR_CRYPTO_UNAVAILABLE', 'Access to the WebCrypto API is restricted to secure origins (https).');
+    }
     const encoder = new TextEncoder();
     const buffer = encoder.encode(data);
     const hashedData = await crypto.subtle.digest(algorithm, buffer);

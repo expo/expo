@@ -9,22 +9,14 @@ title: Keyboard
 
 The Keyboard module allows you to listen for native events and react to them, as well as make changes to the keyboard, like dismissing it.
 
-
 ```javascript
-
-import React, {Component} from 'react';
-import {Keyboard, TextInput} from 'react-native';
+import React, { Component } from 'react';
+import { Keyboard, TextInput } from 'react-native';
 
 class Example extends Component {
   componentDidMount() {
-    this.keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      this._keyboardDidShow,
-    );
-    this.keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      this._keyboardDidHide,
-    );
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
   }
 
   componentWillUnmount() {
@@ -44,9 +36,7 @@ class Example extends Component {
     return <TextInput onSubmitEditing={Keyboard.dismiss} />;
   }
 }
-
 ```
-
 
 ### Methods
 
@@ -63,13 +53,11 @@ class Example extends Component {
 
 ### `addListener()`
 
-
 ```javascript
 
 static addListener(eventName, callback)
 
 ```
-
 
 The `addListener` function connects a JavaScript function to an identified native keyboard notification event.
 
@@ -92,13 +80,11 @@ Note that if you set `android:windowSoftInputMode` to `adjustResize`, only `keyb
 
 ### `removeListener()`
 
-
 ```javascript
 
 static removeListener(eventName, callback)
 
 ```
-
 
 Removes a specific listener.
 
@@ -108,13 +94,11 @@ Removes a specific listener.
 
 ### `removeAllListeners()`
 
-
 ```javascript
 
 static removeAllListeners(eventName)
 
 ```
-
 
 Removes all listeners for a specific event type.
 
@@ -124,13 +108,10 @@ Removes all listeners for a specific event type.
 
 ### `dismiss()`
 
-
 ```javascript
 
 static dismiss()
 
 ```
 
-
 Dismisses the active keyboard and removes focus.
-

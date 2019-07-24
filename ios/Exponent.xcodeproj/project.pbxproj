@@ -2985,7 +2985,7 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "host.exp.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";
@@ -3054,6 +3054,7 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";

@@ -135,6 +135,20 @@ export async function readDirectoryAsync(fileUri: string): Promise<string[]> {
   return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
 }
 
+export async function getFreeDiskStorageAsync(): Promise<number> {
+  if (!ExponentFileSystem.getFreeDiskStorageAsync) {
+    throw new UnavailabilityError('expo-file-system', 'getFreeDiskStorageAsync');
+  }
+  return await ExponentFileSystem.getFreeDiskStorageAsync();
+}
+
+export async function getTotalDiskCapacityAsync(): Promise<number> {
+  if (!ExponentFileSystem.getTotalDiskCapacityAsync) {
+    throw new UnavailabilityError('expo-file-system', 'getTotalDiskCapacityAsync');
+  }
+  return await ExponentFileSystem.getTotalDiskCapacityAsync();
+}
+
 export async function downloadAsync(
   uri: string,
   fileUri: string,

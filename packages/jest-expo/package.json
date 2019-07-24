@@ -15,6 +15,12 @@
   "bin": {
     "jest": "bin/jest.js"
   },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo/universal"
+  },
   "dependencies": {
     "babel-jest": "^24.7.1",
     "jest": "^24.7.1",
