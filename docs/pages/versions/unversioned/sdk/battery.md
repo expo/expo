@@ -119,7 +119,7 @@ await Battery.getPowerStateAsync();
 
 Subscribe to the battery level change updates.
 
-On iOS devices, the event would be fired when the battery level drops up to 1 percent, but is only fired once per minute at maximum.
+On iOS devices, the event would be fired when the battery level drops 1 percent or more, but is only fired once per minute at maximum.
 
 On Android devices, the event would be fired only when significant changes happens. When battery level dropped below [`"android.intent.action.BATTERY_LOW"`](https://developer.android.com/reference/android/content/Intent#ACTION_BATTERY_LOW) or up to [`"android.intent.action.BATTERY_OKAY"`](https://developer.android.com/reference/android/content/Intent#ACTION_BATTERY_OKAY) from low battery level. See [here](https://developer.android.com/training/monitoring-device-state/battery-monitoring) to view more explanation on the official docs.
 
