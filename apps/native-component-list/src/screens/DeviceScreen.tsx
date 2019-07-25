@@ -167,17 +167,6 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
           </View>
           <Button onPress={this._isRooted} title="isRootedExperimental" color="#DCA42D" />
         </View>
-        <View style={{ padding: 10 }}>
-          <View style={{ marginBottom: 10 }}>
-            <HeadingText>get DeviceType</HeadingText>
-            <MonoText> {this.state.deviceType}</MonoText>
-          </View>
-          <Button
-            onPress={this._getDeviceType}
-            title="getDviceType"
-            color="#DCA42D"
-          />
-        </View>
       </ScrollView>
     );
   }
