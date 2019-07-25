@@ -115,8 +115,8 @@ const ESSENTIALS = [
   'Bare Workflow Walkthrough',
   'Up and Running',
   'Supported Expo SDK APIs',
-  'Using Expo client in Bare Workflow',
-  'Using Expo for web in Bare Workflow',
+  'Using Expo client',
+  'Using Expo for web',
   'Migrating from ExpoKit',
 ];
 
