@@ -1,0 +1,4 @@
+{
+  "name": "expo-device",
+  "platforms": ["ios", "android", "web"]
+}

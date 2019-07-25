@@ -7,11 +7,10 @@ The [ScrollView](../scrollview/) is a generic scrolling container that can host 
 
 This example creates a vertical `ScrollView` with both images and text mixed together.
 
-
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, ScrollView, Image, Text } from 'react-native';
+import { ScrollView, Image, Text } from 'react-native';
 
 export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component {
   render() {
@@ -52,18 +51,10 @@ export default class IScrolledDownAndWhatHappenedNextShockedMe extends Component
     );
   }
 }
-
-// skip these lines if using Create React Native App
-AppRegistry.registerComponent(
-  'AwesomeProject',
-  () => IScrolledDownAndWhatHappenedNextShockedMe);
-
 ```
-
 
 ScrollViews can be configured to allow paging through views using swiping gestures by using the `pagingEnabled` props. Swiping horizontally between views can also be implemented on Android using the [ViewPagerAndroid](../viewpagerandroid/) component.
 
 On iOS a ScrollView with a single item can be used to allow the user to zoom content. Set up the `maximumZoomScale` and `minimumZoomScale` props and your user will be able to use pinch and expand gestures to zoom in and out.
 
 The ScrollView works best to present a small amount of things of a limited size. All the elements and views of a `ScrollView` are rendered, even if they are not currently shown on the screen. If you have a long list of more items than can fit on the screen, you should use a `FlatList` instead. So let's [learn about list views](../using-a-listview/) next.
-

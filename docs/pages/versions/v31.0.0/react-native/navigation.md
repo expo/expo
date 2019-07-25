@@ -17,22 +17,16 @@ The community solution to navigation is a standalone library that allows develop
 
 The first step is to install in your project:
 
-
 ```javascript
 
 npm install --save react-navigation
 
 ```
 
-
 Then you can quickly create an app with a home screen and a profile screen:
 
-
 ```javascript
-
-import {
-  createStackNavigator,
-} from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 
 const App = createStackNavigator({
   Home: { screen: HomeScreen },
@@ -40,15 +34,11 @@ const App = createStackNavigator({
 });
 
 export default App;
-
 ```
-
 
 Each screen component can set navigation options such as the header title. It can use action creators on the `navigation` prop to link to other screens:
 
-
 ```javascript
-
 class HomeScreen extends React.Component {
   static navigationOptions = {
     title: 'Welcome',
@@ -56,18 +46,11 @@ class HomeScreen extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <Button
-        title="Go to Jane's profile"
-        onPress={() =>
-          navigate('Profile', { name: 'Jane' })
-        }
-      />
+      <Button title="Go to Jane's profile" onPress={() => navigate('Profile', { name: 'Jane' })} />
     );
   }
 }
-
 ```
-
 
 React Navigation routers make it easy to override navigation logic. Because routers can be nested inside each other, developers can override navigation logic for one area of the app without making widespread changes.
 
@@ -81,30 +64,24 @@ For a complete intro to React Navigation, follow the [React Navigation Getting S
 
 ![](https://facebook.github.io/react-native/docs/assets/NavigationStack-NavigatorIOS.gif)
 
-
 ```javascript
-
 <NavigatorIOS
   initialRoute={{
     component: MyScene,
     title: 'My Initial Scene',
-    passProps: {myProp: 'foo'},
+    passProps: { myProp: 'foo' },
   }}
 />
-
 ```
-
 
 Like other navigation systems, `NavigatorIOS` uses routes to represent screens, with some important differences. The actual component that will be rendered can be specified using the `component` key in the route, and any props that should be passed to this component can be specified in `passProps`. A "navigator" object is automatically passed as a prop to the component, allowing you to call `push` and `pop` as needed.
 
 As `NavigatorIOS` leverages native UIKit navigation, it will automatically render a navigation bar with a back button and title.
 
-
 ```javascript
-
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Button, NavigatorIOS, Text, View} from 'react-native';
+import { Button, NavigatorIOS, Text, View } from 'react-native';
 
 export default class NavigatorIOSApp extends React.Component {
   render() {
@@ -113,9 +90,9 @@ export default class NavigatorIOSApp extends React.Component {
         initialRoute={{
           component: MyScene,
           title: 'My Initial Scene',
-          passProps: {index: 1},
+          passProps: { index: 1 },
         }}
-        style={{flex: 1}}
+        style={{ flex: 1 }}
       />
     );
   }
@@ -139,7 +116,7 @@ class MyScene extends React.Component {
     this.props.navigator.push({
       component: MyScene,
       title: 'Scene ' + nextIndex,
-      passProps: {index: nextIndex},
+      passProps: { index: nextIndex },
     });
   }
 
@@ -147,17 +124,11 @@ class MyScene extends React.Component {
     return (
       <View>
         <Text>Current Scene: {this.props.title}</Text>
-        <Button
-          onPress={this._onForward}
-          title="Tap me to load the next scene"
-        />
+        <Button onPress={this._onForward} title="Tap me to load the next scene" />
       </View>
     );
   }
 }
-
 ```
 
-
 Check out the [`NavigatorIOS` reference docs](../navigatorios/) to learn more about this component.
-

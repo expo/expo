@@ -806,6 +806,13 @@
   resolved "https://registry.yarnpkg.com/@emotion/utils/-/utils-0.7.1.tgz#e44e596d03c9f16ba3b127ad333a8a072bcb5a0a"
   integrity sha1-5E5ZbQPJ8WujsSetMzqKByvLWgo=
 
+"@expo/spawn-async@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.5.0.tgz#799827edd8c10ef07eb1a2ff9dcfe081d596a395"
+  integrity sha512-LB7jWkqrHo+5fJHNrLAFdimuSXQ2MQ4lA7SQW5bf/HbsXuV2VrT/jN/M8f/KoWt0uJMGN4k/j7Opx4AvOOxSew==
+  dependencies:
+    cross-spawn "^6.0.5"
+
 "@mdx-js/loader@^0.16.8":
   version "0.16.8"
   resolved "https://registry.yarnpkg.com/@mdx-js/loader/-/loader-0.16.8.tgz#649f399e254f40213d2e710e79ed769eeadcca1b"

@@ -7,11 +7,9 @@ The Modal component is a simple way to present content above an enclosing view.
 
 > Note: If you need more control over how to present modals over the rest of your app, then consider using a top-level Navigator.
 
-
 ```javascript
-
-import React, {Component} from 'react';
-import {Modal, Text, TouchableHighlight, View, Alert} from 'react-native';
+import React, { Component } from 'react';
+import { Modal, Text, TouchableHighlight, View, Alert } from 'react-native';
 
 class ModalExample extends Component {
   state = {
@@ -19,12 +17,12 @@ class ModalExample extends Component {
   };
 
   setModalVisible(visible) {
-    this.setState({modalVisible: visible});
+    this.setState({ modalVisible: visible });
   }
 
   render() {
     return (
-      <View style={{marginTop: 22}}>
+      <View style={{ marginTop: 22 }}>
         <Modal
           animationType="slide"
           transparent={false}
@@ -32,7 +30,7 @@ class ModalExample extends Component {
           onRequestClose={() => {
             Alert.alert('Modal has been closed.');
           }}>
-          <View style={{marginTop: 22}}>
+          <View style={{ marginTop: 22 }}>
             <View>
               <Text>Hello World!</Text>
 
@@ -56,9 +54,7 @@ class ModalExample extends Component {
     );
   }
 }
-
 ```
-
 
 ### Props
 
@@ -197,4 +193,3 @@ Default is set to `overFullScreen` or `fullScreen` depending on `transparent` pr
 ### `animated`
 
 > **Deprecated.** Use the [`animationType`](../modal/#animationtype) prop instead.
-
