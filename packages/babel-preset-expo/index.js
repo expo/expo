@@ -1,4 +1,4 @@
-const lazyImportsBlacklist = require("./lazy-imports-blacklist");
+const lazyImportsBlacklist = require('./lazy-imports-blacklist');
 
 module.exports = function(api, options = {}) {
   const { web = {}, native = {} } = options;
@@ -14,41 +14,40 @@ module.exports = function(api, options = {}) {
   return {
     presets: [
       [
-        require("metro-react-native-babel-preset"),
+        require('metro-react-native-babel-preset'),
         {
-          disableImportExportTransform:
-            platformOptions.disableImportExportTransform,
+          disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
             lazyOption === true
               ? importModuleSpecifier => {
                   // Do not lazy-initialize packages that are local imports (similar to `lazy: true` behavior)
                   // or are in the blacklist.
                   return !(
-                    importModuleSpecifier.includes("./") ||
+                    importModuleSpecifier.includes('./') ||
                     lazyImportsBlacklist.has(importModuleSpecifier)
                   );
                 }
               : // Pass the option directly to `metro-react-native-babel-preset`
                 // (which in turns pass it to `babel-plugin-transform-modules-commonjs`).
-                lazyOption
-        }
-      ]
+                lazyOption,
+        },
+      ],
     ],
     plugins: [
       [
-        "babel-plugin-module-resolver",
+        'babel-plugin-module-resolver',
         {
           alias: {
-            "react-native-vector-icons": "@expo/vector-icons"
-          }
-        }
+            'react-native-vector-icons': '@expo/vector-icons',
+          },
+        },
       ],
-      ["@babel/plugin-proposal-decorators", { legacy: true }],
-      isWeb && ["babel-plugin-react-native-web"]
-    ].filter(Boolean)
+      ['@babel/plugin-proposal-decorators', { legacy: true }],
+      isWeb && ['babel-plugin-react-native-web'],
+    ].filter(Boolean),
   };
 };
 
 function isTargetWeb(caller) {
-  return caller && caller.name === "babel-loader";
+  return caller && caller.name === 'babel-loader';
 }
