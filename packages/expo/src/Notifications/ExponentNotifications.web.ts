@@ -208,7 +208,7 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
   // This message is received by `/expo-service-worker.js`.
   // https://stackoverflow.com/a/35729334/2603230
   let notificationIcon = (Constants.manifest.notification || {}).icon;
-  registration.active.postMessage(JSON.stringify({ notificationIcon }));
+  await registration.active.postMessage(JSON.stringify({ notificationIcon }));
 
   return subscriptionObject;
 }
