@@ -35,7 +35,7 @@ export async function getBatteryStateAsync(): Promise<BatteryState> {
 }
 
 export async function isLowPowerModeEnabledAsync(): Promise<boolean> {
-  return await ExpoBattery.isLowPowerModeEnableAsync();
+  return await ExpoBattery.isLowPowerModeEnabledAsync();
 }
 
 export async function getPowerStateAsync(): Promise<PowerState> {
