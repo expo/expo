@@ -17,6 +17,7 @@
     "build",
     "tools",
     "bundledNativeModules.json",
+    "requiresExtraSetup.json",
     "AppEntry.js"
   ],
   "scripts": {
