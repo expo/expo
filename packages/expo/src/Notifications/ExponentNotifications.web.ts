@@ -34,6 +34,8 @@ function transformLocalNotification(
     ...abstractNotification,
     tag,
     ...web,
+    // Show that this notification is a local notification
+    _isLocal: true,
   };
   return [nativeNotification.title, nativeNotification];
 }
