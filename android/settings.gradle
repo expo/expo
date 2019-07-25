@@ -7,7 +7,6 @@ include ':tools'
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
-// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `tools/gulp update-exponent-view`
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
     "abi34_0_0",
@@ -18,7 +17,6 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
-// FLAG_END_REMOVE__UPDATE_EXPOKIT
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 // Import gradle helpers for unimodules.
@@ -27,16 +25,17 @@ apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 // Include unimodules.
 includeUnimodulesProjects(
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `tools/gulp update-exponent-view`
 [
     modulesPaths: ['../../packages'],
     target: 'react-native',
     exclude: [
+        'expo-module-template',
+// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `tools/gulp update-exponent-view`
+// section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
         'expo-in-app-purchases',
         'expo-updates',
-        'expo-module-template',
+// FLAG_END_REMOVE__UPDATE_EXPOKIT
     ]
 ]
-// FLAG_END_REMOVE__UPDATE_EXPOKIT
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 )
