@@ -1,36 +1,29 @@
 import path from 'path';
-import fs from 'fs-extra';
 import chalk from 'chalk';
 import spawnAsync from '@expo/spawn-async';
-import { Command } from 'commander/typings';
+import { Command } from '@expo/commander';
 
-import { Directories } from '../expotools';
-
-interface Package {
-  path: string;
-  name: string;
-  scripts: { [key: string]: string };
-}
+import { Package, getListOfPackagesAsync } from '../Packages';
+import * as Directories from '../Directories';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
-const PACKAGES_DIR = Directories.getPackagesDir();
 
 async function action(options) {
   const packages = await getListOfPackagesAsync();
   const only = options.only ? options.only.split(/\s*,\s*/g) : [];
+  const failedPackages: string[] = [];
 
   let passCount = 0;
-  let failureCount = 0;
 
   for (const pkg of packages) {
     if (!pkg.scripts.build && !pkg.scripts.test) {
       // If the package doesn't have build or test script, just skip it.
       continue;
     }
-    if (only.length > 0 && !only.includes(pkg.name)) {
+    if (only.length > 0 && !only.includes(pkg.packageName)) {
       continue;
     }
-    console.log(`🔍 Checking the ${chalk.bold.green(pkg.name)} package ...`);
+    console.log(`🔍 Checking the ${chalk.bold.green(pkg.packageName)} package ...`);
 
     try {
       if (options.build) {
@@ -50,13 +43,15 @@ async function action(options) {
         }
         await runScriptAsync(pkg, 'test', args);
       }
-      console.log(`✨ ${chalk.bold.green(pkg.name)} checks passed.`);
+      console.log(`✨ ${chalk.bold.green(pkg.packageName)} checks passed.`);
       passCount++;
     } catch (error) {
-      failureCount++;
+      failedPackages.push(pkg.packageName);
     }
     console.log();
   }
+
+  const failureCount = failedPackages.length;
 
   if (failureCount === 0) {
     console.log(chalk.bold.green(`🏁 All ${passCount} packages passed.`));
@@ -64,7 +59,8 @@ async function action(options) {
   } else {
     console.log(
       `${chalk.green(`🏁 ${passCount} packages passed`)},`,
-      `${chalk.magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed.`)}`
+      `${chalk.magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed:`)}`,
+      failedPackages.map(failedPackage => chalk.yellow(failedPackage)).join(', '),
     );
     process.exit(1);
   }
@@ -118,35 +114,8 @@ async function checkBuildUniformityAsync(pkg: Package): Promise<void> {
       console.error(chalk.yellow(path.relative(pkg.path, filePath)));
     });
 
-    throw new Error(`The build folder for ${pkg.name} has uncommitted changes after building.`);
+    throw new Error(`The build folder for ${pkg.packageName} has uncommitted changes after building.`);
   }
-}
-
-async function getListOfPackagesAsync(dir: string = PACKAGES_DIR, packages: Package[] = []): Promise<Package[]> {
-  const dirs = await fs.readdir(dir);
-
-  for (const dirName of dirs) {
-    const packagePath = path.join(dir, dirName);
-    const packageJsonPath = path.join(packagePath, 'package.json');
-
-    if (!(await fs.lstat(packagePath)).isDirectory()) {
-      continue;
-    }
-    if (await fs.exists(packageJsonPath)) {
-      const packageJson = require(packageJsonPath);
-      const scripts = packageJson && packageJson.scripts || {};
-
-      packages.push({
-        path: packagePath,
-        name: packageJson.name,
-        scripts,
-      });
-    } else {
-      // Recursively add packages under directories without package.json file.
-      await getListOfPackagesAsync(packagePath, packages);
-    }
-  }
-  return packages;
 }
 
 export default (program: Command) => {

@@ -8,27 +8,27 @@
 /**
  *  Name of the task.
  */
-@property (nonatomic, strong, readonly) NSString *name;
+@property (nonatomic, strong, readonly) NSString *__nonnull name;
 
 /**
  *  Identifier of the application for which the task was created.
  */
-@property (nonatomic, strong, readonly) NSString *appId;
+@property (nonatomic, strong, readonly) NSString *__nonnull appId;
 
 /**
  *  The URL to the application for which the task was created.
  */
-@property (nonatomic, strong, readonly) NSString *appUrl;
+@property (nonatomic, strong, readonly) NSString *__nonnull appUrl;
 
 /**
  *  Task consumer instance that is responsible for handling (consuming) this task.
  */
-@property (nonatomic, strong, readonly) id<UMTaskConsumerInterface> consumer;
+@property (nonatomic, strong, readonly) id<UMTaskConsumerInterface> __nonnull consumer;
 
 /**
  *  Options passed to the task.
  */
-@property (nonatomic, strong) NSDictionary *options;
+@property (nonatomic, strong) NSDictionary *__nullable options;
 
 /**
  *  Executes the task with given dictionary data and given error.

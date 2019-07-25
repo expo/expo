@@ -7,8 +7,8 @@
 //
 
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
-#import <EXFaceDetector/CSBufferOrientationCalculator.h>
-#import "Firebase.h"
+#import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
+#import <Firebase/Firebase.h>
 
 NSString *const EXGMVDataOutputWidthKey = @"Width";
 NSString *const EXGMVDataOutputHeightKey = @"Height";
@@ -78,7 +78,7 @@ static const NSString *kTrackingEnabled = @"tracking";
     result.classificationMode = [values[kRunClassificationsOptionName] longValue];
   }
   if([values objectForKey:kTrackingEnabled]) {
-    result.trackingEnabled = values[kTrackingEnabled];
+    result.trackingEnabled = [values[kTrackingEnabled] boolValue];
   }
   return result;
 }

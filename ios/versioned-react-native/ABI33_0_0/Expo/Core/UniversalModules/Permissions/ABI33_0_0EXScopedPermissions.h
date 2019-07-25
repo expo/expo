@@ -2,6 +2,7 @@
 
 #import <UIKit/UIKit.h>
 #import <ABI33_0_0EXPermissions/ABI33_0_0EXPermissions.h>
+#import <ABI33_0_0ExpoKit/ABI33_0_0EXConstantsBinding.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI33_0_0EXScopedPermissions : ABI33_0_0EXPermissions
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(ABI33_0_0EXConstantsBinding *)constantsBinding;
 
 @end
 

@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -79,6 +81,7 @@ public class Exponent {
 
   private static final String TAG = Exponent.class.getSimpleName();
   private static final String PACKAGER_RUNNING = "running";
+  private static final Pattern ABIVERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+|UNVERSIONED");
 
   private static Exponent sInstance;
 
@@ -478,6 +481,24 @@ public class Exponent {
     // Guess whether we'll use the cache based on whether the source file is saved.
     final File sourceFile = new File(directory, fileName);
     return sourceFile.exists();
+  }
+
+  // As OTAs piles up, the JS bundles will consume quite an amount of storage space
+  // App developers, if find needed, can purge all the existing cache
+  public boolean clearAllJSBundleCache(final String abiVersion) throws IOException {
+    final File filesDir = mContext.getFilesDir();
+    final File directory = new File(filesDir, abiVersion);
+    if (!ABIVERSION_PATTERN.matcher(abiVersion).matches()) {
+      return false;
+    }
+    if (!directory.getCanonicalPath().startsWith(filesDir.getCanonicalPath())) {
+      return false;
+    }
+    if (directory.exists()) {
+      return directory.delete();
+    } else {
+      return false;
+    }
   }
 
   private void printSourceFile(String path) {

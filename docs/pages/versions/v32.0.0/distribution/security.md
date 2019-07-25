@@ -18,12 +18,6 @@ Each developer account has up to two auth keys, each of which can send notificat
 
 Auth keys are revocable from the Apple Developer Center. If you revoke them, notifications will stop working. If you provision a new auth key and upload it to Expo then notifications will resume working. Device tokens are not invalidated when auth keys are revoked.
 
-### Legacy: push certificate (p12) + password (string)
-
-Each app has its own push certificate, which lets you send notifications to the app associated with the certificate.
-
-Push certificates are revocable from the Apple Developer Center. If you revoke them, notifications will stop working. If you provision a new certificate and upload it to Expo then notifications will resume working. Device tokens are not invalidated when push credentials are revoked.
-
 ### Consequences if compromised
 
 If a malicious actor were to somehow gain access to the credentials, they would be able to send push notifications to your app. However, they would need to know which device tokens to send them to.
@@ -31,8 +25,6 @@ If a malicious actor were to somehow gain access to the credentials, they would 
 ### Consequences if lost
 
 The Apple Developer console lets you download an APNs Auth Key only when it is created. If an Auth Key is lost, it can be revoked through the Apple Developer console and replaced with a new key.
-
-You can download your push certificates anytime from the Apple Developer console if they are lost.
 
 ## iOS build credentials
 

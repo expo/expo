@@ -468,7 +468,7 @@ exit:
 
     [self genericHTTPRequest:request retryNumber:retryNumber callback:callback
         retryHandler:^NSURLRequest *(NSInteger lastRetryNumber) {
-            return [self prepareGetRequest:params url:url key:key retryNumber:++lastRetryNumber];
+            return [self prepareGetRequest:params url:url key:key retryNumber:lastRetryNumber+1];
     }];
 }
 
@@ -510,7 +510,7 @@ exit:
                  retryNumber:retryNumber
                     callback:callback
                 retryHandler:^ NSURLRequest *(NSInteger lastRetryNumber) {
-        return [self preparePostRequest:extendedParams url:url key:key retryNumber:++lastRetryNumber];
+        return [self preparePostRequest:extendedParams url:url key:key retryNumber:lastRetryNumber+1];
     }];
 }
 
@@ -551,7 +551,11 @@ exit:
             // indicating various parts of the HTTP post failed.
             // We should retry in those conditions in addition to the case where the server returns a 500
 
-            BOOL isRetryableStatusCode = status >= 500 || status < 0;
+            // Status 53 means the request was killed by the OS because we're still in the background.
+            // This started happening in iOS 12 / Xcode 10 production when we're called from continueUserActivity:
+            // but we're not fully out of the background yet.
+
+            BOOL isRetryableStatusCode = status >= 500 || status < 0 || status == 53;
             
             // Retry the request if appropriate
             if (retryNumber < self.preferenceHelper.retryCount && isRetryableStatusCode) {
@@ -605,14 +609,9 @@ exit:
 
     if (Branch.trackingDisabled) {
         NSString *endpoint = request.URL.absoluteString;
-        BNCPreferenceHelper *prefs = [BNCPreferenceHelper preferenceHelper];
-        if (([endpoint bnc_containsString:@"/v1/install"] ||
-             [endpoint bnc_containsString:@"/v1/open"]) &&
-             ((prefs.linkClickIdentifier.length > 0 ) ||
-              (prefs.spotlightIdentifier.length > 0 ) ||
-              (prefs.universalLinkUrl.length > 0))) {
-            // Allow this network operation since it's an open/install to resolve a link.
-        } else {
+        
+        // if endpoint is not on the whitelist, fail it.
+        if (![self whiteListContainsEndpoint:endpoint]) {
             [[BNCPreferenceHelper preferenceHelper] clearTrackingInformation];
             NSError *error = [NSError branchErrorWithCode:BNCTrackingDisabledError];
             BNCLogError(@"Network service error: %@.", error);
@@ -622,6 +621,7 @@ exit:
             return;
         }
     }
+    
     id<BNCNetworkOperationProtocol> operation =
         [self.networkService networkOperationWithURLRequest:request.copy completion:completionHandler];
     [operation start];
@@ -633,6 +633,28 @@ exit:
         }
         return;
     }
+}
+
+- (BOOL)whiteListContainsEndpoint:(NSString *)endpoint {
+    BNCPreferenceHelper *prefs = [BNCPreferenceHelper preferenceHelper];
+    BOOL hasIdentifier = (prefs.linkClickIdentifier.length > 0 ) || (prefs.spotlightIdentifier.length > 0 ) || (prefs.universalLinkUrl.length > 0);
+    
+    // Allow install to resolve a link.
+    if ([endpoint bnc_containsString:@"/v1/install"] && hasIdentifier) {
+        return YES;
+    }
+    
+    // Allow open to resolve a link.
+    if ([endpoint bnc_containsString:@"/v1/open"] && hasIdentifier) {
+        return YES;
+    }
+    
+    // Allow short url creation requests
+    if ([endpoint bnc_containsString:@"/v1/url"]) {
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (NSError*) verifyNetworkOperation:(id<BNCNetworkOperationProtocol>)operation {
@@ -736,7 +758,7 @@ exit:
     if ([self isV2APIURL:url]) {
         preparedParams[@"sdk"] = nil;
     }
-    if ([Branch trackingDisabled]) {
+    if (Branch.trackingDisabled) {
         preparedParams[@"tracking_disabled"] = (__bridge NSNumber*) kCFBooleanTrue;
         preparedParams[@"local_ip"] = nil;
         preparedParams[@"lastest_update_time"] = nil;
@@ -834,8 +856,7 @@ exit:
     NSString *hardwareId = [deviceInfo.hardwareId copy];
     NSString *hardwareIdType = [deviceInfo.hardwareIdType copy];
     NSNumber *isRealHardwareId = @(deviceInfo.isRealHardwareId);
-
-    if (hardwareId && hardwareIdType && isRealHardwareId) {
+    if (hardwareId != nil && hardwareIdType != nil && isRealHardwareId != nil) {
         dict[BRANCH_REQUEST_KEY_HARDWARE_ID] = hardwareId;
         dict[BRANCH_REQUEST_KEY_HARDWARE_ID_TYPE] = hardwareIdType;
         dict[BRANCH_REQUEST_KEY_IS_HARDWARE_ID_REAL] = isRealHardwareId;

@@ -240,6 +240,8 @@ UM_EXPORT_METHOD_AS(record,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_RECORDING_FAILED", @"Video recording is not supported on a simulator.", nil);
   return;
@@ -252,6 +254,7 @@ UM_EXPORT_METHOD_AS(record,
       reject(@"E_INVALID_VIEW", reason, nil);
     }
   } forView:reactTag ofClass:[EXCamera class]];
+#pragma clang diagnostic pop
 }
 
 UM_EXPORT_METHOD_AS(stopRecording,
@@ -274,6 +277,8 @@ UM_EXPORT_METHOD_AS(resumePreview,
                          resolver:(UMPromiseResolveBlock)resolve
                          rejecter:(UMPromiseRejectBlock)reject)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_SIM_PREVIEW", @"Resuming preview is not supported on simulator.", nil);
   return;
@@ -286,6 +291,7 @@ UM_EXPORT_METHOD_AS(resumePreview,
       UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:tag ofClass:[EXCamera class]];
+#pragma clang diagnostic pop
 }
 
 UM_EXPORT_METHOD_AS(pausePreview,
@@ -293,6 +299,8 @@ UM_EXPORT_METHOD_AS(pausePreview,
                         resolver:(UMPromiseResolveBlock)resolve
                          rejecter:(UMPromiseRejectBlock)reject)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_SIM_PREVIEW", @"Pausing preview is not supported on simulator.", nil);
   return;
@@ -305,6 +313,7 @@ UM_EXPORT_METHOD_AS(pausePreview,
       UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:tag ofClass:[EXCamera class]];
+#pragma clang diagnostic pop
 }
 
 UM_EXPORT_METHOD_AS(getAvailablePictureSizes,

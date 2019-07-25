@@ -13,7 +13,7 @@
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -66,10 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // TODO: Remove once SDK31 is phased out
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
 {
   [[ExpoKit sharedInstance] application:application didRegisterUserNotificationSettings:notificationSettings];
 }
+#pragma clang diagnostic pop
 
 @end
 

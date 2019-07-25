@@ -41,7 +41,11 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
         NSMutableDictionary<NSString *, id> *nextSettings = [[NSMutableDictionary alloc] initWithDictionary:_settings];
         nextSettings[EX_BARCODE_TYPES_KEY] = value;
         _settings = nextSettings;
-        [self maybeStartBarCodeScanning];
+        UM_WEAKIFY(self);
+        [self _runBlockIfQueueIsPresent:^{
+          UM_ENSURE_STRONGIFY(self);
+          [self maybeStartBarCodeScanning];
+        }];
       }
     }
   }

@@ -7,15 +7,9 @@ Use `DatePickerIOS` to render a date/time picker (selector) on iOS. This is a co
 
 ### Example
 
-
 ```javascript
-
-import React, { Component } from 'react'
-import {
-  DatePickerIOS,
-  View,
-  StyleSheet,
-} from 'react-native'
+import React, { Component } from 'react';
+import { DatePickerIOS, View, StyleSheet } from 'react-native';
 
 export default class App extends Component {
   constructor(props) {
@@ -26,45 +20,40 @@ export default class App extends Component {
   }
 
   setDate(newDate) {
-    this.setState({chosenDate: newDate})
+    this.setState({ chosenDate: newDate });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <DatePickerIOS
-          date={this.state.chosenDate}
-          onDateChange={this.setDate}
-        />
+        <DatePickerIOS date={this.state.chosenDate} onDateChange={this.setDate} />
       </View>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-})
-
+});
 ```
-
 
 <center><img src="https://facebook.github.io/react-native/docs/assets/DatePickerIOS/example.gif" width="360"></img></center>
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`date`](../datepickerios/#date)
-- [`onDateChange`](../datepickerios/#ondatechange)
-- [`maximumDate`](../datepickerios/#maximumdate)
-- [`minimumDate`](../datepickerios/#minimumdate)
-- [`minuteInterval`](../datepickerios/#minuteinterval)
-- [`mode`](../datepickerios/#mode)
-- [`locale`](../datepickerios/#locale)
-- [`timeZoneOffsetInMinutes`](../datepickerios/#timezoneoffsetinminutes)
+* [`date`](../datepickerios/#date)
+* [`onDateChange`](../datepickerios/#ondatechange)
+* [`maximumDate`](../datepickerios/#maximumdate)
+* [`minimumDate`](../datepickerios/#minimumdate)
+* [`minuteInterval`](../datepickerios/#minuteinterval)
+* [`mode`](../datepickerios/#mode)
+* [`locale`](../datepickerios/#locale)
+* [`timeZoneOffsetInMinutes`](../datepickerios/#timezoneoffsetinminutes)
 
 ---
 
@@ -169,4 +158,3 @@ By default, the date picker will use the device's timezone. With this parameter,
 | Type   | Required |
 | ------ | -------- |
 | number | No       |
-

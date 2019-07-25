@@ -5,8 +5,8 @@
 //  Created by Michał Czernek on 12/04/2019.
 //
 
-#import "EXFaceDetector.h"
-#import "Firebase.h"
+#import <EXFaceDetector/EXFaceDetector.h>
+#import <Firebase/Firebase.h>
 
 @implementation EXFaceDetector
 {

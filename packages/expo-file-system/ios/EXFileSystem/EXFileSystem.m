@@ -480,7 +480,7 @@ UM_EXPORT_METHOD_AS(makeDirectoryAsync,
   if ([uri.scheme isEqualToString:@"file"]) {
     NSError *error;
     if ([[NSFileManager defaultManager] createDirectoryAtPath:uri.path
-                                  withIntermediateDirectories:options[@"intermediates"]
+                                  withIntermediateDirectories:[options[@"intermediates"] boolValue]
                                                    attributes:nil
                                                         error:&error]) {
       resolve([NSNull null]);
@@ -647,6 +647,24 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   }
 }
 
+UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  if(![self freeDiskStorage]) {
+    reject(@"ERR_FILESYSTEM", @"Unable to determine free disk storage capacity", nil);
+  } else {
+    resolve([self freeDiskStorage]);
+  }
+}
+
+UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  if(![self totalDiskCapacity]) {
+    reject(@"ERR_FILESYSTEM", @"Unable to determine total disk capacity", nil);
+  } else {
+    resolve([self totalDiskCapacity]);
+  }
+}
+
 #pragma mark - Internal methods
 
 - (void)_downloadResumableCreateSessionWithUrl:(NSURL *)url withScopedPath:(NSString *)scopedPath withUUID:(NSString *)uuid withOptions:(NSDictionary *)options withResumeData:(NSData * _Nullable)resumeData withResolver:(UMPromiseResolveBlock)resolve withRejecter:(UMPromiseRejectBlock)reject
@@ -757,6 +775,10 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   }
 }
 
+- (NSDictionary *)documentFileSystemAttributes {
+  return [[NSFileManager defaultManager] attributesOfFileSystemForPath:_documentDirectory error:nil];
+}
+
 #pragma mark - Public utils
 
 - (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri
@@ -813,6 +835,26 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
   [EXFileSystem ensureDirExistsWithPath:directory];
   return [directory stringByAppendingPathComponent:fileName];
+}
+
+- (NSNumber *)totalDiskCapacity {
+  NSDictionary *storage = [self documentFileSystemAttributes];
+  
+  if (storage) {
+    NSNumber *fileSystemSizeInBytes = storage[NSFileSystemSize];
+    return fileSystemSizeInBytes;
+  }
+  return nil;
+}
+
+- (NSNumber *)freeDiskStorage {
+  NSDictionary *storage = [self documentFileSystemAttributes];
+  
+  if (storage) {
+    NSNumber *freeFileSystemSizeInBytes = storage[NSFileSystemFreeSize];
+    return freeFileSystemSizeInBytes;
+  }
+  return nil;
 }
 
 @end

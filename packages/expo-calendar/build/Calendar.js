@@ -91,7 +91,7 @@ export async function getEventAsync(id, { futureEvents = false, instanceStartDat
         return ExpoCalendar.getEventByIdAsync(id);
     }
 }
-export async function createEventAsync(calendarId, details = {}) {
+export async function createEventAsync(calendarId, { id, ...details } = {}) {
     if (!ExpoCalendar.saveEventAsync) {
         throw new UnavailabilityError('Calendar', 'createEventAsync');
     }
@@ -108,8 +108,7 @@ export async function createEventAsync(calendarId, details = {}) {
     }
     const newDetails = {
         ...details,
-        id: undefined,
-        calendarId: calendarId === DEFAULT ? undefined : calendarId,
+        calendarId
     };
     return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
@@ -218,17 +217,13 @@ export async function getReminderAsync(id) {
     }
     return ExpoCalendar.getReminderByIdAsync(id);
 } // iOS
-export async function createReminderAsync(calendarId, details = {}) {
+export async function createReminderAsync(calendarId, { id, ...details } = {}) {
     if (!ExpoCalendar.saveReminderAsync) {
         throw new UnavailabilityError('Calendar', 'createReminderAsync');
     }
-    if (!calendarId) {
-        throw new Error('createReminderAsync must be called with an id (string) of the target calendar');
-    }
     const newDetails = {
         ...details,
-        id: undefined,
-        calendarId: calendarId === DEFAULT ? undefined : calendarId,
+        calendarId: calendarId === null ? undefined : calendarId
     };
     return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
@@ -391,7 +386,6 @@ export const ReminderStatus = {
     COMPLETED: 'completed',
     INCOMPLETE: 'incomplete',
 };
-export const DEFAULT = 'default';
 function stringifyIfDate(date) {
     return date instanceof Date ? date.toISOString() : date;
 }

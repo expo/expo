@@ -5,14 +5,14 @@ title: Transforms
 
 ### Props
 
-* [`decomposedMatrix`](../transforms/#decomposedmatrix)
-* [`rotation`](../transforms/#rotation)
-* [`scaleX`](../transforms/#scalex)
-* [`scaleY`](../transforms/#scaley)
-* [`transform`](../transforms/#transform)
-* [`transformMatrix`](../transforms/#transformmatrix)
-* [`translateX`](../transforms/#translatex)
-* [`translateY`](../transforms/#translatey)
+- [`decomposedMatrix`](../transforms/#decomposedmatrix)
+- [`rotation`](../transforms/#rotation)
+- [`scaleX`](../transforms/#scalex)
+- [`scaleY`](../transforms/#scaley)
+- [`transform`](../transforms/#transform)
+- [`transformMatrix`](../transforms/#transformmatrix)
+- [`translateX`](../transforms/#translatex)
+- [`translateY`](../transforms/#translatey)
 
 ---
 
@@ -95,4 +95,3 @@ Deprecated. Use the transform prop instead.
 | Type                                                                         | Required |
 | ---------------------------------------------------------------------------- | -------- |
 | deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.') | No       |
-

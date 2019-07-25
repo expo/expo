@@ -13,7 +13,7 @@
 #import <ABI32_0_0EXCore/ABI32_0_0EXModuleRegistry.h>
 #import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceEncoder.h>
 #import <ABI32_0_0EXFaceDetector/ABI32_0_0CSBufferOrientationCalculator.h>
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 @interface ABI32_0_0EXFaceDetectorModule ()
 

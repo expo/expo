@@ -2,6 +2,7 @@
 
 #import "EXAppFetcherCacheOnly.h"
 #import "EXAppLoader.h"
+#import "EXEnvironment.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,8 +38,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_fetchJSBundle
 {
+  EXCachedResourceBehavior cacheBehavior = EXCachedResourceOnlyCache;
+  // This is a bit messy, but essentially as long as remote updates are enabled
+  // we never want to 100% fall back to cache, since the OS can reap files from
+  // the cache and we might not have a JS bundle even if we have its corresponding
+  // manifest cached. We always prefer using the network as a last ditch effort to
+  // download a bundle rather than failing to launch or showing an error screen.
+  // TODO(eric): in new updates impl make this less messy
+  if ([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
+    cacheBehavior = EXCachedResourceFallBackToNetwork;
+  }
   __weak typeof(self) weakSelf = self;
-  [self fetchJSBundleWithManifest:self.manifest cacheBehavior:EXCachedResourceOnlyCache timeoutInterval:kEXJSBundleTimeout progress:nil success:^(NSData * _Nonnull data) {
+  [self fetchJSBundleWithManifest:self.manifest cacheBehavior:cacheBehavior timeoutInterval:kEXJSBundleTimeout progress:nil success:^(NSData * _Nonnull data) {
     __strong typeof(weakSelf) strongSelf = weakSelf;
     if (strongSelf) {
       strongSelf.bundle = data;

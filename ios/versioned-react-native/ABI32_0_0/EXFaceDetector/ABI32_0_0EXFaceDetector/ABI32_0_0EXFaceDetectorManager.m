@@ -12,7 +12,7 @@
 #import <ABI32_0_0EXFaceDetector/ABI32_0_0EXFaceDetector.h>
 #import <ABI32_0_0EXFaceDetector/ABI32_0_0CSBufferOrientationCalculator.h>
 #import <ABI32_0_0EXFaceDetectorInterface/ABI32_0_0EXFaceDetectorManager.h>
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 static const NSString *kMinDetectionInterval = @"minDetectionInterval";
 

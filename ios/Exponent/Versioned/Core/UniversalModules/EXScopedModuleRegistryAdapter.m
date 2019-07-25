@@ -8,6 +8,7 @@
 #import "EXScopedFileSystemModule.h"
 #import "EXUnversioned.h"
 #import "EXScopedFilePermissionModule.h"
+#import "EXScopedFontLoader.h"
 #import "EXScopedSecureStore.h"
 #import "EXScopedAmplitude.h"
 #import "EXScopedPermissions.h"
@@ -39,6 +40,11 @@
   [moduleRegistry registerInternalModule:fileSystemModule];
 #endif
 
+#if __has_include(<EXFont/EXFontLoader.h>)
+  EXScopedFontLoader *fontModule = [[EXScopedFontLoader alloc] init];
+  [moduleRegistry registerExportedModule:fontModule];
+#endif
+
 #if __has_include(<EXSensors/EXSensorsManager.h>)
   EXSensorsManagerBinding *sensorsManagerBinding = [[EXSensorsManagerBinding alloc] initWithExperienceId:experienceId andKernelService:kernelServices[EX_UNVERSIONED(@"EXSensorManager")]];
   [moduleRegistry registerInternalModule:sensorsManagerBinding];
@@ -66,7 +72,7 @@
 #endif
 
 #if __has_include(<EXPermissions/EXPermissions.h>)
-  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId];
+  EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
 #endif

@@ -15,7 +15,8 @@ In order to send a push notification to somebody, we need to know about their de
 ![Diagram explaining saving tokens](/static/images/saving-token.png)
 
 ```javascript
-import { Permissions, Notifications } from 'expo';
+import { Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
@@ -86,7 +87,7 @@ The [Expo push notification tool](https://expo.io/dashboard/notifications) is al
 
 For Android, this step is entirely optional -- if your notifications are purely informational and you have no desire to handle them when they are received or selected, you're already done. Notifications will appear in the system notification tray as you've come to expect, and tapping them will open/foreground the app.
 
-For iOS, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app are foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
+For iOS, if you do not set `notification.iosDisplayInForeground` (in your `app.json`) or `_displayInForeground` (in your push message) to `true`, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app are foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
 
 Thankfully, handling push notifications is straightforward with Expo, all you need to do is add a listener using the `Notifications` API.
 
@@ -284,6 +285,96 @@ type PushMessage = {
   ttl?: number,
 
   /**
+   * Rich content that accomplishes the push notification.
+   * Note that for iOS, the displaying priority is video > audio > image.
+   * In other words, if the message specifies both `video` and `image`,
+   * the video will be displayed on iOS devices (and the image will be
+   * displayed on Android devices).
+   */
+  richContent?: {
+    /**
+     * Remote https url of an image that will be displayed with the notification.
+     * The image should not have an alpha channel.
+     * Image restrictions on iOS: https://developer.apple.com/documentation/usernotifications/unnotificationattachment.
+     * Image formats supported on Android: JPEG, PNG, and GIF (will not be animated).
+     *
+     * (Note that an animated GIF will not be animated on Android devices. If you
+     * wish to use an animated GIF for iOS and a static image for Android, put the
+     * GIF as a `video` (see below) and the static image as an `image`.)
+     */
+    image?: string | {
+      url: string,
+      options?: {
+        /**
+         * Whether the image's thumbnail will be displayed.
+         * Defaults to `false`.
+         */
+        thumbnailHidden?: boolean,
+
+        /**
+         * (iOS-specific field)
+         * The clipping rectangle for a thumbnail image. Each value in this key
+         * is a dictionary containing a unit rectangle whose values are in the
+         * range 0.0 to 1.0 and represent the portion of the original image that
+         * you want to display.
+         * For example, specifying `x: 0.25, y: 0.25, width: 0.5, height: 0.5`
+         * defines a clipping rectangle that shows only the center portion of
+         * the image.
+         * Learn more: https://developer.apple.com/documentation/usernotifications/unnotificationattachmentoptionsthumbnailclippingrectkey
+         */
+        thumbnailClippingRect?: {
+          x: number,
+          y: number,
+          width: number,
+          height: number
+        }
+      }
+    },
+
+    /**
+     * (iOS-specific field)
+     * Remote https url of an audio file that will be played with the notification.
+     * Audio restrictions: https://developer.apple.com/documentation/usernotifications/unnotificationattachment
+     */
+    audio?: string,
+
+    /**
+     * (iOS-specific field)
+     * Remote https url of a video that will be displayed with the notification.
+     * Video restrictions: https://developer.apple.com/documentation/usernotifications/unnotificationattachment
+     */
+    video?: string | {
+      url: string,
+      options?: {
+        /**
+         * Whether the image's thumbnail will be displayed.
+         * Defaults to `false`.
+         */
+        thumbnailHidden?: boolean,
+
+        /**
+         * The clipping rectangle for a thumbnail image. Refer to the option
+         * `image.options.thumbnailClippingRect` above.
+         */
+        thumbnailClippingRect?: {
+          x: number,
+          y: number,
+          width: number,
+          height: number
+        },
+
+        /**
+         * For a video, it is the time (in seconds) into the video from which to
+         * grab the thumbnail image. For an animated image (i.e. a GIF file),
+         * it is the frame number of the animation to use as a thumbnail image.
+         * Learn more: https://developer.apple.com/documentation/usernotifications/unnotificationattachmentoptionsthumbnailtimekey
+         */
+        thumbnailTime?: number
+      }
+    }
+  },
+
+  /**
    * A timestamp since the UNIX epoch specifying when the message expires. This
    * has the same effect as the `ttl` field and is just an absolute timestamp
    * instead of a relative time.
@@ -339,9 +430,20 @@ type PushMessage = {
    * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
    * applications, use plain `yourCategoryId`.
    */
-  _category?: string
+  _category?: string,
+
+  /**
+   * Displays the notification when the app is foreground.
+   * Defaults to `false`.
+   */
+  _displayInForeground?: boolean
 
   // Android-specific fields
+
+  /**
+   * Remote url of a custom icon that replaces the default notification icon.
+  */
+  icon?: string,
 
   /**
    * ID of the Notification Channel through which to display this notification

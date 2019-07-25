@@ -2,7 +2,6 @@
 
 #import "EXConstantsBinding.h"
 #import "EXUnversioned.h"
-#import "EXVersions.h"
 
 @interface EXConstantsBinding ()
 
@@ -31,7 +30,6 @@
   NSMutableDictionary *constants = [[super constants] mutableCopy];
 
   [constants setValue:[self expoClientVersion] forKey:@"expoVersion"];
-  [constants setValue:[self supportedExpoSdks] forKey:@"supportedExpoSdks"];
 
   BOOL isDetached = NO;
 #ifdef EX_DETACHED
@@ -64,11 +62,6 @@
     // not correct in standalone apps
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
   }
-}
-
-- (NSArray *)supportedExpoSdks
-{
-  return [EXVersions sharedInstance].versions[@"sdkVersions"];
 }
 
 @end

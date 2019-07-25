@@ -66,7 +66,7 @@ public class SharingModule extends ExportedModule implements ActivityEventListen
 
     try {
       File fileToShare = getLocalFileFoUrl(url);
-      Uri contentUri = FileProvider.getUriForFile(mContext, mContext.getApplicationInfo().packageName + ".provider", fileToShare);
+      Uri contentUri = FileProvider.getUriForFile(mContext, mContext.getApplicationInfo().packageName + ".SharingFileProvider", fileToShare);
 
       String mimeType = params.getString(MIME_TYPE_OPTIONS_KEY);
       if (mimeType == null) {

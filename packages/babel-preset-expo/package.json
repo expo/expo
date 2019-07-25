@@ -1,8 +1,11 @@
 {
   "name": "babel-preset-expo",
-  "version": "5.2.1",
+  "version": "6.0.1",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "jest": "jest",
     "lint": "eslint .",

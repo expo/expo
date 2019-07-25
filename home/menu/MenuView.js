@@ -18,8 +18,8 @@ import {
 } from 'react-native';
 
 import DevIndicator from '../components/DevIndicator';
+import * as Kernel from '../kernel/Kernel';
 import FriendlyUrls from '../legacy/FriendlyUrls';
-import ExponentKernel from '../universal/ExponentKernel';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
 
 let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
@@ -55,9 +55,9 @@ export default class MenuView extends React.Component {
 
   _loadStateAsync = async () => {
     this.setState({ isLoading: true, isLoaded: false }, async () => {
-      const enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
-      const devMenuItems = await ExponentKernel.getDevMenuItemsToShow();
-      const isNuxFinished = await ExponentKernel.getIsNuxFinishedAsync();
+      const enableDevMenuTools = await Kernel.doesCurrentTaskEnableDevtoolsAsync();
+      const devMenuItems = await Kernel.getDevMenuItemsToShowAsync();
+      const isNuxFinished = await Kernel.isNuxFinishedAsync();
       if (this._mounted) {
         this.setState({
           enableDevMenuTools,
@@ -118,7 +118,7 @@ export default class MenuView extends React.Component {
             {this._renderButton({
               key: 'refresh',
               text: 'Reload Manifest and JS Bundle',
-              onPress: () => ExponentKernel.selectRefresh(),
+              onPress: () => Kernel.selectRefresh(),
               iconSource: require('../assets/ios-menu-refresh.png'),
             })}
             {copyUrlButton}
@@ -295,23 +295,23 @@ export default class MenuView extends React.Component {
 
   _onOpenQRCode = async () => {
     if (await requestCameraPermissionsAsync()) {
-      ExponentKernel.selectQRReader();
+      Kernel.selectQRReader();
     } else {
       alert('In order to use the QR Code scanner you need to provide camera permissions');
     }
   };
 
   _onPressFinishNux = () => {
-    ExponentKernel.setIsNuxFinishedAsync(true);
-    ExponentKernel.selectCloseMenu();
+    Kernel.setNuxFinishedAsync(true);
+    Kernel.selectCloseMenu();
   };
 
   _onPressClose = () => {
-    ExponentKernel.selectCloseMenu();
+    Kernel.selectCloseMenu();
   };
 
   _goToHome = () => {
-    ExponentKernel.selectGoToHome();
+    Kernel.selectGoToHome();
   };
 
   _copyTaskUrl = () => {
@@ -319,7 +319,7 @@ export default class MenuView extends React.Component {
   };
 
   _onPressDevMenuButton = key => {
-    ExponentKernel.selectDevMenuItemWithKey(key);
+    Kernel.selectDevMenuItemWithKey(key);
   };
 }
 

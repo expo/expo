@@ -7,47 +7,40 @@ A React component for displaying different types of images, including network im
 
 This example shows fetching and displaying an image from local storage as well as one from network and even from data provided in the `'data:'` uri scheme.
 
- Note that for network and data images, you will need to manually specify the dimensions of your image!
-
+Note that for network and data images, you will need to manually specify the dimensions of your image!
 
 ```javascript
-
 import React, { Component } from 'react';
-import { AppRegistry, View, Image } from 'react-native';
+import { View, Image } from 'react-native';
 
 export default class DisplayAnImage extends Component {
   render() {
     return (
       <View>
+        <Image source={require('/react-native/img/favicon.png')} />
         <Image
-          source={require('/react-native/img/favicon.png')}
+          style={{ width: 50, height: 50 }}
+          source={{ uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png' }}
         />
         <Image
-          style={{width: 50, height: 50}}
-          source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}}
-        />
-        <Image
-          style={{width: 66, height: 58}}
-          source={{uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg=='}}
+          style={{ width: 66, height: 58 }}
+          source={{
+            uri:
+              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
+          }}
         />
       </View>
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('DisplayAnImage', () => DisplayAnImage);
-
 ```
 
-
 You can also add `style` to an image:
-
 
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   stretch: {
@@ -68,22 +61,13 @@ export default class DisplayAnImageWithStyle extends Component {
     );
   }
 }
-
-// skip these lines if using Create React Native App
-AppRegistry.registerComponent(
-  'DisplayAnImageWithStyle',
-  () => DisplayAnImageWithStyle
-);
-
 ```
-
 
 ### GIF and WebP support on Android
 
 When building your own native code, GIF and WebP are not supported by default on Android.
 
 You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
-
 
 ```javascript
 
@@ -104,36 +88,35 @@ dependencies {
 
 ```
 
-
 ### Props
 
-* [`style`](../image/#style)
-* [`blurRadius`](../image/#blurradius)
-* [`onLayout`](../image/#onlayout)
-* [`onLoad`](../image/#onload)
-* [`onLoadEnd`](../image/#onloadend)
-* [`onLoadStart`](../image/#onloadstart)
-* [`resizeMode`](../image/#resizemode)
-* [`source`](../image/#source)
-* [`loadingIndicatorSource`](../image/#loadingindicatorsource)
-* [`onError`](../image/#onerror)
-* [`testID`](../image/#testid)
-* [`resizeMethod`](../image/#resizemethod)
-* [`accessibilityLabel`](../image/#accessibilitylabel)
-* [`accessible`](../image/#accessible)
-* [`capInsets`](../image/#capinsets)
-* [`defaultSource`](../image/#defaultsource)
-* [`onPartialLoad`](../image/#onpartialload)
-* [`onProgress`](../image/#onprogress)
-* [`fadeDuration`](../image/#fadeduration)
+- [`style`](../image/#style)
+- [`blurRadius`](../image/#blurradius)
+- [`onLayout`](../image/#onlayout)
+- [`onLoad`](../image/#onload)
+- [`onLoadEnd`](../image/#onloadend)
+- [`onLoadStart`](../image/#onloadstart)
+- [`resizeMode`](../image/#resizemode)
+- [`source`](../image/#source)
+- [`loadingIndicatorSource`](../image/#loadingindicatorsource)
+- [`onError`](../image/#onerror)
+- [`testID`](../image/#testid)
+- [`resizeMethod`](../image/#resizemethod)
+- [`accessibilityLabel`](../image/#accessibilitylabel)
+- [`accessible`](../image/#accessible)
+- [`capInsets`](../image/#capinsets)
+- [`defaultSource`](../image/#defaultsource)
+- [`onPartialLoad`](../image/#onpartialload)
+- [`onProgress`](../image/#onprogress)
+- [`fadeDuration`](../image/#fadeduration)
 
 ### Methods
 
-* [`getSize`](../image/#getsize)
-* [`prefetch`](../image/#prefetch)
-* [`abortPrefetch`](../image/#abortprefetch)
-* [`queryCache`](../image/#querycache)
-* [`resolveAssetSource`](../image/#resolveassetsource)
+- [`getSize`](../image/#getsize)
+- [`prefetch`](../image/#prefetch)
+- [`abortPrefetch`](../image/#abortprefetch)
+- [`queryCache`](../image/#querycache)
+- [`resolveAssetSource`](../image/#resolveassetsource)
 
 ---
 
@@ -149,46 +132,46 @@ dependencies {
 | ----- | -------- |
 | style | No       |
 
-* [Layout Props...](../layout-props/#props)
+- [Layout Props...](../layout-props/#props)
 
-* [Shadow Props...](../shadow-props/#props)
+- [Shadow Props...](../shadow-props/#props)
 
-* [Transforms...](../transforms/#props)
+- [Transforms...](../transforms/#props)
 
-* **`borderTopRightRadius`**: number
+- **`borderTopRightRadius`**: number
 
-* **`backfaceVisibility`**: enum('visible', 'hidden')
+- **`backfaceVisibility`**: enum('visible', 'hidden')
 
-* **`borderBottomLeftRadius`**: number
+- **`borderBottomLeftRadius`**: number
 
-* **`borderBottomRightRadius`**: number
+- **`borderBottomRightRadius`**: number
 
-* **`borderColor`**: [color](../colors/)
+- **`borderColor`**: [color](../colors/)
 
-* **`borderRadius`**: number
+- **`borderRadius`**: number
 
-* **`borderTopLeftRadius`**: number
+- **`borderTopLeftRadius`**: number
 
-* **`backgroundColor`**: [color](../colors/)
+- **`backgroundColor`**: [color](../colors/)
 
-* **`borderWidth`**: number
+- **`borderWidth`**: number
 
-* **`opacity`**: number
+- **`opacity`**: number
 
-* **`overflow`**: enum('visible', 'hidden')
+- **`overflow`**: enum('visible', 'hidden')
 
-* **`resizeMode`**: Object.keys(ImageResizeMode)
+- **`resizeMode`**: Object.keys(ImageResizeMode)
 
-* **`tintColor`**: [color](../colors/)
+- **`tintColor`**: [color](../colors/)
 
   Changes the color of all the non-transparent pixels to the tintColor.
 
-* **`overlayColor`**: string (_Android_)
+- **`overlayColor`**: string (_Android_)
 
   When the image has rounded corners, specifying an overlayColor will cause the remaining space in the corners to be filled with a solid color. This is useful in cases which are not supported by the Android implementation of rounded corners:
 
-  * Certain resize modes, such as 'contain'
-  * Animated GIFs
+  - Certain resize modes, such as 'contain'
+  - Animated GIFs
 
   A typical way to use this prop is with images displayed on a solid background and setting the `overlayColor` to the same color as the background.
 
@@ -252,15 +235,15 @@ e.g., `onLoadStart={(e) => this.setState({loading: true})}`
 
 Determines how to resize the image when the frame doesn't match the raw image dimensions.
 
-* `cover`: Scale the image uniformly (maintain the image's aspect ratio) so that both dimensions (width and height) of the image will be equal to or larger than the corresponding dimension of the view (minus padding).
+- `cover`: Scale the image uniformly (maintain the image's aspect ratio) so that both dimensions (width and height) of the image will be equal to or larger than the corresponding dimension of the view (minus padding).
 
-* `contain`: Scale the image uniformly (maintain the image's aspect ratio) so that both dimensions (width and height) of the image will be equal to or less than the corresponding dimension of the view (minus padding).
+- `contain`: Scale the image uniformly (maintain the image's aspect ratio) so that both dimensions (width and height) of the image will be equal to or less than the corresponding dimension of the view (minus padding).
 
-* `stretch`: Scale width and height independently, This may change the aspect ratio of the src.
+- `stretch`: Scale width and height independently, This may change the aspect ratio of the src.
 
-* `repeat`: Repeat the image to cover the frame of the view. The image will keep its size and aspect ratio, unless it is larger than the view, in which case it will be scaled down uniformly so that it is contained in the view.
+- `repeat`: Repeat the image to cover the frame of the view. The image will keep its size and aspect ratio, unless it is larger than the view, in which case it will be scaled down uniformly so that it is contained in the view.
 
-* `center`: Center the image in the view along both dimensions. If the image is larger than the view, scale it down uniformly so that it is contained in the view.
+- `center`: Center the image in the view along both dimensions. If the image is larger than the view, scale it down uniformly so that it is contained in the view.
 
 | Type                                                    | Required |
 | ------------------------------------------------------- | -------- |
@@ -290,7 +273,7 @@ Similarly to `source`, this property represents the resource used to render the 
 | ------------------------------------- | -------- |
 | array of ImageSourcePropTypes, number | No       |
 
- Can accept a number as returned by `require('./image.jpg')`
+Can accept a number as returned by `require('./image.jpg')`
 
 ---
 
@@ -318,11 +301,11 @@ A unique identifier for this element to be used in UI Automation testing scripts
 
 The mechanism that should be used to resize the image when the image's dimensions differ from the image view's dimensions. Defaults to `auto`.
 
-* `auto`: Use heuristics to pick between `resize` and `scale`.
+- `auto`: Use heuristics to pick between `resize` and `scale`.
 
-* `resize`: A software operation which changes the encoded image in memory before it gets decoded. This should be used instead of `scale` when the image is much larger than the view.
+- `resize`: A software operation which changes the encoded image in memory before it gets decoded. This should be used instead of `scale` when the image is much larger than the view.
 
-* `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is faster (usually hardware accelerated) and produces higher quality images. This should be used if the image is smaller than the view. It should also be used if the image is slightly bigger than the view.
+- `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is faster (usually hardware accelerated) and produces higher quality images. This should be used if the image is smaller than the view. It should also be used if the image is slightly bigger than the view.
 
 More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing.html.
 
@@ -372,13 +355,13 @@ A static image to display while loading the image source.
 
 If passing an object, the general shape is `{uri: string, width: number, height: number, scale: number}`:
 
-* `uri` - a string representing the resource identifier for the image, which should be either a local file path or the name of a static image resource (which should be wrapped in the `require('./path/to/image.png')` function).
-* `width`, `height` - can be specified if known at build time, in which case these will be used to set the default `<Image/>` component dimensions.
-* `scale` - used to indicate the scale factor of the image. Defaults to 1.0 if unspecified, meaning that one image pixel equates to one display point / DIP.
+- `uri` - a string representing the resource identifier for the image, which should be either a local file path or the name of a static image resource (which should be wrapped in the `require('./path/to/image.png')` function).
+- `width`, `height` - can be specified if known at build time, in which case these will be used to set the default `<Image/>` component dimensions.
+- `scale` - used to indicate the scale factor of the image. Defaults to 1.0 if unspecified, meaning that one image pixel equates to one display point / DIP.
 
 If passing a number:
 
-* `number` - Opaque type returned by something like `require('./image.jpg')`.
+- `number` - Opaque type returned by something like `require('./image.jpg')`.
 
 ---
 
@@ -412,13 +395,9 @@ Android only. By default, it is 300ms.
 
 ### `getSize()`
 
-
 ```javascript
-
 Image.getSize(uri, success, [failure]);
-
 ```
-
 
 Retrieve the width and height (in pixels) of an image prior to displaying it. This method can fail if the image cannot be found, or fails to download.
 
@@ -438,13 +417,9 @@ Does not work for static image resources.
 
 ### `prefetch()`
 
-
 ```javascript
-
 Image.prefetch(url);
-
 ```
-
 
 Prefetches a remote image for later use by downloading it to the disk cache
 
@@ -458,13 +433,9 @@ Prefetches a remote image for later use by downloading it to the disk cache
 
 ### `abortPrefetch()`
 
-
 ```javascript
-
 Image.abortPrefetch(requestId);
-
 ```
-
 
 Abort prefetch request. Android-only.
 
@@ -478,13 +449,9 @@ Abort prefetch request. Android-only.
 
 ### `queryCache()`
 
-
 ```javascript
-
 Image.queryCache(urls);
-
 ```
-
 
 Perform cache interrogation. Returns a mapping from URL to cache status, such as "disk" or "memory". If a requested URL is not in the mapping, it means it's not in the cache.
 
@@ -498,13 +465,9 @@ Perform cache interrogation. Returns a mapping from URL to cache status, such as
 
 ### `resolveAssetSource()`
 
-
 ```javascript
-
 Image.resolveAssetSource(source);
-
 ```
-
 
 Resolves an asset reference into an object which has the properties `uri`, `width`, and `height`.
 
@@ -514,5 +477,4 @@ Resolves an asset reference into an object which has the properties `uri`, `widt
 | ------ | -------------- | -------- | ---------------------------------------------------------------------------- |
 | source | number, object | Yes      | A number (opaque type returned by require('./foo.png')) or an `ImageSource`. |
 
- `ImageSource` is an object like `{ uri: '<http location || file path>' }`
-
+`ImageSource` is an object like `{ uri: '<http location || file path>' }`
