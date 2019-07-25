@@ -14,6 +14,11 @@ module.exports = function(api, options = {}) {
   return {
     presets: [
       [
+        // We use `require` here instead of directly using the package name
+        // because we want to specifically use the `metro-react-native-babel-preset`
+        // installed in this folder's `node_modules` (`babel-preset-expo/node_modules/`).
+        // This way the preset will not change unintentionally.
+        // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
         require('metro-react-native-babel-preset'),
         {
           disableImportExportTransform: platformOptions.disableImportExportTransform,
