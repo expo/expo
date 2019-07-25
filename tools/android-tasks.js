@@ -142,17 +142,10 @@ function yesnoPromise(question) {
   });
 }
 
-/**
- * @param {string} filename Filename path that is passes to `fs.readFile`
- * @param {Array<[string | RegExp, string]>} regexReplacePairs Array of tuples of shape `[regex, replace]`
- */
-async function regexFileAsync(filename, regexReplacePairs) {
-  const file = await fs.readFile(filename);
+async function regexFileAsync(filename, regex, replace) {
+  let file = await fs.readFile(filename);
   let fileString = file.toString();
-  for (const [regex, replace] of regexReplacePairs) {
-    fileString = fileString.replace(regex instanceof RegExp ? regex : new RegExp(regex.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&'), 'g'), replace)
-  }
-  await fs.writeFile(filename, fileString);
+  await fs.writeFile(filename, fileString.replace(regex, replace));
 }
 
 let savedFiles = {};
@@ -198,116 +191,93 @@ async function findUnimodules(pkgDir) {
 }
 
 exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
-  const androidRoot = path.join(process.cwd(), '..', 'android');
-  const appBuildGradle = path.join(androidRoot, 'app', 'build.gradle');
-  const expoViewBuildGradle = path.join(androidRoot, 'expoview', 'build.gradle');
+  let androidRoot = path.join(process.cwd(), '..', 'android');
+  let appBuildGradle = path.join(androidRoot, 'app', 'build.gradle');
+  let expoViewBuildGradle = path.join(androidRoot, 'expoview', 'build.gradle');
   const settingsGradle = path.join(androidRoot, 'settings.gradle');
-  const constantsJava = path.join(androidRoot, 'expoview/src/main/java/host/exp/exponent/Constants.java');
+  const constantsJava = path.join(
+    androidRoot,
+    'expoview/src/main/java/host/exp/exponent/Constants.java'
+  );
   const multipleVersionReactNativeActivity = path.join(
     androidRoot,
     'expoview/src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java'
   );
 
   // Modify permanently
-  await regexFileAsync(expoViewBuildGradle, [
-    [
-      /version = '[\d.]+'/,
-      `version = '${sdkVersion}'`
-    ],
-    [
-      /api 'com.facebook.react:react-native:[\d.]+'/,
-      `api 'com.facebook.react:react-native:${sdkVersion}'`
-    ]
-  ]);
-
-  await regexFileAsync(path.join(androidRoot, 'ReactAndroid', 'release.gradle'), [
-    [
-      /version = '[\d.]+'/, `version = '${sdkVersion}'`
-    ]
-  ]);
-
-  await regexFileAsync(path.join(androidRoot, 'app', 'build.gradle'), [
-    [
-      /host.exp.exponent:expoview:[\d.]+/,
-      `host.exp.exponent:expoview:${sdkVersion}`
-    ]
-  ]);
+  await regexFileAsync(expoViewBuildGradle, /version = '[\d.]+'/, `version = '${sdkVersion}'`);
+  await regexFileAsync(
+    expoViewBuildGradle,
+    /api 'com.facebook.react:react-native:[\d.]+'/,
+    `api 'com.facebook.react:react-native:${sdkVersion}'`
+  );
+  await regexFileAsync(
+    path.join(androidRoot, 'ReactAndroid', 'release.gradle'),
+    /version = '[\d.]+'/,
+    `version = '${sdkVersion}'`
+  );
+  await regexFileAsync(
+    path.join(androidRoot, 'app', 'build.gradle'),
+    /host.exp.exponent:expoview:[\d.]+/,
+    `host.exp.exponent:expoview:${sdkVersion}`
+  );
 
   await stashFileAsync(appBuildGradle);
   await stashFileAsync(expoViewBuildGradle);
   await stashFileAsync(multipleVersionReactNativeActivity);
   await stashFileAsync(constantsJava);
-  await stashFileAsync(settingsGradle)
+  await stashFileAsync(settingsGradle);
 
   // Modify temporarily
-
-  await regexFileAsync(constantsJava, [
-    [
-      /TEMPORARY_ABI_VERSION\s*=\s*null/,
-      `TEMPORARY_ABI_VERSION = "${sdkVersion}"`
-    ],
-    [
-      `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
-      '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
-    ],
-    [
-      `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
-      'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
-    ]
-  ]);
-
-
-  await regexFileAsync(appBuildGradle, [
-    [
-      '/* UNCOMMENT WHEN DISTRIBUTING',
-      '// UNCOMMENT WHEN DISTRIBUTING'
-    ],
-    [
-      'END UNCOMMENT WHEN DISTRIBUTING */',
-      '// END UNCOMMENT WHEN DISTRIBUTING'
-    ]
-  ]);
-
-  await regexFileAsync(expoViewBuildGradle, [
-    [
-      '/* UNCOMMENT WHEN DISTRIBUTING',
-      '// UNCOMMENT WHEN DISTRIBUTING'
-    ],
-    [
-      'END UNCOMMENT WHEN DISTRIBUTING */',
-      '// END UNCOMMENT WHEN DISTRIBUTING'
-    ],
-    [
-      `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
-      '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
-    ],
-    [
-      `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
-      'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
-    ]
-  ]);
-
-  await regexFileAsync(multipleVersionReactNativeActivity, [
-    [
-      `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
-      '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
-    ],
-    [
-      `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
-      'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
-    ]
-  ]);
-
-  await regexFileAsync(settingsGradle, [
-    [
-      `// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT`,
-      '/* '
-    ],
-    [
-      `// FLAG_END_REMOVE__UPDATE_EXPOKIT`,
-      '*/ //'
-    ]
-  ]);
+  await regexFileAsync(
+    constantsJava,
+    /TEMPORARY_ABI_VERSION\s*=\s*null/,
+    `TEMPORARY_ABI_VERSION = "${sdkVersion}"`
+  );
+  await regexFileAsync(
+    constantsJava,
+    `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
+    '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
+  );
+  await regexFileAsync(
+    constantsJava,
+    `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
+    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
+  );
+  await regexFileAsync(appBuildGradle, '/* UNCOMMENT WHEN DISTRIBUTING', '');
+  await regexFileAsync(appBuildGradle, 'END UNCOMMENT WHEN DISTRIBUTING */', '');
+  await regexFileAsync(expoViewBuildGradle, '/* UNCOMMENT WHEN DISTRIBUTING', '');
+  await regexFileAsync(expoViewBuildGradle, 'END UNCOMMENT WHEN DISTRIBUTING */', '');
+  await regexFileAsync(
+    expoViewBuildGradle,
+    `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
+    '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
+  );
+  await regexFileAsync(
+    expoViewBuildGradle,
+    `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
+    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
+  );
+  await regexFileAsync(
+    multipleVersionReactNativeActivity,
+    `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
+    '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
+  );
+  await regexFileAsync(
+    multipleVersionReactNativeActivity,
+    `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
+    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
+  );
+  await regexFileAsync(
+    settingsGradle,
+    `// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT`,
+    `/*`
+  );
+  await regexFileAsync(
+    settingsGradle,
+    `// FLAG_END_REMOVE__UPDATE_EXPOKIT`,
+    `*/ //`
+  );
 
   const detachableUniversalModules = await findUnimodules('../packages');
 
@@ -353,11 +323,11 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     });
   }
 
+  await restoreFileAsync(settingsGradle);
   await restoreFileAsync(constantsJava);
   await restoreFileAsync(appBuildGradle);
   await restoreFileAsync(expoViewBuildGradle);
   await restoreFileAsync(multipleVersionReactNativeActivity);
-  await restoreFileAsync(settingsGradle);
 
   await spawnAsyncPrintCommand('rm', [
     '-rf',
