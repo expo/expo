@@ -20,7 +20,7 @@ Note: Displays a warning on iOS if battery monitoring is not enabled, or if atte
 
 - [`Battery.getBatteryLevelAsync()`](#batterygetbatterylevelasync)
 - [`Battery.getBatteryStateAsync()`](#batterygetbatterystateasync)
-- [`Battery.isLowPowerModeEnableAsync()`](#batteryislowpowermodeenableasync)
+- [`Battery.isLowPowerModeEnabledAsync()`](#batteryislowpowermodeenabledasync)
 - [`Battery.getPowerStateAsync()`](#batterygetpowerstateasync)
 
 ### Event Subscriptions
@@ -71,7 +71,7 @@ await Battery.getBatteryStateAsync();
 // BatteryState.CHARGING
 ```
 
-### `Battery.isLowPowerModeEnableAsync()`
+### `Battery.isLowPowerModeEnabledAsync()`
 
 Gets the current status of Low Power mode on iOS and Power Saver mode on Android.
 
@@ -84,7 +84,7 @@ Returns a `Promise` that resolves to a `boolean` value of either `true` or `fals
 Low Power Mode (iOS) or Power Saver Mode (Android) are enabled.
 
 ```js
-await Battery.isLowPowerModeEnableAsync();
+await Battery.isLowPowerModeEnabledAsync();
 // true
 ```
 

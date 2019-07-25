@@ -126,7 +126,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   @ExpoMethod
-  public void isLowPowerModeEnableAsync(Promise promise) {
+  public void isLowPowerModeEnabledAsync(Promise promise) {
     try {
       PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
       boolean lowPowerMode = powerManager.isPowerSaveMode();
