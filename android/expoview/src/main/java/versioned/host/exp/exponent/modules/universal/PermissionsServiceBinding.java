@@ -29,7 +29,7 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
     int globalResult = PackageManager.PERMISSION_GRANTED;
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      globalResult = ContextCompat.checkSelfPermission(mContext, permission);
+      globalResult = ContextCompat.checkSelfPermission(this.getMContext(), permission);
     }
 
     if (globalResult == PackageManager.PERMISSION_GRANTED &&

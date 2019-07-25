@@ -9,8 +9,11 @@ buildscript {
   }
 }
 
+
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
+
 
 group = 'host.exp.exponent'
 version = '8.0.0-rc.0'
@@ -73,6 +76,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-permissions-interface'
-
+  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
   api "androidx.appcompat:appcompat:1.0.0"
 }
