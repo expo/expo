@@ -297,7 +297,7 @@ public class PushNotificationHelper {
                   }
                 }
               } catch (JSONException e) {
-                Log.d(TAG, "Something is wrong with the user-provided data payload: " + e.toString());
+                Log.e(TAG, "Something is wrong with the user-provided data payload: " + e.toString());
               }
             }
 
@@ -319,9 +319,9 @@ public class PushNotificationHelper {
     try {
       imageBitmap = Picasso.with(context).load(imageURL).get();
     } catch (IOException ie) {
-      Log.d(TAG, "The image (" + imageURL + ") in the push notification is not loaded correctly: " + ie.toString());
+      Log.e(TAG, "The image (" + imageURL + ") in the push notification is not loaded correctly: " + ie.toString());
     } catch (IllegalStateException ise) {
-      Log.d(TAG, "The image URL (" + imageURL + ") in the push notification is invalid: " + ise.toString());
+      Log.e(TAG, "The image URL (" + imageURL + ") in the push notification is invalid: " + ise.toString());
     }
 
     return imageBitmap;
