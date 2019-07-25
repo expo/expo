@@ -384,6 +384,13 @@ type PushMessage = {
   },
 
   /**
+   * (Android and web only)
+   * Remote url of a custom icon that replaces the default notification icon.
+   * This value overrides `notification.icon` in `app.json`.
+   */
+  icon?: string,
+
+  /**
    * A timestamp since the UNIX epoch specifying when the message expires. This
    * has the same effect as the `ttl` field and is just an absolute timestamp
    * instead of a relative time.
@@ -450,11 +457,6 @@ type PushMessage = {
   // Android-specific fields
 
   /**
-   * Remote url of a custom icon that replaces the default notification icon.
-  */
-  icon?: string,
-
-  /**
    * ID of the Notification Channel through which to display this notification
    * on Android devices. If an ID is specified but the corresponding channel
    * does not exist on the device (i.e. has not yet been created by your app),
@@ -468,11 +470,6 @@ type PushMessage = {
   channelId?: string,
 
   // Web-specific fields
-  /**
-   * Remote url to an image to use as the icon for push notifications.
-   * This value overrides `notification.icon` in `app.json`.
-   */
-  icon?: string,
 
   /**
    * The web path that will be opened/focused after the user clicks the
