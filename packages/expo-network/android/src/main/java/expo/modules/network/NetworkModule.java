@@ -120,7 +120,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   @ExpoMethod
-  public void isAirplaneModeEnableAsync(Promise promise) {
+  public void isAirplaneModeEnabledAsync(Promise promise) {
     boolean isAirPlaneMode = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
     promise.resolve(isAirPlaneMode);
   }

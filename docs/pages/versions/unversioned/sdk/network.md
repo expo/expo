@@ -18,7 +18,7 @@ import * as Network from 'expo-network';
 
 - [`Network.getIpAddressAsync()`](#networkgetipaddressasync)
 - [`Network.getMacAddressAsync(interfaceName?)`](#networkgetmacaddressasyncinterfacename)
-- [`Network.isAirplaneModeEnableAsync()`](#networkisairplanemodeenableasync) (Android only)
+- [`Network.isAirplaneModeEnabledAsync()`](#networkisairplanemodeenabledasync) (Android only)
 
 ### Errors
 
@@ -63,7 +63,7 @@ await Network.getMacAddressAsync();
 // "E5:12:D8:E5:69:97"
 ```
 
-### `Network.isAirplaneModeEnableAsync()`
+### `Network.isAirplaneModeEnabledAsync()`
 
 **Android only.** Tells if the device is in airplane mode.
 
@@ -74,7 +74,7 @@ Returns a `Promise` that resolves to the `boolean` value for whether the device 
 **Examples**
 
 ```js
-await Application.isAirplaneModeEnableAsync();
+await Application.isAirplaneModeEnabledAsync();
 // false
 ```
 

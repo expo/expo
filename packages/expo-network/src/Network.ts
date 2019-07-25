@@ -20,9 +20,9 @@ export async function getMacAddressAsync(interfaceName?:string): Promise<string>
   }
 }
 
-export async function isAirplaneModeEnableAsync(): Promise<boolean> {
-  if (!ExpoNetwork.isAirplaneModeEnableAsync) {
-    throw new UnavailabilityError('expo-network', 'isAirplaneModeEnableAsync');
+export async function isAirplaneModeEnabledAsync(): Promise<boolean> {
+  if (!ExpoNetwork.isAirplaneModeEnabledAsync) {
+    throw new UnavailabilityError('expo-network', 'isAirplaneModeEnabledAsync');
   }
-  return await ExpoNetwork.isAirplaneModeEnableAsync();
+  return await ExpoNetwork.isAirplaneModeEnabledAsync();
 }

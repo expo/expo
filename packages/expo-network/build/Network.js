@@ -17,10 +17,10 @@ export async function getMacAddressAsync(interfaceName) {
         return await ExpoNetwork.getMacAddressAsync(interfaceName);
     }
 }
-export async function isAirplaneModeEnableAsync() {
-    if (!ExpoNetwork.isAirplaneModeEnableAsync) {
-        throw new UnavailabilityError('expo-network', 'isAirplaneModeEnableAsync');
+export async function isAirplaneModeEnabledAsync() {
+    if (!ExpoNetwork.isAirplaneModeEnabledAsync) {
+        throw new UnavailabilityError('expo-network', 'isAirplaneModeEnabledAsync');
     }
-    return await ExpoNetwork.isAirplaneModeEnableAsync();
+    return await ExpoNetwork.isAirplaneModeEnabledAsync();
 }
 //# sourceMappingURL=Network.js.map
