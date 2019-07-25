@@ -33,7 +33,7 @@
     "babel-eslint": "^9.0.0",
     "eslint": "^6.0.1",
     "eslint-config-universe": "^2.0.0-alpha.0",
-    "expo-cli": "^2.21.2",
+    "expo-cli": "^3.0.4",
     "expo-yarn-workspaces": "^1.2.0",
     "prettier": "^1.18.2"
   },
