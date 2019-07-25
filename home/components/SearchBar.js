@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     paddingLeft: 5,
     marginRight: 5,
-    outlineWidth: 0,
   },
   searchInputPlaceholderText: {},
 });
