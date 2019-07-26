@@ -38,6 +38,8 @@ expo push:web:upload --vapid-pubkey <vapid-public-key> --vapid-pvtkey <vapid-pri
 
 ## Client Setup
 
+**Note:** If you use `expo push:web:generate` or `expo push:web:upload` command above to generate/upload your VAPID keys, the following steps should have done for you automatically by Expo CLI.
+
 You will also need to add your VAPID public key to your client app's `app.json` file in the `notification.vapidPublicKey` field.
 
 You should also include your username (the username of the Expo account which uploaded the keys) in the `owner` field. You do not have to do this if you choose to not handle web push notifications through Expo's server.
