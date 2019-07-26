@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0",
-    "babel-preset-expo": "^5.0.0"
+    "babel-preset-expo": "^6.0.0"
   },
   "dependencies": {
     "expo-app-auth": "~6.0.0-rc.0",

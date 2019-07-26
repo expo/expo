@@ -63,7 +63,7 @@
     "@types/lodash.zipobject": "^4.1.4",
     "@types/qs": "^6.5.1",
     "@types/uuid-js": "^0.7.1",
-    "babel-preset-expo": "^5.0.0",
+    "babel-preset-expo": "^6.0.0",
     "cross-spawn": "^6.0.5",
     "@unimodules/core": "3.0.0-rc.0",
     "@unimodules/react-native-adapter": "3.0.0-rc.0",

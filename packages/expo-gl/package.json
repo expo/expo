@@ -45,7 +45,7 @@
     "prop-types": "^15.6.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
+    "babel-preset-expo": "^6.0.0",
     "expo-module-scripts": "^1.0.0",
     "react-test-renderer": "^16.7.0"
   },
