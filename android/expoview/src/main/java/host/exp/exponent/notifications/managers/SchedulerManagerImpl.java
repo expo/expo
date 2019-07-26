@@ -11,22 +11,21 @@ import java.util.List;
 import java.util.Map;
 
 import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
-import host.exp.exponent.notifications.interfaces.SchedulerInterface;
-import host.exp.exponent.notifications.interfaces.SchedulerModelInterface;
-import host.exp.exponent.notifications.interfaces.SchedulersManagerInterface;
+import host.exp.exponent.notifications.schedulers.Scheduler;
+import host.exp.exponent.notifications.schedulers.SchedulerModel;
 import host.exp.exponent.notifications.schedulers.CalendarSchedulerModel;
 import host.exp.exponent.notifications.schedulers.IntervalSchedulerModel;
-import host.exp.exponent.notifications.schedulers.Scheduler;
+import host.exp.exponent.notifications.schedulers.SchedulerImpl;
 
-class SchedulerManager implements SchedulersManagerInterface {
+class SchedulerManagerImpl implements SchedulersManager {
 
   private boolean mFetchedFromDB = false;
 
-  private HashMap<String, SchedulerInterface> mSchedulersMap = new HashMap<>();
+  private HashMap<String, Scheduler> mSchedulersMap = new HashMap<>();
 
   private Context mApplicationContext;
 
-  SchedulerManager(Context applicationContext) {
+  SchedulerManagerImpl(Context applicationContext) {
     mApplicationContext = applicationContext;
   }
 
@@ -38,7 +37,7 @@ class SchedulerManager implements SchedulersManagerInterface {
 
     ArrayList<String> unsuccessful = new ArrayList<String>();
 
-    for (Map.Entry<String, SchedulerInterface> scheduler : mSchedulersMap.entrySet()) {
+    for (Map.Entry<String, Scheduler> scheduler : mSchedulersMap.entrySet()) {
       try {
         scheduler.getValue().schedule(action);
       } catch (UnableToScheduleException e) {
@@ -58,7 +57,7 @@ class SchedulerManager implements SchedulersManagerInterface {
 
     ArrayList<String> toRemove = new ArrayList<String>();
 
-    for (Map.Entry<String, SchedulerInterface> scheduler : mSchedulersMap.entrySet()) {
+    for (Map.Entry<String, Scheduler> scheduler : mSchedulersMap.entrySet()) {
       if (experienceId == null || scheduler.getValue().getOwnerExperienceId().equals(experienceId)) {
         scheduler.getValue().remove();
         toRemove.add(scheduler.getKey());
@@ -73,7 +72,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   @Override
   public void cancelAlreadyScheduled(String experienceId) {
     fetchSchedulersMap();
-    for (SchedulerInterface scheduler : mSchedulersMap.values()) {
+    for (Scheduler scheduler : mSchedulersMap.values()) {
       if (experienceId == null || scheduler.getOwnerExperienceId().equals(experienceId)) {
         scheduler.cancel();
       }
@@ -83,7 +82,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   @Override
   public void rescheduleOrDelete(String id) {
     fetchSchedulersMap();
-    SchedulerInterface scheduler = mSchedulersMap.get(id);
+    Scheduler scheduler = mSchedulersMap.get(id);
     if (scheduler == null) {
       return;
     }
@@ -102,7 +101,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   @Override
   public void removeScheduler(String id) {
     fetchSchedulersMap();
-    SchedulerInterface scheduler = mSchedulersMap.get(id);
+    Scheduler scheduler = mSchedulersMap.get(id);
     if (scheduler == null) {
       return;
     }
@@ -112,7 +111,7 @@ class SchedulerManager implements SchedulersManagerInterface {
   }
 
   @Override
-  public void addScheduler(SchedulerInterface scheduler, Function<String, Boolean> handler) {
+  public void addScheduler(Scheduler scheduler, Function<String, Boolean> handler) {
     fetchSchedulersMap();
 
     scheduler.setApplicationContext(mApplicationContext);
@@ -136,14 +135,14 @@ class SchedulerManager implements SchedulersManagerInterface {
       mFetchedFromDB = true;
 
       for (Class schedulerClass : getSchedulerClasses()) {
-        List<SchedulerModelInterface> schedulers = new Select().from(schedulerClass).queryList();
-        for (SchedulerModelInterface schedulerModel : schedulers) {
-          Scheduler scheduler = new Scheduler(schedulerModel);
+        List<SchedulerModel> schedulers = new Select().from(schedulerClass).queryList();
+        for (SchedulerModel schedulerModel : schedulers) {
+          SchedulerImpl scheduler = new SchedulerImpl(schedulerModel);
           mSchedulersMap.put(scheduler.getIdAsString(), scheduler);
         }
       }
 
-      for (SchedulerInterface scheduler : mSchedulersMap.values()) {
+      for (Scheduler scheduler : mSchedulersMap.values()) {
         scheduler.setApplicationContext(mApplicationContext);
       }
     }

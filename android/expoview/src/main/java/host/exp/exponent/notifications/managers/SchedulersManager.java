@@ -1,8 +1,10 @@
-package host.exp.exponent.notifications.interfaces;
+package host.exp.exponent.notifications.managers;
 
 import org.unimodules.core.interfaces.Function;
 
-public interface SchedulersManagerInterface {
+import host.exp.exponent.notifications.schedulers.Scheduler;
+
+public interface SchedulersManager {
 
   void triggerAll(String action);
 
@@ -14,6 +16,6 @@ public interface SchedulersManagerInterface {
 
   void removeScheduler(String id);
 
-  void addScheduler(SchedulerInterface scheduler, Function<String, Boolean> handler);
+  void addScheduler(Scheduler scheduler, Function<String, Boolean> handler);
 
 }

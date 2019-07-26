@@ -16,12 +16,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import host.exp.exponent.notifications.interfaces.SchedulerModelInterface;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
 import host.exp.exponent.notifications.managers.SchedulersDatabase;
 
 @Table(databaseName = SchedulersDatabase.NAME)
-public class IntervalSchedulerModel extends BaseModel implements SchedulerModelInterface {
+public class IntervalSchedulerModel extends BaseModel implements SchedulerModel {
 
   private static List<String> triggeringActions = Arrays.asList(null,
       Intent.ACTION_REBOOT,

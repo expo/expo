@@ -20,12 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import host.exp.exponent.notifications.helpers.ExpoCronDefinitionBuilder;
-import host.exp.exponent.notifications.interfaces.SchedulerModelInterface;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
 import host.exp.exponent.notifications.managers.SchedulersDatabase;
 
 @Table(databaseName = SchedulersDatabase.NAME)
-public class CalendarSchedulerModel extends BaseModel implements SchedulerModelInterface {
+public class CalendarSchedulerModel extends BaseModel implements SchedulerModel {
 
   private static List<String> triggeringActions = Arrays.asList(null,
       Intent.ACTION_BOOT_COMPLETED,

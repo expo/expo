@@ -7,26 +7,25 @@ import org.unimodules.core.interfaces.Function;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import host.exp.exponent.notifications.interfaces.SchedulerInterface;
-import host.exp.exponent.notifications.interfaces.SchedulersManagerInterface;
+import host.exp.exponent.notifications.schedulers.Scheduler;
 
-public class SchedulersManagerProxy implements SchedulersManagerInterface {
+public class SchedulersManagerProxy implements SchedulersManager {
 
-  private volatile static SchedulersManagerInterface instance = null;
+  private volatile static SchedulersManager instance = null;
 
   public final static String SCHEDULER_ID = "scheduler_id";
 
-  private SchedulersManagerInterface mSchedulersManager;
+  private SchedulersManager mSchedulersManager;
 
   private Executor mSingleThreadExecutor = Executors.newSingleThreadExecutor();
 
-  private SchedulersManagerProxy(SchedulersManagerInterface schedulerManager) {
+  private SchedulersManagerProxy(SchedulersManager schedulerManager) {
     mSchedulersManager = schedulerManager;
   }
 
-  public static synchronized SchedulersManagerInterface getInstance(Context context) {
+  public static synchronized SchedulersManager getInstance(Context context) {
     if (instance == null) {
-      instance = new SchedulersManagerProxy(new SchedulerManager(context.getApplicationContext()));
+      instance = new SchedulersManagerProxy(new SchedulerManagerImpl(context.getApplicationContext()));
     }
     return instance;
   }
@@ -57,7 +56,7 @@ public class SchedulersManagerProxy implements SchedulersManagerInterface {
   }
 
   @Override
-  public void addScheduler(final SchedulerInterface scheduler, final Function<String, Boolean> handler) {
+  public void addScheduler(final Scheduler scheduler, final Function<String, Boolean> handler) {
     mSingleThreadExecutor.execute(()-> mSchedulersManager.addScheduler(scheduler, handler));
   }
 

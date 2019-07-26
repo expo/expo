@@ -37,7 +37,7 @@ import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.notifications.schedulers.IntervalSchedulerModel;
-import host.exp.exponent.notifications.schedulers.Scheduler;
+import host.exp.exponent.notifications.schedulers.SchedulerImpl;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
@@ -423,7 +423,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     intervalSchedulerModel.setScheduledTime(System.currentTimeMillis() + ((Double) options.get("interval")).longValue());
     intervalSchedulerModel.setInterval(((Double) options.get("interval")).longValue()); // on iOS we cannot change interval
 
-    Scheduler scheduler = new Scheduler(intervalSchedulerModel);
+    SchedulerImpl scheduler = new SchedulerImpl(intervalSchedulerModel);
 
     SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
         scheduler,
@@ -467,7 +467,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     calendarSchedulerModel.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
     calendarSchedulerModel.setCalendarData(cron.asString());
 
-    Scheduler scheduler = new Scheduler(calendarSchedulerModel);
+    SchedulerImpl scheduler = new SchedulerImpl(calendarSchedulerModel);
 
     SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
         scheduler,

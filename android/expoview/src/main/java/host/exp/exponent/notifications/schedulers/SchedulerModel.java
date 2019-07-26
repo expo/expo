@@ -1,8 +1,8 @@
-package host.exp.exponent.notifications.interfaces;
+package host.exp.exponent.notifications.schedulers;
 
 import java.util.HashMap;
 
-public interface SchedulerModelInterface {
+public interface SchedulerModel {
 
   long getNextAppearanceTime();
 
