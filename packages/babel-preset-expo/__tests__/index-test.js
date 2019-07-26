@@ -96,7 +96,7 @@ import 'react-native-vector-icons';
   });
 });
 
-describe('"lazy" option', () => {
+describe('"lazyImports" option', () => {
   it(`defaults to null`, () => {
     let testFilename = path.join(path.resolve(__dirname, 'samples'), 'Lazy.js');
     let optionsDefault = {

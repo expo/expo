@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`"lazy" option accepts ["inline-comp", "./inline-func", "../inline-func-with-side-effects.fx.ts"] 1`] = `
+exports[`"lazyImports" option accepts ["inline-comp", "./inline-func", "../inline-func-with-side-effects.fx.ts"] 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _expo=require(\\"expo\\");
 var _expoAsset=require(\\"expo-asset\\");
 var _react=_interopRequireDefault(require(\\"react\\"));
@@ -49,7 +49,7 @@ _react.default.createElement(_fooView.default,null)));
 Lazy;exports.default=_default;"
 `;
 
-exports[`"lazy" option accepts [Function anonymous] 1`] = `
+exports[`"lazyImports" option accepts [Function anonymous] 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));_createClass2=function _createClass2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));_inherits2=function _inherits2(){return data;};return data;}function _expo(){var data=require(\\"expo\\");_expo=function _expo(){return data;};return data;}
 function _expoAsset(){var data=require(\\"expo-asset\\");_expoAsset=function _expoAsset(){return data;};return data;}
 function _react(){var data=_interopRequireDefault(require(\\"react\\"));_react=function _react(){return data;};return data;}
@@ -98,7 +98,7 @@ _react().default.createElement(_fooView().default,null)));
 Lazy;exports.default=_default;"
 `;
 
-exports[`"lazy" option accepts false 1`] = `
+exports[`"lazyImports" option accepts false 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _expo=require(\\"expo\\");
 var _expoAsset=require(\\"expo-asset\\");
 var _react=_interopRequireDefault(require(\\"react\\"));
@@ -147,7 +147,7 @@ _react.default.createElement(_fooView.default,null)));
 Lazy;exports.default=_default;"
 `;
 
-exports[`"lazy" option accepts null 1`] = `
+exports[`"lazyImports" option accepts null 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));var _createClass2=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));var _possibleConstructorReturn2=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));var _getPrototypeOf2=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));var _inherits2=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));var _expo=require(\\"expo\\");
 var _expoAsset=require(\\"expo-asset\\");
 var _react=_interopRequireDefault(require(\\"react\\"));
@@ -196,7 +196,7 @@ _react.default.createElement(_fooView.default,null)));
 Lazy;exports.default=_default;"
 `;
 
-exports[`"lazy" option accepts true 1`] = `
+exports[`"lazyImports" option accepts true 1`] = `
 "var _interopRequireDefault=require(\\"@babel/runtime/helpers/interopRequireDefault\\");var _interopRequireWildcard=require(\\"@babel/runtime/helpers/interopRequireWildcard\\");Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/classCallCheck\\"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/createClass\\"));_createClass2=function _createClass2(){return data;};return data;}function _possibleConstructorReturn2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/possibleConstructorReturn\\"));_possibleConstructorReturn2=function _possibleConstructorReturn2(){return data;};return data;}function _getPrototypeOf2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/getPrototypeOf\\"));_getPrototypeOf2=function _getPrototypeOf2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require(\\"@babel/runtime/helpers/inherits\\"));_inherits2=function _inherits2(){return data;};return data;}var _expo=require(\\"expo\\");
 var _expoAsset=require(\\"expo-asset\\");
 function _react(){var data=_interopRequireDefault(require(\\"react\\"));_react=function _react(){return data;};return data;}
