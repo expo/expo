@@ -358,6 +358,7 @@ jobs:
       - install_nix
       - setup
       - update_submodules
+      - run: yarn global add expo-cli@3.0.4
       - run: git lfs pull
       - fetch_cocoapods_specs
       - yarn_install:
@@ -379,17 +380,17 @@ jobs:
           working_directory: ~/project
           no_output_timeout: 40m
           command: |
-              export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
-              tar \
-                -zcf "/tmp/$TARBALL" \
-                package.json \
-                exponent-view-template \
-                shellAppBase-builds \
-                shellAppWorkspaces \
-                ios
-              ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
-              echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
-              echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
+            export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+            tar \
+              -zcf "/tmp/$TARBALL" \
+              package.json \
+              exponent-view-template \
+              shellAppBase-builds \
+              shellAppWorkspaces \
+              ios
+            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+            echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+            echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
 
   shell_app_android_build:
     executor: android
