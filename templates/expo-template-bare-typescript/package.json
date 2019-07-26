@@ -1,5 +1,5 @@
 {
-  "name": "expo-template-bare-minimum",
+  "name": "expo-template-bare-typescript",
   "description": "This bare project template includes TypeScript",
   "version": "34.0.0-rc.7",
   "scripts": {
