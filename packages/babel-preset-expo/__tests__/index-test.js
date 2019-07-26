@@ -98,7 +98,7 @@ import 'react-native-vector-icons';
 
 describe('"lazyImports" option', () => {
   it(`defaults to null`, () => {
-    let testFilename = path.join(path.resolve(__dirname, 'samples'), 'Lazy.js');
+    let testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
     let optionsDefault = {
       babelrc: false,
       presets: [preset],
@@ -121,7 +121,7 @@ describe('"lazyImports" option', () => {
     [['inline-comp', './inline-func', '../inline-func-with-side-effects.fx.ts']],
     [name => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
   ])(`accepts %p`, lazyImportsOption => {
-    let testFilename = path.join(path.resolve(__dirname, 'samples'), 'Lazy.js');
+    let testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
     let options = {
       babelrc: false,
       presets: [[preset, { lazyImports: lazyImportsOption }]],
