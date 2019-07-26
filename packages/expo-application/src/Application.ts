@@ -2,16 +2,19 @@ import { Platform, UnavailabilityError } from '@unimodules/core';
 
 import ExpoApplication from './ExpoApplication';
 
-export const nativeApplicationVersion = ExpoApplication ? ExpoApplication.nativeApplicationVersion : null;
-export const nativeBuildVersion = ExpoApplication ? ExpoApplication.nativeBuildVersion : null;
-export const applicationName = ExpoApplication ? ExpoApplication.applicationName : null;
-export const applicationId = ExpoApplication ? ExpoApplication.applicationId : null;
-export let androidId;
-if (Platform.OS === 'ios' || Platform.OS === 'web') {
-  androidId = null;
-} else {
-  androidId = ExpoApplication ? ExpoApplication.androidId : null;
-}
+export const nativeApplicationVersion: string | null = ExpoApplication
+  ? ExpoApplication.nativeApplicationVersion || null
+  : null;
+export const nativeBuildVersion: string | number | null = ExpoApplication
+  ? ExpoApplication.nativeBuildVersion || null
+  : null;
+export const applicationName: string | null = ExpoApplication
+  ? ExpoApplication.applicationName || null
+  : null;
+export const applicationId: string | null = ExpoApplication
+  ? ExpoApplication.applicationId || null
+  : null;
+export const androidId: string | null = ExpoApplication ? ExpoApplication.androidId || null : null;
 
 export async function getInstallReferrerAsync(): Promise<string> {
   if (!ExpoApplication.getInstallReferrerAsync) {

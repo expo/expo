@@ -35,24 +35,23 @@ import * as Application from 'expo-application';
 
 The human-readable name of the application that is displayed with the app's icon on the device's home screen or desktop. On Android and iOS, this value is a `string` unless the name could not be retrieved, in which case this value will be `null`. On web this value is `null`.
 
-- e.g., `Expo`, `Yelp`, `Instagram`
+- e.g., "`Expo`", "`Yelp`", "`Instagram`"
 
 ### `Application.applicationId`
 
 The ID of the application. On Android, this is the application ID. On iOS, this is the bundle ID. On web, this is `null`.
 
-- e.g., `com.cocoacasts.scribbles`, `com.apple.Pages`
+- e.g., "`com.cocoacasts.scribbles`, `com.apple.Pages`"
 
 ### `Application.nativeApplicationVersion`
 
 The human-readable version of the native application that may be displayed in the app store. This is the `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set by `version` in app.json on Android at the time the native app was built. On web, this value is `null`.
 
-
-- e.g., `2.11.0`
+- e.g., "`2.11.0`"
 
 ### `Application.nativeBuildVersion`
 
-The internal build version of the native application that the app store may use to distinguish between different binaries. This is the `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built. On web, this value is `null`. Note that the return type on Android will a `number` and the return type on iOS will be a `string`. 
+The internal build version of the native application that the app store may use to distinguish between different binaries. This is the `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built. On web, this value is `null`. Note that the return type on Android will a `number` and the return type on iOS will be a `string`.
 
 - e.g., `iOS: "2.11.0", Android: 114`
 
@@ -132,11 +131,10 @@ await Application.getLastUpdateTimeAsync();
 
 ## Error Codes
 
-| Code                                                | Description                                                                                      |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND | Error code thrown for `firstInstallTimeAsync` and `lastUpdateTimeAsync`. This may be thrown if the package information or package name could not be retrieved. |
-| ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE | The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed. This error code may come up when testing on an AVD that doesn't come with the Play Store pre-installed, such as the Google Pixel 3 and Nexus 6. |
-| ERR_APPLICATION_INSTALL_REFERRER_CONNECTION | A connection could not be established to the Google Play Store |
-| ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION | A `RemoteException` was thrown after a connection was established to the Play Store. This may happen if the process hosting the remote object is no longer available, which usually means the process crashed. See https://stackoverflow.com/questions/3156389/android-remoteexceptions-and-services. |
-| ERR_APPLICATION_INSTALL_REFERRER | General default case error code for the `getInstallReferrerAsync` method. This error code will be thrown if an exception occured for the install referrer, but the exception was none of the errors above. The [`responseCode`](https://developer.android.com/reference/com/android/installreferrer/api/InstallReferrerClient.InstallReferrerResponse.html) is provided along with the error.  |
-
+| Code                                              | Description                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ERR_APPLICATION_PACKAGE_NAME_NOT_FOUND            | Error code thrown for `firstInstallTimeAsync` and `lastUpdateTimeAsync`. This may be thrown if the package information or package name could not be retrieved.                                                                                                                                                                                                                                |
+| ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE      | The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed. This error code may come up when testing on an AVD that doesn't come with the Play Store pre-installed, such as the Google Pixel 3 and Nexus 6.                                                                                                                             |
+| ERR_APPLICATION_INSTALL_REFERRER_CONNECTION       | A connection could not be established to the Google Play Store                                                                                                                                                                                                                                                                                                                                |
+| ERR_APPLICATION_INSTALL_REFERRER_REMOTE_EXCEPTION | A `RemoteException` was thrown after a connection was established to the Play Store. This may happen if the process hosting the remote object is no longer available, which usually means the process crashed. See https://stackoverflow.com/questions/3156389/android-remoteexceptions-and-services.                                                                                         |
+| ERR_APPLICATION_INSTALL_REFERRER                  | General default case error code for the `getInstallReferrerAsync` method. This error code will be thrown if an exception occured for the install referrer, but the exception was none of the errors above. The [`responseCode`](https://developer.android.com/reference/com/android/installreferrer/api/InstallReferrerClient.InstallReferrerResponse.html) is provided along with the error. |
