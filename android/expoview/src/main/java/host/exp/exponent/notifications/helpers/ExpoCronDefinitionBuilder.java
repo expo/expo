@@ -15,6 +15,7 @@ Use this link to see how it works: https://github.com/jmrozanec/cron-utils/tree/
 
 public class ExpoCronDefinitionBuilder {
 
+
   public static CronDefinition getCronDefinition() {
     return CronDefinitionBuilder.defineCron()
         .withSeconds().and()
@@ -26,15 +27,19 @@ public class ExpoCronDefinitionBuilder {
         .withYear().withValidRange(1970, 2099).and()
         .lastFieldOptional()
         .withCronValidation(
-            new CronConstraint("Both, a day-of-week AND a day-of-month parameter, are not supported.") {
-              @Override
-              public boolean validate(Cron cron) {
-                boolean presentDayOfWeek = !(cron.retrieve(CronFieldName.DAY_OF_MONTH).getExpression() instanceof QuestionMark);
-                boolean presentDayOfMonth = !(cron.retrieve(CronFieldName.DAY_OF_WEEK).getExpression() instanceof QuestionMark);
-                return !(presentDayOfMonth && presentDayOfWeek);
-              }
-            })
+            ExpoCronDefinitionBuilder.getCronConstraint())
         .instance(); // quartz with corrected validation
+  }
+
+  public static CronConstraint getCronConstraint() {
+    return new CronConstraint("Both, a day-of-week AND a day-of-month parameter, are not supported.") {
+      @Override
+      public boolean validate(Cron cron) {
+        boolean presentDayOfWeek = !(cron.retrieve(CronFieldName.DAY_OF_MONTH).getExpression() instanceof QuestionMark);
+        boolean presentDayOfMonth = !(cron.retrieve(CronFieldName.DAY_OF_WEEK).getExpression() instanceof QuestionMark);
+        return !(presentDayOfMonth && presentDayOfWeek);
+      }
+    };
   }
 
 }

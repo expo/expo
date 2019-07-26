@@ -5,20 +5,20 @@ import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 
 public interface SchedulerInterface {
 
-  public void schedule(String action) throws UnableToScheduleException;
+  void schedule(String action) throws UnableToScheduleException;
 
-  public String getIdAsString();
+  String getIdAsString();
 
-  public String getOwnerExperienceId();
+  String getOwnerExperienceId();
 
-  public void cancel();
+  void cancel();
 
-  public boolean canBeRescheduled();
+  boolean canBeRescheduled();
 
-  public String saveAndGetId();
+  String saveAndGetId();
 
-  public void setApplicationContext(Context context);
+  void setApplicationContext(Context context);
 
-  public void remove();
+  void remove();
 
 }
