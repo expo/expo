@@ -806,6 +806,8 @@ PODS:
     - UMFileSystemInterface
     - UMImageLoaderInterface
     - UMPermissionsInterface
+  - EXCellular (0.0.1):
+    - UMCore
   - EXConstants (5.0.0):
     - UMConstantsInterface
     - UMCore
@@ -1545,6 +1547,7 @@ DEPENDENCIES:
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
+  - EXCellular (from `../packages/expo-cellular/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXCrypto (from `../packages/expo-crypto/ios`)
@@ -2116,6 +2119,9 @@ EXTERNAL SOURCES:
   EXCamera:
     :path: !ruby/object:Pathname
     path: "../packages/expo-camera/ios"
+  EXCellular:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-cellular/ios"
   EXConstants:
     :path: !ruby/object:Pathname
     path: "../packages/expo-constants/ios"
@@ -2487,6 +2493,7 @@ SPEC CHECKSUMS:
   EXBrightness: bf95e6eec3b9d5ba965e2dbf236d913884dd555a
   EXCalendar: e0539468aae24ec9b40aff116319b2162edf0197
   EXCamera: 06d071d11378051a64bb057f4c1ee486eb69dccc
+  EXCellular: fc1fbbbdba14df8ccbe30f7cdc45aa55fd195bce
   EXConstants: f1d63f5bcf9a790fea747ceba6411b7814005191
   EXContacts: cba6db9b4d8ef590c2185711a648fa32d90041b9
   EXCrypto: fdec92b3f9740e1c27858688d3cff33002f1ff44
