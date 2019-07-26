@@ -1127,10 +1127,10 @@
     mime "^2.4.0"
     tempy "^0.3.0"
 
-"@expo/xdl@^56.1.3":
-  version "56.1.3"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-56.1.3.tgz#a0413e6e386102eaf81d88dde890bc05e7a1861f"
-  integrity sha512-zYALIoozRe1scLuzUKagfJwD6eMF2b5QIxpAWaUovsgXt1N/F6Cm/G+IZ4R/rv9u+H7SSaGLMZ5rfBwByL9ozg==
+"@expo/xdl@^56.1.4-rc.2":
+  version "56.1.4-rc.2"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-56.1.4-rc.2.tgz#5740688d1b48353e4dea5488334e27c81273c646"
+  integrity sha512-fvCzFdmoeAOIAp/NBvDF769uH079h2srB/AN84GtD+M0KndI7N3IcJZw3S1A1J1cbq+t8WwivAC86QKvrvtb8w==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.1.2"
