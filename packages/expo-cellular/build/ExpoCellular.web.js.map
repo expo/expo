@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoCellular.web.js","sourceRoot":"","sources":["../src/ExpoCellular.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACX,IAAI,IAAI;QACJ,OAAO,cAAc,CAAC;IAC1B,CAAC;CACJ,CAAC","sourcesContent":["export default {\n    get name(): string {\n        return 'ExpoCellular';\n    },\n}; "]}
