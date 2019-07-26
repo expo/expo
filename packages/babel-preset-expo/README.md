@@ -5,13 +5,13 @@ at https://github.com/expo/expo. Thanks!
 
 ## Options
 
-### [`lazy`](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy)
+### [`lazyImports`](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy)
 
 Changes Babel's compiled `import` statements to be lazily evaluated when their imported bindings are used for the first time.
 
 This can improve the initial load time of your module because evaluating dependencies up front is sometimes entirely un-necessary. This is especially the case when implementing a library module.
 
-The value of `lazy` has a few possible effects:
+The value of `lazyImports` has a few possible effects:
 
 - `null` - [metro-react-native-babel-preset](https://github.com/facebook/metro/tree/master/packages/metro-react-native-babel-preset) will handle it. (Learn more about it here: https://github.com/facebook/metro/commit/23e3503dde5f914f3e642ef214f508d0a699851d)
 
@@ -31,7 +31,7 @@ The value of `lazy` has a few possible effects:
 [
     'babel-preset-expo',
     {
-        lazy: true
+        lazyImports: true
     }
 ],
 ```

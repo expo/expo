@@ -107,7 +107,7 @@ describe('"lazy" option', () => {
 
     let optionsNull = {
       babelrc: false,
-      presets: [[preset, { lazy: null }]],
+      presets: [[preset, { lazyImports: null }]],
     };
     let { codeNull } = babel.transformFileSync(testFilename, optionsNull);
 
@@ -120,11 +120,11 @@ describe('"lazy" option', () => {
     [true],
     [['inline-comp', './inline-func', '../inline-func-with-side-effects.fx.ts']],
     [name => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
-  ])(`accepts %p`, lazyOption => {
+  ])(`accepts %p`, lazyImportsOption => {
     let testFilename = path.join(path.resolve(__dirname, 'samples'), 'Lazy.js');
     let options = {
       babelrc: false,
-      presets: [[preset, { lazy: lazyOption }]],
+      presets: [[preset, { lazyImports: lazyImportsOption }]],
       // Make the snapshot easier to read
       retainLines: true,
     };

@@ -7,9 +7,9 @@ module.exports = function(api, options = {}) {
     ? { disableImportExportTransform: true, ...web }
     : { disableImportExportTransform: false, ...native };
 
-  // Note that if `options.lazy` is not set (i.e., `null` or `undefined`),
+  // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
   // `metro-react-native-babel-preset` will handle it.
-  const lazyOption = options && options.lazy;
+  const lazyImportsOption = options && options.lazyImports;
 
   return {
     presets: [
@@ -23,7 +23,7 @@ module.exports = function(api, options = {}) {
         {
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
-            lazyOption === true
+            lazyImportsOption === true
               ? importModuleSpecifier => {
                   // Do not lazy-initialize packages that are local imports (similar to `lazy: true` behavior)
                   // or are in the blacklist.
@@ -34,7 +34,7 @@ module.exports = function(api, options = {}) {
                 }
               : // Pass the option directly to `metro-react-native-babel-preset`
                 // (which in turns pass it to `babel-plugin-transform-modules-commonjs`).
-                lazyOption,
+                lazyImportsOption,
         },
       ],
     ],
