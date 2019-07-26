@@ -159,6 +159,7 @@ public class CalendarSchedulerModel extends BaseModel implements SchedulerModel 
   }
 
   public HashMap<String, Object> getDetails() {
+    setSerializedDetails(this.serializedDetails);
     return details;
   }
 
