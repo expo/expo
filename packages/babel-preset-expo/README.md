@@ -9,7 +9,7 @@ at https://github.com/expo/expo. Thanks!
 
 Changes Babel's compiled `import` statements to be lazily evaluated when their imported bindings are used for the first time.
 
-This can improve the initial load time of your module because evaluating dependencies up front is sometimes entirely un-necessary. This is especially the case when implementing a library module.
+This can improve the initial load time of your app because evaluating dependencies up front is sometimes entirely un-necessary, particularly when the dependencies have no side effects.
 
 The value of `lazyImports` has a few possible effects:
 
