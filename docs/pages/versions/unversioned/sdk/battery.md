@@ -14,7 +14,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import * as Battery from 'expo-battery';
 ```
 
-Note: Displays a warning on iOS if battery monitoring is not enabled, or if attempted on iOS simulator (where monitoring is not possible)
+Note: On iOS simulator, battery monitoring is not possible.
 
 ### Methods
 
@@ -43,7 +43,7 @@ Note: Displays a warning on iOS if battery monitoring is not enabled, or if atte
 
 Gets the battery level of the device as a number between 0 and 1.
 
-On Android, the default value is `-1`. If cannot retrieve current battery level, this throws `NullPointerException` with error code [`ERR_BATTERY_INVALID_ACCESS_BATTERY_LEVEL`](#error-codes).
+On Android, the default value is `-1`. If the current battery level cannot be retrieved, this throws `NullPointerException` with error code [`ERR_BATTERY_INVALID_ACCESS_BATTERY_LEVEL`](#error-codes).
 
 #### Returns
 
@@ -90,7 +90,7 @@ await Battery.isLowPowerModeEnabledAsync();
 
 ### `Battery.getPowerStateAsync()`
 
-Gets the power state of the device including the battery level, whether it is plugged in, and if the system is currently operating in Low Power Mode (iOS) or Power Saver Mode (Android). Displays a warning on iOS if battery monitoring is not enabled, or if attempted on iOS simulator (where monitoring is not possible)
+Gets the power state of the device including the battery level, whether it is plugged in, and if the system is currently operating in Low Power Mode (iOS) or Power Saver Mode (Android). 
 
 #### Returns
 

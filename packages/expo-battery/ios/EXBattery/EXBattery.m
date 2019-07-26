@@ -117,17 +117,6 @@ UM_EXPORT_METHOD_AS(isLowPowerModeEnabledAsync,
 
 - (NSDictionary *)getPowerState
 {
-#if RCT_DEV && (!TARGET_IPHONE_SIMULATOR) && !TARGET_OS_TV
-  if ([UIDevice currentDevice].isBatteryMonitoringEnabled != YES) {
-    RCTLogWarn(@"Battery monitoring is not enabled. "
-               "You need to enable monitoring with `[UIDevice currentDevice].batteryMonitoringEnabled = TRUE`");
-  }
-#endif
-#if RCT_DEV && TARGET_IPHONE_SIMULATOR && !TARGET_OS_TV
-  if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnknown) {
-    RCTLogWarn(@"Battery state `unknown` and monitoring disabled, this is normal for simulators and tvOS.");
-  }
-#endif
   
   NSArray *batteryStates = @[@"UNKNOWN", @"UNPLUGGED", @"CHARGING", @"FULL"];
   NSDictionary *powerState =
