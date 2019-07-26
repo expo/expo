@@ -153,7 +153,7 @@ async function _subscribeUserToPushAsync() {
     // This message is received by `/expo-service-worker.js`.
     // https://stackoverflow.com/a/35729334/2603230
     let notificationIcon = (Constants.manifest.notification || {}).icon;
-    await registration.active.postMessage(JSON.stringify({ notificationIcon }));
+    await registration.active.postMessage(JSON.stringify({ fromExpoWebClient: { notificationIcon } }));
     return subscriptionObject;
 }
 // https://github.com/web-push-libs/web-push#using-vapid-key-for-applicationserverkey

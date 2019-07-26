@@ -206,9 +206,13 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
 
   // Store notification icon string in service worker.
   // This message is received by `/expo-service-worker.js`.
+  // We wrap it with `fromExpoWebClient` to make sure other message
+  // will not override content such as `notificationIcon`.
   // https://stackoverflow.com/a/35729334/2603230
   let notificationIcon = (Constants.manifest.notification || {}).icon;
-  await registration.active.postMessage(JSON.stringify({ notificationIcon }));
+  await registration.active.postMessage(
+    JSON.stringify({ fromExpoWebClient: { notificationIcon } })
+  );
 
   return subscriptionObject;
 }
