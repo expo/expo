@@ -4,11 +4,11 @@ export type PowerState = {
   lowPowerMode?: boolean;
 };
 
-export const enum BatteryState{
-  UNPLUGGED = 'UNPLUGGED',
-  CHARGING = 'CHARGING',
-  FULL = 'FULL',
-  UNKNOWN = 'UNKNOWN',
+export enum BatteryState{
+  UNKNOWN = 0,
+  UNPLUGGED,
+  CHARGING,
+  FULL,
 }
 
 export type batteryLevel = { batteryLevel: number };

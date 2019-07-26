@@ -1,5 +1,4 @@
 import { PowerState, BatteryState, BatteryLevelUpdateCallback, BatteryListener, BatteryStateUpdateCallback, PowerModeUpdateCallback } from './Battery.types';
-export { BatteryState };
 export declare function getBatteryLevelAsync(): Promise<number>;
 export declare function getBatteryStateAsync(): Promise<BatteryState>;
 export declare function isLowPowerModeEnabledAsync(): Promise<boolean>;

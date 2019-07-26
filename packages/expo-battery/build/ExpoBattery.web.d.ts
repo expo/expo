@@ -1,4 +1,2 @@
-declare const _default: {
-    readonly name: string;
-};
+declare const _default: {};
 export default _default;

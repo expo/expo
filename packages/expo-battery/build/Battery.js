@@ -1,28 +1,28 @@
-import { EventEmitter } from '@unimodules/core';
+import { UnavailabilityError, EventEmitter } from '@unimodules/core';
 import ExpoBattery from './ExpoBattery';
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 export async function getBatteryLevelAsync() {
+    if (!ExpoBattery.getBatteryLevelAsync) {
+        throw new UnavailabilityError('expo-battery', 'getBatteryLevelAsync');
+    }
     return await ExpoBattery.getBatteryLevelAsync();
 }
 export async function getBatteryStateAsync() {
-    let batteryState = await ExpoBattery.getBatteryStateAsync();
-    switch (batteryState) {
-        case "CHARGING" /* CHARGING */:
-            return "CHARGING" /* CHARGING */;
-        case "FULL" /* FULL */:
-            return "FULL" /* FULL */;
-        case "UNPLUGGED" /* UNPLUGGED */:
-            return "UNPLUGGED" /* UNPLUGGED */;
-        case "UNKNOWN" /* UNKNOWN */:
-            return "UNKNOWN" /* UNKNOWN */;
-        default:
-            return "UNKNOWN" /* UNKNOWN */;
+    if (!ExpoBattery.getBatteryStateAsync) {
+        throw new UnavailabilityError('expo-battery', 'getBatteryStateAsync');
     }
+    return await ExpoBattery.getBatteryStateAsync();
 }
 export async function isLowPowerModeEnabledAsync() {
+    if (!ExpoBattery.isLowPowerModeEnabledAsync) {
+        throw new UnavailabilityError('expo-battery', 'isLowPowerModeEnabledAsync');
+    }
     return await ExpoBattery.isLowPowerModeEnabledAsync();
 }
 export async function getPowerStateAsync() {
+    if (!ExpoBattery.getPowerStateAsync) {
+        throw new UnavailabilityError('expo-battery', 'getPowerStateAsync');
+    }
     return await ExpoBattery.getPowerStateAsync();
 }
 export function addBatteryLevelListener(callback) {

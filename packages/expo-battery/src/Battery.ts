@@ -1,4 +1,4 @@
-import { Platform, EventEmitter } from '@unimodules/core';
+import { UnavailabilityError, EventEmitter } from '@unimodules/core';
 
 import ExpoBattery from './ExpoBattery';
 import {
@@ -12,33 +12,31 @@ import {
 
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 
-export { BatteryState };
-
 export async function getBatteryLevelAsync(): Promise<number> {
+  if (!ExpoBattery.getBatteryLevelAsync) {
+    throw new UnavailabilityError('expo-battery', 'getBatteryLevelAsync');
+  }
   return await ExpoBattery.getBatteryLevelAsync();
 }
 
 export async function getBatteryStateAsync(): Promise<BatteryState> {
-  let batteryState = await ExpoBattery.getBatteryStateAsync();
-  switch (batteryState) {
-    case BatteryState.CHARGING:
-      return BatteryState.CHARGING;
-    case BatteryState.FULL:
-      return BatteryState.FULL;
-    case BatteryState.UNPLUGGED:
-      return BatteryState.UNPLUGGED;
-    case BatteryState.UNKNOWN:
-      return BatteryState.UNKNOWN;
-    default:
-      return BatteryState.UNKNOWN;
+  if (!ExpoBattery.getBatteryStateAsync) {
+    throw new UnavailabilityError('expo-battery', 'getBatteryStateAsync');
   }
+  return await ExpoBattery.getBatteryStateAsync();
 }
 
 export async function isLowPowerModeEnabledAsync(): Promise<boolean> {
+  if (!ExpoBattery.isLowPowerModeEnabledAsync) {
+    throw new UnavailabilityError('expo-battery', 'isLowPowerModeEnabledAsync');
+  }
   return await ExpoBattery.isLowPowerModeEnabledAsync();
 }
 
 export async function getPowerStateAsync(): Promise<PowerState> {
+  if (!ExpoBattery.getPowerStateAsync) {
+    throw new UnavailabilityError('expo-battery', 'getPowerStateAsync');
+  }
   return await ExpoBattery.getPowerStateAsync();
 }
 

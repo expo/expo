@@ -114,15 +114,29 @@ UM_EXPORT_METHOD_AS(isLowPowerModeEnabledAsync,
   resolve(@(NSProcessInfo.processInfo.isLowPowerModeEnabled));
 }
 
+- (EXBatteryState)batteryState
+{
+  switch (UIDevice.currentDevice.batteryState) {
+    case UIDeviceBatteryStateUnknown:
+      return EXBatteryStateUnknown;
+    case UIDeviceBatteryStateUnplugged:
+      return EXBatteryStateUnplugged;
+    case UIDeviceBatteryStateCharging:
+      return EXBatteryStateCharging;
+    case UIDeviceBatteryStateFull:
+      return EXBatteryStateFull;
+    default:
+      return EXBatteryStateUnknown;
+  }
+}
 
 - (NSDictionary *)getPowerState
 {
   
-  NSArray *batteryStates = @[@"UNKNOWN", @"UNPLUGGED", @"CHARGING", @"FULL"];
   NSDictionary *powerState =
   @{
     @"batteryLevel": @([UIDevice currentDevice].batteryLevel),
-    @"batteryState": batteryStates[[UIDevice currentDevice].batteryState],
+    @"batteryState": @([self batteryState]),
     @"lowPowerMode": @(NSProcessInfo.processInfo.isLowPowerModeEnabled)
    };
   return powerState;

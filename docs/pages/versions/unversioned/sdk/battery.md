@@ -2,7 +2,7 @@
 title: Battery
 ---
 
-This unimodule provides battery information for the physical device, as well as corresponding event listeners.
+Provides battery information for the physical device, as well as corresponding event listeners.
 
 ## Installation
 
@@ -159,10 +159,10 @@ Subscribe to Low Power Mode (iOS) or Power Saver Mode (Android) updates. The eve
 
 ### `Battery.BatteryState`
 
+- **`BatteryState.UNKNOWN`** - if the battery state is unknown or unable to access.
 - **`BatteryState.UNPLUGGED`** - if battery is not charging or discharging.
 - **`BatteryState.CHARGING`** - if battery is charging.
 - **`BatteryState.FULL`** - if the battery level is full.
-- **`BatteryState.UNKNOWN`** - if the battery state is unknown or unable to access.
 
 ## Error Codes
 

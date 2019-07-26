@@ -33,18 +33,18 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   public enum BatteryState {
-    CHARGING("CHARGING"),
-    FULL("FULL"),
-    UNPLUGGED("UNPLUGGED"),
-    UNKNOWN("UNKNOWN");
+    UNKNOWN(0),
+    UNPLUGGED(1),
+    CHARGING(2),
+    FULL(3);
 
-    private final String value;
+    private final int value;
 
-    BatteryState(String value) {
+    BatteryState(int value) {
       this.value = value;
     }
 
-    public String getValue() {
+    public int getValue() {
       return value;
     }
   }
@@ -69,7 +69,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   static protected void onBatteryStateChange(BatteryState batteryState) {
     Bundle result = new Bundle();
-    result.putString("batteryState", batteryState.getValue());
+    result.putInt("batteryState", batteryState.getValue());
     mEventEmitter.emit(BATTERY_CHARGED_EVENT_NAME, result);
   }
 
@@ -117,8 +117,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
       IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
       Intent batteryStatus = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
       int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-      String statusString = batteryStatusNativeToJS(status).getValue();
-      promise.resolve(statusString);
+      promise.resolve(batteryStatusNativeToJS(status).getValue());
     } catch (NullPointerException e) {
       Log.e(TAG, e.getMessage());
       promise.reject("ERR_BATTERY_INVALID_ACCESS_BATTERY_STATE", "Could not get battery state", e);
@@ -151,8 +150,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
       Intent batteryStatus = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
       int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-      String statusString = batteryStatusNativeToJS(status).getValue();
-      result.putString("batteryState", statusString);
+      result.putInt("batteryState",  batteryStatusNativeToJS(status).getValue());
 
       PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
       boolean lowPowerMode = powerManager.isPowerSaveMode();
