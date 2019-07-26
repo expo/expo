@@ -95,3 +95,41 @@ import 'react-native-vector-icons';
     expect(code).toMatchSnapshot();
   });
 });
+
+describe('"lazyImports" option', () => {
+  it(`defaults to null`, () => {
+    let testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
+    let optionsDefault = {
+      babelrc: false,
+      presets: [preset],
+    };
+    let { codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
+
+    let optionsNull = {
+      babelrc: false,
+      presets: [[preset, { lazyImports: null }]],
+    };
+    let { codeNull } = babel.transformFileSync(testFilename, optionsNull);
+
+    expect(codeDefault).toEqual(codeNull);
+  });
+
+  it.each([
+    [null],
+    [false],
+    [true],
+    [['inline-comp', './inline-func', '../inline-func-with-side-effects.fx.ts']],
+    [name => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
+  ])(`accepts %p`, lazyImportsOption => {
+    let testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
+    let options = {
+      babelrc: false,
+      presets: [[preset, { lazyImports: lazyImportsOption }]],
+      // Make the snapshot easier to read
+      retainLines: true,
+    };
+
+    let { code } = babel.transformFileSync(testFilename, options);
+    expect(code).toMatchSnapshot();
+  });
+});
