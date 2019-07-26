@@ -1,4 +1,4 @@
 {
-  "name": "expo-module-template",
-  "platforms": ["ios", "android"]
+  "name": "expo-cellular",
+  "platforms": ["ios", "android", "web"]
 }
