@@ -153,7 +153,7 @@
         BNCLogDebugSDK(@"No new BlackList refresh found.");
     } else {
         BNCLogDebugSDK(@"BlackList refresh result. Error: %@ status: %ld body:\n%@.",
-            operation.error, operation.response.statusCode, responseString);
+            operation.error, (long)operation.response.statusCode, responseString);
     }
     if (operation.error || operation.responseData == nil || operation.response.statusCode != 200) {
         self.error = operation.error;
