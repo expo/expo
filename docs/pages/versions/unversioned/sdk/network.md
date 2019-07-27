@@ -16,15 +16,44 @@ import * as Network from 'expo-network';
 
 ### Methods
 
+- [`Network.getNetworkStateAsync()`](#networkgetnetworkstateasync)
 - [`Network.getIpAddressAsync()`](#networkgetipaddressasync)
 - [`Network.getMacAddressAsync(interfaceName?)`](#networkgetmacaddressasyncinterfacename)
 - [`Network.isAirplaneModeEnabledAsync()`](#networkisairplanemodeenabledasync) (Android only)
+
+### Enum Types
+
+- [`Network.NetworkStateType`](#networknetworkstatetype)
 
 ### Errors
 
 - [Error Codes](#error-codes)
 
 ## Methods
+
+### `Network.getNetworkStateAsync()`
+
+Gets the device's current network connection state.
+
+#### Returns
+
+A `Promise` that resolves to an object with the following fields: 
+
+- **type (_NetworkStateType_)** -- a [`NetworkStateType`](#networknetworkstatetype) enum value that represents the current network connection type.
+
+- **isConnected (_boolean_)** -- if there is an active network connection. Note that this does not mean that internet is reachable.
+- **isInternetReachable (_boolean_)** -- if the internet is reachable with the currently active network connection.
+
+**Examples**
+
+```js
+await Network.getNetworkStateAsync();
+// {
+  //   type: NetworkStateType.CELLULAR,
+  //   isConnected: true,
+  //   isInternetReachable: true,
+  // }
+```
 
 ### `Network.getIpAddressAsync()`
 
@@ -51,10 +80,9 @@ Gets the specified network interface's Mac address. On Android, it requires [`an
 
 #### Returns
 
-A `Promise` that resolves to a `string` of the network adapter MAC address or  `null` if there's no such address matching the interface.
+A `Promise` that resolves to a `string` of the network adapter MAC address or `null` if there's no such address matching the interface.
 
-[Note from Apple](https://developer.apple.com/library/archive/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1): In iOS 7 and later, if you ask for the MAC address of an iOS device, the system returns the value `"02:00:00:00:00:00"`. If you need to identify the device, use the `identifierForVendor` property of `UIDevice` instead. (Apps that need an identifier for their own advertising purposes should consider using the `advertisingIdentifier` property of `ASIdentifierManager` instead. 
-
+[Note from Apple](https://developer.apple.com/library/archive/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1): In iOS 7 and later, if you ask for the MAC address of an iOS device, the system returns the value `"02:00:00:00:00:00"`. If you need to identify the device, use the `identifierForVendor` property of `UIDevice` instead. (Apps that need an identifier for their own advertising purposes should consider using the `advertisingIdentifier` property of `ASIdentifierManager` instead.
 
 **Examples**
 
@@ -77,6 +105,22 @@ Returns a `Promise` that resolves to the `boolean` value for whether the device 
 await Application.isAirplaneModeEnabledAsync();
 // false
 ```
+
+## Enums
+
+### `Network.NetworkStateType`
+
+An enum of the different types of devices supported by Expo, with these values:
+
+- **`NONE`** -- no active network connection detected.
+- **`UNKNOWN`** -- the connection type could not be determined.
+- **`CELLULAR`** -- active network connection over mobile data or [`DUN-specific`](https://developer.android.com/reference/android/net/ConnectivityManager#TYPE_MOBILE_DUN) mobile connection when setting an upstream connection for tethering.
+- **`WIFI`** -- active network connection over Wifi.
+- **`BLUETOOTH`** -- active network connection over Bluetooth.
+- **`ETHERNET`** -- active network connection over Ethernet.
+- **`WIMAX`** -- active network connection over Wimax.
+- **`VPN`** -- active network connection over VPN.
+- **`OTHER`** -- active network connection over other network connection types.
 
 ## Error Codes
 
