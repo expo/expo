@@ -1,12 +1,10 @@
-/**
- @file          BNCError.h
- @package       Branch-SDK
- @brief         Branch errors.
-
- @author        Qinwei Gong
- @date          November 2014
- @copyright     Copyright © 2014 Branch. All rights reserved.
-*/
+//
+//  BNCError.h
+//  Branch-SDK
+//
+//  Created by Qinwei Gong on 11/17/14.
+//  Copyright (c) 2014 Branch Metrics. All rights reserved.
+//
 
 #if __has_feature(modules)
 @import Foundation;
@@ -42,5 +40,4 @@ typedef NS_ENUM(NSInteger, BNCErrorCode) {
 + (NSError*_Nonnull) branchErrorWithCode:(BNCErrorCode)errorCode localizedMessage:(NSString*_Nullable)message;
 @end
 
-void BNCForceNSErrorCategoryToLoad(void)
-    __attribute__((constructor));
+void BNCForceNSErrorCategoryToLoad(void) __attribute__((constructor));

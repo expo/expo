@@ -578,7 +578,7 @@ NSArray<BNCCurrency>* BNCCurrencyAllCurrencies(void) {
 	if (self.commerceDictionary)
 		params[@"commerce_data"] = self.commerceDictionary;
     if (preferenceHelper.limitFacebookTracking)
-        params[@"limit_facebook_tracking"] = (__bridge NSNumber*) kCFBooleanTrue;
+        params[@"limit_facebook_tracking"] = CFBridgingRelease(kCFBooleanTrue);
 
 	NSString *URL = [preferenceHelper getAPIURL:BRANCH_REQUEST_ENDPOINT_USER_COMPLETED_ACTION];
     [serverInterface postRequest:params
@@ -599,13 +599,14 @@ NSArray<BNCCurrency>* BNCCurrencyAllCurrencies(void) {
 		self.completion(dictionary, error);
 }
 
-#pragma mark BranchCommerceEventRequest NSSecureCoding
+#pragma mark BranchCommerceEventRequest NSCoding
 
 - (instancetype)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
 	if (!self) return self;
-	self.commerceDictionary = [decoder decodeObjectOfClass:NSDictionary.class forKey:@"commerceDictionary"];
-	self.metadata = [decoder decodeObjectOfClass:NSDictionary.class forKey:@"metaData"];
+
+	self.commerceDictionary = [decoder decodeObjectForKey:@"commerceDictionary"];
+	self.metadata = [decoder decodeObjectForKey:@"metaData"];
     return self;
 }
 
@@ -613,10 +614,6 @@ NSArray<BNCCurrency>* BNCCurrencyAllCurrencies(void) {
     [super encodeWithCoder:coder];
     [coder encodeObject:self.commerceDictionary forKey:@"commerceDictionary"];
     [coder encodeObject:self.metadata forKey:@"metadata"];
-}
-
-+ (BOOL) supportsSecureCoding {
-    return YES;
 }
 
 @end

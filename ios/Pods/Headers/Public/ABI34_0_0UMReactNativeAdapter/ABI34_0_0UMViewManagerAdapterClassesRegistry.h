@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/UMReactNativeAdapter/ABI34_0_0UMReactNativeAdapter/UMModuleRegistryAdapter/ABI34_0_0UMViewManagerAdapterClassesRegistry.h

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/EXConstants/ABI34_0_0EXConstants/ABI34_0_0EXConstants.h

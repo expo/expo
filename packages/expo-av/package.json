@@ -1,6 +1,6 @@
 {
   "name": "expo-av",
-  "version": "6.0.0-rc.0",
+  "version": "6.0.0",
   "description": "Expo universal module for Audio and Video playback",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,7 +37,7 @@
     "babel-preset-expo": "^6.0.0",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "6334f82adccb529e9347e348c874bd8f6a92cacc",
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a",
   "dependencies": {
     "lodash": "^4.17.11",
     "nullthrows": "^1.1.0"

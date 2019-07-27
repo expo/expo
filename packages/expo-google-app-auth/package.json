@@ -36,8 +36,8 @@
     "babel-preset-expo": "^6.0.0"
   },
   "dependencies": {
-    "expo-app-auth": "~6.0.0-rc.0",
-    "expo-constants": "~6.0.0-rc.0"
+    "expo-app-auth": "~6.0.0",
+    "expo-constants": "~6.0.0"
   },
   "gitHead": "6334f82adccb529e9347e348c874bd8f6a92cacc"
 }

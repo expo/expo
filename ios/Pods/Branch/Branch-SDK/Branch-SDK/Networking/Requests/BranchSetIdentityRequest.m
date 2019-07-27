@@ -76,7 +76,7 @@
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if ((self = [super initWithCoder:decoder])) {
-        _userId = [decoder decodeObjectOfClass:NSString.class forKey:@"userId"];
+        _userId = [decoder decodeObjectForKey:@"userId"];
     }
     return self;
 }

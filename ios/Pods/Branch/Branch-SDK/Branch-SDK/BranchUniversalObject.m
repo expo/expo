@@ -482,8 +482,7 @@ BranchCondition _Nonnull BranchConditionRefurbished   = @"REFURBISHED";
             // Log share completed event
             if (completed && !activityError) {
                 [[BranchEvent customEventWithName:BNCShareCompletedEvent contentItem:self] logEvent];
-                [BNCFabricAnswers sendEventWithName:@"Branch Share" andAttributes:
-                    [self getDictionaryWithCompleteLinkProperties:linkProperties]];
+                [BNCFabricAnswers sendEventWithName:@"Branch Share" andAttributes:[self getDictionaryWithCompleteLinkProperties:linkProperties]];
             }
             if (completion)
                 completion(activityType, completed);
@@ -609,7 +608,7 @@ BranchCondition _Nonnull BranchConditionRefurbished   = @"REFURBISHED";
     } else {
         NSError *error = [NSError branchErrorWithCode:BNCSpotlightPublicIndexError
                                      localizedMessage:@"Publically indexed cannot be removed from Spotlight"];
-        if (completion) completion(error);
+        completion(error);
     }
 }
 

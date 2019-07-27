@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/UMFaceDetectorInterface/ABI34_0_0UMFaceDetectorInterface/ABI34_0_0UMFaceDetectorManagerProvider.h

@@ -94,6 +94,5 @@ NSURL* /* _Nonnull */ BNCURLForBranchDirectory(void);
 
 - (NSMutableString*) sanitizedMutableBaseURL:(NSString*)baseUrl;
 - (void) synchronize;  //  Flushes preference queue to persistence.
-+ (void) clearAll;
 
 @end
