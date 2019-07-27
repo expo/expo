@@ -1,6 +1,6 @@
 {
   "name": "expo-video-thumbnails",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0",
   "description": "ExpoVideoThumbnails standalone module",
   "main": "build/VideoThumbnails.js",
   "types": "build/VideoThumbnails.d.ts",
@@ -23,5 +23,5 @@
   "peerDependencies": {
     "@unimodules/core": "~1.0.0"
   },
-  "gitHead": "6334f82adccb529e9347e348c874bd8f6a92cacc"
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
 }
