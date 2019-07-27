@@ -12,8 +12,11 @@ import java.util.Map;
 import android.content.Context;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -31,6 +34,32 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   private ModuleRegistry mModuleRegistry;
   private ActivityProvider mActivityProvider;
   private Activity mActivity;
+
+  public static enum NetworkStateType {
+    NONE("NONE"),
+    UNKNOWN("UNKNOWN"),
+    CELLULAR("CELLULAR"),
+    WIFI("WIFI"),
+    BLUETOOTH("BLUETOOTH"),
+    ETHERNET("ETHERNET"),
+    WIMAX("WIMAX"),
+    VPN("VPN"),
+    OTHER("OTHER");
+
+    private final String value;
+
+    NetworkStateType(String value) {
+      this.value = value;
+    }
+
+    public String getValue() {
+      return value;
+    }
+
+    public boolean equal(String value){
+      return this.value.equals(value);
+    }
+  }
 
   public NetworkModule(Context context) {
     super(context);
@@ -52,10 +81,51 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   private WifiInfo getWifiInfo() {
     try {
       WifiManager manager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-      return manager.getConnectionInfo();
-    } catch (NullPointerException e) {
+      WifiInfo wifiInfo = manager.getConnectionInfo();
+      return wifiInfo;
+    } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       throw e;
+    }
+  }
+
+  private NetworkStateType getConnectionType(NetworkInfo netinfo) {
+    switch (netinfo.getType()) {
+      case ConnectivityManager.TYPE_MOBILE:
+      case ConnectivityManager.TYPE_MOBILE_DUN:
+        return NetworkStateType.CELLULAR;
+      case ConnectivityManager.TYPE_WIFI:
+        return NetworkStateType.WIFI;
+      case ConnectivityManager.TYPE_BLUETOOTH:
+        return NetworkStateType.BLUETOOTH;
+      case ConnectivityManager.TYPE_ETHERNET:
+        return NetworkStateType.ETHERNET;
+      case ConnectivityManager.TYPE_WIMAX:
+        return NetworkStateType.WIMAX;
+      case ConnectivityManager.TYPE_VPN:
+        return NetworkStateType.VPN;
+      default:
+        return NetworkStateType.UNKNOWN;
+    }
+  }
+
+  @ExpoMethod
+  public void getNetworkStateAsync(Promise promise) {
+    Bundle result = new Bundle();
+    try {
+      ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+      NetworkInfo netInfo = cm.getActiveNetworkInfo();
+      result.putBoolean("isInternetReachable", netInfo.isConnected());
+
+      NetworkStateType mConnectionType = getConnectionType(netInfo);
+      result.putString("type", mConnectionType.getValue());
+      result.putBoolean("isConnected", !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"));
+    } catch (Exception e) {
+      result.putBoolean("isInternetReachable", false);
+      result.putBoolean("isConnected", false);
+      result.putString("type", NetworkStateType.NONE.getValue());
+    } finally {
+      promise.resolve(result);
     }
   }
 

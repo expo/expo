@@ -1,5 +1,11 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
 import ExpoNetwork from './ExpoNetwork';
+export async function getNetworkStateAsync() {
+    if (!ExpoNetwork.getNetworkStateAsync) {
+        throw new UnavailabilityError('expo-network', 'getNetworkStateAsync');
+    }
+    return await ExpoNetwork.getNetworkStateAsync();
+}
 export async function getIpAddressAsync() {
     if (!ExpoNetwork.getIpAddressAsync) {
         throw new UnavailabilityError('expo-network', 'getIpAddressAsync');

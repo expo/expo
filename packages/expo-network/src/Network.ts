@@ -1,6 +1,14 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
 
 import ExpoNetwork from './ExpoNetwork';
+import { NetworkState } from './Network.types';
+
+export async function getNetworkStateAsync(): Promise<NetworkState> {
+  if (!ExpoNetwork.getNetworkStateAsync) {
+    throw new UnavailabilityError('expo-network', 'getNetworkStateAsync');
+  }
+  return await ExpoNetwork.getNetworkStateAsync();
+}
 
 export async function getIpAddressAsync(): Promise<string> {
   if (!ExpoNetwork.getIpAddressAsync) {
@@ -9,7 +17,7 @@ export async function getIpAddressAsync(): Promise<string> {
   return await ExpoNetwork.getIpAddressAsync();
 }
 
-export async function getMacAddressAsync(interfaceName?:string): Promise<string> {
+export async function getMacAddressAsync(interfaceName?: string): Promise<string> {
   if (!ExpoNetwork.getMacAddressAsync) {
     throw new UnavailabilityError('expo-network', 'getMacAddressAsync');
   }
