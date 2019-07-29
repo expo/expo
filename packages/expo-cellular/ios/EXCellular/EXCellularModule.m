@@ -26,11 +26,6 @@ UM_EXPORT_MODULE(ExpoCellular);
   return dispatch_get_main_queue();
 }
 
-UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
-{
-  resolve(@"generation here");
-}
-
 - (NSDictionary *)constantsToExport
 {
   CTCarrier *carrier = [self carrier];
@@ -44,14 +39,51 @@ UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
            };
 }
 
+UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@([[self class] getCellularGeneration]));
+}
+
++ (EXCellularGeneration)getCellularGeneration
+{
+  CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
+  NSString *serviceCurrentRadioAccessTechnology;
+  if (@available(iOS 12.0, *)) {
+    serviceCurrentRadioAccessTechnology = netinfo.serviceCurrentRadioAccessTechnology.allValues.firstObject;
+  } else {
+    // Fallback on earlier versions
+    serviceCurrentRadioAccessTechnology = netinfo.currentRadioAccessTechnology;
+  }
+
+  if (netinfo) {
+    if ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS] ||
+        [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge] ||
+        [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMA1x]) {
+      return EXCellularGeneration2G;
+    } else if ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyWCDMA] ||
+               [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyHSDPA] ||
+               [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyHSUPA] ||
+               [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORev0] ||
+               [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORevA] ||
+               [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORevB] ||
+               [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyeHRPD]) {
+      return EXCellularGeneration3G;
+    } else if ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
+      return EXCellularGeneration4G;
+    }
+  }
+  return EXCellularGenerationUnknown;
+}
+
+
 - (CTCarrier *)carrier
 {
-  CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];
+  CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
   NSDictionary<NSString *, CTCarrier *> *serviceSubscriberCellularProviders;
   CTCarrier *carrier;
   
   if (@available(iOS 12.0, *)) {
-    serviceSubscriberCellularProviders = info.serviceSubscriberCellularProviders;
+    serviceSubscriberCellularProviders = netinfo.serviceSubscriberCellularProviders;
     carrier = serviceSubscriberCellularProviders.allValues.firstObject;
   } else {
     // Fallback on earlier versions
@@ -62,7 +94,7 @@ UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
      @property (nonatomic, readonly, retain, nullable) NSString* isoCountryCode;
      @property (nonatomic, readonly, assign) BOOL allowsVOIP;
      */
-    carrier = info.subscriberCellularProvider;
+    carrier = netinfo.subscriberCellularProvider;
   }
   
   return carrier;
