@@ -1,7 +1,7 @@
 {
   "name": "expo-cellular",
   "version": "0.0.1",
-  "description": "ExpoCellular standalone module",
+  "description": "Provides information about the user’s cellular service provider",
   "main": "build/Cellular.js",
   "types": "build/Cellular.d.ts",
   "scripts": {
