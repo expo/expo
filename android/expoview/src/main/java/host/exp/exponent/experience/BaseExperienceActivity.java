@@ -3,11 +3,15 @@
 package host.exp.exponent.experience;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -15,20 +19,22 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.RNObject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.fcm.FcmRegistrationIntentService;
 import host.exp.exponent.gcm.GcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.utils.AsyncCondition;
-import host.exp.expoview.BuildConfig;
-import host.exp.expoview.Exponent;
-import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
+import host.exp.exponent.utils.AsyncCondition;
+import host.exp.exponent.utils.PermissionsHelper;
+import host.exp.expoview.BuildConfig;
+import host.exp.expoview.Exponent;
 
-public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
+public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity implements PermissionAwareActivity {
   private static abstract class ExperienceEvent {
     private ExperienceId mExperienceId;
     ExperienceEvent(ExperienceId experienceId) {
@@ -53,6 +59,11 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
   @Inject
   Kernel mKernel;
+
+  @Inject
+  ExponentManifest mExponentManifest;
+
+  private PermissionsHelper mPermissionsHelper;
 
   private long mOnResumeTime;
 
@@ -81,6 +92,14 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     mReactRootView = new RNObject("com.facebook.react.ReactRootView");
 
     NativeModuleDepsProvider.getInstance().inject(BaseExperienceActivity.class, this);
+
+    if (mManifest == null) {
+      mManifest = mExponentManifest.getKernelManifest();
+    }
+
+    if (mExperienceId == null) {
+      mExperienceId = ExperienceId.create(mManifest.optString(ExponentManifest.MANIFEST_ID_KEY));
+    }
   }
 
   @Override
@@ -265,6 +284,34 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
   @Override
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
+      mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
+      mPermissionsHelper = null;
+    }
+  }
+
+
+  @Override
+  public void requestPermissions(final String[] permissions, final int requestCode, final PermissionListener listener) {
+    mPermissionsHelper = new PermissionsHelper(mExperienceId);
+    mPermissionsHelper.requestPermissions(new Exponent.PermissionsListener() {
+      @Override
+      public void permissionsGranted() {
+        listener.onRequestPermissionsResult(requestCode, permissions, arrayFilled(PackageManager.PERMISSION_GRANTED, permissions.length));
+      }
+
+      @Override
+      public void permissionsDenied() {
+        listener.onRequestPermissionsResult(requestCode, permissions, arrayFilled(PackageManager.PERMISSION_DENIED, permissions.length));
+      }
+    }, permissions, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY));
+  }
+
+  private static int[] arrayFilled(int with, int length) {
+    int[] array = new int[length];
+    for (int i = 0; i < length; i++) {
+      array[i] = with;
+    }
+    return array;
   }
 }
