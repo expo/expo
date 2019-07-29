@@ -56,17 +56,20 @@ export async function authenticateAsync(
     );
 
     const result = await ExpoLocalAuthentication.authenticateAsync(options);
-    const hasFaceID = (await supportedAuthenticationTypesAsync()).includes(
-      AuthenticationType.FACIAL_RECOGNITION
-    );
 
-    if (Constants.appOwnership === 'expo' && hasFaceID) {
-      result.warning =
-        'FaceID is not available in the Expo Client. You can use it in a standalone Expo app by providing `ios.infoPlist.NSFaceIDUsageDescription` in your app.json file.';
+    if (Constants.appOwnership === 'expo') {
+      const hasFaceID = (await supportedAuthenticationTypesAsync()).includes(
+        AuthenticationType.FACIAL_RECOGNITION
+      );
+      if (hasFaceID) {
+        result.warning =
+          'FaceID is not available in the Expo Client. You can use it in a standalone Expo app by providing `ios.infoPlist.NSFaceIDUsageDescription` in your app.json file.';
+      }
     }
     if (result.warning) {
       console.warn(result.warning);
     }
+
     return result;
   } else {
     return await ExpoLocalAuthentication.authenticateAsync();
