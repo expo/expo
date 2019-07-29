@@ -91,8 +91,8 @@ export default class DeviceScreen extends React.PureComponent<props, mState> {
           name="Application applicationName"
           value={Application.applicationName}></ApplicationConstants>
         <ApplicationConstants
-          name="Application bundleId"
-          value={Application.bundleId}></ApplicationConstants>
+          name="Application applicationId"
+          value={Application.applicationId}></ApplicationConstants>
         <ApplicationConstants
           name="Application androidId"
           value={Application.androidId}></ApplicationConstants>
