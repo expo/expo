@@ -1,6 +1,6 @@
 {
   "name": "expo-google-app-auth",
-  "version": "6.0.0-rc.0",
+  "version": "6.0.0",
   "description": "Provides a wrapper around expo-app-auth for Google sign in.",
   "main": "build/Google.js",
   "types": "build/Google.d.ts",
@@ -39,5 +39,5 @@
     "expo-app-auth": "~6.0.0",
     "expo-constants": "~6.0.0"
   },
-  "gitHead": "6334f82adccb529e9347e348c874bd8f6a92cacc"
+  "gitHead": "ee69d7af7b09256c903e10614655668b7aa37df3"
 }
