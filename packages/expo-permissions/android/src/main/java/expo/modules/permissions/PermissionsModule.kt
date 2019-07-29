@@ -22,6 +22,7 @@ import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.interfaces.permissions.PermissionsListener
+import org.unimodules.interfaces.permissions.PermissionsManager
 
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
@@ -36,7 +37,7 @@ private const val ERROR_TAG = "E_PERMISSIONS"
 private const val PERMISSION_EXPIRES_NEVER = "never"
 
 class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEventListener {
-  private var mPermissionsRequester: PermissionsRequester? = null
+  private var mPermissionManager: PermissionsManager? = null
   private var mPermissions: Permissions? = null
   private var mActivityProvider: ActivityProvider? = null
   private val mPermissionsAskedFor = HashSet<String>()
@@ -142,7 +143,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
   /* End bundle section */
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mPermissionsRequester = PermissionsRequester(moduleRegistry)
+    mPermissionManager = moduleRegistry.getModule(PermissionsManager::class.java)
     mPermissions = moduleRegistry.getModule(Permissions::class.java)
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
@@ -244,21 +245,19 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
     askForPermissions(requestedPermissionsTypes, permissionsTypesToBeAsked, promise)
   }
 
-  private fun askForPermissions(requestedPermissionsTypes: ArrayList<String>?,
+  private fun askForPermissions(requestedPermissionsTypes: ArrayList<String>,
                                 permissionsTypesToBeAsked: ArrayList<String>,
                                 promise: Promise) {
-    val askedPermissions = mPermissionsRequester!!.askForPermissions(
-        permissionsTypesToBeAsked.toTypedArray(), // permissionsTypesToBeAsked handles empty array
-        PermissionsListener { _, _ ->
-          promise.resolve(getPermissions(requestedPermissionsTypes!!)) // read all requested permissions statuses
-        })
-
-    if (!askedPermissions) {
+    if (mPermissions == null || mPermissionManager == null) {
       promise.reject(
           ERROR_TAG + "_UNAVAILABLE",
           "Permissions module is null. Are you sure all the installed Expo modules are properly linked?"
       )
     }
+
+    mPermissions!!.askForPermissions(
+        permissionsTypesToBeAsked.toTypedArray() // permissionsTypesToBeAsked handles empty array
+    ) { promise.resolve(getPermissions(requestedPermissionsTypes)) }
   }
 
   @Throws(IllegalStateException::class)
@@ -332,7 +331,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
    * Throws IllegalStateException there's no Permissions module present.
    */
   private fun arePermissionsGranted(permissions: Array<String>): Boolean {
-    if (mPermissions != null) {
+    if (mPermissions == null) {
       throw IllegalStateException("No Permissions module present.")
     }
 
@@ -392,7 +391,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
     mAskAsyncPermissionsTypesToBeAsked = null
 
     // invoke actual asking for permissions
-    askForPermissions(askAsyncRequestedPermissionsTypes, askAsyncPermissionsTypesToBeAsked!!, askAsyncPromise!!)
+    askForPermissions(askAsyncRequestedPermissionsTypes!!, askAsyncPermissionsTypesToBeAsked!!, askAsyncPromise!!)
   }
 
   override fun onHostPause() {

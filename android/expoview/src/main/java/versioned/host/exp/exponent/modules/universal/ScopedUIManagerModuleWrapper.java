@@ -22,20 +22,20 @@ public class ScopedUIManagerModuleWrapper extends UIManagerModuleWrapper {
     mExperienceName = experienceName;
   }
 
-  @Override
-  public boolean requestPermissions(final String[] permissions, final int requestCode, final PermissionsListener listener) {
-    return Exponent.getInstance().requestPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        listener.onPermissionResult(permissions, arrayFilled(PackageManager.PERMISSION_GRANTED, permissions.length));
-      }
-
-      @Override
-      public void permissionsDenied() {
-        listener.onPermissionResult(permissions, arrayFilled(PackageManager.PERMISSION_DENIED, permissions.length));
-      }
-    }, permissions, mExperienceId, mExperienceName);
-  }
+//  @Override
+//  public boolean requestPermissions(final String[] permissions, final int requestCode, final PermissionsListener listener) {
+//    return Exponent.getInstance().requestPermissions(new Exponent.PermissionsListener() {
+//      @Override
+//      public void permissionsGranted() {
+//        listener.onPermissionResult(permissions, arrayFilled(PackageManager.PERMISSION_GRANTED, permissions.length));
+//      }
+//
+//      @Override
+//      public void permissionsDenied() {
+//        listener.onPermissionResult(permissions, arrayFilled(PackageManager.PERMISSION_DENIED, permissions.length));
+//      }
+//    }, permissions, mExperienceId, mExperienceName);
+//  }
 
   @Override
   public void registerActivityEventListener(final ActivityEventListener activityEventListener) {
