@@ -243,9 +243,10 @@ Each message must be a JSON object with the given fields:
 ```javascript
 type PushMessage = {
   /**
-   * An Expo push token specifying the recipient of this message.
+   * An Expo push token or an array of Expo push tokens specifying the recipient(s)
+   * of this message.
    */
-  to: string,
+  to: string | [string],
 
   /**
    * A JSON object delivered to your app. It may be up to about 4KiB; the total
