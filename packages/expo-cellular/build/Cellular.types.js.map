@@ -1,0 +1,1 @@
+{"version":3,"file":"Cellular.types.js","sourceRoot":"","sources":["../src/Cellular.types.ts"],"names":[],"mappings":"AAKC,CAAC","sourcesContent":["export const enum CellularGeneration {\n  'UNKNOWN' = 0,\n  '2G',\n  '3G',\n  '4G',\n};\n"]}

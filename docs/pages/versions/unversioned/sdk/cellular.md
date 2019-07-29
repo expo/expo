@@ -112,7 +112,7 @@ Describes the current generation of the `cellular` connection. It is an enum wit
 
 | Value     | Description                                                                                                       |
 | --------- | ----------------------------------------------------------------------------------------------------------------- |
-| `null`    | Either we are not currently connected to a cellular network or type could not be determined                       |
+| `UNKNOWN`    | Either we are not currently connected to a cellular network or type could not be determined                       |
 | `2g`      | Currently connected to a 2G cellular network. Includes CDMA, EDGE, GPRS, and IDEN type connections                |
 | `3g`      | Currently connected to a 3G cellular network. Includes EHRPD, EVDO, HSPA, HSUPA, HSDPA, and UTMS type connections |
 | `4g`      | Currently connected to a 4G cellular network. Includes HSPAP and LTE type connections                             |
