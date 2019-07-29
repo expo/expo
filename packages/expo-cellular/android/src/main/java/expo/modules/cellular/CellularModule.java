@@ -1,8 +1,10 @@
 package expo.modules.cellular;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
+import android.net.sip.SipManager;
 import android.telephony.TelephonyManager;
 
 import org.unimodules.core.ExportedModule;
@@ -50,6 +52,26 @@ public class CellularModule extends ExportedModule implements RegistryLifecycleL
     mModuleRegistry = moduleRegistry;
   }
 
+  @Override
+  public Map<String, Object> getConstants() {
+    HashMap<String, Object> constants = new HashMap<>();
+    constants.put("allowsVoip", SipManager.isVoipSupported(mContext));
+
+    TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+    constants.put("carrier", tm != null ? tm.getSimOperatorName() : null);
+    constants.put("isoCountryCode", tm != null ? tm.getSimCountryIso() : null);
+    String combo = tm != null ? tm.getSimOperator() : null;
+    constants.put("mobileCountryCode", combo != null ? combo.substring(0,3) : null);
+    StringBuilder sb = null;
+    if(combo != null){
+      sb =  new StringBuilder(combo);
+      sb.delete(0,3);
+    }
+    constants.put("mobileNetworkCode", sb != null? sb.toString(): null);
+
+    return constants;
+  }
+
   @ExpoMethod
   public void getCellularGenerationAsync(Promise promise) {
     try {
@@ -79,7 +101,7 @@ public class CellularModule extends ExportedModule implements RegistryLifecycleL
           promise.resolve(CellularGeneration.UNKNOWN.getValue());
       }
     } catch (Exception e) {
-      promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORKTYPE", "Unable to access network type", e);
+      promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORKTYPE", "Unable to access network type or not connected to a cellular network", e);
     }
   }
 }
