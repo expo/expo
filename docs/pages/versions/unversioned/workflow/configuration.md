@@ -292,7 +292,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ```
 
-> **ExpoKit**: To change the value of `enabled`, edit `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
+> **ExpoKit**: To change the value of `enabled`, edit the `areRemoteUpdatesEnabled` key in `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and the `ARE_REMOTE_UPDATES_ENABLED` variable in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
 
 ### `"ios"`
 
