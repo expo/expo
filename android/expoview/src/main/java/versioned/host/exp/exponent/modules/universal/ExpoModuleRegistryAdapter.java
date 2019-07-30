@@ -4,18 +4,17 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ModuleRegistryReadyNotifier;
 import org.unimodules.adapters.react.NativeModulesProxy;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
@@ -59,6 +58,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
 
+    // Add SpongyCastle integration
     moduleRegistry.registerExportedModule(new SecureStoreModuleBinding(scopedContext));
 
     // ReactAdapterPackage requires ReactContext
