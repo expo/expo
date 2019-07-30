@@ -38,7 +38,7 @@ import * as Cellular from 'expo-cellular';
 
 ### `Cellular.allowsVoip`
 
-Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether the system supports SIP-based Voip api. See [here](<https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context)>) to view more information.
+Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether the system supports SIP-based Voip api. See [here](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context)) to view more information.
 
 #### Examples
 
@@ -48,7 +48,7 @@ Cellular.allowsVoip; // true or false
 
 ### `Cellular.carrier`
 
-The name of the user’s home cellular service provider. If the device has duel sim card, only the current active sim card on the network will be returned.
+The name of the user’s home cellular service provider. If the device has duel sim card, only the current active sim card on the network will be returned. On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`.
 
 #### Examples
 
@@ -68,7 +68,7 @@ Cellular.isoCountryCode; // "us" or "au"
 
 ### `Cellular.mobileCountryCode`
 
-The mobile country code (MCC) for the user’s current registered cellular service provider. On Android, the result may be unreliable on CDMA networks.
+The mobile country code (MCC) for the user’s current registered cellular service provider. On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`.
 
 #### Examples
 
@@ -78,7 +78,7 @@ Cellular.mobileCountryCode; // "310"
 
 ### `Cellular.mobileNetworkCode`
 
-The mobile network code (MNC) for the user’s cellular service provider.On Android, the result may be unreliable on CDMA networks.
+The mobile network code (MNC) for the user’s cellular service provider. On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`.
 
 #### Examples
 
