@@ -32,10 +32,10 @@ UM_EXPORT_MODULE(ExpoCellular);
   
   return @{
            @"allowsVoip": @(carrier.allowsVOIP),
-           @"carrier": carrier.carrierName,
-           @"isoCountryCode": carrier.isoCountryCode,
-           @"mobileCountryCode": carrier.mobileCountryCode,
-           @"mobileNetworkCode": carrier.mobileNetworkCode,
+           @"carrier": UMNullIfNil(carrier.carrierName),
+           @"isoCountryCode": UMNullIfNil(carrier.isoCountryCode),
+           @"mobileCountryCode": UMNullIfNil(carrier.mobileCountryCode),
+           @"mobileNetworkCode": UMNullIfNil(carrier.mobileNetworkCode),
            };
 }
 
