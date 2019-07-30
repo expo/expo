@@ -37,7 +37,7 @@ Gets the device's current network connection state.
 
 #### Returns
 
-A `Promise` that resolves to an object with the following fields: 
+A `Promise` that resolves to an object with the following fields:
 
 - **type (_NetworkStateType_)** -- a [`NetworkStateType`](#networknetworkstatetype) enum value that represents the current network connection type.
 
@@ -49,10 +49,10 @@ A `Promise` that resolves to an object with the following fields:
 ```js
 await Network.getNetworkStateAsync();
 // {
-  //   type: NetworkStateType.CELLULAR,
-  //   isConnected: true,
-  //   isInternetReachable: true,
-  // }
+//   type: NetworkStateType.CELLULAR,
+//   isConnected: true,
+//   isInternetReachable: true,
+// }
 ```
 
 ### `Network.getIpAddressAsync()`
@@ -130,3 +130,4 @@ An enum of the different types of devices supported by Expo, with these values:
 | ERR_NETWORK_UNDEFINED_INTERFACE         | An undefined `interfaceName` was passed as an argument in `getMacAddressAsync`.                                                                                           |
 | ERR_NETWORK_SOCKET_EXCEPTION            | Encounter error in creating or accessing the socket in `getMacAddressAsync`.                                                                                              |
 | ERR_NETWORK_INVALID_PERMISSION_INTERNET | No permission of [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) in `getMacAddressAsync`. |
+| ERR_NETWORK_NO_ACCESS_NETWORKINFO       | Unable to access network information                                                                                                                                      |
