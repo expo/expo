@@ -21,8 +21,6 @@ import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.interfaces.permissions.Permissions
-import org.unimodules.interfaces.permissions.PermissionsListener
-import org.unimodules.interfaces.permissions.PermissionsManager
 
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
@@ -37,7 +35,6 @@ private const val ERROR_TAG = "E_PERMISSIONS"
 private const val PERMISSION_EXPIRES_NEVER = "never"
 
 class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEventListener {
-  private var mPermissionManager: PermissionsManager? = null
   private var mPermissions: Permissions? = null
   private var mActivityProvider: ActivityProvider? = null
   private val mPermissionsAskedFor = HashSet<String>()
@@ -143,7 +140,6 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
   /* End bundle section */
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mPermissionManager = moduleRegistry.getModule(PermissionsManager::class.java)
     mPermissions = moduleRegistry.getModule(Permissions::class.java)
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
@@ -248,7 +244,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
   private fun askForPermissions(requestedPermissionsTypes: ArrayList<String>,
                                 permissionsTypesToBeAsked: ArrayList<String>,
                                 promise: Promise) {
-    if (mPermissions == null || mPermissionManager == null) {
+    if (mPermissions == null) {
       promise.reject(
           ERROR_TAG + "_UNAVAILABLE",
           "Permissions module is null. Are you sure all the installed Expo modules are properly linked?"
