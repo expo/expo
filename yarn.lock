@@ -3339,6 +3339,13 @@
   resolved "https://registry.yarnpkg.com/@types/zen-observable/-/zen-observable-0.8.0.tgz#8b63ab7f1aa5321248aad5ac890a485656dcea4d"
   integrity sha512-te5lMAWii1uEJ4FwLjzdlbw3+n0FZNOvFXHxQDKeT0dilh7HOzdMzV2TrJVUzq8ep7J4Na8OUYPRLSQkJHAlrg==
 
+"@unimodules/core@3.0.0-rc.0":
+  version "3.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@unimodules/core/-/core-3.0.0-rc.0.tgz#496c95bda714f9f7c091d632c7cfe686c0741661"
+  integrity sha512-ZyfoilFVXJuMUl+2tMEeQhi8CxWGLi0SUCUU4z+G2aPNLWJP5PAri6XasvpB1YiOC8JnF8kh9BXRUP1+N70BNA==
+  dependencies:
+    compare-versions "^3.4.0"
+
 "@unimodules/core@~1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@unimodules/core/-/core-1.0.0.tgz#1d7e1c2fcc3d7b996339a8d5321ea0f149af94ed"
