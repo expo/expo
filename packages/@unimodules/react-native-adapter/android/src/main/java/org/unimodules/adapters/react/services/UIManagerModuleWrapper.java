@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -22,11 +21,17 @@ import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.modules.core.PermissionAwareActivity;
-import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIManagerModule;
+
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.JavaScriptContextProvider;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.imageloader.ImageLoader;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -36,22 +41,11 @@ import java.util.WeakHashMap;
 
 import javax.annotation.Nullable;
 
-import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.JavaScriptContextProvider;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.imageloader.ImageLoader;
-import org.unimodules.interfaces.permissions.PermissionsListener;
-import org.unimodules.interfaces.permissions.PermissionsManager;
-
 public class UIManagerModuleWrapper implements
     ActivityProvider,
     ImageLoader,
     InternalModule,
     JavaScriptContextProvider,
-    PermissionsManager,
     UIManager {
   private ReactContext mReactContext;
   private Map<LifecycleEventListener, com.facebook.react.bridge.LifecycleEventListener> mLifecycleListenersMap = new WeakHashMap<>();
@@ -71,7 +65,6 @@ public class UIManagerModuleWrapper implements
         ActivityProvider.class,
         ImageLoader.class,
         JavaScriptContextProvider.class,
-        PermissionsManager.class,
         UIManager.class
     );
   }
@@ -209,28 +202,6 @@ public class UIManagerModuleWrapper implements
   public void unregisterActivityEventListener(final ActivityEventListener activityEventListener) {
     getContext().removeActivityEventListener(mActivityEventListenersMap.get(activityEventListener));
     mActivityEventListenersMap.remove(activityEventListener);
-  }
-
-  @Override
-  public boolean requestPermissions(String[] permissions, final int requestCode, final PermissionsListener listener) {
-    Activity currentActivity = getContext().getCurrentActivity();
-    if (currentActivity instanceof PermissionAwareActivity) {
-      PermissionAwareActivity activity = (PermissionAwareActivity) currentActivity;
-      activity.requestPermissions(permissions, requestCode, new PermissionListener() {
-        @Override
-        public boolean onRequestPermissionsResult(int realRequestCode, String[] permissions, int[] grantResults) {
-          if (requestCode == realRequestCode) {
-            listener.onPermissionResult(permissions, grantResults);
-            return true;
-          } else {
-            return false;
-          }
-        }
-      });
-      return true;
-    } else {
-      return false;
-    }
   }
 
   public long getJavaScriptContextRef() {

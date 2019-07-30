@@ -77,6 +77,11 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-permissions-interface'
+
   api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
   api "com.android.support:appcompat-v7:${safeExtGet("supportLibVersion", "28.0.0")}"
+
+  compileOnly('com.facebook.react:react-native:+') {
+    exclude group: 'com.android.support'
+  }
 }
