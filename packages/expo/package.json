@@ -71,7 +71,7 @@
     "expo-asset": "~6.0.0",
     "expo-constants": "~6.0.0",
     "expo-file-system": "~6.0.0",
-    "expo-font": "~6.0.0",
+    "expo-font": "~6.0.1",
     "expo-keep-awake": "~6.0.0",
     "expo-linear-gradient": "~6.0.0",
     "expo-location": "~6.0.0",
