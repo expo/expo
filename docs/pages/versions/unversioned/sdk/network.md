@@ -35,6 +35,8 @@ import * as Network from 'expo-network';
 
 Gets the device's current network connection state.
 
+On web, [`navigator.connection.type`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/connection) is not available on browsers. So if there is an active network connection, the field `type` returns `NetworkStateType.UNKNOWN`. Otherwise, it returns `NetworkStateType.NONE`.
+
 #### Returns
 
 A `Promise` that resolves to an object with the following fields:
