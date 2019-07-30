@@ -13,9 +13,12 @@ import android.content.Context;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -109,19 +112,52 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
     }
   }
 
+  private NetworkStateType getNetworkCapabilities(NetworkCapabilities nc) {
+    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) return NetworkStateType.CELLULAR;
+    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) return NetworkStateType.WIFI;
+    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) return NetworkStateType.BLUETOOTH;
+    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) return NetworkStateType.ETHERNET;
+    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) return NetworkStateType.VPN;
+    return NetworkStateType.UNKNOWN;
+  }
+
   @ExpoMethod
   public void getNetworkStateAsync(Promise promise) {
     Bundle result = new Bundle();
-    try {
-      ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-      NetworkInfo netInfo = cm.getActiveNetworkInfo();
-      result.putBoolean("isInternetReachable", netInfo.isConnected());
+    ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    //use getActiveNetworkInfo before api level 29
+    if(Build.VERSION.SDK_INT < 29){
+      try {
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        result.putBoolean("isInternetReachable", netInfo.isConnected());
 
-      NetworkStateType mConnectionType = getConnectionType(netInfo);
-      result.putString("type", mConnectionType.getValue());
-      result.putBoolean("isConnected", !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"));
-    } catch (Exception e) {
-      promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e);
+        NetworkStateType mConnectionType = getConnectionType(netInfo);
+        result.putString("type", mConnectionType.getValue());
+        result.putBoolean("isConnected", !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"));
+      } catch (Exception e) {
+        promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e);
+      }
+    }
+    else{
+      try{
+        Network network = cm.getActiveNetwork();
+        boolean isInternetReachable = network != null;
+        NetworkStateType mConnectionType = null;
+        if(isInternetReachable){
+          NetworkCapabilities nc = cm.getNetworkCapabilities(network);
+          mConnectionType = getNetworkCapabilities(nc);
+          result.putString("type", mConnectionType.getValue());
+        }
+        else{
+          result.putString("type", NetworkStateType.NONE.getValue());
+        }
+        result.putBoolean("isInternetReachable", isInternetReachable);
+        result.putBoolean("isConnected", mConnectionType != null && !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"));
+        promise.resolve(result);
+      }
+      catch (Exception e) {
+        promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e);
+      }
     }
   }
 
