@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXNetwork/EXNetwork.h>
+#import <SystemConfiguration/SystemConfiguration.h>
 
 #import <ifaddrs.h>
 #import <arpa/inet.h>
@@ -8,10 +9,23 @@
 @interface EXNetwork ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic) SCNetworkReachabilityRef reachabilityRef;
+@property (nonatomic) SCNetworkReachabilityFlags lastFlags;
+@property (nonatomic) NSString *type;
 
 @end
 
 @implementation EXNetwork
+
+// Creates a new "blank" state
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    _type = @"unknown";
+  }
+  return self;
+}
 
 UM_EXPORT_MODULE(ExpoNetwork);
 
@@ -59,6 +73,48 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
   
   // Free memory
   freeifaddrs(interfaces);
+}
+
+UM_EXPORT_METHOD_AS(getNetworkStateAsync,
+                    getNetworkStateAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  _reachabilityRef =  [self createReachabilityRef];
+  SCNetworkReachabilityFlags flags = [self lastFlags];
+    
+  if ((flags & kSCNetworkReachabilityFlagsReachable) == 0 ||
+      (flags & kSCNetworkReachabilityFlagsConnectionRequired) != 0) {
+    _type = @"none";
+  }
+  
+#if !TARGET_OS_TV
+  else if ((flags & kSCNetworkReachabilityFlagsIsWWAN) != 0) {
+    _type = @"cellular";
+  }
+#endif
+  else {
+    _type = @"wifi";
+  }
+  
+  resolve([self type]);
+}
+
+
+- (SCNetworkReachabilityRef)createReachabilityRef
+{
+  struct sockaddr_in zeroAddress;
+  bzero(&zeroAddress, sizeof(zeroAddress));
+  zeroAddress.sin_len = sizeof(zeroAddress);
+  zeroAddress.sin_family = AF_INET;
+  
+  SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr *) &zeroAddress);
+  
+  // Set the state the first time
+  SCNetworkReachabilityFlags flags;
+  SCNetworkReachabilityGetFlags(reachability, &flags);
+  _lastFlags = flags;
+  
+  return reachability;
 }
 
 @end
