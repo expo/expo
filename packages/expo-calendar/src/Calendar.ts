@@ -533,6 +533,7 @@ export const CalendarType = {
   EXCHANGE: 'exchange',
   SUBSCRIBED: 'subscribed',
   BIRTHDAYS: 'birthdays',
+  UNKNOWN: 'unknown',
 }; // iOS
 
 export const EventStatus = {

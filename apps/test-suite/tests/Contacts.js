@@ -228,7 +228,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
             Contacts.Fields.PhoneNumbers,
             Contacts.Fields.Emails,
           ]);
-          const { id, name, phoneNumbers, emails } = contact;
+          const { phoneNumbers, emails } = contact;
 
           expect(contact.note).toBeUndefined();
           expect(contact.relationships).toBeUndefined();
@@ -265,7 +265,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.createGroupAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.createGroupAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(typeof groupId).toBe('string');
           }
@@ -284,7 +286,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.getGroupsAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.getGroupsAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(Array.isArray(groups)).toBe(true);
             expect(groups.length).toBeGreaterThan(0);
@@ -304,7 +308,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.getGroupsAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.getGroupsAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(Array.isArray(groups)).toBe(true);
             expect(groups.length).toBeGreaterThan(0);
@@ -327,7 +333,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.getDefaultContainerIdAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.getDefaultContainerIdentifierAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(Array.isArray(groups)).toBe(true);
             expect(groups.length).toBeGreaterThan(0);
@@ -352,11 +360,13 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
         if (isAndroid) {
           let errorMessage;
           try {
-            const success = await Contacts.removeGroupAsync('some-value');
+            await Contacts.removeGroupAsync('some-value');
           } catch ({ message }) {
             errorMessage = message;
           } finally {
-            expect(errorMessage).toBe('Error: Contacts.removeGroupAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.removeGroupAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           }
         } else {
           for (let group of testGroups) {
@@ -382,7 +392,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.getDefaultContainerIdAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.getDefaultContainerIdentifierAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(typeof defaultContainerId).toBe('string');
           }

@@ -1,0 +1,33 @@
+{
+  "name": "expo-template-bare-typescript",
+  "description": "This bare project template includes TypeScript",
+  "version": "34.0.3",
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "web": "expo start --web",
+    "start": "react-native start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "expo": "^34.0.1",
+    "react": "16.8.3",
+    "react-dom": "^16.8.6",
+    "react-native-web": "^0.11.4",
+    "react-native": "0.59.8",
+    "react-native-gesture-handler": "~1.3.0",
+    "react-native-reanimated": "~1.1.0",
+    "react-native-unimodules": "~0.5.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@types/react": "^16.8.23",
+    "@types/react-native": "^0.57.65",
+    "babel-preset-expo": "^6.0.0",
+    "jest-expo": "^34.0.0",
+    "typescript": "^3.4.5"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
