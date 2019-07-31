@@ -52,6 +52,7 @@ import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
+import expo.modules.device.DevicePackage;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
@@ -68,6 +69,7 @@ public class ExperiencePackagePicker {
       new ConstantsPackage(),
       new ContactsPackage(),
       new CryptoPackage(),
+      new DevicePackage(),
       new DocumentPickerPackage(),
       new FacebookPackage(),
       new FaceDetectorPackage(),

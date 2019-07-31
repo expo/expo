@@ -322,7 +322,7 @@ try {
 
   A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record.
 
-- `recordingInstance.createNewLoadedSound()`
+- `recordingInstance.createNewLoadedSoundAsync()`
 
   Creates and loads a new `Sound` object to play back the `Recording`. Note that this will only succeed once the `Recording` is done recording (once `stopAndUnloadAsync()` has been called).
 

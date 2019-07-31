@@ -5,41 +5,36 @@ title: SectionList
 
 A performant interface for rendering sectioned lists, supporting the most handy features:
 
-* Fully cross-platform.
-* Configurable viewability callbacks.
-* List header support.
-* List footer support.
-* Item separator support.
-* Section header support.
-* Section separator support.
-* Heterogeneous data and item rendering support.
-* Pull to Refresh.
-* Scroll loading.
+- Fully cross-platform.
+- Configurable viewability callbacks.
+- List header support.
+- List footer support.
+- Item separator support.
+- Section header support.
+- Section separator support.
+- Heterogeneous data and item rendering support.
+- Pull to Refresh.
+- Scroll loading.
 
 If you don't need section support and want a simpler interface, use [`<FlatList>`](../flatlist/).
 
 Simple Examples:
 
-
 ```javascript
-
 // Example 1 (Homogeneous Rendering)
 <SectionList
-  renderItem={({item, index, section}) => <Text key={index}>{item}</Text>}
-  renderSectionHeader={({section: {title}}) => (
-    <Text style={{fontWeight: 'bold'}}>{title}</Text>
+  renderItem={({ item, index, section }) => <Text key={index}>{item}</Text>}
+  renderSectionHeader={({ section: { title } }) => (
+    <Text style={{ fontWeight: 'bold' }}>{title}</Text>
   )}
   sections={[
-    {title: 'Title1', data: ['item1', 'item2']},
-    {title: 'Title2', data: ['item3', 'item4']},
-    {title: 'Title3', data: ['item5', 'item6']},
+    { title: 'Title1', data: ['item1', 'item2'] },
+    { title: 'Title2', data: ['item3', 'item4'] },
+    { title: 'Title3', data: ['item5', 'item6'] },
   ]}
   keyExtractor={(item, index) => item + index}
 />
-
 ```
-
-
 
 ```javascript
 
@@ -57,54 +52,53 @@ const overrideRenderItem = ({ item, index, section: { title, data } }) => <Text 
 
 ```
 
-
 This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/) that aren't explicitly listed here, along with the following caveats:
 
-* Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
-* This is a `PureComponent` which means that it will not re-render if `props` remain shallow- equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
-* In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.
-* By default, the list looks for a `key` prop on each item and uses that for the React key. Alternatively, you can provide a custom `keyExtractor` prop.
+- Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
+- This is a `PureComponent` which means that it will not re-render if `props` remain shallow- equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
+- In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.
+- By default, the list looks for a `key` prop on each item and uses that for the React key. Alternatively, you can provide a custom `keyExtractor` prop.
 
 ### Props
 
-* [`ScrollView` props...](../scrollview/#props)
+- [`ScrollView` props...](../scrollview/#props)
 
 Required props:
 
-* [`sections`](../sectionlist/#sections)
+- [`sections`](../sectionlist/#sections)
 
 Optional props:
 
-* [`initialNumToRender`](../sectionlist/#initialnumtorender)
-* [`keyExtractor`](../sectionlist/#keyextractor)
-* [`renderItem`](../sectionlist/#renderitem)
-* [`onEndReached`](../sectionlist/#onendreached)
-* [`extraData`](../sectionlist/#extradata)
-* [`ItemSeparatorComponent`](../sectionlist/#itemseparatorcomponent)
-* [`inverted`](../sectionlist/#inverted)
-* [`ListFooterComponent`](../sectionlist/#listfootercomponent)
-* [`legacyImplementation`](../sectionlist/#legacyimplementation)
-* [`ListEmptyComponent`](../sectionlist/#listemptycomponent)
-* [`onEndReachedThreshold`](../sectionlist/#onendreachedthreshold)
-* [`onRefresh`](../sectionlist/#onrefresh)
-* [`onViewableItemsChanged`](../sectionlist/#onviewableitemschanged)
-* [`refreshing`](../sectionlist/#refreshing)
-* [`removeClippedSubviews`](../sectionlist/#removeclippedsubviews)
-* [`ListHeaderComponent`](../sectionlist/#listheadercomponent)
-* [`renderSectionFooter`](../sectionlist/#rendersectionfooter)
-* [`renderSectionHeader`](../sectionlist/#rendersectionheader)
-* [`SectionSeparatorComponent`](../sectionlist/#sectionseparatorcomponent)
-* [`stickySectionHeadersEnabled`](../sectionlist/#stickysectionheadersenabled)
+- [`initialNumToRender`](../sectionlist/#initialnumtorender)
+- [`keyExtractor`](../sectionlist/#keyextractor)
+- [`renderItem`](../sectionlist/#renderitem)
+- [`onEndReached`](../sectionlist/#onendreached)
+- [`extraData`](../sectionlist/#extradata)
+- [`ItemSeparatorComponent`](../sectionlist/#itemseparatorcomponent)
+- [`inverted`](../sectionlist/#inverted)
+- [`ListFooterComponent`](../sectionlist/#listfootercomponent)
+- [`legacyImplementation`](../sectionlist/#legacyimplementation)
+- [`ListEmptyComponent`](../sectionlist/#listemptycomponent)
+- [`onEndReachedThreshold`](../sectionlist/#onendreachedthreshold)
+- [`onRefresh`](../sectionlist/#onrefresh)
+- [`onViewableItemsChanged`](../sectionlist/#onviewableitemschanged)
+- [`refreshing`](../sectionlist/#refreshing)
+- [`removeClippedSubviews`](../sectionlist/#removeclippedsubviews)
+- [`ListHeaderComponent`](../sectionlist/#listheadercomponent)
+- [`renderSectionFooter`](../sectionlist/#rendersectionfooter)
+- [`renderSectionHeader`](../sectionlist/#rendersectionheader)
+- [`SectionSeparatorComponent`](../sectionlist/#sectionseparatorcomponent)
+- [`stickySectionHeadersEnabled`](../sectionlist/#stickysectionheadersenabled)
 
 ### Methods
 
-* [`scrollToLocation`](../sectionlist/#scrolltolocation)
-* [`recordInteraction`](../sectionlist/#recordinteraction)
-* [`flashScrollIndicators`](../sectionlist/#flashscrollindicators)
+- [`scrollToLocation`](../sectionlist/#scrolltolocation)
+- [`recordInteraction`](../sectionlist/#recordinteraction)
+- [`flashScrollIndicators`](../sectionlist/#flashscrollindicators)
 
 ### Type Definitions
 
-* [`Section`](../sectionlist/#section)
+- [`Section`](../sectionlist/#section)
 
 ---
 
@@ -116,8 +110,8 @@ Optional props:
 
 The actual data to render, akin to the `data` prop in [`FlatList`](../flatlist/).
 
-| Type                                        | Required |
-| ------------------------------------------- | -------- |
+| Type                                         | Required |
+| -------------------------------------------- | -------- |
 | array of [Section](../sectionlist/#section)s | Yes      |
 
 ---
@@ -152,15 +146,15 @@ Default renderer for every item in every section. Can be over-ridden on a per-se
 
 The render function will be passed an object with the following keys:
 
-* 'item' (object) - the item object as specified in this section's `data` key
-* 'index' (number) - Item's index within the section.
-* 'section' (object) - The full section object as specified in `sections`.
-* 'separators' (object) - An object with the following keys:
-  * 'highlight' (function) - `() => void`
-  * 'unhighlight' (function) - `() => void`
-  * 'updateProps' (function) - `(select, newProps) => void`
-    * 'select' (enum) - possible values are 'leading', 'trailing'
-    * 'newProps' (object)
+- 'item' (object) - the item object as specified in this section's `data` key
+- 'index' (number) - Item's index within the section.
+- 'section' (object) - The full section object as specified in `sections`.
+- 'separators' (object) - An object with the following keys:
+  - 'highlight' (function) - `() => void`
+  - 'unhighlight' (function) - `() => void`
+  - 'updateProps' (function) - `(select, newProps) => void`
+    - 'select' (enum) - possible values are 'leading', 'trailing'
+    - 'newProps' (object)
 
 ---
 
@@ -262,8 +256,8 @@ Called when the viewability of rows changes, as defined by the `viewabilityConfi
 
 The function will be passed an object with the following keys:
 
-* 'viewableItems' (array of `ViewToken`s)
-* 'changed' (array of `ViewToken`s)
+- 'viewableItems' (array of `ViewToken`s)
+- 'changed' (array of `ViewToken`s)
 
 The `ViewToken` type is exported by `ViewabilityHelper.js`:
 
@@ -313,8 +307,8 @@ Rendered at the very beginning of the list. Can be a React Component Class, a re
 
 Rendered at the bottom of each section.
 
-| Type                                                 | Required |
-| ---------------------------------------------------- | -------- |
+| Type                                                   | Required |
+| ------------------------------------------------------ | -------- |
 | [(info: {section: SectionT}) => ?React.Element\<any\>] | No       |
 
 ---
@@ -323,8 +317,8 @@ Rendered at the bottom of each section.
 
 Rendered at the top of each section. These stick to the top of the `ScrollView` by default on iOS. See `stickySectionHeadersEnabled`.
 
-| Type                                                 | Required |
-| ---------------------------------------------------- | -------- |
+| Type                                                   | Required |
+| ------------------------------------------------------ | -------- |
 | [(info: {section: SectionT}) => ?React.Element\<any\>] | No       |
 
 ---
@@ -333,8 +327,8 @@ Rendered at the top of each section. These stick to the top of the `ScrollView` 
 
 Rendered at the top and bottom of each section (note this is different from `ItemSeparatorComponent` which is only rendered between items). These are intended to separate sections from the headers above and below and typically have the same highlight response as `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`, and any custom props from `separators.updateProps`.
 
-| Type              | Required |
-| ----------------- | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [ReactClass\<any\>] | No       |
 
 ---
@@ -351,13 +345,9 @@ Makes section headers stick to the top of the screen until the next one pushes i
 
 ### `scrollToLocation()`
 
-
 ```javascript
-
 scrollToLocation(params);
-
 ```
-
 
 Scrolls to the item at the specified `sectionIndex` and `itemIndex` (within the section) positioned in the viewable area such that `viewPosition` 0 places it at the top (and may be covered by a sticky header), 1 at the bottom, and 0.5 centered in the middle.
 
@@ -371,23 +361,19 @@ Scrolls to the item at the specified `sectionIndex` and `itemIndex` (within the 
 
 Valid `params` keys are:
 
-* 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
-* 'itemIndex' (number) - Index within section for the item to scroll to. Required.
-* 'sectionIndex' (number) - Index for section that contains the item to scroll to. Required.
-* 'viewOffset' (number) - A fixed number of pixels to offset the final target position, e.g. to compensate for sticky headers.
-* 'viewPosition' (number) - A value of `0` places the item specified by index at the top, `1` at the bottom, and `0.5` centered in the middle.
+- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
+- 'itemIndex' (number) - Index within section for the item to scroll to. Required.
+- 'sectionIndex' (number) - Index for section that contains the item to scroll to. Required.
+- 'viewOffset' (number) - A fixed number of pixels to offset the final target position, e.g. to compensate for sticky headers.
+- 'viewPosition' (number) - A value of `0` places the item specified by index at the top, `1` at the bottom, and `0.5` centered in the middle.
 
 ---
 
 ### `recordInteraction()`
 
-
 ```javascript
-
 recordInteraction();
-
 ```
-
 
 Tells the list an interaction has occured, which should trigger viewability calculations, e.g. if `waitForInteractions` is true and the user has not scrolled. This is typically called by taps on items or by navigation actions.
 
@@ -395,13 +381,9 @@ Tells the list an interaction has occured, which should trigger viewability calc
 
 ### `flashScrollIndicators()`
 
-
 ```javascript
-
 flashScrollIndicators();
-
 ```
-
 
 Displays the scroll indicators momentarily.
 
@@ -417,11 +399,10 @@ An object that identifies the data to be rendered for a given section.
 
 **Properties:**
 
-| Name                     | Type                         | Description                                                                                                                                                            |
-| ------------------------ | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Name                     | Type                         | Description                                                                                                                                                             |
+| ------------------------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | data                     | array                        | The data for rendering items in this section. Array of objects, much like [`FlatList`'s data prop](../flatlist/#data).                                                  |
-| [key]                    | string                       | Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections, the array index will be used by default.                                 |
+| [key]                    | string                       | Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections, the array index will be used by default.                                  |
 | [renderItem]             | function                     | Optionally define an arbitrary item renderer for this section, overriding the default [`renderItem`](../sectionlist/#renderitem) for the list.                          |
 | [ItemSeparatorComponent] | component, function, element | Optionally define an arbitrary item separator for this section, overriding the default [`ItemSeparatorComponent`](../sectionlist/#itemseparatorcomponent) for the list. |
 | [keyExtractor]           | function                     | Optionally define an arbitrary key extractor for this section, overriding the default [`keyExtractor`](../sectionlist/#keyextractor).                                   |
-

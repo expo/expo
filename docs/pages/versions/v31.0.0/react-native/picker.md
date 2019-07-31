@@ -5,32 +5,28 @@ title: Picker
 
 Renders the native picker component on iOS and Android. Example:
 
-
 ```javascript
-
-    <Picker
-      selectedValue={this.state.language}
-      style={{ height: 50, width: 100 }}
-      onValueChange={(itemValue, itemIndex) => this.setState({language: itemValue})}>
-      <Picker.Item label="Java" value="java" />
-      <Picker.Item label="JavaScript" value="js" />
-    </Picker>
-
+<Picker
+  selectedValue={this.state.language}
+  style={{ height: 50, width: 100 }}
+  onValueChange={(itemValue, itemIndex) => this.setState({ language: itemValue })}>
+  <Picker.Item label="Java" value="java" />
+  <Picker.Item label="JavaScript" value="js" />
+</Picker>
 ```
-
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`onValueChange`](../picker/#onvaluechange)
-- [`selectedValue`](../picker/#selectedvalue)
-- [`style`](../picker/#style)
-- [`testID`](../picker/#testid)
-- [`enabled`](../picker/#enabled)
-- [`mode`](../picker/#mode)
-- [`prompt`](../picker/#prompt)
-- [`itemStyle`](../picker/#itemstyle)
+* [`onValueChange`](../picker/#onvaluechange)
+* [`selectedValue`](../picker/#selectedvalue)
+* [`style`](../picker/#style)
+* [`testID`](../picker/#testid)
+* [`enabled`](../picker/#enabled)
+* [`mode`](../picker/#mode)
+* [`prompt`](../picker/#prompt)
+* [`itemStyle`](../picker/#itemstyle)
 
 ---
 
@@ -42,8 +38,8 @@ Renders the native picker component on iOS and Android. Example:
 
 Callback for when an item is selected. This is called with the following parameters:
 
-* `itemValue`: the `value` prop of the item that was selected
-* `itemPosition`: the index of the selected item in this picker
+- `itemValue`: the `value` prop of the item that was selected
+- `itemPosition`: the index of the selected item in this picker
 
 | Type     | Required |
 | -------- | -------- |
@@ -93,8 +89,8 @@ If set to false, the picker will be disabled, i.e. the user will not be able to 
 
 On Android, specifies how to display the selection items when the user taps on the picker:
 
-* 'dialog': Show a modal dialog. This is the default.
-* 'dropdown': Shows a dropdown anchored to the picker view
+- 'dialog': Show a modal dialog. This is the default.
+- 'dropdown': Shows a dropdown anchored to the picker view
 
 | Type                       | Required | Platform |
 | -------------------------- | -------- | -------- |
@@ -116,7 +112,6 @@ Prompt string for this picker, used on Android in dialog mode as the title of th
 
 Style to apply to each of the item labels.
 
-| Type                               | Required | Platform |
-| ---------------------------------- | -------- | -------- |
+| Type                                | Required | Platform |
+| ----------------------------------- | -------- | -------- |
 | [text styles](../text-style-props/) | No       | iOS      |
-

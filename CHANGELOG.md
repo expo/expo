@@ -6,6 +6,16 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 📚 3rd party library updates
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 34.0.0
+
+### 📚 3rd party library updates
+
 - `react-native-gesture-handler` updated from `1.2.1` to `1.3.0`
 - `react-native-branch` updated from `2.2.5` to `3.0.1`
 - `react-native-reanimated` updated from `1.0.1` to `1.1.0`
@@ -25,6 +35,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added `native` mode for Android SplashScreen on standalone apps by [@bbarthec](https://github.com/bbarthec) ([#4567](https://github.com/expo/expo/pull/4567))
 - added support for video recording in `ImagePicker.launchCameraAsync`. ([#4903](https://github.com/expo/expo/pull/4903) by [@lukmccall](https://github.com/lukmccall))
 - added an option which allows displaying notifications in foreground on iOS by [@hesyifei](https://github.com/hesyifei) ([#4802](https://github.com/expo/expo/pull/4802))
+- added rich content supports for push notifications by [@hesyifei](https://github.com/hesyifei) ([#4787](https://github.com/expo/expo/pull/4787))
+- added `lazyImports` option in `babel-preset-expo` which allows lazy-initializing/inline-requiring packages by [@hesyifei](https://github.com/hesyifei) ([#4685](https://github.com/expo/expo/pull/4685))
 
 ### 🐛 Bug fixes
 

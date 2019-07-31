@@ -82,10 +82,11 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 
 - Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
+- Install or upgrade `react-native-unimodules@^0.5.0` in your project (`yarn add -D react-native-unimodules@^0.5.0` or `npm install --save-dev react-native-unimodules@^0.5.0` if you prefer npm over Yarn).
 
 If upgrading from SDK 32 or below:
 
-1. Install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
+1. If you haven't already done so install `react-native-unimodules@^0.5.0` in your project (`yarn add -D react-native-unimodules@^0.5.0` or `npm install --save-dev react-native-unimodules@^0.5.0` if you prefer npm over Yarn).
 2. Remove the list of unimodules' dependencies:
     ```ruby
       pod 'EXAdsAdMob',
@@ -170,10 +171,12 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 - Update your version of expokit in `package.json` to the version in `expokitNpmPackage` and yarn/npm install.
 - If upgrading to SDK 31 or below, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
+- Go to `android/app/build.gradle` (same file) and replace `api 'com.facebook.react:react-native:[OLD SDK VERSION]'` with `api 'com.facebook.react:react-native:[NEW SDK VERSION]'`.
+- Go to `android/app/build.gradle` (same file) and upgrade JSC version by replcaing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
 
 If upgrading from SDK32 or below:
 
-1. If you haven't already done so when upgrading your iOS project, install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
+1. If you haven't already done so when upgrading your iOS project, install `react-native-unimodules@^0.5.0` in your project (`yarn add -D react-native-unimodules@^0.5.0` or `npm install --save-dev react-native-unimodules@^0.5.0` if you prefer npm over Yarn).
 2. In `android/settings.gradle` add to the bottom of the file:
     ```groovy
     apply from: '../node_modules/react-native-unimodules/gradle.groovy'

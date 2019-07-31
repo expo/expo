@@ -7,7 +7,6 @@ React component that wraps the platform `DrawerLayout` (Android only). The Drawe
 
 Example:
 
-
 ```javascript
 
 render: function() {
@@ -30,7 +29,6 @@ render: function() {
 },
 
 ```
-
 
 ### Props
 
@@ -164,16 +162,12 @@ Function called when the drawer state has changed. The drawer can be in 3 states
 
 Specifies the background color of the drawer. The default value is white. If you want to set the opacity of the drawer, use rgba. Example:
 
-
 ```javascript
-
 return <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)" />;
-
 ```
 
-
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -182,21 +176,17 @@ return <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)" />;
 
 Make the drawer take the entire screen and draw the background of the status bar to allow it to open over the status bar. It will only have an effect on API 21+.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ## Methods
 
 ### `openDrawer()`
 
-
 ```javascript
-
 openDrawer();
-
 ```
-
 
 Opens the drawer.
 
@@ -204,13 +194,8 @@ Opens the drawer.
 
 ### `closeDrawer()`
 
-
 ```javascript
-
 closeDrawer();
-
 ```
 
-
 Closes the drawer.
-

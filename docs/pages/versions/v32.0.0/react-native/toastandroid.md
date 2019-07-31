@@ -14,47 +14,41 @@ The 'showWithGravityAndOffset' function adds on the ability to specify offset Th
 
 Basic usage:
 
-
 ```javascript
-
-import {ToastAndroid} from 'react-native';
+import { ToastAndroid } from 'react-native';
 
 ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
 ToastAndroid.showWithGravity(
   'All Your Base Are Belong To Us',
   ToastAndroid.SHORT,
-  ToastAndroid.CENTER,
+  ToastAndroid.CENTER
 );
 ToastAndroid.showWithGravityAndOffset(
   'A wild toast appeared!',
   ToastAndroid.LONG,
   ToastAndroid.BOTTOM,
   25,
-  50,
+  50
 );
-
 ```
-
 
 ### Advanced usage:
 
 The ToastAndroid API is imperative and this might present itself as an issue, but there is actually a way(hack) to expose a declarative component from it. See an example below:
 
-
 ```javascript
-
-import React, {Component} from 'react';
-import {View, Button, ToastAndroid} from 'react-native';
+import React, { Component } from 'react';
+import { View, Button, ToastAndroid } from 'react-native';
 
 // a component that calls the imperative ToastAndroid API
-const Toast = (props) => {
+const Toast = props => {
   if (props.visible) {
     ToastAndroid.showWithGravityAndOffset(
       props.message,
       ToastAndroid.LONG,
       ToastAndroid.BOTTOM,
       25,
-      50,
+      50
     );
     return null;
   }
@@ -76,7 +70,7 @@ class App extends Component {
       },
       () => {
         this.hideToast();
-      },
+      }
     );
   };
 
@@ -95,23 +89,21 @@ class App extends Component {
     );
   }
 }
-
 ```
-
 
 ### Methods
 
-* [`show`](../toastandroid/#show)
-* [`showWithGravity`](../toastandroid/#showwithgravity)
-* [`showWithGravityAndOffset`](../toastandroid/#showwithgravityandoffset)
+- [`show`](../toastandroid/#show)
+- [`showWithGravity`](../toastandroid/#showwithgravity)
+- [`showWithGravityAndOffset`](../toastandroid/#showwithgravityandoffset)
 
 ### Properties
 
-* [`SHORT`](../toastandroid/#short)
-* [`LONG`](../toastandroid/#long)
-* [`TOP`](../toastandroid/#top)
-* [`BOTTOM`](../toastandroid/#bottom)
-* [`CENTER`](../toastandroid/#center)
+- [`SHORT`](../toastandroid/#short)
+- [`LONG`](../toastandroid/#long)
+- [`TOP`](../toastandroid/#top)
+- [`BOTTOM`](../toastandroid/#bottom)
+- [`CENTER`](../toastandroid/#center)
 
 ---
 
@@ -121,18 +113,15 @@ class App extends Component {
 
 ### `show()`
 
-
 ```javascript
 
 static show(message, duration)
 
 ```
 
-
 ---
 
 ### `showWithGravity()`
-
 
 ```javascript
 
@@ -140,11 +129,9 @@ static showWithGravity(message, duration, gravity)
 
 ```
 
-
 ---
 
 ### `showWithGravityAndOffset()`
-
 
 ```javascript
 
@@ -152,64 +139,42 @@ static showWithGravityAndOffset(message, duration, gravity, xOffset, yOffset)
 
 ```
 
-
 ## Properties
 
 ### `SHORT`
 
-
 ```javascript
-
 ToastAndroid.SHORT;
-
 ```
-
 
 ---
 
 ### `LONG`
 
-
 ```javascript
-
 ToastAndroid.LONG;
-
 ```
-
 
 ---
 
 ### `TOP`
 
-
 ```javascript
-
 ToastAndroid.TOP;
-
 ```
-
 
 ---
 
 ### `BOTTOM`
 
-
 ```javascript
-
 ToastAndroid.BOTTOM;
-
 ```
-
 
 ---
 
 ### `CENTER`
 
-
 ```javascript
-
 ToastAndroid.CENTER;
-
 ```
-
-

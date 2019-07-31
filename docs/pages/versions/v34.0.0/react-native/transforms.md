@@ -95,4 +95,3 @@ The skew transformations require a string so that the transform may be expressed
 | Type                                                                         | Required |
 | ---------------------------------------------------------------------------- | -------- |
 | deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.') | No       |
-

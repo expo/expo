@@ -1,6 +1,6 @@
 {
   "name": "expo-file-system",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Provides access to the local file system on the device.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0",
-    "jest-expo": "^33.0.0-rc.1"
+    "jest-expo": "~34.0.0"
   },
-  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
 }

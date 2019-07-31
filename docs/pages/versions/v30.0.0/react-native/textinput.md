@@ -7,11 +7,9 @@ A foundational component for inputting text into the app via a keyboard. Props p
 
 The simplest use case is to plop down a `TextInput` and subscribe to the `onChangeText` events to read the user input. There are also other events, such as `onSubmitEditing` and `onFocus` that can be subscribed to. A simple example:
 
-
 ```javascript
-
 import React, { Component } from 'react';
-import { AppRegistry, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 
 export default class UselessTextInput extends Component {
   constructor(props) {
@@ -22,29 +20,23 @@ export default class UselessTextInput extends Component {
   render() {
     return (
       <TextInput
-        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-        onChangeText={(text) => this.setState({text})}
+        style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+        onChangeText={text => this.setState({ text })}
         value={this.state.text}
       />
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
-
 ```
-
 
 Two methods exposed via the native element are .focus() and .blur() that will focus or blur the TextInput programmatically.
 
 Note that some props are only available with `multiline={true/false}`. Additionally, border styles that apply to only one side of the element (e.g., `borderBottomColor`, `borderLeftWidth`, etc.) will not be applied if `multiline=false`. To achieve the same effect, you can wrap your `TextInput` in a `View`:
 
-
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
 
 class UselessTextInput extends Component {
   render() {
@@ -85,15 +77,7 @@ export default class UselessTextInputMultiline extends Component {
     );
   }
 }
-
-// skip these lines if using Create React Native App
-AppRegistry.registerComponent(
- 'AwesomeProject',
- () => UselessTextInputMultiline
-);
-
 ```
-
 
 `TextInput` has by default a border at the bottom of its view. This border has its padding set by the background image provided by the system, and it cannot be changed. Solutions to avoid this is to either not set height explicitly, case in which the system will take care of displaying the border in the correct position, or to not display the border by setting `underlineColorAndroid` to transparent.
 
@@ -101,60 +85,60 @@ Note that on Android performing text selection in input can change app's activit
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`allowFontScaling`](../textinput/#allowfontscaling)
-- [`autoCapitalize`](../textinput/#autocapitalize)
-- [`autoCorrect`](../textinput/#autocorrect)
-- [`autoFocus`](../textinput/#autofocus)
-- [`blurOnSubmit`](../textinput/#bluronsubmit)
-- [`caretHidden`](../textinput/#carethidden)
-- [`clearButtonMode`](../textinput/#clearbuttonmode)
-- [`clearTextOnFocus`](../textinput/#cleartextonfocus)
-- [`contextMenuHidden`](../textinput/#contextMenuHidden)
-- [`dataDetectorTypes`](../textinput/#datadetectortypes)
-- [`defaultValue`](../textinput/#defaultvalue)
-- [`disableFullscreenUI`](../textinput/#disablefullscreenui)
-- [`editable`](../textinput/#editable)
-- [`enablesReturnKeyAutomatically`](../textinput/#enablesreturnkeyautomatically)
-- [`inlineImageLeft`](../textinput/#inlineimageleft)
-- [`inlineImagePadding`](../textinput/#inlineimagepadding)
-- [`keyboardAppearance`](../textinput/#keyboardappearance)
-- [`keyboardType`](../textinput/#keyboardtype)
-- [`maxLength`](../textinput/#maxlength)
-- [`multiline`](../textinput/#multiline)
-- [`numberOfLines`](../textinput/#numberoflines)
-- [`onBlur`](../textinput/#onblur)
-- [`onChange`](../textinput/#onchange)
-- [`onChangeText`](../textinput/#onchangetext)
-- [`onContentSizeChange`](../textinput/#oncontentsizechange)
-- [`onEndEditing`](../textinput/#onendediting)
-- [`onFocus`](../textinput/#onfocus)
-- [`onKeyPress`](../textinput/#onkeypress)
-- [`onLayout`](../textinput/#onlayout)
-- [`onScroll`](../textinput/#onscroll)
-- [`onSelectionChange`](../textinput/#onselectionchange)
-- [`onSubmitEditing`](../textinput/#onsubmitediting)
-- [`placeholder`](../textinput/#placeholder)
-- [`placeholderTextColor`](../textinput/#placeholdertextcolor)
-- [`returnKeyLabel`](../textinput/#returnkeylabel)
-- [`returnKeyType`](../textinput/#returnkeytype)
-- [`secureTextEntry`](../textinput/#securetextentry)
-- [`selection`](../textinput/#selection)
-- [`selectionColor`](../textinput/#selectioncolor)
-- [`selectionState`](../textinput/#selectionstate)
-- [`selectTextOnFocus`](../textinput/#selecttextonfocus)
-- [`spellCheck`](../textinput/#spellcheck)
-- [`textContentType`](../textinput/#textcontenttype)
-- [`style`](../textinput/#style)
-- [`textBreakStrategy`](../textinput/#textbreakstrategy)
-- [`underlineColorAndroid`](../textinput/#underlinecolorandroid)
-- [`value`](../textinput/#value)
+* [`allowFontScaling`](../textinput/#allowfontscaling)
+* [`autoCapitalize`](../textinput/#autocapitalize)
+* [`autoCorrect`](../textinput/#autocorrect)
+* [`autoFocus`](../textinput/#autofocus)
+* [`blurOnSubmit`](../textinput/#bluronsubmit)
+* [`caretHidden`](../textinput/#carethidden)
+* [`clearButtonMode`](../textinput/#clearbuttonmode)
+* [`clearTextOnFocus`](../textinput/#cleartextonfocus)
+* [`contextMenuHidden`](../textinput/#contextMenuHidden)
+* [`dataDetectorTypes`](../textinput/#datadetectortypes)
+* [`defaultValue`](../textinput/#defaultvalue)
+* [`disableFullscreenUI`](../textinput/#disablefullscreenui)
+* [`editable`](../textinput/#editable)
+* [`enablesReturnKeyAutomatically`](../textinput/#enablesreturnkeyautomatically)
+* [`inlineImageLeft`](../textinput/#inlineimageleft)
+* [`inlineImagePadding`](../textinput/#inlineimagepadding)
+* [`keyboardAppearance`](../textinput/#keyboardappearance)
+* [`keyboardType`](../textinput/#keyboardtype)
+* [`maxLength`](../textinput/#maxlength)
+* [`multiline`](../textinput/#multiline)
+* [`numberOfLines`](../textinput/#numberoflines)
+* [`onBlur`](../textinput/#onblur)
+* [`onChange`](../textinput/#onchange)
+* [`onChangeText`](../textinput/#onchangetext)
+* [`onContentSizeChange`](../textinput/#oncontentsizechange)
+* [`onEndEditing`](../textinput/#onendediting)
+* [`onFocus`](../textinput/#onfocus)
+* [`onKeyPress`](../textinput/#onkeypress)
+* [`onLayout`](../textinput/#onlayout)
+* [`onScroll`](../textinput/#onscroll)
+* [`onSelectionChange`](../textinput/#onselectionchange)
+* [`onSubmitEditing`](../textinput/#onsubmitediting)
+* [`placeholder`](../textinput/#placeholder)
+* [`placeholderTextColor`](../textinput/#placeholdertextcolor)
+* [`returnKeyLabel`](../textinput/#returnkeylabel)
+* [`returnKeyType`](../textinput/#returnkeytype)
+* [`secureTextEntry`](../textinput/#securetextentry)
+* [`selection`](../textinput/#selection)
+* [`selectionColor`](../textinput/#selectioncolor)
+* [`selectionState`](../textinput/#selectionstate)
+* [`selectTextOnFocus`](../textinput/#selecttextonfocus)
+* [`spellCheck`](../textinput/#spellcheck)
+* [`textContentType`](../textinput/#textcontenttype)
+* [`style`](../textinput/#style)
+* [`textBreakStrategy`](../textinput/#textbreakstrategy)
+* [`underlineColorAndroid`](../textinput/#underlinecolorandroid)
+* [`value`](../textinput/#value)
 
 ### Methods
 
-* [`clear`](../textinput/#clear)
-* [`isFocused`](../textinput/#isfocused)
+- [`clear`](../textinput/#clear)
+- [`isFocused`](../textinput/#isfocused)
 
 ---
 
@@ -176,10 +160,10 @@ Specifies whether fonts should scale to respect Text Size accessibility settings
 
 Can tell `TextInput` to automatically capitalize certain characters.
 
-* `characters`: all characters.
-* `words`: first letter of each word.
-* `sentences`: first letter of each sentence (_default_).
-* `none`: don't auto capitalize anything.
+- `characters`: all characters.
+- `words`: first letter of each word.
+- `sentences`: first letter of each sentence (_default_).
+- `none`: don't auto capitalize anything.
 
 | Type                                             | Required |
 | ------------------------------------------------ | -------- |
@@ -265,12 +249,12 @@ You can provide one type or an array of many types.
 
 Possible values for `dataDetectorTypes` are:
 
-* `'phoneNumber'`
-* `'link'`
-* `'address'`
-* `'calendarEvent'`
-* `'none'`
-* `'all'`
+- `'phoneNumber'`
+- `'link'`
+- `'address'`
+- `'calendarEvent'`
+- `'none'`
+- `'all'`
 
 | Type                                                                                                                                                     | Required | Platform |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------- |
@@ -322,15 +306,9 @@ If `true`, the keyboard disables the return key when there is no text and automa
 
 If defined, the provided image resource will be rendered on the left. The image resource must be inside `/android/app/src/main/res/drawable` and referenced like
 
-
 ```javascript
-
-<TextInput
- inlineImageLeft='search_icon'
-/>
-
+<TextInput inlineImageLeft="search_icon" />
 ```
-
 
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
@@ -364,29 +342,29 @@ Determines which keyboard to open, e.g.`numeric`.
 
 The following values work across platforms:
 
-* `default`
-* `numeric`
-* `email-address`
-* `phone-pad`
+- `default`
+- `numeric`
+- `email-address`
+- `phone-pad`
 
 _iOS Only_
 
 The following values work on iOS only:
 
-* `ascii-capable`
-* `numbers-and-punctuation`
-* `url`
-* `number-pad`
-* `name-phone-pad`
-* `decimal-pad`
-* `twitter`
-* `web-search`
+- `ascii-capable`
+- `numbers-and-punctuation`
+- `url`
+- `number-pad`
+- `name-phone-pad`
+- `decimal-pad`
+- `twitter`
+- `web-search`
 
 _Android Only_
 
 The following values work on Android only:
 
-* `visible-password`
+- `visible-password`
 
 | Type                                                                                                                                                                                                    | Required |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
@@ -550,8 +528,8 @@ The string that will be rendered before text input has been entered.
 
 The text color of the placeholder string.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -574,29 +552,29 @@ _Cross platform_
 
 The following values work across platforms:
 
-* `done`
-* `go`
-* `next`
-* `search`
-* `send`
+- `done`
+- `go`
+- `next`
+- `search`
+- `send`
 
 _Android Only_
 
 The following values work on Android only:
 
-* `none`
-* `previous`
+- `none`
+- `previous`
 
 _iOS Only_
 
 The following values work on iOS only:
 
-* `default`
-* `emergency-call`
-* `google`
-* `join`
-* `route`
-* `yahoo`
+- `default`
+- `emergency-call`
+- `google`
+- `join`
+- `route`
+- `yahoo`
 
 | Type                                                                                                                              | Required |
 | --------------------------------------------------------------------------------------------------------------------------------- | -------- |
@@ -628,8 +606,8 @@ The start and end of the text input's selection. Set start and end to the same v
 
 The highlight and cursor color of the text input.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -640,9 +618,9 @@ An instance of `DocumentSelectionState`, this is some state that is responsible 
 
 Some functionality that can be performed with this instance is:
 
-* `blur()`
-* `focus()`
-* `update()`
+- `blur()`
+- `focus()`
+- `update()`
 
 > You can reference `DocumentSelectionState` in [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
 
@@ -682,32 +660,32 @@ To disable autofill, set `textContentType` to `none`.
 
 Possible values for `textContentType` are:
 
-* `none`
-* `URL`
-* `addressCity`
-* `addressCityAndState`
-* `addressState`
-* `countryName`
-* `creditCardNumber`
-* `emailAddress`
-* `familyName`
-* `fullStreetAddress`
-* `givenName`
-* `jobTitle`
-* `location`
-* `middleName`
-* `name`
-* `namePrefix`
-* `nameSuffix`
-* `nickname`
-* `organizationName`
-* `postalCode`
-* `streetAddressLine1`
-* `streetAddressLine2`
-* `sublocality`
-* `telephoneNumber`
-* `username`
-* `password`
+- `none`
+- `URL`
+- `addressCity`
+- `addressCityAndState`
+- `addressState`
+- `countryName`
+- `creditCardNumber`
+- `emailAddress`
+- `familyName`
+- `fullStreetAddress`
+- `givenName`
+- `jobTitle`
+- `location`
+- `middleName`
+- `name`
+- `namePrefix`
+- `nameSuffix`
+- `nickname`
+- `organizationName`
+- `postalCode`
+- `streetAddressLine1`
+- `streetAddressLine2`
+- `sublocality`
+- `telephoneNumber`
+- `username`
+- `password`
 
 | Type                                                                                                                                                                                                                                                                                                                                                                                                       | Required | Platform |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------- |
@@ -719,21 +697,21 @@ Possible values for `textContentType` are:
 
 Note that not all Text styles are supported, an incomplete list of what is not supported includes:
 
-* `borderLeftWidth`
-* `borderTopWidth`
-* `borderRightWidth`
-* `borderBottomWidth`
-* `borderTopLeftRadius`
-* `borderTopRightRadius`
-* `borderBottomRightRadius`
-* `borderBottomLeftRadius`
+- `borderLeftWidth`
+- `borderTopWidth`
+- `borderRightWidth`
+- `borderBottomWidth`
+- `borderTopLeftRadius`
+- `borderTopRightRadius`
+- `borderBottomRightRadius`
+- `borderBottomLeftRadius`
 
 see [Issue#7070](https://github.com/facebook/react-native/issues/7070) for more detail.
 
 [Styles](../style/)
 
-| Type                  | Required |
-| --------------------- | -------- |
+| Type                   | Required |
+| ---------------------- | -------- |
 | [Text](../text/#style) | No       |
 
 ---
@@ -752,8 +730,8 @@ Set text break strategy on Android API Level 23+, possible values are `simple`, 
 
 The color of the `TextInput` underline.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | Android  |
 
 ---
@@ -770,13 +748,9 @@ The value to show for the text input. `TextInput` is a controlled component, whi
 
 ### `clear()`
 
-
 ```javascript
-
 clear();
-
 ```
-
 
 Removes all text from the `TextInput`.
 
@@ -784,13 +758,10 @@ Removes all text from the `TextInput`.
 
 ### `isFocused()`
 
-
 ```javascript
 
 isFocused():
 
 ```
 
-
 Returns `true` if the input is currently focused; `false` otherwise.
-

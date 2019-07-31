@@ -1,6 +1,6 @@
 {
   "name": "expo-google-sign-in",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Enables native Google authentication features in your app! This module can only be used in ExpoKit, or a Standalone Expo app. For in-depth setup, check out this guide: https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce",
   "main": "build/GoogleSignIn.js",
   "types": "build/GoogleSignIn.d.ts",
@@ -51,5 +51,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
 }

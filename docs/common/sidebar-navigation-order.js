@@ -111,7 +111,14 @@ const EXPOKIT = [
   'Universal Modules and ExpoKit',
 ];
 
-const ESSENTIALS = ['Bare Workflow Walkthrough', 'Up and Running', 'Supported Expo SDK APIs'];
+const ESSENTIALS = [
+  'Bare Workflow Walkthrough',
+  'Up and Running',
+  'Supported Expo SDK APIs',
+  'Using Expo client',
+  'Using Expo for web',
+  'Migrating from ExpoKit',
+];
 
 const REACT_NATIVE = [
   // 'REACT NATIVE BASICS',

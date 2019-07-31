@@ -9,9 +9,7 @@ Component to control the app status bar.
 
 It is possible to have multiple `StatusBar` components mounted at the same time. The props will be merged in the order the `StatusBar` components were mounted.
 
-
 ```javascript
-
 <View>
   <StatusBar backgroundColor="blue" barStyle="light-content" />
   <View>
@@ -19,9 +17,7 @@ It is possible to have multiple `StatusBar` components mounted at the same time.
     ...
   </View>
 </View>
-
 ```
-
 
 ### Imperative API
 
@@ -94,8 +90,8 @@ If the status bar is hidden.
 
 The background color of the status bar.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | Android  |
 
 ---
@@ -132,27 +128,24 @@ The transition effect when showing and hiding the status bar using the `hidden` 
 
 ### `setHidden()`
 
-
 ```javascript
 
 static setHidden(hidden: boolean, [animation]: StatusBarAnimation)
 
 ```
 
-
 Show or hide the status bar
 
 **Parameters:**
 
-| Name      | Type                                                  | Required | Description                                                      |
-| --------- | ----------------------------------------------------- | -------- | ---------------------------------------------------------------- |
-| hidden    | boolean                                               | Yes      | Hide the status bar.                                             |
+| Name      | Type                                                   | Required | Description                                                      |
+| --------- | ------------------------------------------------------ | -------- | ---------------------------------------------------------------- |
+| hidden    | boolean                                                | Yes      | Hide the status bar.                                             |
 | animation | [StatusBarAnimation](../statusbar/#statusbaranimation) | No       | Optional animation when changing the status bar hidden property. |
 
 ---
 
 ### `setBarStyle()`
-
 
 ```javascript
 
@@ -160,27 +153,24 @@ static setBarStyle(style: StatusBarStyle, [animated]: boolean)
 
 ```
 
-
 Set the status bar style
 
 **Parameters:**
 
-| Name     | Type                                          | Required | Description               |
-| -------- | --------------------------------------------- | -------- | ------------------------- |
+| Name     | Type                                           | Required | Description               |
+| -------- | ---------------------------------------------- | -------- | ------------------------- |
 | style    | [StatusBarStyle](../statusbar/#statusbarstyle) | Yes      | Status bar style to set   |
-| animated | boolean                                       | No       | Animate the style change. |
+| animated | boolean                                        | No       | Animate the style change. |
 
 ---
 
 ### `setNetworkActivityIndicatorVisible()`
-
 
 ```javascript
 
 static setNetworkActivityIndicatorVisible(visible: boolean)
 
 ```
-
 
 Control the visibility of the network activity indicator. iOS-only.
 
@@ -194,13 +184,11 @@ Control the visibility of the network activity indicator. iOS-only.
 
 ### `setBackgroundColor()`
 
-
 ```javascript
 
 static setBackgroundColor(color: string, [animated]: boolean)
 
 ```
-
 
 Set the background color for the status bar. Android-only
 
@@ -215,13 +203,11 @@ Set the background color for the status bar. Android-only
 
 ### `setTranslucent()`
 
-
 ```javascript
 
 static setTranslucent(translucent: boolean)
 
 ```
-
 
 Control the translucency of the status bar. Android-only.
 
@@ -243,10 +229,10 @@ Status bar style
 
 **Constants:**
 
-| Value         | Description                                                          |
-| ------------- | -------------------------------------------------------------------- |
-| default       | Default status bar style (dark for iOS, light for Android)           |
-| light-content | Dark background, white texts and icons                               |
+| Value         | Description                                                           |
+| ------------- | --------------------------------------------------------------------- |
+| default       | Default status bar style (dark for iOS, light for Android)            |
+| light-content | Dark background, white texts and icons                                |
 | dark-content  | Light background, dark texts and icons (requires API\>=23 on Android) |
 
 ---
@@ -266,4 +252,3 @@ Status bar animation
 | none  | No animation    |
 | fade  | Fade animation  |
 | slide | Slide animation |
-
