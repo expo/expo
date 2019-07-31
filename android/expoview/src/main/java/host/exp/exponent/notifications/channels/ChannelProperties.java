@@ -3,119 +3,54 @@ package host.exp.exponent.notifications.channels;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 @Table(databaseName = ChannelPropertiesDatabase.NAME)
-public class ChannelProperties {
+public class ChannelProperties extends BaseModel {
 
   @PrimaryKey
   @Column
   public String channelId;
 
   @Column
-  public String channelName;
+  public String serializedChannel;
 
-  @Column
-  public Integer importance;
-
-  @Column(typeConverter = ArrayConverter.class)
-  public ArrayList vibrate;
-
-  @Column
-  public boolean badge;
-
-  @Column
-  public boolean sound;
-
-
-  public static ChannelProperties createChannelProperties(String channelId, JSONObject jsonObject) {
-
-  }
-  
-  public static ChannelProperties findChannelPropertiesForChannelId(String channelId) {
+  public ChannelProperties() {
 
   }
 
-  
-  public void save() {
-
+  public ChannelProperties(ChannelPOJO channelPOJO) {
+    channelId = channelPOJO.getChannelId();
+    try {
+      ByteArrayOutputStream bo = new ByteArrayOutputStream();
+      ObjectOutputStream so = new ObjectOutputStream(bo);
+      so.writeObject(channelPOJO);
+      so.flush();
+      serializedChannel = bo.toString();
+    } catch (Exception e) {
+      System.out.println(e);
+    }
   }
 
-  
-  public void delete() {
-
-  }
-
-  
-  public String getChannelId() {
+  public ChannelPOJO toChannelPOJO() {
+    try {
+      byte b[] = serializedChannel.getBytes();
+      ByteArrayInputStream bi = new ByteArrayInputStream(b);
+      ObjectInputStream si = new ObjectInputStream(bi);
+      ChannelPOJO channelPOJO = (ChannelPOJO) si.readObject();
+      return channelPOJO;
+    } catch (Exception e) {
+      System.out.println(e);
+    }
     return null;
   }
 
-  
-  public Long[] getVibrate() {
-    return new Long[0];
-  }
-
-  
-  public String getChannelName() {
-    return null;
-  }
-
-  
-  public int getImportance() {
-    return 0;
-  }
-
-  
-  public boolean getSound() {
-    return false;
-  }
-
-  
-  public boolean getBadge() {
-    return false;
-  }
-
-  
-  public String getChannelDescription() {
-    return null;
-  }
-
-  
-  public void setChannelId(String channelId) {
-
-  }
-
-  
-  public void setVibrate(Long[] vibrate) {
-
-  }
-
-  
-  public void setChannelName(String channelName) {
-
-  }
-
-  
-  public void setImportance(int importance) {
-
-  }
-
-  
-  public void setSound(boolean sound) {
-
-  }
-
-  
-  public void setBadge(boolean badge) {
-
-  }
-
-  
-  public void setChannelDescription(String channelDescription) {
-
-  }
 }
