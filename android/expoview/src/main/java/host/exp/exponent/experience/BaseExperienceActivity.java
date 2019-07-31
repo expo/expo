@@ -4,9 +4,8 @@ package host.exp.exponent.experience;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.os.Process;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -62,6 +61,9 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
   @Inject
   ExponentManifest mExponentManifest;
+
+  @Inject
+  protected ExpoKernelServiceRegistry mKernelServiceRegistry;
 
   private PermissionsHelper mPermissionsHelper;
 
@@ -282,8 +284,27 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     }
   }
 
+  // for getting scope permission
   @Override
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+  public int checkPermission(final String permission, final int pid, final int uid) {
+    int globalResult = super.checkPermission(permission, pid, uid);
+
+    if (globalResult == PackageManager.PERMISSION_GRANTED &&
+        mKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
+      return PackageManager.PERMISSION_GRANTED;
+    } else {
+      return PackageManager.PERMISSION_DENIED;
+    }
+  }
+
+  // for getting global permission
+  @Override
+  public int checkSelfPermission(String permission) {
+    return super.checkPermission(permission, Process.myPid(), Process.myUid());
+  }
+
+  @Override
+  public void onRequestPermissionsResult(final int requestCode, final String permissions[], final int[] grantResults) {
     if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
       mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
       mPermissionsHelper = null;
@@ -307,7 +328,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     }, permissions, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY));
   }
 
-  private static int[] arrayFilled(int with, int length) {
+  private static int[] arrayFilled(final int with, final int length) {
     int[] array = new int[length];
     for (int i = 0; i < length; i++) {
       array[i] = with;
