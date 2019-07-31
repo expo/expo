@@ -56,7 +56,7 @@ public class PermissionsHelper {
     List<String> permissionsToExplain = new ArrayList<>();
     for (String permission : permissions) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-          ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+          /* ask for global permission */ activity.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
         isGranted = false;
         mPermissionsToRequestGlobally.add(permission);
 
