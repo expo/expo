@@ -71,9 +71,9 @@ export async function updateExpoKitAndroidAsync(
   const androidDir = path.join(expoDir, 'android');
 
   // Populate android template files now since we take out the prebuild step later on
-  await spawnAsync('et android-generate-dynamic-macros', [], {
+  await spawnAsync('et', ['android-generate-dynamic-macros'], {
     stdio: 'inherit',
-    cwd: path.join(androidDir, 'app'),
+    cwd: path.resolve(expoDir),
   });
 
   await S3.uploadDirectoriesAsync(BUCKET, key, [

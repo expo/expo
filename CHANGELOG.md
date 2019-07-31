@@ -6,6 +6,16 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 📚 3rd party library updates
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 34.0.0
+
+### 📚 3rd party library updates
+
 - `react-native-gesture-handler` updated from `1.2.1` to `1.3.0`
 - `react-native-branch` updated from `2.2.5` to `3.0.1`
 - `react-native-reanimated` updated from `1.0.1` to `1.1.0`

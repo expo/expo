@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { NativeModules, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { HeaderBackButton, withNavigation, withNavigationFocus } from 'react-navigation';
 
 import Colors from '../constants/Colors';

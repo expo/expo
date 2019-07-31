@@ -11,9 +11,9 @@
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "dependencies": {
-    "expo": "^34.0.0-experiment.8",
+    "expo": "~34.0.3",
     "expokit": "^33.0.3",
-    "expo-in-app-purchases": "^1.0.0",
+    "expo-in-app-purchases": "~6.0.0",
     "react": "16.8.3",
     "react-dom": "^16.8.6",
     "react-native": "0.59.8",
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "babel-preset-expo": "^5.1.1",
-    "expo-yarn-workspaces": "^1.0.0"
+    "expo-yarn-workspaces": "^1.2.0"
   },
   "private": true
 }
