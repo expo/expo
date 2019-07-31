@@ -176,7 +176,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 }'
 ```
 
-The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** This is an example request body that sends two messages:
+The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** This is an example request body that sends four messages:
 
 ```json
 [{
@@ -187,6 +187,12 @@ The HTTP request body must be JSON. It may either be a single message object or 
   "to": "ExponentPushToken[yyyyyyyyyyyyyyyyyyyyyy]",
   "badge": 1,
   "body": "You've got mail"
+}, {
+  "to": [
+    "ExponentPushToken[zzzzzzzzzzzzzzzzzzzzzz]",
+    "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]"
+  ],
+  "body": "Breaking news!"
 }]
 ```
 
@@ -196,12 +202,14 @@ Upon success, the HTTP response will be a JSON object whose `data` field is an a
 {
   "data": [
     {"status": "ok", "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
-    {"status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY}
+    {"status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"},
+    {"status": "ok", "id": "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZ"},
+    {"status": "ok", "id": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
   ]
 }
 ```
 
-If you send a single message that isn't wrapped in an array, the `data` field will be the push ticket also not wrapped in an array.
+If you send a single message that isn't wrapped in an array to a single recipient, the `data` field will be the push ticket also not wrapped in an array.
 
 #### Push tickets
 
@@ -243,9 +251,10 @@ Each message must be a JSON object with the given fields:
 ```javascript
 type PushMessage = {
   /**
-   * An Expo push token specifying the recipient of this message.
+   * An Expo push token or an array of Expo push tokens specifying the recipient(s)
+   * of this message.
    */
-  to: string,
+  to: string | string[],
 
   /**
    * A JSON object delivered to your app. It may be up to about 4KiB; the total
