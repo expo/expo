@@ -4,8 +4,10 @@ package host.exp.exponent.notifications;
 
 public class NotificationConstants {
   public static final int MAX_COLLAPSED_NOTIFICATIONS = 5;
+  public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
   public static final String NOTIFICATION_MESSAGE_KEY = "message"; // deprecated
   public static final String NOTIFICATION_EXPERIENCE_ID_KEY = "experienceId";
+  public static final String NOTIFICATION_EXACT_TIME = "exact";
   public static final String NOTIFICATION_DATA_KEY = "data";
   public static final String NOTIFICATION_ORIGIN_KEY = "origin";
   public static final String NOTIFICATION_ID_KEY = "notificationId";
@@ -30,4 +32,5 @@ public class NotificationConstants {
   public static final String NOTIFICATION_CHANNEL_PRIORITY_HIGH = "high";
   public static final String NOTIFICATION_CHANNEL_PRIORITY_LOW = "low";
   public static final String NOTIFICATION_CHANNEL_PRIORITY_MIN = "min";
+
 }
