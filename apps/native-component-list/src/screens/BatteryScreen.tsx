@@ -43,10 +43,10 @@ export default class BatteryScreen extends React.Component<{}, State> {
   }
 
   _pingBattery = async () => {
-    let batteryLevel = await Battery.getBatteryLevelAsync();
-    let batteryState = await Battery.getBatteryStateAsync();
-    let lowPowerMode = await Battery.isLowPowerModeEnabledAsync();
-    let powerState = await Battery.getPowerStateAsync();
+    const batteryLevel = await Battery.getBatteryLevelAsync();
+    const batteryState = await Battery.getBatteryStateAsync();
+    const lowPowerMode = await Battery.isLowPowerModeEnabledAsync();
+    const powerState = await Battery.getPowerStateAsync();
     this.setState({ batteryLevel, powerState, batteryState, lowPowerMode })
   }
 
