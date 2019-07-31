@@ -5,7 +5,6 @@
   "author": "Expo",
   "license": "MIT",
   "scripts": {
-    "prepare": "yarn workspace expo prepare",
     "postinstall": "expo-yarn-workspaces check-workspace-dependencies && rm -rf node_modules/babel-jest/node_modules/babel-core",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
@@ -13,16 +12,12 @@
   "workspaces": {
     "packages": [
       "apps/*",
+      "apps/test-suite/puppeteer-test",
       "expokit-npm-package",
       "home",
       "packages/*",
       "packages/@unimodules/*",
       "react-native-lab/react-native"
-    ],
-    "nohoist": [
-      "**/@storybook/**",
-      "**/@emotion/**",
-      "apps/storybook/webpack-manifest-plugin"
     ]
   },
   "dependencies": {
@@ -31,9 +26,9 @@
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
-    "eslint": "^5.16.0",
+    "eslint": "^6.0.1",
     "eslint-config-universe": "^2.0.0-alpha.0",
-    "expo-cli": "^2.20.2",
+    "expo-cli": "^2.21.2",
     "expo-yarn-workspaces": "^1.1.0",
     "prettier": "^1.18.2"
   },

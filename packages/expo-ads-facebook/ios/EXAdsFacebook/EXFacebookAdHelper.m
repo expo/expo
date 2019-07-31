@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import "EXFacebookAdHelper.h"
+#import <EXAdsFacebook/EXFacebookAdHelper.h>
 
 @implementation EXFacebookAdHelper
 

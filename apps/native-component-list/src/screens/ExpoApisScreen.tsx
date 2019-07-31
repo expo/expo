@@ -91,6 +91,7 @@ export default class ExpoApisScreen extends React.Component {
       'Battery',
       'BackgroundFetch',
       'Branch',
+      'Brightness',
       'Calendars',
       'Constants',
       'Contacts',

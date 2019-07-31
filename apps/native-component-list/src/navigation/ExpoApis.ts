@@ -6,6 +6,7 @@ import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
 import Battery from '../screens/BatteryScreen';
 import Branch from '../screens/BranchScreen';
+import Brightness from '../screens/BrightnessScreen';
 import Calendars from '../screens/CalendarsScreen';
 import Constants from '../screens/ConstantsScreen';
 import ContactDetail from '../screens/Contacts/ContactDetailScreen';
@@ -72,6 +73,7 @@ const optionalScreens: {
   BackgroundFetch,
   Battery,
   Branch,
+  Brightness,
   DocumentPicker,
   Localization,
   FacebookLogin,

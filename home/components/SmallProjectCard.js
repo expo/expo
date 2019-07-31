@@ -26,7 +26,6 @@ export default class SmallProjectCard extends React.PureComponent {
   render() {
     let {
       hideUsername,
-      likeCount,
       projectName,
       platform,
       projectUrl,
@@ -37,7 +36,6 @@ export default class SmallProjectCard extends React.PureComponent {
     } = this.props;
 
     const isUnlisted = privacy === 'unlisted';
-    const renderLikes = typeof likeCount === 'number' && !isUnlisted;
 
     return (
       <TouchableNativeFeedbackSafe
@@ -70,10 +68,7 @@ export default class SmallProjectCard extends React.PureComponent {
           <View style={styles.projectExtraInfoContainer}>
             <Text
               onPress={username ? this._handlePressUsername : null}
-              style={[
-                styles.projectExtraInfoText,
-                (renderLikes || isUnlisted) && { flexShrink: 4 },
-              ]}
+              style={[styles.projectExtraInfoText, isUnlisted && { flexShrink: 4 }]}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {hideUsername ? slug : username || projectUrl}
@@ -87,15 +82,6 @@ export default class SmallProjectCard extends React.PureComponent {
                 </View>
 
                 <Text style={styles.unlistedText}>Unlisted</Text>
-              </View>
-            )}
-
-            {renderLikes && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.bullet} />
-                <Text onPress={() => {}} numberOfLines={1} style={styles.projectExtraInfoText}>
-                  {likeCount} {likeCount === 1 ? 'like' : 'likes'}
-                </Text>
               </View>
             )}
           </View>
@@ -155,9 +141,8 @@ function PlatformIcon({ platform }) {
   return <View style={styles.platformIconContainer}>{icon}</View>;
 }
 
-// note(brentvatne): we need to know this value so we can set the width of
-// extra info container so it properly sizes the url / likes, otherwise it
-// just overflows. I think this is a yoga bug
+// note(brentvatne): we need to know this value so we can set the width of extra info container so
+// it properly sizes the url, otherwise it just overflows. I think this is a yoga bug
 const IconPaddingLeft = 15;
 const IconPaddingRight = 10;
 const IconWidth = 40;

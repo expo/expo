@@ -12,17 +12,7 @@ public class BatteryStateReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-    BatteryModule.BatteryState bs;
-    if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
-      bs = (BatteryModule.BatteryState.CHARGING);
-    } else if (status == BatteryManager.BATTERY_STATUS_FULL) {
-      bs = (BatteryModule.BatteryState.FULL);
-    } else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
-      bs = (BatteryModule.BatteryState.UNPLUGGED);
-    }
-    else{
-      bs = (BatteryModule.BatteryState.UNKNOWN);
-    }
+    BatteryModule.BatteryState bs = BatteryModule.batteryStatusNativeToJS(status);
     BatteryModule.onBatteryStateChange(bs);
   }
 }

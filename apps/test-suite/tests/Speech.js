@@ -1,13 +1,12 @@
 'use strict';
-
 import * as Speech from 'expo-speech';
-import { Platform, NativeModules } from 'react-native';
+import { Platform } from 'react-native';
 
+import ExponentTest from '../ExponentTest';
 import { waitFor } from './helpers';
 
 export const name = 'Speech';
 
-const { ExponentTest } = NativeModules;
 const longTextToSpeak = 'One ring to rule them all.';
 const shortTextToSpeak = 'Hi!';
 
@@ -18,13 +17,19 @@ const shortTextToSpeak = 'Hi!';
 
 export function test(t) {
   // NOTE(2018-03-08): These tests are failing on iOS; disable for CI
-  const unreliablyDescribe = Platform.OS === 'ios' && ExponentTest.isInCI ? t.xdescribe : t.describe;
+  const unreliablyDescribe =
+    Platform.OS !== 'android' && ExponentTest.isInCI ? t.xdescribe : t.describe;
   unreliablyDescribe('Speech', () => {
     t.describe('Speech.speak()', () => {
       t.it('calls onStart', async () => {
         const onStart = t.jasmine.createSpy('onStart');
         Speech.speak(shortTextToSpeak, { onStart });
-        await waitFor(500);
+        await waitFor(
+          Platform.select({
+            web: 1000,
+            default: 500,
+          })
+        );
         t.expect(onStart).toHaveBeenCalled();
         Speech.stop();
       });
@@ -32,12 +37,17 @@ export function test(t) {
       t.it('calls onDone', async () => {
         const onDone = t.jasmine.createSpy('onDone');
         Speech.speak(shortTextToSpeak, { onDone });
-        await waitFor(1000);
+        await waitFor(
+          Platform.select({
+            web: 1500,
+            default: 1000,
+          })
+        );
         t.expect(onDone).toHaveBeenCalled();
         Speech.stop();
       });
 
-      if (Platform.OS === 'android') {
+      if (Platform.OS !== 'ios') {
         t.it("doesn't call onError if not needed", async () => {
           const onError = t.jasmine.createSpy('onError');
           const language = 'en-US';

@@ -6,7 +6,7 @@ import xcode from 'xcode';
 import glob from 'glob-promise';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
 

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI34_0_0/EXContacts/ABI34_0_0EXContacts/ABI34_0_0EXContacts+Serialization.h

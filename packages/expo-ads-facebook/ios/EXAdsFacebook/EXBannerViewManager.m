@@ -1,6 +1,6 @@
-#import "EXBannerViewManager.h"
-#import "EXBannerView.h"
-#import "EXFacebookAdHelper.h"
+#import <EXAdsFacebook/EXBannerViewManager.h>
+#import <EXAdsFacebook/EXBannerView.h>
+#import <EXAdsFacebook/EXFacebookAdHelper.h>
 
 @implementation EXBannerViewManager
 

@@ -11,7 +11,6 @@ If this button doesn't look right for your app, you can build your own button us
 
 Example usage:
 
-
 ```javascript
 
 import { Button } from 'react-native';
@@ -26,16 +25,15 @@ import { Button } from 'react-native';
 
 ```
 
-
 ### Props
 
-* [`onPress`](../button/#onpress)
-* [`title`](../button/#title)
-* [`accessibilityLabel`](../button/#accessibilitylabel)
-* [`color`](../button/#color)
-* [`disabled`](../button/#disabled)
-* [`testID`](../button/#testid)
-* [`hasTVPreferredFocus`](../button/#hastvpreferredfocus)
+- [`onPress`](../button/#onpress)
+- [`title`](../button/#title)
+- [`accessibilityLabel`](../button/#accessibilitylabel)
+- [`color`](../button/#color)
+- [`disabled`](../button/#disabled)
+- [`testID`](../button/#testid)
+- [`hasTVPreferredFocus`](../button/#hastvpreferredfocus)
 
 ---
 
@@ -77,8 +75,8 @@ Text to display for blindness accessibility features
 
 Color of the text (iOS), or background color of the button (Android)
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -110,4 +108,3 @@ _(Apple TV only)_ TV preferred focus (see documentation for the View component).
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
-

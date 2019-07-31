@@ -8,6 +8,8 @@ Provides a way to launch android intents. e.g. - opening a specific settings scr
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-intent-launcher`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-intent-launcher).
 
+> **Note**: Not compatible with web.
+
 ## API
 
 ```js
@@ -65,5 +67,5 @@ A promise resolving to an object of type [IntentResult](#typeintentresult).
 import * as IntentLauncher from 'expo-intent-launcher';
 
 // Open location settings
-IntentLauncher.startActivityAsync(IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS);
+IntentLauncher.startActivityAsync(IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS);
 ```

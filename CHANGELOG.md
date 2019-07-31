@@ -16,16 +16,22 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🛠 Breaking changes
 
 - Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
+- Removed `Calendar.DEFAULT` and replaced it with `null`. ([#4836](https://github.com/expo/expo/pull/4836) by [@lukmccall](https://github.com/lukmccall))
+- `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
 - Added `fallbackLabel` option to `LocalAuthentication.authenticateAsync` on iOS which allows to customize a title of the fallback button when the system doesn't recognize the user and asks to authenticate via device passcode. ([#4612](https://github.com/expo/expo/pull/4612) by [@changLiuUNSW](https://github.com/changLiuUNSW))
 - added `native` mode for Android SplashScreen on standalone apps by [@bbarthec](https://github.com/bbarthec) ([#4567](https://github.com/expo/expo/pull/4567))
+- added support for video recording in `ImagePicker.launchCameraAsync`. ([#4903](https://github.com/expo/expo/pull/4903) by [@lukmccall](https://github.com/lukmccall))
+- added an option which allows displaying notifications in foreground on iOS by [@hesyifei](https://github.com/hesyifei) ([#4802](https://github.com/expo/expo/pull/4802))
 
 ### 🐛 Bug fixes
 
 - fixed `BarCodeScanner` blocking UI when defining custom `barCodeTypes` on iOS by [@sjchmiela](https://github.com/sjchmiela)
 - fixed picking images over 2000px on Android by [@bbarthec](https://github.com/bbarthec) ([#4731](https://github.com/expo/expo/pull/4731))
+- fixed `Calendar.getEventsAsync` crashing if `calendarId` is SQL keyword by [@lukmccall](https://github.com/lukmccall) ([#4836](https://github.com/expo/expo/pull/4836))
+- fixed `BOOL` interpretation on 32-bit iOS devices by [@lukmccall](https://github.com/lukmccall) ([#4862](https://github.com/expo/expo/pull/4862))
 
 ## 33.0.0
 
@@ -80,6 +86,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added support for custom poster styles in `Video` by [@sjchmiela](https://github.com/sjchmiela) ([#4165](https://github.com/expo/expo/issues/4165))
 - added `pausesUpdatesAutomatically` option to automatically pause background location updates based on the `activityType` by [@tsapeta](https://github.com/tsapeta) ([#4167](https://github.com/expo/expo/pull/4167))
 - added ability to load fonts by remote URI by [@seekshiva](https://github.com/seekshiva) ([#2745](https://github.com/expo/expo/pull/2745))
+- added support for 64 bit platforms by [@wkozyra95](https://github.com/wkozyra95) ([#4565](https://github.com/expo/expo/pull/4565))
 
 ### 🐛 Bug fixes
 

@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <GoogleMobileVision/GoogleMobileVision.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 @interface EXFaceEncoder : NSObject
 

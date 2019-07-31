@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Firebase.h"
+#import <Firebase/Firebase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

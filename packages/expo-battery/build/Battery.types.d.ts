@@ -1,16 +1,22 @@
 export declare type PowerState = {
     batteryLevel?: number;
-    batteryState?: string;
+    batteryState?: BatteryState;
     lowPowerMode?: boolean;
 };
+export declare enum BatteryState {
+    UNKNOWN = 0,
+    UNPLUGGED = 1,
+    CHARGING = 2,
+    FULL = 3
+}
 export declare type batteryLevel = {
     batteryLevel: number;
 };
 export declare type batteryState = {
-    batteryState: string;
+    batteryState: batteryState;
 };
 export declare type lowPowerMode = {
-    lowPowerMode: string;
+    lowPowerMode: boolean;
 };
 export declare type BatteryLevelUpdateCallback = (batteryLevel: batteryLevel) => void;
 export declare type BatteryStateUpdateCallback = (batteryState: batteryState) => void;

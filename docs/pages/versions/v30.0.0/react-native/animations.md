@@ -15,37 +15,35 @@ The [`Animated`](../animated/) API is designed to make it very easy to concisely
 
 For example, a container view that fades in when it is mounted may look like this:
 
-
 ```javascript
-
 import React from 'react';
 import { Animated, Text, View } from 'react-native';
 
 class FadeInView extends React.Component {
   state = {
-    fadeAnim: new Animated.Value(0),  // Initial value for opacity: 0
-  }
+    fadeAnim: new Animated.Value(0), // Initial value for opacity: 0
+  };
 
   componentDidMount() {
-    Animated.timing(                  // Animate over time
-      this.state.fadeAnim,            // The animated value to drive
+    Animated.timing(
+      // Animate over time
+      this.state.fadeAnim, // The animated value to drive
       {
-        toValue: 1,                   // Animate to opacity: 1 (opaque)
-        duration: 10000,              // Make it take a while
+        toValue: 1, // Animate to opacity: 1 (opaque)
+        duration: 10000, // Make it take a while
       }
-    ).start();                        // Starts the animation
+    ).start(); // Starts the animation
   }
 
   render() {
     let { fadeAnim } = this.state;
 
     return (
-      <Animated.View                 // Special animatable View
+      <Animated.View // Special animatable View
         style={{
           ...this.props.style,
-          opacity: fadeAnim,         // Bind opacity to animated value
-        }}
-      >
+          opacity: fadeAnim, // Bind opacity to animated value
+        }}>
         {this.props.children}
       </Animated.View>
     );
@@ -56,17 +54,15 @@ class FadeInView extends React.Component {
 export default class App extends React.Component {
   render() {
     return (
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <FadeInView style={{width: 250, height: 50, backgroundColor: 'powderblue'}}>
-          <Text style={{fontSize: 28, textAlign: 'center', margin: 10}}>Fading in</Text>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <FadeInView style={{ width: 250, height: 50, backgroundColor: 'powderblue' }}>
+          <Text style={{ fontSize: 28, textAlign: 'center', margin: 10 }}>Fading in</Text>
         </FadeInView>
       </View>
-    )
+    );
   }
 }
-
 ```
-
 
 Let's break down what's happening here. In the `FadeInView` constructor, a new `Animated.Value` called `fadeAnim` is initialized as part of `state`. The opacity property on the `View` is mapped to this animated value. Behind the scenes, the numeric value is extracted and used to set opacity.
 
@@ -85,17 +81,13 @@ By default, `timing` will use a easeInOut curve that conveys gradual acceleratio
 
 For example, if we want to create a 2-second long animation of an object that slightly backs up before moving to its final position:
 
-
 ```javascript
-
 Animated.timing(this.state.xPosition, {
   toValue: 100,
   easing: Easing.back(),
   duration: 2000,
 }).start();
-
 ```
-
 
 Take a look at the [Configuring animations](../animated/#configuring-animations) section of the `Animated` API reference to learn more about all the config parameters supported by the built-in animations.
 
@@ -105,20 +97,18 @@ Animations can be combined and played in sequence or in parallel. Sequential ani
 
 For example, the following animation coasts to a stop, then it springs back while twirling in parallel:
 
-
 ```javascript
-
 Animated.sequence([
   // decay, then spring to start and twirl
   Animated.decay(position, {
     // coast to a stop
-    velocity: {x: gestureState.vx, y: gestureState.vy}, // velocity from gesture release
+    velocity: { x: gestureState.vx, y: gestureState.vy }, // velocity from gesture release
     deceleration: 0.997,
   }),
   Animated.parallel([
     // after decay, in parallel:
     Animated.spring(position, {
-      toValue: {x: 0, y: 0}, // return to start
+      toValue: { x: 0, y: 0 }, // return to start
     }),
     Animated.timing(twirl, {
       // and twirl
@@ -126,9 +116,7 @@ Animated.sequence([
     }),
   ]),
 ]).start(); // start the sequence group
-
 ```
-
 
 If one animation is stopped or interrupted, then all other animations in the group are also stopped. `Animated.parallel` has a `stopTogether` option that can be set to `false` to disable this.
 
@@ -140,18 +128,14 @@ You can [combine two animated values](../animated/#combining-animated-values) vi
 
 There are some cases where an animated value needs to invert another animated value for calculation. An example is inverting a scale (2x --> 0.5x):
 
-
 ```javascript
-
 const a = new Animated.Value(1);
 const b = Animated.divide(1, a);
 
 Animated.spring(a, {
   toValue: 2,
 }).start();
-
 ```
-
 
 ### Interpolation
 
@@ -159,19 +143,14 @@ Each property can be run through an interpolation first. An interpolation maps i
 
 A simple mapping to convert a 0-1 range to a 0-100 range would be:
 
-
 ```javascript
-
 value.interpolate({
   inputRange: [0, 1],
   outputRange: [0, 100],
 });
-
 ```
 
-
 For example, you may want to think about your `Animated.Value` as going from 0 to 1, but animate the position from 150px to 0px and the opacity from 0 to 1. This can easily be done by modifying `style` from the example above like so:
-
 
 ```javascript
 
@@ -187,22 +166,16 @@ For example, you may want to think about your `Animated.Value` as going from 0 t
 
 ```
 
-
 [`interpolate()`](../animated/#interpolate) supports multiple range segments as well, which is handy for defining dead zones and other handy tricks. For example, to get an negation relationship at -300 that goes to 0 at -100, then back up to 1 at 0, and then back down to zero at 100 followed by a dead-zone that remains at 0 for everything beyond that, you could do:
 
-
 ```javascript
-
 value.interpolate({
   inputRange: [-300, -100, 0, 100, 101],
   outputRange: [300, 0, 1, 0, 0],
 });
-
 ```
 
-
 Which would map like so:
-
 
 ```javascript
 
@@ -221,19 +194,14 @@ Input | Output
 
 ```
 
-
 `interpolate()` also supports mapping to strings, allowing you to animate colors as well as values with units. For example, if you wanted to animate a rotation you could do:
 
-
 ```javascript
-
 value.interpolate({
   inputRange: [0, 360],
   outputRange: ['0deg', '360deg'],
 });
-
 ```
-
 
 `interpolate()` also supports arbitrary easing functions, many of which are already implemented in the [`Easing`](../easing/) module. `interpolate()` also has configurable behavior for extrapolating the `outputRange`. You can set the extrapolation by setting the `extrapolate`, `extrapolateLeft`, or `extrapolateRight` options. The default value is `extend` but you can use `clamp` to prevent the output value from exceeding `outputRange`.
 
@@ -241,19 +209,15 @@ value.interpolate({
 
 Animated values can also track other values. Just set the `toValue` of an animation to another animated value instead of a plain number. For example, a "Chat Heads" animation like the one used by Messenger on Android could be implemented with a `spring()` pinned on another animated value, or with `timing()` and a `duration` of 0 for rigid tracking. They can also be composed with interpolations:
 
-
 ```javascript
-
-Animated.spring(follower, {toValue: leader}).start();
+Animated.spring(follower, { toValue: leader }).start();
 Animated.timing(opacity, {
   toValue: pan.x.interpolate({
     inputRange: [0, 300],
     outputRange: [1, 0],
   }),
 }).start();
-
 ```
-
 
 The `leader` and `follower` animated values would be implemented using `Animated.ValueXY()`. `ValueXY` is a handy way to deal with 2D interactions, such as panning or dragging. It is a simple wrapper that basically contains two `Animated.Value` instances and some helper functions that call through to them, making `ValueXY` a drop-in replacement for `Value` in many cases. It allows us to track both x and y values in the example above.
 
@@ -262,7 +226,6 @@ The `leader` and `follower` animated values would be implemented using `Animated
 Gestures, like panning or scrolling, and other events can map directly to animated values using [`Animated.event`](../animated/#event). This is done with a structured map syntax so that values can be extracted from complex event objects. The first level is an array to allow mapping across multiple args, and that array contains nested objects.
 
 For example, when working with horizontal scrolling gestures, you would do the following in order to map `event.nativeEvent.contentOffset.x` to `scrollX` (an `Animated.Value`):
-
 
 ```javascript
 
@@ -278,9 +241,7 @@ For example, when working with horizontal scrolling gestures, you would do the f
 
 ```
 
-
 When using `PanResponder`, you could use the following code to extract the x and y positions from `gestureState.dx` and `gestureState.dy`. We use a `null` in the first position of the array, as we are only interested in the second argument passed to the `PanResponder` handler, which is the `gestureState`.
-
 
 ```javascript
 
@@ -293,13 +254,12 @@ onPanResponderMove={Animated.event(
 
 ```
 
-
 ### Responding to the current animation value
 
 You may notice that there is no obvious way to read the current value while animating. This is because the value may only be known in the native runtime due to optimizations. If you need to run JavaScript in response to the current value, there are two approaches:
 
-* `spring.stopAnimation(callback)` will stop the animation and invoke `callback` with the final value. This is useful when making gesture transitions.
-* `spring.addListener(callback)` will invoke `callback` asynchronously while the animation is running, providing a recent value. This is useful for triggering state changes, for example snapping a bobble to a new option as the user drags it closer, because these larger state changes are less sensitive to a few frames of lag compared to continuous gestures like panning which need to run at 60 fps.
+- `spring.stopAnimation(callback)` will stop the animation and invoke `callback` with the final value. This is useful when making gesture transitions.
+- `spring.addListener(callback)` will invoke `callback` asynchronously while the animation is running, providing a recent value. This is useful for triggering state changes, for example snapping a bobble to a new option as the user drags it closer, because these larger state changes are less sensitive to a few frames of lag compared to continuous gestures like panning which need to run at 60 fps.
 
 `Animated` is designed to be fully serializable so that animations can be run in a high performance way, independent of the normal JavaScript event loop. This does influence the API, so keep that in mind when it seems a little trickier to do something compared to a fully synchronous system. Check out `Animated.Value.addListener` as a way to work around some of these limitations, but use it sparingly since it might have performance implications in the future.
 
@@ -309,42 +269,34 @@ The `Animated` API is designed to be serializable. By using the [native driver](
 
 Using the native driver for normal animations is quite simple. Just add `useNativeDriver: true` to the animation config when starting it.
 
-
 ```javascript
-
 Animated.timing(this.state.animatedValue, {
   toValue: 1,
   duration: 500,
   useNativeDriver: true, // <-- Add this
 }).start();
-
 ```
-
 
 Animated values are only compatible with one driver so if you use native driver when starting an animation on a value, make sure every animation on that value also uses the native driver.
 
 The native driver also works with `Animated.event`. This is specially useful for animations that follow the scroll position as without the native driver, the animation will always run a frame behind the gesture due to the async nature of React Native.
 
-
 ```javascript
-
 <Animated.ScrollView // <-- Use the Animated ScrollView wrapper
   scrollEventThrottle={1} // <-- Use 1 here to make sure no events are ever missed
   onScroll={Animated.event(
     [
       {
         nativeEvent: {
-          contentOffset: {y: this.state.animatedValue},
+          contentOffset: { y: this.state.animatedValue },
         },
       },
     ],
-    {useNativeDriver: true} // <-- Add this
+    { useNativeDriver: true } // <-- Add this
   )}>
   {content}
 </Animated.ScrollView>
-
 ```
-
 
 You can see the native driver in action by running the [RNTester app](https://github.com/facebook/react-native/blob/master/RNTester/), then loading the Native Animated Example. You can also take a look at the [source code](https://github.com/facebook/react-native/blob/master/RNTester/js/NativeAnimationsExample.js) to learn how these examples were produced.
 
@@ -358,28 +310,24 @@ When an animation is running, it can prevent `VirtualizedList` components from r
 
 While using transform styles such as `rotateY`, `rotateX`, and others ensure the transform style `perspective` is in place. At this time some animations may not render on Android without it. Example below.
 
-
 ```javascript
-
 <Animated.View
   style={{
     transform: [
-      {scale: this.state.scale},
-      {rotateY: this.state.rotateY},
-      {perspective: 1000}, // without this line this Animation will not render on Android while working fine on iOS
+      { scale: this.state.scale },
+      { rotateY: this.state.rotateY },
+      { perspective: 1000 }, // without this line this Animation will not render on Android while working fine on iOS
     ],
   }}
 />
-
 ```
-
 
 ### Additional examples
 
 The RNTester app has various examples of `Animated` in use:
 
-* [AnimatedGratuitousApp](https://github.com/facebook/react-native/tree/master/RNTester/js/AnimatedGratuitousApp)
-* [NativeAnimationsExample](https://github.com/facebook/react-native/blob/master/RNTester/js/NativeAnimationsExample.js)
+- [AnimatedGratuitousApp](https://github.com/facebook/react-native/tree/master/RNTester/js/AnimatedGratuitousApp)
+- [NativeAnimationsExample](https://github.com/facebook/react-native/blob/master/RNTester/js/NativeAnimationsExample.js)
 
 ## `LayoutAnimation` API
 
@@ -389,18 +337,12 @@ Note that although `LayoutAnimation` is very powerful and can be quite useful, i
 
 Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
 
-
 ```javascript
-
 UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
-
 ```
 
-
-
 ```javascript
-
 import React from 'react';
 import {
   NativeModules,
@@ -425,13 +367,13 @@ export default class App extends React.Component {
   _onPress = () => {
     // Animate the update
     LayoutAnimation.spring();
-    this.setState({w: this.state.w + 15, h: this.state.h + 15})
-  }
+    this.setState({ w: this.state.w + 15, h: this.state.h + 15 });
+  };
 
   render() {
     return (
       <View style={styles.container}>
-        <View style={[styles.box, {width: this.state.w, height: this.state.h}]} />
+        <View style={[styles.box, { width: this.state.w, height: this.state.h }]} />
         <TouchableOpacity onPress={this._onPress}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>Press me!</Text>
@@ -464,9 +406,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 ```
-
 
 This example uses a preset value, you can customize the animations as you need, see [LayoutAnimation.js](https://github.com/facebook/react-native/blob/master/Libraries/LayoutAnimation/LayoutAnimation.js) for more information.
 
@@ -483,4 +423,3 @@ As mentioned [in the Direct Manipulation section](../direct-manipulation/), `set
 We could use this in the Rebound example to update the scale - this might be helpful if the component that we are updating is deeply nested and hasn't been optimized with `shouldComponentUpdate`.
 
 If you find your animations with dropping frames (performing below 60 frames per second), look into using `setNativeProps` or `shouldComponentUpdate` to optimize them. Or you could run the animations on the UI thread rather than the JavaScript thread [with the useNativeDriver option](http://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html). You may also want to defer any computationally intensive work until after animations are complete, using the [InteractionManager](../interactionmanager/). You can monitor the frame rate by using the In-App Developer Menu "FPS Monitor" tool.
-

@@ -11,21 +11,15 @@ The selected index can be changed on the fly by assigning the selectedIndex prop
 
 ## Example
 
-
 ```javascript
-
-
 <SegmentedControlIOS
   values={['One', 'Two']}
   selectedIndex={this.state.selectedIndex}
-  onChange={(event) => {
-    this.setState({selectedIndex: event.nativeEvent.selectedSegmentIndex});
+  onChange={event => {
+    this.setState({ selectedIndex: event.nativeEvent.selectedSegmentIndex });
   }}
 />
-
-
 ```
-
 
 <center><img src="https://facebook.github.io/react-native/docs/assets/SegmentedControlIOS/example.gif" width="360" /></center>
 
@@ -120,4 +114,3 @@ The labels for the control's segment buttons, in order.
 | Type            | Required |
 | --------------- | -------- |
 | array of string | No       |
-
