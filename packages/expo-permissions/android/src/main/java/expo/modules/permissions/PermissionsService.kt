@@ -3,6 +3,7 @@ package expo.modules.permissions
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.support.v4.content.ContextCompat
 import com.facebook.react.modules.core.PermissionAwareActivity
 
 import org.unimodules.core.ModuleRegistry
@@ -13,23 +14,27 @@ import org.unimodules.interfaces.permissions.Permissions
 private const val PERMISSIONS_REQUEST: Int = 13
 
 open class PermissionsService(context: Context): InternalModule, Permissions {
-  private var mPermissions: Permissions? = null
   protected val mContext: Context = context
   private var mActivityProvider: ActivityProvider? = null
 
   override fun getExportedInterfaces(): List<Class<out Any>>
-      = listOf<Class<out Any>>(Permissions::class.java)
+    = listOf<Class<out Any>>(Permissions::class.java)
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mPermissions = moduleRegistry.getModule(Permissions::class.java)
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
   }
 
   override fun getPermissions(permissions: Array<String>): IntArray
     = IntArray(permissions.size) { i -> getPermission(permissions[i]) }
 
-  override fun getPermission(permission: String): Int
-    = mPermissions?.getPermission(permission) ?: PackageManager.PERMISSION_DENIED
+  override fun getPermission(permission: String): Int {
+    val currentActivity = mActivityProvider?.currentActivity
+
+    if (currentActivity != null && currentActivity is PermissionAwareActivity) {
+      return ContextCompat.checkSelfPermission(currentActivity, permission)
+    }
+    return PackageManager.PERMISSION_DENIED
+  }
 
   override fun askForPermissions(permissions: Array<String>, listener: Permissions.PermissionsRequestListener) {
     val currentActivity = mActivityProvider?.currentActivity

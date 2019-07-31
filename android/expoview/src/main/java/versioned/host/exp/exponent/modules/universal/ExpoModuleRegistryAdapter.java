@@ -46,9 +46,6 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new ScopedRotationVectorSensorService(experienceId));
     moduleRegistry.registerInternalModule(new SharedCookiesDataSourceFactoryProvider());
 
-    // Overriding expo-permissions/PermissionsService -- binding checks with kernel services
-    moduleRegistry.registerInternalModule(new PermissionsServiceBinding(scopedContext, experienceId));
-
     // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
     moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
 
