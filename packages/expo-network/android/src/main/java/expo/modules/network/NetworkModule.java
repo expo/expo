@@ -134,6 +134,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
         NetworkStateType mConnectionType = getConnectionType(netInfo);
         result.putString("type", mConnectionType.getValue());
         result.putBoolean("isConnected", !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"));
+        promise.resolve(result);
       } catch (Exception e) {
         promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e);
       }
