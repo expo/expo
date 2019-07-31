@@ -22,7 +22,7 @@
 {
   self = [super init];
   if (self) {
-    _type = @"unknown";
+    _type = EXNetworkTypeUnknown;
   }
   return self;
 }
@@ -84,16 +84,16 @@ UM_EXPORT_METHOD_AS(getNetworkStateAsync,
     
   if ((flags & kSCNetworkReachabilityFlagsReachable) == 0 ||
       (flags & kSCNetworkReachabilityFlagsConnectionRequired) != 0) {
-    _type = @"none";
+    _type = EXNetworkTypeNone;
   }
   
 #if !TARGET_OS_TV
   else if ((flags & kSCNetworkReachabilityFlagsIsWWAN) != 0) {
-    _type = @"cellular";
+    _type = EXNetworkTypeCellular;
   }
 #endif
   else {
-    _type = @"wifi";
+    _type = EXNetworkTypeWifi;
   }
   
   resolve([self type]);
