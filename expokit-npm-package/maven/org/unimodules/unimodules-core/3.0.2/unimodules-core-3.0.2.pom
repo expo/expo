@@ -4,6 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.unimodules</groupId>
   <artifactId>unimodules-core</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.2</version>
   <packaging>aar</packaging>
 </project>

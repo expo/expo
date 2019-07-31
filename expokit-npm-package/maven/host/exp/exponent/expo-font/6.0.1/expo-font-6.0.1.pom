@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>host.exp.exponent</groupId>
   <artifactId>expo-font</artifactId>
-  <version>6.0.0</version>
+  <version>6.0.1</version>
   <packaging>aar</packaging>
   <dependencies>
     <dependency>
       <groupId>org.unimodules</groupId>
       <artifactId>unimodules-core</artifactId>
-      <version>3.0.0</version>
+      <version>3.0.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
