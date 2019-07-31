@@ -254,7 +254,7 @@ type PushMessage = {
    * An Expo push token or an array of Expo push tokens specifying the recipient(s)
    * of this message.
    */
-  to: string | [string],
+  to: string | string[],
 
   /**
    * A JSON object delivered to your app. It may be up to about 4KiB; the total
