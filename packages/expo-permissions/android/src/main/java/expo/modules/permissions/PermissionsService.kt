@@ -1,7 +1,5 @@
 package expo.modules.permissions
 
-
-import android.content.Context
 import android.content.pm.PackageManager
 import android.support.v4.content.ContextCompat
 import com.facebook.react.modules.core.PermissionAwareActivity
@@ -13,8 +11,7 @@ import org.unimodules.interfaces.permissions.Permissions
 
 private const val PERMISSIONS_REQUEST: Int = 13
 
-open class PermissionsService(context: Context): InternalModule, Permissions {
-  protected val mContext: Context = context
+class PermissionsService: InternalModule, Permissions {
   private var mActivityProvider: ActivityProvider? = null
 
   override fun getExportedInterfaces(): List<Class<out Any>>

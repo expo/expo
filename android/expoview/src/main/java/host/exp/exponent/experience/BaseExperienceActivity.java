@@ -311,7 +311,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     }
   }
 
-
   @Override
   public void requestPermissions(final String[] permissions, final int requestCode, final PermissionListener listener) {
     mPermissionsHelper = new PermissionsHelper(mExperienceId);

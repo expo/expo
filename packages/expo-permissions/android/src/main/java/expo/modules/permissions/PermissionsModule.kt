@@ -11,7 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.app.NotificationManagerCompat
+import expo.modules.permissions.requesters.*
 
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
@@ -24,20 +24,20 @@ import org.unimodules.interfaces.permissions.Permissions
 
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+import kotlin.properties.Delegates
 
-private const val EXPIRES_KEY = "expires"
-private const val STATUS_KEY = "status"
-private const val GRANTED_VALUE = "granted"
-private const val DENIED_VALUE = "denied"
-private const val UNDETERMINED_VALUE = "undetermined"
-private const val ERROR_TAG = "E_PERMISSIONS"
+internal const val EXPIRES_KEY = "expires"
+internal const val STATUS_KEY = "status"
+internal const val GRANTED_VALUE = "granted"
+internal const val DENIED_VALUE = "denied"
+internal const val UNDETERMINED_VALUE = "undetermined"
+internal const val ERROR_TAG = "E_PERMISSIONS"
 
-private const val PERMISSION_EXPIRES_NEVER = "never"
+internal const val PERMISSION_EXPIRES_NEVER = "never"
 
 class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEventListener {
-  private var mPermissions: Permissions? = null
+
   private var mActivityProvider: ActivityProvider? = null
-  private val mPermissionsAskedFor = HashSet<String>()
 
   // state holders for asking for writing permissions
   private var mWritingPermissionBeingAsked = false // change this directly before calling corresponding startActivity
@@ -45,99 +45,35 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
   private var mAskAsyncRequestedPermissionsTypes: ArrayList<String>? = null
   private var mAskAsyncPermissionsTypesToBeAsked: ArrayList<String>? = null
 
-  /* Bundle section */
-  private fun getNotificationPermissions(): Bundle {
-    val response = Bundle()
-    val areEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
-    response.putString(STATUS_KEY, if (areEnabled) GRANTED_VALUE else DENIED_VALUE)
-    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-    return response
+  private var mRequesters: Map<String, PermissionRequester> by Delegates.notNull()
+
+  init {
+    val notificationRequester = NotificationRequester(context)
+    mRequesters = mapOf(
+        "location" to LocationRequester(),
+        "camera" to SimpleRequester(Manifest.permission.CAMERA),
+        "contacts" to SimpleRequester(Manifest.permission.READ_CONTACTS),
+        "audioRecording" to SimpleRequester(Manifest.permission.RECORD_AUDIO),
+        "cameraRoll" to CameraRollRequester(),
+        "calendar" to CalendarRequester(),
+        "sms" to SimpleRequester(Manifest.permission.READ_SMS),
+        "reminders" to RemindersRequester(),
+        "notifications" to notificationRequester,
+        "userFacingNotifications" to notificationRequester
+    )
   }
 
-  private fun getLocationPermissions(): Bundle {
-    val response = Bundle()
-    var scope = "none"
-    try {
-      when {
-        isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-          response.putString(STATUS_KEY, GRANTED_VALUE)
-          scope = "fine"
-        }
-        isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
-          response.putString(STATUS_KEY, GRANTED_VALUE)
-          scope = "coarse"
-        }
-        mPermissionsAskedFor.contains("location") -> response.putString(STATUS_KEY, DENIED_VALUE)
-        else -> response.putString(STATUS_KEY, UNDETERMINED_VALUE)
-      }
-    } catch (e: IllegalStateException) {
-      response.putString(STATUS_KEY, UNDETERMINED_VALUE)
+  companion object {
+    private val mPermissionsAskedFor = HashSet<String>()
+    fun didAsk(permission: String): Boolean {
+      return mPermissionsAskedFor.contains(permission)
     }
 
-    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-    val platformMap = Bundle()
-    platformMap.putString("scope", scope)
-    response.putBundle("android", platformMap)
-
-    return response
-  }
-
-  // checkSelfPermission does not return accurate status of WRITE_SETTINGS
-  private fun getWriteSettingsPermission(): Bundle {
-    val response = Bundle()
-    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      when {
-        Settings.System.canWrite(mActivityProvider!!.currentActivity.applicationContext) -> response.putString(STATUS_KEY, GRANTED_VALUE)
-        mPermissionsAskedFor.contains("systemBrightness") -> response.putString(STATUS_KEY, DENIED_VALUE)
-        else -> response.putString(STATUS_KEY, UNDETERMINED_VALUE)
-      }
-    } else {
-      response.putString(STATUS_KEY, GRANTED_VALUE)
+    private var mPermissions: Permissions? = null
+    fun getPermissionService(): Permissions {
+      return mPermissions ?: throw IllegalStateException("No Permissions module present.")
     }
-
-    return response
   }
-
-  private fun getCameraRollPermissions(): Bundle {
-    val response = Bundle()
-    try {
-      when {
-        arePermissionsGranted(
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        ) -> response.putString(STATUS_KEY, GRANTED_VALUE)
-        mPermissionsAskedFor.contains("cameraRoll") -> response.putString(STATUS_KEY, DENIED_VALUE)
-        else -> response.putString(STATUS_KEY, UNDETERMINED_VALUE)
-      }
-    } catch (e: IllegalStateException) {
-      response.putString(STATUS_KEY, UNDETERMINED_VALUE)
-    }
-
-    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-
-    return response
-  }
-
-  private fun getCalendarPermissions(): Bundle {
-    val response = Bundle()
-    try {
-      when {
-        arePermissionsGranted(
-            arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
-        ) -> response.putString(STATUS_KEY, GRANTED_VALUE)
-        mPermissionsAskedFor.contains("calendar") -> response.putString(STATUS_KEY, DENIED_VALUE)
-        else -> response.putString(STATUS_KEY, DENIED_VALUE)
-      }
-    } catch (e: IllegalStateException) {
-      response.putString(STATUS_KEY, UNDETERMINED_VALUE)
-    }
-
-    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-
-    return response
-  }
-  /* End bundle section */
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     mPermissions = moduleRegistry.getModule(Permissions::class.java)
@@ -146,7 +82,6 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
   }
 
   override fun getName(): String = "ExpoPermissions"
-
 
   @ExpoMethod
   fun getAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
@@ -183,41 +118,21 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
     // proceed with asking for non-granted permissions
     val permissionsTypesToBeAsked = ArrayList<String>()
     for (type in requestedPermissionsTypesSet) {
-      when (type) {
-        "notifications", "userFacingNotifications", "reminders", "systemBrightness" -> {}
-        "location" -> {
-          permissionsTypesToBeAsked.add(Manifest.permission.ACCESS_FINE_LOCATION)
-          permissionsTypesToBeAsked.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+      try {
+        if (type == "systemBrightness") {
+          continue
         }
-        "camera" -> {
-          permissionsTypesToBeAsked.add(Manifest.permission.CAMERA)
+        permissionsTypesToBeAsked.addAll(getRequester(type).getPermissionToAsk())
+        if (type == "contacts" && isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
+          // Ask for WRITE_CONTACTS permission only if the permission is present in AndroidManifest.
+          permissionsTypesToBeAsked.add(Manifest.permission.WRITE_CONTACTS)
         }
-        "contacts" -> {
-          permissionsTypesToBeAsked.add(Manifest.permission.READ_CONTACTS)
-          if (isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
-            // Ask for WRITE_CONTACTS permission only if the permission is present in AndroidManifest.
-            permissionsTypesToBeAsked.add(Manifest.permission.WRITE_CONTACTS)
-          }
-        }
-        "audioRecording" -> {
-          permissionsTypesToBeAsked.add(Manifest.permission.RECORD_AUDIO)
-        }
-        "cameraRoll" -> {
-          permissionsTypesToBeAsked.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-          permissionsTypesToBeAsked.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-        "calendar" -> {
-          permissionsTypesToBeAsked.add(Manifest.permission.READ_CALENDAR)
-          permissionsTypesToBeAsked.add(Manifest.permission.WRITE_CALENDAR)
-        }
-        else -> {
-          return promise.reject(
-              ERROR_TAG + "_UNSUPPORTED",
-              String.format("Cannot request permission: %s", type)
-          )
-        }
-      }// we do not have to ask for it
-      // here we do nothing but later we're checking whether to launch WritingSettingsActivity
+      } catch (e: IllegalStateException) {
+        return promise.reject(
+            ERROR_TAG + "_UNSUPPORTED",
+            String.format("Cannot request permission: %s", type)
+        )
+      }
     }
 
     // check whether to launch WritingSettingsActivity
@@ -234,6 +149,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
       mAskAsyncPermissionsTypesToBeAsked = permissionsTypesToBeAsked
       askForWriteSettingsPermissionFirst()
       mPermissionsAskedFor.add("systemBrightness")
+      mPermissionsAskedFor.addAll(requestedPermissionsTypesSet) // todo: maybe move it to `onHostResume` function?
       return
     }
 
@@ -244,16 +160,16 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
   private fun askForPermissions(requestedPermissionsTypes: ArrayList<String>,
                                 permissionsTypesToBeAsked: ArrayList<String>,
                                 promise: Promise) {
-    if (mPermissions == null) {
+    try {
+      getPermissionService().askForPermissions(
+          permissionsTypesToBeAsked.toTypedArray() // permissionsTypesToBeAsked handles empty array
+      ) { promise.resolve(getPermissions(requestedPermissionsTypes)) }
+    } catch (e: IllegalStateException) {
       promise.reject(
           ERROR_TAG + "_UNAVAILABLE",
           "Permissions module is null. Are you sure all the installed Expo modules are properly linked?"
       )
     }
-
-    mPermissions!!.askForPermissions(
-        permissionsTypesToBeAsked.toTypedArray() // permissionsTypesToBeAsked handles empty array
-    ) { promise.resolve(getPermissions(requestedPermissionsTypes)) }
   }
 
   @Throws(IllegalStateException::class)
@@ -267,72 +183,42 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
 
   @Throws(IllegalStateException::class)
   private fun getPermission(permissionType: String): Bundle {
-    when (permissionType) {
-      "notifications", "userFacingNotifications" -> return getNotificationPermissions()
-      "location" -> return getLocationPermissions()
-      "camera" -> return getSimplePermission(Manifest.permission.CAMERA)
-      "contacts" -> return getSimplePermission(Manifest.permission.READ_CONTACTS)
-      "audioRecording" -> return getSimplePermission(Manifest.permission.RECORD_AUDIO)
-      "systemBrightness" -> return getWriteSettingsPermission()
-      "cameraRoll" -> return getCameraRollPermissions()
-      "calendar" -> return getCalendarPermissions()
-      "SMS" -> return getSimplePermission(Manifest.permission.READ_SMS)
-      "reminders" -> {
-        val response = Bundle()
-        response.putString(STATUS_KEY, GRANTED_VALUE)
-        response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-        return response
-      }
-      else -> throw IllegalStateException(String.format("Unrecognized permission type: %s", permissionType))
+    return when (permissionType) {
+      "systemBrightness" -> getWriteSettingsPermission()
+      else -> getRequester(permissionType).getPermission()
     }
   }
 
-  /**
-   * Checks status for Android built-in permission
-   *
-   * @param permission [Manifest.permission]
-   */
-  private fun getSimplePermission(permission: String): Bundle {
-    val response = Bundle()
+  // checkSelfPermission does not return accurate status of WRITE_SETTINGS
+  private fun getWriteSettingsPermission(): Bundle {
+    return Bundle().apply {
+      putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
 
-    try {
-      when {
-        isPermissionGranted(permission) -> response.putString(STATUS_KEY, GRANTED_VALUE)
-        mPermissionsAskedFor.contains(permission) -> response.putString(STATUS_KEY, DENIED_VALUE)
-        else -> response.putString(STATUS_KEY, UNDETERMINED_VALUE)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        when {
+          Settings.System.canWrite(mActivityProvider!!.currentActivity.applicationContext) -> {
+            putString(STATUS_KEY, GRANTED_VALUE)
+          }
+          didAsk("systemBrightness") -> {
+            putString(STATUS_KEY, DENIED_VALUE)
+          }
+          else -> {
+            putString(STATUS_KEY, UNDETERMINED_VALUE)
+          }
+        }
+      } else {
+        putString(STATUS_KEY, GRANTED_VALUE)
       }
-    } catch (e: IllegalStateException) {
-      response.putString(STATUS_KEY, UNDETERMINED_VALUE)
     }
-
-    response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-
-    return response
   }
 
-  /**
-   * Checks whether given permission is granted or not.
-   * Throws IllegalStateException there's no Permissions module present.
-   */
-  private fun isPermissionGranted(permission: String): Boolean {
-    if (mPermissions != null) {
-      return mPermissions?.getPermission(permission) == PackageManager.PERMISSION_GRANTED
+  private fun getRequester(permissionType: String): PermissionRequester {
+    val requester = mRequesters[permissionType]
+    if (requester != null) {
+      return requester
     } else {
-      throw IllegalStateException("No Permissions module present.")
+      throw IllegalStateException(String.format("Unrecognized permission type: %s", permissionType))
     }
-  }
-
-  /**
-   * Checks whether all given permissions are granted or not.
-   * Throws IllegalStateException there's no Permissions module present.
-   */
-  private fun arePermissionsGranted(permissions: Array<String>): Boolean {
-    if (mPermissions == null) {
-      throw IllegalStateException("No Permissions module present.")
-    }
-
-    val permissionsResults = mPermissions!!.getPermissions(permissions)
-    return permissionsResults.count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
   }
 
   /**
@@ -385,6 +271,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
     mAskAsyncPromise = null
     mAskAsyncRequestedPermissionsTypes = null
     mAskAsyncPermissionsTypesToBeAsked = null
+
 
     // invoke actual asking for permissions
     askForPermissions(askAsyncRequestedPermissionsTypes!!, askAsyncPermissionsTypesToBeAsked!!, askAsyncPromise!!)
