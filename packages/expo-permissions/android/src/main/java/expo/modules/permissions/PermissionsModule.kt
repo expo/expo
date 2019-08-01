@@ -184,8 +184,12 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
   @Throws(IllegalStateException::class)
   private fun getPermission(permissionType: String): Bundle {
     return when (permissionType) {
-      "systemBrightness" -> getWriteSettingsPermission()
-      else -> getRequester(permissionType).getPermission()
+      "systemBrightness" -> {
+        getWriteSettingsPermission()
+      }
+      else -> {
+        getRequester(permissionType).getPermission()
+      }
     }
   }
 
