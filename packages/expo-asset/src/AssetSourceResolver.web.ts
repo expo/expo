@@ -2,7 +2,17 @@ import { Platform, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import { Dimensions } from 'react-native';
 
-type PackagerAsset = any;
+type PackagerAsset = {
+  __packager_asset: boolean;
+  fileSystemLocation: string;
+  httpServerLocation: string;
+  width?: number;
+  height?: number;
+  scales: number[];
+  hash: string;
+  name: string;
+  type: string;
+};
 
 function getBasePath({ httpServerLocation }: PackagerAsset): string {
   if (httpServerLocation[0] === '/') {
