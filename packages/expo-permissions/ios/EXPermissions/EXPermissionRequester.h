@@ -13,18 +13,6 @@
 
 @protocol EXPermissionRequesterDelegate <NSObject>
 
-- (void)permissionRequesterDidFinish: (NSObject<EXPermissionRequester> *)requester;
-
-@end
-
-@protocol EXPermissionsModule
-
-- (dispatch_queue_t)methodQueue;
-
-@end
-
-@interface EXPermissionBaseRequester : NSObject<EXPermissionRequester>
-
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
+- (void)permissionRequesterDidFinish:(NSObject<EXPermissionRequester> *)requester;
 
 @end

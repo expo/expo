@@ -11,8 +11,7 @@
 + (NSDictionary *)permissions
 {
   AVAuthorizationStatus systemStatus;
-  EXPermissionStatus status;
-          
+  EXPermissionStatus status;  
   NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
   if (!(cameraUsageDescription && microphoneUsageDescription)) {

@@ -5,7 +5,6 @@
 #import <UMCore/UMUtilities.h>
 #import <UMCore/UMDefines.h>
 
-
 @interface EXScopedPermissions ()
 
 @property (nonatomic, strong) NSString *experienceId;
@@ -143,7 +142,6 @@
   }];
 }
 
-
 + (NSString *)textForPermissionType:(NSString *)type
 {
   if ([type isEqualToString:@"audioRecording"]) {
@@ -160,7 +158,6 @@
   // temporarily exclude notifactions from permissions per experience; system brightness is always granted
   return ![@[@"notifications", @"userFacingNotifications", @"systemBrightness"] containsObject:permissionType];
 }
-
 
 @end
 #endif
