@@ -69,7 +69,7 @@ async function _handleMultiPermissionsRequestIOSAsync(
     .then(permissions => ({
       status: coalesceStatuses(permissions),
       expires: coalesceExpirations(permissions),
-      permissions: { ...permissions },
+      permissions
     }));
 }
 

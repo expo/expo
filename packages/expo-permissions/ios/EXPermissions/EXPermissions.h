@@ -3,7 +3,7 @@
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <EXPermissions/EXPermissionRequester.h>
+#import <EXPermissions/EXPermissionBaseRequester.h>
 
 FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 
@@ -13,7 +13,11 @@ typedef enum EXPermissionStatus {
   EXPermissionStatusUndetermined,
 } EXPermissionStatus;
 
+@protocol EXPermissionsModule
 
+- (dispatch_queue_t)methodQueue;
+
+@end
 
 @interface EXPermissions : UMExportedModule <EXPermissionRequesterDelegate, UMPermissionsInterface, UMModuleRegistryConsumer, EXPermissionsModule>
 

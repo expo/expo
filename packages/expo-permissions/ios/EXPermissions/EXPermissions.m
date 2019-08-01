@@ -144,8 +144,8 @@ UM_EXPORT_METHOD_AS(askAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [self askForPermissionWithType:permissionType
-                       withResults:resolve
-                      withRejecter:reject];
+                     withResults:resolve 
+                     withRejecter:reject];
 }
 
 # pragma mark - permission requsters / getters
@@ -162,7 +162,6 @@ UM_EXPORT_METHOD_AS(askAsync,
     #endif
     return [requesterClass permissions];
   }
-  
   return nil;
 }
 
@@ -171,7 +170,6 @@ UM_EXPORT_METHOD_AS(askAsync,
 - (BOOL)hasGrantedPermission:(NSString *)permissionType
 {
   NSDictionary *permissions = [self getPermissionsForResource:permissionType];
-  
   if (!permissions) {
     UMLogWarn(@"Permission with type '%@' not found.", permissionType);
     return false;
@@ -222,8 +220,8 @@ UM_EXPORT_METHOD_AS(askAsync,
 }
 
 - (void)askForGlobalPermission:(NSString *)permissionType
-                   withResolver:(void (^)(NSDictionary *))resolver
-                   withRejecter:(UMPromiseRejectBlock)reject
+                  withResolver:(void (^)(NSDictionary *))resolver
+                  withRejecter:(UMPromiseRejectBlock)reject
 {
   id<EXPermissionRequester> requester = [self getPermissionRequesterForType:permissionType];
   if (requester == nil) {
