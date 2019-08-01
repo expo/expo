@@ -64,7 +64,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
       moduleRegistry.registerInternalModule(internalModule);
     }
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
-    //moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext, experienceId, manifest.optString(ExponentManifest.MANIFEST_NAME_KEY)));
+    moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext));
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
