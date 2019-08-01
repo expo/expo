@@ -86,7 +86,7 @@ declare enum LocationActivityType {
     OtherNavigation = 4,
     Airborne = 5
 }
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, };
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
 export declare enum GeofencingEventType {
     Enter = 1,
     Exit = 2

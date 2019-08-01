@@ -91,7 +91,8 @@ static BOOL ABI31_0_0RCTParseSelectorPart(const char **input, NSMutableString *s
 static BOOL ABI31_0_0RCTParseUnused(const char **input)
 {
   return ABI31_0_0RCTReadString(input, "__unused") ||
-         ABI31_0_0RCTReadString(input, "__attribute__((unused))");
+         ABI31_0_0RCTReadString(input, "__attribute__((unused))") ||
+         ABI31_0_0RCTReadString(input, "__attribute__((__unused__))");
 }
 
 static ABI31_0_0RCTNullability ABI31_0_0RCTParseNullability(const char **input)

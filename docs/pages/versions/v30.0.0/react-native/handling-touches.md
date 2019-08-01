@@ -9,18 +9,14 @@ Users interact with mobile apps mainly through touch. They can use a combination
 
 [Button](../button/) provides a basic button component that is rendered nicely on all platforms. The minimal example to display a button looks like this:
 
-
 ```javascript
-
 <Button
   onPress={() => {
     Alert.alert('You tapped the button!');
   }}
   title="Press Me"
 />
-
 ```
-
 
 This will render a blue label on iOS, and a blue rounded rectangle with white text on Android. Pressing the button will call the "onPress" function, which in this case displays an alert popup. If you like, you can specify a "color" prop to change the color of your button.
 
@@ -28,43 +24,27 @@ This will render a blue label on iOS, and a blue rounded rectangle with white te
 
 Go ahead and play around with the `Button` component using the example below. You can select which platform your app is previewed in by clicking on the toggle in the bottom right, then click on "Tap to Play" to preview the app.
 
-
 ```javascript
-
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Button, StyleSheet, View } from 'react-native';
+import { Alert, Button, StyleSheet, View } from 'react-native';
 
 export default class ButtonBasics extends Component {
   _onPressButton() {
-    Alert.alert('You tapped the button!')
+    Alert.alert('You tapped the button!');
   }
 
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.buttonContainer}>
-          <Button
-            onPress={this._onPressButton}
-            title="Press Me"
-          />
+          <Button onPress={this._onPressButton} title="Press Me" />
         </View>
         <View style={styles.buttonContainer}>
-          <Button
-            onPress={this._onPressButton}
-            title="Press Me"
-            color="#841584"
-          />
+          <Button onPress={this._onPressButton} title="Press Me" color="#841584" />
         </View>
         <View style={styles.alternativeLayoutButtonContainer}>
-          <Button
-            onPress={this._onPressButton}
-            title="This looks great!"
-          />
-          <Button
-            onPress={this._onPressButton}
-            title="OK!"
-            color="#841584"
-          />
+          <Button onPress={this._onPressButton} title="This looks great!" />
+          <Button onPress={this._onPressButton} title="OK!" color="#841584" />
         </View>
       </View>
     );
@@ -73,24 +53,19 @@ export default class ButtonBasics extends Component {
 
 const styles = StyleSheet.create({
   container: {
-   flex: 1,
-   justifyContent: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
   buttonContainer: {
-    margin: 20
+    margin: 20,
   },
   alternativeLayoutButtonContainer: {
     margin: 20,
     flexDirection: 'row',
-    justifyContent: 'space-between'
-  }
+    justifyContent: 'space-between',
+  },
 });
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => ButtonBasics);
-
 ```
-
 
 ## Touchables
 
@@ -98,33 +73,40 @@ If the basic button doesn't look right for your app, you can build your own butt
 
 Which "Touchable" component you use will depend on what kind of feedback you want to provide:
 
-* Generally, you can use [**TouchableHighlight**](../touchablehighlight/) anywhere you would use a button or link on web. The view's background will be darkened when the user presses down on the button.
+- Generally, you can use [**TouchableHighlight**](../touchablehighlight/) anywhere you would use a button or link on web. The view's background will be darkened when the user presses down on the button.
 
-* You may consider using [**TouchableNativeFeedback**](../touchablenativefeedback/) on Android to display ink surface reaction ripples that respond to the user's touch.
+- You may consider using [**TouchableNativeFeedback**](../touchablenativefeedback/) on Android to display ink surface reaction ripples that respond to the user's touch.
 
-* [**TouchableOpacity**](../touchableopacity/) can be used to provide feedback by reducing the opacity of the button, allowing the background to be seen through while the user is pressing down.
+- [**TouchableOpacity**](../touchableopacity/) can be used to provide feedback by reducing the opacity of the button, allowing the background to be seen through while the user is pressing down.
 
-* If you need to handle a tap gesture but you don't want any feedback to be displayed, use [**TouchableWithoutFeedback**](../touchablewithoutfeedback/).
+- If you need to handle a tap gesture but you don't want any feedback to be displayed, use [**TouchableWithoutFeedback**](../touchablewithoutfeedback/).
 
 In some cases, you may want to detect when a user presses and holds a view for a set amount of time. These long presses can be handled by passing a function to the `onLongPress` props of any of the "Touchable" components.
 
 Let's see all of these in action:
 
-
 ```javascript
-
 import React, { Component } from 'react';
-import { Alert, AppRegistry, Platform, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableNativeFeedback, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  TouchableOpacity,
+  TouchableNativeFeedback,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
 export default class Touchables extends Component {
   _onPressButton() {
-    Alert.alert('You tapped the button!')
+    Alert.alert('You tapped the button!');
   }
 
   _onLongPressButton() {
-    Alert.alert('You long-pressed the button!')
+    Alert.alert('You long-pressed the button!');
   }
-
 
   render() {
     return (
@@ -140,20 +122,23 @@ export default class Touchables extends Component {
           </View>
         </TouchableOpacity>
         <TouchableNativeFeedback
-            onPress={this._onPressButton}
-            background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+          onPress={this._onPressButton}
+          background={
+            Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''
+          }>
           <View style={styles.button}>
             <Text style={styles.buttonText}>TouchableNativeFeedback</Text>
           </View>
         </TouchableNativeFeedback>
-        <TouchableWithoutFeedback
-            onPress={this._onPressButton}
-            >
+        <TouchableWithoutFeedback onPress={this._onPressButton}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>TouchableWithoutFeedback</Text>
           </View>
         </TouchableWithoutFeedback>
-        <TouchableHighlight onPress={this._onPressButton} onLongPress={this._onLongPressButton} underlayColor="white">
+        <TouchableHighlight
+          onPress={this._onPressButton}
+          onLongPress={this._onLongPressButton}
+          underlayColor="white">
           <View style={styles.button}>
             <Text style={styles.buttonText}>Touchable with Long Press</Text>
           </View>
@@ -166,27 +151,21 @@ export default class Touchables extends Component {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 60,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   button: {
     marginBottom: 30,
     width: 260,
     alignItems: 'center',
-    backgroundColor: '#2196F3'
+    backgroundColor: '#2196F3',
   },
   buttonText: {
     padding: 20,
-    color: 'white'
-  }
+    color: 'white',
+  },
 });
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => Touchables);
-
 ```
-
 
 ## Scrolling lists, swiping pages, and pinch-to-zoom
 
 Another gesture commonly used in mobile apps is the swipe or pan. This gesture allows the user to scroll through a list of items, or swipe through pages of content. In order to handle these and other gestures, we'll learn [how to use a ScrollView](../using-a-scrollview/) next.
-

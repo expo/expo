@@ -58,8 +58,10 @@ const generateNavLinks = (path_, arr) => {
       if (ext === '.md' && name !== 'index') {
         try {
           let title = fm(fs.readFileSync(filePath, 'utf8')).attributes.title;
+          let sidebarTitle = fm(fs.readFileSync(filePath, 'utf8')).attributes.sidebar_title;
           let obj = {
             name: title,
+            sidebarTitle,
             href: processUrl(filePath),
           };
           arr.push(obj);

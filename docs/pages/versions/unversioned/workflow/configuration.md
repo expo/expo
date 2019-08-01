@@ -220,6 +220,14 @@ Configuration for remote (push) notifications.
     "color": STRING,
 
     /*
+      Whether or not to display notifications when the app is in the foreground on iOS.
+      `_displayInForeground` option in the individual push notification message overrides this option.
+      Learn more: https://docs.expo.io/versions/latest/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
+      Defaults to `false`.
+    */
+    "iosDisplayInForeground": BOOLEAN,
+
+    /*
       Show each push notification individually "default" or collapse into one "collapse".
       Valid values: "default", "collapse"
     */
@@ -284,7 +292,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ```
 
-> **ExpoKit**: To change the value of `enabled`, edit `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
+> **ExpoKit**: To change the value of `enabled`, edit the `areRemoteUpdatesEnabled` key in `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and the `ARE_REMOTE_UPDATES_ENABLED` variable in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
 
 ### `"ios"`
 

@@ -1,10 +1,10 @@
 {
   "name": "expo-in-app-purchases",
-  "version": "1.0.2",
+  "version": "6.0.0",
   "description": "Expo unimodule for accepting in-app purchases",
   "main": "build/InAppPurchases.js",
   "types": "build/InAppPurchases.d.ts",
-   "scripts": {
+  "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "test": "expo-module test",
@@ -33,5 +33,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
 }
