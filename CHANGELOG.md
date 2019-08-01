@@ -7,10 +7,13 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 📚 3rd party library updates
 
 ### 🛠 Breaking changes
+- `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
 - added an option which allows displaying notifications in foreground on iOS by [@hesyifei](https://github.com/hesyifei) ([#4802](https://github.com/expo/expo/pull/4802))
+- added rich content supports for push notifications by [@hesyifei](https://github.com/hesyifei) ([#4787](https://github.com/expo/expo/pull/4787))
+- added `lazyImports` option in `babel-preset-expo` which allows lazy-initializing/inline-requiring packages by [@hesyifei](https://github.com/hesyifei) ([#4685](https://github.com/expo/expo/pull/4685))
 
 ### 🐛 Bug fixes
 
@@ -29,15 +32,12 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
 - Removed `Calendar.DEFAULT` and replaced it with `null`. ([#4836](https://github.com/expo/expo/pull/4836) by [@lukmccall](https://github.com/lukmccall))
-- `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
 - Added `fallbackLabel` option to `LocalAuthentication.authenticateAsync` on iOS which allows to customize a title of the fallback button when the system doesn't recognize the user and asks to authenticate via device passcode. ([#4612](https://github.com/expo/expo/pull/4612) by [@changLiuUNSW](https://github.com/changLiuUNSW))
 - added `native` mode for Android SplashScreen on standalone apps by [@bbarthec](https://github.com/bbarthec) ([#4567](https://github.com/expo/expo/pull/4567))
 - added support for video recording in `ImagePicker.launchCameraAsync`. ([#4903](https://github.com/expo/expo/pull/4903) by [@lukmccall](https://github.com/lukmccall))
-- added rich content supports for push notifications by [@hesyifei](https://github.com/hesyifei) ([#4787](https://github.com/expo/expo/pull/4787))
-- added `lazyImports` option in `babel-preset-expo` which allows lazy-initializing/inline-requiring packages by [@hesyifei](https://github.com/hesyifei) ([#4685](https://github.com/expo/expo/pull/4685))
 
 ### 🐛 Bug fixes
 
