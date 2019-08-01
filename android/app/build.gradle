@@ -239,7 +239,13 @@ dependencies {
         '../enabled-modules'
       ],
       configuration: 'api',
-      target       : 'react-native'
+      target       : 'react-native',
+      exclude      : [
+        'expo-module-template',
+        'expo-in-app-purchases',
+        'expo-payments-stripe',
+        'expo-updates'
+      ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE
