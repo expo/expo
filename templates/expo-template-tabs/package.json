@@ -21,7 +21,7 @@
     "expo": "^34.0.1",
     "expo-asset": "^6.0.0",
     "expo-constants": "6.0.0",
-    "expo-font": "6.0.0",
+    "expo-font": "~6.0.0",
     "expo-web-browser": "6.0.0",
     "react": "16.8.3",
     "react-dom": "^16.8.6",
