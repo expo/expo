@@ -40,7 +40,7 @@ class DeviceConstants extends React.Component<DeviceConstant> {
 }
 
 class DeviceMethods extends React.Component<DeviceMethod, State> {
-  state: State = {
+  state = {
     value: '',
   };
 
