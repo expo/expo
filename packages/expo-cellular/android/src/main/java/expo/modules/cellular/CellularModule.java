@@ -62,18 +62,17 @@ public class CellularModule extends ExportedModule implements RegistryLifecycleL
     constants.put("isoCountryCode", tm != null ? tm.getSimCountryIso() : null);
 
     //check if sim state is ready
-    if( tm != null && tm.getSimState() == TelephonyManager.SIM_STATE_READY){
+    if (tm != null && tm.getSimState() == TelephonyManager.SIM_STATE_READY) {
       constants.put("carrier", tm.getSimOperatorName());
       String combo = tm.getSimOperator();
-      constants.put("mobileCountryCode", combo != null ? combo.substring(0,3) : null);
+      constants.put("mobileCountryCode", combo != null ? combo.substring(0, 3) : null);
       StringBuilder sb = null;
-      if(combo != null){
-        sb =  new StringBuilder(combo);
-        sb.delete(0,3);
+      if (combo != null) {
+        sb = new StringBuilder(combo);
+        sb.delete(0, 3);
       }
-      constants.put("mobileNetworkCode", sb != null? sb.toString(): null);
-    }
-    else{
+      constants.put("mobileNetworkCode", sb != null ? sb.toString() : null);
+    } else {
       constants.put("carrier", null);
       constants.put("mobileCountryCode", null);
       constants.put("mobileNetworkCode", null);
@@ -114,5 +113,3 @@ public class CellularModule extends ExportedModule implements RegistryLifecycleL
     }
   }
 }
-
-

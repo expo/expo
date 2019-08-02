@@ -1,6 +1,6 @@
 # expo-cellular
 
-Information about the user’s cellular service provider, such as its unique identifier, cellular connection type ,and whether it allows VoIP calls on its network.
+Information about the user’s cellular service provider, such as its unique identifier, cellular connection type and whether it allows VoIP calls on its network.
 
 # API documentation
 

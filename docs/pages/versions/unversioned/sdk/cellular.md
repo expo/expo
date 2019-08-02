@@ -2,7 +2,7 @@
 title: Cellular
 ---
 
-Provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
+Provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type and whether it allows VoIP calls on its network.
 
 Note: On iOS simulator, cellular network information cannot be retrieved. 
 
