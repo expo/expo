@@ -32,7 +32,7 @@ The following examples show what the output of a lexical block looks like after 
 
 ## If Statements
 
-Application code
+### Input
 
 ```js
 import { Platform } from '@unimodules/core';
