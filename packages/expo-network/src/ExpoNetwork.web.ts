@@ -2,26 +2,32 @@ import { NetworkState, NetworkStateType } from './Network.types';
 
 export default {
   async getIpAddressAsync(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      fetch('https://api.ipify.org?format=json')
-        .then(data => {
-          data.json().then(result => {
-            resolve(result.ip);
-          });
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    return new Promise(async (resolve, reject) => {
+      try {
+        const resp = await fetch('https://api.ipify.org?format=json');
+        const data = await resp.json();
+        resolve(data.ip);
+      } catch (e) {
+        reject(e);
+      }
+    }
+    );
   },
   async getNetworkStateAsync(): Promise<NetworkState> {
     let type = navigator.onLine ? NetworkStateType.UNKNOWN : NetworkStateType.NONE;
     let isConnected = navigator.onLine;
     let isInternetReachable = isConnected;
-    return {
-      type,
-      isConnected,
-      isInternetReachable,
-    };
+    return new Promise((resolve) => {
+      resolve({
+        type,
+        isConnected,
+        isInternetReachable,
+      });
+    });
   },
+  async getMacAddressAsync(): Promise<null> {
+    return new Promise((resolve) => {
+      resolve(null);
+    });
+  }
 };
