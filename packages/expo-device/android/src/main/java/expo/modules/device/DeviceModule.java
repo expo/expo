@@ -214,9 +214,10 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
 
   @ExpoMethod
   public void isRootedExperimentalAsync(Promise promise) {
-    try{
-      boolean isRooted = false;
-      boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
+    boolean isRooted = false;
+    boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
+
+    try {
       String buildTags = Build.TAGS;
       if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
         isRooted = true;
@@ -229,11 +230,15 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
           isRooted = isDevice && file.exists();
         }
       }
-      promise.resolve(isRooted);
+    } catch (SecurityException se) {
+      promise.reject(
+        "ERR_DEVICE_ROOT_DETECTION",
+        "Could not access the file system to determine if the device is rooted.",
+        se);
+      return;
     }
-    catch(SecurityException se){
-      promise.reject("ERR_DEVICE_INVALID_FILE_ACCESS", "No access to read file system", se );
-    }
+
+    promise.resolve(isRooted);
   }
 
   @ExpoMethod

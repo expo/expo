@@ -19,16 +19,12 @@ When `true`, indicates that the view is an accessibility element. When a view is
 
 On Android, `accessible={true}` property for a react-native View will be translated into native `focusable={true}`.
 
-
 ```javascript
-
 <View accessible={true}>
   <Text>text one</Text>
   <Text>text two</Text>
 </View>
-
 ```
-
 
 In the above example, we can't get accessibility focus separately on 'text one' and 'text two'. Instead we get focus on a parent view with 'accessible' property.
 
@@ -38,20 +34,13 @@ When a view is marked as accessible, it is a good practice to set an accessibili
 
 To use, set the `accessibilityLabel` property to a custom string on your View, Text or Touchable:
 
-
 ```javascript
-
-<TouchableOpacity
-  accessible={true}
-  accessibilityLabel="Tap me!"
-  onPress={this._onPress}>
+<TouchableOpacity accessible={true} accessibilityLabel="Tap me!" onPress={this._onPress}>
   <View style={styles.button}>
     <Text style={styles.buttonText}>Press me!</Text>
   </View>
 </TouchableOpacity>
-
 ```
-
 
 In the above example, the `accessibilityLabel` on the TouchableOpacity element would default to "Press me!". The label is constructed by concatenating all Text node children separated by spaces.
 
@@ -61,9 +50,7 @@ An accessibility hint helps users understand what will happen when they perform 
 
 To use, set the `accessibilityHint` property to a custom string on your View, Text or Touchable:
 
-
 ```javascript
-
 <TouchableOpacity
   accessible={true}
   accessibilityLabel="Go back"
@@ -73,9 +60,7 @@ To use, set the `accessibilityHint` property to a custom string on your View, Te
     <Text style={styles.buttonText}>Back</Text>
   </View>
 </TouchableOpacity>
-
 ```
-
 
 iOS In the above example, VoiceOver will read the hint after the label, if the user has hints enabled in the device's VoiceOver settings. Read more about guidelines for accessibilityHint in the [iOS Developer Docs](https://developer.apple.com/documentation/objectivec/nsobject/1615093-accessibilityhint)
 
@@ -167,7 +152,6 @@ When components dynamically change, we want TalkBack to alert the end user. This
 - **polite** Accessibility services should announce changes to this view.
 - **assertive** Accessibility services should interrupt ongoing speech to immediately announce changes to this view.
 
-
 ```javascript
 
 <TouchableWithoutFeedback onPress={this._addOne}>
@@ -181,13 +165,11 @@ When components dynamically change, we want TalkBack to alert the end user. This
 
 ```
 
-
 In the above example method \_addOne changes the state.count variable. As soon as an end user clicks the TouchableWithoutFeedback, TalkBack reads text in the Text view because of its 'accessibilityLiveRegion=”polite”' property.
 
 #### importantForAccessibility (Android)
 
 In the case of two overlapping UI components with the same parent, default accessibility focus can have unpredictable behavior. The ‘importantForAccessibility’ property will resolve this by controlling if a view fires accessibility events and if it is reported to accessibility services. It can be set to ‘auto’, ‘yes’, ‘no’ and ‘no-hide-descendants’ (the last value will force accessibility services to ignore the component and all of its children).
-
 
 ```javascript
 
@@ -203,7 +185,6 @@ In the case of two overlapping UI components with the same parent, default acces
 </View>
 
 ```
-
 
 In the above example, the yellow layout and its descendants are completely invisible to TalkBack and all other accessibility services. So we can easily use overlapping views with the same parent without confusing TalkBack.
 
@@ -236,17 +217,15 @@ The `label` field is optional for standard actions, and is often unused by assis
 
 To handle action requests, a component must implement an `onAccessibilityAction` function. The only argument to this function is an event containing the name of the action to perform. The below example from RNTester shows how to create a component which defines and handles several custom actions.
 
-
 ```javascript
-
 <View
   accessible={true}
   accessibilityActions={[
-    {name: 'cut', label: 'cut'},
-    {name: 'copy', label: 'copy'},
-    {name: 'paste', label: 'paste'},
+    { name: 'cut', label: 'cut' },
+    { name: 'copy', label: 'copy' },
+    { name: 'paste', label: 'paste' },
   ]}
-  onAccessibilityAction={(event) => {
+  onAccessibilityAction={event => {
     switch (event.nativeEvent.actionName) {
       case 'cut':
         Alert.alert('Alert', 'cut action success');
@@ -260,9 +239,7 @@ To handle action requests, a component must implement an `onAccessibilityAction`
     }
   }}
 />
-
 ```
-
 
 ### Checking if a Screen Reader is Enabled
 
@@ -271,7 +248,6 @@ The `AccessibilityInfo` API allows you to determine whether or not a screen read
 ### Sending Accessibility Events (Android)
 
 Sometimes it is useful to trigger an accessibility event on a UI component (i.e. when a custom view appears on a screen or a custom radio button has been selected). Native UIManager module exposes a method ‘sendAccessibilityEvent’ for this purpose. It takes two arguments: view tag and a type of an event.
-
 
 ```javascript
 
@@ -298,7 +274,6 @@ _onPress: function() {
 
 ```
 
-
 In the above example we've created a custom radio button that now behaves like a native one. More specifically, TalkBack now correctly announces changes to the radio button selection.
 
 ## Testing VoiceOver Support (iOS)
@@ -324,7 +299,6 @@ To use the volume key shortcut, press both volume keys for 3 seconds to start an
 
 Additionally, if you prefer, you can toggle TalkBack via command line with:
 
-
 ```javascript
 
 # disable
@@ -334,5 +308,3 @@ adb shell settings put secure enabled_accessibility_services com.android.talkbac
 adb shell settings put secure enabled_accessibility_services com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService
 
 ```
-
-

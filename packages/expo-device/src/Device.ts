@@ -11,14 +11,7 @@ export enum DeviceType {
   UNKNOWN = 'UNKNOWN',
 }
 
-export const brand = ExpoDevice ? ExpoDevice.brand : null;
-export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 export let modelName;
-export let osBuildFingerprint;
-export let modelId;
-export let designName;
-export let productName;
-export let platformApiLevel;
 if (Platform.OS === 'ios') {
   let IosDeviceName;
   let IosModelId = ExpoDevice.modelId;
@@ -38,19 +31,31 @@ if (Platform.OS === 'ios') {
     }
   }
   modelName = IosDeviceName;
-  osBuildFingerprint = null;
-  modelId = ExpoDevice ? ExpoDevice.modelId : null;
-  designName = null;
-  productName = null;
-  platformApiLevel = null;
-} else {
-  modelName = ExpoDevice ? ExpoDevice.modelName : null;
-  osBuildFingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
-  modelId = null;
-  designName = ExpoDevice ? ExpoDevice.designName : null;
-  productName = ExpoDevice ? ExpoDevice.productName : null;
-  platformApiLevel = ExpoDevice ? ExpoDevice.platformApiLevel : null;
 }
+if (!modelName) modelName = ExpoDevice ? ExpoDevice.modelName : null;
+export const modelId = ExpoDevice ? (ExpoDevice.modelId ? ExpoDevice.modelId : null) : null;
+export const osBuildFingerprint = ExpoDevice
+  ? ExpoDevice.osBuildFingerprint
+    ? ExpoDevice.osBuildFingerprint
+    : null
+  : null;
+export const designName = ExpoDevice
+  ? ExpoDevice.designName
+    ? ExpoDevice.designName
+    : null
+  : null;
+export const productName = ExpoDevice
+  ? ExpoDevice.productName
+    ? ExpoDevice.productName
+    : null
+  : null;
+export const platformApiLevel = ExpoDevice
+  ? ExpoDevice.platformApiLevel
+    ? ExpoDevice.platformApiLevel
+    : null
+  : null;
+export const brand = ExpoDevice ? ExpoDevice.brand : null;
+export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 export const osName = ExpoDevice ? ExpoDevice.osName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
 export const isDevice = ExpoDevice ? ExpoDevice.isDevice : null;

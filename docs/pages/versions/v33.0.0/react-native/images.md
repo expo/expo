@@ -7,18 +7,13 @@ title: Images
 
 React Native provides a unified way of managing images and other media assets in your iOS and Android apps. To add a static image to your app, place it somewhere in your source code tree and reference it like this:
 
-
 ```javascript
-
 <Image source={require('./my-icon.png')} />
-
 ```
-
 
 The image name is resolved the same way JS modules are resolved. In the example above, the packager will look for `my-icon.png` in the same folder as the component that requires it. Also, if you have `my-icon.ios.png` and `my-icon.android.png`, the packager will pick the correct file for the platform.
 
 You can also use the `@2x` and `@3x` suffixes to provide images for different screen densities. If you have the following file structure:
-
 
 ```javascript
 
@@ -31,16 +26,11 @@ You can also use the `@2x` and `@3x` suffixes to provide images for different sc
 
 ```
 
-
 ...and `button.js` code contains:
 
-
 ```javascript
-
 <Image source={require('./img/check.png')} />
-
 ```
-
 
 ...the packager will bundle and serve the image corresponding to device's screen density. For example, `check@2x.png`, will be used on an iPhone 7, while`check@3x.png` will be used on an iPhone 7 Plus or a Nexus 5. If there is no image matching the screen density, the closest best option will be selected.
 
@@ -58,9 +48,7 @@ Here are some benefits that you get:
 
 In order for this to work, the image name in `require` has to be known statically.
 
-
 ```javascript
-
 // GOOD
 <Image source={require('./my-icon.png')} />;
 
@@ -69,13 +57,9 @@ var icon = this.props.active ? 'my-icon-active' : 'my-icon-inactive';
 <Image source={require('./' + icon + '.png')} />;
 
 // GOOD
-var icon = this.props.active
-  ? require('./my-icon-active.png')
-  : require('./my-icon-inactive.png');
+var icon = this.props.active ? require('./my-icon-active.png') : require('./my-icon-inactive.png');
 <Image source={icon} />;
-
 ```
-
 
 Note that image sources required this way include size (width, height) info for the Image. If you need to scale the image dynamically (i.e. via flex), you may need to manually set `{ width: undefined, height: undefined }` on the style attribute.
 
@@ -93,30 +77,21 @@ If you are building a hybrid app (some UIs in React Native, some UIs in platform
 
 For images included via Xcode asset catalogs or in the Android drawable folder, use the image name without the extension:
 
-
 ```javascript
-
-<Image source={{uri: 'app_icon'}} style={{width: 40, height: 40}} />
-
+<Image source={{ uri: 'app_icon' }} style={{ width: 40, height: 40 }} />
 ```
-
 
 For images in the Android assets folder, use the `asset:/` scheme:
 
-
 ```javascript
-
-<Image source={{uri: 'asset:/app_icon.png'}} style={{width: 40, height: 40}} />
-
+<Image source={{ uri: 'asset:/app_icon.png' }} style={{ width: 40, height: 40 }} />
 ```
-
 
 These approaches provide no safety checks. It's up to you to guarantee that those images are available in the application. Also you have to specify image dimensions manually.
 
 ## Network Images
 
 Many of the images you will display in your app will not be available at compile time, or you will want to load some dynamically to keep the binary size down. Unlike with static resources, _you will need to manually specify the dimensions of your image_. It's highly recommended that you use https as well in order to satisfy [App Transport Security](https://facebook.github.io/react-native/docs/integration-with-existing-apps/#app-transport-security) requirements on iOS.
-
 
 ```javascript
 
@@ -129,14 +104,11 @@ Many of the images you will display in your app will not be available at compile
 
 ```
 
-
 ### Network Requests for Images
 
 If you would like to set such things as the HTTP-Verb, Headers or a Body along with the image request, you may do this by defining these properties on the source object:
 
-
 ```javascript
-
 <Image
   source={{
     uri: 'https://facebook.github.io/react/logo-og.png',
@@ -146,11 +118,9 @@ If you would like to set such things as the HTTP-Verb, Headers or a Body along w
     },
     body: 'Your Body goes here',
   }}
-  style={{width: 400, height: 400}}
+  style={{ width: 400, height: 400 }}
 />
-
 ```
-
 
 ## Uri Data Images
 
@@ -158,9 +128,7 @@ Sometimes, you might be getting encoded image data from a REST API call. You can
 
 > This is recommended for very small and dynamic images only, like icons in a list from a DB.
 
-
 ```javascript
-
 // include at least width and height!
 <Image
   style={{
@@ -173,9 +141,7 @@ Sometimes, you might be getting encoded image data from a REST API call. You can
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
   }}
 />
-
 ```
-
 
 ### Cache Control (iOS Only)
 
@@ -186,19 +152,15 @@ In some cases you might only want to display an image if it is already in the lo
 - `force-cache`: The existing cached data will be used to satisfy the request, regardless of its age or expiration date. If there is no existing data in the cache corresponding the request, the data is loaded from the originating source.
 - `only-if-cached`: The existing cache data will be used to satisfy a request, regardless of its age or expiration date. If there is no existing data in the cache corresponding to a URL load request, no attempt is made to load the data from the originating source, and the load is considered to have failed.
 
-
 ```javascript
-
 <Image
   source={{
     uri: 'https://facebook.github.io/react/logo-og.png',
     cache: 'only-if-cached',
   }}
-  style={{width: 400, height: 400}}
+  style={{ width: 400, height: 400 }}
 />
-
 ```
-
 
 ## Local Filesystem Images
 
@@ -216,25 +178,19 @@ _In React Native_ this behavior is intentionally not implemented. It is more wor
 
 For example, the result of `require('./my-icon.png')` might be:
 
-
 ```javascript
 
 {"__packager_asset":true,"uri":"my-icon.png","width":591,"height":573}
 
 ```
 
-
 ## Source as an object
 
 In React Native, one interesting decision is that the `src` attribute is named `source` and doesn't take a string but an object with a `uri` attribute.
 
-
 ```javascript
-
-<Image source={{uri: 'something.jpg'}} />
-
+<Image source={{ uri: 'something.jpg' }} />
 ```
-
 
 On the infrastructure side, the reason is that it allows us to attach metadata to this object. For example if you are using `require('./my-icon.png')`, then we add information about its actual location and size (don't rely on this fact, it might change in the future!). This is also future proofing, for example we may want to support sprites at some point, instead of outputting `{uri: ...}`, we can output `{uri: ..., crop: {left: 10, top: 50, width: 20, height: 40}}` and transparently support spriting on all the existing call sites.
 
@@ -246,7 +202,6 @@ A common feature request from developers familiar with the web is `background-im
 
 You might not want to use `<ImageBackground>` in some cases, since the implementation is very simple. Refer to `<ImageBackground>`'s [documentation](../imagebackground/) for more insight, and create your own custom component when needed.
 
-
 ```javascript
 
 return (
@@ -256,7 +211,6 @@ return (
 );
 
 ```
-
 
 Note that you must specify some width and height style attributes.
 
@@ -272,4 +226,3 @@ Please note that the following corner specific, border radius style properties a
 ## Off-thread Decoding
 
 Image decoding can take more than a frame-worth of time. This is one of the major sources of frame drops on the web because decoding is done in the main thread. In React Native, image decoding is done in a different thread. In practice, you already need to handle the case when the image is not downloaded yet, so displaying the placeholder for a few more frames while it is decoding does not require any code change.
-

@@ -249,5 +249,89 @@ export async function test(t) {
         });
       });
     }
+
+    // In this test app we contact the Expo push service directly. You *never*
+    // should do this in a real app. You should always store the push tokens on your
+    // own server or use the local notification API if you want to notify this user.
+    const PUSH_ENDPOINT = 'https://expo.io/--/api/v2/push/send';
+    const demoBodies = {
+      simple: {
+        title: 'Welcome to Expo!',
+        body: 'Native Component List is registered for push notifications.',
+        data: { example: 'sample data' },
+      },
+      image: {
+        title: 'Kodiak bear',
+        body:
+          'A Kodiak bear in Kodiak National Wildlife Refuge, Alaska, United States.\n\nSource: https://commons.wikimedia.org/wiki/File:2010-kodiak-bear-1.jpg',
+        richContent: {
+          image: 'https://upload.wikimedia.org/wikipedia/commons/7/71/2010-kodiak-bear-1.jpg',
+        },
+        data: {
+          trinomialName: 'Ursus arctos middendorffi',
+        },
+      },
+    };
+    t.describe('Push notifications related', () => {
+      async function sendPushNotificationAsync(type) {
+        let receivedPushNotification = false;
+        const subscription = Notifications.addListener(async notification => {
+          await testNotificationResponse(notification, demoBodies[type], type);
+          subscription.remove();
+          receivedPushNotification = true;
+        });
+        const token = await Notifications.getExpoPushTokenAsync();
+        const response = await fetch(PUSH_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify([
+            {
+              to: token,
+              ...demoBodies[type],
+            },
+          ]),
+        });
+
+        // Wait for the push notification to arrive.
+        await waitFor(5000);
+
+        return receivedPushNotification;
+      }
+
+      async function testNotificationResponse(notification, sentMessage, type) {
+        t.expect(notification).toBeDefined();
+        switch (type) {
+          case 'simple':
+            t.expect(notification.data).toEqual(sentMessage.data);
+            break;
+          case 'image': {
+            const newData = { ...sentMessage.data, _richContent: sentMessage.richContent };
+            t.expect(notification.data).toEqual(newData);
+            break;
+          }
+          default:
+            break;
+        }
+      }
+
+      t.it(
+        'Simple push notification',
+        async () => {
+          t.expect(await sendPushNotificationAsync('simple')).toBe(true);
+        },
+        10000
+      );
+
+      t.it(
+        'Image push notification',
+        async () => {
+          t.expect(await sendPushNotificationAsync('image')).toBe(true);
+        },
+        10000
+      );
+    });
   });
 }

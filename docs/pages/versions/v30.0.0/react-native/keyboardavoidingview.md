@@ -7,17 +7,13 @@ It is a component to solve the common problem of views that need to move out of 
 
 Example usage:
 
-
 ```javascript
-
 import { KeyboardAvoidingView } from 'react-native';
 
 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
   ... your UI ...
-</KeyboardAvoidingView>
-
+</KeyboardAvoidingView>;
 ```
-
 
 ### Example
 
@@ -25,18 +21,18 @@ import { KeyboardAvoidingView } from 'react-native';
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`keyboardVerticalOffset`](../keyboardavoidingview/#keyboardverticaloffset)
-- [`behavior`](../keyboardavoidingview/#behavior)
-- [`contentContainerStyle`](../keyboardavoidingview/#contentcontainerstyle)
-- [`enabled`](../keyboardavoidingview/#enabled)
+* [`keyboardVerticalOffset`](../keyboardavoidingview/#keyboardverticaloffset)
+* [`behavior`](../keyboardavoidingview/#behavior)
+* [`contentContainerStyle`](../keyboardavoidingview/#contentcontainerstyle)
+* [`enabled`](../keyboardavoidingview/#enabled)
 
 ### Methods
 
-* [`relativeKeyboardHeight`](../keyboardavoidingview/#relativekeyboardheight)
-* [`onKeyboardChange`](../keyboardavoidingview/#onkeyboardchange)
-* [`onLayout`](../keyboardavoidingview/#onlayout)
+- [`relativeKeyboardHeight`](../keyboardavoidingview/#relativekeyboardheight)
+- [`onKeyboardChange`](../keyboardavoidingview/#onkeyboardchange)
+- [`onLayout`](../keyboardavoidingview/#onlayout)
 
 ---
 
@@ -86,35 +82,24 @@ Enabled or disabled KeyboardAvoidingView.
 
 ### `relativeKeyboardHeight()`
 
-
 ```javascript
 
 relativeKeyboardHeight(keyboardFrame: object):
 
 ```
 
-
 ---
 
 ### `onKeyboardChange()`
 
-
 ```javascript
-
 onKeyboardChange((event: object));
-
 ```
-
 
 ---
 
 ### `onLayout()`
 
-
 ```javascript
-
 onLayout((event: ViewLayoutEvent));
-
 ```
-
-

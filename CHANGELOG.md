@@ -6,6 +6,21 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 📚 3rd party library updates
 
+### 🛠 Breaking changes
+- `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
+
+### 🎉 New features
+
+- added an option which allows displaying notifications in foreground on iOS by [@hesyifei](https://github.com/hesyifei) ([#4802](https://github.com/expo/expo/pull/4802))
+- added rich content supports for push notifications by [@hesyifei](https://github.com/hesyifei) ([#4787](https://github.com/expo/expo/pull/4787))
+- added `lazyImports` option in `babel-preset-expo` which allows lazy-initializing/inline-requiring packages by [@hesyifei](https://github.com/hesyifei) ([#4685](https://github.com/expo/expo/pull/4685))
+
+### 🐛 Bug fixes
+
+## 34.0.0
+
+### 📚 3rd party library updates
+
 - `react-native-gesture-handler` updated from `1.2.1` to `1.3.0`
 - `react-native-branch` updated from `2.2.5` to `3.0.1`
 - `react-native-reanimated` updated from `1.0.1` to `1.1.0`
@@ -17,7 +32,6 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
 - Removed `Calendar.DEFAULT` and replaced it with `null`. ([#4836](https://github.com/expo/expo/pull/4836) by [@lukmccall](https://github.com/lukmccall))
-- `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 

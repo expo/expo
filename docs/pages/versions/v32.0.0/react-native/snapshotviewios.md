@@ -5,10 +5,10 @@ title: SnapshotViewIOS
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`onSnapshotReady`](../snapshotviewios/#onsnapshotready)
-- [`testIdentifier`](../snapshotviewios/#testidentifier)
+* [`onSnapshotReady`](../snapshotviewios/#onsnapshotready)
+* [`testIdentifier`](../snapshotviewios/#testidentifier)
 
 ---
 
@@ -29,4 +29,3 @@ title: SnapshotViewIOS
 | Type   | Required |
 | ------ | -------- |
 | string | No       |
-

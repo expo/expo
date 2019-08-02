@@ -7,7 +7,6 @@ This component is used inside a ScrollView or ListView to add pull to refresh fu
 
 ### Usage example
 
-
 ```javascript
 
 class RefreshableList extends Component {
@@ -43,23 +42,22 @@ class RefreshableList extends Component {
 
 ```
 
-
 **Note:** `refreshing` is a controlled prop, this is why it needs to be set to true in the `onRefresh` function otherwise the refresh indicator will stop immediately.
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`refreshing`](../refreshcontrol/#refreshing)
-- [`onRefresh`](../refreshcontrol/#onrefresh)
-- [`colors`](../refreshcontrol/#colors)
-- [`enabled`](../refreshcontrol/#enabled)
-- [`progressBackgroundColor`](../refreshcontrol/#progressbackgroundcolor)
-- [`progressViewOffset`](../refreshcontrol/#progressviewoffset)
-- [`size`](../refreshcontrol/#size)
-- [`tintColor`](../refreshcontrol/#tintcolor)
-- [`title`](../refreshcontrol/#title)
-- [`titleColor`](../refreshcontrol/#titlecolor)
+* [`refreshing`](../refreshcontrol/#refreshing)
+* [`onRefresh`](../refreshcontrol/#onrefresh)
+* [`colors`](../refreshcontrol/#colors)
+* [`enabled`](../refreshcontrol/#enabled)
+* [`progressBackgroundColor`](../refreshcontrol/#progressbackgroundcolor)
+* [`progressViewOffset`](../refreshcontrol/#progressviewoffset)
+* [`size`](../refreshcontrol/#size)
+* [`tintColor`](../refreshcontrol/#tintcolor)
+* [`title`](../refreshcontrol/#title)
+* [`titleColor`](../refreshcontrol/#titlecolor)
 
 ---
 
@@ -91,8 +89,8 @@ Called when the view starts refreshing.
 
 The colors (at least one) that will be used to draw the refresh indicator.
 
-| Type                        | Required | Platform |
-| --------------------------- | -------- | -------- |
+| Type                         | Required | Platform |
+| ---------------------------- | -------- | -------- |
 | array of [color](../colors/) | No       | Android  |
 
 ---
@@ -111,8 +109,8 @@ Whether the pull to refresh functionality is enabled.
 
 The background color of the refresh indicator.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | Android  |
 
 ---
@@ -141,8 +139,8 @@ Size of the refresh indicator, see RefreshControl.SIZE.
 
 The color of the refresh indicator.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | iOS      |
 
 ---
@@ -161,7 +159,6 @@ The title displayed under the refresh indicator.
 
 Title color.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | iOS      |
-
