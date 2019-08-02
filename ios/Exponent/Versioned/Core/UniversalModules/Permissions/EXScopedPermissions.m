@@ -133,7 +133,7 @@
   }
   
   // not in Expo Client - invoke allow action for each permission type
-  if ([_constantsBinding.appOwnership isEqualToString:@"expo"]) {
+  if (![_constantsBinding.appOwnership isEqualToString:@"expo"]) {
     NSMutableDictionary *results = [NSMutableDictionary new];
     
     for (NSString *permissionType in permissionsTypes) {
