@@ -5,7 +5,40 @@ at https://github.com/expo/expo. Thanks!
 
 ## Options
 
-### `web.transformImportExport`
+### [`lazyImports`](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy)
+
+Changes Babel's compiled `import` statements to be lazily evaluated when their imported bindings are used for the first time.
+
+*Note:* this option has an effect only when the `disableImportExportTransform` option is set to `false`. On Android and iOS, `disableImportExportTransform` defaults to `false`, and on web it defaults to `true` to allow for tree shaking.
+
+This can improve the initial load time of your app because evaluating dependencies up front is sometimes entirely un-necessary, particularly when the dependencies have no side effects.
+
+The value of `lazyImports` has a few possible effects:
+
+- `null` - [metro-react-native-babel-preset](https://github.com/facebook/metro/tree/master/packages/metro-react-native-babel-preset) will handle it. (Learn more about it here: https://github.com/facebook/metro/commit/23e3503dde5f914f3e642ef214f508d0a699851d)
+
+- `false` - No lazy initialization of any imported module.
+
+- `true` - Lazy-init all imported modules except local imports (e.g., `./foo`), certain Expo packages that have side effects, and the two cases mentioned [here](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy).
+
+- `Array<string>` - [babel-plugin-transform-modules-commonjs](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy) will handle it.
+
+- `(string) => boolean` - [babel-plugin-transform-modules-commonjs](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy) will handle it.
+
+  If you choose to do this, you can also access the list of Expo packages that have side effects by using `const lazyImportsBlacklist = require('babel-preset-expo/lazy-imports-blacklist');` which returns a `Set`.
+
+**default:** `null`
+
+```js
+[
+    'babel-preset-expo',
+    {
+        lazyImports: true
+    }
+],
+```
+
+### `web.disableImportExportTransform`
 
 Enabling this option will allow your project to run with older JavaScript syntax (i.e. `module.exports`). This option will break tree shaking and increase your bundle size, but will eliminate the following error when `module.exports` is used:
 
@@ -17,7 +50,7 @@ Enabling this option will allow your project to run with older JavaScript syntax
 [
     'babel-preset-expo',
     {
-        web: { transformImportExport: true }
+        web: { disableImportExportTransform: true }
     }
 ],
 ```

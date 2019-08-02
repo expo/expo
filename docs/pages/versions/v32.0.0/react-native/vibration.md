@@ -17,35 +17,31 @@ Repeatable vibration is also supported, the vibration will repeat with defined p
 
 Example:
 
-
 ```javascript
+const DURATION = 10000;
+const PATTERN = [1000, 2000, 3000];
 
-const DURATION = 10000
-const PATTERN = [1000, 2000, 3000]
-
-Vibration.vibrate(DURATION)
+Vibration.vibrate(DURATION);
 // Android: vibrate for 10s
 // iOS: duration is not configurable, vibrate for fixed time (about 500ms)
 
-Vibration.vibrate(PATTERN)
+Vibration.vibrate(PATTERN);
 // Android: wait 1s -> vibrate 2s -> wait 3s
 // iOS: wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate
 
-Vibration.vibrate(PATTERN, true)
+Vibration.vibrate(PATTERN, true);
 // Android: wait 1s -> vibrate 2s -> wait 3s -> wait 1s -> vibrate 2s -> wait 3s -> ...
 // iOS: wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate -> wait 1s -> vibrate -> wait 2s -> vibrate -> wait 3s -> vibrate -> ...
 
-Vibration.cancel()
+Vibration.cancel();
 // Android: vibration stopped
 // iOS: vibration stopped
-
 ```
-
 
 ### Methods
 
-* [`vibrate`](../vibration/#vibrate)
-* [`cancel`](../vibration/#cancel)
+- [`vibrate`](../vibration/#vibrate)
+- [`cancel`](../vibration/#cancel)
 
 ---
 
@@ -55,42 +51,31 @@ Vibration.cancel()
 
 ### `vibrate()`
 
-
 ```javascript
 
 Vibration.vibrate(pattern: number, Array<number>, repeat: boolean)
 
 ```
 
-
 Trigger a vibration with specified `pattern`.
 
 **Parameters:**
 
-| Name    | Type                    | Required | Description                                                                  |
-| ------- | ----------------------- | -------- | ---------------------------------------------------------------------------- |
+| Name    | Type                      | Required | Description                                                                  |
+| ------- | ------------------------- | -------- | ---------------------------------------------------------------------------- |
 | pattern | number or Array\<number\> | Yes      | Vibration pattern, accept a number or an array of numbers. Default to 400ms. |
-| repeat  | boolean                 | No       | Repeat vibration pattern until cancel(), default to false.                   |
+| repeat  | boolean                   | No       | Repeat vibration pattern until cancel(), default to false.                   |
 
 ---
 
 ### `cancel()`
 
-
 ```javascript
-
 Vibration.cancel();
-
 ```
-
 
 Stop vibration.
 
-
 ```javascript
-
-Vibration.cancel()
-
+Vibration.cancel();
 ```
-
-

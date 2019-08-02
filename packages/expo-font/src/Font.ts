@@ -95,11 +95,7 @@ export async function loadAsync(
   await loadPromises[name];
 }
 
-export {
-  FontSource, 
-  FontDisplay, 
-  FontResource,
-}
+export { FontSource, FontDisplay, FontResource };
 
 declare var module: any;
 
@@ -119,7 +115,7 @@ if (module && module.exports) {
         isLoaded,
         isLoading,
         loadAsync,
-        FontDisplay, 
+        FontDisplay,
       };
     },
   });

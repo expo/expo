@@ -17,9 +17,7 @@ Repeatable vibration is also supported, the vibration will repeat with defined p
 
 Example:
 
-
 ```javascript
-
 const DURATION = 10000;
 const PATTERN = [1000, 2000, 3000];
 
@@ -38,9 +36,7 @@ Vibration.vibrate(PATTERN, true);
 Vibration.cancel();
 // Android: vibration stopped
 // iOS: vibration stopped
-
 ```
-
 
 ### Methods
 
@@ -55,42 +51,31 @@ Vibration.cancel();
 
 ### `vibrate()`
 
-
 ```javascript
 
 Vibration.vibrate(pattern: number, Array<number>, repeat: boolean)
 
 ```
 
-
 Trigger a vibration with specified `pattern`.
 
 **Parameters:**
 
-| Name    | Type                    | Required | Description                                                                  |
-| ------- | ----------------------- | -------- | ---------------------------------------------------------------------------- |
+| Name    | Type                      | Required | Description                                                                  |
+| ------- | ------------------------- | -------- | ---------------------------------------------------------------------------- |
 | pattern | number or Array\<number\> | Yes      | Vibration pattern, accept a number or an array of numbers. Default to 400ms. |
-| repeat  | boolean                 | No       | Repeat vibration pattern until cancel(), default to false.                   |
+| repeat  | boolean                   | No       | Repeat vibration pattern until cancel(), default to false.                   |
 
 ---
 
 ### `cancel()`
 
-
 ```javascript
-
 Vibration.cancel();
-
 ```
-
 
 Stop vibration.
 
-
 ```javascript
-
-Vibration.cancel()
-
+Vibration.cancel();
 ```
-
-

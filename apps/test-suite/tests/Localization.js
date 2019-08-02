@@ -1,5 +1,6 @@
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
+import { Platform } from 'react-native';
 
 const en = {
   good: 'good',
@@ -84,14 +85,16 @@ export function test(t) {
         t.expect(iso.length > 0).toBe(true);
       }
     });
-    t.it('Gets the current timzezone', async () => {
-      const result = Localization.timezone;
-      t.expect(result).toBeDefined();
-      t.expect(typeof result).toBe('string');
-      t.expect(result.length > 0).toBe(true);
-      // Format: expect something like America/Los_Angeles or America/Chihuahua
-      t.expect(result.split('/').length > 1).toBe(true);
-    });
+    if (Platform.OS !== 'web') {
+      t.it('Gets the current timezone', async () => {
+        const result = Localization.timezone;
+        t.expect(result).toBeDefined();
+        t.expect(typeof result).toBe('string');
+        t.expect(result.length > 0).toBe(true);
+        // Format: expect something like America/Los_Angeles or America/Chihuahua
+        t.expect(result.split('/').length > 1).toBe(true);
+      });
+    }
 
     t.it('Gets the current layout direction (ltr only)', async () => {
       const result = Localization.isRTL;

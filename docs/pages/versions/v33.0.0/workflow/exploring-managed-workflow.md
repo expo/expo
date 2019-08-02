@@ -1,10 +1,11 @@
 ---
-title: Walkthrough
+title: Managed Workflow Walkthrough
+sidebar_title: Walkthrough
 ---
 
 import Video from '../../../../components/plugins/Video'
 
-If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build, deploy, and update an app with the managed workflow, this is the right place for you. **Feel free to skip this if you just want to write code a quickly as possible** &mdash; [Up and Running](../up-and-running/) is for you.
+If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build, deploy, and update an app with the managed workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](../up-and-running/) is for you.
 
 ## Initialize a project
 
@@ -12,7 +13,7 @@ Let’s get started by initializing a project. `expo init` gives you several opt
 
 <Video file="exploring-managed/init.mp4" spaceAfter={30} />
 
-> _Note: You may see several `peerDependencies` warnings when intalling the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
+> _Note: You may see several `peerDependencies` warnings when installing the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
 
 ## Start the project
 

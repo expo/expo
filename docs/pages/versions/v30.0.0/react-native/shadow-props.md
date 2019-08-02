@@ -5,10 +5,10 @@ title: Shadow Props
 
 ### Props
 
-* [`shadowColor`](../shadow-props/#shadowcolor)
-* [`shadowOffset`](../shadow-props/#shadowoffset)
-* [`shadowOpacity`](../shadow-props/#shadowopacity)
-* [`shadowRadius`](../shadow-props/#shadowradius)
+- [`shadowColor`](../shadow-props/#shadowcolor)
+- [`shadowOffset`](../shadow-props/#shadowoffset)
+- [`shadowOpacity`](../shadow-props/#shadowopacity)
+- [`shadowRadius`](../shadow-props/#shadowradius)
 
 ---
 
@@ -20,8 +20,8 @@ title: Shadow Props
 
 Sets the drop shadow color
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | iOS      |
 
 ---
@@ -53,4 +53,3 @@ Sets the drop shadow blur radius
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | number | No       | iOS      |
-

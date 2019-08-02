@@ -45,7 +45,10 @@ async function runPuppeteerAsync() {
   page.on('console', async msg => {
     // 2. Filter the results into a list of objects
     const args = await Promise.all(msg.args().map(arg => parseHandle(arg)));
-    console.log(args);
+
+    for (const log of args) {
+      console.log(log.value);
+    }
 
     // 4. Ignore anything that isn't an object - in test-suite we are sending the results as an object.
     const jsonObjects = args.filter(({ type }) => type === 'object');
@@ -55,7 +58,7 @@ async function runPuppeteerAsync() {
         return value.magic === '[TEST-SUITE-END]';
       })[0];
       // 6. Print this for Circle CI debugging if the tests fail
-      console.log(results);
+      console.log(results.results);
 
       // 7. Close the browser and the webpack server
       await browser.close();
@@ -66,8 +69,10 @@ async function runPuppeteerAsync() {
 
       // 8. If there were any errors, then kill the process with non-zero for CI
       if (results.failed === 0) {
+        console.log('Passed!');
         process.exit(0);
       } else {
+        console.log('Failed: ', results.failed);
         process.exit(1);
       }
     }

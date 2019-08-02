@@ -5,32 +5,32 @@ title: View Style Props
 
 ### Props
 
-* [`borderRightColor`](../view-style-props/#borderrightcolor)
-* [`backfaceVisibility`](../view-style-props/#backfacevisibility)
-* [`borderBottomColor`](../view-style-props/#borderbottomcolor)
-* [`borderBottomEndRadius`](../view-style-props/#borderbottomendradius)
-* [`borderBottomLeftRadius`](../view-style-props/#borderbottomleftradius)
-* [`borderBottomRightRadius`](../view-style-props/#borderbottomrightradius)
-* [`borderBottomStartRadius`](../view-style-props/#borderbottomstartradius)
-* [`borderBottomWidth`](../view-style-props/#borderbottomwidth)
-* [`borderColor`](../view-style-props/#bordercolor)
-* [`borderEndColor`](../view-style-props/#borderendcolor)
-* [`borderLeftColor`](../view-style-props/#borderleftcolor)
-* [`borderLeftWidth`](../view-style-props/#borderleftwidth)
-* [`borderRadius`](../view-style-props/#borderradius)
-* [`backgroundColor`](../view-style-props/#backgroundcolor)
-* [`borderRightWidth`](../view-style-props/#borderrightwidth)
-* [`borderStartColor`](../view-style-props/#borderstartcolor)
-* [`borderStyle`](../view-style-props/#borderstyle)
-* [`borderTopColor`](../view-style-props/#bordertopcolor)
-* [`borderTopEndRadius`](../view-style-props/#bordertopendradius)
-* [`borderTopLeftRadius`](../view-style-props/#bordertopleftradius)
-* [`borderTopRightRadius`](../view-style-props/#bordertoprightradius)
-* [`borderTopStartRadius`](../view-style-props/#bordertopstartradius)
-* [`borderTopWidth`](../view-style-props/#bordertopwidth)
-* [`borderWidth`](../view-style-props/#borderwidth)
-* [`opacity`](../view-style-props/#opacity)
-* [`elevation`](../view-style-props/#elevation)
+- [`borderRightColor`](../view-style-props/#borderrightcolor)
+- [`backfaceVisibility`](../view-style-props/#backfacevisibility)
+- [`borderBottomColor`](../view-style-props/#borderbottomcolor)
+- [`borderBottomEndRadius`](../view-style-props/#borderbottomendradius)
+- [`borderBottomLeftRadius`](../view-style-props/#borderbottomleftradius)
+- [`borderBottomRightRadius`](../view-style-props/#borderbottomrightradius)
+- [`borderBottomStartRadius`](../view-style-props/#borderbottomstartradius)
+- [`borderBottomWidth`](../view-style-props/#borderbottomwidth)
+- [`borderColor`](../view-style-props/#bordercolor)
+- [`borderEndColor`](../view-style-props/#borderendcolor)
+- [`borderLeftColor`](../view-style-props/#borderleftcolor)
+- [`borderLeftWidth`](../view-style-props/#borderleftwidth)
+- [`borderRadius`](../view-style-props/#borderradius)
+- [`backgroundColor`](../view-style-props/#backgroundcolor)
+- [`borderRightWidth`](../view-style-props/#borderrightwidth)
+- [`borderStartColor`](../view-style-props/#borderstartcolor)
+- [`borderStyle`](../view-style-props/#borderstyle)
+- [`borderTopColor`](../view-style-props/#bordertopcolor)
+- [`borderTopEndRadius`](../view-style-props/#bordertopendradius)
+- [`borderTopLeftRadius`](../view-style-props/#bordertopleftradius)
+- [`borderTopRightRadius`](../view-style-props/#bordertoprightradius)
+- [`borderTopStartRadius`](../view-style-props/#bordertopstartradius)
+- [`borderTopWidth`](../view-style-props/#bordertopwidth)
+- [`borderWidth`](../view-style-props/#borderwidth)
+- [`opacity`](../view-style-props/#opacity)
+- [`elevation`](../view-style-props/#elevation)
 
 ---
 
@@ -40,8 +40,8 @@ title: View Style Props
 
 ### `borderRightColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -56,8 +56,8 @@ title: View Style Props
 
 ### `borderBottomColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -104,24 +104,24 @@ title: View Style Props
 
 ### `borderColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
 
 ### `borderEndColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
 
 ### `borderLeftColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -144,8 +144,8 @@ title: View Style Props
 
 ### `backgroundColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -160,8 +160,8 @@ title: View Style Props
 
 ### `borderStartColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -176,8 +176,8 @@ title: View Style Props
 
 ### `borderTopColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -245,4 +245,3 @@ title: View Style Props
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | number | No       | Android  |
-

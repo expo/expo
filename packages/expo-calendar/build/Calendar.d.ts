@@ -153,6 +153,7 @@ export declare const CalendarType: {
     EXCHANGE: string;
     SUBSCRIBED: string;
     BIRTHDAYS: string;
+    UNKNOWN: string;
 };
 export declare const EventStatus: {
     NONE: string;

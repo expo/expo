@@ -1,6 +1,6 @@
 {
   "name": "EXBackgroundFetch",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "summary": "Expo universal module for BackgroundFetch API",
   "description": "Expo universal module for BackgroundFetch API",
   "license": "MIT",

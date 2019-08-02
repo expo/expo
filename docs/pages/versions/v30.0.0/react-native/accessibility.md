@@ -19,16 +19,12 @@ When `true`, indicates that the view is an accessibility element. When a view is
 
 On Android, `accessible={true}` property for a react-native View will be translated into native `focusable={true}`.
 
-
 ```javascript
-
 <View accessible={true}>
   <Text>text one</Text>
   <Text>text two</Text>
 </View>
-
 ```
-
 
 In the above example, we can't get accessibility focus separately on 'text one' and 'text two'. Instead we get focus on a parent view with 'accessible' property.
 
@@ -38,20 +34,13 @@ When a view is marked as accessible, it is a good practice to set an accessibili
 
 To use, set the `accessibilityLabel` property to a custom string on your View:
 
-
 ```javascript
-
-<TouchableOpacity
-  accessible={true}
-  accessibilityLabel={'Tap me!'}
-  onPress={this._onPress}>
+<TouchableOpacity accessible={true} accessibilityLabel={'Tap me!'} onPress={this._onPress}>
   <View style={styles.button}>
     <Text style={styles.buttonText}>Press me!</Text>
   </View>
 </TouchableOpacity>
-
 ```
-
 
 In the above example, the `accessibilityLabel` on the TouchableOpacity element would default to "Press me!". The label is constructed by concatenating all Text node children separated by spaces.
 
@@ -61,23 +50,23 @@ Accessibility traits tell a person using VoiceOver what kind of element they hav
 
 To use, set the `accessibilityTraits` property to one of (or an array of) accessibility trait strings:
 
-* **none** Used when the element has no traits.
-* **button** Used when the element should be treated as a button.
-* **link** Used when the element should be treated as a link.
-* **header** Used when an element acts as a header for a content section (e.g. the title of a navigation bar).
-* **search** Used when the text field element should also be treated as a search field.
-* **image** Used when the element should be treated as an image. Can be combined with button or link, for example.
-* **selected** Used when the element is selected. For example, a selected row in a table or a selected button within a segmented control.
-* **plays** Used when the element plays its own sound when activated.
-* **key** Used when the element acts as a keyboard key.
-* **text** Used when the element should be treated as static text that cannot change.
-* **summary** Used when an element can be used to provide a quick summary of current conditions in the app when the app first launches. For example, when Weather first launches, the element with today's weather conditions is marked with this trait.
-* **disabled** Used when the control is not enabled and does not respond to user input.
-* **frequentUpdates** Used when the element frequently updates its label or value, but too often to send notifications. Allows an accessibility client to poll for changes. A stopwatch would be an example.
-* **startsMedia** Used when activating an element starts a media session (e.g. playing a movie, recording audio) that should not be interrupted by output from an assistive technology, like VoiceOver.
-* **adjustable** Used when an element can be "adjusted" (e.g. a slider).
-* **allowsDirectInteraction** Used when an element allows direct touch interaction for VoiceOver users (for example, a view representing a piano keyboard).
-* **pageTurn** Informs VoiceOver that it should scroll to the next page when it finishes reading the contents of the element.
+- **none** Used when the element has no traits.
+- **button** Used when the element should be treated as a button.
+- **link** Used when the element should be treated as a link.
+- **header** Used when an element acts as a header for a content section (e.g. the title of a navigation bar).
+- **search** Used when the text field element should also be treated as a search field.
+- **image** Used when the element should be treated as an image. Can be combined with button or link, for example.
+- **selected** Used when the element is selected. For example, a selected row in a table or a selected button within a segmented control.
+- **plays** Used when the element plays its own sound when activated.
+- **key** Used when the element acts as a keyboard key.
+- **text** Used when the element should be treated as static text that cannot change.
+- **summary** Used when an element can be used to provide a quick summary of current conditions in the app when the app first launches. For example, when Weather first launches, the element with today's weather conditions is marked with this trait.
+- **disabled** Used when the control is not enabled and does not respond to user input.
+- **frequentUpdates** Used when the element frequently updates its label or value, but too often to send notifications. Allows an accessibility client to poll for changes. A stopwatch would be an example.
+- **startsMedia** Used when activating an element starts a media session (e.g. playing a movie, recording audio) that should not be interrupted by output from an assistive technology, like VoiceOver.
+- **adjustable** Used when an element can be "adjusted" (e.g. a slider).
+- **allowsDirectInteraction** Used when an element allows direct touch interaction for VoiceOver users (for example, a view representing a piano keyboard).
+- **pageTurn** Informs VoiceOver that it should scroll to the next page when it finishes reading the contents of the element.
 
 #### accessibilityViewIsModal (iOS)
 
@@ -103,7 +92,6 @@ Assign this property to a custom function which will be called when someone perf
 
 In some cases, we also want to alert the end user of the type of selected component (i.e., that it is a “button”). If we were using native buttons, this would work automatically. Since we are using javascript, we need to provide a bit more context for TalkBack. To do so, you must specify the ‘accessibilityComponentType’ property for any UI component. We support 'none', ‘button’, ‘radiobutton_checked’ and ‘radiobutton_unchecked’.
 
-
 ```javascript
 
 <TouchableWithoutFeedback accessibilityComponentType=”button”
@@ -115,17 +103,15 @@ In some cases, we also want to alert the end user of the type of selected compon
 
 ```
 
-
 In the above example, the TouchableWithoutFeedback is being announced by TalkBack as a native Button.
 
 #### accessibilityLiveRegion (Android)
 
 When components dynamically change, we want TalkBack to alert the end user. This is made possible by the ‘accessibilityLiveRegion’ property. It can be set to ‘none’, ‘polite’ and ‘assertive’:
 
-* **none** Accessibility services should not announce changes to this view.
-* **polite** Accessibility services should announce changes to this view.
-* **assertive** Accessibility services should interrupt ongoing speech to immediately announce changes to this view.
-
+- **none** Accessibility services should not announce changes to this view.
+- **polite** Accessibility services should announce changes to this view.
+- **assertive** Accessibility services should interrupt ongoing speech to immediately announce changes to this view.
 
 ```javascript
 
@@ -140,13 +126,11 @@ When components dynamically change, we want TalkBack to alert the end user. This
 
 ```
 
-
 In the above example method \_addOne changes the state.count variable. As soon as an end user clicks the TouchableWithoutFeedback, TalkBack reads text in the Text view because of its 'accessibilityLiveRegion=”polite”' property.
 
 #### importantForAccessibility (Android)
 
 In the case of two overlapping UI components with the same parent, default accessibility focus can have unpredictable behavior. The ‘importantForAccessibility’ property will resolve this by controlling if a view fires accessibility events and if it is reported to accessibility services. It can be set to ‘auto’, ‘yes’, ‘no’ and ‘no-hide-descendants’ (the last value will force accessibility services to ignore the component and all of its children).
-
 
 ```javascript
 
@@ -163,7 +147,6 @@ In the case of two overlapping UI components with the same parent, default acces
 
 ```
 
-
 In the above example, the yellow layout and its descendants are completely invisible to TalkBack and all other accessibility services. So we can easily use overlapping views with the same parent without confusing TalkBack.
 
 ### Checking if a Screen Reader is Enabled
@@ -173,7 +156,6 @@ The `AccessibilityInfo` API allows you to determine whether or not a screen read
 ### Sending Accessibility Events (Android)
 
 Sometimes it is useful to trigger an accessibility event on a UI component (i.e. when a custom view appears on a screen or a custom radio button has been selected). Native UIManager module exposes a method ‘sendAccessibilityEvent’ for this purpose. It takes two arguments: view tag and a type of an event.
-
 
 ```javascript
 
@@ -200,7 +182,6 @@ _onPress: function() {
 
 ```
 
-
 In the above example we've created a custom radio button that now behaves like a native one. More specifically, TalkBack now correctly announces changes to the radio button selection.
 
 ## Testing VoiceOver Support (iOS)
@@ -210,4 +191,3 @@ To enable VoiceOver, go to the Settings app on your iOS device. Tap General, the
 To enable VoiceOver, tap on VoiceOver under "Vision" and toggle the switch that appears at the top.
 
 At the very bottom of the Accessibility settings, there is an "Accessibility Shortcut". You can use this to toggle VoiceOver by triple clicking the Home button.
-

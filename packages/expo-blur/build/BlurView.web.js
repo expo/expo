@@ -20,10 +20,9 @@ BlurView.defaultProps = {
 function isBlurSupported() {
     // https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports
     // https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter#Browser_compatibility
-    // TODO: Bacon: Chrome blur seems broken natively
-    return typeof CSS !== 'undefined' && CSS.supports('-webkit-backdrop-filter', 'blur(1px)');
-    // TODO: Bacon: Chrome doesn't work, RNWeb uses webkit on Safari, which works.
-    // || CSS.supports('backdrop-filter', 'blur(1px)')
+    return (typeof CSS !== 'undefined' &&
+        (CSS.supports('-webkit-backdrop-filter', 'blur(1px)') ||
+            CSS.supports('backdrop-filter', 'blur(1px)')));
 }
 function getBlurStyle({ intensity, tint }) {
     if (isBlurSupported()) {

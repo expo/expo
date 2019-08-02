@@ -9,7 +9,6 @@ It is important all children are `<View>`s and not composite components. You can
 
 Example:
 
-
 ```javascript
 
 render: function() {
@@ -42,25 +41,24 @@ var styles = {
 
 ```
 
-
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`initialPage`](../viewpagerandroid/#initialpage)
-- [`keyboardDismissMode`](../viewpagerandroid/#keyboarddismissmode)
-- [`onPageScroll`](../viewpagerandroid/#onpagescroll)
-- [`onPageScrollStateChanged`](../viewpagerandroid/#onpagescrollstatechanged)
-- [`onPageSelected`](../viewpagerandroid/#onpageselected)
-- [`pageMargin`](../viewpagerandroid/#pagemargin)
-- [`peekEnabled`](../viewpagerandroid/#peekenabled)
-- [`scrollEnabled`](../viewpagerandroid/#scrollenabled)
-- [`setPage`](../viewpagerandroid/#setpage)
-- [`setPageWithoutAnimation`](../viewpagerandroid/#setpagewithoutanimation)
+* [`initialPage`](../viewpagerandroid/#initialpage)
+* [`keyboardDismissMode`](../viewpagerandroid/#keyboarddismissmode)
+* [`onPageScroll`](../viewpagerandroid/#onpagescroll)
+* [`onPageScrollStateChanged`](../viewpagerandroid/#onpagescrollstatechanged)
+* [`onPageSelected`](../viewpagerandroid/#onpageselected)
+* [`pageMargin`](../viewpagerandroid/#pagemargin)
+* [`peekEnabled`](../viewpagerandroid/#peekenabled)
+* [`scrollEnabled`](../viewpagerandroid/#scrollenabled)
+* [`setPage`](../viewpagerandroid/#setpage)
+* [`setPageWithoutAnimation`](../viewpagerandroid/#setpagewithoutanimation)
 
 ### Type Definitions
 
-* [`ViewPagerScrollState`](../viewpagerandroid/#viewpagerscrollstate)
+- [`ViewPagerScrollState`](../viewpagerandroid/#viewpagerscrollstate)
 
 ---
 
@@ -82,8 +80,8 @@ Index of initial page that should be selected. Use `setPage` method to update th
 
 Determines whether the keyboard gets dismissed in response to a drag.
 
-* 'none' (the default), drags do not dismiss the keyboard.
-* 'on-drag', the keyboard is dismissed when a drag begins.
+- 'none' (the default), drags do not dismiss the keyboard.
+- 'on-drag', the keyboard is dismissed when a drag begins.
 
 | Type                    | Required |
 | ----------------------- | -------- |
@@ -95,8 +93,8 @@ Determines whether the keyboard gets dismissed in response to a drag.
 
 Executed when transitioning between pages (ether because of animation for the requested page change or when user is swiping/dragging between pages) The `event.nativeEvent` object for this callback will carry following data:
 
-* position - index of first page from the left that is currently visible
-* offset - value from range [0,1) describing stage between page transitions. Value x means that (1 - x) fraction of the page at "position" index is visible, and x fraction of the next page is visible.
+- position - index of first page from the left that is currently visible
+- offset - value from range [0,1) describing stage between page transitions. Value x means that (1 - x) fraction of the page at "position" index is visible, and x fraction of the next page is visible.
 
 | Type     | Required |
 | -------- | -------- |
@@ -108,9 +106,9 @@ Executed when transitioning between pages (ether because of animation for the re
 
 Function called when the page scrolling state has changed. The page scrolling state can be in 3 states:
 
-* idle, meaning there is no interaction with the page scroller happening at the time
-* dragging, meaning there is currently an interaction with the page scroller
-* settling, meaning that there was an interaction with the page scroller, and the page scroller is now finishing it's closing or opening animation
+- idle, meaning there is no interaction with the page scroller happening at the time
+- dragging, meaning there is currently an interaction with the page scroller
+- settling, meaning that there was an interaction with the page scroller, and the page scroller is now finishing it's closing or opening animation
 
 | Type     | Required |
 | -------- | -------- |
@@ -122,7 +120,7 @@ Function called when the page scrolling state has changed. The page scrolling st
 
 This callback will be called once ViewPager finish navigating to selected page (when user swipes between pages). The `event.nativeEvent` object passed to this callback will have following fields:
 
-* position - index of page that has been selected
+- position - index of page that has been selected
 
 | Type     | Required |
 | -------- | -------- |
@@ -164,7 +162,7 @@ When false, the content does not scroll. The default value is true.
 
 A helper function to scroll to a specific page in the ViewPager. The transition between pages will be animated.
 
-* position - index of page that will be selected
+- position - index of page that will be selected
 
 | Type   | Required |
 | ------ | -------- |
@@ -176,7 +174,7 @@ A helper function to scroll to a specific page in the ViewPager. The transition 
 
 A helper function to scroll to a specific page in the ViewPager. The transition between pages will _not_ be animated.
 
-* position - index of page that will be selected
+- position - index of page that will be selected
 
 | Type   | Required |
 | ------ | -------- |
@@ -186,9 +184,9 @@ A helper function to scroll to a specific page in the ViewPager. The transition 
 
 ### ViewPagerScrollState
 
-| Type  |
-| ----- |
-| $Enum |
+| Type   |
+| ------ |
+| \$Enum |
 
 **Constants:**
 
@@ -197,4 +195,3 @@ A helper function to scroll to a specific page in the ViewPager. The transition 
 | idle     |             |
 | dragging |             |
 | settling |             |
-

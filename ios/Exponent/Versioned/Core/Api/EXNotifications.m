@@ -115,6 +115,56 @@ RCT_EXPORT_METHOD(presentLocalNotification:(NSDictionary *)payload
   }];
 }
 
+
+  RCT_EXPORT_METHOD(scheduleNotificationWithTimer:(NSDictionary *)payload
+                   withOptions:(NSDictionary *)options
+                   resolver:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+{
+ if (!payload[@"data"]) {
+   reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
+   return;
+ }
+ BOOL repeats = [options[@"repeat"] boolValue];
+ int seconds = [options[@"interval"] intValue] / 1000;
+ UNTimeIntervalNotificationTrigger *notificationTrigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:seconds repeats:repeats];
+ UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
+ UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
+                                                                       content:content
+                                                                       trigger:notificationTrigger];
+ [_userNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+   if (error) {
+     reject(@"E_NOTIF_REQ", error.localizedDescription, error);
+   } else {
+     resolve(content.userInfo[@"id"]);
+   }
+ }];
+}
+
+RCT_EXPORT_METHOD(scheduleNotificationWithCalendar:(NSDictionary *)payload
+                 withOptions:(NSDictionary *)options
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+ if (!payload[@"data"]) {
+   reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.", nil);
+   return;
+ }
+ UNCalendarNotificationTrigger *notificationTrigger = [self calendarTriggerFrom:options];
+ UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
+ UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
+                                                                       content:content
+                                                                       trigger:notificationTrigger];
+ [_userNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+   if (error) {
+     reject(@"E_NOTIF_REQ", error.localizedDescription, error);
+   } else {
+     resolve(content.userInfo[@"id"]);
+   }
+ }];
+}
+
+
 RCT_EXPORT_METHOD(scheduleLocalNotification:(NSDictionary *)payload
                   withOptions:(NSDictionary *)options
                   resolver:(RCTPromiseResolveBlock)resolve
@@ -341,12 +391,33 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
   return [calendar components:unitFlags fromDate:triggerDate];
 }
 
+- (UNCalendarNotificationTrigger *)calendarTriggerFrom:(NSDictionary *)options
+{
+ BOOL repeats = [options[@"repeat"] boolValue];
+
+  NSDateComponents *date = [[NSDateComponents alloc] init];
+
+  NSArray *timeUnits = @[@"year", @"day", @"weekDay", @"month", @"hour", @"second", @"minute"];
+
+  for (NSString *timeUnit in timeUnits) {
+   if (options[timeUnit]) {
+     [date setValue:options[timeUnit] forKey:timeUnit];
+   }
+ }
+
+  return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:date repeats:repeats];
+}
+
+
 - (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
 {
   NSString *actionId = [self internalIdForIdentifier:params[@"actionId"]];
   NSString *buttonTitle = params[@"buttonTitle"];
 
-  UNNotificationActionOptions options = UNNotificationActionOptionForeground;
+  UNNotificationActionOptions options = UNNotificationActionOptionNone;
+  if (![params[@"doNotOpenInForeground"] boolValue]) {
+    options += UNNotificationActionOptionForeground;
+  }
   if ([params[@"isDestructive"] boolValue]) {
     options += UNNotificationActionOptionDestructive;
   }
