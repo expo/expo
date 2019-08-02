@@ -3,12 +3,12 @@ package expo.modules.permissions.requesters
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import expo.modules.permissions.PermissionsModule
 import expo.modules.permissions.PermissionsTypes.SYSTEM_BRIGHTNESS
 import expo.modules.permissions.DENIED_VALUE
 import expo.modules.permissions.EXPIRES_KEY
 import expo.modules.permissions.GRANTED_VALUE
 import expo.modules.permissions.PERMISSION_EXPIRES_NEVER
+import expo.modules.permissions.PermissionsService
 import expo.modules.permissions.STATUS_KEY
 import expo.modules.permissions.UNDETERMINED_VALUE
 import org.unimodules.core.interfaces.ActivityProvider
@@ -20,21 +20,25 @@ class SystemBrightnessRequester(private val activityProvider: ActivityProvider) 
   override fun getPermission(): Bundle {
     return Bundle().apply {
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-      var statusKey: String = GRANTED_VALUE
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        statusKey = when {
-          Settings.System.canWrite(activityProvider.currentActivity.applicationContext) -> {
-            GRANTED_VALUE
-          }
-          PermissionsModule.didAsk(SYSTEM_BRIGHTNESS.type) -> {
-            DENIED_VALUE
-          }
-          else -> {
-            UNDETERMINED_VALUE
-          }
+      putString(STATUS_KEY, when {
+        writePermissionsCheck() -> {
+          GRANTED_VALUE
         }
-      }
-      putString(STATUS_KEY, statusKey)
+        PermissionsService.didAsk(SYSTEM_BRIGHTNESS.type) -> {
+          DENIED_VALUE
+        }
+        else -> {
+          UNDETERMINED_VALUE
+        }
+      })
+    }
+  }
+
+  private fun writePermissionsCheck(): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      Settings.System.canWrite(activityProvider.currentActivity.applicationContext)
+    } else {
+      true
     }
   }
 }

@@ -2,9 +2,8 @@ package expo.modules.permissions.requesters
 
 import android.os.Bundle
 
-
 /**
- * Used for representing CAMERA, CONTACTS, AUDIORECORDING, SMS
+ * Used for representing CAMERA, CONTACTS, AUDIO_RECORDING, SMS
  *
  */
 class SimpleRequester(val permission: String) : PermissionRequester {

@@ -2,7 +2,8 @@ package expo.modules.permissions.requesters
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import expo.modules.permissions.*
+import expo.modules.permissions.PermissionsService
+import expo.modules.permissions.PERMISSION_EXPIRES_NEVER
 import expo.modules.permissions.EXPIRES_KEY
 import expo.modules.permissions.GRANTED_VALUE
 import expo.modules.permissions.STATUS_KEY
@@ -18,7 +19,7 @@ interface PermissionRequester {
      * @param permission [android.Manifest.permission]
      */
     fun isPermissionGranted(permission: String): Boolean {
-      return PermissionsModule.getPermissionService().getPermission(permission) == PackageManager.PERMISSION_GRANTED
+      return PermissionsService.getPermissionService().getPermission(permission) == PackageManager.PERMISSION_GRANTED
     }
 
     /**
@@ -26,7 +27,7 @@ interface PermissionRequester {
      * Throws IllegalStateException there's no Permissions module present.
      */
     fun arePermissionsGranted(permissions: Array<String>): Boolean {
-      with (PermissionsModule.getPermissionService().getPermissions(permissions)) {
+      with (PermissionsService.getPermissionService().getPermissions(permissions)) {
         return count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
       }
     }
@@ -38,7 +39,7 @@ interface PermissionRequester {
             isPermissionGranted(permission) -> {
               putString(STATUS_KEY, GRANTED_VALUE)
             }
-            PermissionsModule.didAsk(permission) -> {
+            PermissionsService.didAsk(permission) -> {
               putString(STATUS_KEY, GRANTED_VALUE)
             }
             else -> {

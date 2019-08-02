@@ -2,12 +2,12 @@ package expo.modules.permissions.requesters
 
 import android.Manifest
 import android.os.Bundle
-import expo.modules.permissions.PermissionsModule
-import expo.modules.permissions.PermissionsTypes.CALENDAR
+import expo.modules.permissions.PermissionsService
 import expo.modules.permissions.DENIED_VALUE
 import expo.modules.permissions.EXPIRES_KEY
 import expo.modules.permissions.GRANTED_VALUE
 import expo.modules.permissions.PERMISSION_EXPIRES_NEVER
+import expo.modules.permissions.PermissionsTypes.CALENDAR
 import expo.modules.permissions.STATUS_KEY
 import expo.modules.permissions.UNDETERMINED_VALUE
 
@@ -26,7 +26,7 @@ class CalendarRequester : PermissionRequester {
           PermissionRequester.arePermissionsGranted(getPermissionToAsk()) -> {
             putString(STATUS_KEY, GRANTED_VALUE)
           }
-          PermissionsModule.didAsk(CALENDAR.type) -> {
+          PermissionsService.didAsk(CALENDAR.type) -> {
             putString(STATUS_KEY, DENIED_VALUE)
           }
           else -> {
