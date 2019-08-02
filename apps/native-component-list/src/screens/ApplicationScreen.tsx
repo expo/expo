@@ -9,14 +9,12 @@ interface ApplicationConstantsName {
   value?: any;
 }
 
-interface mState {
+interface State {
   installReferrer?: string;
   idForVendor?: string;
   firstInstallDate?: string | undefined;
   lastUpdateDate?: string | undefined;
 }
-
-interface props {}
 
 class ApplicationConstants extends React.Component<ApplicationConstantsName> {
   render() {
@@ -39,19 +37,23 @@ class ApplicationConstants extends React.Component<ApplicationConstantsName> {
   }
 }
 
-export default class DeviceScreen extends React.PureComponent<props, mState> {
+export default class ApplicationScreen extends React.Component<{}, State> {
   static navigationOptions = {
-    title: 'Device',
+    title: 'Application',
   };
 
-  constructor(props: Readonly<props>) {
-    super(props);
-    this.state = {
-      installReferrer: '',
-      idForVendor: '',
-      firstInstallDate: '',
-      lastUpdateDate: ''
-    };
+  state: State = {
+    installReferrer: '',
+    idForVendor: '',
+    firstInstallDate: '',
+    lastUpdateDate: '',
+  };
+
+  componentDidMount() {
+    this._getInstallReferrer();
+    this._getIDFV();
+    this._getLastUpdateDate();
+    this._getFirstInstallDate();
   }
 
   _getInstallReferrer = () => {
