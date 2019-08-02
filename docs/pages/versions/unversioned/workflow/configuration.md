@@ -356,7 +356,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       and Split View on iPad.
       Defaults to `true` currently, but will change to `false` in a future SDK version.
 
-      ExpoKit: use Xcode to set this.
+      ExpoKit: use Xcode to set `UIRequiresFullScreen`.
     */
     "requireFullScreen": BOOLEAN,
 
