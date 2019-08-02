@@ -57,13 +57,14 @@ class DeviceMethods extends React.Component<DeviceMethod, State> {
 
   render() {
     let { name } = this.props;
+    if(!name) name = '';
     return (
       <View style={{ padding: 10 }}>
         <View style={{ marginBottom: 10 }}>
           <HeadingText>{name}</HeadingText>
           <MonoText> {this.state.value}</MonoText>
         </View>
-        <Button onPress={this._getValue} title="getDeviceType" color="#DCA42D" />
+        <Button onPress={this._getValue} title={name} color="#DCA42D" />
       </View>
     );
   }
