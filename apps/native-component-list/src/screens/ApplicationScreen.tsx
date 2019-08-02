@@ -4,19 +4,21 @@ import * as Application from 'expo-application';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
-interface ApplicationConstantsName {
+interface ApplicationConstant {
   name?: string;
   value?: any;
 }
 
-interface State {
-  installReferrer?: string;
-  idForVendor?: string;
-  firstInstallDate?: string | undefined;
-  lastUpdateDate?: string | undefined;
+interface ApplicationMethod {
+  name?: string;
+  method?: any;
 }
 
-class ApplicationConstants extends React.Component<ApplicationConstantsName> {
+interface State {
+  value?: string;
+}
+
+class ApplicationConstants extends React.Component<ApplicationConstant> {
   render() {
     let { name, value } = this.props;
     if (typeof value === 'boolean') {
@@ -37,99 +39,72 @@ class ApplicationConstants extends React.Component<ApplicationConstantsName> {
   }
 }
 
-export default class ApplicationScreen extends React.Component<{}, State> {
+class ApplicationMethods extends React.Component<ApplicationMethod, State> {
+  state = {
+    value: '',
+  };
+
+  _getValue = async () => {
+    let method = this.props.method;
+    let value = await method();
+    if (value instanceof Date) {
+      value = value.toString();
+    }
+    this.setState({ value });
+  };
+
+  render() {
+    let { name } = this.props;
+    if (!name) name = '';
+    return (
+      <View style={{ padding: 10 }}>
+        <View style={{ marginBottom: 10 }}>
+          <HeadingText>{name}</HeadingText>
+          <MonoText> {this.state.value}</MonoText>
+        </View>
+        <Button onPress={this._getValue} title={name} color="#DCA42D" />
+      </View>
+    );
+  }
+}
+
+export default class ApplicationScreen extends React.Component {
   static navigationOptions = {
     title: 'Application',
   };
-
-  state: State = {
-    installReferrer: '',
-    idForVendor: '',
-    firstInstallDate: '',
-    lastUpdateDate: '',
-  };
-
-  componentDidMount() {
-    this._getInstallReferrer();
-    this._getIDFV();
-    this._getLastUpdateDate();
-    this._getFirstInstallDate();
-  }
-
-  _getInstallReferrer = () => {
-    Application.getInstallReferrerAsync().then(installReferrer => {
-      this.setState({ installReferrer: installReferrer });
-    });
-  };
-
-  _getIDFV = () => {
-    Application.getIosIdForVendorAsync().then(idForVendor => {
-      this.setState({ idForVendor: idForVendor });
-    });
-  };
-
-  _getFirstInstallDate = () => {
-    Application.getFirstInstallTimeAsync().then(firstInstallDate => {
-      this.setState({ firstInstallDate: firstInstallDate.toDateString() });
-    });
-  };
-
-  _getLastUpdateDate = () => {
-    Application.getLastUpdateTimeAsync().then(lastUpdateDate => {
-      this.setState({ lastUpdateDate: lastUpdateDate.toDateString() });
-    });
-  };
-
   render() {
     return (
       <ScrollView style={{ padding: 20, flex: 1, margin: 10 }}>
         <ApplicationConstants
           name="Application nativeApplicationVersion"
-          value={Application.nativeApplicationVersion}></ApplicationConstants>
+          value={Application.nativeApplicationVersion}
+        />
         <ApplicationConstants
           name="Application nativeBuildVersion"
-          value={Application.nativeBuildVersion}></ApplicationConstants>
+          value={Application.nativeBuildVersion}
+        />
         <ApplicationConstants
           name="Application applicationName"
-          value={Application.applicationName}></ApplicationConstants>
-        <ApplicationConstants
-          name="Application applicationId"
-          value={Application.applicationId}></ApplicationConstants>
-        <ApplicationConstants
-          name="Application androidId"
-          value={Application.androidId}></ApplicationConstants>
-        <View style={{ padding: 10 }}>
-          <View style={{ marginBottom: 10 }}>
-            <HeadingText>get InstallReferrer</HeadingText>
-            <MonoText> {this.state.installReferrer}</MonoText>
-          </View>
-          <Button onPress={this._getInstallReferrer} title="get InstallReferrer" color="#DCA42D" />
-        </View>
-        <View style={{ padding: 10 }}>
-          <View style={{ marginBottom: 10 }}>
-            <HeadingText>get IosIdForVendor</HeadingText>
-            <MonoText> {this.state.idForVendor}</MonoText>
-          </View>
-          <Button onPress={this._getIDFV} title="get IosIdForVendor" color="#DCA42D" />
-        </View>
-        <View style={{ padding: 10 }}>
-          <View style={{ marginBottom: 10 }}>
-            <HeadingText>get firstInstallDate</HeadingText>
-            <MonoText> {this.state.firstInstallDate}</MonoText>
-          </View>
-          <Button
-            onPress={this._getFirstInstallDate}
-            title="get firstInstallDate"
-            color="#DCA42D"
-          />
-        </View>
-        <View style={{ padding: 10 }}>
-          <View style={{ marginBottom: 10 }}>
-            <HeadingText>get lastUpdateDate</HeadingText>
-            <MonoText> {this.state.lastUpdateDate}</MonoText>
-          </View>
-          <Button onPress={this._getLastUpdateDate} title="get lastUpdateDate" color="#DCA42D" />
-        </View>
+          value={Application.applicationName}
+        />
+        <ApplicationConstants name="Application applicationId" value={Application.applicationId} />
+        <ApplicationConstants name="Application androidId" value={Application.androidId} />
+        <ApplicationMethods
+          name="Application get install referrer"
+          method={Application.getInstallReferrerAsync}
+        />
+        <ApplicationMethods
+          name="Application get IosIdForVendor"
+          method={Application.getIosIdForVendorAsync}
+        />
+        <ApplicationMethods
+          name="Application get first install time"
+          method={Application.getFirstInstallTimeAsync}
+        />
+        <ApplicationMethods
+          name="Application get last update time"
+          method={Application.getLastUpdateTimeAsync}
+        />
       </ScrollView>
     );
   }
