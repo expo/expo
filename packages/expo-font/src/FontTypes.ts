@@ -5,12 +5,15 @@ import { Asset } from 'expo-asset';
  */
 export type FontSource = string | number | Asset | FontResource;
 
-// noop: web only
 export enum FontDisplay {
-    Auto = 'auto',
+  Auto = 'auto',
+  Block = 'block',
+  Swap = 'swap',
+  Fallback = 'fallback',
+  Optional = 'optional',
 }
-  
+
 export interface FontResource {
-    uri: string | number;
-    display?: FontDisplay;
+  uri: string | number;
+  display?: FontDisplay;
 }

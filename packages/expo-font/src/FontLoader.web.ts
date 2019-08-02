@@ -1,38 +1,48 @@
 import ExpoFontLoader from './ExpoFontLoader';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { FontSource, FontResource } from './FontTypes.web';
-/**
- * A font source can be a URI, a module ID, or an Expo Asset.
- */
+import { FontSource, FontResource } from './FontTypes';
+import { Asset } from 'expo-asset';
 
 export function fontFamilyNeedsScoping(name: string): boolean {
   return false;
 }
 
-export function getAssetForSource(source: FontSource): FontResource {
+export function getAssetForSource(source: FontSource): Asset | FontResource {
   if (typeof source === 'object' && 'uri' in source) {
     return {
-        display: source.display,
-        // @ts-ignore
-        uri: source.uri || source.localUri
-    }
+      // @ts-ignore
+      display: source.display,
+      // @ts-ignore
+      uri: source.uri || source.localUri,
+    };
   }
 
   if (typeof source !== 'string') {
-    throw new Error(`Unexpected type ${typeof source} expected a URI string or Asset from expo-asset.`);
+    throw new Error(
+      `Unexpected type ${typeof source} expected a URI string or Asset from expo-asset.`
+    );
   }
 
   return {
-      uri: source
-    };
+    uri: source,
+  };
 }
 
-export async function loadSingleFontAsync(name: string, asset: FontResource): Promise<void> {
-    if (canUseDOM) {
-        await ExpoFontLoader.loadAsync(name, asset);
-    }
+export async function loadSingleFontAsync(
+  name: string,
+  input: Asset | FontResource
+): Promise<void> {
+  const asset = input as Asset;
+  if (asset.downloadAsync) {
+    throw new Error('expo-font: loadSingleFontAsync expected an asset of type FontResource on web');
+  }
+
+  // Guard for SSR
+  if (canUseDOM) {
+    await ExpoFontLoader.loadAsync(name, asset);
+  }
 }
 
 export function getNativeFontName(name: string): string {
-    return name;
+  return name;
 }

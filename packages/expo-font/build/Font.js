@@ -1,40 +1,7 @@
-<<<<<<< HEAD
 import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
 import { FontDisplay } from './FontTypes';
-||||||| merged common ancestors
-import { Asset } from 'expo-asset';
-import Constants from 'expo-constants';
-import { Platform } from '@unimodules/core';
-import ExpoFontLoader from './ExpoFontLoader';
-const isWeb = Platform.OS === 'web';
-const isInClient = !isWeb && Constants.appOwnership === 'expo';
-=======
-import { Asset } from 'expo-asset';
-import Constants from 'expo-constants';
-import { Platform } from '@unimodules/core';
-import ExpoFontLoader from './ExpoFontLoader';
-const isWeb = Platform.OS === 'web';
-const isInClient = !isWeb && Constants.appOwnership === 'expo';
-const isInIOSStandalone = Constants.appOwnership === 'standalone' && Platform.OS === 'ios';
->>>>>>> master
 const loaded = {};
 const loadPromises = {};
-<<<<<<< HEAD
-||||||| merged common ancestors
-function fontFamilyNeedsScoping(name) {
-    return (isInClient &&
-        !Constants.systemFonts.includes(name) &&
-        name !== 'System' &&
-        !name.includes(Constants.sessionId));
-}
-=======
-function fontFamilyNeedsScoping(name) {
-    return ((isInClient || isInIOSStandalone) &&
-        !Constants.systemFonts.includes(name) &&
-        name !== 'System' &&
-        !name.includes(Constants.sessionId));
-}
->>>>>>> master
 /**
  * Used to transform font family names to the scoped name. This does not need to
  * be called in standalone or bare apps but it will return unscoped font family
@@ -102,7 +69,7 @@ export async function loadAsync(nameOrMap, source) {
     })();
     await loadPromises[name];
 }
-export { FontDisplay, };
+export { FontDisplay };
 if (module && module.exports) {
     let wasImportWarningShown = false;
     // @ts-ignore: Temporarily define an export named "Font" for legacy compatibility

@@ -1,9 +1,11 @@
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import ExpoFontLoader from './ExpoFontLoader';
 const isInClient = Constants.appOwnership === 'expo';
+const isInIOSStandalone = Constants.appOwnership === 'standalone' && Platform.OS === 'ios';
 export function fontFamilyNeedsScoping(name) {
-    return (isInClient &&
+    return ((isInClient || isInIOSStandalone) &&
         !Constants.systemFonts.includes(name) &&
         name !== 'System' &&
         !name.includes(Constants.sessionId));
@@ -26,7 +28,11 @@ export function getAssetForSource(source) {
     // or returned Asset.fromModule if isWeb.
     return source;
 }
-export async function loadSingleFontAsync(name, asset) {
+export async function loadSingleFontAsync(name, input) {
+    const asset = input;
+    if (!asset.downloadAsync) {
+        throw new Error('expo-font: loadSingleFontAsync expected asset of type Asset on native');
+    }
     await asset.downloadAsync();
     if (!asset.downloaded) {
         throw new Error(`Failed to download asset for font "${name}"`);

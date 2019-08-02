@@ -4,7 +4,11 @@ import { Asset } from 'expo-asset';
  */
 export declare type FontSource = string | number | Asset | FontResource;
 export declare enum FontDisplay {
-    Auto = "auto"
+    Auto = "auto",
+    Block = "block",
+    Swap = "swap",
+    Fallback = "fallback",
+    Optional = "optional"
 }
 export interface FontResource {
     uri: string | number;

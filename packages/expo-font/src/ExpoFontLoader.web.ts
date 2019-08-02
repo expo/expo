@@ -1,7 +1,6 @@
 import FontObserver from 'fontfaceobserver';
 import { FontResource, FontDisplay } from './FontTypes';
 
-
 export default {
   get name(): string {
     return 'ExpoFontLoader';
@@ -43,8 +42,10 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
   // @ts-ignore: TypeScript does not define HTMLStyleElement::styleSheet. This is just for IE and
   // possibly can be removed if it's unnecessary on IE 11.
   if (styleElement.styleSheet) {
-    // @ts-ignore
-    styleElement.styleSheet.cssText = styleElement.styleSheet.cssText ? styleElement.styleSheet.cssText + fontStyle : fontStyle;
+    const styleElementIE = styleElement as any;
+    styleElementIE.styleSheet.cssText = styleElementIE.styleSheet.cssText
+      ? styleElementIE.styleSheet.cssText + fontStyle
+      : fontStyle;
   } else {
     const textNode = document.createTextNode(fontStyle);
     styleElement.appendChild(textNode);

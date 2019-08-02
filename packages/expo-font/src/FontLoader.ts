@@ -1,25 +1,23 @@
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import { FontSource } from './FontTypes';
-import ExpoFontLoader from './ExpoFontLoader';
+import { Platform } from 'react-native';
 
-/**
- * A font source can be a URI, a module ID, or an Expo Asset.
- */
-export type FontSource = string | number | Asset;
+import ExpoFontLoader from './ExpoFontLoader';
+import { FontResource, FontSource } from './FontTypes';
 
 const isInClient = Constants.appOwnership === 'expo';
+const isInIOSStandalone = Constants.appOwnership === 'standalone' && Platform.OS === 'ios';
 
 export function fontFamilyNeedsScoping(name: string): boolean {
   return (
-    isInClient &&
+    (isInClient || isInIOSStandalone) &&
     !Constants.systemFonts.includes(name) &&
     name !== 'System' &&
     !name.includes(Constants.sessionId)
   );
 }
 
-export function getAssetForSource(source: FontSource): Asset {
+export function getAssetForSource(source: FontSource): Asset | FontResource {
   if (source instanceof Asset) {
     return source;
   }
@@ -29,7 +27,7 @@ export function getAssetForSource(source: FontSource): Asset {
   } else if (typeof source === 'number') {
     return Asset.fromModule(source);
   } else if (typeof source === 'object' && typeof source.uri !== 'undefined') {
-      return getAssetForSource(source.uri);
+    return getAssetForSource(source.uri);
   }
 
   // @ts-ignore Error: Type 'string' is not assignable to type 'Asset'
@@ -38,7 +36,15 @@ export function getAssetForSource(source: FontSource): Asset {
   return source;
 }
 
-export async function loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
+export async function loadSingleFontAsync(
+  name: string,
+  input: Asset | FontResource
+): Promise<void> {
+  const asset = input as Asset;
+  if (!asset.downloadAsync) {
+    throw new Error('expo-font: loadSingleFontAsync expected asset of type Asset on native');
+  }
+
   await asset.downloadAsync();
   if (!asset.downloaded) {
     throw new Error(`Failed to download asset for font "${name}"`);

@@ -12,4 +12,4 @@ export declare function isLoading(name: string): boolean;
 export declare function loadAsync(nameOrMap: string | {
     [name: string]: FontSource;
 }, source?: FontSource): Promise<void>;
-export { FontSource, FontDisplay, FontResource, };
+export { FontSource, FontDisplay, FontResource };
