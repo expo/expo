@@ -5,14 +5,16 @@ import { EventSubscription } from 'fbemitter';
 import ComponentListScreen from './ComponentListScreen';
 import { Screens } from '../navigation/ExpoApis';
 
-try {
-  require('react-native-branch').default.subscribe((bundle: any) => {
-    if (bundle && bundle.params && !bundle.error) {
-      Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
-    }
-  });
-} catch (e) {
-  // Branch is not available, do nothing
+if (Platform.OS !== 'web') {
+  try {
+    require('react-native-branch').default.subscribe((bundle: any) => {
+      if (bundle && bundle.params && !bundle.error) {
+        Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
+      }
+    });
+  } catch (e) {
+    // Branch is not available, do nothing
+  }
 }
 
 export default class ExpoApisScreen extends React.Component {
