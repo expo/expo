@@ -1,0 +1,53 @@
+{
+  "name": "babel-plugin-universal-platforms",
+  "version": "1.0.0",
+  "description": "Removes unused platforms from the Platform module of unimodules/core",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "build/*"
+  ],
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/babel-plugin-universal-platforms"
+  },
+  "keywords": [
+    "babel",
+    "babel-preset",
+    "expo",
+    "react-native",
+    "universal"
+  ],
+  "author": "Expo <support@expo.io>",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/babel-plugin-universal-platforms#readme",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "dependencies": {
+    "@babel/core": "^7.1.0",
+    "@types/dedent": "^0.7.0",
+    "@types/jest": "^24.0.16",
+    "jest-require": "^0.0.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "expo-module-scripts": "^1.0.0"
+  }
+}

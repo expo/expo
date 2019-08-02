@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Platform.OS is converted to a static value for Terser 1`] = `"const value = \\"ios\\";"`;
+
+exports[`Platform.select should remove non-matching platforms but leave Platform.select 1`] = `
+"const defaults = {
+  default: 'default'
+};
+const value = Platform.select({ ...defaults
+});"
+`;
+
+exports[`Platform.select should remove non-matching platforms but leave Platform.select with method 1`] = `
+"const value = Platform.select({
+  android() {}
+
+});"
+`;
+
+exports[`Platform.select should remove non-matching platforms but leave Platform.select with unknown cases 1 1`] = `
+"const value = Platform.select({
+  ['andr' + 'oid']: () => {}
+});"
+`;
+
+exports[`Platform.select should remove non-matching platforms but leave Platform.select with unknown cases and default case 1`] = `
+"const value = Platform.select({
+  default: 'default',
+
+  ['w' + 'eb']() {}
+
+});"
+`;
+
+exports[`Platform.select should replace Platform.select with value for default case if there is no matching platform 1`] = `
+"const value = {
+  test: true
+};"
+`;
+
+exports[`Platform.select should replace Platform.select with value for matching platform 1`] = `
+"const defaults = {
+  default: 'default'
+};
+
+const value = () => {};"
+`;
+
+exports[`if Statements only saves Android code 1`] = `
+"{
+  console.log('Android');
+}"
+`;
+
+exports[`if Statements only saves custom code 1`] = `
+"{
+  console.log('and beyond');
+}"
+`;
+
+exports[`if Statements only saves iOS code 1`] = `
+"{
+  console.log('iOS');
+}"
+`;
+
+exports[`if Statements only saves web code 1`] = `
+"{
+  console.log('web');
+}"
+`;
+
+exports[`removes __DEV__ and process.env.NODE_ENV 1`] = `
+"{
+  console.log(\\"DEV MODE\\");
+}
+{
+  console.log(\\"DEV MODE\\");
+}"
+`;

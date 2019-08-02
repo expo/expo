@@ -2,8 +2,10 @@ const lazyImportsBlacklist = require('./lazy-imports-blacklist');
 
 module.exports = function(api, options = {}) {
   const { web = {}, native = {} } = options;
-  const isWeb = api.caller(isTargetWeb);
-  const platformOptions = isWeb
+  const isWebpack = api.caller(caller => !!caller && caller.name === 'babel-loader');
+  const platform = api.caller(caller => !!caller && caller.platform);
+  const mode = api.caller(caller => !!caller && caller.mode);
+  const platformOptions = isWebpack
     ? { disableImportExportTransform: true, ...web }
     : { disableImportExportTransform: false, ...native };
 
@@ -47,12 +49,12 @@ module.exports = function(api, options = {}) {
           },
         },
       ],
+
+      // If the platform is defined then babel will
+      // remove all of the dead Platform.OS and Platforn.select code.
+      platform && ['babel-plugin-universal-platforms', { platform, mode }],
       ['@babel/plugin-proposal-decorators', { legacy: true }],
-      isWeb && ['babel-plugin-react-native-web'],
+      isWebpack && ['babel-plugin-react-native-web'],
     ].filter(Boolean),
   };
 };
-
-function isTargetWeb(caller) {
-  return caller && caller.name === 'babel-loader';
-}

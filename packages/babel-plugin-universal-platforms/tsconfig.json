@@ -1,0 +1,14 @@
+{
+  "extends": "expo-module-scripts/tsconfig.base",
+  "compilerOptions": {
+    "target": "es2015",
+    "lib": ["dom", "es2016"],
+    "jsx": "react",
+    "strict": true,
+    "module": "commonjs",
+    "declarationMap": true,
+    "outDir": "./build"
+  },
+  "include": ["./src"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}
