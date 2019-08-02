@@ -1,8 +1,8 @@
 {
   "name": "EXCellular",
   "version": "0.0.1",
-  "summary": "ExpoCellular standalone module",
-  "description": "ExpoCellular standalone module",
+  "summary": "Provides information about the user’s cellular service provider",
+  "description": "Provides information about the user’s cellular service provider",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-cellular",
