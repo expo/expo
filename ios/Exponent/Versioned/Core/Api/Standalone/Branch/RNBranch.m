@@ -42,7 +42,7 @@ static NSString * const IdentFieldName = @"ident";
 static NSString * const RNBranchErrorDomain = @"RNBranchErrorDomain";
 static NSInteger const RNBranchUniversalObjectNotFoundError = 1;
 
-static NSString * const REQUIRED_BRANCH_SDK = @"0.27.0";
+static NSString * const REQUIRED_BRANCH_SDK = @"0.27.1";
 
 #pragma mark - Private RNBranch declarations
 
@@ -372,10 +372,14 @@ RCT_EXPORT_METHOD(
 
 #pragma mark getLatestReferringParams
 RCT_EXPORT_METHOD(
-                  getLatestReferringParams:(RCTPromiseResolveBlock)resolve
+                  getLatestReferringParams:(NSNumber* __nonnull)synchronous
+                  resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject
                   ) {
-    resolve([self.class.branch getLatestReferringParams]);
+    if (synchronous.boolValue)
+        resolve([self.class.branch getLatestReferringParamsSynchronous]);
+    else
+        resolve([self.class.branch getLatestReferringParams]);
 }
 
 #pragma mark getFirstReferringParams
