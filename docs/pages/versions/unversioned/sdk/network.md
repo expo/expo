@@ -130,8 +130,8 @@ An enum of the different types of devices supported by Expo, with these values:
 
 | Code                                    | Description                                                                                                                                                               |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ERR_NETWORK_UNKNOWN_HOST                | Unknown Wifi host when trying to access `WifiManager` in `getIpAddressAsync`                                                                                              |
+| ERR_NETWORK_IP_ADDRESS                | On Android, there may be an unknown Wifi host when trying to access `WifiManager` in `getIpAddressAsync`. On iOS, no network interfaces could be retrieved.                                                                                              |
 | ERR_NETWORK_UNDEFINED_INTERFACE         | An undefined `interfaceName` was passed as an argument in `getMacAddressAsync`.                                                                                           |
-| ERR_NETWORK_SOCKET_EXCEPTION            | Encounter error in creating or accessing the socket in `getMacAddressAsync`.                                                                                              |
-| ERR_NETWORK_INVALID_PERMISSION_INTERNET | No permission of [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) in `getMacAddressAsync`. |
+| ERR_NETWORK_SOCKET_EXCEPTION            | An error was encountered in creating or accessing the socket in `getMacAddressAsync`.                                                                                              |
+| ERR_NETWORK_INVALID_PERMISSION_INTERNET | There are invalid permissions for [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) in `getMacAddressAsync`. |
 | ERR_NETWORK_NO_ACCESS_NETWORKINFO       | Unable to access network information                                                                                                                                      |

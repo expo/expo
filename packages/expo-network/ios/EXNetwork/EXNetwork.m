@@ -37,7 +37,8 @@ UM_EXPORT_MODULE(ExpoNetwork);
 
 UM_EXPORT_METHOD_AS(getMacAddressAsync,
                     resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
   //some iOS privacy issues
   NSString *address = @"02:00:00:00:00:00";
   resolve(address);
@@ -68,7 +69,7 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
     }
     resolve(address);
   } else {
-    reject(@"E_NO_IFADDRS", @"No network interfaces could be retrieved.", nil);
+    reject(@"ERR_NETWORK_IP_ADDRESS", @"No network interfaces could be retrieved.", nil);
   }
   
   // Free memory
