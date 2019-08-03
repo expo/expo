@@ -84,7 +84,9 @@ Gets the specified network interface's Mac address. On Android, it requires [`an
 
 A `Promise` that resolves to a `string` of the network adapter MAC address or `null` if there's no such address matching the interface. On web, the `Promise` resolves to `null`.
 
-[Note from Apple](https://developer.apple.com/library/archive/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1): In iOS 7 and later, if you ask for the MAC address of an iOS device, the system returns the value `"02:00:00:00:00:00"`. If you need to identify the device, use the `identifierForVendor` property of `UIDevice` instead. (Apps that need an identifier for their own advertising purposes should consider using the `advertisingIdentifier` property of `ASIdentifierManager` instead.
+[Note from Apple](https://developer.apple.com/library/archive/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1): In iOS 7 and later, if you ask for the MAC address of an iOS device, the system returns the value `"02:00:00:00:00:00"`. 
+
+If you need to identify the device, use the `getIdentifierForVendorAsync()` method of the `expo-device` unimodule instead. 
 
 **Examples**
 
