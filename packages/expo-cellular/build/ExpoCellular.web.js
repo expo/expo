@@ -16,7 +16,10 @@ export default {
         return null;
     },
     async getCellularGenerationAsync() {
-        let connection = navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'] || null;
+        let connection = navigator['connection'] ||
+            navigator['mozConnection'] ||
+            navigator['webkitConnection'] ||
+            null;
         if (connection != null) {
             switch (connection.effectiveType) {
                 case 'slow-2g':

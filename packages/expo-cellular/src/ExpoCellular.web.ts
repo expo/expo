@@ -16,10 +16,13 @@ export default {
   get mobileNetworkCode(): null {
     return null;
   },
-  async getCellularGenerationAsync(): Promise<CellularGeneration | null>{
+  async getCellularGenerationAsync(): Promise<CellularGeneration | null> {
     let connection =
-      navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'] || null;
-    if(connection != null){
+      navigator['connection'] ||
+      navigator['mozConnection'] ||
+      navigator['webkitConnection'] ||
+      null;
+    if (connection != null) {
       switch (connection.effectiveType) {
         case 'slow-2g':
         case '2g':
@@ -31,8 +34,7 @@ export default {
         default:
           return Promise.resolve(CellularGeneration.UNKNOWN);
       }
-    }
-    else{
+    } else {
       return Promise.reject(null);
     }
   },
