@@ -86,14 +86,6 @@ UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
     serviceSubscriberCellularProviders = netinfo.serviceSubscriberCellularProviders;
     carrier = serviceSubscriberCellularProviders.allValues.firstObject;
   } else {
-    // Fallback on earlier versions
-    /*
-     @property (nonatomic, readonly, retain, nullable) NSString *carrierName;
-     @property (nonatomic, readonly, retain, nullable) NSString *mobileCountryCode;
-     @property (nonatomic, readonly, retain, nullable) NSString *mobileNetworkCode;
-     @property (nonatomic, readonly, retain, nullable) NSString* isoCountryCode;
-     @property (nonatomic, readonly, assign) BOOL allowsVOIP;
-     */
     carrier = netinfo.subscriberCellularProvider;
   }
   
