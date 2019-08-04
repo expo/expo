@@ -21,10 +21,10 @@ export async function getMacAddressAsync(interfaceName?: string): Promise<string
   if (!ExpoNetwork.getMacAddressAsync) {
     throw new UnavailabilityError('expo-network', 'getMacAddressAsync');
   }
-  if (Platform.OS === 'ios') {
-    return await ExpoNetwork.getMacAddressAsync();
-  } else {
+  if (Platform.OS === 'android') {
     return await ExpoNetwork.getMacAddressAsync(interfaceName);
+  } else {
+    return await ExpoNetwork.getMacAddressAsync();
   }
 }
 

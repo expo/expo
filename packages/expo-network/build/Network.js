@@ -16,11 +16,11 @@ export async function getMacAddressAsync(interfaceName) {
     if (!ExpoNetwork.getMacAddressAsync) {
         throw new UnavailabilityError('expo-network', 'getMacAddressAsync');
     }
-    if (Platform.OS === 'ios') {
-        return await ExpoNetwork.getMacAddressAsync();
+    if (Platform.OS === 'android') {
+        return await ExpoNetwork.getMacAddressAsync(interfaceName);
     }
     else {
-        return await ExpoNetwork.getMacAddressAsync(interfaceName);
+        return await ExpoNetwork.getMacAddressAsync();
     }
 }
 export async function isAirplaneModeEnabledAsync() {
