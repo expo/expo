@@ -59,7 +59,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
       return value;
     }
 
-    public boolean equal(String value){
+    public boolean equal(String value) {
       return this.value.equals(value);
     }
   }
@@ -113,11 +113,12 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   private NetworkStateType getNetworkCapabilities(NetworkCapabilities nc) {
-    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) return NetworkStateType.CELLULAR;
-    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) return NetworkStateType.WIFI;
-    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) return NetworkStateType.BLUETOOTH;
-    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) return NetworkStateType.ETHERNET;
-    if(nc.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) return NetworkStateType.VPN;
+    if (nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) return NetworkStateType.CELLULAR;
+    if (nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE))
+      return NetworkStateType.WIFI;
+    if (nc.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) return NetworkStateType.BLUETOOTH;
+    if (nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) return NetworkStateType.ETHERNET;
+    if (nc.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) return NetworkStateType.VPN;
     return NetworkStateType.UNKNOWN;
   }
 
@@ -126,11 +127,10 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
     Bundle result = new Bundle();
     ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
     //use getActiveNetworkInfo before api level 29
-    if(Build.VERSION.SDK_INT < 29){
+    if (Build.VERSION.SDK_INT < 29) {
       try {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         result.putBoolean("isInternetReachable", netInfo.isConnected());
-
         NetworkStateType mConnectionType = getConnectionType(netInfo);
         result.putString("type", mConnectionType.getValue());
         result.putBoolean("isConnected", !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"));
@@ -138,25 +138,22 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
       } catch (Exception e) {
         promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e);
       }
-    }
-    else{
-      try{
+    } else {
+      try {
         Network network = cm.getActiveNetwork();
         boolean isInternetReachable = network != null;
         NetworkStateType mConnectionType = null;
-        if(isInternetReachable){
+        if (isInternetReachable) {
           NetworkCapabilities nc = cm.getNetworkCapabilities(network);
           mConnectionType = getNetworkCapabilities(nc);
           result.putString("type", mConnectionType.getValue());
-        }
-        else{
+        } else {
           result.putString("type", NetworkStateType.NONE.getValue());
         }
         result.putBoolean("isInternetReachable", isInternetReachable);
         result.putBoolean("isConnected", mConnectionType != null && !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"));
         promise.resolve(result);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e);
       }
     }
@@ -175,7 +172,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
       promise.resolve(ipAddressString);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_NETWORK_UNKNOWN_HOST", "Unknown Host Exception", e);
+      promise.reject("ERR_NETWORK_IP_ADDRESS", "Unknown Host Exception", e);
     }
   }
 
