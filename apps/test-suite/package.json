@@ -40,7 +40,7 @@
     "expo-keep-awake": "~6.0.0",
     "expo-localization": "~6.0.0",
     "expo-location": "~6.0.0",
-    "expo-media-library": "~6.0.0",
+    "expo-media-library": "~6.1.0-rc.0",
     "expo-permissions": "~6.0.0",
     "expo-random": "~6.0.0",
     "expo-secure-store": "~6.0.0",
