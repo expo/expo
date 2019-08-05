@@ -13,13 +13,7 @@ typedef enum EXPermissionStatus {
   EXPermissionStatusUndetermined,
 } EXPermissionStatus;
 
-@protocol EXPermissionsModule
-
-- (dispatch_queue_t)methodQueue;
-
-@end
-
-@interface EXPermissions : UMExportedModule <EXPermissionRequesterDelegate, UMPermissionsInterface, UMModuleRegistryConsumer, EXPermissionsModule>
+@interface EXPermissions : UMExportedModule <EXPermissionRequesterDelegate, UMPermissionsInterface, UMModuleRegistryConsumer>
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;
 
@@ -30,4 +24,7 @@ typedef enum EXPermissionStatus {
 - (void)askForGlobalPermission:(NSString *)permissionType
                   withResolver:(void (^)(NSDictionary *))resolver
                   withRejecter:(UMPromiseRejectBlock)reject;
+
+- (UMModuleRegistry *)getModuleRegistry;
+
 @end

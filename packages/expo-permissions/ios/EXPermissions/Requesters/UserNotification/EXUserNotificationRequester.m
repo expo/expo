@@ -5,26 +5,13 @@
 #import <EXPermissions/EXPermissions.h>
 #import <UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h>
 
-@interface EXUserNotificationRequester ()
-
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-
-@end
-
 @implementation EXUserNotificationRequester
 
-- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry {
-  if (self = [super init]) {
-    _moduleRegistry = moduleRegistry;
-  }
-  return self;
+- (id<UMUserNotificationCenterProxyInterface>)getNotificationCenter {
+  return [[self.permissionsModule getModuleRegistry] getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)];
 }
 
-+ (id<UMUserNotificationCenterProxyInterface>)getCenterWithModuleRegistry:(UMModuleRegistry *) moduleRegistry {
-  return [moduleRegistry getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)];
-}
-
-+ (NSDictionary *)permissionsWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (NSDictionary *)permissions
 {
   dispatch_assert_queue_not(dispatch_get_main_queue());
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
@@ -33,7 +20,7 @@
   __block BOOL allowsBadge;
   __block EXPermissionStatus status;
 
-  [[EXUserNotificationRequester getCenterWithModuleRegistry:moduleRegistry] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+  [[self getNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
     allowsSound = settings.soundSetting == UNNotificationSettingEnabled;
     allowsAlert = settings.alertSetting == UNNotificationSettingEnabled;
     allowsBadge = settings.badgeSetting == UNNotificationSettingEnabled;
@@ -66,12 +53,11 @@
   UM_WEAKIFY(self)
   
   UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge;
-  id<UMUserNotificationCenterProxyInterface> notificationCenter = [EXUserNotificationRequester getCenterWithModuleRegistry:_moduleRegistry];
+  id<UMUserNotificationCenterProxyInterface> notificationCenter = [self getNotificationCenter];
   [notificationCenter requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
     UM_STRONGIFY(self)
-    id<EXPermissionsModule> permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsModule)];
-    NSAssert(permissionsModule, @"Permissions module is required to properly consume result.");
-    dispatch_async(permissionsModule.methodQueue, ^{
+    NSAssert(self.permissionsModule, @"Permissions module is required to properly consume result.");
+    dispatch_async(self.permissionsModule.methodQueue, ^{
       if (error) {
         reject(@"E_PERM_REQ", error.description, error);
       } else {
@@ -84,7 +70,7 @@
 - (void)_consumeResolverWithCurrentPermissions:(UMPromiseResolveBlock)resolver
 {
   if (resolver) {
-    resolver([[self class] permissionsWithModuleRegistry:_moduleRegistry]);
+    resolver([self permissions]);
   }
   if (self.delegate) {
     [self.delegate permissionRequesterDidFinish:self];

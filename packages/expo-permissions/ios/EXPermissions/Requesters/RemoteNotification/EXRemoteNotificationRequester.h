@@ -4,10 +4,6 @@
 
 FOUNDATION_EXPORT NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName;
 
-@interface EXRemoteNotificationRequester : EXPermissionBaseRequester < EXPermissionRequesterDelegate>
-
-- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
-
-+ (NSDictionary *)permissionsWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
+@interface EXRemoteNotificationRequester : EXPermissionBaseRequester <EXPermissionRequesterDelegate>
 
 @end

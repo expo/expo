@@ -4,6 +4,4 @@
 
 @interface EXLocationRequester : EXPermissionBaseRequester
 
-+ (NSDictionary *)permissions;
-
 @end

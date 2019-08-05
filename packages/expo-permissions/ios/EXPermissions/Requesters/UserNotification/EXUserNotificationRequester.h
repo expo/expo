@@ -5,8 +5,4 @@
 
 @interface EXUserNotificationRequester : EXPermissionBaseRequester
 
-- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
-
-+ (NSDictionary *)permissionsWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
-
 @end

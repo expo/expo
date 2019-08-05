@@ -26,13 +26,13 @@ static SEL whenInUseAuthorizationSelector;
   whenInUseAuthorizationSelector = NSSelectorFromString([@"request" stringByAppendingString:@"WhenInUseAuthorization"]);
 }
 
-+ (NSDictionary *)permissions
+- (NSDictionary *)permissions
 {
   EXPermissionStatus status;
   NSString *scope = @"none";
   
   CLAuthorizationStatus systemStatus;
-  if (![self isConfiguredForAlwaysAuthorization] && ![self isConfiguredForWhenInUseAuthorization]) {
+  if (![[self class] isConfiguredForAlwaysAuthorization] && ![[self class] isConfiguredForWhenInUseAuthorization]) {
     UMFatal(UMErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.io/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
@@ -71,7 +71,7 @@ static SEL whenInUseAuthorizationSelector;
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  NSDictionary *existingPermissions = [[self class] permissions];
+  NSDictionary *existingPermissions = [self permissions];
   if (existingPermissions && ![existingPermissions[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusUndetermined]]) {
     // since permissions are already determined, the iOS request methods will be no-ops.
     // just resolve with whatever existing permissions.
@@ -175,7 +175,7 @@ static SEL whenInUseAuthorizationSelector;
     return;
   }
   if (_resolve) {
-    _resolve([[self class] permissions]);
+    _resolve([self permissions]);
     _resolve = nil;
     _reject = nil;
   }

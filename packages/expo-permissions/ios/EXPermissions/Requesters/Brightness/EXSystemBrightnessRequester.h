@@ -4,6 +4,4 @@
 
 @interface EXSystemBrightnessRequester : EXPermissionBaseRequester
 
-+ (NSDictionary *)permissions;
-
 @end

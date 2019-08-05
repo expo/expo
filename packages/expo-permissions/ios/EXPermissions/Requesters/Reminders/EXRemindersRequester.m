@@ -4,7 +4,7 @@
 
 @implementation EXRemindersRequester
 
-+ (NSDictionary *)permissions
+- (NSDictionary *)permissions
 {
   EXPermissionStatus status;
   EKAuthorizationStatus permissions;
@@ -44,7 +44,7 @@
     if (error && error.code != 100) {
       reject(@"E_REMINDERS_ERROR_UNKNOWN", error.localizedDescription, error);
     } else {
-      resolve([[self class] permissions]);
+      resolve([self permissions]);
     }
     
     if (self.delegate) {

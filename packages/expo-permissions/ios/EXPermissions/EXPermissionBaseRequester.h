@@ -6,5 +6,6 @@
 @interface EXPermissionBaseRequester : NSObject<EXPermissionRequester>
 
 @property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
+@property (nonatomic, weak) EXPermissions *permissionsModule;
 
 @end

@@ -4,6 +4,4 @@
 
 @interface EXRemindersRequester : EXPermissionBaseRequester
 
-+ (NSDictionary *)permissions;
-
 @end

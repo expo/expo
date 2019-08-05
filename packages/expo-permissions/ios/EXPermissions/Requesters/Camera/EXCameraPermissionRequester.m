@@ -8,7 +8,7 @@
 
 @implementation EXCameraPermissionRequester
 
-+ (NSDictionary *)permissions
+- (NSDictionary *)permissions
 {
   AVAuthorizationStatus systemStatus;
   EXPermissionStatus status;  
@@ -43,7 +43,7 @@
   UM_WEAKIFY(self)
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
     UM_STRONGIFY(self)
-    resolve([[self class] permissions]);
+    resolve([self permissions]);
     if (self.delegate) {
       [self.delegate permissionRequesterDidFinish:self];
     }

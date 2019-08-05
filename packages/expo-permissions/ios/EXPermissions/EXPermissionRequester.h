@@ -3,11 +3,19 @@
 #import <Foundation/Foundation.h>
 #import <UMCore/UMExportedModule.h>
 
+@class EXPermissions; // forward declaration 
+
 @protocol EXPermissionRequester <NSObject>
 
+- (void)setPermissionsModule:(EXPermissions *)permissionsModule;
+
 - (void)setDelegate:(id)permissionRequesterDelegate;
+
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve
+
                               rejecter:(UMPromiseRejectBlock)reject;
+
+- (NSDictionary *)permissions;
 
 @end
 

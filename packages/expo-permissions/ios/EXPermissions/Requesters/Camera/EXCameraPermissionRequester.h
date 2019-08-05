@@ -4,6 +4,4 @@
 
 @interface EXCameraPermissionRequester : EXPermissionBaseRequester
 
-+ (NSDictionary *)permissions;
-
 @end

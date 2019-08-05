@@ -6,7 +6,7 @@
 
 @implementation EXCameraRollRequester
 
-+ (NSDictionary *)permissions
+- (NSDictionary *)permissions
 {
   EXPermissionStatus status;
   PHAuthorizationStatus permissions = [PHPhotoLibrary authorizationStatus];
@@ -33,7 +33,7 @@
   UM_WEAKIFY(self)
   [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
     UM_STRONGIFY(self)
-    resolve([[self class] permissions]);
+    resolve([self permissions]);
     if (self.delegate) {
       [self.delegate permissionRequesterDidFinish:self];
     }

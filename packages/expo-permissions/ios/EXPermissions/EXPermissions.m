@@ -50,7 +50,7 @@ NSString * const EXPermissionExpiresNever = @"never";
 
 @interface EXPermissions ()
 
-@property (nonatomic, strong) NSDictionary<NSString *, Class> *requesters;
+@property (nonatomic, strong) NSDictionary<NSString *, id<EXPermissionRequester>> *requesters;
 @property (nonatomic, strong) NSMutableArray *requests;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
@@ -62,41 +62,41 @@ UM_EXPORT_MODULE(ExpoPermissions);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMPermissionsInterface), @protocol(EXPermissionsModule)];
+  return @[@protocol(UMPermissionsInterface)];
 }
 
-+ (NSDictionary<NSString *, Class> *)defaultRequesters
++ (NSDictionary<NSString *, id<EXPermissionRequester>> *)defaultRequesters
 {
   NSDictionary *requesters =  @{
         #if __has_include(<EXPermissions/EXAudioRecordingPermissionRequester.h>)
-           @"audioRecording": [EXAudioRecordingPermissionRequester class],
+           @"audioRecording": [EXAudioRecordingPermissionRequester new],
         #endif
         #if __has_include(<EXPermissions/EXCalendarRequester.h>)
-           @"calendar": [EXCalendarRequester class],
+           @"calendar": [EXCalendarRequester new],
         #endif
         #if __has_include(<EXPermissions/EXCameraPermissionRequester.h>)
-           @"camera": [EXCameraPermissionRequester class],
+           @"camera": [EXCameraPermissionRequester new],
         #endif
         #if __has_include(<EXPermissions/EXCameraRollRequester.h>)
-           @"cameraRoll": [EXCameraRollRequester class],
+           @"cameraRoll": [EXCameraRollRequester new],
         #endif
         #if __has_include(<EXPermissions/EXContactsRequester.h>)
-           @"contacts": [EXContactsRequester class],
+           @"contacts": [EXContactsRequester new],
         #endif
         #if __has_include(<EXPermissions/EXLocationRequester.h>)
-           @"location": [EXLocationRequester class],
+           @"location": [EXLocationRequester new],
         #endif
         #if __has_include(<EXPermissions/EXRemoteNotificationRequester.h>)
-           @"notifications": [EXRemoteNotificationRequester class],
+           @"notifications": [EXRemoteNotificationRequester new],
         #endif
         #if __has_include(<EXPermissions/EXRemindersRequester.h>)
-           @"reminders": [EXRemindersRequester class],
+           @"reminders": [EXRemindersRequester new],
         #endif
         #if __has_include(<EXPermissions/EXUserNotificationRequester.h>)
-           @"userFacingNotifications": [EXUserNotificationRequester class],
+           @"userFacingNotifications": [EXUserNotificationRequester new],
         #endif
         #if __has_include(<EXPermissions/EXSystemBrightnessRequester.h>)
-           @"systemBrightness": [EXSystemBrightnessRequester class]
+           @"systemBrightness": [EXSystemBrightnessRequester new]
         #endif
            };
   
@@ -120,6 +120,9 @@ UM_EXPORT_MODULE(ExpoPermissions);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
+  for (NSString* key in _requesters) {
+    [_requesters[key] setPermissionsModule:self];
+  }
 }
 
 # pragma mark - Exported methods
@@ -129,7 +132,6 @@ UM_EXPORT_METHOD_AS(getAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-
   NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:[self getPermissionsForResource:permissionType]];
   // permission type not found - reject immediately
   if (permission == nil) {
@@ -152,15 +154,9 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)type
 {
-  Class requesterClass = _requesters[type];
-  if (requesterClass) {
-    #if __has_include(<EXPermissions/EXRemoteNotificationRequester.h>) || \
-        __has_include(<EXPermissions/EXUserNotificationRequester.h>)
-        if ([requesterClass respondsToSelector:@selector(permissionsWithModuleRegistry:)]) {
-          return [requesterClass permissionsWithModuleRegistry:_moduleRegistry];
-        }
-    #endif
-    return [requesterClass permissions];
+  id<EXPermissionRequester> requester = _requesters[type];
+  if (requester) {
+    return [requester permissions];
   }
   return nil;
 }
@@ -262,18 +258,7 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 - (id<EXPermissionRequester>)getPermissionRequesterForType:(NSString *)type
 {
-  Class requesterClass = _requesters[type];
-  if (requesterClass) {
-    #if __has_include(<EXPermissions/EXRemoteNotificationRequester.h>) || \
-    __has_include(<EXPermissions/EXUserNotificationRequester.h>)
-        if ([requesterClass instancesRespondToSelector:@selector(initWithModuleRegistry:)]) {
-          return [[requesterClass alloc] initWithModuleRegistry:_moduleRegistry];
-        }
-    #endif
-    return [[requesterClass alloc] init];
-  }
-  
-  return nil;
+  return _requesters[type];
 }
 
 - (void)permissionRequesterDidFinish:(NSObject<EXPermissionRequester> *)requester
@@ -281,6 +266,10 @@ UM_EXPORT_METHOD_AS(askAsync,
   if ([_requests containsObject:requester]) {
     [_requests removeObject:requester];
   }
+}
+
+- (UMModuleRegistry *)getModuleRegistry {
+  return _moduleRegistry;
 }
 
 @end

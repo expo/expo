@@ -7,7 +7,7 @@
 
 @implementation EXAudioRecordingPermissionRequester
 
-+ (NSDictionary *)permissions
+- (NSDictionary *)permissions
 {
   AVAudioSessionRecordPermission systemStatus;
   EXPermissionStatus status;
@@ -42,7 +42,7 @@
   UM_WEAKIFY(self)
   [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
     UM_STRONGIFY(self)
-    resolve([[self class] permissions]);
+    resolve([self permissions]);
     if (self.delegate) {
       [self.delegate permissionRequesterDidFinish:self];
     }

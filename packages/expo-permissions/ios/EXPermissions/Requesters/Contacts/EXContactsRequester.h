@@ -4,6 +4,4 @@
 
 @interface EXContactsRequester : EXPermissionBaseRequester
 
-+ (NSDictionary *)permissions;
-
 @end

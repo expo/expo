@@ -4,6 +4,4 @@
 
 @interface EXCameraRollRequester : EXPermissionBaseRequester
 
-+ (NSDictionary *)permissions;
-
 @end

@@ -64,7 +64,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "RemoteNotification" do |ss|
-    ss.dependency "EXPermissions/Core"
+    ss.dependency "EXPermissions/UserNotification"
     ss.source_files = "EXPermissions/Requesters/RemoteNotification/*.{h,m}"
   end
 

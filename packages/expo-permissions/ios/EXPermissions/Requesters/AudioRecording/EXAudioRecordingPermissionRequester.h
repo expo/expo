@@ -4,6 +4,4 @@
 
 @interface EXAudioRecordingPermissionRequester : EXPermissionBaseRequester
 
-+ (NSDictionary *)permissions;
-
 @end

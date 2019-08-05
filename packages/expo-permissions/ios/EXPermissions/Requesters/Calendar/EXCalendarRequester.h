@@ -4,6 +4,4 @@
 
 @interface EXCalendarRequester : EXPermissionBaseRequester
 
-+ (NSDictionary *)permissions;
-
 @end

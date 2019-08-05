@@ -4,7 +4,7 @@
 
 @implementation EXSystemBrightnessRequester
 
-+ (NSDictionary *)permissions
+- (NSDictionary *)permissions
 {
   return @{
            @"status": [EXPermissions permissionStringForStatus:EXPermissionStatusGranted],
@@ -14,7 +14,7 @@
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  resolve([[self class] permissions]);
+  resolve([self permissions]);
   [self.delegate permissionRequesterDidFinish:self];
 }
 

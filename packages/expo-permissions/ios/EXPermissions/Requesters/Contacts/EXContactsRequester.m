@@ -6,7 +6,7 @@
 
 @implementation EXContactsRequester
 
-+ (NSDictionary *)permissions
+- (NSDictionary *)permissions
 {
   EXPermissionStatus status;
   CNAuthorizationStatus permissions = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
@@ -38,7 +38,7 @@
     if (error && error.code != 100) {
       reject(@"E_CONTACTS_ERROR_UNKNOWN", error.localizedDescription, error);
     } else {
-      resolve([[self class] permissions]);
+      resolve([self permissions]);
     }
 
     if (self.delegate) {
