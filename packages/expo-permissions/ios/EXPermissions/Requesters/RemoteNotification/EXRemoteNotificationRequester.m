@@ -10,7 +10,6 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
 @property (nonatomic, strong) EXUserNotificationRequester *localNotificationRequester;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
@@ -76,11 +75,6 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
   }
 }
 
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
-{
-  _delegate = delegate;
-}
-
 - (void)dealloc
 {
   [self _clearObserver];
@@ -112,8 +106,8 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
       _resolve = nil;
       _reject = nil;
     }
-    if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
+    if (self.delegate) {
+      [self.delegate permissionRequesterDidFinish:self];
     }
   }
 }

@@ -45,11 +45,14 @@
   NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:globalPermission];
   
   if ([self shouldVerifyScopedPermission:permissionType]
-      && [EXPermissions statusForPermissions:permission] == EXPermissionStatusGranted
-      && ![self hasGrantedScopedPermission:permissionType]) {
-    permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+      && [EXPermissions statusForPermissions:permission] == EXPermissionStatusGranted) {
+    permission[@"status"] = [self getScopedPermissionStatus:permissionType];
   }
   return permission;
+}
+
+- (NSString *)getScopedPermissionStatus:(NSString *)permissionType {
+  return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_experienceId]];
 }
 
 - (BOOL)hasGrantedScopedPermission:(NSString *)permissionType
@@ -76,9 +79,9 @@
 //
 //  We will query for second group manually, with our own dialogs.
 //  The result will be saved in EXPermissionsScopedModuleDelegate.
-
+  NSDictionary* globalPermissions = [super getPermissionsForResource:permissionType];
   UM_WEAKIFY(self)
-  if (![[super getPermissionsForResource:permissionType][@"status"] isEqualToString:@"granted"]) {
+  if (![globalPermissions[@"status"] isEqualToString:@"granted"]) {
     // first group
     // ask for permission. If granted then save it as scope permission
     void (^customOnResults)(NSDictionary *) = ^(NSDictionary *permission){
@@ -93,7 +96,7 @@
     // had to reinitilize UIAlertActions between alertShow invocations
     UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       UM_ENSURE_STRONGIFY(self);
-      NSMutableDictionary *permission = [[super getPermissionsForResource:permissionType] mutableCopy];
+      NSMutableDictionary *permission = [globalPermissions mutableCopy];
       // try to save scoped permissions - if fails than permission is denied
       if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId]) {
         permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
@@ -104,8 +107,7 @@
     
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       UM_ENSURE_STRONGIFY(self);
-      // i dont know if i need to get global permission but for i will leave it here
-      NSMutableDictionary *permission = [[self getPermissionsForResource:permissionType] mutableCopy];
+      NSMutableDictionary *permission = [globalPermissions mutableCopy];
       permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
       permission[@"granted"] = @(NO);
       onResults([NSDictionary dictionaryWithDictionary:permission]);
