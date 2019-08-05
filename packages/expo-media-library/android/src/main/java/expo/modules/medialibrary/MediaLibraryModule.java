@@ -100,6 +100,7 @@ public class MediaLibraryModule extends ExportedModule {
     mModuleRegistry = moduleRegistry;
   }
 
+  // TODO(@tsapeta): refactor together with expo-permissions
   @ExpoMethod
   public void requestPermissionsAsync(final Promise promise) {
     Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
@@ -123,6 +124,7 @@ public class MediaLibraryModule extends ExportedModule {
     });
   }
 
+  // TODO(@tsapeta): refactor together with expo-permissions
   @ExpoMethod
   public void getPermissionsAsync(final Promise promise) {
     Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
