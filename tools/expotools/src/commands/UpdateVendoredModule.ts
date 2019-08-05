@@ -128,12 +128,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     steps: [
       {
         sourceIosPath: 'ios',
-        targetIosPath: 'Api/Standalone/Branch',
+        targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
         sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
         targetAndroidPath: '../../../../../../../../../packages/expo-branch/android/src/main/java/expo/modules/branch/vendored',
         sourceAndroidPackage: 'io.branch.rnbranch',
         targetAndroidPackage: 'expo.modules.branch.vendored',
         recursive: false,
+        updatePbxproj: false,
       },
     ],
   },
