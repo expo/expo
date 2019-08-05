@@ -10,11 +10,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -239,13 +243,65 @@ public class PushNotificationHelper {
             }
 
             // Add icon
-            Notification notification;
             if (!manifestUrl.equals(Constants.INITIAL_URL)) {
-              notification = notificationBuilder.setLargeIcon(bitmap).build();
-            } else {
-              // TODO: don't actually need to load bitmap in this case
-              notification = notificationBuilder.build();
+              notificationBuilder.setLargeIcon(bitmap);
             }
+
+            if (body != null) {
+              try {
+                JSONObject bodyObject = new JSONObject(body);
+
+                // Download and display the custom icon.
+                boolean hasCustomIcon = false;
+                if (bodyObject.has("_icon")) {
+                  final String iconURL = bodyObject.getString("_icon");
+                  final Bitmap iconBitmap = loadRemoteImage(iconURL, context);
+                  if (iconBitmap != null) {
+                    notificationBuilder.setLargeIcon(iconBitmap);
+                    hasCustomIcon = true;
+                  }
+                }
+
+                // Download and display the rich content (the image).
+                // Do not display any rich content if `isMultiple`.
+                if (!isMultiple && bodyObject.has("_richContent")) {
+                  final JSONObject richContent = bodyObject.getJSONObject("_richContent");
+                  if (richContent.has("image")) {
+                    String imageURL;
+                    JSONObject imageOptions = null;
+                    if (richContent.get("image") instanceof String) {
+                      imageURL = richContent.getString("image");
+                    } else {
+                      imageURL = richContent.getJSONObject("image").getString("url");
+                      imageOptions = richContent.getJSONObject("image").getJSONObject("options");
+                    }
+
+                    boolean thumbnailHidden = false;
+                    if (imageOptions != null && imageOptions.getBoolean("thumbnailHidden")) {
+                      thumbnailHidden = true;
+                    }
+
+                    final Bitmap imageBitmap = loadRemoteImage(imageURL, context);
+                    if (imageBitmap != null) {
+                      NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle()
+                          .bigPicture(imageBitmap)
+                          .setBigContentTitle(message);
+                      if (!hasCustomIcon && !thumbnailHidden) {
+                        // Make the rich content image the thumbnail too if there's no "icon" specified.
+                        // Ref: https://developer.android.com/training/notify-user/expanded#image-style
+                        bigPictureStyle.bigLargeIcon(null);
+                        notificationBuilder.setLargeIcon(imageBitmap);
+                      }
+                      notificationBuilder.setStyle(bigPictureStyle);
+                    }
+                  }
+                }
+              } catch (JSONException e) {
+                Log.e(TAG, "Something is wrong with the user-provided data payload: " + e.toString());
+              }
+            }
+
+            Notification notification = notificationBuilder.build();
 
             // Display
             manager.notify(experienceId, notificationId, notification);
@@ -256,6 +312,19 @@ public class PushNotificationHelper {
         }).start();
       }
     });
+  }
+
+  private Bitmap loadRemoteImage(String imageURL, Context context) {
+    Bitmap imageBitmap = null;
+    try {
+      imageBitmap = Picasso.with(context).load(imageURL).get();
+    } catch (IOException ie) {
+      Log.e(TAG, "The image (" + imageURL + ") in the push notification is not loaded correctly: " + ie.toString());
+    } catch (IllegalStateException ise) {
+      Log.e(TAG, "The image URL (" + imageURL + ") in the push notification is invalid: " + ise.toString());
+    }
+
+    return imageBitmap;
   }
 
   private void addUnreadNotificationToMetadata(String experienceId, String message, int notificationId) {

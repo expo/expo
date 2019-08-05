@@ -194,6 +194,7 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   let androidRoot = path.join(process.cwd(), '..', 'android');
   let appBuildGradle = path.join(androidRoot, 'app', 'build.gradle');
   let expoViewBuildGradle = path.join(androidRoot, 'expoview', 'build.gradle');
+  const settingsGradle = path.join(androidRoot, 'settings.gradle');
   const constantsJava = path.join(
     androidRoot,
     'expoview/src/main/java/host/exp/exponent/Constants.java'
@@ -225,6 +226,8 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
   await stashFileAsync(expoViewBuildGradle);
   await stashFileAsync(multipleVersionReactNativeActivity);
   await stashFileAsync(constantsJava);
+  await stashFileAsync(settingsGradle);
+
   // Modify temporarily
   await regexFileAsync(
     constantsJava,
@@ -264,6 +267,16 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     multipleVersionReactNativeActivity,
     `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
     'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
+  );
+  await regexFileAsync(
+    settingsGradle,
+    `// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT`,
+    `/*`
+  );
+  await regexFileAsync(
+    settingsGradle,
+    `// FLAG_END_REMOVE__UPDATE_EXPOKIT`,
+    `*/ //`
   );
 
   const detachableUniversalModules = await findUnimodules('../packages');
@@ -310,6 +323,7 @@ exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
     });
   }
 
+  await restoreFileAsync(settingsGradle);
   await restoreFileAsync(constantsJava);
   await restoreFileAsync(appBuildGradle);
   await restoreFileAsync(expoViewBuildGradle);

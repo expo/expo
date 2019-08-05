@@ -1,5 +1,5 @@
 ---
-title: Using Expo for Web in Bare Workflow
+title: Using Expo for web in Bare Workflow
 sidebar_title: Using Expo for web
 ---
 

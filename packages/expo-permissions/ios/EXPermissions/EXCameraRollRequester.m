@@ -30,6 +30,7 @@
   }
   return @{
     @"status": [EXPermissions permissionStringForStatus:status],
+    @"granted": @(status == EXPermissionStatusGranted),
     @"expires": EXPermissionExpiresNever,
   };
 }
