@@ -65,38 +65,38 @@ UM_EXPORT_MODULE(ExpoPermissions);
   return @[@protocol(UMPermissionsInterface)];
 }
 
-+ (NSDictionary<NSString *, id<EXPermissionRequester>> *)defaultRequesters
++ (NSDictionary<NSString *, id<EXPermissionRequester>> *)defaultRequesters:(EXPermissions *)permissionsModule
 {
   NSDictionary *requesters =  @{
         #if __has_include(<EXPermissions/EXAudioRecordingPermissionRequester.h>)
-           @"audioRecording": [EXAudioRecordingPermissionRequester new],
+           @"audioRecording": [[EXAudioRecordingPermissionRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXCalendarRequester.h>)
-           @"calendar": [EXCalendarRequester new],
+           @"calendar": [[EXCalendarRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXCameraPermissionRequester.h>)
-           @"camera": [EXCameraPermissionRequester new],
+           @"camera": [[EXCameraPermissionRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXCameraRollRequester.h>)
-           @"cameraRoll": [EXCameraRollRequester new],
+           @"cameraRoll": [[EXCameraRollRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXContactsRequester.h>)
-           @"contacts": [EXContactsRequester new],
+           @"contacts": [[EXContactsRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXLocationRequester.h>)
-           @"location": [EXLocationRequester new],
+           @"location": [[EXLocationRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXRemoteNotificationRequester.h>)
-           @"notifications": [EXRemoteNotificationRequester new],
+           @"notifications": [[EXRemoteNotificationRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXRemindersRequester.h>)
-           @"reminders": [EXRemindersRequester new],
+           @"reminders": [[EXRemindersRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXUserNotificationRequester.h>)
-           @"userFacingNotifications": [EXUserNotificationRequester new],
+           @"userFacingNotifications": [[EXUserNotificationRequester alloc] initWithPermissionsModule:permissionsModule],
         #endif
         #if __has_include(<EXPermissions/EXSystemBrightnessRequester.h>)
-           @"systemBrightness": [EXSystemBrightnessRequester new]
+           @"systemBrightness": [[EXSystemBrightnessRequester alloc] initWithPermissionsModule:permissionsModule]
         #endif
            };
   
@@ -105,7 +105,7 @@ UM_EXPORT_MODULE(ExpoPermissions);
 
 - (instancetype)init
 {
-  return [self initWithRequesters:[EXPermissions defaultRequesters]];
+  return [self initWithRequesters:[EXPermissions defaultRequesters:self]];
 }
 
 - (instancetype)initWithRequesters:(NSDictionary <NSString *, Class> *)requesters
@@ -120,9 +120,6 @@ UM_EXPORT_MODULE(ExpoPermissions);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  for (NSString* key in _requesters) {
-    [_requesters[key] setPermissionsModule:self];
-  }
 }
 
 # pragma mark - Exported methods

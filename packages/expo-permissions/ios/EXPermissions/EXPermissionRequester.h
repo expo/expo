@@ -7,7 +7,7 @@
 
 @protocol EXPermissionRequester <NSObject>
 
-- (void)setPermissionsModule:(EXPermissions *)permissionsModule;
+- (instancetype)initWithPermissionsModule:(EXPermissions *)permissionsModule;
 
 - (void)setDelegate:(id)permissionRequesterDelegate;
 
