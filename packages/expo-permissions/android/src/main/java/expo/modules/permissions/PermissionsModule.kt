@@ -47,22 +47,6 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
 
   private var mRequesters: Map<String, PermissionRequester> by Delegates.notNull()
 
-  init {
-    val notificationRequester = NotificationRequester(context)
-    mRequesters = mapOf(
-        "location" to LocationRequester(),
-        "camera" to SimpleRequester(Manifest.permission.CAMERA),
-        "contacts" to SimpleRequester(Manifest.permission.READ_CONTACTS),
-        "audioRecording" to SimpleRequester(Manifest.permission.RECORD_AUDIO),
-        "cameraRoll" to CameraRollRequester(),
-        "calendar" to CalendarRequester(),
-        "sms" to SimpleRequester(Manifest.permission.READ_SMS),
-        "reminders" to RemindersRequester(),
-        "notifications" to notificationRequester,
-        "userFacingNotifications" to notificationRequester
-    )
-  }
-
   companion object {
     private val mPermissionsAskedFor = HashSet<String>()
     fun didAsk(permission: String): Boolean {
@@ -79,6 +63,21 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
     mPermissions = moduleRegistry.getModule(Permissions::class.java)
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
+
+    val notificationRequester = NotificationRequester(context)
+    mRequesters = mapOf(
+        PermissionsTypes.LOCATION.type to LocationRequester(),
+        PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),
+        PermissionsTypes.CONTACTS.type to SimpleRequester(Manifest.permission.READ_CONTACTS),
+        PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(Manifest.permission.RECORD_AUDIO),
+        PermissionsTypes.CAMERA_ROLL.type to CameraRollRequester(),
+        PermissionsTypes.CALENDAR.type to CalendarRequester(),
+        PermissionsTypes.SMS.type to SimpleRequester(Manifest.permission.READ_SMS),
+        PermissionsTypes.REMINDERS.type to RemindersRequester(),
+        PermissionsTypes.NOTIFICATIONS.type to notificationRequester,
+        PermissionsTypes.USER_FACING_NOTIFICATIONS.type to notificationRequester,
+        PermissionsTypes.SYSTEM_BRIGHTNESS.type to SystemBrightnessRequester(mActivityProvider!!)
+    )
   }
 
   override fun getName(): String = "ExpoPermissions"
@@ -119,9 +118,6 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
     val permissionsTypesToBeAsked = ArrayList<String>()
     for (type in requestedPermissionsTypesSet) {
       try {
-        if (type == "systemBrightness") {
-          continue
-        }
         permissionsTypesToBeAsked.addAll(getRequester(type).getPermissionToAsk())
         if (type == "contacts" && isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
           // Ask for WRITE_CONTACTS permission only if the permission is present in AndroidManifest.
@@ -136,7 +132,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
     }
 
     // check whether to launch WritingSettingsActivity
-    if (requestedPermissionsTypesSet.contains("systemBrightness") &&
+    if (requestedPermissionsTypesSet.contains(PermissionsTypes.SYSTEM_BRIGHTNESS.type) &&
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (mAskAsyncPromise != null) {
         return promise.reject(
@@ -148,7 +144,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
       mAskAsyncRequestedPermissionsTypes = requestedPermissionsTypes
       mAskAsyncPermissionsTypesToBeAsked = permissionsTypesToBeAsked
       askForWriteSettingsPermissionFirst()
-      mPermissionsAskedFor.add("systemBrightness")
+      mPermissionsAskedFor.add(PermissionsTypes.SYSTEM_BRIGHTNESS.type)
       mPermissionsAskedFor.addAll(requestedPermissionsTypesSet) // todo: maybe move it to `onHostResume` function?
       return
     }
@@ -183,46 +179,11 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
 
   @Throws(IllegalStateException::class)
   private fun getPermission(permissionType: String): Bundle {
-    return when (permissionType) {
-      "systemBrightness" -> {
-        getWriteSettingsPermission()
-      }
-      else -> {
-        getRequester(permissionType).getPermission()
-      }
-    }
-  }
-
-  // checkSelfPermission does not return accurate status of WRITE_SETTINGS
-  private fun getWriteSettingsPermission(): Bundle {
-    return Bundle().apply {
-      putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        when {
-          Settings.System.canWrite(mActivityProvider!!.currentActivity.applicationContext) -> {
-            putString(STATUS_KEY, GRANTED_VALUE)
-          }
-          didAsk("systemBrightness") -> {
-            putString(STATUS_KEY, DENIED_VALUE)
-          }
-          else -> {
-            putString(STATUS_KEY, UNDETERMINED_VALUE)
-          }
-        }
-      } else {
-        putString(STATUS_KEY, GRANTED_VALUE)
-      }
-    }
+    return getRequester(permissionType).getPermission()
   }
 
   private fun getRequester(permissionType: String): PermissionRequester {
-    val requester = mRequesters[permissionType]
-    if (requester != null) {
-      return requester
-    } else {
-      throw IllegalStateException(String.format("Unrecognized permission type: %s", permissionType))
-    }
+    return mRequesters[permissionType] ?: throw IllegalStateException("Unrecognized permission type: $permissionType")
   }
 
   /**
@@ -253,12 +214,13 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
    */
   @TargetApi(Build.VERSION_CODES.M)
   private fun askForWriteSettingsPermissionFirst() {
-    // Launch systems dialog for write settings
-    val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-    intent.data = Uri.parse("package:" + context.packageName)
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    mWritingPermissionBeingAsked = true
-    context.startActivity(intent)
+    Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+      data = Uri.parse("package:" + context.packageName)
+      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }.let {
+      mWritingPermissionBeingAsked = true
+      context.startActivity(it)
+    }
   }
 
   override fun onHostResume() {
