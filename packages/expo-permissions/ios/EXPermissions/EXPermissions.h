@@ -13,11 +13,13 @@ typedef enum EXPermissionStatus {
   EXPermissionStatusUndetermined,
 } EXPermissionStatus;
 
-@interface EXPermissions : UMExportedModule <EXPermissionRequesterDelegate, UMPermissionsInterface, UMModuleRegistryConsumer>
+@interface EXPermissions : UMExportedModule <UMPermissionsInterface, UMModuleRegistryConsumer>
 
 - (NSDictionary *)getPermissionsForResource:(NSString *)resource;
 
 + (NSString *)permissionStringForStatus:(EXPermissionStatus)status;
+
+- (id<EXPermissionRequester>)getPermissionRequesterForType:(NSString *)type;
 
 + (EXPermissionStatus)statusForPermissions:(NSDictionary *)permissions;
 

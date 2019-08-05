@@ -44,9 +44,6 @@
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
     UM_STRONGIFY(self)
     resolve([self permissions]);
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
   }];
 }
 

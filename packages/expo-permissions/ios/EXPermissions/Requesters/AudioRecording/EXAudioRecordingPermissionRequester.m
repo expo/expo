@@ -43,9 +43,6 @@
   [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
     UM_STRONGIFY(self)
     resolve([self permissions]);
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
   }];
 }
 @end

@@ -15,7 +15,6 @@
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   resolve([self permissions]);
-  [self.delegate permissionRequesterDidFinish:self];
 }
 
 @end

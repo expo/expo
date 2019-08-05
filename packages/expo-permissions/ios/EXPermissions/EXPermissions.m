@@ -51,7 +51,6 @@ NSString * const EXPermissionExpiresNever = @"never";
 @interface EXPermissions ()
 
 @property (nonatomic, strong) NSDictionary<NSString *, id<EXPermissionRequester>> *requesters;
-@property (nonatomic, strong) NSMutableArray *requests;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
@@ -111,7 +110,6 @@ UM_EXPORT_MODULE(ExpoPermissions);
 - (instancetype)initWithRequesters:(NSDictionary <NSString *, Class> *)requesters
 {
   if (self = [super init]) {
-    _requests = [NSMutableArray array];
     _requesters = requesters;
   }
   return self;
@@ -222,8 +220,6 @@ UM_EXPORT_METHOD_AS(askAsync,
     return reject(@"E_PERMISSIONS_UNSUPPORTED", [NSString stringWithFormat:@"Cannot request permission: %@", permissionType], nil);
   }
   
-  [self.requests addObject:requester];
-  [requester setDelegate:self];
   [requester requestPermissionsWithResolver:resolver rejecter:reject];
 }
 
@@ -256,13 +252,6 @@ UM_EXPORT_METHOD_AS(askAsync,
 - (id<EXPermissionRequester>)getPermissionRequesterForType:(NSString *)type
 {
   return _requesters[type];
-}
-
-- (void)permissionRequesterDidFinish:(NSObject<EXPermissionRequester> *)requester
-{
-  if ([_requests containsObject:requester]) {
-    [_requests removeObject:requester];
-  }
 }
 
 - (UMModuleRegistry *)getModuleRegistry {

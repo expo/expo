@@ -40,10 +40,6 @@
     } else {
       resolve([self permissions]);
     }
-
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
   }];
 }
 

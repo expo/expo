@@ -72,9 +72,6 @@
   if (resolver) {
     resolver([self permissions]);
   }
-  if (self.delegate) {
-    [self.delegate permissionRequesterDidFinish:self];
-  }
 }
 
 @end

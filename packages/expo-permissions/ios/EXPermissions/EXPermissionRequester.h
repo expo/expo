@@ -9,18 +9,10 @@
 
 - (instancetype)initWithPermissionsModule:(EXPermissions *)permissionsModule;
 
-- (void)setDelegate:(id)permissionRequesterDelegate;
-
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve
 
                               rejecter:(UMPromiseRejectBlock)reject;
 
 - (NSDictionary *)permissions;
-
-@end
-
-@protocol EXPermissionRequesterDelegate <NSObject>
-
-- (void)permissionRequesterDidFinish:(NSObject<EXPermissionRequester> *)requester;
 
 @end

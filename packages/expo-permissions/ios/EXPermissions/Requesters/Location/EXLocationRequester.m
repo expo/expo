@@ -76,9 +76,6 @@ static SEL whenInUseAuthorizationSelector;
     // since permissions are already determined, the iOS request methods will be no-ops.
     // just resolve with whatever existing permissions.
     resolve(existingPermissions);
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
   } else {
     _resolve = resolve;
     _reject = reject;
@@ -124,9 +121,6 @@ static SEL whenInUseAuthorizationSelector;
       ((void (*)(id, SEL))objc_msgSend)(_locMgr, whenInUseAuthorizationSelector);
     } else {
       _reject(@"E_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
-      if (self.delegate) {
-        [self.delegate permissionRequesterDidFinish:self];
-      }
     }
   }
 }
@@ -157,9 +151,6 @@ static SEL whenInUseAuthorizationSelector;
     _resolve = nil;
     _reject = nil;
   }
-  if (self.delegate) {
-    [self.delegate permissionRequesterDidFinish:self];
-  }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
@@ -178,9 +169,6 @@ static SEL whenInUseAuthorizationSelector;
     _resolve([self permissions]);
     _resolve = nil;
     _reject = nil;
-  }
-  if (self.delegate) {
-    [self.delegate permissionRequesterDidFinish:self];
   }
 }
 

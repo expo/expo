@@ -5,19 +5,15 @@
 @implementation EXPermissionBaseRequester
 
 - (instancetype)initWithPermissionsModule:(EXPermissions *)permissionsModule {
-  if (!(self = [super init])) {
-    return nil;
+  if (self = [super init]) {
+    _permissionsModule = permissionsModule;
+    return self;
   }
-  _permissionsModule = permissionsModule;
-  return self;
+  return nil;
 }
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject {
   @throw [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"%s must be overridden in a subclass/category", __PRETTY_FUNCTION__] userInfo:nil];
-}
-
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)permissionRequesterDelegate {
-  _delegate = permissionRequesterDelegate;
 }
 
 - (NSDictionary *)permissions {

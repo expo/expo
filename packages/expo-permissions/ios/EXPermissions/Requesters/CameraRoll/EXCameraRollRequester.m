@@ -34,9 +34,6 @@
   [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
     UM_STRONGIFY(self)
     resolve([self permissions]);
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
   }];
 }
 
