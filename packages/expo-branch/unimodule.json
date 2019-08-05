@@ -1,6 +1,6 @@
 {
   "name": "expo-branch",
-  "platforms": ["android"],
+  "platforms": ["ios", "android"],
   "android": {
     "packages": ["expo.modules.branch.BranchPackage"]
   }
