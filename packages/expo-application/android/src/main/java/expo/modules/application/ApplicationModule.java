@@ -1,13 +1,7 @@
 package expo.modules.application;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.RemoteException;
@@ -24,6 +18,9 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ApplicationModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String NAME = "ExpoApplication";
@@ -115,7 +112,6 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
         switch (responseCode) {
           case InstallReferrerClient.InstallReferrerResponse.OK:
             // Connection established and response received
-            Log.d("INSTALL_REFERRER", "connection established and response ok");
             try {
               ReferrerDetails response = referrerClient.getInstallReferrer();
               installReferrer.append(response.getInstallReferrer());
@@ -127,12 +123,10 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
             break;
           case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
             // API not available in the current Play Store app
-            Log.d("INSTALL_REFERRER", "feature not supported");
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.");
             break;
           case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
             // Connection could not be established
-            Log.d("INSTALL_REFERRER", "connection could not be established");
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER_CONNECTION", "Could not establish a connection to Google Play");
             break;
           default:
@@ -146,6 +140,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
       public void onInstallReferrerServiceDisconnected() {
         // Try to restart the connection on the next request to
         // Google Play by calling the startConnection() method.
+        promise.reject("ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED", "Connection to install referrer service was lost.");
       }
     });
   }
