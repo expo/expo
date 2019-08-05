@@ -26,8 +26,9 @@ interface PermissionRequester {
      * Throws IllegalStateException there's no Permissions module present.
      */
     fun arePermissionsGranted(permissions: Array<String>): Boolean {
-      val permissionsResult = PermissionsModule.getPermissionService().getPermissions(permissions)
-      return permissionsResult.count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
+      with (PermissionsModule.getPermissionService().getPermissions(permissions)) {
+        return count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
+      }
     }
 
     fun getSimplePermission(permission: String): Bundle {
