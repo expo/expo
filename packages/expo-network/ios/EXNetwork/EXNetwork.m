@@ -4,6 +4,7 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 
 #import <ifaddrs.h>
+#import <errno.h>
 #import <arpa/inet.h>
 
 @interface EXNetwork ()
@@ -69,7 +70,9 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
     }
     resolve(address);
   } else {
-    reject(@"ERR_NETWORK_IP_ADDRESS", @"No network interfaces could be retrieved.", nil);
+    NSString *errorMessage = [NSString stringWithFormat:@"%@/%@/%@",  @"No network interfaces could be retrieved. getifaddrs() failed with error number: ", errno, strerror(errno)];
+
+    reject(@"ERR_NETWORK_IP_ADDRESS", errorMessage, nil);
   }
   
   // Free memory
