@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelServiceRegistry.h"
-#import "EXBranchManager.h"
 #import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFileSystemManager.h"
@@ -21,7 +20,6 @@
 
 @interface EXKernelServiceRegistry ()
 
-@property (nonatomic, strong) EXBranchManager *branchManager;
 @property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
 @property (nonatomic, strong) EXFileSystemManager *fileSystemManager;
 @property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
@@ -44,7 +42,6 @@
 {
   if (self = [super init]) {
     // TODO: init these in some clean way
-    [self branchManager];
     [self cachedResourceManager];
     [self errorRecoveryManager];
     [self remoteNotificationManager];
@@ -59,14 +56,6 @@
     [self notificationCenter];
   }
   return self;
-}
-
-- (EXBranchManager *)branchManager
-{
-  if (!_branchManager) {
-    _branchManager = [[EXBranchManager alloc] init];
-  }
-  return _branchManager;
 }
 
 - (EXCachedResourceManager *)cachedResourceManager
@@ -176,7 +165,6 @@
     // New singleton modules should register themselves in UMModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
-                                  self.branchManager,
                                   self.cachedResourceManager,
                                   self.errorRecoveryManager,
                                   self.fileSystemManager,
