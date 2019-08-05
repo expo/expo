@@ -59,7 +59,9 @@ await Network.getNetworkStateAsync();
 
 ### `Network.getIpAddressAsync()`
 
-Gets the device's current IPv4 address.
+Gets the device's current IPv4 address. 
+
+On web, this method uses [`Ipify Api`](https://www.ipify.org/) to get public ip address of current device via http request.
 
 #### Returns
 
@@ -86,7 +88,7 @@ A `Promise` that resolves to a `string` of the network adapter MAC address or `n
 
 [Note from Apple](https://developer.apple.com/library/archive/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1): In iOS 7 and later, if you ask for the MAC address of an iOS device, the system returns the value `"02:00:00:00:00:00"`. 
 
-If you need to identify the device, use the `getIdentifierForVendorAsync()` method of the `expo-device` unimodule instead. 
+If you need to identify the device, use the `getIosIdForVendorAsync()` method of the `expo-application` unimodule instead. 
 
 **Examples**
 
