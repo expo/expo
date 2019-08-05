@@ -12,8 +12,8 @@
 #import "RNBranchEventEmitter.h"
 
 // Notification/Event Names
-NSString * const RNBranchInitSessionSuccess = @"RNBranch.initSessionSuccess";
-NSString * const RNBranchInitSessionError = @"RNBranch.initSessionError";
+NSString * const kRNBranchInitSessionSuccess = @"RNBranch.initSessionSuccess";
+NSString * const kRNBranchInitSessionError = @"RNBranch.initSessionError";
 
 @interface RNBranchEventEmitter()
 @property (nonatomic) BOOL hasListeners;
@@ -37,8 +37,8 @@ RCT_EXPORT_MODULE();
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[RNBranchInitSessionSuccess,
-             RNBranchInitSessionError
+    return @[kRNBranchInitSessionSuccess,
+             kRNBranchInitSessionError
              ];
 }
 
@@ -61,12 +61,12 @@ RCT_EXPORT_MODULE();
 
 + (void)initSessionDidSucceedWithPayload:(NSDictionary *)payload
 {
-    [self postNotificationName:RNBranchInitSessionSuccess withPayload:payload];
+    [self postNotificationName:kRNBranchInitSessionSuccess withPayload:payload];
 }
 
 + (void)initSessionDidEncounterErrorWithPayload:(NSDictionary *)payload
 {
-    [self postNotificationName:RNBranchInitSessionError withPayload:payload];
+    [self postNotificationName:kRNBranchInitSessionError withPayload:payload];
 }
 
 # pragma mark - Private
