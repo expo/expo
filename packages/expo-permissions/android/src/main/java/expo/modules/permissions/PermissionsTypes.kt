@@ -1,6 +1,6 @@
 package expo.modules.permissions
 
-enum class PermissionsTypes(val type:String) {
+enum class PermissionsTypes(val type: String) {
     LOCATION("location"),
     CAMERA("camera"),
     CONTACTS("contacts"),
