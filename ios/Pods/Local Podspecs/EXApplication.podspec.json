@@ -1,8 +1,8 @@
 {
   "name": "EXApplication",
   "version": "0.0.1",
-  "summary": "A universal module that gets application information at runtime",
-  "description": "A universal module that gets application information at runtime",
+  "summary": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
+  "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-application",
