@@ -6,7 +6,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow the [react-native-svg installation instructions](https://github.com/react-native-community/react-native-svg).
+To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-svg`. In bare apps, also follow the [react-native-svg installation instructions](https://github.com/react-native-community/react-native-svg).
 
 ## API
 

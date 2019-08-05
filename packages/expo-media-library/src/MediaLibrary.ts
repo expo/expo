@@ -84,6 +84,8 @@ export type AssetsOptions = {
   album?: AlbumRef;
   sortBy?: Array<SortByValue> | SortByValue;
   mediaType?: Array<MediaTypeValue> | MediaTypeValue;
+  createdAfter?: Date | number;
+  createdBefore?: Date | number;
 };
 
 export type PagedInfo<T> = {
@@ -91,6 +93,17 @@ export type PagedInfo<T> = {
   endCursor: string;
   hasNextPage: boolean;
   totalCount: number;
+};
+
+export enum PermissionStatus {
+  UNDETERMINED = 'undetermined',
+  GRANTED = 'granted',
+  DENIED = 'denied',
+};
+
+export type PermissionInfo = {
+  status: 'granted' | 'denied' | 'undetermined';
+  granted: boolean;
 };
 
 export type AssetRef = Asset | string;
@@ -146,9 +159,27 @@ function checkSortByKey(sortBy: any): void {
   }
 }
 
+function dateToNumber(value?: Date | number): number | undefined {
+  return value instanceof Date ? value.getTime() : value;
+}
+
 // export constants
 export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
 export const SortBy: SortByObject = MediaLibrary.SortBy;
+
+export async function requestPermissionsAsync(): Promise<PermissionInfo> {
+  if (!MediaLibrary.requestPermissionsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
+  }
+  return await MediaLibrary.requestPermissionsAsync();
+}
+
+export async function getPermissionsAsync(): Promise<PermissionInfo> {
+  if (!MediaLibrary.getPermissionsAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
+  }
+  return await MediaLibrary.getPermissionsAsync();
+}
 
 export async function createAssetAsync(localUri: string): Promise<Asset> {
   if (!MediaLibrary.createAssetAsync) {
@@ -304,7 +335,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
   }
 
-  const { first, after, album, sortBy, mediaType } = assetsOptions;
+  const { first, after, album, sortBy, mediaType, createdAfter, createdBefore } = assetsOptions;
 
   const options = {
     first: first == null ? 20 : first,
@@ -312,6 +343,8 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     album: getId(album),
     sortBy: arrayize(sortBy),
     mediaType: arrayize(mediaType || [MediaType.photo]),
+    createdAfter: dateToNumber(createdAfter),
+    createdBefore: dateToNumber(createdBefore),
   };
 
   if (first != null && typeof options.first !== 'number') {

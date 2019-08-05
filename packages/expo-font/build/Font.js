@@ -4,10 +4,11 @@ import { Platform } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
 const isWeb = Platform.OS === 'web';
 const isInClient = !isWeb && Constants.appOwnership === 'expo';
+const isInIOSStandalone = Constants.appOwnership === 'standalone' && Platform.OS === 'ios';
 const loaded = {};
 const loadPromises = {};
 function fontFamilyNeedsScoping(name) {
-    return (isInClient &&
+    return ((isInClient || isInIOSStandalone) &&
         !Constants.systemFonts.includes(name) &&
         name !== 'System' &&
         !name.includes(Constants.sessionId));

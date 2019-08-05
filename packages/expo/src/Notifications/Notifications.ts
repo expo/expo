@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 import {
   Notification,
@@ -362,6 +362,9 @@ export default {
 
   /* Cancel scheduled notification notification with ID */
   cancelScheduledNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
+    if (Platform.OS === 'android' && typeof notificationId === 'string') {
+      return ExponentNotifications.cancelScheduledNotificationWithStringIdAsync(notificationId);
+    }
     return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
   },
 
@@ -398,4 +401,53 @@ export default {
     }
     return ExponentNotifications.setBadgeNumberAsync(number);
   },
+
+  async scheduleNotificationWithCalendarAsync(
+    notification: LocalNotification,
+    options: {
+      year?: number;
+      month?: number;
+      hour?: number;
+      day?: number;
+      minute?: number;
+      second?: number;
+      weekDay?: number;
+      repeat?: boolean;
+    } = {}
+  ): Promise<string> {
+    const areOptionsValid: boolean =
+      (options.month == null || isInRangeInclusive(options.month, 1, 12)) &&
+      (options.day == null || isInRangeInclusive(options.day, 1, 31)) &&
+      (options.hour == null || isInRangeInclusive(options.hour, 0, 23)) &&
+      (options.minute == null || isInRangeInclusive(options.minute, 0, 59)) &&
+      (options.second == null || isInRangeInclusive(options.second, 0, 59)) &&
+      (options.weekDay == null || isInRangeInclusive(options.weekDay, 1, 7)) &&
+      (options.weekDay == null || options.day == null);
+
+    if (!areOptionsValid) {
+      throw new CodedError(
+        'WRONG_OPTIONS',
+        'Options in scheduleNotificationWithCalendarAsync call were incorrect!'
+      );
+    }
+
+    return ExponentNotifications.scheduleNotificationWithCalendar(notification, options);
+  },
+
+  async scheduleNotificationWithTimerAsync(
+    notification: LocalNotification,
+    options: {
+      interval: number;
+      repeat?: boolean;
+    }
+  ): Promise<string> {
+    if (options.interval < 1) {
+      throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
+    }
+    return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
+  },
 };
+
+function isInRangeInclusive(variable: number, min: number, max: number): boolean {
+  return (variable >= min && variable <= max);
+}
