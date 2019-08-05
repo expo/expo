@@ -3,6 +3,13 @@ import { UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
+export var PermissionStatus;
+(function (PermissionStatus) {
+    PermissionStatus["UNDETERMINED"] = "undetermined";
+    PermissionStatus["GRANTED"] = "granted";
+    PermissionStatus["DENIED"] = "denied";
+})(PermissionStatus || (PermissionStatus = {}));
+;
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;
