@@ -831,7 +831,7 @@ PODS:
     - Firebase/MLVisionFaceModel
     - UMCore
     - UMFaceDetectorInterface
-  - EXFileSystem (6.0.0):
+  - EXFileSystem (6.0.1):
     - UMCore
     - UMFileSystemInterface
   - EXFont (6.0.1):
@@ -873,7 +873,7 @@ PODS:
   - EXMailComposer (6.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (6.0.0):
+  - EXMediaLibrary (6.1.0-rc.0):
     - UMCore
     - UMPermissionsInterface
   - EXNetwork (0.0.1):
@@ -2500,7 +2500,7 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 043c0521b52ae061070fd84b405459e0b7cba940
   EXFacebook: b71969e92a4d76632ee743d26e88c61b4d9a3e45
   EXFaceDetector: badb48d40de77184aabcc8bc9cbd9b2e6d5e14ee
-  EXFileSystem: a5a7b8409e7d11f3948804e674ea91720fa84cd5
+  EXFileSystem: 8a7c20589ad1c6b631040bcbbc5e29d945630625
   EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
   EXGL: dc4ae6520b142a74e28e6f4472d27a26fc211f37
   EXGL-CPP: 06949fa99656c36b488ff51155ca865c871f3d3d
@@ -2514,7 +2514,7 @@ SPEC CHECKSUMS:
   EXLocalization: 1abab86f9e7f09c96ca19ea695606f81230fedcf
   EXLocation: 4eb76115832f08b1e78003b335c210e18fa60424
   EXMailComposer: 801ebd0bfd0c6e743a69102168b35b00efa67277
-  EXMediaLibrary: 4b69832fe53e3bda72c147b5783a6eab9d1b7f64
+  EXMediaLibrary: 207c50e6d09c0d498ae293f59de28daf67a33076
   EXNetwork: be7e9060970126a0ee277b4bbc5ad59fe26e99a5
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
   EXPrint: ad5e463fbc7de12f44339685612d3fb086d936ab
