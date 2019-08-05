@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import expo.modules.permissions.PermissionsModule
+import expo.modules.permissions.PermissionsTypes.SYSTEM_BRIGHTNESS
 import expo.modules.permissions.DENIED_VALUE
 import expo.modules.permissions.EXPIRES_KEY
 import expo.modules.permissions.GRANTED_VALUE
@@ -13,28 +14,27 @@ import expo.modules.permissions.UNDETERMINED_VALUE
 import org.unimodules.core.interfaces.ActivityProvider
 
 class SystemBrightnessRequester(private val activityProvider: ActivityProvider) : PermissionRequester {
-  override fun getPermissionToAsk(): Array<String> = emptyArray() // this permission is handling in different way
+  override fun getPermissionToAsk(): Array<String> = emptyArray() // this permission is handled in different way
 
   // checkSelfPermission does not return accurate status of WRITE_SETTINGS
   override fun getPermission(): Bundle {
     return Bundle().apply {
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-
+      var statusKey: String = GRANTED_VALUE
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        when {
+        statusKey = when {
           Settings.System.canWrite(activityProvider.currentActivity.applicationContext) -> {
-            putString(STATUS_KEY, GRANTED_VALUE)
+            GRANTED_VALUE
           }
-          PermissionsModule.didAsk("systemBrightness") -> {
-            putString(STATUS_KEY, DENIED_VALUE)
+          PermissionsModule.didAsk(SYSTEM_BRIGHTNESS.type) -> {
+            DENIED_VALUE
           }
           else -> {
-            putString(STATUS_KEY, UNDETERMINED_VALUE)
+            UNDETERMINED_VALUE
           }
         }
-      } else {
-        putString(STATUS_KEY, GRANTED_VALUE)
       }
+      putString(STATUS_KEY, statusKey)
     }
   }
 }

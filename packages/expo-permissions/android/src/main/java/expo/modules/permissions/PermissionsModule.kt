@@ -66,17 +66,17 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
 
     val notificationRequester = NotificationRequester(context)
     mRequesters = mapOf(
-        "location" to LocationRequester(),
-        "camera" to SimpleRequester(Manifest.permission.CAMERA),
-        "contacts" to SimpleRequester(Manifest.permission.READ_CONTACTS),
-        "audioRecording" to SimpleRequester(Manifest.permission.RECORD_AUDIO),
-        "cameraRoll" to CameraRollRequester(),
-        "calendar" to CalendarRequester(),
-        "sms" to SimpleRequester(Manifest.permission.READ_SMS),
-        "reminders" to RemindersRequester(),
-        "notifications" to notificationRequester,
-        "userFacingNotifications" to notificationRequester,
-        "systemBrightness" to SystemBrightnessRequester(mActivityProvider!!)
+        PermissionsTypes.LOCATION.type to LocationRequester(),
+        PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),
+        PermissionsTypes.CONTACTS.type to SimpleRequester(Manifest.permission.READ_CONTACTS),
+        PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(Manifest.permission.RECORD_AUDIO),
+        PermissionsTypes.CAMERA_ROLL.type to CameraRollRequester(),
+        PermissionsTypes.CALENDAR.type to CalendarRequester(),
+        PermissionsTypes.SMS.type to SimpleRequester(Manifest.permission.READ_SMS),
+        PermissionsTypes.REMINDERS.type to RemindersRequester(),
+        PermissionsTypes.NOTIFICATIONS.type to notificationRequester,
+        PermissionsTypes.USER_FACING_NOTIFICATIONS.type to notificationRequester,
+        PermissionsTypes.SYSTEM_BRIGHTNESS.type to SystemBrightnessRequester(mActivityProvider!!)
     )
   }
 
@@ -132,7 +132,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
     }
 
     // check whether to launch WritingSettingsActivity
-    if (requestedPermissionsTypesSet.contains("systemBrightness") &&
+    if (requestedPermissionsTypesSet.contains(PermissionsTypes.SYSTEM_BRIGHTNESS.type) &&
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (mAskAsyncPromise != null) {
         return promise.reject(
@@ -144,7 +144,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
       mAskAsyncRequestedPermissionsTypes = requestedPermissionsTypes
       mAskAsyncPermissionsTypesToBeAsked = permissionsTypesToBeAsked
       askForWriteSettingsPermissionFirst()
-      mPermissionsAskedFor.add("systemBrightness")
+      mPermissionsAskedFor.add(PermissionsTypes.SYSTEM_BRIGHTNESS.type)
       mPermissionsAskedFor.addAll(requestedPermissionsTypesSet) // todo: maybe move it to `onHostResume` function?
       return
     }
@@ -183,7 +183,7 @@ class PermissionsModule(context: Context) : ExportedModule(context), LifecycleEv
   }
 
   private fun getRequester(permissionType: String): PermissionRequester {
-    return mRequesters[permissionType] ?: throw IllegalStateException(String.format("Unrecognized permission type: %s", permissionType))
+    return mRequesters[permissionType] ?: throw IllegalStateException("Unrecognized permission type: $permissionType")
   }
 
   /**

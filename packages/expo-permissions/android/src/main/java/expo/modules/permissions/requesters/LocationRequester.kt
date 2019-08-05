@@ -3,6 +3,7 @@ package expo.modules.permissions.requesters
 import android.Manifest
 import android.os.Bundle
 import expo.modules.permissions.PermissionsModule
+import expo.modules.permissions.PermissionsTypes.LOCATION
 import expo.modules.permissions.DENIED_VALUE
 import expo.modules.permissions.EXPIRES_KEY
 import expo.modules.permissions.GRANTED_VALUE
@@ -31,7 +32,7 @@ class LocationRequester : PermissionRequester {
             putString(STATUS_KEY, GRANTED_VALUE)
             scope = "coarse"
           }
-          PermissionsModule.didAsk("location") -> {
+          PermissionsModule.didAsk(LOCATION.type) -> {
             putString(STATUS_KEY, DENIED_VALUE)
           }
           else -> {

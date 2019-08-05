@@ -26,7 +26,7 @@ interface PermissionRequester {
      * Throws IllegalStateException there's no Permissions module present.
      */
     fun arePermissionsGranted(permissions: Array<String>): Boolean {
-      with(PermissionsModule.getPermissionService().getPermissions(permissions)) {
+      with (PermissionsModule.getPermissionService().getPermissions(permissions)) {
         return count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
       }
     }
