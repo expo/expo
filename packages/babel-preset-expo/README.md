@@ -54,3 +54,18 @@ Enabling this option will allow your project to run with older JavaScript syntax
     }
 ],
 ```
+
+### `web.useNextBabel`
+
+Enabling this option will make your project use the [`next/babel`](https://github.com/zeit/next.js#customizing-babel-config) preset instead of the default `metro-react-native-babel-preset` preset. This option should only be used if you intend to develop your Expo for Web project with [Next.js](https://nextjs.org/).
+
+**default:** `false`
+
+```js
+[
+    'babel-preset-expo',
+    {
+        web: { useNextBabel: true }
+    }
+],
+```

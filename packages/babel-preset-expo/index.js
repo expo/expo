@@ -11,11 +11,9 @@ module.exports = function(api, options = {}) {
   // `metro-react-native-babel-preset` will handle it.
   const lazyImportsOption = options && options.lazyImports;
 
-  const withNextJsOption = options && options.withNextJs;
-
   return {
     presets: [
-      isWeb && withNextJsOption
+      isWeb && web.useNextBabel
         ? 'next/babel'
         : [
             // We use `require` here instead of directly using the package name
