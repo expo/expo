@@ -27,6 +27,7 @@ interface VendoredModuleUpdateStep {
   sourceAndroidPackage?: string;
   targetAndroidPackage?: string;
   recursive?: boolean;
+  updatePbxproj?: boolean;
 }
 
 interface VendoredModuleConfig {
@@ -408,6 +409,7 @@ async function action(options: ActionOptions) {
     const executeIOS = ['all', 'ios'].includes(options.platform);
 
     step.recursive = step.recursive === true;
+    step.updatePbxproj = !(step.updatePbxproj === false);
 
     // iOS
     if (executeIOS && step.sourceIosPath && step.targetIosPath) {
@@ -427,7 +429,7 @@ async function action(options: ActionOptions) {
 
       await copyFilesAsync(objcFiles, sourceDir, targetDir);
 
-      if (options.pbxproj) {
+      if (options.pbxproj && step.updatePbxproj) {
         console.log(`\nUpdating pbxproj configuration ...`);
 
         for (const file of objcFiles) {
